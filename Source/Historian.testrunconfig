@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRunConfiguration name="Historian Test Configuration" id="34abdefd-9b6e-4ec9-b4a3-b74bced33d13" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2006">
+  <Description>Configuration for all test runs.</Description>
+  <TestTypeSpecific />
+</TestRunConfiguration>
