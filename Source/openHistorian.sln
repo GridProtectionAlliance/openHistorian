@@ -76,6 +76,40 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianConsole", "Applications\openHistorian\openHistorianConsole\openHistorianConsole.csproj", "{ACF08973-90D7-4239-A7FF-D38223AE2DBA}"
 EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 8
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Libraries\\openHistorian\\openHistorian.csproj
+		SccProjectTopLevelParentUniqueName1 = openHistorian.sln
+		SccProjectName1 = Libraries/openHistorian
+		SccLocalPath1 = Libraries\\openHistorian
+		SccProjectUniqueName2 = Libraries\\Test\\openHistorian.Test\\openHistorian.Test.csproj
+		SccProjectTopLevelParentUniqueName2 = openHistorian.sln
+		SccProjectName2 = Libraries/Test/openHistorian.Test
+		SccLocalPath2 = Libraries\\Test\\openHistorian.Test
+		SccProjectUniqueName3 = Tools\\HistorianPlaybackUtility\\HistorianPlaybackUtility.csproj
+		SccProjectTopLevelParentUniqueName3 = openHistorian.sln
+		SccProjectName3 = Tools/HistorianPlaybackUtility
+		SccLocalPath3 = Tools\\HistorianPlaybackUtility
+		SccProjectUniqueName4 = Libraries\\Hadoop.Replication\\Hadoop.Replication.csproj
+		SccProjectTopLevelParentUniqueName4 = openHistorian.sln
+		SccProjectName4 = Libraries/Hadoop.Replication
+		SccLocalPath4 = Libraries\\Hadoop.Replication
+		SccProjectUniqueName5 = Tools\\HistorianViewer\\HistorianViewer.csproj
+		SccProjectTopLevelParentUniqueName5 = openHistorian.sln
+		SccProjectName5 = Tools/HistorianViewer
+		SccLocalPath5 = Tools\\HistorianViewer
+		SccProjectUniqueName6 = Applications\\openHistorian\\openHistorian\\openHistorian.csproj
+		SccProjectTopLevelParentUniqueName6 = openHistorian.sln
+		SccProjectName6 = Applications/openHistorian/openHistorian
+		SccLocalPath6 = Applications\\openHistorian\\openHistorian
+		SccProjectUniqueName7 = Applications\\openHistorian\\openHistorianConsole\\openHistorianConsole.csproj
+		SccProjectTopLevelParentUniqueName7 = openHistorian.sln
+		SccProjectName7 = Applications/openHistorian/openHistorianConsole
+		SccLocalPath7 = Applications\\openHistorian\\openHistorianConsole
+	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Historian.vsmdi
 	EndGlobalSection
