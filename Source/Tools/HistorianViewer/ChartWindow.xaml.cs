@@ -30,8 +30,8 @@ using System.Windows.Controls.DataVisualization.Charting;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using openHistorian;
-using openHistorian.Files;
+using TimeSeriesArchiver;
+using TimeSeriesArchiver.Files;
 
 namespace HistorianViewer
 {

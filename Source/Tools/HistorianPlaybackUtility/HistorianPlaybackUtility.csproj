@@ -153,12 +153,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\openHistorian\openHistorian.csproj">
-      <Project>{7E1ABF87-8936-44E5-85C0-37044E0D3877}</Project>
-      <Name>openHistorian %28Libraries\openHistorian%29</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
     <None Include="HistorianPlaybackUtility.ico" />
   </ItemGroup>
@@ -178,6 +172,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\TimeSeriesArchiver\TimeSeriesArchiver.csproj">
+      <Project>{7E1ABF87-8936-44E5-85C0-37044E0D3877}</Project>
+      <Name>TimeSeriesArchiver</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

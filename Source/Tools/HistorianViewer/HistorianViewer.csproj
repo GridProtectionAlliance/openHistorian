@@ -224,9 +224,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\openHistorian\openHistorian.csproj">
+    <ProjectReference Include="..\..\Libraries\TimeSeriesArchiver\TimeSeriesArchiver.csproj">
       <Project>{7E1ABF87-8936-44E5-85C0-37044E0D3877}</Project>
-      <Name>openHistorian %28Libraries\openHistorian%29</Name>
+      <Name>TimeSeriesArchiver</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

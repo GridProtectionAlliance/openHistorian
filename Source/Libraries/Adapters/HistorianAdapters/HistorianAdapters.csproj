@@ -146,9 +146,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\openHistorian\openHistorian.csproj">
+    <ProjectReference Include="..\..\TimeSeriesArchiver\TimeSeriesArchiver.csproj">
       <Project>{7E1ABF87-8936-44E5-85C0-37044E0D3877}</Project>
-      <Name>openHistorian %28Libraries\openHistorian%29</Name>
+      <Name>TimeSeriesArchiver</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -160,8 +160,8 @@
   -->
   <Import Project="$(MSBuildBinPath)/Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>IF EXIST "$(OutDir)..\Applications\openPDC" COPY "$(TargetPath)" "$(OutDir)..\Applications\openPDC"
-IF EXIST "$(OutDir)..\Applications\openPDC" COPY "$(TargetDir)TVA.Web.dll" "$(OutDir)..\Applications\openPDC"
-IF EXIST "$(OutDir)..\Applications\openPDC" COPY "$(TargetDir)TVA.Historian.dll" "$(OutDir)..\Applications\openPDC"</PostBuildEvent>
+    <PostBuildEvent>IF EXIST "$(OutDir)..\Applications\openHistorian" COPY "$(TargetPath)" "$(OutDir)..\Applications\openHistorian"
+IF EXIST "$(OutDir)..\Applications\openHistorian" COPY "$(TargetDir)TVA.Web.dll" "$(OutDir)..\Applications\openHistorian"
+IF EXIST "$(OutDir)..\Applications\openHistorian" COPY "$(TargetDir)TimeSeriesArchiver.dll" "$(OutDir)..\Applications\openHistorian"</PostBuildEvent>
   </PropertyGroup>
 </Project>

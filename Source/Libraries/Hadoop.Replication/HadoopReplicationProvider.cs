@@ -58,7 +58,7 @@ using System.Threading;
 using TVA;
 using TVA.Collections;
 using TVA.Configuration;
-using openHistorian.Replication;
+using TimeSeriesArchiver.Replication;
 using TVA.IO;
 using TVA.IO.Checksums;
 using TVA.Net.Ftp;
@@ -67,7 +67,7 @@ using TVA.Units;
 namespace Hadoop.Replication
 {
     /// <summary>
-    /// Represents a provider of replication for the <see cref="openHistorian.IArchive"/> to Hadoop using FTP channel.
+    /// Represents a provider of replication for the <see cref="TimeSeriesArchiver.IArchive"/> to Hadoop using FTP channel.
     /// </summary>
     public class HadoopReplicationProvider : ReplicationProviderBase
     {
@@ -303,7 +303,7 @@ namespace Hadoop.Replication
         }
 
         /// <summary>
-        /// Replicates the <see cref="openHistorian.IArchive"/>.
+        /// Replicates the <see cref="TimeSeriesArchiver.IArchive"/>.
         /// </summary>
         protected override void ReplicateArchive()
         {

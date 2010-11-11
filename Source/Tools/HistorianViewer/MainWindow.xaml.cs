@@ -32,8 +32,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Xml;
 using Microsoft.Win32;
-using openHistorian;
-using openHistorian.Files;
+using TimeSeriesArchiver;
+using TimeSeriesArchiver.Files;
 using TVA.IO;
 
 namespace HistorianViewer

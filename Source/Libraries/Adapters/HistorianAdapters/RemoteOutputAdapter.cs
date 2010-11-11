@@ -41,7 +41,7 @@ using TimeSeriesFramework;
 using TimeSeriesFramework.Adapters;
 using TVA;
 using TVA.Communication;
-using openHistorian.Packets;
+using TimeSeriesArchiver.Packets;
 
 namespace HistorianAdapters
 {
