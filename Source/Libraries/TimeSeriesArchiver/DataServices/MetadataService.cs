@@ -28,6 +28,8 @@
 //       Added check to verify that the service is enabled before processing incoming requests.
 //  10/11/2010 - Mihir Brahmbhatt
 //       Updated header and license agreement.
+//  11/07/2010 - Pinal C. Patel
+//       Modified to fix breaking changes made to SelfHostingService.
 //
 //******************************************************************************************************
 
@@ -51,9 +53,9 @@ namespace TimeSeriesArchiver.DataServices
         /// Initializes a new instance of the <see cref="MetadataService"/> class.
         /// </summary>
         public MetadataService()
-            :base()
+            : base()
         {
-            ServiceUri = "http://localhost:6151/historian";
+            Endpoints = "http.rest://localhost:6151/historian";
         }
 
         #endregion
@@ -146,10 +148,6 @@ namespace TimeSeriesArchiver.DataServices
                 if (!Enabled)
                     return;
 
-                // Ensure that writing data is allowed.
-                if (!CanWrite)
-                    throw new InvalidOperationException("Write operation is prohibited");
-
                 // Ensure that data archive is available.
                 if (Archive == null)
                     throw new ArgumentNullException("Archive");
@@ -175,10 +173,6 @@ namespace TimeSeriesArchiver.DataServices
                 // Abort if services is not enabled.
                 if (!Enabled)
                     return null;
-
-                // Ensure that reading data is allowed.
-                if (!CanRead)
-                    throw new InvalidOperationException("Read operation is prohibited");
 
                 // Ensure that data archive is available.
                 if (Archive == null)
@@ -219,10 +213,6 @@ namespace TimeSeriesArchiver.DataServices
                 if (!Enabled)
                     return null;
 
-                // Ensure that reading data is allowed.
-                if (!CanRead)
-                    throw new InvalidOperationException("Read operation is prohibited");
-
                 // Ensure that data archive is available.
                 if (Archive == null)
                     throw new ArgumentNullException("Archive");
@@ -261,10 +251,6 @@ namespace TimeSeriesArchiver.DataServices
                 // Abort if services is not enabled.
                 if (!Enabled)
                     return null;
-
-                // Ensure that reading data is allowed.
-                if (!CanRead)
-                    throw new InvalidOperationException("Read operation is prohibited");
 
                 // Ensure that data archive is available.
                 if (Archive == null)

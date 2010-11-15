@@ -28,6 +28,8 @@
 //       Modified the default constructor to set the base class Singleton property to true.
 //  10/11/2010 - Mihir Brahmbhatt
 //       Updated header and license agreement.
+//  11/07/2010 - Pinal C. Patel
+//       Modified to fix breaking changes made to SelfHostingService.
 //
 //******************************************************************************************************
 
@@ -40,6 +42,7 @@ namespace TimeSeriesArchiver.DataServices
     /// </summary>
     public class DataService : SelfHostingService, IDataService
     {
+
         #region [ Members ]
 
         // Fields
@@ -56,6 +59,8 @@ namespace TimeSeriesArchiver.DataServices
             : base()
         {
             Singleton = true;
+            PublishMetadata = true;
+            PersistSettings = true;
         }
 
         #endregion

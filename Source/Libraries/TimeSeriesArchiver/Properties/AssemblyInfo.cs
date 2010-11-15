@@ -17,7 +17,7 @@ using System.Security.Permissions;
 #else
 [assembly: AssemblyConfiguration("Release Build")]
 #endif
-[assembly: AssemblyDefaultAlias("openHistorian")]
+[assembly: AssemblyDefaultAlias("TimeSeriesArchiver")]
 [assembly: AssemblyDescription("Core historian specific components.")]
 [assembly: AssemblyTitle("TimeSeriesArchiver")]
 
