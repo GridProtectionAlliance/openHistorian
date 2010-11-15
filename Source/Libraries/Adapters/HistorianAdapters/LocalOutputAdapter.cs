@@ -50,6 +50,8 @@
 //       Added automatic URL namespace reservation for built-in web services.
 //  11/03/2010 - Mihir Brahmbhatt
 //       Updated openHistorian Reference
+//  11/07/2010 - Pinal C. Patel
+//       Modified namespace reservation logic to handle the changed URI format in SelfHostingService.
 //
 //******************************************************************************************************
 
@@ -61,6 +63,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using TimeSeriesArchiver.DataServices;
 using TimeSeriesArchiver.Files;
@@ -468,27 +471,29 @@ namespace HistorianAdapters
 
         private void DataServices_AdapterCreated(object sender, EventArgs<IDataService> e)
         {
-            e.Argument.Enabled = true;
             e.Argument.SettingsCategory = InstanceName + e.Argument.SettingsCategory;
 
-            string serviceUri = null;
-
-            try
+            // Attempt to reserve the http namespace reservation for this data service URI
+            string uri = string.Empty;
+            IDataService provider = e.Argument;
+            if (provider != null && !string.IsNullOrWhiteSpace(provider.Endpoints))
             {
-                // Attempt to reserve the http namespace reservation for this data service URI
-                IDataService provider = e.Argument;
-
-                if (provider != null)
+                foreach (string endpoint in provider.Endpoints.Split(';'))
                 {
-                    serviceUri = provider.ServiceUri;
-
-                    if (!string.IsNullOrWhiteSpace(serviceUri))
-                        SetNamespaceReservation(new Uri(serviceUri));
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(endpoint))
+                        {
+                            // Convert the endpoint address to standard URI format.
+                            uri = Regex.Replace(endpoint.Trim(), "http\\..*://", "http://", RegexOptions.IgnoreCase);
+                            SetNamespaceReservation(new Uri(uri));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        OnStatusMessage("Unable to set namespace reservation for \"{0}\", this may not be required on this OS version. Message was: {1}", uri, ex.Message);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                OnStatusMessage("Unable to set namespace reservation for \"{0}\", this may not be required on this OS version. Message was: {1}", serviceUri.ToNonNullString("http://??"), ex.Message);
             }
         }
 
@@ -800,3 +805,4 @@ namespace HistorianAdapters
         #endregion
     }
 }
+
