@@ -102,24 +102,21 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.XML" />
-    <Reference Include="TimeSeriesFramework, Version=1.0.1.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TimeSeriesFramework, Version=1.0.2.21312, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\TimeSeriesFramework\TimeSeriesFramework.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Communication, Version=1.1.36.46795, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.Communication, Version=4.0.1.58800, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath Condition=" '$(SignAssembly)' != 'true' ">..\..\..\Dependencies\TVA\TVA.Communication.dll</HintPath>
-      <HintPath Condition=" '$(SignAssembly)' == 'true' ">..\..\..\Dependencies\TVA\Signed\TVA.Communication.dll</HintPath>
+      <HintPath>..\..\..\Dependencies\TVA\TVA.Communication.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Core, Version=1.1.36.46795, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.Core, Version=4.0.1.58800, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath Condition=" '$(SignAssembly)' != 'true' ">..\..\..\Dependencies\TVA\TVA.Core.dll</HintPath>
-      <HintPath Condition=" '$(SignAssembly)' == 'true' ">..\..\..\Dependencies\TVA\Signed\TVA.Core.dll</HintPath>
+      <HintPath>..\..\..\Dependencies\TVA\TVA.Core.dll</HintPath>
     </Reference>
-    <Reference Include="TVA.Web, Version=1.1.36.46795, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="TVA.Web, Version=4.0.1.58800, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath Condition=" '$(SignAssembly)' != 'true' ">..\..\..\Dependencies\TVA\TVA.Web.dll</HintPath>
-      <HintPath Condition=" '$(SignAssembly)' == 'true' ">..\..\..\Dependencies\TVA\Signed\TVA.Web.dll</HintPath>
+      <HintPath>..\..\..\Dependencies\TVA\TVA.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
