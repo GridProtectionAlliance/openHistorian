@@ -36,13 +36,18 @@
 //       Modified Write() to seek only when necessary.
 //  10/11/2010 - Mihir Brahmbhatt
 //       Updated header and license agreement.
+//  11/18/2010 - J. Ritchie Carroll
+//       Added a exception handler for reading (exposed via DataReadException event) to make sure
+//       bad data or corruption in an archive file does not stop the read process.
 //
 //******************************************************************************************************
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using TVA;
 
 namespace TimeSeriesArchiver.Files
 {
@@ -70,6 +75,13 @@ namespace TimeSeriesArchiver.Files
         private long m_writeCursor;
         private DateTime m_lastActivityTime;
 
+        /// <summary>
+        /// Occurs when an <see cref="Exception"/> is encountered while reading <see cref="IDataPoint"/> from the <see cref="ArchiveDataBlock"/>.
+        /// </summary>
+        [Category("Data"),
+        Description("Occurs when an Exception is encountered while reading IDataPoint from the ArchiveDataBlock.")]
+        public event EventHandler<EventArgs<Exception>> DataReadException;
+
         #endregion
 
         #region [ Constructors ]
@@ -89,10 +101,19 @@ namespace TimeSeriesArchiver.Files
             m_readBuffer = new byte[ArchiveDataPoint.ByteCount];
             m_writeCursor = Location;
             m_lastActivityTime = DateTime.Now;
+
             if (reset)
-                Reset();                                        // Clear existing data.
+            {
+                // Clear existing data.
+                Reset();
+            }
             else
-                foreach (ArchiveDataPoint dataPoint in Read()) { }   // Read existing data.
+            {
+                // Read existing data.
+                foreach (ArchiveDataPoint dataPoint in Read())
+                {
+                }
+            }
         }
 
         #endregion
@@ -184,18 +205,31 @@ namespace TimeSeriesArchiver.Files
         /// <returns>Returns <see cref="ArchiveDataPoint"/>s from the <see cref="ArchiveDataBlock"/>.</returns>
         public IEnumerable<IDataPoint> Read()
         {
+            ArchiveDataPoint dataPoint;
+
             lock (m_parent.FileData)
             {
                 // We'll start reading from where the data block begins.
                 m_parent.FileData.Seek(Location, SeekOrigin.Begin);
 
-                for (int i = 1; i <= Capacity; i++)
+                for (int i = 0; i < Capacity; i++)
                 {
                     // Read the data in the block.
                     m_lastActivityTime = DateTime.Now;
                     m_parent.FileData.Read(m_readBuffer, 0, m_readBuffer.Length);
-                    ArchiveDataPoint dataPoint = new ArchiveDataPoint(m_historianID, m_readBuffer, 0, m_readBuffer.Length);
-                    if (!dataPoint.IsEmpty)
+
+                    // Attempt to parse archive data point
+                    try
+                    {
+                        dataPoint = new ArchiveDataPoint(m_historianID, m_readBuffer, 0, m_readBuffer.Length);
+                    }
+                    catch (Exception ex)
+                    {
+                        dataPoint = null;
+                        OnDataReadException(ex);
+                    }
+
+                    if (dataPoint != null && !dataPoint.IsEmpty)
                     {
                         // There is data - use it.
                         m_writeCursor = m_parent.FileData.Position;
@@ -250,6 +284,16 @@ namespace TimeSeriesArchiver.Files
                 Write(new ArchiveDataPoint(m_historianID));
             }
             m_writeCursor = Location;
+        }
+
+        /// <summary>
+        /// Raises the <see cref="DataReadException"/> event.
+        /// </summary>
+        /// <param name="ex"><see cref="Exception"/> to send to <see cref="DataReadException"/> event.</param>
+        protected virtual void OnDataReadException(Exception ex)
+        {
+            if (DataReadException != null)
+                DataReadException(this, new EventArgs<Exception>(ex));
         }
 
         #endregion
