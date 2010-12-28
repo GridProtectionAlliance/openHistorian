@@ -200,6 +200,10 @@
             <summary>
             Represents an <see cref="T:TVA.Security.ISecurityProvider"/> that uses Active Directory for its backend datastore and credential authentication.
             </summary>
+            <remarks>
+            A <a href="http://en.wikipedia.org/wiki/Security_Identifier" target="_blank">Security Identifier</a> can also be specified in 
+            <b>IncludedResources</b> instead of a role name in the format of 'SID:&lt;Security Identifier&gt;' (Example: SID:S-1-5-21-19610888-1443184010-1631745340-269783).
+            </remarks>
             <example>
             Required config file entries:
             <code>
@@ -241,8 +245,6 @@
             <summary>
             Base class for a provider of role-based security in applications.
             </summary>
-            <seealso cref="T:TVA.Security.SecurityIdentity"/>
-            <seealso cref="T:TVA.Security.SecurityPrincipal"/>
             <example>
             This examples shows how to extend <see cref="T:TVA.Security.SecurityProviderBase"/> to use a flat-file for the security datastore:
             <code>
@@ -331,6 +333,8 @@
             ]]>
             </code>
             </example>
+            <seealso cref="T:TVA.Security.SecurityIdentity"/>
+            <seealso cref="T:TVA.Security.SecurityPrincipal"/>
         </member>
         <member name="T:TVA.Security.ISecurityProvider">
             <summary>
@@ -349,6 +353,13 @@
             </summary>
             <param name="password">Password to be used for authentication.</param>
             <returns>true if the user is authenticated, otherwise false.</returns>
+        </member>
+        <member name="M:TVA.Security.ISecurityProvider.TranslateRole(System.String)">
+            <summary>
+            Performs a translation of the specified user <paramref name="role"/>.
+            </summary>
+            <param name="role">The user role to be translated.</param>
+            <returns>The user role that the specified user <paramref name="role"/> translates to.</returns>
         </member>
         <member name="P:TVA.Security.ISecurityProvider.ApplicationName">
             <summary>
@@ -396,6 +407,19 @@
             Releases the unmanaged resources before the security provider is reclaimed by <see cref="T:System.GC"/>.
             </summary>
         </member>
+        <member name="M:TVA.Security.SecurityProviderBase.RefreshData">
+            <summary>
+            When overridden in a derived class, refreshes the <see cref="P:TVA.Security.SecurityProviderBase.UserData"/>.
+            </summary>
+            <returns>true if <see cref="P:TVA.Security.SecurityProviderBase.UserData"/> is refreshed, otherwise false.</returns>
+        </member>
+        <member name="M:TVA.Security.SecurityProviderBase.Authenticate(System.String)">
+            <summary>
+            When overridden in a derived class, authenticates the user.
+            </summary>
+            <param name="password">Password to be used for authentication.</param>
+            <returns>true if the user is authenticated, otherwise false.</returns>
+        </member>
         <member name="M:TVA.Security.SecurityProviderBase.Dispose">
             <summary>
             Releases all the resources used by the security provider.
@@ -418,18 +442,12 @@
             </summary>
             <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:TVA.Security.SecurityProviderBase.SettingsCategory"/> has a value of null or empty string.</exception>
         </member>
-        <member name="M:TVA.Security.SecurityProviderBase.RefreshData">
+        <member name="M:TVA.Security.SecurityProviderBase.TranslateRole(System.String)">
             <summary>
-            When overridden in a derived class, refreshes the <see cref="P:TVA.Security.SecurityProviderBase.UserData"/>.
+            Performs a translation of the specified user <paramref name="role"/>.
             </summary>
-            <returns>true if <see cref="P:TVA.Security.SecurityProviderBase.UserData"/> is refreshed, otherwise false.</returns>
-        </member>
-        <member name="M:TVA.Security.SecurityProviderBase.Authenticate(System.String)">
-            <summary>
-            When overridden in a derived class, authenticates the user.
-            </summary>
-            <param name="password">Password to be used for authentication.</param>
-            <returns>true if the user is authenticated, otherwise false.</returns>
+            <param name="role">The user role to be translated.</param>
+            <returns>The user role that the specified user <paramref name="role"/> translates to.</returns>
         </member>
         <member name="M:TVA.Security.SecurityProviderBase.Dispose(System.Boolean)">
             <summary>
@@ -486,6 +504,13 @@
             </summary>
             <param name="password">Password to be used for authentication.</param>
             <returns>true if the user is authenticated, otherwise false.</returns>
+        </member>
+        <member name="M:TVA.Security.LdapSecurityProvider.TranslateRole(System.String)">
+            <summary>
+            Performs a translation of the specified user <paramref name="role"/>.
+            </summary>
+            <param name="role">The user role to be translated.</param>
+            <returns>The user role that the specified user <paramref name="role"/> translates to.</returns>
         </member>
         <member name="P:TVA.Security.LdapSecurityProvider.WindowsPrincipal">
             <summary>
@@ -632,6 +657,114 @@
         <member name="P:TVA.Security.SecurityPrincipal.Identity">
             <summary>
             Gets the <see cref="T:TVA.Security.SecurityIdentity"/> object of the user.
+            </summary>
+        </member>
+        <member name="T:TVA.Security.AdoSecurityProvider">
+            <summary>
+            Represents an <see cref="T:TVA.Security.ISecurityProvider"/> that uses ADO.NET data source (SQL Server, MySQL, Microsoft Access etc) for its
+            backend datastore and authenticates internal users against Active Directory and external users against the database.
+            </summary>
+            <example>
+            Required config file entries:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="TVA.Configuration.CategorizedSettingsSection, TVA.Core" />
+              </configSections>
+              <categorizedSettings>
+                <systemSettings>      
+                    <add name="ConnectionString" value="Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\ProgramData\openPDC\openPDC1.mdb" 
+                        description="Configuration database connection string" encrypted="false"/>
+                    <add name="DataProviderString" value="AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089};ConnectionType=System.Data.OleDb.OleDbConnection;AdapterType=System.Data.OleDb.OleDbDataAdapter" 
+                        description="Configuration database ADO.NET data provider assembly type creation string" encrypted="false"/>      
+                </systemSettings>
+                <securityProvider>
+                  <add name="ProviderType" value="TVA.Security.SqlSecurityProvider, TVA.Security"
+                    description="The type to be used for enforcing security." encrypted="false" />
+                  <add name="IncludedResources" value="*=*" description="Semicolon delimited list of resources to be secured along with role names."
+                    encrypted="false" />
+                  <add name="ExcludedResources" value="" description="Semicolon delimited list of resources to be excluded from being secured."
+                    encrypted="false" />
+                </securityProvider>
+                <activeDirectory>
+                  <add name="PrivilegedDomain" value="" description="Domain of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedUserName" value="" description="Username of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedPassword" value="" description="Password of privileged domain user account."
+                    encrypted="true" />
+                </activeDirectory>
+              </categorizedSettings>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:TVA.Security.AdoSecurityProvider.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.Security.AdoSecurityProvider"/> class.
+            </summary>
+            <param name="username">Name that uniquely identifies the user.</param>
+        </member>
+        <member name="M:TVA.Security.AdoSecurityProvider.RefreshData">
+            <summary>
+            Refreshes the <see cref="T:TVA.Security.UserData"/>.
+            </summary>
+            <returns>true if <see cref="P:TVA.Security.SecurityProviderBase.UserData"/> is refreshed, otherwise false.</returns>
+        </member>
+        <member name="M:TVA.Security.AdoSecurityProvider.Authenticate(System.String)">
+            <summary>
+            Authenticates the user.
+            </summary>
+            <param name="password">Password to be used for authentication.</param>
+            <returns>true if the user is authenticated, otherwise false.</returns>
+        </member>
+        <member name="M:TVA.Security.AdoSecurityProvider.LogLogin(System.Boolean)">
+            <summary>
+            Logs user authentication attempt.
+            </summary>
+            <param name="loginSuccess">true if user authentication was successful, otherwise false.</param>
+            <returns>true if logging was successful, otherwise false.</returns>
+        </member>
+        <member name="M:TVA.Security.AdoSecurityProvider.LogError(System.String,System.String)">
+            <summary>
+            Logs information about an encountered exception to the backend datastore.
+            </summary>
+            <param name="source">Source of the exception.</param>
+            <param name="message">Detailed description of the exception.</param>
+            <returns>true if logging was successful, otherwise false.</returns>
+        </member>
+        <member name="T:TVA.Security.AdoSecurityProvider.DataConnection">
+            <summary>
+            Creates a new <see cref="T:System.Data.IDbConnection"/> to configured ADO.NET data source.
+            </summary>
+        </member>
+        <member name="M:TVA.Security.AdoSecurityProvider.DataConnection.#ctor">
+            <summary>
+            Creates a new <see cref="T:TVA.Security.AdoSecurityProvider.DataConnection"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.Security.AdoSecurityProvider.DataConnection.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:TVA.Security.AdoSecurityProvider.DataConnection"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.Security.AdoSecurityProvider.DataConnection.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:TVA.Security.AdoSecurityProvider.DataConnection"/> object.
+            </summary>
+        </member>
+        <member name="M:TVA.Security.AdoSecurityProvider.DataConnection.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:TVA.Security.AdoSecurityProvider.DataConnection"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="P:TVA.Security.AdoSecurityProvider.DataConnection.Connection">
+            <summary>
+            Gets an open <see cref="T:System.Data.IDbConnection"/> to configured ADO.NET data source.
             </summary>
         </member>
     </members>

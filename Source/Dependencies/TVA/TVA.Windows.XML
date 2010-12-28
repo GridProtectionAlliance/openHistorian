@@ -52,7 +52,6 @@
             <summary>
             Represents a windows form secured using role-based security.
             </summary>
-            <seealso cref="T:TVA.Security.ISecurityProvider"/>
             <example>
             Required config file entries:
             <code>
@@ -89,6 +88,7 @@
             ]]>
             </code>
             </example>
+            <seealso cref="T:TVA.Security.ISecurityProvider"/>
         </member>
         <member name="M:TVA.Windows.Forms.SecureForm.#ctor">
             <summary>
@@ -122,7 +122,6 @@
             <summary>
             Represents a WPF window secured using role-based security.
             </summary>
-            <seealso cref="T:TVA.Security.ISecurityProvider"/>
             <example>
             Required config file entries:
             <code>
@@ -158,8 +157,6 @@
             </configuration>
             ]]>
             </code>
-            </example>
-            <example>
             XAML to be used for the WPF window that inherits from <see cref="T:TVA.Windows.SecureWindow"/>:
             <code>
             <![CDATA[
@@ -175,6 +172,7 @@
             ]]>
             </code>
             </example>
+            <seealso cref="T:TVA.Security.ISecurityProvider"/>
         </member>
         <member name="M:TVA.Windows.SecureWindow.#ctor">
             <summary>

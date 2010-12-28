@@ -17,56 +17,56 @@
             
             class Program
             {
-                static SerialClient m_client;
+                static SerialClient s_client;
             
                 static void Main(string[] args)
                 {
                     // Initialize the client.
-                    m_client = new SerialClient("Port=COM1; BaudRate=9600; Parity=None; StopBits=One; DataBits=8; DtrEnable=False; RtsEnable=False");
-                    m_client.Initialize();
+                    s_client = new SerialClient("Port=COM1; BaudRate=9600; Parity=None; StopBits=One; DataBits=8; DtrEnable=False; RtsEnable=False");
+                    s_client.Initialize();
                     // Register event handlers.
-                    m_client.ConnectionAttempt += m_client_ConnectionAttempt;
-                    m_client.ConnectionEstablished += m_client_ConnectionEstablished;
-                    m_client.ConnectionTerminated += m_client_ConnectionTerminated;
-                    m_client.SendDataComplete += m_client_SendDataComplete;
-                    m_client.ReceiveDataComplete += m_client_ReceiveDataComplete;
+                    s_client.ConnectionAttempt += s_client_ConnectionAttempt;
+                    s_client.ConnectionEstablished += s_client_ConnectionEstablished;
+                    s_client.ConnectionTerminated += s_client_ConnectionTerminated;
+                    s_client.SendDataComplete += s_client_SendDataComplete;
+                    s_client.ReceiveDataComplete += s_client_ReceiveDataComplete;
                     // Connect the client.
-                    m_client.Connect();
+                    s_client.Connect();
             
                     // Write user input to the serial port.
                     string input;
                     while (string.Compare(input = Console.ReadLine(), "Exit", true) != 0)
                     {
-                        m_client.Send(input);
+                        s_client.Send(input);
                     }
             
                     // Disconnect the client on shutdown.
-                    m_client.Disconnect();
+                    s_client.Dispose();
                 }
             
-                static void m_client_ConnectionAttempt(object sender, EventArgs e)
+                static void s_client_ConnectionAttempt(object sender, EventArgs e)
                 {
                     Console.WriteLine("Client is connecting to serial port.");
                 }
             
-                static void m_client_ConnectionEstablished(object sender, EventArgs e)
+                static void s_client_ConnectionEstablished(object sender, EventArgs e)
                 {
                     Console.WriteLine("Client connected to serial port.");
                 }
             
-                static void m_client_ConnectionTerminated(object sender, EventArgs e)
+                static void s_client_ConnectionTerminated(object sender, EventArgs e)
                 {
                     Console.WriteLine("Client disconnected from serial port.");
                 }
             
-                static void m_client_SendDataComplete(object sender, EventArgs e)
+                static void s_client_SendDataComplete(object sender, EventArgs e)
                 {
-                    Console.WriteLine(string.Format("Sent data - {0}", m_client.TextEncoding.GetString(m_client.Client.SendBuffer)));
+                    Console.WriteLine(string.Format("Sent data - {0}", s_client.TextEncoding.GetString(s_client.Client.SendBuffer)));
                 }
             
-                static void m_client_ReceiveDataComplete(object sender, EventArgs&lt;byte[], int&gt; e)
+                static void s_client_ReceiveDataComplete(object sender, EventArgs&lt;byte[], int&gt; e)
                 {
-                    Console.WriteLine(string.Format("Received data - {0}", m_client.TextEncoding.GetString(e.Argument1, 0, e.Argument2)));
+                    Console.WriteLine(string.Format("Received data - {0}", s_client.TextEncoding.GetString(e.Argument1, 0, e.Argument2)));
                 }
             }
             </code>
@@ -838,6 +838,12 @@
             </summary>
             <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:TVA.Communication.SerialClient"/> when it is connected.</exception>
             <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:TVA.Communication.SerialClient.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:TVA.Communication.SerialClient"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:TVA.Communication.SerialClient.ValidateConnectionString(System.String)">
             <summary>
@@ -2047,55 +2053,55 @@
             
             class Program
             {
-                static UdpClient m_client;
+                static UdpClient s_client;
             
                 static void Main(string[] args)
                 {
                     // Initialize the client.
-                    m_client = new UdpClient("Server=localhost:8888; Port=8989");
-                    m_client.Handshake = false;
-                    m_client.ReceiveTimeout = -1;
-                    m_client.Encryption = CipherStrength.None;
-                    m_client.Compression = CompressionStrength.NoCompression;
-                    m_client.SecureSession = false;
-                    m_client.Initialize();
+                    s_client = new UdpClient("Server=localhost:8888; Port=8989");
+                    s_client.Handshake = false;
+                    s_client.ReceiveTimeout = -1;
+                    s_client.Encryption = CipherStrength.None;
+                    s_client.Compression = CompressionStrength.NoCompression;
+                    s_client.SecureSession = false;
+                    s_client.Initialize();
                     // Register event handlers.
-                    m_client.ConnectionAttempt += m_client_ConnectionAttempt;
-                    m_client.ConnectionEstablished += m_client_ConnectionEstablished;
-                    m_client.ConnectionTerminated += m_client_ConnectionTerminated;
-                    m_client.ReceiveDataComplete += m_client_ReceiveDataComplete;
+                    s_client.ConnectionAttempt += s_client_ConnectionAttempt;
+                    s_client.ConnectionEstablished += s_client_ConnectionEstablished;
+                    s_client.ConnectionTerminated += s_client_ConnectionTerminated;
+                    s_client.ReceiveDataComplete += s_client_ReceiveDataComplete;
                     // Connect the client.
-                    m_client.Connect();
+                    s_client.Connect();
             
                     // Transmit user input to the server.
                     string input;
                     while (string.Compare(input = Console.ReadLine(), "Exit", true) != 0)
                     {
-                        m_client.Send(input);
+                        s_client.Send(input);
                     }
             
                     // Disconnect the client on shutdown.
-                    m_client.Disconnect();
+                    s_client.Dispose();
                 }
             
-                static void m_client_ConnectionAttempt(object sender, EventArgs e)
+                static void s_client_ConnectionAttempt(object sender, EventArgs e)
                 {
                     Console.WriteLine("Client is connecting to server.");
                 }
             
-                static void m_client_ConnectionEstablished(object sender, EventArgs e)
+                static void s_client_ConnectionEstablished(object sender, EventArgs e)
                 {
                     Console.WriteLine("Client connected to server.");
                 }
             
-                static void m_client_ConnectionTerminated(object sender, EventArgs e)
+                static void s_client_ConnectionTerminated(object sender, EventArgs e)
                 {
                     Console.WriteLine("Client disconnected from server.");
                 }
             
-                static void m_client_ReceiveDataComplete(object sender, EventArgs&lt;byte[], int&gt; e)
+                static void s_client_ReceiveDataComplete(object sender, EventArgs&lt;byte[], int&gt; e)
                 {
-                    Console.WriteLine(string.Format("Received data - {0}.", m_client.TextEncoding.GetString(e.Argument1, 0, e.Argument2)));
+                    Console.WriteLine(string.Format("Received data - {0}.", s_client.TextEncoding.GetString(e.Argument1, 0, e.Argument2)));
                 }
             }
             </code>
@@ -2146,10 +2152,11 @@
             <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:TVA.Communication.UdpClient"/> when it is not disconnected.</exception>
             <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
         </member>
-        <member name="M:TVA.Communication.UdpClient.OpenPort">
+        <member name="M:TVA.Communication.UdpClient.Dispose(System.Boolean)">
             <summary>
-            Connects to the <see cref="T:TVA.Communication.UdpClient"/>.
+            Releases the unmanaged resources used by the <see cref="T:TVA.Communication.UdpClient"/> and optionally releases the managed resources.
             </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:TVA.Communication.UdpClient.ValidateConnectionString(System.String)">
             <summary>
@@ -2164,6 +2171,11 @@
             Gets the secret key to be used for ciphering client data.
             </summary>
             <returns>Cipher secret key.</returns>
+        </member>
+        <member name="M:TVA.Communication.UdpClient.OpenPort">
+            <summary>
+            Connects to the <see cref="T:TVA.Communication.UdpClient"/>.
+            </summary>
         </member>
         <member name="M:TVA.Communication.UdpClient.SendDataAsync(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -2243,57 +2255,57 @@
             
             class Program
             {
-                static TcpClient m_client;
+                static TcpClient s_client;
             
                 static void Main(string[] args)
                 {
                     // Initialize the client.
-                    m_client = new TcpClient("Server=localhost:8888");
-                    m_client.Handshake = false;
-                    m_client.PayloadAware = false;
-                    m_client.ReceiveTimeout = -1;
-                    m_client.MaxConnectionAttempts = 5;
-                    m_client.Encryption = CipherStrength.None;
-                    m_client.Compression = CompressionStrength.NoCompression;
-                    m_client.SecureSession = false;
-                    m_client.Initialize();
+                    s_client = new TcpClient("Server=localhost:8888");
+                    s_client.Handshake = false;
+                    s_client.PayloadAware = false;
+                    s_client.ReceiveTimeout = -1;
+                    s_client.MaxConnectionAttempts = 5;
+                    s_client.Encryption = CipherStrength.None;
+                    s_client.Compression = CompressionStrength.NoCompression;
+                    s_client.SecureSession = false;
+                    s_client.Initialize();
                     // Register event handlers.
-                    m_client.ConnectionAttempt += m_client_ConnectionAttempt;
-                    m_client.ConnectionEstablished += m_client_ConnectionEstablished;
-                    m_client.ConnectionTerminated += m_client_ConnectionTerminated;
-                    m_client.ReceiveDataComplete += m_client_ReceiveDataComplete;
+                    s_client.ConnectionAttempt += s_client_ConnectionAttempt;
+                    s_client.ConnectionEstablished += s_client_ConnectionEstablished;
+                    s_client.ConnectionTerminated += s_client_ConnectionTerminated;
+                    s_client.ReceiveDataComplete += s_client_ReceiveDataComplete;
                     // Connect the client.
-                    m_client.Connect();
+                    s_client.Connect();
             
                     // Transmit user input to the server.
                     string input;
                     while (string.Compare(input = Console.ReadLine(), "Exit", true) != 0)
                     {
-                        m_client.Send(input);
+                        s_client.Send(input);
                     }
             
                     // Disconnect the client on shutdown.
-                    m_client.Disconnect();
+                    s_client.Dispose();
                 }
             
-                static void m_client_ConnectionAttempt(object sender, EventArgs e)
+                static void s_client_ConnectionAttempt(object sender, EventArgs e)
                 {
                     Console.WriteLine("Client is connecting to server.");
                 }
             
-                static void m_client_ConnectionEstablished(object sender, EventArgs e)
+                static void s_client_ConnectionEstablished(object sender, EventArgs e)
                 {
                     Console.WriteLine("Client connected to server.");
                 }
             
-                static void m_client_ConnectionTerminated(object sender, EventArgs e)
+                static void s_client_ConnectionTerminated(object sender, EventArgs e)
                 {
                     Console.WriteLine("Client disconnected from server.");
                 }
             
-                static void m_client_ReceiveDataComplete(object sender, EventArgs&lt;byte[], int&gt; e)
+                static void s_client_ReceiveDataComplete(object sender, EventArgs&lt;byte[], int&gt; e)
                 {
-                    Console.WriteLine(string.Format("Received data - {0}.", m_client.TextEncoding.GetString(e.Argument1, 0, e.Argument2)));
+                    Console.WriteLine(string.Format("Received data - {0}.", s_client.TextEncoding.GetString(e.Argument1, 0, e.Argument2)));
                 }
             }
             </code>
@@ -2347,6 +2359,12 @@
             </summary>
             <exception cref="T:System.InvalidOperationException">Attempt is made to connect the <see cref="T:TVA.Communication.TcpClient"/> when it is not disconnected.</exception>
             <returns><see cref="T:System.Threading.WaitHandle"/> for the asynchronous operation.</returns>
+        </member>
+        <member name="M:TVA.Communication.TcpClient.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:TVA.Communication.TcpClient"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:TVA.Communication.TcpClient.ValidateConnectionString(System.String)">
             <summary>
@@ -3077,7 +3095,7 @@
                     }
             
                     // Disconnect the client on shutdown.
-                    s_client.Disconnect();
+                    s_client.Dispose();
                 }
             
                 static void s_client_ConnectionAttempt(object sender, EventArgs e)
@@ -3104,6 +3122,7 @@
             This example shows how to use <see cref="T:TVA.Communication.FileClient"/> for reading data to a file:
             <code>
             using System;
+            using TVA;
             using TVA.Communication;
             
             class Program
@@ -3127,7 +3146,7 @@
                     Console.ReadLine();
             
                     // Disconnect the client on shutdown.
-                    s_client.Disconnect();
+                    s_client.Dispose();
                 }
             
                 static void s_client_ConnectionAttempt(object sender, EventArgs e)

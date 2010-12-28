@@ -78,7 +78,7 @@
         </member>
         <member name="T:TVA.Web.Services.Messaging.MessageType">
             <summary>
-            Indicates how a <see cref="T:TVA.Web.Services.Messaging.Message"/> is processed by the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.
+            Indicates how a <see cref="T:TVA.Web.Services.Messaging.Message"/> is distributed by the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.
             </summary>
         </member>
         <member name="F:TVA.Web.Services.Messaging.MessageType.Topic">
@@ -121,6 +121,217 @@
             Gets or sets the actual payload of this <see cref="T:TVA.Web.Services.Messaging.Message"/>.
             </summary>
         </member>
+        <member name="T:TVA.Web.Services.Messaging.MessageBusSecurityPolicy">
+            <summary>
+            Represents an <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy">authorization policy</see> that can be used for enabling role-based security on <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.
+            </summary>
+            <example>
+            This example shows the required config file entries when securing <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="TVA.Configuration.CategorizedSettingsSection, TVA.Core" />
+              </configSections>
+              <categorizedSettings>
+                <securityProvider>
+                  <add name="ApplicationName" value="SEC_APP" description="Name of the application being secured as defined in the backend security datastore."
+                    encrypted="false" />
+                  <add name="ConnectionString" value="Primary={Server=DB1;Database=AppSec;Trusted_Connection=True};Backup={Server=DB2;Database=AppSec;Trusted_Connection=True}"
+                    description="Connection string to be used for connection to the backend security datastore."
+                    encrypted="false" />
+                  <add name="ProviderType" value="TVA.Security.SqlSecurityProvider, TVA.Security"
+                    description="The type to be used for enforcing security." encrypted="false" />
+                  <add name="IncludedResources" value="Topic.Name=*;Queue.Name=*" description="Semicolon delimited list of resources to be secured along with role names."
+                    encrypted="false" />
+                  <add name="ExcludedResources" value="*/mex;*/Publish;*/GetClients;*/GetQueues;*/GetTopics;*/SecurityService.svc/*"
+                    description="Semicolon delimited list of resources to be excluded from being secured."
+                    encrypted="false" />
+                </securityProvider>
+                <activeDirectory>
+                  <add name="PrivilegedDomain" value="" description="Domain of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedUserName" value="" description="Username of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedPassword" value="" description="Password of privileged domain user account."
+                    encrypted="true" />
+                </activeDirectory>
+              </categorizedSettings>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+            <seealso cref="T:TVA.Web.Services.Messaging.MessageBusService"/>
+        </member>
+        <member name="T:TVA.Web.SecurityPolicy">
+            <summary>
+            Represents an <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy">authorization policy</see> that can be used by WCF services for enabling role-based security.
+            </summary>
+            <example>
+            Common config file entries:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="TVA.Configuration.CategorizedSettingsSection, TVA.Core" />
+              </configSections>
+              <categorizedSettings>
+                <securityProvider>
+                  <add name="ApplicationName" value="SEC_APP" description="Name of the application being secured as defined in the backend security datastore."
+                    encrypted="false" />
+                  <add name="ConnectionString" value="Primary={Server=DB1;Database=AppSec;Trusted_Connection=True};Backup={Server=DB2;Database=AppSec;Trusted_Connection=True}"
+                    description="Connection string to be used for connection to the backend security datastore."
+                    encrypted="false" />
+                  <add name="ProviderType" value="TVA.Security.SqlSecurityProvider, TVA.Security"
+                    description="The type to be used for enforcing security." encrypted="false" />
+                  <add name="IncludedResources" value="*/*.*=*" description="Semicolon delimited list of resources to be secured along with role names."
+                    encrypted="false" />
+                  <add name="ExcludedResources" value="*/SecurityService.svc/*"
+                    description="Semicolon delimited list of resources to be excluded from being secured."
+                    encrypted="false" />
+                </securityProvider>
+                <activeDirectory>
+                  <add name="PrivilegedDomain" value="" description="Domain of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedUserName" value="" description="Username of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedPassword" value="" description="Password of privileged domain user account."
+                    encrypted="true" />
+                </activeDirectory>
+              </categorizedSettings>
+            </configuration>
+            ]]>
+            </code>
+            Internal WCF service configuration:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <system.serviceModel>
+                <services>
+                  <service name="WcfService1.Service1" behaviorConfiguration="serviceBehavior">
+                    <endpoint address="" contract="WcfService1.IService1" binding="webHttpBinding" 
+                              bindingConfiguration="endpointBinding" behaviorConfiguration="endpointBehavior" />
+                  </service>
+                </services>
+                <behaviors>
+                  <endpointBehaviors>
+                    <behavior name="endpointBehavior">
+                      <webHttp/>
+                    </behavior>
+                  </endpointBehaviors>
+                  <serviceBehaviors>
+                    <behavior name="serviceBehavior">
+                      <serviceAuthorization principalPermissionMode="Custom">
+                        <authorizationPolicies>
+                          <add policyType="TVA.Web.SecurityPolicy, TVA.Web" />
+                        </authorizationPolicies>
+                      </serviceAuthorization>
+                    </behavior>
+                  </serviceBehaviors>
+                </behaviors>
+                <bindings>
+                  <webHttpBinding>
+                    <binding name="endpointBinding">
+                      <security mode="TransportCredentialOnly">
+                        <transport clientCredentialType="Windows"/>
+                      </security>
+                    </binding>
+                  </webHttpBinding>
+                </bindings>
+                <serviceHostingEnvironment aspNetCompatibilityEnabled="false" />
+              </system.serviceModel>
+            </configuration>
+            ]]>
+            </code>
+            External WCF service configuration:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <system.web>
+                <httpModules>
+                  <add name="SecurityModule" type="TVA.Web.SecurityModule, TVA.Web" />
+                </httpModules>
+              </system.web>
+              <system.serviceModel>
+                <services>
+                  <service name="WcfService1.Service1" behaviorConfiguration="serviceBehavior">
+                    <endpoint address="" contract="WcfService1.IService1" binding="webHttpBinding" 
+                              bindingConfiguration="endpointBinding" behaviorConfiguration="endpointBehavior"/>
+                  </service>
+                </services>
+                <behaviors>
+                  <endpointBehaviors>
+                    <behavior name="endpointBehavior">
+                      <webHttp/>
+                    </behavior>
+                  </endpointBehaviors>
+                  <serviceBehaviors>
+                    <behavior name="serviceBehavior">
+                      <serviceAuthorization principalPermissionMode="Custom">
+                        <authorizationPolicies>
+                          <add policyType="TVA.Web.SecurityPolicy, TVA.Web" />
+                        </authorizationPolicies>
+                      </serviceAuthorization>
+                    </behavior>
+                  </serviceBehaviors>
+                </behaviors>
+                <bindings>
+                  <webHttpBinding>
+                    <binding name="endpointBinding">
+                      <security mode="None" />
+                    </binding>
+                  </webHttpBinding>
+                </bindings>
+                <serviceHostingEnvironment aspNetCompatibilityEnabled="true" />
+              </system.serviceModel>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+            <seealso cref="T:TVA.Security.ISecurityProvider"/>
+        </member>
+        <member name="M:TVA.Web.SecurityPolicy.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.Web.SecurityPolicy"/> class.
+            </summary>
+        </member>
+        <member name="M:TVA.Web.SecurityPolicy.Evaluate(System.IdentityModel.Policy.EvaluationContext,System.Object@)">
+            <summary>
+            Evaluates the <paramref name="evaluationContext"/> and initializes security.
+            </summary>
+            <param name="evaluationContext">An <see cref="T:System.IdentityModel.Policy.EvaluationContext"/> object.</param>
+            <param name="state">Custom state of the <see cref="T:TVA.Web.SecurityPolicy"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TVA.Web.SecurityPolicy.GetResourceName">
+            <summary>
+            Gets the name of resource being accessed.
+            </summary>
+            <returns><see cref="P:System.ServiceModel.OperationContext.IncomingMessageHeaders"/>.<see cref="P:System.ServiceModel.Channels.MessageHeaders.To"/>.<see cref="P:System.Uri.PathAndQuery"/> property value.</returns>
+        </member>
+        <member name="P:TVA.Web.SecurityPolicy.Id">
+            <summary>
+            Gets the identifier of this <see cref="T:TVA.Web.SecurityPolicy"/> instance.
+            </summary>
+        </member>
+        <member name="P:TVA.Web.SecurityPolicy.Issuer">
+            <summary>
+            Gets a claim set that represents the issuer of this <see cref="T:TVA.Web.SecurityPolicy"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.Web.Services.Messaging.MessageBusSecurityPolicy.GetResourceName">
+            <summary>
+            Gets the name of resource being accessed.
+            </summary>
+            <returns>
+            <see cref="T:TVA.Web.Services.Messaging.Message"/>.<see cref="P:TVA.Web.Services.Messaging.Message.Name"/> property value for <see cref="M:TVA.Web.Services.Messaging.MessageBusService.Publish(TVA.Web.Services.Messaging.Message)"/> operations, 
+            otherwise <see cref="P:System.ServiceModel.Channels.MessageHeaders.Action"/> property value for all other operations.
+            </returns>
+        </member>
         <member name="T:TVA.Web.Services.Messaging.ClientInfo">
             <summary>
             Represents information about a client connected to the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> to produce/consume <see cref="T:TVA.Web.Services.Messaging.Message"/>s.
@@ -133,7 +344,7 @@
         </member>
         <member name="F:TVA.Web.Services.Messaging.ClientInfo.ConnectedAt">
             <summary>
-            Gets or sets the <see cref="T:System.DateTime"/> when the client connected to the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.
+            Gets or sets the UTC <see cref="T:System.DateTime"/> when the client connected to the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.
             </summary>
         </member>
         <member name="F:TVA.Web.Services.Messaging.ClientInfo.MessagesProduced">
@@ -664,11 +875,6 @@
             Releases the unmanaged resources before the web service is reclaimed by <see cref="T:System.GC"/>.
             </summary>
         </member>
-        <member name="M:TVA.Web.Services.SelfHostingService.Dispose">
-            <summary>
-            Releases all the resources used by the web service.
-            </summary>
-        </member>
         <member name="M:TVA.Web.Services.SelfHostingService.Initialize">
             <summary>
             Initializes the web service.
@@ -676,15 +882,13 @@
         </member>
         <member name="M:TVA.Web.Services.SelfHostingService.SaveSettings">
             <summary>
-            Saves web service settings to the config file if the <see cref="P:TVA.Web.Services.SelfHostingService.PersistSettings"/> property is set to true.
+            Saves web service settings to the config file if the <see cref="P:TVA.Adapters.Adapter.PersistSettings"/> property is set to true.
             </summary>
-            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:TVA.Web.Services.SelfHostingService.SettingsCategory"/> has a value of null or empty string.</exception>
         </member>
         <member name="M:TVA.Web.Services.SelfHostingService.LoadSettings">
             <summary>
-            Loads saved web service settings from the config file if the <see cref="P:TVA.Web.Services.SelfHostingService.PersistSettings"/> property is set to true.
+            Loads saved web service settings from the config file if the <see cref="P:TVA.Adapters.Adapter.PersistSettings"/> property is set to true.
             </summary>
-            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:TVA.Web.Services.SelfHostingService.SettingsCategory"/> has a value of null or empty string.</exception>
         </member>
         <member name="M:TVA.Web.Services.SelfHostingService.GetUnusedPort">
             <summary>
@@ -789,6 +993,11 @@
             <see cref="F:TVA.EventArgs`1.Argument"/> is the exception encountered when processing a request.
             </remarks>
         </member>
+        <member name="P:TVA.Web.Services.SelfHostingService.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the web service is currently enabled.
+            </summary>
+        </member>
         <member name="P:TVA.Web.Services.SelfHostingService.Endpoints">
             <summary>
             Gets or sets a semicolon delimited list of URIs where the web service can be accessed.
@@ -820,22 +1029,6 @@
             Gets or sets a boolean value that indicates whether web service metadata is to made available at all web service <see cref="P:TVA.Web.Services.SelfHostingService.Endpoints"/>.
             </summary>
         </member>
-        <member name="P:TVA.Web.Services.SelfHostingService.Enabled">
-            <summary>
-            Gets or sets a boolean value that indicates whether the web service is currently enabled.
-            </summary>
-        </member>
-        <member name="P:TVA.Web.Services.SelfHostingService.PersistSettings">
-            <summary>
-            Gets or sets a boolean value that indicates whether the web service settings are to be saved to the config file.
-            </summary>
-        </member>
-        <member name="P:TVA.Web.Services.SelfHostingService.SettingsCategory">
-            <summary>
-            Gets or sets the category under which the web service settings are to be saved to the config file if the <see cref="P:TVA.Web.Services.SelfHostingService.PersistSettings"/> property is set to true.
-            </summary>
-            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
-        </member>
         <member name="P:TVA.Web.Services.SelfHostingService.ServiceHost">
             <summary>
             Gets the <see cref="T:System.ServiceModel.Web.WebServiceHost"/> hosting the web service.
@@ -850,7 +1043,7 @@
             Embedded WCF REST service contract used for securing external facing WCF services.
             </summary>
         </member>
-        <member name="M:TVA.Web.Embedded.ISecurityService.Login(System.String,System.String)">
+        <member name="M:TVA.Web.Embedded.ISecurityService.Authenticate(System.String,System.String)">
             <summary>
             Authenticates a user and caches the security context upon successful authentication for subsequent use.
             </summary>
@@ -858,13 +1051,37 @@
             <param name="password">Password of the user.</param>
             <returns>An <see cref="T:TVA.Security.UserData"/> object of the user.</returns>
         </member>
-        <member name="M:TVA.Web.Embedded.SecurityService.Login(System.String,System.String)">
+        <member name="M:TVA.Web.Embedded.ISecurityService.GetUserData">
+            <summary>
+            Returns information about the current user. 
+            </summary>
+            <returns>An <see cref="T:TVA.Security.UserData"/> object of the user if user's security context has been initialized, otherwise null.</returns>
+        </member>
+        <member name="M:TVA.Web.Embedded.ISecurityService.RefreshUserData">
+            <summary>
+            Refreshes and returns information about the current user. 
+            </summary>
+            <returns>An <see cref="T:TVA.Security.UserData"/> object of the user if user's security context has been initialized, otherwise null.</returns>
+        </member>
+        <member name="M:TVA.Web.Embedded.SecurityService.Authenticate(System.String,System.String)">
             <summary>
             Authenticates a user and caches the security context upon successful authentication for subsequent use.
             </summary>
             <param name="username">Username of the user.</param>
             <param name="password">Password of the user.</param>
             <returns>An <see cref="T:TVA.Security.UserData"/> object of the user.</returns>
+        </member>
+        <member name="M:TVA.Web.Embedded.SecurityService.GetUserData">
+            <summary>
+            Returns information about the current user. 
+            </summary>
+            <returns>An <see cref="T:TVA.Security.UserData"/> object of the user if user's security context has been initialized, otherwise null.</returns>
+        </member>
+        <member name="M:TVA.Web.Embedded.SecurityService.RefreshUserData">
+            <summary>
+            Refreshes and returns information about the current user. 
+            </summary>
+            <returns>An <see cref="T:TVA.Security.UserData"/> object of the user if user's security context has been initialized, otherwise null.</returns>
         </member>
         <member name="T:TVA.Web.Embedded.SecurityPortal">
             <summary>
@@ -1312,184 +1529,374 @@
             Defines a callback contract that must be implemented by clients of <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> for receiving <see cref="T:TVA.Web.Services.Messaging.Message"/>s.
             </summary>
         </member>
-        <member name="M:TVA.Web.Services.Messaging.IMessageBusServiceCallback.MessageReceived(TVA.Web.Services.Messaging.Message)">
+        <member name="M:TVA.Web.Services.Messaging.IMessageBusServiceCallback.ProcessMessage(TVA.Web.Services.Messaging.Message)">
             <summary>
             Invoked when a new <see cref="T:TVA.Web.Services.Messaging.Message"/> is received from the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.
             </summary>
-            <param name="message"></param>
-        </member>
-        <member name="T:TVA.Web.SecurityPolicy">
-            <summary>
-            Represents an authorization policy that can be used by WCF services for initializing security.
-            </summary>
-            <seealso cref="T:TVA.Security.ISecurityProvider"/>
-            <example>
-            Common config file entries:
-            <code>
-            <![CDATA[
-            <?xml version="1.0"?>
-            <configuration>
-              <configSections>
-                <section name="categorizedSettings" type="TVA.Configuration.CategorizedSettingsSection, TVA.Core" />
-              </configSections>
-              <categorizedSettings>
-                <securityProvider>
-                  <add name="ApplicationName" value="SEC_APP" description="Name of the application being secured as defined in the backend security datastore."
-                    encrypted="false" />
-                  <add name="ConnectionString" value="Primary={Server=DB1;Database=AppSec;Trusted_Connection=True};Backup={Server=DB2;Database=AppSec;Trusted_Connection=True}"
-                    description="Connection string to be used for connection to the backend security datastore."
-                    encrypted="false" />
-                  <add name="ProviderType" value="TVA.Security.SqlSecurityProvider, TVA.Security"
-                    description="The type to be used for enforcing security." encrypted="false" />
-                  <add name="IncludedResources" value="*/*.*=*" description="Semicolon delimited list of resources to be secured along with role names."
-                    encrypted="false" />
-                  <add name="ExcludedResources" value="*/SecurityService.svc/*"
-                    description="Semicolon delimited list of resources to be excluded from being secured."
-                    encrypted="false" />
-                </securityProvider>
-                <activeDirectory>
-                  <add name="PrivilegedDomain" value="" description="Domain of privileged domain user account."
-                    encrypted="false" />
-                  <add name="PrivilegedUserName" value="" description="Username of privileged domain user account."
-                    encrypted="false" />
-                  <add name="PrivilegedPassword" value="" description="Password of privileged domain user account."
-                    encrypted="true" />
-                </activeDirectory>
-              </categorizedSettings>
-            </configuration>
-            ]]>
-            </code>
-            </example>
-            <example>
-            Internal WCF service configuration:
-            <code>
-            <![CDATA[
-            <?xml version="1.0"?>
-            <configuration>
-              <system.serviceModel>
-                <services>
-                  <service name="WcfService1.Service1" behaviorConfiguration="serviceBehavior">
-                    <endpoint address="" contract="WcfService1.IService1" binding="webHttpBinding" 
-                              bindingConfiguration="endpointBinding" behaviorConfiguration="endpointBehavior" />
-                  </service>
-                </services>
-                <behaviors>
-                  <endpointBehaviors>
-                    <behavior name="endpointBehavior">
-                      <webHttp/>
-                    </behavior>
-                  </endpointBehaviors>
-                  <serviceBehaviors>
-                    <behavior name="serviceBehavior">
-                      <serviceAuthorization principalPermissionMode="Custom">
-                        <authorizationPolicies>
-                          <add policyType="TVA.Web.SecurityPolicy, TVA.Web" />
-                        </authorizationPolicies>
-                      </serviceAuthorization>
-                    </behavior>
-                  </serviceBehaviors>
-                </behaviors>
-                <bindings>
-                  <webHttpBinding>
-                    <binding name="endpointBinding">
-                      <security mode="TransportCredentialOnly">
-                        <transport clientCredentialType="Windows"/>
-                      </security>
-                    </binding>
-                  </webHttpBinding>
-                </bindings>
-                <serviceHostingEnvironment aspNetCompatibilityEnabled="false" />
-              </system.serviceModel>
-            </configuration>
-            ]]>
-            </code>
-            </example>
-            <example>
-            External WCF service configuration:
-            <code>
-            <![CDATA[
-            <?xml version="1.0"?>
-            <configuration>
-              <system.web>
-                <httpModules>
-                  <add name="SecurityModule" type="TVA.Web.SecurityModule, TVA.Web" />
-                </httpModules>
-              </system.web>
-              <system.serviceModel>
-                <services>
-                  <service name="WcfService1.Service1" behaviorConfiguration="serviceBehavior">
-                    <endpoint address="" contract="WcfService1.IService1" binding="webHttpBinding" 
-                              bindingConfiguration="endpointBinding" behaviorConfiguration="endpointBehavior"/>
-                  </service>
-                </services>
-                <behaviors>
-                  <endpointBehaviors>
-                    <behavior name="endpointBehavior">
-                      <webHttp/>
-                    </behavior>
-                  </endpointBehaviors>
-                  <serviceBehaviors>
-                    <behavior name="serviceBehavior">
-                      <serviceAuthorization principalPermissionMode="Custom">
-                        <authorizationPolicies>
-                          <add policyType="TVA.Web.SecurityPolicy, TVA.Web" />
-                        </authorizationPolicies>
-                      </serviceAuthorization>
-                    </behavior>
-                  </serviceBehaviors>
-                </behaviors>
-                <bindings>
-                  <webHttpBinding>
-                    <binding name="endpointBinding">
-                      <security mode="None" />
-                    </binding>
-                  </webHttpBinding>
-                </bindings>
-                <serviceHostingEnvironment aspNetCompatibilityEnabled="true" />
-              </system.serviceModel>
-            </configuration>
-            ]]>
-            </code>
-            </example>
-        </member>
-        <member name="M:TVA.Web.SecurityPolicy.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:TVA.Web.SecurityPolicy"/> class.
-            </summary>
-        </member>
-        <member name="M:TVA.Web.SecurityPolicy.Evaluate(System.IdentityModel.Policy.EvaluationContext,System.Object@)">
-            <summary>
-            Evaluates the <paramref name="evaluationContext"/> and initializes security.
-            </summary>
-            <param name="evaluationContext">An <see cref="T:System.IdentityModel.Policy.EvaluationContext"/> object.</param>
-            <param name="state">Custom state of the <see cref="T:TVA.Web.SecurityPolicy"/>.</param>
-            <returns></returns>
-        </member>
-        <member name="M:TVA.Web.SecurityPolicy.GetResourceName">
-            <summary>
-            Gets the name of resource being accessed.
-            </summary>
-            <returns><see cref="P:System.ServiceModel.OperationContext.IncomingMessageHeaders"/>.<see cref="P:System.ServiceModel.Channels.MessageHeaders.To"/>.<see cref="P:System.Uri.PathAndQuery"/> property value.</returns>
-        </member>
-        <member name="P:TVA.Web.SecurityPolicy.Id">
-            <summary>
-            Gets the identifier of this <see cref="T:TVA.Web.SecurityPolicy"/> instance.
-            </summary>
-        </member>
-        <member name="P:TVA.Web.SecurityPolicy.Issuer">
-            <summary>
-            Gets a claim set that represents the issuer of this <see cref="T:TVA.Web.SecurityPolicy"/>.
-            </summary>
+            <param name="message"><see cref="T:TVA.Web.Services.Messaging.Message"/> received from the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.</param>
         </member>
         <member name="T:TVA.Web.Services.Messaging.NamespaceDoc">
             <summary>
             Contains WCF web services that facilitate secure inter-process messaging.
             </summary>
         </member>
+        <member name="T:TVA.Web.Services.Messaging.MessageProcessingMode">
+            <summary>
+            Indicates how the distribution of <see cref="T:TVA.Web.Services.Messaging.Message"/>s is processed by the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.
+            </summary>
+        </member>
+        <member name="F:TVA.Web.Services.Messaging.MessageProcessingMode.Parallel">
+            <summary>
+            <see cref="T:TVA.Web.Services.Messaging.Message"/> distribution is processed in parallel for increased distribution performance.
+            </summary>
+        </member>
+        <member name="F:TVA.Web.Services.Messaging.MessageProcessingMode.Sequential">
+            <summary>
+            <see cref="T:TVA.Web.Services.Messaging.Message"/> distribution is processed sequentially to preserve <see cref="T:TVA.Web.Services.Messaging.Message"/> ordering.
+            </summary>
+        </member>
         <member name="T:TVA.Web.Services.Messaging.MessageBusService">
             <summary>
             A message bus for event-based messaging between disjoint systems.
             </summary>
+            <example>
+            This example shows how to host <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> inside a console application:
+            <code>
+            using System;
+            using System.ServiceModel;
+            using System.ServiceModel.Description;
+            using System.Threading;
+            using TVA;
+            using TVA.Web.Services.Messaging;
+            
+            class Program
+            {
+                static void Main(string[] args)
+                {
+                    // Prompt for security option.
+                    Console.Write("Enable security (Y/N): ");
+                    bool enableSecurity = Console.ReadLine().ParseBoolean();
+            
+                    // Initialize message bus service.
+                    MessageBusService service = new MessageBusService();
+                    service.Singleton = true;
+                    service.PublishMetadata = true;
+                    service.PersistSettings = false;
+                    service.Endpoints = "http.duplex://localhost:4501; net.tcp://locahost:4502";
+                    if (enableSecurity)
+                        service.SecurityPolicy = typeof(MessageBusSecurityPolicy).FullName;
+                    service.Initialize();
+            
+                    // Show message bus service status.
+                    if (service.ServiceHost.State == CommunicationState.Opened)
+                    {
+                        Console.WriteLine("\r\n{0} is running:", service.GetType().Name);
+                        foreach (ServiceEndpoint endpoint in service.ServiceHost.Description.Endpoints)
+                        {
+                            Console.WriteLine("- {0} ({1})", endpoint.Address, endpoint.Binding.GetType().Name);
+                        }
+            
+                        new Thread(delegate() 
+                            {
+                                while (service.ServiceHost.State == CommunicationState.Opened)
+                                {
+                                    Console.WriteLine();
+                                    Console.WriteLine();
+                                    Console.WriteLine("Status of {0}:", service.Name);
+                                    Console.WriteLine(service.Status);
+                                    Console.Write("Press Enter key to stop...");
+            
+                                    Thread.Sleep(5000);
+                                }
+                            }).Start();
+                    }
+                    else
+                    {
+                        Console.WriteLine("\r\n{0} could not be started", service.GetType().Name);
+                    }
+            
+                    // Shutdown.
+                    Console.ReadLine();
+                    service.Dispose();
+                }
+            }
+            </code>
+            This example shows how to host <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> inside a web application:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <system.serviceModel>
+                <services>
+                  <service name="TVA.Web.Services.Messaging.MessageBusService">
+                    <endpoint address="" contract="TVA.Web.Services.Messaging.IMessageBusService" binding="wsDualHttpBinding" />
+                    <endpoint address="mex" contract="IMetadataExchange" binding="mexHttpBinding" />
+                  </service>
+                </services>
+                <behaviors>
+                  <serviceBehaviors>
+                    <behavior>
+                      <serviceMetadata httpGetEnabled="true" />
+                      <serviceDebug includeExceptionDetailInFaults="false" />
+                    </behavior>
+                  </serviceBehaviors>
+                </behaviors>
+                <serviceHostingEnvironment multipleSiteBindingsEnabled="true">
+                  <serviceActivations>
+                    <add relativeAddress="MessageBusService.svc" service="TVA.Web.Services.Messaging.MessageBusService" />
+                  </serviceActivations>
+                </serviceHostingEnvironment>
+              </system.serviceModel>
+            </configuration>
+            ]]>
+            </code>
+            This example shows how to publish <see cref="T:TVA.Web.Services.Messaging.Message"/>s to <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>:
+            <code>
+            using System;
+            using System.ServiceModel;
+            using System.Threading;
+            
+            class Program : IMessageBusServiceCallback
+            {
+                static void Main(string[] args)
+                {
+                    // NOTE: Service reference to the message bus service must be added to generate the service proxy.
+            
+                    // Initialize auto-generated message bus service proxy.
+                    InstanceContext callbackContext = new InstanceContext(new Program());
+                    MessageBusServiceClient messageBusService = new MessageBusServiceClient(callbackContext, "NetTcpBinding_IMessageBusService");
+            
+                    // Create registration request for publishing messages.
+                    RegistrationRequest registration = new RegistrationRequest();
+                    registration.MessageType = MessageType.Topic;
+                    registration.MessageName = "Topic.Frequency";
+                    registration.RegistrationType = RegistrationType.Produce;
+                    messageBusService.Register(registration);
+            
+                    // Start publishing messages to the bus asynchronously.
+                    new Thread(delegate() 
+                        {
+                            Message message = new Message();
+                            message.Type = registration.MessageType;
+                            message.Name = registration.MessageName;
+                            message.Format = "application/octet-stream";
+            
+                            Random random = new Random(59);
+                            while (messageBusService.State == CommunicationState.Opened)
+                            {
+                                message.Time = DateTime.UtcNow;
+                                message.Content = BitConverter.GetBytes(random.Next(61));
+                                messageBusService.Publish(message);
+            
+                                Thread.Sleep(5000);
+                            }
+                        }).Start();
+            
+                    // Shutdown.
+                    Console.Write("Press Enter key to stop...");
+                    Console.ReadLine();
+                    messageBusService.Close();
+                }
+            
+                public void ProcessMessage(Message message)
+                {
+                    // This method will not be invoked since we are not consuming messages.
+                    throw new NotSupportedException();
+                }
+            }
+            </code>
+            This example shows how to subscribe to <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> for receiving <see cref="T:TVA.Web.Services.Messaging.Message"/>s:
+            <code>
+            using System;
+            using System.ServiceModel;
+            
+            class Program : IMessageBusServiceCallback
+            {
+                static void Main(string[] args)
+                {
+                    // NOTE: Service reference to the message bus service must be added to generate the service proxy.
+            
+                    // Initialize auto-generated message bus service proxy.
+                    InstanceContext callbackContext = new InstanceContext(new Program());
+                    MessageBusServiceClient messageBusService = new MessageBusServiceClient(callbackContext, "NetTcpBinding_IMessageBusService");
+            
+                    // Subscribe with message bus service to receive messages.
+                    RegistrationRequest registration = new RegistrationRequest();
+                    registration.MessageType = MessageType.Topic;
+                    registration.MessageName = "Topic.Frequency";
+                    registration.RegistrationType = RegistrationType.Consume;
+                    messageBusService.Register(registration);
+            
+                    // Shutdown.
+                    Console.WriteLine("Press Enter key to stop...");
+                    Console.WriteLine();
+                    Console.ReadLine();
+                    messageBusService.Close();
+                }
+            
+                public void ProcessMessage(Message message)
+                {
+                    if (message.Format != "application/octet-stream")
+                        Console.WriteLine("Message format '{0}' is not supported", message.Format);
+                    else
+                        Console.WriteLine("Message received: {0} Hz", BitConverter.ToInt32(message.Content, 0));
+                }
+            }
+            </code>
+            This example shows how to monitor <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> remotely:
+            <code>
+            using System;
+            using System.ServiceModel;
+            using System.Threading;
+            using TVA;
+            
+            class Program : IMessageBusServiceCallback
+            {
+                static void Main(string[] args)
+                {
+                    // NOTE: Service reference to the message bus service must be added to generate the service proxy.
+            
+                    // Initialize auto-generated message bus service proxy.
+                    InstanceContext callbackContext = new InstanceContext(new Program());
+                    MessageBusServiceClient messageBusService = new MessageBusServiceClient(callbackContext, "NetTcpBinding_IMessageBusService");
+                    messageBusService.ChannelFactory.Open();
+            
+                    // Start querying messages bus service status asynchronously.
+                    new Thread(delegate()
+                    {
+                        while (messageBusService.State == CommunicationState.Opened)
+                        {
+                            Console.Clear();
+                            Console.WriteLine(new string('-', 79));
+                            Console.WriteLine("|" + "Message Bus Status".CenterText(77) + "|");
+                            Console.WriteLine(new string('-', 79));
+                            Console.WriteLine();
+            
+                            // Show clients.
+                            Console.Write("Client ID".PadRight(25));
+                            Console.Write(" ");
+                            Console.Write("Connected".PadRight(21));
+                            Console.Write(" ");
+                            Console.Write("Msg. Produced".PadRight(15));
+                            Console.Write(" ");
+                            Console.Write("Msg. Consumed".PadRight(15));
+                            Console.WriteLine();
+                            Console.Write(new string('-', 25));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 21));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.WriteLine();
+                            foreach (ClientInfo client in messageBusService.GetClients())
+                            {
+                                Console.Write(client.SessionId.TruncateRight(25).PadRight(25));
+                                Console.Write(" ");
+                                Console.Write(client.ConnectedAt.ToString("MM/dd/yy hh:mm:ss tt").PadRight(21));
+                                Console.Write(" ");
+                                Console.Write(client.MessagesProduced.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(client.MessagesConsumed.ToString().PadRight(15));
+                                Console.WriteLine();
+                            }
+                            Console.WriteLine();
+            
+                            // Show queues.
+                            Console.Write("Queue Name".PadRight(25));
+                            Console.Write(" ");
+                            Console.Write("Producers".PadRight(10));
+                            Console.Write(" ");
+                            Console.Write("Consumers".PadRight(10));
+                            Console.Write(" ");
+                            Console.Write("Msg. Received".PadRight(15));
+                            Console.Write(" ");
+                            Console.Write("Msg. Processed".PadRight(15));
+                            Console.WriteLine();
+                            Console.Write(new string('-', 25));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 10));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 10));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.WriteLine();
+                            foreach (RegistrationInfo queue in messageBusService.GetQueues())
+                            {
+                                Console.Write(queue.MessageName.PadRight(25));
+                                Console.Write(" ");
+                                Console.Write(queue.Producers.Length.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(queue.Consumers.Length.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(queue.MessagesReceived.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(queue.MessagesProcessed.ToString().PadRight(15));
+                                Console.WriteLine();
+                            }
+                            Console.WriteLine();
+            
+                            // Show topics.
+                            Console.Write("Topic Name".PadRight(25));
+                            Console.Write(" ");
+                            Console.Write("Producers".PadRight(10));
+                            Console.Write(" ");
+                            Console.Write("Consumers".PadRight(10));
+                            Console.Write(" ");
+                            Console.Write("Msg. Received".PadRight(15));
+                            Console.Write(" ");
+                            Console.Write("Msg. Processed".PadRight(15));
+                            Console.WriteLine();
+                            Console.Write(new string('-', 25));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 10));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 10));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.WriteLine();
+                            foreach (RegistrationInfo topic in messageBusService.GetTopics())
+                            {
+                                Console.Write(topic.MessageName.PadRight(25));
+                                Console.Write(" ");
+                                Console.Write(topic.Producers.Length.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(topic.Consumers.Length.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(topic.MessagesReceived.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(topic.MessagesProcessed.ToString().PadRight(15));
+                                Console.WriteLine();
+                            }
+                            Console.WriteLine();
+                            Console.Write("Press Enter key to stop...");
+            
+                            Thread.Sleep(5000);
+                        }
+                    }).Start();
+            
+                    // Shutdown.
+                    Console.ReadLine();
+                    messageBusService.Close();
+                }
+            
+                public void ProcessMessage(Message message)
+                {
+                    // This method will not be invoked since we are not consuming messages.
+                    throw new NotSupportedException();
+                }
+            }
+            </code>
+            </example>
+            <seealso cref="T:TVA.Web.Services.Messaging.Message"/>
+            <seealso cref="T:TVA.Web.Services.Messaging.ClientInfo"/>
+            <seealso cref="T:TVA.Web.Services.Messaging.RegistrationInfo"/>
+            <seealso cref="T:TVA.Web.Services.Messaging.RegistrationRequest"/>
+            <seealso cref="T:TVA.Web.Services.Messaging.MessageBusSecurityPolicy"/>
         </member>
         <member name="T:TVA.Web.Services.Messaging.IMessageBusService">
             <summary>
@@ -1532,9 +1939,35 @@
             </summary>
             <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> of <see cref="T:TVA.Web.Services.Messaging.RegistrationInfo"/> objects.</returns>
         </member>
+        <member name="F:TVA.Web.Services.Messaging.MessageBusService.DefaultBufferThreshold">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.Web.Services.Messaging.MessageBusService.BufferThreshold"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.Web.Services.Messaging.MessageBusService.DefaultProcessingMode">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.Web.Services.Messaging.MessageBusService.ProcessingMode"/> property.
+            </summary>
+        </member>
         <member name="M:TVA.Web.Services.Messaging.MessageBusService.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> class.
+            </summary>
+        </member>
+        <member name="M:TVA.Web.Services.Messaging.MessageBusService.Initialize">
+            <summary>
+            Initializes the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.
+            </summary>
+            <exception cref="T:System.NotSupportedException">The specified <see cref="P:TVA.Web.Services.Messaging.MessageBusService.ProcessingMode"/> is not supported.</exception>
+        </member>
+        <member name="M:TVA.Web.Services.Messaging.MessageBusService.SaveSettings">
+            <summary>
+            Saves <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> settings to the config file if the <see cref="P:TVA.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:TVA.Web.Services.Messaging.MessageBusService.LoadSettings">
+            <summary>
+            Loads saved <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> settings from the config file if the <see cref="P:TVA.Adapters.Adapter.PersistSettings"/> property is set to true.
             </summary>
         </member>
         <member name="M:TVA.Web.Services.Messaging.MessageBusService.Register(TVA.Web.Services.Messaging.RegistrationRequest)">
@@ -1578,6 +2011,28 @@
             Releases the unmanaged resources used by the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> object and optionally releases the managed resources.
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="P:TVA.Web.Services.Messaging.MessageBusService.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> is currently enabled.
+            </summary>
+        </member>
+        <member name="P:TVA.Web.Services.Messaging.MessageBusService.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.Web.Services.Messaging.MessageBusService.BufferThreshold">
+            <summary>
+            Gets or sets the maximum number of <see cref="T:TVA.Web.Services.Messaging.Message"/>s that can be buffered for distribution by the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> before the 
+            the oldest buffered <see cref="T:TVA.Web.Services.Messaging.Message"/>s are discarded to keep memory consumption in check by avoiding <see cref="T:TVA.Web.Services.Messaging.Message"/> flooding.
+            </summary>
+            <remarks>Set <see cref="P:TVA.Web.Services.Messaging.MessageBusService.BufferThreshold"/> to -1 to disable discarding of <see cref="T:TVA.Web.Services.Messaging.Message"/>s.</remarks>
+        </member>
+        <member name="P:TVA.Web.Services.Messaging.MessageBusService.ProcessingMode">
+            <summary>
+            Gets or sets the <see cref="T:TVA.Web.Services.Messaging.MessageProcessingMode"/> used by the <see cref="T:TVA.Web.Services.Messaging.MessageBusService"/> for processing <see cref="T:TVA.Web.Services.Messaging.Message"/> distribution.
+            </summary>
         </member>
         <member name="T:TVA.Web.Services.SerializationFormat">
             <summary>
@@ -1629,9 +2084,8 @@
         </member>
         <member name="T:TVA.Web.SecurityModule">
             <summary>
-            Represents an HTTP module that can be used to enable site-wide role-based security.
+            Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security.
             </summary>
-            <seealso cref="T:TVA.Security.ISecurityProvider"/>
             <example>
             Required config file entries:
             <code>
@@ -1675,6 +2129,7 @@
             ]]>
             </code>
             </example>
+            <seealso cref="T:TVA.Security.ISecurityProvider"/>
         </member>
         <member name="M:TVA.Web.SecurityModule.Init(System.Web.HttpApplication)">
             <summary>

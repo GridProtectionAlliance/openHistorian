@@ -453,13 +453,13 @@
         </member>
         <member name="M:TVA.TypeExtensions.GetRootType(System.Type)">
             <summary>
-            Gets the root type in the inheritace hierarchy from which the specified type inherits.
+            Gets the root type in the inheritace hierarchy from which the specified <paramref name="type"/> inherits.
             </summary>
             <param name="type">The <see cref="T:System.Type"/> whose root type is to be found.</param>
-            <returns>The root type in the inheritance hierarchy from which the specified type inherits.</returns>
+            <returns>The root type in the inheritance hierarchy from which the specified <paramref name="type"/> inherits.</returns>
             <remarks>
-            Unless input type is <see cref="T:System.Object"/>, the returned type will never be <see cref="T:System.Object"/>, 
-            even though all types ultimately inherit from it.
+            Unless input <paramref name="type"/> is <see cref="T:System.Object"/> or <see cref="T:System.MarshalByRefObject"/>, the returned type will never 
+            be <see cref="T:System.Object"/> or <see cref="T:System.MarshalByRefObject"/>, even though all types ultimately inherit from either one of them.
             </remarks>
         </member>
         <member name="M:TVA.TypeExtensions.LoadImplementations(System.Type)">
@@ -1239,6 +1239,11 @@
             <param name="attributeValue">Function delegate used to return desired attribute property.</param>
             <returns>Specified attribute value if it exists; otherwise default value.</returns>
         </member>
+        <member name="P:TVA.Configuration.SettingsBase.Culture">
+            <summary>
+            Gets or sets the <see cref="T:System.Globalization.CultureInfo"/> to use for the conversion of setting values to and from <see cref="T:System.String"/>.
+            </summary>
+        </member>
         <member name="P:TVA.Configuration.SettingsBase.MemberAccessBindingFlags">
             <summary>
             Gets or sets <see cref="T:System.Reflection.BindingFlags"/> used to access fields and properties of dervied class.
@@ -1266,7 +1271,6 @@
             <summary>
             A class that facilitates value validation using <see cref="T:TVA.Validation.IValidator"/> implementations.
             </summary>
-            <seealso cref="T:TVA.Validation.IValidator"/>
             <example>
             This example shows how to use <see cref="T:TVA.Validation.ValidationService"/> for input validation:
             <code>
@@ -1314,6 +1318,7 @@
             }
             </code>
             </example>
+            <seealso cref="T:TVA.Validation.IValidator"/>
         </member>
         <member name="M:TVA.Validation.ValidationService.#ctor(System.Func{System.String,System.Object})">
             <summary>
@@ -1408,8 +1413,6 @@
                 return nanoseconds * SI.Nano;
             }
             </code>
-            </example>
-            <example>
             Convert time in seconds to milliseconds:
             <code>
             public double GetMilliseconds(Time seconds)
@@ -1417,8 +1420,6 @@
                 return time / SI.Milli;
             }
             </code>
-            </example>
-            <example>
             This example converts minutes to hours:
             <code>
             public double GetHours(double minutes)
@@ -2876,7 +2877,6 @@
              Represents a process performance monitor that operates similar to the Windows Performance Monitor utility
              that can be used to monitor system performance.
              </summary>
-             <seealso cref="T:TVA.Diagnostics.PerformanceCounter"/>
              <example>
              This example shows how to use <see cref="T:TVA.Diagnostics.PerformanceMonitor"/> for monitoring application performance:
              <code>
@@ -2900,6 +2900,7 @@
              }
              </code>
              </example>
+             <seealso cref="T:TVA.Diagnostics.PerformanceCounter"/>
         </member>
         <member name="T:TVA.IProvideStatus">
             <summary>
@@ -8469,8 +8470,6 @@
                 return watts / SI.Mega;
             }
             </code>
-            </example>
-            <example>
             This example converts megawatts to mechanical horsepower:
             <code>
             public double GetHorsepower(double megawatts)
@@ -10550,7 +10549,6 @@
             <summary>
             Represents an HTTP module that can be used to handle exceptions globally in Web Sites and Web Services.
             </summary>
-            <seealso cref="T:TVA.ErrorManagement.ErrorLogger"/>
             <example>
             Below is the config file entry required for enabling error handling using <see cref="T:TVA.ErrorManagement.ErrorModule"/>:
             <code>
@@ -10601,6 +10599,7 @@
             ]]>
             </code>
             </example>
+            <seealso cref="T:TVA.ErrorManagement.ErrorLogger"/>
         </member>
         <member name="M:TVA.ErrorManagement.ErrorModule.Init(System.Web.HttpApplication)">
             <summary>
@@ -11087,7 +11086,6 @@
             <summary>
             Monitors multiple <see cref="T:TVA.Scheduling.Schedule"/> at an interval of one minute to check if they are due.
             </summary>
-            <seealso cref="T:TVA.Scheduling.Schedule"/>
             <example>
             This example shows how to use the <see cref="T:TVA.Scheduling.ScheduleManager"/> component:
             <code>
@@ -11131,6 +11129,7 @@
             }
             </code>
             </example>
+            <seealso cref="T:TVA.Scheduling.Schedule"/>
         </member>
         <member name="F:TVA.Scheduling.ScheduleManager.DefaultPersistSettings">
             <summary>
@@ -12759,8 +12758,6 @@
                 return joules / SI.Mega;
             }
             </code>
-            </example>
-            <example>
             This example converts megajoules to kilowatt-hours:
             <code>
             public double GetKilowattHours(double megajoules)
@@ -12768,8 +12765,6 @@
                 return (new Energy(megajoules * SI.Mega)).ToWattHours() / SI.Kilo;
             }
             </code>
-            </example>
-            <example>
             This example converts kilowatt-hours to megawatt-hours:
             <code>
             public double GetMegawattHours(double kilowattHours)
@@ -13505,8 +13500,6 @@
                  }
              }
              </code>
-             </example>
-             <example>
              This example generates a familiar tune, plays the song and saves it to disk:
              <code>
              // Add reference to System.Speech
@@ -16501,8 +16494,6 @@
             Represents a generic loader of adapters.
             </summary>
             <typeparam name="T"><see cref="T:System.Type"/> of adapters to be loaded.</typeparam>
-            <seealso cref="T:TVA.Adapters.Adapter"/>
-            <seealso cref="T:TVA.Adapters.IAdapter"/>
             <example>
             This example show how to use the <see cref="T:TVA.Adapters.AdapterLoader`1"/> to isolate adapters in seperate <see cref="T:System.AppDomain"/>s and monitor their resource usage:
             <code>
@@ -16595,9 +16586,9 @@
                 }
             }
             
-            /// <summary>
+            /// &lt;summary&gt;
             /// Base adapter class.
-            /// </summary>
+            /// &lt;/summary&gt;
             public abstract class PublishAdapterBase : Adapter
             {
                 public PublishAdapterBase()
@@ -16666,6 +16657,8 @@
             }
             </code>
             </example>
+            <seealso cref="T:TVA.Adapters.Adapter"/>
+            <seealso cref="T:TVA.Adapters.IAdapter"/>
         </member>
         <member name="F:TVA.Adapters.AdapterLoader`1.DefaultAdapterDirectory">
             <summary>
@@ -17965,8 +17958,6 @@
                 return meters / SI.Kilo;
             }
             </code>
-            </example>
-            <example>
             This example converts feet to inches:
             <code>
             public double GetFeet(double inches)
@@ -18790,6 +18781,24 @@
             Converts <paramref name="value"/> to a <see cref="T:System.String"/> using an appropriate <see cref="T:System.ComponentModel.TypeConverter"/>.
             </summary>
             <param name="value">Value to convert to a <see cref="T:System.String"/>.</param>
+            <returns><paramref name="value"/> converted to a <see cref="T:System.String"/>.</returns>
+            <remarks>
+            <para>
+            If <see cref="T:System.ComponentModel.TypeConverter"/> fails, the value's <c>ToString()</c> value will be returned.
+            Returned value will never be null, if no value exists an empty string ("") will be returned.
+            </para>
+            <para>
+            You can use the <see cref="M:TVA.StringExtensions.ConvertToType``1(System.String)"/> string extension method to
+            convert the string back to its original <see cref="T:System.Type"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:TVA.Common.TypeConvertToString(System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Converts <paramref name="value"/> to a <see cref="T:System.String"/> using an appropriate <see cref="T:System.ComponentModel.TypeConverter"/>.
+            </summary>
+            <param name="value">Value to convert to a <see cref="T:System.String"/>.</param>
+            <param name="culture"><see cref="T:System.Globalization.CultureInfo"/> to use for the conversion.</param>
             <returns><paramref name="value"/> converted to a <see cref="T:System.String"/>.</returns>
             <remarks>
             <para>
@@ -20234,7 +20243,6 @@
              <remarks>
              This class is useful for updating the same file on multiple servers (e.g., load balanced web server).
              </remarks>
-             <seealso cref="T:TVA.IO.ExportDestination"/>
              <example>
              This example shows the use <see cref="T:TVA.IO.MultipleDestinationExporter"/> for exporting data to multiple locations:
              <code>
@@ -20306,6 +20314,7 @@
              ]]>
              </code>
              </example>
+             <seealso cref="T:TVA.IO.ExportDestination"/>
         </member>
         <member name="F:TVA.IO.MultipleDestinationExporter.DefaultExportTimeout">
             <summary>
@@ -23178,13 +23187,30 @@
             <see cref="M:TVA.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
             </remarks>
         </member>
-        <member name="M:TVA.StringExtensions.ConvertToType(System.String,System.Type)">
+        <member name="M:TVA.StringExtensions.ConvertToType``1(System.String,System.Type)">
             <summary>
             Converts this string into the specified type.
             </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
             <param name="value">Source string to convert to type.</param>
             <param name="type"><see cref="T:System.Type"/> to convert string to.</param>
-            <returns><see cref="T:System.String"/> converted to specfied <see cref="T:System.Type"/>; null if conversion fails.</returns>
+            <returns><see cref="T:System.String"/> converted to specfied <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
+            <remarks>
+            This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified <paramref name="type"/>,
+            the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
+            <see cref="T:System.ComponentModel.TypeConverter"/> to convert the original object to a <see cref="T:System.String"/>; see the
+            <see cref="M:TVA.Common.TypeConvertToString(System.Object)"/> method for an easy way to do this.
+            </remarks>
+        </member>
+        <member name="M:TVA.StringExtensions.ConvertToType``1(System.String,System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            Converts this string into the specified type.
+            </summary>
+            <typeparam name="T"><see cref="T:System.Type"/> to convert string to.</typeparam>
+            <param name="value">Source string to convert to type.</param>
+            <param name="type"><see cref="T:System.Type"/> to convert string to.</param>
+            <param name="culture"><see cref="T:System.Globalization.CultureInfo"/> to use for the conversion.</param>
+            <returns><see cref="T:System.String"/> converted to specfied <see cref="T:System.Type"/>; default value of specified type T if conversion fails.</returns>
             <remarks>
             This function makes use of a <see cref="T:System.ComponentModel.TypeConverter"/> to convert this <see cref="T:System.String"/> to the specified <paramref name="type"/>,
             the best way to make sure <paramref name="value"/> can be converted back to its original type is to use the same
@@ -23233,11 +23259,11 @@
             <para>
             Values can be escaped within braces to contain nested key value pair expressions like
             the following: <c>normalKVP=-1; nestedKVP={p1=true; p2=0.001}</c>.
-            Only one level of nesting is supported.
+            Multiple levels of nesting is supported.
             </para>
             </remarks>
             <exception cref="T:System.ArgumentNullException">value is null.</exception>
-            <exception cref="T:System.FormatException">Only one level of tagged value expressions are allowed -or-
+            <exception cref="T:System.FormatException">Total nested key value value pair expressions are mismatched -or-
             encountered end value delimeter '}' before start value delimeter '{'.</exception>
         </member>
         <member name="M:TVA.StringExtensions.ParseKeyValuePairs(System.String,System.Char,System.Char)">
@@ -23260,12 +23286,12 @@
             <para>
             Values can be escaped within braces to contain nested key value pair expressions like
             the following: <c>normalKVP=-1; nestedKVP={p1=true; p2=0.001}</c>.
-            Only one level of nesting is supported.
+            Multiple levels of nesting is supported.
             </para>
             </remarks>
             <exception cref="T:System.ArgumentNullException">value is null.</exception>
             <exception cref="T:System.ArgumentException">All delimeters must be unique.</exception>
-            <exception cref="T:System.FormatException">Only one level of tagged value expressions are allowed -or-
+            <exception cref="T:System.FormatException">Total nested key value value pair expressions are mismatched -or-
             encountered end value delimeter '}' before start value delimeter '{'.</exception>
         </member>
         <member name="M:TVA.StringExtensions.ParseKeyValuePairs(System.String,System.Char,System.Char,System.Char,System.Char)">
@@ -23288,12 +23314,13 @@
             </para>
             <para>
             If value includes <paramref name="startValueDelimeter"/>, it must include <paramref name="endValueDelimeter"/>
-            otherwise results will be unexpected. Only one level of start/end value delimeter nesting is supported.
+            otherwise results will be unexpected.
+            Multiple levels of nesting is supported.
             </para>
             </remarks>
             <exception cref="T:System.ArgumentNullException">value is null.</exception>
             <exception cref="T:System.ArgumentException">All delimeters must be unique.</exception>
-            <exception cref="T:System.FormatException">Only one level of tagged value expressions are allowed -or-
+            <exception cref="T:System.FormatException">Total nested key value value pair expressions are mismatched -or-
             encountered <paramref name="endValueDelimeter"/> before <paramref name="startValueDelimeter"/>.</exception>
         </member>
         <member name="M:TVA.StringExtensions.NotEmpty(System.String)">
@@ -23570,7 +23597,7 @@
             <summary>
             Performs a case insensitive string replacement.
             </summary>
-            <param name="inString">The string to examine.</param>
+            <param name="value">The string to examine.</param>
             <param name="fromText">The value to replace.</param>
             <param name="toText">The new value to be inserted</param>
             <returns>A string with replacements.</returns>
@@ -23666,11 +23693,11 @@
         </member>
         <member name="M:TVA.StringExtensions.LastIndexOfRepeatedChar(System.String,System.Char,System.Int32)">
             <summary>
-            Returns the index of the last repeated index of the first group of repeated characters that begin with 'value'
+            Returns the index of the last repeated index of the first group of repeated characters that begin with the <paramref name="characterToFind"/>.
             </summary>
-            <param name="inString">String to process</param>
-            <param name="value">character to search for</param>
-            <param name="startIndex">the begin search point</param>
+            <param name="value">String to process.</param>
+            <param name="characterToFind">The character of interest.</param>
+            <param name="startIndex">The index from which to begin the search.</param>
             <returns>The index of the last instance of the character that is repeated or (-1) if no repeated chars found.</returns>
         </member>
         <member name="M:TVA.StringExtensions.TrimWithEllipsisMiddle(System.String,System.Int32)">
@@ -23703,7 +23730,6 @@
             <summary>
             A collection of settings that can be represented as a string of key-value pairs for easy persistance and also provide built-in validation support for the settings.
             </summary>
-            <seealso cref="T:TVA.Validation.ValidationService"/>
             <example>
             This example shows how to use <see cref="T:TVA.Collections.SettingsCollection"/> for key-value pair type settings and apply validation to them:
             <code>
@@ -23745,6 +23771,7 @@
             }
             </code>
             </example>
+            <seealso cref="T:TVA.Validation.ValidationService"/>
         </member>
         <member name="M:TVA.Collections.SettingsCollection.#ctor">
             <summary>
@@ -27621,93 +27648,102 @@
             </summary>
         </member>
         <member name="T:TVA.Configuration.ConfigurationFile">
-             <summary>
-             Represents a configuration file of a Windows or Web application.
-             </summary>
-             <seealso cref="T:TVA.Configuration.CategorizedSettingsSection"/>
-             <seealso cref="T:TVA.Configuration.CategorizedSettingsElement"/>
-             <seealso cref="T:TVA.Configuration.CategorizedSettingsElementCollection"/>
-             <example>
-             This example shows how to save and read settings from the config file:
-             <code>
-             using System;
-             using System.Configuration;
-             using TVA;
-             using TVA.Configuration;
+            <summary>
+            Represents a configuration file of a Windows or Web application.
+            </summary>
+            <example>
+            This example shows how to save and read settings from the config file:
+            <code>
+            using System;
+            using System.Configuration;
+            using TVA;
+            using TVA.Configuration;
             
-             class Program
-             {
-                 static void Main(string[] args)
-                 {
-                     // Get the application config file.
-                     ConfigurationFile config = ConfigurationFile.Current;
-                     
-                     // Get the sections of config file.
-                     CategorizedSettingsElementCollection passwords = config.Settings["Passwords"];
-                     CategorizedSettingsElementCollection monitoring = config.Settings["Monitoring"];
-                     KeyValueConfigurationCollection appSettings = config.Configuration.AppSettings.Settings;
-                     ConnectionStringSettingsCollection connStrings = config.Configuration.ConnectionStrings.ConnectionStrings;
-                    
-                     // Add settings to the config file under the "appSettings" section.
-                     appSettings.Add("SaveSettingOnExit", true.ToString());
-                     // Add settings to the config file under the "connectionStrings" section.
-                     connStrings.Add(new ConnectionStringSettings("DevSql", "Server=SqlServer;Database=Sandbox;Trusted_Connection=True"));
-                     // Add settings to the config (if they don't exist) under a custom "monitoring" section.
-                     monitoring.Add("RefreshInterval", 5, "Interval in seconds at which the Monitor screen is to be refreshed.");
-                     monitoring.Add("MessagesSnapshot", 30000, "Maximum messages length to be displayed on the Monitor screen.");
-                     // Add passwords to the config file encrypted (if they don't exist) under a custom "passwords" section.
-                     passwords.Add("Admin", "Adm1nP4ss", "Password used for performing administrative tasks.", true);
-                     config.Save();  // Save settings to the config file.
-                    
-                     // Read saved settings from the config file.
-                     bool saveSettingsOnExit = appSettings["SaveSettingOnExit"].Value.ParseBoolean();
-                     string devConnectionString = connStrings["DevSql"].ConnectionString;
-                     string adminPassword = passwords["Admin"].Value;
-                     int refreshInterval = monitoring["RefreshInterval"].ValueAsInt32();
-                     int messagesSnapshot = monitoring["MessagesSnapshot"].ValueAsInt32();
-                    
-                     // Print the retrieved settings to the console.
-                     Console.WriteLine(string.Format("SaveSettingOnExit = {0}", saveSettingsOnExit));
-                     Console.WriteLine(string.Format("DevSql = {0}", devConnectionString));
-                     Console.WriteLine(string.Format("Admin = {0}", adminPassword));
-                     Console.WriteLine(string.Format("RefreshInterval = {0}", refreshInterval));
-                     Console.WriteLine(string.Format("MessagesSnapshot = {0}", messagesSnapshot));
-                    
-                     Console.ReadLine();
-                 }
-             }
-             </code>
-             This example shows the content of the config file from the sample code above:
-             <code>
-             <![CDATA[
-             <?xml version="1.0" encoding="utf-8"?>
-             <configuration>
-               <configSections>
-                 <section name="categorizedSettings" type="TVA.Configuration.CategorizedSettingsSection, TVA.Core" />
-               </configSections>
-               <appSettings>
-                 <add key="SaveSettingOnExit" value="True" />
-               </appSettings>
-               <categorizedSettings>
-                 <passwords>
-                   <add name="Admin" value="C+0j6fE/N0Q9b5xaeDKgvRmSeY9zJkO1EQCr7cHoG3x24tztlbBB54PfWsuMGXc/"
-                     description="Password used for performing administrative tasks."
-                     encrypted="true" />
-                 </passwords>
-                 <monitoring>
-                   <add name="RefreshInterval" value="5" description="Interval in seconds at which the Monitor screen is to be refreshed."
-                     encrypted="false" />
-                   <add name="MessagesSnapshot" value="30000" description="Maximum messages length to be displayed on the Monitor screen."
-                     encrypted="false" />
-                 </monitoring>
-               </categorizedSettings>
-               <connectionStrings>
-                 <add name="DevSql" connectionString="Server=SqlServer;Database=Sandbox;Trusted_Connection=True" />
-               </connectionStrings>
-             </configuration>
-             ]]>
-             </code>
-             </example>
+            class Program
+            {
+                static void Main(string[] args)
+                {
+                    // Get the application config file.
+                    ConfigurationFile config = ConfigurationFile.Current;
+            
+                    // Get the sections of config file.
+                    CategorizedSettingsElementCollection startup = config.Settings["Startup"];
+                    CategorizedSettingsElementCollection passwords = config.Settings["Passwords"];
+                    CategorizedSettingsElementCollection monitoring = config.Settings["Monitoring"];
+                    KeyValueConfigurationCollection appSettings = config.Configuration.AppSettings.Settings;
+                    ConnectionStringSettingsCollection connStrings = config.Configuration.ConnectionStrings.ConnectionStrings;
+            
+                    // Add settings to the config file under the "appSettings" section.
+                    appSettings.Add("SaveSettingOnExit", true.ToString());
+                    // Add settings to the config file under the "connectionStrings" section.
+                    connStrings.Add(new ConnectionStringSettings("DevSql", "Server=SqlServer;Database=Sandbox;Trusted_Connection=True"));
+                    // Add settings to the config (if they don't exist) under a custom "monitoring" section.
+                    monitoring.Add("RefreshInterval", 5, "Interval in seconds at which the Monitor screen is to be refreshed.");
+                    monitoring.Add("MessagesSnapshot", 30000, "Maximum messages length to be displayed on the Monitor screen.");
+                    // Add password to the config file encrypted (if it doesn't exist) under a custom "passwords" section.
+                    passwords.Add("Admin", "Adm1nP4ss", "Password used for performing administrative tasks.", true);
+                    // Add user-scope setting to the config (if it doesn't exist) under a custom "startup" section.
+                    startup.Add("Theme", "Default", "Application theme to use for the session.", false, SettingScope.User);
+                    config.Save();  // Save settings to the config file.
+            
+                    // Read saved settings from the config file.
+                    bool saveSettingsOnExit = appSettings["SaveSettingOnExit"].Value.ParseBoolean();
+                    string devConnectionString = connStrings["DevSql"].ConnectionString;
+                    string appTheme = startup["Theme"].Value;
+                    string adminPassword = passwords["Admin"].Value;
+                    int refreshInterval = monitoring["RefreshInterval"].ValueAsInt32();
+                    int messagesSnapshot = monitoring["MessagesSnapshot"].ValueAsInt32();
+            
+                    // Print the retrieved settings to the console.
+                    Console.WriteLine("SaveSettingOnExit = {0}", saveSettingsOnExit);
+                    Console.WriteLine("DevSql = {0}", devConnectionString);
+                    Console.WriteLine("Theme = {0}", appTheme);
+                    Console.WriteLine("Admin = {0}", adminPassword);
+                    Console.WriteLine("RefreshInterval = {0}", refreshInterval);
+                    Console.WriteLine("MessagesSnapshot = {0}", messagesSnapshot);
+            
+                    Console.ReadLine();
+                }
+            }
+            </code>
+            This example shows the content of the config file from the sample code above:
+            <code>
+            <![CDATA[
+            <?xml version="1.0" encoding="utf-8"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="TVA.Configuration.CategorizedSettingsSection, TVA.Core" />
+              </configSections>
+              <appSettings>
+                <add key="SaveSettingOnExit" value="True" />
+              </appSettings>
+              <categorizedSettings>
+                <startup>
+                  <add name="Theme" value="Default" description="Application theme to use for the session."
+                    encrypted="false" scope="User" />
+                </startup>
+                <passwords>
+                  <add name="Admin" value="C+0j6fE/N0Q9b5xaeDKgvRmSeY9zJkO1EQCr7cHoG3x24tztlbBB54PfWsuMGXc/"
+                    description="Password used for performing administrative tasks."
+                    encrypted="true" />
+                </passwords>
+                <monitoring>
+                  <add name="RefreshInterval" value="5" description="Interval in seconds at which the Monitor screen is to be refreshed."
+                    encrypted="false" />
+                  <add name="MessagesSnapshot" value="30000" description="Maximum messages length to be displayed on the Monitor screen."
+                    encrypted="false" />
+                </monitoring>
+              </categorizedSettings>
+              <connectionStrings>
+                <add name="DevSql" connectionString="Server=SqlServer;Database=Sandbox;Trusted_Connection=True" />
+              </connectionStrings>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+            <seealso cref="T:TVA.Configuration.CategorizedSettingsSection"/>
+            <seealso cref="T:TVA.Configuration.CategorizedSettingsElement"/>
+            <seealso cref="T:TVA.Configuration.CategorizedSettingsElementCollection"/>
         </member>
         <member name="M:TVA.Configuration.ConfigurationFile.#ctor(System.String)">
             <summary>
@@ -27743,6 +27779,11 @@
             </summary>
             <param name="configFilePath">Path of the config file that belongs to a Windows or Web application.</param>
             <returns>An <see cref="T:TVA.Configuration.ConfigurationFile"/> object.</returns>
+        </member>
+        <member name="P:TVA.Configuration.ConfigurationFile.Culture">
+            <summary>
+            Gets or sets the <see cref="T:System.Globalization.CultureInfo"/> to use for the conversion of setting values to and from <see cref="T:System.String"/>.
+            </summary>
         </member>
         <member name="P:TVA.Configuration.ConfigurationFile.Configuration">
             <summary>
@@ -28010,8 +28051,6 @@
                 return kilograms * SI.Kilo;
             }
             </code>
-            </example>
-            <example>
             This example converts tons to pounds:
             <code>
             public double GetPounds(double tons)
@@ -30229,8 +30268,6 @@
                 return cubicmeters / SI.Kilo;
             }
             </code>
-            </example>
-            <example>
             This example converts teaspoons to cups:
             <code>
             public double GetCups(double teaspoons)
@@ -30238,8 +30275,6 @@
                 return Volume.FromTeaspoons(teaspoons).ToCups();
             }
             </code>
-            </example>
-            <example>
             This example converts liters to fluid ounces:
             <code>
             public double GetFluidOunces(double liters)
@@ -31778,8 +31813,6 @@
                  }
              }
              </code>
-             </example>
-             <example>
              This example shows the config file section that can be used to specify the domain account to be used for Active Directory queries:
              <code>
              <![CDATA[
