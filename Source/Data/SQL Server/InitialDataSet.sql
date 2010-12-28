@@ -46,7 +46,7 @@ INSERT INTO Company(Acronym, MapAcronym, Name, LoadOrder) VALUES('DUKE', 'DUK', 
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('InputAdapter', 'InputAdapters', 'Defines IInputAdapter definitions for a Historian node', 1, 1)
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('ActionAdapter', 'ActionAdapters', 'Defines IActionAdapter definitions for a Historian node', 2, 1)
 INSERT INTO ConfigurationEntity(SourceName, RuntimeName, Description, LoadOrder, Enabled) VALUES('OutputAdapter', 'OutputAdapters', 'Defines IOutputAdapter definitions for a Historian node', 3, 1)
-INSERT INTO Node(Name, CompanyID, Description, Master, LoadOrder, Enabled) VALUES('Default', NULL, 'Default node', 0, 0, 1)
+INSERT INTO Node(Name, CompanyID, Description, RemoteStatusServiceUrl, Master, LoadOrder, Enabled) VALUES('Default', NULL, 'Default node','Server=localhost:8600', 0, 0, 1)
 UPDATE Node SET ID='e7a5235d-cb6f-4864-a96e-a8686f36e599' WHERE Name='Default'
 INSERT INTO DataOperation(NodeId, Description, AssemblyName, TypeName, MethodName, Arguments, LoadOrder, Enabled) VALUES('e7a5235d-cb6f-4864-a96e-a8686f36e599','Optimize Local Historian Settings', 'HistorianAdapters.dll', 'HistorianAdapters.LocalOutputAdapter', 'OptimizeLocalHistorianSettings', '', 1, 1)
 INSERT INTO InputAdapter(NodeID, AdapterName, AssemblyName, TypeName, ConnectionString, LoadOrder, Enabled) VALUES('e7a5235d-cb6f-4864-a96e-a8686f36e599', 'InputAdapter', 'HistorianAdapters.dll', 'HistorianAdapters.LocalOutputAdapter', 'protocol=TCP;server=localhost;port=1003;initiateConnection=False;', 0, 1)

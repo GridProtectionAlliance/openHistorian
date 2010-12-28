@@ -58,9 +58,9 @@ CREATE TABLE Node(
 	Latitude DECIMAL(9, 6) NULL,
 	Description LONGTEXT NULL,
 	ImagePath LONGTEXT NULL,
-	--TimeSeriesDataServiceUrl LONGTEXT NULL,
-	--RemoteStatusServiceUrl LONGTEXT NULL,
-	--RealTimeStatisticServiceUrl LONGTEXT NULL,
+	TimeSeriesDataServiceUrl LONGTEXT NULL,
+	RemoteStatusServiceUrl LONGTEXT NULL,
+	RealTimeStatisticServiceUrl LONGTEXT NULL,
 	Master TINYINT NOT NULL DEFAULT 0,
 	LoadOrder INT NOT NULL DEFAULT 0,
 	Enabled TINYINT NOT NULL DEFAULT 0,
@@ -177,6 +177,17 @@ UNION ALL
 SELECT     'Output Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, COALESCE(ConnectionString, '') AS ConnectionString
 FROM         OutputAdapter;
  
+ /* View for openHistorian Manager APP */
+CREATE VIEW NodeDetail
+AS
+SELECT N.ID, N.Name, N.CompanyID AS CompanyID, COALESCE(N.Longitude, 0) AS Longitude, COALESCE(N.Latitude, 0) AS Latitude, 
+		COALESCE(N.Description, '') AS Description, COALESCE(N.ImagePath, '') AS ImagePath, N.Master, N.LoadOrder, N.Enabled, 
+		COALESCE(N.TimeSeriesDataServiceUrl, '') AS TimeSeriesDataServiceUrl, COALESCE(N.RemoteStatusServiceUrl, '') AS RemoteStatusServiceUrl,	
+		COALESCE(N.RealTimeStatisticServiceUrl, '') AS RealTimeStatisticServiceUrl, COALESCE(C.Name, '') AS CompanyName
+FROM Node N LEFT JOIN Company C 
+ON N.CompanyID = C.ID;
+ /*--------------------------------------*/
+
 /*
 CREATE TRIGGER ActionAdapter_RuntimeSync_Insert AFTER INSERT ON ActionAdapter
 FOR EACH ROW INSERT INTO Runtime (SourceID, SourceTable) VALUES(NEW.ID, N'CustomActionAdapter');

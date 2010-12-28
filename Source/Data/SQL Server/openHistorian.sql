@@ -143,9 +143,9 @@ CREATE TABLE [Node](
 	[Latitude] [decimal](9, 6) NULL,
 	[Description] [nvarchar](max) NULL,
 	[ImagePath] [nvarchar](max) NULL,
-	--[TimeSeriesDataServiceUrl] [nvarchar](max) NULL,
-	--[RemoteStatusServiceUrl] [nvarchar](max) NULL,
-	--[RealTimeStatisticServiceUrl] [nvarchar](max) NULL,
+	[TimeSeriesDataServiceUrl] [nvarchar](max) NULL,
+	[RemoteStatusServiceUrl] [nvarchar](max) NULL,
+	[RealTimeStatisticServiceUrl] [nvarchar](max) NULL,
 	[Master] [bit] NOT NULL CONSTRAINT [DF_Node_Master]  DEFAULT ((0)),
 	[LoadOrder] [int] NOT NULL CONSTRAINT [DF_Node_LoadOrder]  DEFAULT ((0)),
 	[Enabled] [bit] NOT NULL CONSTRAINT [DF_Node_Enabled]  DEFAULT ((0)),
@@ -335,6 +335,23 @@ GO
 
 ALTER TABLE [dbo].[OutputAdapter]  WITH CHECK ADD  CONSTRAINT [FK_OutputAdapter_Node] FOREIGN KEY([NodeID])
 REFERENCES [Node] ([ID])
+
+
+
+/* View for openHistorian Manager APP */
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[NodeDetail] AS
+SELECT N.ID, N.Name, ISNULL(N.CompanyID, 0) AS CompanyID, ISNULL(N.Longitude, 0) AS Longitude, ISNULL(N.Latitude, 0) AS Latitude, 
+		ISNULL(N.Description, '') AS Description, ISNULL(N.ImagePath, '') AS ImagePath, N.Master, N.LoadOrder, N.Enabled, 
+		ISNULL(N.TimeSeriesDataServiceUrl, '') AS TimeSeriesDataServiceUrl, ISNULL(N.RemoteStatusServiceUrl, '') AS RemoteStatusServiceUrl,
+		ISNULL(N.RealTimeStatisticServiceUrl, '') AS RealTimeStatisticServiceUrl, ISNULL(C.Name, '') AS CompanyName
+FROM Node N LEFT JOIN Company C 
+ON N.CompanyID = C.ID
+GO
+ /*--------------------------------------*/
 
 /*
 GO
