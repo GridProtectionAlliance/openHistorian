@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DF68DFD7-789B-4DFD-B00F-FBF991FEDAC0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>openHistorian</RootNamespace>
+    <AssemblyName>openHistorian</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Build\Output\Debug\Libraries\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Build\Output\Release\Libraries\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\Build\Output\Release\Libraries\openHistorian.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TVA.Communication, Version=4.0.3.40, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\TVACodeLibrary.Libraries.Communication.4.0.3.40\lib\net40\TVA.Communication.dll</HintPath>
+    </Reference>
+    <Reference Include="TVA.Core, Version=4.0.3.40, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\TVACodeLibrary.Libraries.Core.4.0.3.40\lib\net40\TVA.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="TVA.Security, Version=4.0.3.40, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\TVACodeLibrary.Libraries.Security.4.0.3.40\lib\net40\TVA.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="TVA.ServiceModel, Version=4.0.3.40, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\TVACodeLibrary.Libraries.ServiceModel.4.0.3.40\lib\net40\TVA.ServiceModel.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Adapters\DataAdapterBase.cs" />
+    <Compile Include="Adapters\DataAdapters.cs" />
+    <Compile Include="Adapters\IDataAdapter.cs" />
+    <Compile Include="Adapters\DataMapping.cs" />
+    <Compile Include="Adapters\IDataMapping.cs" />
+    <Compile Include="Adapters\Native\DataListener.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\DataService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\DataServices.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\IDataService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\IMetadataService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\ITimeSeriesDataService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\MetadataService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\NamespaceDoc.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\SerializableMetadata.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\SerializableMetadataRecord.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\SerializableTimeSeriesData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\SerializableTimeSeriesDataPoint.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\Serialization.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\DataServices\TimeSeriesDataService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Adapters\Native\NativeInputAdapter.cs" />
+    <Compile Include="Archives\DataArchiveBase.cs" />
+    <Compile Include="Archives\DataArchives.cs" />
+    <Compile Include="Archives\V1\ArchiveDataBlock.cs" />
+    <Compile Include="Archives\V1\ArchiveDataBlockPointer.cs" />
+    <Compile Include="Archives\ArchiveData.cs" />
+    <Compile Include="Archives\V1\ArchiveFile.cs" />
+    <Compile Include="Archives\V1\ArchiveFileAllocationTable.cs" />
+    <Compile Include="Archives\V1\ArchiveFileStatistics.cs" />
+    <Compile Include="IMetadata.cs" />
+    <Compile Include="Archives\V1\IntercomFile.cs" />
+    <Compile Include="Archives\V1\IntercomRecord.cs" />
+    <Compile Include="Archives\V1\MetadataFile.cs" />
+    <Compile Include="Archives\V1\MetadataRecord.cs" />
+    <Compile Include="Archives\V1\MetadataRecordAlarmFlags.cs" />
+    <Compile Include="Archives\V1\MetadataRecordAnalogFields.cs" />
+    <Compile Include="Archives\V1\MetadataRecordComposedFields.cs" />
+    <Compile Include="Archives\V1\MetadataRecordConstantFields.cs" />
+    <Compile Include="Archives\V1\MetadataRecordDigitalFields.cs" />
+    <Compile Include="Archives\V1\MetadataRecordGeneralFlags.cs" />
+    <Compile Include="Archives\V1\MetadataRecordSecurityFlags.cs" />
+    <Compile Include="Archives\V1\MetadataRecordSummary.cs" />
+    <Compile Include="Archives\V1\NamespaceDoc.cs" />
+    <Compile Include="Archives\V1\StateFile.cs" />
+    <Compile Include="Archives\V1\StateRecord.cs" />
+    <Compile Include="Archives\V1\StateRecordData.cs" />
+    <Compile Include="Archives\V1\StateRecordSummary.cs" />
+    <Compile Include="Archives\IDataArchive.cs" />
+    <Compile Include="Data.cs" />
+    <Compile Include="DataCache.cs" />
+    <Compile Include="DataKey.cs" />
+    <Compile Include="IData.cs" />
+    <Compile Include="IDataCache.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="Adapters\Native\Packets\IPacket.cs" />
+    <Compile Include="Adapters\Native\Packets\NamespaceDoc.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketBase.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketCommonHeader.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketParser.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketType1.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketType101.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketType101Data.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketType11.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketType2.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketType3.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketType4.cs" />
+    <Compile Include="Adapters\Native\Packets\PacketType5.cs" />
+    <Compile Include="Adapters\Native\Packets\QueryPacketBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TimeTag.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Adapters\Native\DataListener.bmp" />
+    <Content Include="Archives\V1\ArchiveFile.bmp" />
+    <Content Include="Archives\V1\IntercomFile.bmp" />
+    <Content Include="Archives\V1\MetadataFile.bmp" />
+    <Content Include="Archives\V1\StateFile.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

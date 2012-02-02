@@ -1,0 +1,136 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{9C3A3ABA-9618-49B0-9104-60678B4F3D71}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{08078FEC-378B-4585-85B2-E8B0B646D270}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{71B86842-3055-4797-AA46-AB35B706354C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{5C9DD205-EA5C-4654-97EC-55A3C922BC3C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openHistorianService", "openHistorianService", "{460BEC91-29E7-4574-9E85-0FD62D43D683}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianService", "Applications\openHistorianService\openHistorianService\openHistorianService.csproj", "{4A9A34C1-1FAF-42CA-B214-C1605B03D847}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianServiceConsole", "Applications\openHistorianService\openHistorianServiceConsole\openHistorianServiceConsole.csproj", "{81B143F5-0447-4054-A8C9-E4D63443C86B}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "openHistorianServiceSetup", "Applications\openHistorianService\openHistorianServiceSetup\openHistorianServiceSetup.vdproj", "{A29A6B4C-8750-4E19-B6AC-8AF2F1AD3860}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openHistorianClient", "openHistorianClient", "{4D912150-86EF-44C4-ABBC-C869FE82C829}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openHistorianExplorer", "openHistorianExplorer", "{DA2EF5C4-6C06-49F7-AFA7-FD5720E8DEBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "Libraries\openHistorian\openHistorian.csproj", "{DF68DFD7-789B-4DFD-B00F-FBF991FEDAC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.DR", "Libraries\openHistorian.DR\openHistorian.DR.csproj", "{17ADB720-7D60-4974-9613-F16BDD62C2A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Iccp", "Libraries\openHistorian.Iccp\openHistorian.Iccp.csproj", "{4E0110E5-77E4-4CE9-B298-76F6D20F65C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Web", "Libraries\openHistorian.Web\openHistorian.Web.csproj", "{9257213D-9D20-4888-AEA1-9EB67A20EDB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Dnp", "Libraries\openHistorian.Dnp\openHistorian.Dnp.csproj", "{50D4DA67-D5D8-4213-9A57-CAAD71FF4001}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Opc", "Libraries\openHistorian.Opc\openHistorian.Opc.csproj", "{0329EAD1-48F6-407C-A861-F506D7E49A4A}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 10
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Applications\\openHistorianService\\openHistorianService\\openHistorianService.csproj
+		SccProjectTopLevelParentUniqueName1 = openHistorian.sln
+		SccProjectName1 = Applications/openHistorianService/openHistorianService
+		SccLocalPath1 = Applications\\openHistorianService\\openHistorianService
+		SccProjectUniqueName2 = Applications\\openHistorianService\\openHistorianServiceConsole\\openHistorianServiceConsole.csproj
+		SccProjectTopLevelParentUniqueName2 = openHistorian.sln
+		SccProjectName2 = Applications/openHistorianService/openHistorianServiceConsole
+		SccLocalPath2 = Applications\\openHistorianService\\openHistorianServiceConsole
+		SccProjectUniqueName3 = Applications\\openHistorianService\\openHistorianServiceSetup\\openHistorianServiceSetup.vdproj
+		SccProjectTopLevelParentUniqueName3 = openHistorian.sln
+		SccProjectName3 = Applications/openHistorianService/openHistorianServiceSetup
+		SccLocalPath3 = Applications\\openHistorianService\\openHistorianServiceSetup
+		SccProjectUniqueName4 = Libraries\\openHistorian.DR\\openHistorian.DR.csproj
+		SccProjectTopLevelParentUniqueName4 = openHistorian.sln
+		SccProjectName4 = Libraries/openHistorian.DR
+		SccLocalPath4 = Libraries\\openHistorian.DR
+		SccProjectUniqueName5 = Libraries\\openHistorian.Iccp\\openHistorian.Iccp.csproj
+		SccProjectTopLevelParentUniqueName5 = openHistorian.sln
+		SccProjectName5 = Libraries/openHistorian.Iccp
+		SccLocalPath5 = Libraries\\openHistorian.Iccp
+		SccProjectUniqueName6 = Libraries\\openHistorian.Web\\openHistorian.Web.csproj
+		SccProjectTopLevelParentUniqueName6 = openHistorian.sln
+		SccProjectName6 = Libraries/openHistorian.Web
+		SccLocalPath6 = Libraries\\openHistorian.Web
+		SccProjectUniqueName7 = Libraries\\openHistorian\\openHistorian.csproj
+		SccProjectTopLevelParentUniqueName7 = openHistorian.sln
+		SccProjectName7 = Libraries/openHistorian
+		SccLocalPath7 = Libraries\\openHistorian
+		SccProjectUniqueName8 = Libraries\\openHistorian.Dnp\\openHistorian.Dnp.csproj
+		SccProjectTopLevelParentUniqueName8 = openHistorian.sln
+		SccProjectName8 = Libraries/openHistorian.Dnp
+		SccLocalPath8 = Libraries\\openHistorian.Dnp
+		SccProjectUniqueName9 = Libraries\\openHistorian.Opc\\openHistorian.Opc.csproj
+		SccProjectTopLevelParentUniqueName9 = openHistorian.sln
+		SccProjectName9 = Libraries/openHistorian.Opc
+		SccLocalPath9 = Libraries\\openHistorian.Opc
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4A9A34C1-1FAF-42CA-B214-C1605B03D847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A9A34C1-1FAF-42CA-B214-C1605B03D847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A9A34C1-1FAF-42CA-B214-C1605B03D847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A9A34C1-1FAF-42CA-B214-C1605B03D847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81B143F5-0447-4054-A8C9-E4D63443C86B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81B143F5-0447-4054-A8C9-E4D63443C86B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81B143F5-0447-4054-A8C9-E4D63443C86B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81B143F5-0447-4054-A8C9-E4D63443C86B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A29A6B4C-8750-4E19-B6AC-8AF2F1AD3860}.Debug|Any CPU.ActiveCfg = Debug
+		{A29A6B4C-8750-4E19-B6AC-8AF2F1AD3860}.Release|Any CPU.ActiveCfg = Release
+		{DF68DFD7-789B-4DFD-B00F-FBF991FEDAC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF68DFD7-789B-4DFD-B00F-FBF991FEDAC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF68DFD7-789B-4DFD-B00F-FBF991FEDAC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF68DFD7-789B-4DFD-B00F-FBF991FEDAC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17ADB720-7D60-4974-9613-F16BDD62C2A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17ADB720-7D60-4974-9613-F16BDD62C2A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17ADB720-7D60-4974-9613-F16BDD62C2A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17ADB720-7D60-4974-9613-F16BDD62C2A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E0110E5-77E4-4CE9-B298-76F6D20F65C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E0110E5-77E4-4CE9-B298-76F6D20F65C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E0110E5-77E4-4CE9-B298-76F6D20F65C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E0110E5-77E4-4CE9-B298-76F6D20F65C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9257213D-9D20-4888-AEA1-9EB67A20EDB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9257213D-9D20-4888-AEA1-9EB67A20EDB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9257213D-9D20-4888-AEA1-9EB67A20EDB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9257213D-9D20-4888-AEA1-9EB67A20EDB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50D4DA67-D5D8-4213-9A57-CAAD71FF4001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50D4DA67-D5D8-4213-9A57-CAAD71FF4001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50D4DA67-D5D8-4213-9A57-CAAD71FF4001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50D4DA67-D5D8-4213-9A57-CAAD71FF4001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0329EAD1-48F6-407C-A861-F506D7E49A4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0329EAD1-48F6-407C-A861-F506D7E49A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0329EAD1-48F6-407C-A861-F506D7E49A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0329EAD1-48F6-407C-A861-F506D7E49A4A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DF68DFD7-789B-4DFD-B00F-FBF991FEDAC0} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{17ADB720-7D60-4974-9613-F16BDD62C2A4} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{4E0110E5-77E4-4CE9-B298-76F6D20F65C4} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{9257213D-9D20-4888-AEA1-9EB67A20EDB4} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{50D4DA67-D5D8-4213-9A57-CAAD71FF4001} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{0329EAD1-48F6-407C-A861-F506D7E49A4A} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{460BEC91-29E7-4574-9E85-0FD62D43D683} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
+		{4D912150-86EF-44C4-ABBC-C869FE82C829} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
+		{DA2EF5C4-6C06-49F7-AFA7-FD5720E8DEBD} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
+		{4A9A34C1-1FAF-42CA-B214-C1605B03D847} = {460BEC91-29E7-4574-9E85-0FD62D43D683}
+		{81B143F5-0447-4054-A8C9-E4D63443C86B} = {460BEC91-29E7-4574-9E85-0FD62D43D683}
+		{A29A6B4C-8750-4E19-B6AC-8AF2F1AD3860} = {460BEC91-29E7-4574-9E85-0FD62D43D683}
+	EndGlobalSection
+EndGlobal

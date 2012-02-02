@@ -1,0 +1,1268 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TVA.ServiceProcess</name>
+    </assembly>
+    <members>
+        <member name="T:TVA.ServiceProcess.ClientHelper">
+            <summary>
+            Component that provides client-side functionality to <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ClientHelper.DefaultUsername">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ClientHelper.Username"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ClientHelper.DefaultPassword">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ClientHelper.Password"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ClientHelper.DefaultPersistSettings">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ClientHelper.PersistSettings"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ClientHelper.DefaultSettingsCategory">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ClientHelper.SettingsCategory"/> property.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientHelper"/> class.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientHelper"/> class.
+            </summary>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:TVA.ServiceProcess.ClientHelper"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.Initialize">
+            <summary>
+            Initializes the <see cref="T:TVA.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <remarks>
+            <see cref="M:TVA.ServiceProcess.ClientHelper.Initialize"/> is to be called by user-code directly only if the <see cref="T:TVA.ServiceProcess.ClientHelper"/> is not consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.BeginInit">
+            <summary>
+            Performs necessary operations before the <see cref="T:TVA.ServiceProcess.ClientHelper"/> properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:TVA.ServiceProcess.ClientHelper.BeginInit"/> should never be called by user-code directly. This method exists solely for use 
+            by the designer if the <see cref="T:TVA.ServiceProcess.ClientHelper"/> is consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.EndInit">
+            <summary>
+            Performs necessary operations after the <see cref="T:TVA.ServiceProcess.ClientHelper"/> properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:TVA.ServiceProcess.ClientHelper.EndInit"/> should never be called by user-code directly. This method exists solely for use 
+            by the designer if the <see cref="T:TVA.ServiceProcess.ClientHelper"/> is consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.SaveSettings">
+            <summary>
+            Saves settings for the <see cref="T:TVA.ServiceProcess.ClientHelper"/> to the config file if the <see cref="P:TVA.ServiceProcess.ClientHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:TVA.ServiceProcess.ClientHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.LoadSettings">
+            <summary>
+            Loads saved settings for the <see cref="T:TVA.ServiceProcess.ClientHelper"/> from the config file if the <see cref="P:TVA.ServiceProcess.ClientHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:TVA.ServiceProcess.ClientHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.Connect">
+            <summary>
+            Connects <see cref="P:TVA.ServiceProcess.ClientHelper.RemotingClient"/> to <see cref="P:TVA.ServiceProcess.ServiceHelper.RemotingServer"/> and wait until authentication is complete.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.Disconnect">
+            <summary>
+            Disconnects <see cref="P:TVA.ServiceProcess.ClientHelper.RemotingClient"/> from <see cref="P:TVA.ServiceProcess.ServiceHelper.RemotingServer"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.SendRequest(System.String)">
+            <summary>
+            Sends a request to the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> using <see cref="P:TVA.ServiceProcess.ClientHelper.RemotingClient"/>.
+            </summary>
+            <param name="request">Request text to be sent.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.SendRequest(TVA.ServiceProcess.ClientRequest)">
+            <summary>
+            Sends a request to the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> using <see cref="P:TVA.ServiceProcess.ClientHelper.RemotingClient"/>.
+            </summary>
+            <param name="request"><see cref="T:TVA.ServiceProcess.ClientRequest"/> object to be sent.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.OnReceivedServiceUpdate(TVA.UpdateType,System.String)">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ClientHelper.ReceivedServiceUpdate"/> event.
+            </summary>
+            <param name="type">One of the <see cref="T:TVA.UpdateType"/> values.</param>
+            <param name="update">Update message received.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.OnReceivedServiceResponse(TVA.ServiceProcess.ServiceResponse)">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ClientHelper.ReceivedServiceResponse"/> event.
+            </summary>
+            <param name="response"><see cref="T:TVA.ServiceProcess.ServiceResponse"/> received.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.OnServiceStateChanged(TVA.ObjectState{TVA.ServiceProcess.ServiceState})">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ClientHelper.ServiceStateChanged"/> event.
+            </summary>
+            <param name="state">New <see cref="T:TVA.ServiceProcess.ServiceState"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.OnProcessStateChanged(TVA.ObjectState{TVA.ServiceProcess.ServiceProcessState})">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ClientHelper.ProcessStateChanged"/> event.
+            </summary>
+            <param name="state">New <see cref="T:TVA.ServiceProcess.ServiceProcessState"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.OnAuthenticationSuccess">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ClientHelper.AuthenticationSuccess"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.OnAuthenticationFailure">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ClientHelper.AuthenticationFailure"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.OnTelnetSessionEstablished">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ClientHelper.TelnetSessionEstablished"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.OnTelnetSessionTerminated">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ClientHelper.TelnetSessionTerminated"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:TVA.ServiceProcess.ClientHelper"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.PretendRequest(System.String)">
+            <summary>
+            Returns an <see cref="T:TVA.ServiceProcess.ClientRequestInfo"/> object for the specified <paramref name="requestCommand"/> that can be used 
+            to invoke <see cref="P:TVA.ServiceProcess.ServiceHelper.ClientRequestHandlers"/> manually as if the request was sent by a <see cref="T:TVA.ServiceProcess.ClientHelper"/> remotely.
+            </summary>
+            <param name="requestCommand">Command for which an <see cref="T:TVA.ServiceProcess.ClientRequestInfo"/> object is to be created.</param>
+            <returns>An <see cref="T:TVA.ServiceProcess.ClientRequestInfo"/> object.</returns>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientHelper.TryParseActionableResponse(TVA.ServiceProcess.ServiceResponse,System.String@,System.Boolean@)">
+            <summary>
+            Attempts to parse an actionable reponse sent from the service.
+            </summary>
+            <param name="serviceResponse"><see cref="T:TVA.ServiceProcess.ServiceResponse"/> to test for actionable response.</param>
+            <param name="sourceCommand">Command that invoked <paramref name="serviceResponse"/>.</param>
+            <param name="responseSuccess">Boolean success state of <paramref name="serviceResponse"/>.</param>
+            <returns><c>true</c> if actionable response was able to be parsed successfully; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="E:TVA.ServiceProcess.ClientHelper.ReceivedServiceUpdate">
+            <summary>
+            Occurs when a status update is received from the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ClientHelper.ReceivedServiceResponse">
+            <summary>
+            Occurs when a custom <see cref="T:TVA.ServiceProcess.ServiceResponse"/> is received from the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ClientHelper.ServiceStateChanged">
+            <summary>
+            Occurs when the state of the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> is changed.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ClientHelper.ProcessStateChanged">
+            <summary>
+            Occurs when the state of a <see cref="T:TVA.ServiceProcess.ServiceProcess"/> is changed.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ClientHelper.AuthenticationSuccess">
+            <summary>
+            Occurs when the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> successfully authenticates the <see cref="T:TVA.ServiceProcess.ClientHelper"/>.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ClientHelper.AuthenticationFailure">
+            <summary>
+            Occurs when the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> fails to authenticate the <see cref="T:TVA.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <remarks>
+            Set <see cref="P:System.ComponentModel.CancelEventArgs.Cancel"/> to <b>true</b> to continue with connection attempts even after authentication fails. 
+            This can be useful for re-authenticating the <see cref="T:TVA.ServiceProcess.ClientHelper"/> using different <see cref="P:TVA.ServiceProcess.ClientHelper.Username"/> and <see cref="P:TVA.ServiceProcess.ClientHelper.Password"/>.
+            </remarks>
+        </member>
+        <member name="E:TVA.ServiceProcess.ClientHelper.TelnetSessionEstablished">
+            <summary>
+            Occurs when a telnet session has been established.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ClientHelper.TelnetSessionTerminated">
+            <summary>
+            Occurs when a telnet session has been terminated.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientHelper.RemotingClient">
+            <summary>
+            Gets or sets the <see cref="T:TVA.Communication.ClientBase"/> object used for communicating with the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientHelper.Username">
+            <summary>
+            Gets or sets the username of the <see cref="T:TVA.ServiceProcess.ClientHelper"/>'s user to be used for authenticating with the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being specified is a null string.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientHelper.Password">
+            <summary>
+            Gets or sets the password of the <see cref="T:TVA.ServiceProcess.ClientHelper"/>'s user to be used for authenticating with the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being specified is a null string.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientHelper.PersistSettings">
+            <summary>
+            Gets or sets a boolean value that indicates whether the settings of <see cref="T:TVA.ServiceProcess.ClientHelper"/> are to be saved to the config file.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientHelper.SettingsCategory">
+            <summary>
+            Gets or sets the category under which the settings of <see cref="T:TVA.ServiceProcess.ClientHelper"/> are to be saved to the config file if the <see cref="P:TVA.ServiceProcess.ClientHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientHelper.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:TVA.ServiceProcess.ClientHelper"/> is currently enabled.
+            </summary>
+            <remarks>
+            <see cref="P:TVA.ServiceProcess.ClientHelper.Enabled"/> property is not be set by user-code directly.
+            </remarks>
+        </member>
+        <member name="T:TVA.ServiceProcess.ServiceState">
+            <summary>
+            Indicates the state of a Windows Service.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceState.Started">
+            <summary>
+            Service has started.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceState.Stopped">
+            <summary>
+            Service has stopped.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceState.Paused">
+            <summary>
+            Service has paused.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceState.Resumed">
+            <summary>
+            Service has resumed.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceState.Shutdown">
+            <summary>
+            Service has shutdown.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.ServiceHelper">
+            <summary>
+            Component that provides added functionality to a Windows Service.
+            </summary>
+            <seealso cref="T:TVA.ServiceProcess.ServiceProcess"/>
+            <seealso cref="T:TVA.ServiceProcess.ServiceResponse"/>
+            <seealso cref="T:TVA.ServiceProcess.ClientInfo"/>
+            <seealso cref="T:TVA.ServiceProcess.ClientRequest"/>
+            <seealso cref="T:TVA.ServiceProcess.ClientRequestHandler"/>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultLogStatusUpdates">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.LogStatusUpdates"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultMaxStatusUpdatesLength">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.MaxStatusUpdatesLength"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultMaxStatusUpdatesFrequency">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.MaxStatusUpdatesFrequency"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultMonitorServiceHealth">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.MonitorServiceHealth"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultHealthMonitorInterval">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.HealthMonitorInterval"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultRequestHistoryLimit">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.RequestHistoryLimit"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultSupportTelnetSessions">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.SupportTelnetSessions"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultSupportSystemCommands">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.SupportSystemCommands"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultSecureRemoteInteractions">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.SecureRemoteInteractions"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultPersistSettings">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.PersistSettings"/> property.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceHelper.DefaultSettingsCategory">
+            <summary>
+            Specifies the default value for the <see cref="P:TVA.ServiceProcess.ServiceHelper.SettingsCategory"/> property.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> class.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> class.
+            </summary>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.Initialize">
+            <summary>
+            Initializes the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <remarks>
+            <see cref="M:TVA.ServiceProcess.ServiceHelper.Initialize"/> is to be called by user-code directly only if the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> 
+            object is not consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.BeginInit">
+            <summary>
+            Performs necessary operations before the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:TVA.ServiceProcess.ServiceHelper.BeginInit"/> should never be called by user-code directly. This method exists solely for use 
+            by the designer if the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> is consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.EndInit">
+            <summary>
+            Performs necessary operations after the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:TVA.ServiceProcess.ServiceHelper.EndInit"/> should never be called by user-code directly. This method exists solely for use 
+            by the designer if the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> is consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.SaveSettings">
+            <summary>
+            Saves settings of the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> to the config file if the <see cref="P:TVA.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:TVA.ServiceProcess.ServiceHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.SaveSettings(System.Boolean)">
+            <summary>
+            Saves settings of the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> to the config file if the <see cref="P:TVA.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <param name="includeServiceComponents">A boolean value that indicates whether the settings of <see cref="P:TVA.ServiceProcess.ServiceHelper.ServiceComponents"/> are to be saved.</param>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:TVA.ServiceProcess.ServiceHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.LoadSettings">
+            <summary>
+            Loads saved settings of the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> from the config file if the <see cref="P:TVA.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:TVA.ServiceProcess.ServiceHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.LoadSettings(System.Boolean)">
+            <summary>
+            Loads saved settings of the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> from the config file if the <see cref="P:TVA.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <param name="includeServiceComponents">A boolean value that indicates whether the settings of <see cref="P:TVA.ServiceProcess.ServiceHelper.ServiceComponents"/> are to be loaded.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnStart(System.String[])">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])"/> method of <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+            <param name="args">Array of type <see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnStop">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnStop"/> method of <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnPause">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnPause"/> method of <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnResume">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnContinue"/> method of <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnShutdown">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnShutdown"/> method of <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.AddProcess(System.Action{System.String,System.Object[]},System.String)">
+            <summary>
+            Adds a new <see cref="T:TVA.ServiceProcess.ServiceProcess"/> to the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <param name="processExecutionMethod">The <see cref="T:System.Delegate"/> to be invoked the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> is started.</param>
+            <param name="processName">Name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> being added.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.AddProcess(System.Action{System.String,System.Object[]},System.String,System.Object[])">
+            <summary>
+            Adds a new <see cref="T:TVA.ServiceProcess.ServiceProcess"/> to the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <param name="processExecutionMethod">The <see cref="T:System.Delegate"/> to be invoked the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> is started.</param>
+            <param name="processName">Name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> being added.</param>
+            <param name="processArguments">Arguments to be passed in to the <paramref name="processExecutionMethod"/> during execution.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.AddScheduledProcess(System.Action{System.String,System.Object[]},System.String,System.String)">
+            <summary>
+            Adds a new <see cref="T:TVA.ServiceProcess.ServiceProcess"/> to the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> that executes on a schedule.
+            </summary>
+            <param name="processExecutionMethod">The <see cref="T:System.Delegate"/> to be invoked the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> is started.</param>
+            <param name="processName">Name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> being added.</param>
+            <param name="processSchedule"><see cref="T:TVA.Scheduling.Schedule"/> for the execution of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.AddScheduledProcess(System.Action{System.String,System.Object[]},System.String,System.Object[],System.String)">
+            <summary>
+            Adds a new <see cref="T:TVA.ServiceProcess.ServiceProcess"/> to the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> that executes on a schedule.
+            </summary>
+            <param name="processExecutionMethod">The <see cref="T:System.Delegate"/> to be invoked the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> is started.</param>
+            <param name="processName">Name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> being added.</param>
+            <param name="processArguments">Arguments to be passed in to the <paramref name="processExecutionMethod"/> during execution.</param>
+            <param name="processSchedule"><see cref="T:TVA.Scheduling.Schedule"/> for the execution of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.ScheduleProcess(System.String,System.String)">
+            <summary>
+            Schedules an existing <see cref="T:TVA.ServiceProcess.ServiceProcess"/> for automatic execution.
+            </summary>
+            <param name="processName">Name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> to be scheduled.</param>
+            <param name="scheduleRule">Rule that defines the execution pattern of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.ScheduleProcess(System.String,System.String,System.Boolean)">
+            <summary>
+            Schedules an existing <see cref="T:TVA.ServiceProcess.ServiceProcess"/> for automatic execution.
+            </summary>
+            <param name="processName">Name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> to be scheduled.</param>
+            <param name="scheduleRule">Rule that defines the execution pattern of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.</param>
+            <param name="updateExistingSchedule">true if the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> is to be re-scheduled; otherwise false.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.SendResponse(TVA.ServiceProcess.ServiceResponse)">
+            <summary>
+            Sends the specified <paramref name="response"/> to all <see cref="P:TVA.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+            <param name="response">The <see cref="T:TVA.ServiceProcess.ServiceResponse"/> to be sent to all <see cref="P:TVA.ServiceProcess.ServiceHelper.RemoteClients"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.SendResponse(System.Guid,TVA.ServiceProcess.ServiceResponse)">
+            <summary>
+            Sends the specified <paramref name="response"/> to the specified <paramref name="client"/> only.
+            </summary>
+            <param name="client">ID of the client to whom the <paramref name="response"/> is to be sent.</param>
+            <param name="response">The <see cref="T:TVA.ServiceProcess.ServiceResponse"/> to be sent to the <paramref name="client"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.SendActionableResponse(TVA.ServiceProcess.ClientRequestInfo,System.Boolean,System.Object,System.String,System.Object[])">
+            <summary>
+            Sends an actionable response to client along with an optional formatted message and attachment.
+            </summary>
+            <param name="requestInfo"><see cref="T:TVA.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
+            <param name="success">Flag that determines if this response to client request was a success.</param>
+            <param name="attachment">Attachment to send with response.</param>
+            <param name="status">Formatted status message to send with response.</param>
+            <param name="args">Arguments of the formatted status message.</param>
+            <remarks>
+            This method is used to send an actionable client response that can be used for responding to an event after a command has been issued.
+            </remarks>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.UpdateStatus(TVA.UpdateType,System.String,System.Object[])">
+            <summary>
+            Provides a status update to all <see cref="P:TVA.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+            <param name="message">Text message to be transmitted to all <see cref="P:TVA.ServiceProcess.ServiceHelper.RemoteClients"/>.</param>
+            <param name="type">One of the <see cref="T:TVA.UpdateType"/> values.</param>
+            <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.UpdateStatus(System.Guid,TVA.UpdateType,System.String,System.Object[])">
+            <summary>
+            Provides a status update to the specified <paramref name="client"/>.
+            </summary>
+            <param name="client">ID of the client to whom the <paramref name="message"/> is to be sent.</param>
+            <param name="type">One of the <see cref="T:TVA.UpdateType"/> values.</param>
+            <param name="message">Text message to be transmitted to the <paramref name="client"/>.</param>
+            <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.FindProcess(System.String)">
+            <summary>
+            Returns the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> for the specified <paramref name="processName"/>.
+            </summary>
+            <param name="processName">Name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> to be retrieved.</param>
+            <returns><see cref="T:TVA.ServiceProcess.ServiceProcess"/> object if found; otherwise null.</returns>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.FindConnectedClient(System.Guid)">
+            <summary>
+            Returns the <see cref="T:TVA.ServiceProcess.ClientInfo"/> object for the specified <paramref name="clientID"/>.
+            </summary>
+            <param name="clientID">ID of the client whose <see cref="T:TVA.ServiceProcess.ClientInfo"/> object is to be retrieved.</param>
+            <returns><see cref="T:TVA.ServiceProcess.ClientInfo"/> object if found; otherwise null.</returns>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.FindClientRequestHandler(System.String)">
+            <summary>
+            Returns the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> object for the specified <paramref name="handlerCommand"/>.
+            </summary>
+            <param name="handlerCommand">Request type whose <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> object is to be retrieved.</param>
+            <returns><see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> object if found; otherwise null.</returns>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnServiceStarting(System.String[])">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ServiceStarting"/> event.
+            </summary>
+            <param name="args">Arguments to be sent to <see cref="E:TVA.ServiceProcess.ServiceHelper.ServiceStarting"/> event.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnServiceStarted">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ServiceStarted"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnServiceStopping">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ServiceStopping"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnServiceStopped">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ServiceStopped"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnServicePausing">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ServicePausing"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnServicePaused">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ServicePaused"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnServiceResuming">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ServiceResuming"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnServiceResumed">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ServiceResumed"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnSystemShutdown">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.SystemShutdown"/> event.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnReceivedClientRequest(TVA.ServiceProcess.ClientRequest,TVA.ServiceProcess.ClientInfo)">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ReceivedClientRequest"/> event.
+            </summary>
+            <param name="request">The <see cref="T:TVA.ServiceProcess.ClientRequest"/> that was received.</param>
+            <param name="requestSender">The <see cref="T:TVA.ServiceProcess.ClientInfo"/> object of the <paramref name="request"/> sender.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.OnProcessStateChanged(System.String,TVA.ServiceProcess.ServiceProcessState)">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceHelper.ProcessStateChanged"/> event.
+            </summary>
+            <param name="processName">Name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> whose state changed.</param>
+            <param name="processState">New <see cref="T:TVA.ServiceProcess.ServiceProcessState"/> of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceHelper.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ServiceStarting">
+            <summary>
+            Occurs when the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/> is starting.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ServiceStarted">
+            <summary>
+            Occurs when the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/> has started.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ServiceStopping">
+            <summary>
+            Occurs when the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/> is stopping.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ServiceStopped">
+            <summary>
+            Occurs when the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/> has stopped.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ServicePausing">
+            <summary>
+            Occurs when the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/> is pausing.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ServicePaused">
+            <summary>
+            Occurs when the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/> has paused.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ServiceResuming">
+            <summary>
+            Occurs when the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/> is resuming.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ServiceResumed">
+            <summary>
+            Occurs when the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/> has resumed.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.SystemShutdown">
+            <summary>
+            Occurs when the system is being shutdown.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ReceivedClientRequest">
+            <summary>
+            Occurs when a request is received from one of the <see cref="P:TVA.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+            <remarks>
+            <see cref="F:TVA.EventArgs`2.Argument1"/> is the ID of the remote client that sent the request.<br/>
+            <see cref="F:TVA.EventArgs`2.Argument2"/> is the <see cref="T:TVA.ServiceProcess.ClientRequest"/> sent by the remote client.
+            </remarks>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceHelper.ProcessStateChanged">
+            <summary>
+            Occurs when the state of a defiend <see cref="T:TVA.ServiceProcess.ServiceProcess"/> changes.
+            </summary>
+            <remarks>
+            <see cref="F:TVA.EventArgs`2.Argument1"/> is the <see cref="P:TVA.ServiceProcess.ServiceProcess.Name"/>.<br/>
+            <see cref="F:TVA.EventArgs`2.Argument2"/> is the <see cref="P:TVA.ServiceProcess.ServiceProcess.CurrentState"/>
+            </remarks>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.LogStatusUpdates">
+            <summary>
+            Gets or sets a boolean value that indicates whether messages sent using <see cref="M:TVA.ServiceProcess.ServiceHelper.UpdateStatus(TVA.UpdateType,System.String,System.Object[])"/> 
+            or <see cref="M:TVA.ServiceProcess.ServiceHelper.UpdateStatus(System.Guid,TVA.UpdateType,System.String,System.Object[])"/> are to be logged to the <see cref="P:TVA.ServiceProcess.ServiceHelper.StatusLog"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.MaxStatusUpdatesLength">
+            <summary>
+            Gets or sets the maximum numbers of characters allowed in update status messages without getting suppressed from being displayed.
+            </summary>
+            <exception cref="T:System.ArgumentException">The value being assigned is negative or zero.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.MaxStatusUpdatesFrequency">
+            <summary>
+            Gets or sets the maximum number of status update messages that can be issued in a second without getting suppressed from being displayed.
+            </summary>
+            <exception cref="T:System.ArgumentException">The value being assigned is negative or zero.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.MonitorServiceHealth">
+            <summary>
+            Gets or sets a boolean value that indicates whether the health of the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/> is to be monitored.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.HealthMonitorInterval">
+            <summary>
+            Gets or sets the interval, in seconds, over which to sample the performance monitor for health statistics.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.RequestHistoryLimit">
+            <summary>
+            Gets or sets the maximum number of <see cref="T:TVA.ServiceProcess.ClientRequest"/> entries to be maintained in the <see cref="P:TVA.ServiceProcess.ServiceHelper.ClientRequestHistory"/>.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">The value being assigned is zero or negative.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.SupportTelnetSessions">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> will have support for remote telnet-like sessions.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.SupportSystemCommands">
+            <summary>
+            Gets or sets a boolean value that indicates whether <see cref="T:TVA.ServiceProcess.ServiceHelper"/> commands will have support for system-level access (-system switch).
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.SecureRemoteInteractions">
+            <summary>
+            Gets or sets a boolean value that indicates whether <see cref="T:TVA.ServiceProcess.ServiceHelper"/> will secure remote interactions from <see cref="T:TVA.ServiceProcess.ClientHelper"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.PersistSettings">
+            <summary>
+            Gets or sets a boolean value that indicates whether the settings of <see cref="T:TVA.ServiceProcess.ServiceHelper"/> are to be saved to the config file.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.SettingsCategory">
+            <summary>
+            Gets or sets the category under which the settings of <see cref="T:TVA.ServiceProcess.ServiceHelper"/> are to be saved to the config file 
+            if the <see cref="P:TVA.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.ParentService">
+            <summary>
+            Gets or sets the <see cref="T:System.ServiceProcess.ServiceBase"/> to which the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> will provided added functionality.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.RemotingServer">
+            <summary>
+            Gets or sets the <see cref="T:TVA.Communication.ServerBase"/> component used for communicating with <see cref="P:TVA.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.ProcessScheduler">
+            <summary>
+            Gets the <see cref="T:TVA.Scheduling.ScheduleManager"/> component used for scheduling defined <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.StatusLog">
+            <summary>
+            Gets the <see cref="T:TVA.IO.LogFile"/> component used for logging status messages to a text file.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.ErrorLogger">
+            <summary>
+            Gets the <see cref="P:TVA.ServiceProcess.ServiceHelper.ErrorLogger"/> component used for logging errors encountered in the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> is currently enabled.
+            </summary>
+            <remarks>
+            <see cref="P:TVA.ServiceProcess.ServiceHelper.Enabled"/> property is not be set by user-code directly.
+            </remarks>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.Processes">
+            <summary>
+            Gets a list of <see cref="T:TVA.ServiceProcess.ServiceProcess"/> defined in the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.RemoteClients">
+            <summary>
+            Gets a list of <see cref="T:TVA.ServiceProcess.ClientInfo"/> for remote clients connected to the <see cref="P:TVA.ServiceProcess.ServiceHelper.RemotingServer"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.ClientRequestHistory">
+            <summary>
+            Gets a list of <see cref="T:TVA.ServiceProcess.ClientRequestInfo"/> for requests made by <see cref="P:TVA.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.ClientRequestHandlers">
+            <summary>
+            Gets a list of <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> registered for handling requests from <see cref="P:TVA.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.ServiceComponents">
+            <summary>
+            Gets a list of components that implement the <see cref="T:TVA.ISupportLifecycle"/> interface used by the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.PerformanceMonitor">
+            <summary>
+            Gets the <see cref="P:TVA.ServiceProcess.ServiceHelper.PerformanceMonitor"/> object used for monitoring the health of the <see cref="P:TVA.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.Name">
+            <summary>
+            Gets the unique identifier of the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceHelper.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.NamespaceDoc">
+            <summary>
+            Contains classes used to simplify and standardize development and operation of Windows services that are remotely manageable.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.ClientRequest">
+            <summary>
+            Represents a request sent by <see cref="T:TVA.ServiceProcess.ClientHelper"/> to <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <seealso cref="T:TVA.ServiceProcess.ClientHelper"/>
+            <seealso cref="T:TVA.ServiceProcess.ServiceHelper"/>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientRequest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientRequest"/> class.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientRequest.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientRequest"/> class.
+            </summary>
+            <param name="command">Command text for the <see cref="T:TVA.ServiceProcess.ClientRequest"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientRequest.#ctor(System.String,TVA.Console.Arguments)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientRequest"/> class.
+            </summary>
+            <param name="command">Command text for the <see cref="T:TVA.ServiceProcess.ClientRequest"/>.</param>
+            <param name="arguments"><see cref="P:TVA.ServiceProcess.ClientRequest.Arguments"/> for the <paramref name="command"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientRequest.ToString">
+            <summary>
+            Returns the <see cref="T:System.String"/> that represents the <see cref="T:TVA.ServiceProcess.ClientRequest"/>.
+            </summary>
+            <returns>A <see cref="T:System.String"/> that represents the <see cref="T:TVA.ServiceProcess.ClientRequest"/>.</returns>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientRequest.Parse(System.String)">
+            <summary>
+            Converts <see cref="T:System.String"/> to a <see cref="T:TVA.ServiceProcess.ClientRequest"/>.
+            </summary>
+            <param name="text">Text to be converted to a <see cref="T:TVA.ServiceProcess.ClientRequest"/>.</param>
+            <returns><see cref="T:TVA.ServiceProcess.ClientRequest"/> object if parsing is successful; otherwise null.</returns>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequest.Command">
+            <summary>
+            Gets or sets the command text for the <see cref="T:TVA.ServiceProcess.ClientRequest"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is either a null or empty string.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequest.Arguments">
+            <summary>
+            Gets or sets the <see cref="P:TVA.ServiceProcess.ClientRequest.Arguments"/> for the <see cref="P:TVA.ServiceProcess.ClientRequest.Command"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequest.Attachments">
+            <summary>
+            Gets a list of attachments for the <see cref="T:TVA.ServiceProcess.ClientRequest"/>.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.ServiceProcessState">
+            <summary>
+            Indicates the current state of <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceProcessState.Unprocessed">
+            <summary>
+            <see cref="T:TVA.ServiceProcess.ServiceProcess"/> has not been started.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceProcessState.Processing">
+            <summary>
+            <see cref="T:TVA.ServiceProcess.ServiceProcess"/> is currently executing.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceProcessState.Processed">
+            <summary>
+            <see cref="T:TVA.ServiceProcess.ServiceProcess"/> has completed processing.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceProcessState.Aborted">
+            <summary>
+            <see cref="T:TVA.ServiceProcess.ServiceProcess"/> was aborted.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.ServiceProcessState.Exception">
+            <summary>
+            <see cref="T:TVA.ServiceProcess.ServiceProcess"/> stopped due to exception.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.ServiceProcess">
+            <summary>
+            Represents a process that executes asynchronously inside a <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <seealso cref="T:TVA.ServiceProcess.ServiceHelper"/>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceProcess.#ctor(System.Action{System.String,System.Object[]},System.String,System.Object[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> class.
+            </summary>
+            <param name="executionMethod"><see cref="T:System.Delegate"/> that gets invoked when <see cref="M:TVA.ServiceProcess.ServiceProcess.Start"/> is called.</param>
+            <param name="name">Name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.</param>
+            <param name="arguments">Arguments to be passed in to the <paramref name="executionMethod"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceProcess.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceProcess.Start">
+            <summary>
+            Starts the execution of <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceProcess.Start(System.Object[])">
+            <summary>
+            Starts the execution of <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.
+            </summary>
+            <param name="arguments">Arguments to be passed in to the <see cref="P:TVA.ServiceProcess.ServiceProcess.ExecutionMethod"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceProcess.Abort">
+            <summary>
+            Stops the execution of <see cref="T:TVA.ServiceProcess.ServiceProcess"/> if it executing.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceProcess.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> object.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceProcess.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceProcess.OnStateChanged">
+            <summary>
+            Raises the <see cref="E:TVA.ServiceProcess.ServiceProcess.StateChanged"/> event.
+            </summary>
+        </member>
+        <member name="E:TVA.ServiceProcess.ServiceProcess.StateChanged">
+            <summary>
+            Occurs when the <see cref="P:TVA.ServiceProcess.ServiceProcess.CurrentState"/> of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> changes.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceProcess.Name">
+            <summary>
+            Gets or sets the name of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceProcess.Arguments">
+            <summary>
+            Gets or sets the arguments to be passed in to the <see cref="P:TVA.ServiceProcess.ServiceProcess.ExecutionMethod"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceProcess.ExecutionMethod">
+            <summary>
+            Gets or sets the <see cref="T:System.Delegate"/> that gets invoked when <see cref="M:TVA.ServiceProcess.ServiceProcess.Start"/> is called.
+            </summary>
+            <remarks>
+            Argument1 gets the <see cref="P:TVA.ServiceProcess.ServiceProcess.Name"/> of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.<br/>
+            Argument2 gets the <see cref="P:TVA.ServiceProcess.ServiceProcess.Arguments"/> of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.
+            </remarks>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceProcess.CurrentState">
+            <summary>
+            Gets the current <see cref="T:TVA.ServiceProcess.ServiceProcessState"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceProcess.ExecutionStartTime">
+            <summary>
+            Gets the <see cref="T:System.DateTime"/> when execution of <see cref="T:TVA.ServiceProcess.ServiceProcess"/> last started.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceProcess.ExecutionStopTime">
+            <summary>
+            Gets the <see cref="T:System.DateTime"/> when execution of <see cref="T:TVA.ServiceProcess.ServiceProcess"/> last completed.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceProcess.LastExecutionTime">
+            <summary>
+            Gets the <see cref="T:TVA.Units.Time"/> taken by the <see cref="T:TVA.ServiceProcess.ServiceProcess"/> during the last execution.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceProcess.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:TVA.ServiceProcess.ServiceProcess"/>.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.ClientRequestHandler">
+            <summary>
+            Represents a handler for <see cref="T:TVA.ServiceProcess.ClientRequest"/>s sent by <see cref="T:TVA.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <seealso cref="T:TVA.ServiceProcess.ClientHelper"/>
+            <seealso cref="T:TVA.ServiceProcess.ClientRequest"/>
+            <seealso cref="T:TVA.ServiceProcess.ServiceHelper"/>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientRequestHandler.#ctor(System.String,System.String,System.Action{TVA.ServiceProcess.ClientRequestInfo})">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> class.
+            </summary>
+            <param name="requestCommand">Command text that the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> will process.</param>
+            <param name="requestDescription">Description of the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/>.</param>
+            <param name="handlerMethod"><see cref="T:System.Delegate"/> method that will be invoked for processing the <paramref name="requestCommand"/>.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientRequestHandler.#ctor(System.String,System.String,System.Action{TVA.ServiceProcess.ClientRequestInfo},System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> class.
+            </summary>
+            <param name="requestCommand">Command text that the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> will process.</param>
+            <param name="requestDescription">Description of the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/>.</param>
+            <param name="handlerMethod"><see cref="T:System.Delegate"/> method that will be invoked for processing the <paramref name="requestCommand"/>.</param>
+            <param name="isAdvertised">true if the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> is to be published by the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>; otherwise false.</param>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequestHandler.Command">
+            <summary>
+            Gets the command text that the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> will process.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequestHandler.CommandDescription">
+            <summary>
+            Gets the description of the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequestHandler.HandlerMethod">
+            <summary>
+            Gets the <see cref="T:System.Delegate"/> method that gets invoked for processing the <see cref="P:TVA.ServiceProcess.ClientRequestHandler.Command"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequestHandler.IsAdvertised">
+            <summary>
+            Gets a boolean value that indicates whether the <see cref="T:TVA.ServiceProcess.ClientRequestHandler"/> will be published by the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.ServiceResponse">
+            <summary>
+            Represents a response sent by the <see cref="T:TVA.ServiceProcess.ServiceHelper"/> to a <see cref="T:TVA.ServiceProcess.ClientRequest"/> from the <see cref="T:TVA.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <seealso cref="T:TVA.ServiceProcess.ServiceHelper"/>
+            <seealso cref="T:TVA.ServiceProcess.ClientHelper"/>
+            <seealso cref="T:TVA.ServiceProcess.ClientRequest"/>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ServiceResponse"/> class.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceResponse.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ServiceResponse"/> class.
+            </summary>
+            <param name="type">Type of the <see cref="T:TVA.ServiceProcess.ServiceResponse"/> in plain text.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceResponse.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ServiceResponse"/> class.
+            </summary>
+            <param name="type">Type of the <see cref="T:TVA.ServiceProcess.ServiceResponse"/> in plain-text.</param>
+            <param name="message">Message associated with the <see cref="T:TVA.ServiceProcess.ServiceResponse"/>.</param>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceResponse.Type">
+            <summary>
+            Gets or sets the plain-text type of the <see cref="T:TVA.ServiceProcess.ServiceResponse"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is either a null or empty string.</exception>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceResponse.Message">
+            <summary>
+            Gets or sets the palin-text message associated with the <see cref="T:TVA.ServiceProcess.ServiceResponse"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceResponse.Attachments">
+            <summary>
+            Gets a list of serializable attachments of the <see cref="T:TVA.ServiceProcess.ServiceResponse"/>.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.RecoverAction">
+            <summary>
+            Defines the recover action to be performed upon service failure.
+            </summary>
+            <remarks>
+            Enum values correspond to Win32 equivalents.
+            </remarks>
+        </member>
+        <member name="F:TVA.ServiceProcess.RecoverAction.None">
+            <summary>
+            No action.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.RecoverAction.Restart">
+            <summary>
+            Restart the service.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.RecoverAction.Reboot">
+            <summary>
+            Reboot the computer.
+            </summary>
+        </member>
+        <member name="F:TVA.ServiceProcess.RecoverAction.RunCommand">
+            <summary>
+            Run a command.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.ServiceInstallerEx">
+            <summary>
+            Defines an extended service installer class that can define service failure actions at install time.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceInstallerEx.#ctor">
+            <summary>
+            Creates a new <see cref="T:TVA.ServiceProcess.ServiceInstallerEx"/>.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ServiceInstallerEx.DefineRecoverAction(TVA.ServiceProcess.RecoverAction,System.Int32)">
+            <summary>
+            Defines a new recover action to be performed upon service failure.
+            </summary>
+            <param name="recoverAction"><see cref="T:TVA.ServiceProcess.RecoverAction"/> to execute upon service failure.</param>
+            <param name="delay">The time to wait before performing the specified <paramref name="recoverAction"/>, in milliseconds.</param>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceInstallerEx.FailResetPeriod">
+            <summary>
+            Sets the time after which to reset the failure count to zero if there are no failures, in seconds.
+            Specify <see cref="F:System.Threading.Timeout.Infinite"/> to indicate that this value should never be reset.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceInstallerEx.FailRebootMessage">
+            <summary>
+            Sets the service fail reboot message.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceInstallerEx.FailRunCommand">
+            <summary>
+            Sets the service fail run command.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceInstallerEx.ExecuteActionsOnNonCrashErrors">
+            <summary>
+            Sets flag that determines when failure actions are to be executed.
+            </summary>
+            <remarks>
+            <para>
+            If this member is <c>true</c> and the service has configured failure actions, the failure actions are queued if the service process
+            terminates without reporting a status of SERVICE_STOPPED or if it enters the SERVICE_STOPPED state but the exit code returned in the
+            SERVICE_STATUS structure is not ERROR_SUCCESS (0).
+            </para>
+            <para>
+            If this member is <c>false</c> and the service has configured failure actions, the failure actions are queued only if the service
+            terminates without reporting a status of SERVICE_STOPPED.
+            </para>
+            <para>
+            This setting is ignored unless the service has configured failure actions.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceInstallerEx.StartOnInstall">
+            <summary>
+            Sets the boolean value to configure the service to start after it is installed.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ServiceInstallerEx.StartTimeout">
+            <summary>
+            Sets the service start timeout in milliseconds.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.ClientRequestInfo">
+            <summary>
+            Represents information about a <see cref="T:TVA.ServiceProcess.ClientRequest"/> sent by <see cref="T:TVA.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <seealso cref="T:TVA.ServiceProcess.ClientInfo"/>
+            <seealso cref="T:TVA.ServiceProcess.ClientRequest"/>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientRequestInfo.#ctor(TVA.ServiceProcess.ClientInfo,TVA.ServiceProcess.ClientRequest)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientRequestInfo"/> class.
+            </summary>
+            <param name="sender"><see cref="T:TVA.ServiceProcess.ClientInfo"/> object of the <paramref name="request"/> sender.</param>
+            <param name="request"><see cref="T:TVA.ServiceProcess.ClientRequest"/> object sent by the <paramref name="sender"/>.</param>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequestInfo.Sender">
+            <summary>
+            Gets or sets the <see cref="T:TVA.ServiceProcess.ClientInfo"/> object of the <see cref="P:TVA.ServiceProcess.ClientRequestInfo.Request"/> sender.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequestInfo.Request">
+            <summary>
+            Gets or sets the <see cref="T:TVA.ServiceProcess.ClientRequest"/> object sent by the <see cref="P:TVA.ServiceProcess.ClientRequestInfo.Sender"/>.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientRequestInfo.ReceivedAt">
+            <summary>
+            Gets or sets the <see cref="T:System.DateTime"/> when the <see cref="P:TVA.ServiceProcess.ClientRequestInfo.Request"/> was received from the <see cref="P:TVA.ServiceProcess.ClientRequestInfo.Sender"/>.
+            </summary>
+        </member>
+        <member name="T:TVA.ServiceProcess.ClientInfo">
+            <summary>
+            Represents information about a client using <see cref="T:TVA.ServiceProcess.ClientHelper"/> for connecting to a Windows Service that uses <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <remarks>
+            <see cref="T:TVA.ServiceProcess.ClientInfo"/> can be serialized and deserialized using <see cref="T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"/> only.
+            </remarks>
+            <seealso cref="T:TVA.ServiceProcess.ClientHelper"/>
+            <seealso cref="T:TVA.ServiceProcess.ServiceHelper"/>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientInfo.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientInfo"/> class.
+            </summary>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientInfo.#ctor(TVA.ServiceProcess.ClientHelper)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TVA.ServiceProcess.ClientInfo"/> class.
+            </summary>
+            <param name="parent">An <see cref="T:TVA.ServiceProcess.ClientHelper"/> object.</param>
+        </member>
+        <member name="M:TVA.ServiceProcess.ClientInfo.SetClientUser(System.Security.Principal.IPrincipal)">
+            <summary>
+            Updates the <see cref="P:TVA.ServiceProcess.ClientInfo.ClientUser"/>.
+            </summary>
+            <param name="user">New <see cref="T:System.Security.Principal.IPrincipal"/> object to be assigned to <see cref="P:TVA.ServiceProcess.ClientInfo.ClientUser"/>.</param>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientInfo.ClientID">
+            <summary>
+            Gets the identifier of the remote client application.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientInfo.ClientType">
+            <summary>
+            Gets the <see cref="T:TVA.ApplicationType"/> of the remote client application.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientInfo.ClientName">
+            <summary>
+            Gets the friendly name of the remote client application.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientInfo.ClientUser">
+            <summary>
+            Gets the <see cref="T:System.Security.Principal.IPrincipal"/> of the remote client application's user.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientInfo.ClientUserCredentials">
+            <summary>
+            Gets the credentials in 'username:password' format for authenticating the remote client application's user if a valid <see cref="P:TVA.ServiceProcess.ClientInfo.ClientUser"/> is not available.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientInfo.MachineName">
+            <summary>
+            Gets the name of the machine running the remote client application.
+            </summary>
+        </member>
+        <member name="P:TVA.ServiceProcess.ClientInfo.ConnectedAt">
+            <summary>
+            Gets or sets the <see cref="T:System.DateTime"/> when the remote client application connected to the <see cref="T:TVA.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+    </members>
+</doc>
