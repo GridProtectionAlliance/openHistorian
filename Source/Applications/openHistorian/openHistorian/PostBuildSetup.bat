@@ -1,4 +1,0 @@
-IF EXIST %1 GOTO DONE
-MD %1
-XCOPY /S /V /R %2 %1
-:DONE 
