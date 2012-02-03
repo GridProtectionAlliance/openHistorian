@@ -76,45 +76,6 @@
     <Compile Include="Adapters\Native\DataListener.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Adapters\DataServices\DataService.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\DataServices.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\IDataService.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\IMetadataService.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\ITimeSeriesDataService.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\MetadataService.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\NamespaceDoc.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\SerializableMetadata.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\SerializableMetadataRecord.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\SerializableTimeSeriesData.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\SerializableTimeSeriesDataPoint.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\Serialization.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Adapters\DataServices\TimeSeriesDataService.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Adapters\Native\NativeInputAdapter.cs" />
     <Compile Include="Archives\DataArchiveBase.cs" />
     <Compile Include="Archives\DataArchives.cs" />
