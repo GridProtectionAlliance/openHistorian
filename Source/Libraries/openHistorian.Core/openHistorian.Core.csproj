@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{040E2AE7-021B-435A-ADBF-06D07EE0A67D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>openHistorian.Core</RootNamespace>
+    <AssemblyName>openHistorian.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Compression.cs" />
+    <Compile Include="ContinuousBuffer.cs" />
+    <Compile Include="OldCompressionCode\CompressBlockUIn32_old2.cs" />
+    <Compile Include="OldCompressionCode\CompressBlockUIn32_old.cs" />
+    <Compile Include="OldCompressionCode\Compression_old.cs" />
+    <Compile Include="OldCompressionCode\CompressBlockUIn32.cs" />
+    <Compile Include="OldCompressionCode\CompressBlockUIn32Static.cs" />
+    <Compile Include="OldCompressionCode\CompressBlockUIn32_2.cs" />
+    <Compile Include="OldCompressionCode\Compression_old1.cs" />
+    <Compile Include="OldCompressionCode\CompressionTest_Old.cs" />
+    <Compile Include="PooledBufferedStream.cs" />
+    <Compile Include="DataWriter\PointWriter.cs" />
+    <Compile Include="DataWriter\TestWritingPoints.cs" />
+    <Compile Include="OldCode\Archive.cs" />
+    <Compile Include="OldCode\MemoryBuffer\BufferedStream.cs" />
+    <Compile Include="OldCode\MemoryBuffer\MemoryUnit.cs" />
+    <Compile Include="OldCode\MemoryBuffer\IMemoryBuffer.cs" />
+    <Compile Include="OldCode\MemoryBuffer\MemoryBufferTwoBufferCLOCK.cs" />
+    <Compile Include="OldCode\PluginDataFeatures\TableOfContents\ITableOfContents.cs" />
+    <Compile Include="OldCode\PluginDataFeatures\TableOfContents\TableOfContents.cs" />
+    <Compile Include="OldCode\PointLibrary\PointLibrary.cs" />
+    <Compile Include="PointStream\PointWriter.cs" />
+    <Compile Include="PointStream\SinglePointMessage.cs" />
+    <Compile Include="PointStream\StreamCommands.cs" />
+    <Compile Include="PointStream\StreamWriter.cs" />
+    <Compile Include="PointStream\StreamReader.cs" />
+    <Compile Include="PointStream\Test\OpenPDCOutputAdapter.cs" />
+    <Compile Include="PointTypes\Definition.cs" />
+    <Compile Include="PointTypes\Float16Type.cs" />
+    <Compile Include="PointTypes\Float32Type.cs" />
+    <Compile Include="PointTypes\Float64Type.cs" />
+    <Compile Include="OldCode\PointLibrary.cs" />
+    <Compile Include="PointTypes\PointDataTypes.cs" />
+    <Compile Include="PointTypes\TypeBase.cs" />
+    <Compile Include="OldCode\IPointQueue.cs" />
+    <Compile Include="PointTypes\EmptyType.cs" />
+    <Compile Include="PointTypes\UInteger32Type.cs" />
+    <Compile Include="PointStream\PointReader.cs" />
+    <Compile Include="OldCode\SinglePrecisionFloatingPoint.cs" />
+    <Compile Include="OldCode\SinglePrecisionFloatingPointQueue.cs" />
+    <Compile Include="PointTypes\DateTimeType.cs" />
+    <Compile Include="PooledMemoryStream.cs" />
+    <Compile Include="StorageSystem\BinaryStream.cs" />
+    <Compile Include="StorageSystem\BlockSorter\NodeHeader.cs" />
+    <Compile Include="StorageSystem\BlockSorter\OldCode\ActiveLeafNode.cs" />
+    <Compile Include="StorageSystem\BlockSorter\OldCode\ActiveNode.cs" />
+    <Compile Include="StorageSystem\BlockSorter\BPlusTreeGet.cs" />
+    <Compile Include="StorageSystem\BlockSorter\BPlusTreeAdd.cs" />
+    <Compile Include="StorageSystem\BlockSorter\InsertResults.cs" />
+    <Compile Include="StorageSystem\BlockSorter\InternalNode.cs" />
+    <Compile Include="StorageSystem\BlockSorter\BPlusTreeDataBucket.cs" />
+    <Compile Include="StorageSystem\BlockSorter\LeafNode.cs" />
+    <Compile Include="StorageSystem\BlockSorter\OldCode\OldNode.cs" />
+    <Compile Include="StorageSystem\BlockSorter\OldCode\LeafEntry.cs" />
+    <Compile Include="StorageSystem\BlockSorter\OldCode\FileReader.cs" />
+    <Compile Include="StorageSystem\BlockSorter\IBlockKey.cs" />
+    <Compile Include="StorageSystem\BlockSorter\BPlusTree.cs" />
+    <Compile Include="StorageSystem\BlockSorter\SearchResults.cs" />
+    <Compile Include="StorageSystem\BlockSorter\OldCode\SplitDetails.cs" />
+    <Compile Include="StorageSystem\BlockSorter\SplitDetails.cs" />
+    <Compile Include="StorageSystem\BlockSorter\Test\DataBucketTest.cs" />
+    <Compile Include="StorageSystem\BlockSorter\Test\InternalNodeTest.cs" />
+    <Compile Include="StorageSystem\BlockSorter\Test\FileReaderTest.cs" />
+    <Compile Include="StorageSystem\BlockSorter\Test\LeafNodeTest.cs" />
+    <Compile Include="StorageSystem\BlockSorter\Test\NodeHeaderTest.cs" />
+    <Compile Include="StorageSystem\BlockSorter\Test\NodeTest.cs" />
+    <Compile Include="StorageSystem\BlockSorter\Test\TreeHeaderTest.cs" />
+    <Compile Include="StorageSystem\BlockSorter\TimeKey.cs" />
+    <Compile Include="StorageSystem\BlockSorter\TreeHeader.cs" />
+    <Compile Include="StorageSystem\File\IndexBufferPool.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\BenchmarkPageSizes.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\TransactionalEditTest.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\DiskIOUnbufferedTest.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\DiskIOMemoryStreamTest.cs" />
+    <Compile Include="StorageSystem\File\DiskIOBase.cs" />
+    <Compile Include="StorageSystem\File\IndexMapper.cs" />
+    <Compile Include="StorageSystem\File\ArchiveConstants.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\DiskIOTest.cs" />
+    <Compile Include="StorageSystem\File\VirtualFileSystem.cs" />
+    <Compile Include="StorageSystem\File\FileAllocationTable.cs" />
+    <Compile Include="StorageSystem\File\DiskIOUnbuffered.cs" />
+    <Compile Include="StorageSystem\File\DiskIOMemoryStream.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\IndexMapperTest.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\ArchiveFileStreamTest.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\ShadowCopyAllocatorTest.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\IndexParserTest.cs" />
+    <Compile Include="StorageSystem\File\ShadowCopyAllocator.cs" />
+    <Compile Include="StorageSystem\File\IndexParser.cs" />
+    <Compile Include="StorageSystem\File\FileAddressTranslation.cs" />
+    <Compile Include="StorageSystem\File\ArchiveFileStream.cs" />
+    <Compile Include="StorageSystem\File\IOReadState.cs" />
+    <Compile Include="StorageSystem\File\BlockType.cs" />
+    <Compile Include="StorageSystem\File\PositionData.cs" />
+    <Compile Include="StorageSystem\File\TransactionalRead.cs" />
+    <Compile Include="StorageSystem\File\FileMetaData.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\FileSystemSnapshotServiceTest.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\FileMetaDataTest.cs" />
+    <Compile Include="StorageSystem\File\Test Procedures\FileAllocationTableTest.cs" />
+    <Compile Include="StorageSystem\File\FileSystemSnapshotService.cs" />
+    <Compile Include="OldCode\Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OldCode\Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OldCode\ArciveDataProcessor.cs" />
+    <Compile Include="OldCode\FileStructure\ArchiveFileSystem.cs" />
+    <Compile Include="OldCode\FileStructure\TimeSeriesData\CacheBuffer.cs" />
+    <Compile Include="OldCode\FileStructure\TimeSeriesData\DataIndex.cs" />
+    <Compile Include="OldCode\FileStructure\TimeSeriesData\IndexNodes.cs" />
+    <Compile Include="OldCode\FileStructure\TimeSeriesData\PageData.cs" />
+    <Compile Include="OldCode\FileStructure\TimeSeriesData\PointDictionaries.cs" />
+    <Compile Include="OldCode\FileStructure\TimeSeriesData\PointDictionary.cs" />
+    <Compile Include="OldCode\FileStructure\TimeSeriesData\PointIndex.cs" />
+    <Compile Include="OldCode\FileStructure\TimeSeriesData\TableOfContentsEntry.cs" />
+    <Compile Include="OldCode\FileStructure\TimeSeriesData\TimeSeriesData.cs" />
+    <Compile Include="OldCode\Historian2.cs" />
+    <Compile Include="OldCode\PluginDataFeatures\IPluginDataFeature.cs" />
+    <Compile Include="StorageSystem\File\TransactionalEdit.cs" />
+    <Compile Include="StorageSystem\IStorageSystem.cs" />
+    <Compile Include="OldCode\PluginDataFeatures\MetaDataLibrary\IMetaDataLibrary.cs" />
+    <Compile Include="OldCode\PluginDataFeatures\TableOfContents\IPointTimeData.cs" />
+    <Compile Include="OldCode\MemoryManager.cs" />
+    <Compile Include="OldCode\OldFormat\HistorianReader.cs" />
+    <Compile Include="OldCode\OldFormat\TimeTag.cs" />
+    <Compile Include="OldCode\PluginDataFeatures\TimeSeriesData\ITimeSeriesData.cs" />
+    <Compile Include="OldCode\PointLibrary\PointData.cs" />
+    <Compile Include="OldCode\PointQueue\IndividualQueueBuffer.cs" />
+    <Compile Include="OldCode\PointQueue\LiveDataProcessor.cs" />
+    <Compile Include="OldCode\TimeSeriesDataStructure\BuildPointArchiveSolution.cs" />
+    <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\Method1.cs" />
+    <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompression.cs" />
+    <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompressorTest.cs" />
+    <Compile Include="OldCode\Program.cs" />
+    <Compile Include="DataReadWrite.cs" />
+    <Compile Include="Test\CompressionTest.cs" />
+    <Compile Include="StorageSystem\ISupportsBinaryStream.cs" />
+    <Compile Include="StorageSystem\Test\BinaryStreamTest.cs" />
+    <Compile Include="Test\PooledMemoryStreamTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCode.cs" />
+    <EmbeddedResource Include="OldCode\Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Historian\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
