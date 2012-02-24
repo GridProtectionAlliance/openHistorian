@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Historian
+namespace openHistorian.Core
 {
     public unsafe class CompressBlockUIn32_2
     {

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Historian.PointTypes;
+using openHistorian.Core.PointTypes;
 using System.IO;
 
-namespace Historian.DataWriter
+namespace openHistorian.Core.DataWriter
 {
     public class PointWriter
     {

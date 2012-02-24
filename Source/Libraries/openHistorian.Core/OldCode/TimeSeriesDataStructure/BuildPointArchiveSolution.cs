@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Historian;
-using Historian.PointQueue;
+using openHistorian.Core;
+using openHistorian.Core.PointQueue;
 
-namespace Historian.TimeSeriesDataStructure
+namespace openHistorian.Core.TimeSeriesDataStructure
 {
     class BuildPointArchiveSolution
     {

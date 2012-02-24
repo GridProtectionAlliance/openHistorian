@@ -3,7 +3,7 @@
 //using System.Linq;
 //using System.Text;
 
-//namespace Historian.PointStream
+//namespace openHistorian.Core.PointStream
 //{
 //    public class SinglePointMessage
 //    {

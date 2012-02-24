@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-namespace Historian.PointTypes
+namespace openHistorian.Core.PointTypes
 {
     /// <summary>
     /// Describes the necessary function to create a queue for a custom point type.

@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace Historian.StorageSystem
+namespace openHistorian.Core.StorageSystem
 {
     class BinaryStreamTest
     {

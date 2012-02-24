@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Historian
+namespace openHistorian.Core
 {
     public unsafe class DataReadWrite
     {

@@ -27,7 +27,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Historian.StorageSystem.File
+namespace openHistorian.Core.StorageSystem.File
 {
     /// <summary>
     /// Provides a stream that converts the virtual addresses of the internal feature files to physical address

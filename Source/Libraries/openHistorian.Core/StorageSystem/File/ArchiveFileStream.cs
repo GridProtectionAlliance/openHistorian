@@ -24,7 +24,7 @@
 using System;
 using System.IO;
 
-namespace Historian.StorageSystem.File
+namespace openHistorian.Core.StorageSystem.File
 {
     /// <summary>
     ///Provides a file stream that can be used to open a file and does all of the background work 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace Historian.PointTypes
+namespace openHistorian.Core.PointTypes
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct SinglePrecisionFloatingPoint : IComparable<SinglePrecisionFloatingPoint>

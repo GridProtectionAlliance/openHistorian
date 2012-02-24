@@ -6,7 +6,7 @@
 //using System.Diagnostics;
 //using System.Windows.Forms;
 
-//namespace Historian
+//namespace openHistorian.Core
 //{
 //    class CompressionTest
 //    {

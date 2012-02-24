@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Historian.PointTypes;
+using openHistorian.Core.PointTypes;
 
-namespace Historian.PointStream.Test
+namespace openHistorian.Core.PointStream.Test
 {
     internal class OpenPDCOutputAdapter
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Historian;
 
 
-namespace Historian.TimeSeriesDataStructure.CompressionMethods
+namespace openHistorian.Core.TimeSeriesDataStructure.CompressionMethods
 {
     public class Method1
     {

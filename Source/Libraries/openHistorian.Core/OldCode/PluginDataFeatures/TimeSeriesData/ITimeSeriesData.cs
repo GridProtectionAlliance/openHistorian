@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Historian.PluginDataFeatures.TimeSeriesData
+namespace openHistorian.Core.PluginDataFeatures.TimeSeriesData
 {
     interface ITimeSeriesData : IPluginDataFeature
     {

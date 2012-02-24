@@ -24,7 +24,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
-namespace Historian.StorageSystem.File
+namespace openHistorian.Core.StorageSystem.File
 {
     /// <summary>
     /// Aquires a snapshot of the file system to browse in an isolated mannor.  

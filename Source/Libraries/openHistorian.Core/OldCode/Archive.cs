@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Historian.StorageSystem;
-using Historian.PointLibrary;
-using Historian.PluginDataFeatures.TableOfContents;
-using Historian.PluginDataFeatures;
-using Historian.PluginDataFeatures.MetaDataLibrary;
+using openHistorian.Core.StorageSystem;
+using openHistorian.Core.PointLibrary;
+using openHistorian.Core.PluginDataFeatures.TableOfContents;
+using openHistorian.Core.PluginDataFeatures;
+using openHistorian.Core.PluginDataFeatures.MetaDataLibrary;
 
 
-namespace Historian
+namespace openHistorian.Core
 {
     public class Archive
     {
@@ -31,13 +31,13 @@ namespace Historian
         public static Archive CreateFileArchive(string FileName)
         {
             Archive archive = new Archive();
-            archive.m_storageSystem = Historian.StorageSystem.File.VirtualFileSystem.CreateArchive(FileName, 4096, 10000000);
+            archive.m_storageSystem = openHistorian.Core.StorageSystem.File.VirtualFileSystem.CreateArchive(FileName, 4096, 10000000);
             return archive;
         }
         public static Archive OpenFileArchive(string FileName)
         {
             Archive archive = new Archive();
-            archive.m_storageSystem = Historian.StorageSystem.File.VirtualFileSystem.OpenArchive(FileName,true);
+            archive.m_storageSystem = openHistorian.Core.StorageSystem.File.VirtualFileSystem.OpenArchive(FileName, true);
             return archive;
         }
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Historian.PluginDataFeatures;
-using Historian.StorageSystem.File;
+using openHistorian.Core.PluginDataFeatures;
+using openHistorian.Core.StorageSystem.File;
 
-namespace Historian.StorageSystem
+namespace openHistorian.Core.StorageSystem
 {
     public interface IStorageSystem
     {

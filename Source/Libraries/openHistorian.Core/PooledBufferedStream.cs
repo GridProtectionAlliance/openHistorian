@@ -28,7 +28,7 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using System.IO;
 
-namespace Historian
+namespace openHistorian.Core
 {
     public unsafe class PooledBufferStream
     {

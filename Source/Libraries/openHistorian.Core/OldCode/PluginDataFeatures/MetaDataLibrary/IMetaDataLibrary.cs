@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Historian.PluginDataFeatures.MetaDataLibrary
+namespace openHistorian.Core.PluginDataFeatures.MetaDataLibrary
 {
     interface IMetaDataLibrary : IPluginDataFeature
     {

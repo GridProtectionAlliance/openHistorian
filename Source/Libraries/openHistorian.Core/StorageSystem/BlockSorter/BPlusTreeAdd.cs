@@ -23,7 +23,7 @@
 
 using System;
 
-namespace Historian.StorageSystem.BlockSorter
+namespace openHistorian.Core.StorageSystem.BlockSorter
 {
     /// <summary>
     /// This class only concerns itself with the Add requirement of the B+ Tree.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Historian.StorageSystem.BlockSorter
+namespace openHistorian.Core.StorageSystem.BlockSorter
 {
     class TreeHeaderTest : TreeHeader
     {

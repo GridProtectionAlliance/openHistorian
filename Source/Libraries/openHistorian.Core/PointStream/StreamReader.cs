@@ -2,9 +2,9 @@
 //using System.Collections.Generic;
 //using System.Linq;
 //using System.Text;
-//using Historian.PointTypes;
+//using openHistorian.Core.PointTypes;
 
-//namespace Historian.PointStream
+//namespace openHistorian.Core.PointStream
 //{
 //    public class StreamReader
 //    {

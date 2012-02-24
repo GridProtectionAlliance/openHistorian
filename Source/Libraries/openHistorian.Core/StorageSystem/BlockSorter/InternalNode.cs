@@ -23,7 +23,7 @@
 
 using System;
 
-namespace Historian.StorageSystem.BlockSorter
+namespace openHistorian.Core.StorageSystem.BlockSorter
 {
     static class InternalNode
     {

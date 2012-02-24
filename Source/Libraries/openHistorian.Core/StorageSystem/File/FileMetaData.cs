@@ -25,7 +25,7 @@
 using System;
 using System.IO;
 
-namespace Historian.StorageSystem.File
+namespace openHistorian.Core.StorageSystem.File
 {
     /// <summary>
     /// This contains the meta data of the file along with index information to map all of the blocks of the file.

@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 
-namespace Historian.StorageSystem.File
+namespace openHistorian.Core.StorageSystem.File
 {
     public class VirtualFileSystem : IStorageSystem , IDisposable
     {

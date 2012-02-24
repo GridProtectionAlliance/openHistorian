@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Historian.PointTypes
+namespace openHistorian.Core.PointTypes
 {
     public enum PointDataTypes : byte
     {

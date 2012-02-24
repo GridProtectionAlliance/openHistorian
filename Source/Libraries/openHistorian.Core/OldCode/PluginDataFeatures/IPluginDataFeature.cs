@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Historian.StorageSystem;
+using openHistorian.Core.StorageSystem;
 
-namespace Historian.PluginDataFeatures
+namespace openHistorian.Core.PluginDataFeatures
 {
     public interface IPluginDataFeature
     {

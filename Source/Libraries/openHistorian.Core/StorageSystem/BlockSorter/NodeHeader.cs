@@ -21,7 +21,7 @@
 //     
 //******************************************************************************************************
 
-namespace Historian.StorageSystem.BlockSorter
+namespace openHistorian.Core.StorageSystem.BlockSorter
 {
     /// <summary>
     /// Assists in the read/write operations of the header of a node.

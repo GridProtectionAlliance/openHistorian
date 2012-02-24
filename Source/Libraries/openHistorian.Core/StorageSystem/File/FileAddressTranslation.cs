@@ -24,7 +24,7 @@
 
 using System;
 
-namespace Historian.StorageSystem.File
+namespace openHistorian.Core.StorageSystem.File
 {
     /// <summary>
     /// This class manages the necessary functions in order to convert physical addresses into virtual addresses.

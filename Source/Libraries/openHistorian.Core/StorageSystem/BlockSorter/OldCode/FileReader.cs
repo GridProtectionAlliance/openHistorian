@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Historian.StorageSystem.BlockSorter
+namespace openHistorian.Core.StorageSystem.BlockSorter
 {
     public class FileReader
     {

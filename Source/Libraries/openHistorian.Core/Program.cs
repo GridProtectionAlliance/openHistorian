@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace FileArchitecture
+namespace openHistorian.Core
 {
     static class Program
     {
@@ -12,9 +12,7 @@ namespace FileArchitecture
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            TestProcedures.Test();
         }
     }
 }

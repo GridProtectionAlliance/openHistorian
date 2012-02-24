@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Historian.PointTypes
+namespace openHistorian.Core.PointTypes
 {
     public class SinglePrecisionFloatingPointQueue : IPointQueue
     {

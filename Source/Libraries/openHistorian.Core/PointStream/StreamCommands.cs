@@ -1,5 +1,5 @@
 ﻿
-namespace Historian.PointStream
+namespace openHistorian.Core.PointStream
 {
     public enum StreamCommands : byte
     {

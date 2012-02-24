@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Historian.StorageSystem.File;
+using openHistorian.Core.StorageSystem.File;
 using System.IO;
 
-namespace Historian.StorageSystem.BlockSorter
+namespace openHistorian.Core.StorageSystem.BlockSorter
 {
     class BPlusTree
     {

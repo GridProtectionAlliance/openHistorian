@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Historian.PointQueue
+namespace openHistorian.Core.PointQueue
 {
     class LiveDataProcessor
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Historian.MemoryBuffer
+namespace openHistorian.Core.MemoryBuffer
 {
     /// <summary>
     /// This provides a stream that will wrap an existing stream to provide a very large buffer space that is in common across the entire instance of this application. 

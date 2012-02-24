@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Historian.PointTypes;
-using Historian.StorageSystem.File;
+using openHistorian.Core.PointTypes;
+using openHistorian.Core.StorageSystem.File;
 using System.IO;
 
-namespace Historian.DataWriter
+namespace openHistorian.Core.DataWriter
 {
     public class TestWritingPoints
     {

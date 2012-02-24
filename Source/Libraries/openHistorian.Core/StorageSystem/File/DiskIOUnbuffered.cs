@@ -27,7 +27,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Historian.StorageSystem.File 
+namespace openHistorian.Core.StorageSystem.File 
 {
     /// <summary>
     /// Provides the interface layer that talkes to 

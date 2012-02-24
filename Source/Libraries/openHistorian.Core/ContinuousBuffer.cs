@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Historian
+namespace openHistorian.Core
 {
     /// <summary>
     /// Implements a circular buffer that can be absolutely indexed. This means that when items are added to this buffer, their index 
