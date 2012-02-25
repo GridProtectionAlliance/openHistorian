@@ -41,6 +41,11 @@ namespace openHistorian.Core
             openHistorian.Core.StorageSystem.BlockSorter.DataBucketTest.Test();
             openHistorian.Core.StorageSystem.BlockSorter.NodeTest.Test();
 
+            //openHistorian.Core.StorageSystem.Importer.NodeHeaderTest.Test();
+            //openHistorian.Core.StorageSystem.Importer.TreeHeaderTest.Test();
+            //openHistorian.Core.StorageSystem.Importer.LeafNodeTest.Test();
+            //openHistorian.Core.StorageSystem.Importer.InternalNodeTest.Test();
+            //openHistorian.Core.StorageSystem.QuickSort.NodeTest.Test();
 
             //openHistorian.Core.StorageSystem.BlockSorter.Test.FileReaderTest.Test();
 

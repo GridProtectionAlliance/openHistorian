@@ -18,7 +18,7 @@ namespace openHistorian.Core.StorageSystem
 
         //GCHandle handle;
         //byte* f_buffer;
-        byte[] m_buffer;
+        internal byte[] m_buffer;
         ISupportsBinaryStream m_stream;
         byte[] m_temp;
 
@@ -115,7 +115,7 @@ namespace openHistorian.Core.StorageSystem
         /// </summary>
         /// <param name="isWriting"></param>
         /// <remarks>This is called when there is not enough bytes in the buffer to store the available data.</remarks>
-        void UpdateLocalBuffer(bool isWriting)
+        internal void UpdateLocalBuffer(bool isWriting)
         {
             FlushToUnderlyingStream();
             //if (m_buffer != null)

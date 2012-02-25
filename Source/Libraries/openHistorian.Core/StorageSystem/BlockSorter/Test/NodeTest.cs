@@ -12,12 +12,7 @@ namespace openHistorian.Core.StorageSystem.BlockSorter
         internal static void Test()
         {
             TestSingleLevelAddGet();
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             TestMulitLevel();
-            sw.Stop();
-            MessageBox.Show(sw.Elapsed.TotalMilliseconds.ToString());
-
             TestMulitLevelDeep();
 
         }
@@ -64,6 +59,9 @@ namespace openHistorian.Core.StorageSystem.BlockSorter
 
         static void TestMulitLevel()
         {
+
+            const int count = 100000;
+          
             Random rand = new Random();
             int seed = rand.Next();
             rand = new Random(seed);
@@ -76,6 +74,9 @@ namespace openHistorian.Core.StorageSystem.BlockSorter
             DateTime date = origDate;
             TimeKey key;
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             byte[] data = new byte[1];
             byte[] data2;
             for (int x = 0; x < 100000; x++)
@@ -86,6 +87,11 @@ namespace openHistorian.Core.StorageSystem.BlockSorter
 
                 node.AddData(key, data);
             }
+            sw.Stop();
+
+
+            Stopwatch sw2 = new Stopwatch();
+            sw2.Start();
 
             rand = new Random(seed);
             date = origDate;
@@ -99,6 +105,10 @@ namespace openHistorian.Core.StorageSystem.BlockSorter
                 if (data2.Length!=1 || data[0] != data2[0])
                     throw new Exception();
             }
+
+            sw2.Stop();
+            MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
+                (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
 
         }
 
