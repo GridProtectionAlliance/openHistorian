@@ -45,8 +45,8 @@ namespace openHistorian.Core.StorageSystem.Generic
         {
             Stream = stream;
             BlockSize = blockSize;
-            MaximumLeafNodeChildren = LeafNodeCalculateMaximumChildren(blockSize);
-            MaximumInternalNodeChildren = InternalNodeCalculateMaximumChildren(blockSize);
+            MaximumLeafNodeChildren = LeafNodeCalculateMaximumChildren();
+            MaximumInternalNodeChildren = InternalNodeCalculateMaximumChildren();
             NextUnallocatedByte = blockSize;
             RootIndexAddress = LeafNodeCreateEmptyNode();
             RootIndexLevel = 0;
@@ -63,8 +63,8 @@ namespace openHistorian.Core.StorageSystem.Generic
                 throw new Exception("Header Corrupt");
             NextUnallocatedByte = stream.ReadInt64();
             BlockSize = stream.ReadInt32();
-            MaximumLeafNodeChildren = LeafNodeCalculateMaximumChildren(BlockSize);
-            MaximumInternalNodeChildren = InternalNodeCalculateMaximumChildren(BlockSize);
+            MaximumLeafNodeChildren = LeafNodeCalculateMaximumChildren();
+            MaximumInternalNodeChildren = InternalNodeCalculateMaximumChildren();
             RootIndexAddress = stream.ReadUInt32();
             RootIndexLevel = stream.ReadByte();
         }
@@ -95,32 +95,6 @@ namespace openHistorian.Core.StorageSystem.Generic
             uint newBlock = (uint)(NextUnallocatedByte / BlockSize);
             NextUnallocatedByte += BlockSize;
             return newBlock;
-        }
-
-        /// <summary>
-        /// returns the address for freshly allocated space.
-        /// </summary>
-        /// <param name="space">the number of bytes to allocate.</param>
-        /// <returns></returns>
-        public long AllocateSpace(int space)
-        {
-            long newAddress = NextUnallocatedByte;
-            NextUnallocatedByte += space;
-            return newAddress;
-        }
-        
-        /// <summary>
-        /// This will modify the BinaryStream.Position property.
-        /// </summary>
-        /// <param name="nodeIndex">the node index to go to</param>
-        public void NavigateToNode(uint nodeIndex)
-        {
-            Stream.Position = nodeIndex * BlockSize;
-        }
-
-        public void NavigateToNode(uint nodeIndex, int offset)
-        {
-            Stream.Position = nodeIndex * BlockSize + offset;
         }
 
         public void SetRootIndex(uint nodeIndex, byte level)

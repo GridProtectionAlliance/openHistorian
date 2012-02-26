@@ -27,11 +27,11 @@ namespace openHistorian.Core.StorageSystem.Generic
 {
     public partial class BPlusTree<TKey, TValue>
     {
-        public const int LeafStructureSize = sizeof(long) + sizeof(long);
+        public int LeafStructureSize;
 
-        public static int LeafNodeCalculateMaximumChildren(int blockSize)
+        public int LeafNodeCalculateMaximumChildren()
         {
-            return (blockSize - NodeHeader.Size) / LeafStructureSize;
+            return (BlockSize - NodeHeader.Size) / LeafStructureSize;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <param name="nodeToSplitIndex"></param>
         /// <param name="greaterNodeIndex"></param>
         /// <param name="firstKeyInGreaterNode"></param>
-        public void LeafNodeSplitNode(uint nodeToSplitIndex, out uint greaterNodeIndex, out long firstKeyInGreaterNode)
+        public void LeafNodeSplitNode(uint nodeToSplitIndex, out uint greaterNodeIndex, out TKey firstKeyInGreaterNode)
         {
             NodeHeader origionalNode = default(NodeHeader);
             NodeHeader newNode = default(NodeHeader);
@@ -63,7 +63,8 @@ namespace openHistorian.Core.StorageSystem.Generic
 
             //lookup the first key that will be copied
             Stream.Position = sourceStartingAddress;
-            firstKeyInGreaterNode = Stream.ReadInt64();
+            firstKeyInGreaterNode=new TKey();
+            firstKeyInGreaterNode.LoadValue(Stream);
 
             //do the copy
             Stream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * LeafStructureSize);
@@ -89,9 +90,9 @@ namespace openHistorian.Core.StorageSystem.Generic
             }
         }
 
-        public long LeafNodeGetValueAddress(long key, uint nodeIndex)
+        public TValue LeafNodeGetValueAddress(TKey key, uint nodeIndex)
         {
-            NavigateToNode(nodeIndex);
+            Stream.Position = nodeIndex * BlockSize;
             return LeafNodeGetValueAddress(key);
         }
 
@@ -103,20 +104,22 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// </summary>
         /// <param name="key">the key to search for</param>
         /// <returns></returns>
-        public long LeafNodeGetValueAddress(long key)
+        public TValue LeafNodeGetValueAddress(TKey key)
         {
             if (LeafNodeSeekToKey(key) == SearchResults.StartOfExactMatch)
             {
-                Stream.Position += 8;
-                return Stream.ReadInt64();
+                Stream.Position += KeySize;
+                TValue value = new TValue();
+                value.LoadValue(Stream);
+                return value;
             }
-            return -1;
+            return default(TValue);
         }
 
-        public InsertResults LeafNodeTryInsertKey(long key, long dataAddress, uint nodeIndex)
+        public InsertResults LeafNodeTryInsertKey(TKey key, TValue value, uint nodeIndex)
         {
-            NavigateToNode(nodeIndex);
-            return LeafNodeTryInsertKey(key, dataAddress);
+            Stream.Position = nodeIndex * BlockSize;
+            return LeafNodeTryInsertKey(key, value);
         }
 
 
@@ -125,11 +128,10 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// this method will seek to the most appropriate location for 
         /// the key to be inserted and insert the data if the leaf is not full. 
         /// </summary>
-        /// <param name="header">the tree header details</param>
         /// <param name="key">the key to insert</param>
-        /// <param name="dataAddress">the address to insert into this node</param>
+        /// <param name="value">the address to insert into this node</param>
         /// <returns>The results of the insert</returns>
-        public InsertResults LeafNodeTryInsertKey(long key, long dataAddress)
+        public InsertResults LeafNodeTryInsertKey(TKey key, TValue value)
         {
             //Determine if the node is full. Reset the position afterwards
             long nodePosition = Stream.Position;
@@ -154,9 +156,9 @@ namespace openHistorian.Core.StorageSystem.Generic
 
             //Insert the data
             Stream.InsertBytes(LeafStructureSize, spaceToMove);
-            Stream.Write(key);
-            Stream.Write(dataAddress);
-
+            key.SaveValue(Stream);
+            value.SaveValue(Stream);
+            
             //save the header
             Stream.Position = nodePosition;
             node.ChildCount++;
@@ -165,9 +167,9 @@ namespace openHistorian.Core.StorageSystem.Generic
             return InsertResults.InsertedOK;
         }
 
-        public SearchResults LeafNodeSeekToKey(long key, uint nodeIndex)
+        public SearchResults LeafNodeSeekToKey(TKey key, uint nodeIndex)
         {
-            NavigateToNode(nodeIndex);
+            Stream.Position = nodeIndex * BlockSize;
             return LeafNodeSeekToKey(key);
         }
 
@@ -175,10 +177,9 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// Starting from the first byte of the node, 
         /// this will seek the current node for the best match of the key provided.
         /// </summary>
-        /// <param name="header">the tree header details</param>
         /// <param name="key">the key to search for</param>
         /// <returns>the stream positioned at the spot corresponding to the returned search results.</returns>
-        public SearchResults LeafNodeSeekToKey(long key)
+        public SearchResults LeafNodeSeekToKey(TKey key)
         {
 #if DEBUG
             if (Stream.Position % BlockSize != 0)
@@ -197,13 +198,13 @@ namespace openHistorian.Core.StorageSystem.Generic
             {
                 int mid = min + (max - min >> 1);
                 Stream.Position = startAddress + LeafStructureSize * mid;
-                long tmpKey = Stream.ReadInt64();
-                if (key == tmpKey)
+                int tmpKey = key.CompareToStream(Stream);
+                if (tmpKey == 0)
                 {
-                    Stream.Position -= sizeof(long);
+                    Stream.Position -= KeySize;
                     return SearchResults.StartOfExactMatch;
                 }
-                if (key > tmpKey)
+                if (tmpKey > 0)
                     min = mid + 1;
                 else
                     max = mid - 1;
@@ -214,13 +215,9 @@ namespace openHistorian.Core.StorageSystem.Generic
             return SearchResults.RightAfterClosestMatchWithoutGoingOver;
         }
 
-
-
-
         /// <summary>
         /// Allocates a new empty tree node.
         /// </summary>
-        /// <param name="header"></param>
         /// <returns></returns>
         public uint LeafNodeCreateEmptyNode()
         {

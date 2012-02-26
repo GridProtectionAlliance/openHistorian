@@ -33,13 +33,16 @@ namespace openHistorian.Core
 
             //openHistorian.Core.DataWriter.TestWritingPoints.Test();
 
+            //openHistorian.Core.StorageSystem.Generic.LeafNodeTest.Test();
+            openHistorian.Core.StorageSystem.Generic.NodeTest.Test();
 
-            openHistorian.Core.StorageSystem.BlockSorter.NodeHeaderTest.Test();
-            openHistorian.Core.StorageSystem.BlockSorter.TreeHeaderTest.Test();
-            openHistorian.Core.StorageSystem.BlockSorter.LeafNodeTest.Test();
-            openHistorian.Core.StorageSystem.BlockSorter.InternalNodeTest.Test();
-            openHistorian.Core.StorageSystem.BlockSorter.DataBucketTest.Test();
-            openHistorian.Core.StorageSystem.BlockSorter.NodeTest.Test();
+
+            //openHistorian.Core.StorageSystem.BlockSorter.NodeHeaderTest.Test();
+            //openHistorian.Core.StorageSystem.BlockSorter.TreeHeaderTest.Test();
+            //openHistorian.Core.StorageSystem.BlockSorter.LeafNodeTest.Test();
+            //openHistorian.Core.StorageSystem.BlockSorter.InternalNodeTest.Test();
+            //openHistorian.Core.StorageSystem.BlockSorter.DataBucketTest.Test();
+            //openHistorian.Core.StorageSystem.BlockSorter.NodeTest.Test();
 
             //openHistorian.Core.StorageSystem.Importer.NodeHeaderTest.Test();
             //openHistorian.Core.StorageSystem.Importer.TreeHeaderTest.Test();

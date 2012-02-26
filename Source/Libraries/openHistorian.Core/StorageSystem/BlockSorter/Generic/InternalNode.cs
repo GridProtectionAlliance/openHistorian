@@ -27,11 +27,11 @@ namespace openHistorian.Core.StorageSystem.Generic
 {
     public partial class BPlusTree<TKey, TValue>
     {
-        public const int InternalStructureSize = sizeof(long) + sizeof(uint);
+        public int InternalStructureSize;
 
-        public int InternalNodeCalculateMaximumChildren(int blockSize)
+        public int InternalNodeCalculateMaximumChildren()
         {
-            return (blockSize - NodeHeader.Size - sizeof(int)) / InternalStructureSize;
+            return (BlockSize - NodeHeader.Size - sizeof(uint)) / InternalStructureSize;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <param name="nodeToSplitIndex"></param>
         /// <param name="greaterNodeIndex"></param>
         /// <param name="firstKeyInGreaterNode"></param>
-        public void InternalNodeSplitNode(uint nodeToSplitIndex, out uint greaterNodeIndex, out long firstKeyInGreaterNode)
+        public void InternalNodeSplitNode(uint nodeToSplitIndex, out uint greaterNodeIndex, out TKey firstKeyInGreaterNode)
         {
             NodeHeader origionalNode = default(NodeHeader);
             NodeHeader newNode = default(NodeHeader);
@@ -64,8 +64,9 @@ namespace openHistorian.Core.StorageSystem.Generic
 
             //lookup the first key that will be copied
             Stream.Position = sourceStartingAddress;
-            firstKeyInGreaterNode = Stream.ReadInt64();
-
+            firstKeyInGreaterNode = new TKey();
+            firstKeyInGreaterNode.LoadValue(Stream);
+            
             //do the copy
             Stream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * InternalStructureSize);
             //Set the lookback position as invalid since this node should never be parsed for data before the first key.
@@ -94,9 +95,9 @@ namespace openHistorian.Core.StorageSystem.Generic
             }
         }
 
-        public InsertResults InternalNodeTryInsertKey(long key, uint childNodeIndex, uint nodeIndex)
+        public InsertResults InternalNodeTryInsertKey(TKey key, uint childNodeIndex, uint nodeIndex)
         {
-            NavigateToNode(nodeIndex);
+            Stream.Position = nodeIndex * BlockSize;
             return InternalNodeTryInsertKey(key, childNodeIndex);
         }
 
@@ -105,11 +106,10 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// this method will seek to the most appropriate location for 
         /// the key to be inserted and insert the data if the leaf is not full. 
         /// </summary>
-        /// <param name="header">the tree header details</param>
         /// <param name="key">the key to insert</param>
         /// <param name="childNodeIndex">the child node that corresponds to this key</param>
         /// <returns>The results of the insert</returns>
-        public InsertResults InternalNodeTryInsertKey(long key, uint childNodeIndex)
+        public InsertResults InternalNodeTryInsertKey(TKey key, uint childNodeIndex)
         {
             long nodePosition = Stream.Position;
 
@@ -133,7 +133,7 @@ namespace openHistorian.Core.StorageSystem.Generic
 #endif
 
             Stream.InsertBytes(InternalStructureSize, spaceToMove);
-            Stream.Write(key);
+            key.SaveValue(Stream);
             Stream.Write(childNodeIndex);
 
             node.ChildCount++;
@@ -143,9 +143,9 @@ namespace openHistorian.Core.StorageSystem.Generic
             return InsertResults.InsertedOK;
         }
 
-        public uint InternalNodeGetNodeIndex(long key, uint nodeIndex)
+        public uint InternalNodeGetNodeIndex(TKey key, uint nodeIndex)
         {
-            NavigateToNode(nodeIndex);
+            Stream.Position = nodeIndex * BlockSize;
             return InternalNodeGetNodeIndex(key);
         }
 
@@ -153,26 +153,25 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// Starting from the end of the internal node header, 
         /// this method will return the node index value that contains the provided key
         /// </summary>
-        /// <param name="header"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public uint InternalNodeGetNodeIndex(long key)
+        public uint InternalNodeGetNodeIndex(TKey key)
         {
 
             SearchResults results = InternalNodeSeekToKey(key);
 
             if (results == SearchResults.StartOfExactMatch)
             {
-                Stream.Position += sizeof(long);
+                Stream.Position += KeySize;
                 return Stream.ReadUInt32();
             }
             Stream.Position -= 4;
             return Stream.ReadUInt32();
         }
 
-        public SearchResults InternalNodeSeekToKey(long key, uint nodeIndex)
+        public SearchResults InternalNodeSeekToKey(TKey key, uint nodeIndex)
         {
-            NavigateToNode(nodeIndex);
+            Stream.Position = nodeIndex * BlockSize;
             return InternalNodeSeekToKey(key);
         }
 
@@ -180,10 +179,9 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// Starting from the first byte of the node, 
         /// this will seek the current node for the best match of the key provided.
         /// </summary>
-        /// <param name="header">the tree header details</param>
         /// <param name="key">the key to search for</param>
         /// <returns>the stream positioned at the spot corresponding to the returned search results.</returns>
-        public SearchResults InternalNodeSeekToKey(long key)
+        public SearchResults InternalNodeSeekToKey(TKey key)
         {
 #if DEBUG
             if (Stream.Position % BlockSize != 0)
@@ -203,13 +201,13 @@ namespace openHistorian.Core.StorageSystem.Generic
             {
                 int mid = min + (max - min >> 1);
                 Stream.Position = startAddress + InternalStructureSize * mid;
-                long tmpKey = Stream.ReadInt64();
-                if (key == tmpKey)
+                int tmpKey = key.CompareToStream(Stream);
+                if (tmpKey == 0)
                 {
-                    Stream.Position -= sizeof(long);
+                    Stream.Position -= KeySize;
                     return SearchResults.StartOfExactMatch;
                 }
-                if (key > tmpKey)
+                if (tmpKey > 0)
                     min = mid + 1;
                 else
                     max = mid - 1;
@@ -224,13 +222,12 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <summary>
         /// Allocates a new empty tree node.
         /// </summary>
-        /// <param name="header"></param>
         /// <param name="level"></param>
         /// <param name="childNodeBefore"></param>
         /// <param name="key"></param>
         /// <param name="childNodeAfter"></param>
         /// <returns></returns>
-        public uint InternalNodeCreateEmptyNode(byte level, uint childNodeBefore, long key, uint childNodeAfter)
+        public uint InternalNodeCreateEmptyNode(byte level, uint childNodeBefore, TKey key, uint childNodeAfter)
         {
             long origionalPosition = Stream.Position;
             //round the next block to the nearest boundry.
@@ -247,7 +244,7 @@ namespace openHistorian.Core.StorageSystem.Generic
             node.Save(Stream, BlockSize, nodeAddress);
 
             Stream.Write(childNodeBefore);
-            Stream.Write(key);
+            key.SaveValue(Stream);
             Stream.Write(childNodeAfter);
 
             Stream.Position = origionalPosition;
@@ -260,7 +257,6 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <summary>
         /// Allocates a new empty tree node.
         /// </summary>
-        /// <param name="header"></param>
         /// <param name="level"></param>
         /// <returns></returns>
         uint InternalNodeCreateEmptyNode(byte level)

@@ -32,7 +32,7 @@ namespace openHistorian.Core.StorageSystem.Generic
     {
         #region [ Methods ]
 
-        public void AddItem(long key, long dataAddress, ref uint nodeIndex, ref byte nodeLevel)
+        public void AddItem(TKey key, TValue value, ref uint nodeIndex, ref byte nodeLevel)
         {
             NodeHeader node = default(NodeHeader);
             uint currentNodeIndex = nodeIndex;
@@ -50,18 +50,18 @@ namespace openHistorian.Core.StorageSystem.Generic
             if (node.Level != 0)
                 throw new Exception("Node levels corrupt");
 
-            InsertResults results = LeafNodeTryInsertKey(key, dataAddress, currentNodeIndex);
+            InsertResults results = LeafNodeTryInsertKey(key, value, currentNodeIndex);
             if (results == InsertResults.InsertedOK)
                 return;
             if (results == InsertResults.DuplicateKeyError)
                 throw new Exception("Key already exists");
 
-            AddItemSplitIsRequired(key, dataAddress, ref nodeIndex, ref nodeLevel);
+            AddItemSplitIsRequired(key, value, ref nodeIndex, ref nodeLevel);
         }
 
-        void AddItemSplitIsRequired(long key, long dataAddress, ref uint nodeIndex, ref byte nodeLevel)
+        void AddItemSplitIsRequired(TKey key, TValue value, ref uint nodeIndex, ref byte nodeLevel)
         {
-            SplitDetails split = AddItemSplitIsRequiredRecursive(key, dataAddress, nodeIndex);
+            SplitDetails split = AddItemSplitIsRequiredRecursive(key, value, nodeIndex);
             //if the highest layer requires a split, a new root must be created.
             if (split.IsSplit)
             {
@@ -70,14 +70,14 @@ namespace openHistorian.Core.StorageSystem.Generic
             }
         }
 
-        SplitDetails AddItemSplitIsRequiredRecursive(long key, long dataAddress, uint currentNodeIndex)
+        SplitDetails AddItemSplitIsRequiredRecursive(TKey key, TValue value, uint currentNodeIndex)
         {
             NodeHeader node = new NodeHeader(Stream, BlockSize, currentNodeIndex);
             if (node.Level > 0)
             {
                 //Get the child and call this function recursively
                 uint childIndex = InternalNodeGetNodeIndex(key, currentNodeIndex);
-                SplitDetails split = AddItemSplitIsRequiredRecursive(key, dataAddress, childIndex);
+                SplitDetails split = AddItemSplitIsRequiredRecursive(key, value, childIndex);
                 
                 //if the child was split, add the new split item to this index with the option of splitting this index also
                 if (split.IsSplit)
@@ -88,18 +88,17 @@ namespace openHistorian.Core.StorageSystem.Generic
             }
             else
             {
-                return AddToLeafNodeSplitIfRequired(key, dataAddress, currentNodeIndex);
+                return AddToLeafNodeSplitIfRequired(key, value, currentNodeIndex);
             }
         }
 
         /// <summary>
         /// </summary>
-        /// <param name="header"></param>
         /// <param name="key"></param>
         /// <param name="indexToAdd"></param>
         /// <param name="currentNodeIndex"></param>
         /// <returns>The details of the split if it was acomplished.</returns>
-        SplitDetails AddToInternalNodeSplitIfRequired(long key, uint indexToAdd, uint currentNodeIndex)
+        SplitDetails AddToInternalNodeSplitIfRequired(TKey key, uint indexToAdd, uint currentNodeIndex)
         {
             SplitDetails split = default(SplitDetails);
             NodeHeader node = new NodeHeader(Stream, BlockSize, currentNodeIndex);
@@ -119,7 +118,7 @@ namespace openHistorian.Core.StorageSystem.Generic
 
             InternalNodeSplitNode(split.LesserIndex, out split.GreaterIndex, out split.Key);
 
-            if (key >= split.Key)
+            if (key.CompareTo(split.Key) >= 0)//(key >= split.Key)
             {
                 InternalNodeTryInsertKey(key, indexToAdd, split.GreaterIndex);
             }
@@ -134,19 +133,18 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <summary>
         /// If a node split is required, this recursive function will need to be called to accomplish the split.
         /// </summary>
-        /// <param name="header"></param>
         /// <param name="key"></param>
-        /// <param name="dataAddress"></param>
+        /// <param name="value"></param>
         /// <param name="currentNodeIndex"></param>
         /// <returns>The details of the split if it was acomplished.</returns>
-        SplitDetails AddToLeafNodeSplitIfRequired(long key, long dataAddress, uint currentNodeIndex)
+        SplitDetails AddToLeafNodeSplitIfRequired(TKey key, TValue value, uint currentNodeIndex)
         {
             SplitDetails split = default(SplitDetails);
             NodeHeader node = new NodeHeader(Stream, BlockSize, currentNodeIndex);
             if (node.Level != 0)
                 throw new Exception();
 
-            InsertResults results = LeafNodeTryInsertKey(key, dataAddress, currentNodeIndex);
+            InsertResults results = LeafNodeTryInsertKey(key, value, currentNodeIndex);
             if (results == InsertResults.InsertedOK)
             {
                 return split;
@@ -160,13 +158,13 @@ namespace openHistorian.Core.StorageSystem.Generic
             LeafNodeSplitNode(split.LesserIndex, out split.GreaterIndex, out split.Key);
             
             //Add the data after the split
-            if (key >= split.Key)
+            if (key.CompareTo(split.Key) >= 0)//(key >= split.Key)
             {
-                LeafNodeTryInsertKey(key, dataAddress, split.GreaterIndex);
+                LeafNodeTryInsertKey(key, value, split.GreaterIndex);
             }
             else
             {
-                LeafNodeTryInsertKey(key, dataAddress, split.LesserIndex);
+                LeafNodeTryInsertKey(key, value, split.LesserIndex);
             }
             return split;
         }

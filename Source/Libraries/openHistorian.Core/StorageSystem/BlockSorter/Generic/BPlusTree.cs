@@ -8,22 +8,36 @@ using System.IO;
 namespace openHistorian.Core.StorageSystem.Generic
 {
     public partial class BPlusTree<TKey, TValue>
-        where TKey : struct,IPrimaryKey
-        where TValue : struct,IValue
+        where TKey : ITreeType<TKey>, new()
+        where TValue : ITreeType<TValue>, new()
     {
         #region [ Members ]
+
+        public int KeySize;
+        public int ValueSize;
 
         #endregion
 
         #region [ Constructors ]
 
+        BPlusTree()
+        {
+            TKey key = new TKey();
+            TValue value = new TValue();
+            KeySize = key.SizeOf;
+            ValueSize = key.SizeOf;
+            LeafStructureSize = key.SizeOf + value.SizeOf;
+            InternalStructureSize = key.SizeOf + sizeof(uint);
+        }
         //Opens an existing one
         public BPlusTree(BinaryStream stream)
+            : this()
         {
             TreeHeader(stream);
         }
         //Creates a new stream
         public BPlusTree(BinaryStream stream, int blockSize)
+            :this()
         {
             TreeHeader(stream, blockSize);
         }
@@ -36,13 +50,11 @@ namespace openHistorian.Core.StorageSystem.Generic
 
         #region [ Methods ]
 
-        public void AddData(TKey key, TValue data)
+        public void AddData(TKey key, TValue value)
         {
             uint indexAddress = RootIndexAddress;
             byte indexLevel = RootIndexLevel;
-            long dataAddress = 1;
-            long key1 = 1;
-            AddItem(key1, dataAddress, ref indexAddress, ref indexLevel);
+            AddItem(key, value, ref indexAddress, ref indexLevel);
             if (indexAddress != RootIndexAddress || indexLevel != RootIndexLevel)
                 SetRootIndex(indexAddress, indexLevel);
         }
@@ -63,9 +75,7 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <returns></returns>
         public TValue GetData(TKey key)
         {
-            long key1 = 0;
-            long dataAddress = GetKey(RootIndexAddress, RootIndexLevel, key1);
-            return default(TValue);
+            return GetKey(RootIndexAddress, RootIndexLevel, key);
         }
 
         #endregion

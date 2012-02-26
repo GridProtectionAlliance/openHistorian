@@ -38,13 +38,13 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <param name="key">the key to match.</param>
         /// <returns>-1 if the key could not be found, the address if the key could be found.</returns>
         /// <remarks>this function is designed to be recursive and will continue calling itself until the data is reached.</remarks>
-        internal long GetKey(uint nodeIndex, byte nodeLevel, long key)
+        internal TValue GetKey(uint nodeIndex, byte nodeLevel, TKey key)
         {
             byte level;
             for (int levelCount = nodeLevel; levelCount > 0; levelCount--)
             {
 #if DEBUG
-                NavigateToNode(nodeIndex);
+                Stream.Position = nodeIndex * BlockSize;
                 level = Stream.ReadByte();
                 if (level != levelCount)
                     throw new Exception("Node levels corrupt");
@@ -53,7 +53,7 @@ namespace openHistorian.Core.StorageSystem.Generic
             }
 
 #if DEBUG
-            NavigateToNode(nodeIndex);
+            Stream.Position = nodeIndex * BlockSize;
             level = Stream.ReadByte();
             if (level != 0)
                 throw new Exception("Node levels corrupt");

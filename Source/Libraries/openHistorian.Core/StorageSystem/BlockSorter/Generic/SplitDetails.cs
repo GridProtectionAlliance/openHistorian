@@ -5,11 +5,14 @@ using System.Text;
 
 namespace openHistorian.Core.StorageSystem.Generic
 {
-    public struct SplitDetails
+    public partial class BPlusTree<TKey, TValue>
     {
-        public bool IsSplit;
-        public uint LesserIndex;
-        public long Key;
-        public uint GreaterIndex;
+        public struct SplitDetails
+        {
+            public bool IsSplit;
+            public uint LesserIndex;
+            public TKey Key;
+            public uint GreaterIndex;
+        }
     }
 }

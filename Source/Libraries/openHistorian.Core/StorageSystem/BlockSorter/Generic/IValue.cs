@@ -7,6 +7,8 @@ namespace openHistorian.Core.StorageSystem.Generic
 {
     public interface IValue
     {
-        void SetToNull();
+        int SizeOf { get; }
+        void LoadValue(BinaryStream stream);
+        void SaveValue(BinaryStream stream);
     }
 }
