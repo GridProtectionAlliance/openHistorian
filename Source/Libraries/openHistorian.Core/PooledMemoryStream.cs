@@ -116,7 +116,7 @@ namespace openHistorian.Core
         /// <param name="data">The data to write</param>
         /// <param name="offset">The position to start the write</param>
         /// <param name="count">The number of bytes to write</param>
-        void Write(long position, byte[] data, int offset, int count)
+        public void Write(long position, byte[] data, int offset, int count)
         {
             int availableLength = RemainingLenght(position);
             int destOffset = CalculateOffset(position);
@@ -155,7 +155,7 @@ namespace openHistorian.Core
         /// <param name="offset">The position to start the read</param>
         /// <param name="count">The number of bytes to read</param>
         /// <returns>The number of bytes read from the stream. This will always be equal to count.</returns>
-        int Read(long position, byte[] data, int offset, int count)
+        public int Read(long position, byte[] data, int offset, int count)
         {
             int availableLength = RemainingLenght(position);
             int destOffset = CalculateOffset(position);
@@ -177,12 +177,12 @@ namespace openHistorian.Core
         /// Implementation of ISupportsBinaryStream to speed up writing to the stream.
         /// </summary>
         /// <returns></returns>
-        void ISupportsBinaryStream.GetCurrentBlock(bool isWriting, out byte[] buffer, out int firstIndex, out int lastIndex, out int currentIndex)
+        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out byte[] buffer, out int firstIndex, out int lastIndex, out int currentIndex)
         {
             firstIndex = 0;
             lastIndex = Length - 1;
-            currentIndex = CalculateOffset(Position);
-            buffer = GetPage(Position);
+            currentIndex = CalculateOffset(position);
+            buffer = GetPage(position);
         }
 
     }

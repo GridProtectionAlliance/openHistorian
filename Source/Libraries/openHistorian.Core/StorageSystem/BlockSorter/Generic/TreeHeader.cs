@@ -34,7 +34,7 @@ namespace openHistorian.Core.StorageSystem.Generic
         public byte RootIndexLevel { get; protected set; }
         public int MaximumLeafNodeChildren { get; protected set; }
         public int MaximumInternalNodeChildren { get; protected set; }
-        protected long NextUnallocatedByte { get; set; }
+        protected uint NextUnallocatedBlock { get; set; }
 
         public void TreeHeader(BinaryStream stream)
         {
@@ -47,7 +47,7 @@ namespace openHistorian.Core.StorageSystem.Generic
             BlockSize = blockSize;
             MaximumLeafNodeChildren = LeafNodeCalculateMaximumChildren();
             MaximumInternalNodeChildren = InternalNodeCalculateMaximumChildren();
-            NextUnallocatedByte = blockSize;
+            NextUnallocatedBlock = 1;
             RootIndexAddress = LeafNodeCreateEmptyNode();
             RootIndexLevel = 0;
             Save(stream);
@@ -61,7 +61,7 @@ namespace openHistorian.Core.StorageSystem.Generic
                 throw new Exception("Header Corrupt");
             if (Stream.ReadByte() != 0)
                 throw new Exception("Header Corrupt");
-            NextUnallocatedByte = stream.ReadInt64();
+            NextUnallocatedBlock = stream.ReadUInt32();
             BlockSize = stream.ReadInt32();
             MaximumLeafNodeChildren = LeafNodeCalculateMaximumChildren();
             MaximumInternalNodeChildren = InternalNodeCalculateMaximumChildren();
@@ -74,7 +74,7 @@ namespace openHistorian.Core.StorageSystem.Generic
             stream.Position = 0;
             stream.Write(FileType);
             stream.Write((byte)0); //Version
-            stream.Write(NextUnallocatedByte);
+            stream.Write(NextUnallocatedBlock);
             stream.Write(BlockSize);
             stream.Write(RootIndexAddress); //Root Index
             stream.Write(RootIndexLevel); //Root Index
@@ -87,13 +87,8 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <returns></returns>
         public uint AllocateNewNode()
         {
-            //Rounds up to the nearest block boundry 
-            long byteFragment = NextUnallocatedByte % BlockSize;
-            if (byteFragment != 0)
-                NextUnallocatedByte += BlockSize - byteFragment;
-
-            uint newBlock = (uint)(NextUnallocatedByte / BlockSize);
-            NextUnallocatedByte += BlockSize;
+            uint newBlock = NextUnallocatedBlock;
+            NextUnallocatedBlock++;
             return newBlock;
         }
 

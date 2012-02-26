@@ -8,13 +8,15 @@ using System.IO;
 namespace openHistorian.Core.StorageSystem.Generic
 {
     public partial class BPlusTree<TKey, TValue>
-        where TKey : ITreeType<TKey>, new()
-        where TValue : ITreeType<TValue>, new()
+        where TKey : struct, ITreeType<TKey>
+        where TValue : struct, ITreeType<TValue>
     {
         #region [ Members ]
 
         public int KeySize;
         public int ValueSize;
+        //TKey key = default(TKey);
+        //TKey value = default(TKey);
 
         #endregion
 
@@ -22,8 +24,10 @@ namespace openHistorian.Core.StorageSystem.Generic
 
         BPlusTree()
         {
-            TKey key = new TKey();
-            TValue value = new TValue();
+            TKey key = default(TKey);
+            TValue value = default(TValue);
+            //TKey key = new TKey();
+            //TValue value = new TValue();
             KeySize = key.SizeOf;
             ValueSize = key.SizeOf;
             LeafStructureSize = key.SizeOf + value.SizeOf;

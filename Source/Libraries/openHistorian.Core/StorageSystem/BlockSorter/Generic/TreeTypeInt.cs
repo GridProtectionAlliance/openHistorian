@@ -5,17 +5,17 @@ using System.Text;
 
 namespace openHistorian.Core.StorageSystem.Generic
 {
-    class TreeTypeInt : ITreeType<TreeTypeInt>
+    struct TreeTypeInt : ITreeType<TreeTypeInt>
     {
-        public TreeTypeInt()
-        {
-        }
+        //public TreeTypeInt()
+        //{
+        //}
         public TreeTypeInt(int value)
         {
             Value = value;
         }
 
-        public int Value { get; set; }
+        public int Value;
         public int SizeOf
         {
             get

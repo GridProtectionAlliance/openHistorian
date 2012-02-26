@@ -50,7 +50,8 @@ namespace openHistorian.Core.StorageSystem.Generic
             if (node.Level != 0)
                 throw new Exception("Node levels corrupt");
 
-            InsertResults results = LeafNodeTryInsertKey(key, value, currentNodeIndex);
+            Stream.Position = currentNodeIndex * BlockSize;
+            InsertResults results = LeafNodeTryInsertKey(key, value);
             if (results == InsertResults.InsertedOK)
                 return;
             if (results == InsertResults.DuplicateKeyError)
@@ -144,7 +145,8 @@ namespace openHistorian.Core.StorageSystem.Generic
             if (node.Level != 0)
                 throw new Exception();
 
-            InsertResults results = LeafNodeTryInsertKey(key, value, currentNodeIndex);
+            Stream.Position = currentNodeIndex * BlockSize;
+            InsertResults results = LeafNodeTryInsertKey(key, value);
             if (results == InsertResults.InsertedOK)
             {
                 return split;
@@ -160,11 +162,13 @@ namespace openHistorian.Core.StorageSystem.Generic
             //Add the data after the split
             if (key.CompareTo(split.Key) >= 0)//(key >= split.Key)
             {
-                LeafNodeTryInsertKey(key, value, split.GreaterIndex);
+                Stream.Position = split.GreaterIndex * BlockSize;
+                LeafNodeTryInsertKey(key, value);
             }
             else
             {
-                LeafNodeTryInsertKey(key, value, split.LesserIndex);
+                Stream.Position = split.LesserIndex * BlockSize;
+                LeafNodeTryInsertKey(key, value);
             }
             return split;
         }

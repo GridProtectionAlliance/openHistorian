@@ -90,12 +90,6 @@ namespace openHistorian.Core.StorageSystem.Generic
             }
         }
 
-        public TValue LeafNodeGetValueAddress(TKey key, uint nodeIndex)
-        {
-            Stream.Position = nodeIndex * BlockSize;
-            return LeafNodeGetValueAddress(key);
-        }
-
 
         /// <summary>
         /// Starting from the first byte of the node, 
@@ -109,17 +103,12 @@ namespace openHistorian.Core.StorageSystem.Generic
             if (LeafNodeSeekToKey(key) == SearchResults.StartOfExactMatch)
             {
                 Stream.Position += KeySize;
-                TValue value = new TValue();
+                TValue value = default(TValue);
+               // TValue value = new TValue();
                 value.LoadValue(Stream);
                 return value;
             }
             return default(TValue);
-        }
-
-        public InsertResults LeafNodeTryInsertKey(TKey key, TValue value, uint nodeIndex)
-        {
-            Stream.Position = nodeIndex * BlockSize;
-            return LeafNodeTryInsertKey(key, value);
         }
 
 
@@ -167,12 +156,6 @@ namespace openHistorian.Core.StorageSystem.Generic
             return InsertResults.InsertedOK;
         }
 
-        public SearchResults LeafNodeSeekToKey(TKey key, uint nodeIndex)
-        {
-            Stream.Position = nodeIndex * BlockSize;
-            return LeafNodeSeekToKey(key);
-        }
-
         /// <summary>
         /// Starting from the first byte of the node, 
         /// this will seek the current node for the best match of the key provided.
@@ -181,18 +164,20 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <returns>the stream positioned at the spot corresponding to the returned search results.</returns>
         public SearchResults LeafNodeSeekToKey(TKey key)
         {
+            long startAddress = Stream.Position + NodeHeader.Size;
+
 #if DEBUG
             if (Stream.Position % BlockSize != 0)
                 throw new Exception("The position must be set to the beginning of the stream");
 #endif
 
-            long startAddress = Stream.Position + NodeHeader.Size;
-            NodeHeader node = new NodeHeader(Stream);
-            if (node.Level != 0)
+            byte level = Stream.ReadByte();
+            short childCount = Stream.ReadInt16();
+            if (level != 0)
                 throw new Exception();
 
             int min = 0;
-            int max = node.ChildCount - 1;
+            int max = childCount - 1;
 
             while (min <= max)
             {
@@ -210,7 +195,7 @@ namespace openHistorian.Core.StorageSystem.Generic
                     max = mid - 1;
             }
             Stream.Position = startAddress + LeafStructureSize * min;
-            if (node.ChildCount == 0 || min == node.ChildCount)
+            if (childCount == 0 || min == childCount)
                 return SearchResults.StartOfEndOfStream;
             return SearchResults.RightAfterClosestMatchWithoutGoingOver;
         }
@@ -221,17 +206,16 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <returns></returns>
         public uint LeafNodeCreateEmptyNode()
         {
-            long origionalPosition = Stream.Position;
             uint nodeAddress = AllocateNewNode();
+            Stream.Position = BlockSize * nodeAddress;
 
-            NodeHeader node;
-            node.Level = 0;
-            node.ChildCount = 0;
-            node.NextNode = 0;
-            node.PreviousNode = 0;
-            node.Save(Stream,BlockSize, nodeAddress);
-
-            Stream.Position = origionalPosition;
+            //Clearing the Node
+            //Level = 0;
+            //ChildCount = 0;
+            //NextNode = 0;
+            //PreviousNode = 0;
+            Stream.Write(0L);
+            Stream.Write(0);
 
             return nodeAddress;
         }

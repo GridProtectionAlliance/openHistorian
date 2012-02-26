@@ -18,7 +18,7 @@ namespace openHistorian.Core.StorageSystem
 
         //GCHandle handle;
         //byte* f_buffer;
-        internal byte[] m_buffer;
+        byte[] m_buffer;
         ISupportsBinaryStream m_stream;
         byte[] m_temp;
 
@@ -26,17 +26,20 @@ namespace openHistorian.Core.StorageSystem
         {
             m_temp = new byte[16];
             m_stream = stream;
+            m_currentPosition = stream.Position;
             Clear();
         }
+        
         void Clear()
         {
+            //if (handle.IsAllocated)
+            //    handle.Free();
             m_buffer = null;
             m_firstIndex = 0;
             m_lastIndex = -1;
             m_lastIndexWrite = -1;
             m_currentIndex = 0;
             m_origionalIndex = 0;
-            m_currentPosition = -1;
         }
 
         /// <summary>
@@ -49,33 +52,23 @@ namespace openHistorian.Core.StorageSystem
         {
             get
             {
-                if (m_currentPosition >= 0)
-                    return m_currentPosition + (m_currentIndex - m_origionalIndex);
-                else
-                    return m_stream.Position + (m_currentIndex - m_origionalIndex);
+                return m_currentPosition + (m_currentIndex - m_origionalIndex);
             }
             set
             {
-                if (m_currentPosition >= 0)
+                long newCurrentIndex = m_origionalIndex + (value - m_currentPosition);
+                if (newCurrentIndex >= m_firstIndex && newCurrentIndex <= m_lastIndex)
                 {
-                    if (m_currentPosition != m_stream.Position)
+                    m_currentIndex = (int)newCurrentIndex;
+                    if (Position != value)
                         throw new Exception();
-
-                    long newCurrentIndex = m_origionalIndex + (value - m_currentPosition);
-                    if (newCurrentIndex >= m_firstIndex && newCurrentIndex <= m_lastIndex)
-                    {
-                        m_currentIndex = (int)newCurrentIndex;
-
-                        if (Position != value)
-                            throw new Exception();
-
-                        return;
-                    }
                 }
-                //ToDo: Determine if flushing is required, if not, make adjustments.
-                //long pos = m_stream.Position;
-                FlushToUnderlyingStream();
-                m_stream.Position = value;
+                else
+                {
+                    //If set outside the bounds of the current block.
+                    Clear();
+                    m_currentPosition = value;
+                }
             }
         }
 
@@ -103,25 +96,29 @@ namespace openHistorian.Core.StorageSystem
         /// <summary>
         /// Since all read/write operations are cached, calling this will update the underlying stream's position.
         /// </summary>
-        public void FlushToUnderlyingStream()
+        public void FlushToUnderlyingStream2()
         {
             m_stream.Position = Position;
             //ToDo: Consider not modifing any of the local buffer parameters.
             Clear();
         }
 
+        //bool GetRawDataBlock(bool isWriting, out byte[] buffer, out int currentIndex, out int validLength)
+        //{
+            
+        //}
+
         /// <summary>
         /// Updates the local buffer data.
         /// </summary>
         /// <param name="isWriting"></param>
         /// <remarks>This is called when there is not enough bytes in the buffer to store the available data.</remarks>
-        internal void UpdateLocalBuffer(bool isWriting)
+        void UpdateLocalBuffer(bool isWriting)
         {
-            FlushToUnderlyingStream();
-            //if (m_buffer != null)
+            //if (handle.IsAllocated)
             //    handle.Free();
-            m_stream.GetCurrentBlock(isWriting, out m_buffer, out m_firstIndex, out m_lastIndex, out m_currentIndex);
-            m_currentPosition = m_stream.Position;
+            m_currentPosition = Position;
+            m_stream.GetCurrentBlock(m_currentPosition, isWriting, out m_buffer, out m_firstIndex, out m_lastIndex, out m_currentIndex);
             m_origionalIndex = m_currentIndex;
             
             //handle = GCHandle.Alloc(m_buffer, GCHandleType.Pinned);
@@ -147,12 +144,8 @@ namespace openHistorian.Core.StorageSystem
             int firstIndex1, firstIndex2, lastIndex1, lastIndex2, currentIndex1, currentIndex2;
 
             long origionalPosition = Position;
-            Position = source;
-            FlushToUnderlyingStream();
-            m_stream.GetCurrentBlock(false, out buffer1, out firstIndex1, out lastIndex1, out currentIndex1);
-            Position = destination;
-            FlushToUnderlyingStream();
-            m_stream.GetCurrentBlock(true, out buffer2, out firstIndex2, out lastIndex2, out currentIndex2);
+            m_stream.GetCurrentBlock(source,false, out buffer1, out firstIndex1, out lastIndex1, out currentIndex1);
+            m_stream.GetCurrentBlock(destination,true, out buffer2, out firstIndex2, out lastIndex2, out currentIndex2);
 
             if (lastIndex1 - currentIndex1 + 1 >= length && lastIndex1 - currentIndex1 + 1 >= length) //both source and destination are within the same buffer
             {
@@ -313,6 +306,7 @@ namespace openHistorian.Core.StorageSystem
             const int size = sizeof(byte);
             if (m_lastIndexWrite >= m_currentIndex) //RemainingLenghtWrite >= size.
             {
+                //f_buffer[m_currentIndex] = value;
                 m_buffer[m_currentIndex] = value;
                 m_currentIndex += size;
                 return;
@@ -330,9 +324,8 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return;
             }
-            FlushToUnderlyingStream();
             m_temp[0] = value;
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
         public void Write(short value)
         {
@@ -358,16 +351,16 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return;
             }
-            FlushToUnderlyingStream();
             m_temp[0] = (byte)value;
             m_temp[1] = (byte)(value >> 8);
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
         public void Write(int value)
         {
             const int size = sizeof(int);
             if (m_lastIndexWrite - m_currentIndex >= size - 1)
             {
+                //*(int*)(f_buffer + m_currentIndex) = value;
                 fixed (byte* lp = m_buffer)
                 {
                     *(int*)(lp + m_currentIndex) = value;
@@ -391,12 +384,11 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return;
             }
-            FlushToUnderlyingStream();
             fixed (byte* lp = m_temp)
             {
                 *(int*)lp = value;
             }
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
         public void Write(float value)
         {
@@ -426,18 +418,18 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return;
             }
-            FlushToUnderlyingStream();
             fixed (byte* lp = m_temp)
             {
                 *(float*)lp = value;
             }
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
         public void Write(long value)
         {
             const int size = sizeof(long);
             if (m_lastIndexWrite - m_currentIndex >= size - 1)
             {
+                //*(long*)(f_buffer + m_currentIndex) = value;
                 fixed (byte* lp = m_buffer)
                 {
                     *(long*)(lp + m_currentIndex) = value;
@@ -461,12 +453,11 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return;
             }
-            FlushToUnderlyingStream();
             fixed (byte* lp = m_temp)
             {
                 *(long*)lp = value;
             }
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
         public void Write(double value)
         {
@@ -496,12 +487,11 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return;
             }
-            FlushToUnderlyingStream();
             fixed (byte* lp = m_temp)
             {
                 *(double*)lp = value;
             }
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
         public void Write(DateTime value)
         {
@@ -531,12 +521,11 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return;
             }
-            FlushToUnderlyingStream();
             fixed (byte* lp = m_temp)
             {
                 *(DateTime*)lp = value;
             }
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
         public void Write(decimal value)
         {
@@ -566,12 +555,11 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return;
             }
-            FlushToUnderlyingStream();
             fixed (byte* lp = m_temp)
             {
                 *(decimal*)lp = value;
             }
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
         public void Write(Guid value)
         {
@@ -601,12 +589,11 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return;
             }
-            FlushToUnderlyingStream();
             fixed (byte* lp = m_temp)
             {
                 *(Guid*)lp = value;
             }
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
         public void Write7Bit(uint value)
         {
@@ -659,10 +646,9 @@ namespace openHistorian.Core.StorageSystem
                 Compression.Write7Bit(m_buffer, ref m_currentIndex, value);
                 return;
             }
-            FlushToUnderlyingStream();
             int pos = 0;
             Compression.Write7Bit(m_temp, ref pos, value);
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
 
         public void Write7Bit(ulong value)
@@ -744,10 +730,9 @@ namespace openHistorian.Core.StorageSystem
                 Compression.Write7Bit(m_buffer, ref m_currentIndex, value);
                 return;
             }
-            FlushToUnderlyingStream();
             int pos = 0;
             Compression.Write7Bit(m_temp, ref pos, value);
-            m_stream.Write(m_temp, 0, size);
+            Write(m_temp, 0, size);
         }
 
         public void Write(byte[] value, int offset, int count)
@@ -762,8 +747,8 @@ namespace openHistorian.Core.StorageSystem
         }
         void Write2(byte[] value, int offset, int count)
         {
-            FlushToUnderlyingStream();
-            m_stream.Write(value, offset, count);
+            m_stream.Write(Position,value,offset,count);
+            m_currentIndex += count;
         }
 
         #endregion
@@ -840,8 +825,7 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return value;
             }
-            FlushToUnderlyingStream();
-            m_stream.Read(m_temp, 0, size);
+            Read(m_temp, 0, size);
             return m_temp[0];
         }
         public short ReadInt16()
@@ -866,8 +850,7 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return value;
             }
-            FlushToUnderlyingStream();
-            m_stream.Read(m_temp, 0, size);
+            Read(m_temp, 0, size);
             return (short)(m_temp[0] | (m_temp[1] << 8));
         }
         public int ReadInt32()
@@ -900,8 +883,7 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return value;
             }
-            FlushToUnderlyingStream();
-            m_stream.Read(m_temp, 0, size);
+            Read(m_temp, 0, size);
             fixed (byte* lp = m_temp)
             {
                 return *(int*)(lp);
@@ -937,8 +919,7 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return value;
             }
-            FlushToUnderlyingStream();
-            m_stream.Read(m_temp, 0, size);
+            Read(m_temp, 0, size);
             fixed (byte* lp = m_temp)
             {
                 return *(float*)(lp);
@@ -975,8 +956,7 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return value;
             }
-            FlushToUnderlyingStream();
-            m_stream.Read(m_temp, 0, size);
+            Read(m_temp, 0, size);
             fixed (byte* lp = m_temp)
             {
                 return *(long*)(lp);
@@ -1013,8 +993,7 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return value;
             }
-            FlushToUnderlyingStream();
-            m_stream.Read(m_temp, 0, size);
+            Read(m_temp, 0, size);
             fixed (byte* lp = m_temp)
             {
                 return *(double*)(lp);
@@ -1050,8 +1029,7 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return value;
             }
-            FlushToUnderlyingStream();
-            m_stream.Read(m_temp, 0, size);
+            Read(m_temp, 0, size);
             fixed (byte* lp = m_temp)
             {
                 return *(DateTime*)(lp);
@@ -1085,8 +1063,7 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return value;
             }
-            FlushToUnderlyingStream();
-            m_stream.Read(m_temp, 0, size);
+            Read(m_temp, 0, size);
             fixed (byte* lp = m_temp)
             {
                 return *(decimal*)(lp);
@@ -1120,8 +1097,7 @@ namespace openHistorian.Core.StorageSystem
                 m_currentIndex += size;
                 return value;
             }
-            FlushToUnderlyingStream();
-            m_stream.Read(m_temp, 0, size);
+            Read(m_temp, 0, size);
             fixed (byte* lp = m_temp)
             {
                 return *(Guid*)(lp);
@@ -1313,8 +1289,9 @@ namespace openHistorian.Core.StorageSystem
         }
         int Read2(byte[] value, int offset, int count)
         {
-            FlushToUnderlyingStream();
-            return m_stream.Read(value, offset, count);
+            int read = m_stream.Read(Position, value, offset, count);
+            m_currentIndex += count;
+            return read;
         }
         #endregion
 

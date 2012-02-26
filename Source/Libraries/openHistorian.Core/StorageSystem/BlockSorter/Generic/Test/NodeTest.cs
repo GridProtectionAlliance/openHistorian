@@ -9,7 +9,6 @@ namespace openHistorian.Core.StorageSystem.Generic
 {
     class NodeTest
     {
-
         internal static void Test()
         {
             TestSingleLevelAddGet();
@@ -28,6 +27,8 @@ namespace openHistorian.Core.StorageSystem.Generic
             rand = new Random(seed);
 
             var ms = new PooledMemoryStream();
+            ms.Position = 1000 * 4096;
+            ms.Write(new byte[] { 1 }, 0, 1);
             var bs = new BinaryStream(ms);
             var tree = new BPlusTree<TreeTypeInt, TreeTypeLong>(bs, 4096);
 
@@ -77,6 +78,8 @@ namespace openHistorian.Core.StorageSystem.Generic
             rand = new Random(seed);
 
             var ms = new PooledMemoryStream();
+            ms.Position = 1000 * 4096;
+            ms.Write(new byte[] { 1 }, 0, 1);
             var bs = new BinaryStream(ms);
             var tree = new BPlusTree<TreeTypeInt, TreeTypeInt>(bs, 4096);
 
@@ -126,6 +129,8 @@ namespace openHistorian.Core.StorageSystem.Generic
             rand = new Random(seed);
 
             var ms = new PooledMemoryStream();
+            ms.Position = 1000 * 4096;
+            ms.Write(new byte[] { 1 }, 0, 1);
             var bs = new BinaryStream(ms);
             var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs, 4096);
 

@@ -383,10 +383,23 @@ namespace openHistorian.Core.StorageSystem.File
             m_position++;
         }
 
-        void ISupportsBinaryStream.GetCurrentBlock(bool isWriting, out byte[] buffer, out int firstIndex, out int lastIndex, out int curentPosition)
+        int ISupportsBinaryStream.Read(long position, byte[] data, int start, int count)
+        {
+            Position = position;
+            return Read(data, start, count);
+        }
+
+        void ISupportsBinaryStream.Write(long position, byte[] data, int start, int count)
+        {
+            Position = position;
+            Write(data,start,count);
+        }
+
+        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out byte[] buffer, out int firstIndex, out int lastIndex, out int curentPosition)
         {
             if (isWriting && IsReadOnly)
                 throw new Exception("File is read only");
+            Position = position;
             PrepareBlockForWrite();
             if (isWriting)
                 m_IsBlockDirty = true;
@@ -453,6 +466,10 @@ namespace openHistorian.Core.StorageSystem.File
         #endregion
 
 
-      
+
+
+
+  
+
     }
 }

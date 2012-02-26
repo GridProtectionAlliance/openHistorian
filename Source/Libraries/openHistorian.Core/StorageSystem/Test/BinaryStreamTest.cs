@@ -19,54 +19,42 @@ namespace openHistorian.Core.StorageSystem
             BinaryStream bs = new BinaryStream(ms);
             Stopwatch sw = new Stopwatch();
             //DateTime b = DateTime.UtcNow;
-            uint b = 10;
+            byte b = 10;
             //Guid b = Guid.NewGuid() ;
+            for (int x2 = 0; x2 < count; x2++)
+            {
+                bs.Position = 0;
+                for (int x = 0; x < count; x++)
+                {
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                }
+            }
+
             sw.Start();
             for (int x2 = 0; x2 < count; x2++)
             {
                 bs.Position = 0;
                 for (int x = 0; x < count; x++)
                 {
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b, b);
-                    //bs.Write(b);
-                    //bs.Write(b);
-                    //bs.Write(b);
-                    //bs.Write(b);
-                    //bs.Write(b);
-                    //bs.Write(b);
-                    //bs.Write(b);
-                    //bs.Write(b);
-                    //bs.Write(b);
-                    //bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
+                    bs.Write(b);
                     //bs.ReadDecimal();
                     //bs.ReadDecimal();
                     //bs.ReadDecimal();
@@ -149,7 +137,9 @@ namespace openHistorian.Core.StorageSystem
                 {
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) bs.Write(*(byte*)lp);
-                    bs.Position += rand.Next(40);
+                    int skip = rand.Next(40)+1;
+                    bs.Position += skip;
+                    bs.Position -= rand.Next(skip);
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) bs.Write(*(sbyte*)lp);
                     rand.NextBytes(data);
@@ -177,6 +167,7 @@ namespace openHistorian.Core.StorageSystem
                     rand.NextBytes(data);
                     bool value = (*lp != 0);
                     while (rand.Next(4) < 2) bs.Write(value);
+
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) bs.Write7Bit(*(uint*)lp);
                     data[3] = 0;
@@ -204,14 +195,14 @@ namespace openHistorian.Core.StorageSystem
                     while (rand.Next(4) < 2) bs.Write7Bit(*(ulong*)lp);
 
                     rand.NextBytes(data);
-                    bs.Write(data,0,data.Length);
+                    bs.Write(data, 0, data.Length);
 
                     while (rand.Next(4) < 2)
                     {
-                        if (bs.Position>100)
+                        if (bs.Position > 100)
                         {
-                            bs.Position-=100;
-                            int insertCount=rand.Next(16)+1;
+                            bs.Position -= 100;
+                            int insertCount = rand.Next(16) + 1;
                             bs.InsertBytes(insertCount, 100);
                             bs.Write(data, 0, insertCount);
                             bs.Position -= insertCount;
@@ -230,14 +221,15 @@ namespace openHistorian.Core.StorageSystem
                 }
                 rand = new Random(seed);
 
-                bs.FlushToUnderlyingStream();
-                stream.Position = 0;
+                bs.Position = 0;
 
                 for (int x = 0; x < 10000; x++)
                 {
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.ReadByte() != (*(byte*)lp)) throw new Exception();
-                    bs.Position += rand.Next(40);
+                    int skip = rand.Next(40) + 1;
+                    bs.Position += skip;
+                    bs.Position -= rand.Next(skip);
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.ReadSByte() != (*(sbyte*)lp)) throw new Exception();
                     rand.NextBytes(data);
@@ -265,7 +257,7 @@ namespace openHistorian.Core.StorageSystem
                     rand.NextBytes(data);
                     bool b2 = (*lp != 0);
                     while (rand.Next(4) < 2) if (bs.ReadBoolean() != b2) throw new Exception();
-                    
+
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.Read7BitUInt32() != (*(uint*)lp)) throw new Exception();
                     data[3] = 0;
@@ -291,7 +283,7 @@ namespace openHistorian.Core.StorageSystem
                     while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
                     data[1] = 0;
                     while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
-                    
+
                     rand.NextBytes(data);
                     bs.Read(data2, 0, 16);
                     if (!data2.SequenceEqual<byte>(data)) throw new Exception();

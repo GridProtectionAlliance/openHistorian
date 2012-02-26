@@ -27,7 +27,7 @@ namespace openHistorian.Core
 
             openHistorian.Core.PooledMemoryStreamTest.Test();
 
-            //openHistorian.Core.StorageSystem.BinaryStreamTest.Test();
+            openHistorian.Core.StorageSystem.BinaryStreamTest.Test();
 
             //openHistorian.Core.StorageSystem.File.BenchmarkPageSizes.Test();
 

@@ -58,7 +58,8 @@ namespace openHistorian.Core.StorageSystem.Generic
             if (level != 0)
                 throw new Exception("Node levels corrupt");
 #endif
-            return LeafNodeGetValueAddress( key, nodeIndex);
+            Stream.Position = nodeIndex * BlockSize;
+            return LeafNodeGetValueAddress(key);
         }
 
     }
