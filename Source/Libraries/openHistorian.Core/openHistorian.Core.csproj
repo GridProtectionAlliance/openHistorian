@@ -100,6 +100,7 @@
     <Compile Include="StorageSystem\BlockSorter\Generic\BPlusTree.cs" />
     <Compile Include="StorageSystem\BlockSorter\Generic\BPlusTreeAdd.cs" />
     <Compile Include="StorageSystem\BlockSorter\Generic\BPlusTreeGet.cs" />
+    <Compile Include="StorageSystem\BlockSorter\Generic\TreeTypeInt.cs" />
     <Compile Include="StorageSystem\BlockSorter\Generic\InsertResults.cs" />
     <Compile Include="StorageSystem\BlockSorter\Generic\InternalNode.cs" />
     <Compile Include="StorageSystem\BlockSorter\Generic\ITreeType.cs" />

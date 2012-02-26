@@ -14,9 +14,109 @@ namespace openHistorian.Core.StorageSystem.Generic
         {
             TestSingleLevelAddGet();
             TestMultiLevel();
+            TestMultiLevelInt();
+            TestMultiLevelIntLong();
             //TestMulitLevelDeep();
         }
-        
+
+        static void TestMultiLevelIntLong()
+        {
+            const int count = 100000;
+
+            Random rand = new Random();
+            int seed = rand.Next();
+            rand = new Random(seed);
+
+            var ms = new PooledMemoryStream();
+            var bs = new BinaryStream(ms);
+            var tree = new BPlusTree<TreeTypeInt, TreeTypeLong>(bs, 4096);
+
+            int origKey = seed;
+            TreeTypeInt key = origKey;
+            TreeTypeLong data = 1;
+            long data2;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int x = 0; x < count; x++)
+            {
+                key.Value += rand.Next(500) + 1;
+                data.Value = rand.Next();
+                tree.AddData(key, data);
+            }
+
+            sw.Stop();
+
+            Stopwatch sw2 = new Stopwatch();
+            sw2.Start();
+
+            rand = new Random(seed);
+            key = origKey;
+            for (int x = 0; x < count; x++)
+            {
+                key.Value += rand.Next(500) + 1;
+                data.Value = rand.Next();
+
+                data2 = tree.GetData(key).Value;
+                if (data2 != data.Value)
+                    throw new Exception();
+            }
+
+            sw2.Stop();
+            MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
+                (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
+        }
+
+        static void TestMultiLevelInt()
+        {
+            const int count = 100000;
+
+            Random rand = new Random();
+            int seed = rand.Next();
+            rand = new Random(seed);
+
+            var ms = new PooledMemoryStream();
+            var bs = new BinaryStream(ms);
+            var tree = new BPlusTree<TreeTypeInt, TreeTypeInt>(bs, 4096);
+
+            int origKey = seed;
+            TreeTypeInt key = origKey;
+            TreeTypeInt data = 1;
+            int data2;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int x = 0; x < count; x++)
+            {
+                key.Value += rand.Next(500) + 1;
+                data.Value = rand.Next();
+                tree.AddData(key, data);
+            }
+
+            sw.Stop();
+
+            Stopwatch sw2 = new Stopwatch();
+            sw2.Start();
+
+            rand = new Random(seed);
+            key = origKey;
+            for (int x = 0; x < count; x++)
+            {
+                key.Value += rand.Next(500) + 1;
+                data.Value = rand.Next();
+
+                data2 = tree.GetData(key).Value;
+                if (data2 != data.Value)
+                    throw new Exception();
+            }
+
+            sw2.Stop();
+            MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
+                (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
+        }
+       
         static void TestMultiLevel()
         {
             const int count = 100000;
