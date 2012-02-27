@@ -407,7 +407,6 @@ namespace openHistorian.Core.StorageSystem.File
             lastIndex = (int)m_positionBlock.Length - 1;
             curentPosition = m_positionBlock.Offset(m_position);
             buffer = Buffer.Block;
-
         }
 
         /// <summary>

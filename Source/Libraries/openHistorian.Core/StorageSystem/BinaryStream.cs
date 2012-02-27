@@ -29,7 +29,7 @@ namespace openHistorian.Core.StorageSystem
             m_currentPosition = stream.Position;
             Clear();
         }
-        
+
         void Clear()
         {
             //if (handle.IsAllocated)
@@ -60,8 +60,6 @@ namespace openHistorian.Core.StorageSystem
                 if (newCurrentIndex >= m_firstIndex && newCurrentIndex <= m_lastIndex)
                 {
                     m_currentIndex = (int)newCurrentIndex;
-                    if (Position != value)
-                        throw new Exception();
                 }
                 else
                 {
@@ -103,9 +101,50 @@ namespace openHistorian.Core.StorageSystem
             Clear();
         }
 
-        //bool GetRawDataBlock(bool isWriting, out byte[] buffer, out int currentIndex, out int validLength)
+        //public bool GetRawDataBlock(bool isWriting, out byte[] buffer, out int currentIndex, out int validLength)
         //{
-            
+        //    if (isWriting)
+        //    {
+        //        if (RemainingLengthWrite<=0)
+        //            UpdateLocalBuffer(true);
+        //        buffer = m_buffer;
+        //        currentIndex = m_currentIndex;
+        //        validLength = RemainingLengthWrite;
+        //    }
+        //    else
+        //    {
+        //        if (RemainingLength <= 0)
+        //            UpdateLocalBuffer(false); 
+        //        buffer = m_buffer;
+        //        currentIndex = m_currentIndex;
+        //        validLength = RemainingLength;
+        //    }
+        //    return true;
+        //}
+
+        //public void PositionSet(long value)
+        //{
+        //    //If set outside the bounds of the current block.
+        //    Clear();
+        //    m_currentPosition = value;
+        //}
+        //public void PositionDecrement(int value)
+        //{
+        //    m_currentIndex -= value;
+        //    //if (m_currentIndex < m_firstIndex)
+        //    //{
+        //    //    m_currentPosition = Position;
+        //    //    Clear();
+        //    //}
+        //}
+        //public void PositionIncrement(int value)
+        //{
+        //    m_currentIndex += value;
+        //    //if (m_currentIndex < m_firstIndex)
+        //    //{
+        //    //    m_currentPosition = Position;
+        //    //    Clear();
+        //    //}
         //}
 
         /// <summary>
@@ -120,7 +159,7 @@ namespace openHistorian.Core.StorageSystem
             m_currentPosition = Position;
             m_stream.GetCurrentBlock(m_currentPosition, isWriting, out m_buffer, out m_firstIndex, out m_lastIndex, out m_currentIndex);
             m_origionalIndex = m_currentIndex;
-            
+
             //handle = GCHandle.Alloc(m_buffer, GCHandleType.Pinned);
             //f_buffer = (byte*)handle.AddrOfPinnedObject().ToPointer();
 
@@ -144,17 +183,17 @@ namespace openHistorian.Core.StorageSystem
             int firstIndex1, firstIndex2, lastIndex1, lastIndex2, currentIndex1, currentIndex2;
 
             long origionalPosition = Position;
-            m_stream.GetCurrentBlock(source,false, out buffer1, out firstIndex1, out lastIndex1, out currentIndex1);
-            m_stream.GetCurrentBlock(destination,true, out buffer2, out firstIndex2, out lastIndex2, out currentIndex2);
+            m_stream.GetCurrentBlock(source, false, out buffer1, out firstIndex1, out lastIndex1, out currentIndex1);
+            m_stream.GetCurrentBlock(destination, true, out buffer2, out firstIndex2, out lastIndex2, out currentIndex2);
 
-            if (lastIndex1 - currentIndex1 + 1 >= length && lastIndex1 - currentIndex1 + 1 >= length) //both source and destination are within the same buffer
+            if (lastIndex1 - currentIndex1 + 1 >= length && lastIndex2 - currentIndex2 + 1 >= length) //both source and destination are within the same buffer
             {
-                Array.Copy(buffer1, currentIndex1, buffer2, currentIndex2, length);
+                Buffer.BlockCopy(buffer1, currentIndex1, buffer2, currentIndex2, length);
             }
             else if (lastIndex1 - currentIndex1 + 1 >= length) //only the source is within the same buffer
             {
-                Position = destination;
-                Write(buffer1, currentIndex1, length);
+                Position = source;
+                Read(buffer2, currentIndex2, length);
             }
             else
             {
@@ -197,7 +236,8 @@ namespace openHistorian.Core.StorageSystem
 
             if (RemainingLengthWrite >= numberOfBytes + lengthOfValidDataToShift)
             {
-                Array.Copy(m_buffer, m_currentIndex, m_buffer, m_currentIndex + numberOfBytes, lengthOfValidDataToShift);
+                Buffer.BlockCopy(m_buffer, m_currentIndex, m_buffer, m_currentIndex + numberOfBytes, lengthOfValidDataToShift);
+                //Array.Copy(m_buffer, m_currentIndex, m_buffer, m_currentIndex + numberOfBytes, lengthOfValidDataToShift);
             }
             else
             {
@@ -747,7 +787,7 @@ namespace openHistorian.Core.StorageSystem
         }
         void Write2(byte[] value, int offset, int count)
         {
-            m_stream.Write(Position,value,offset,count);
+            m_stream.Write(Position, value, offset, count);
             m_currentIndex += count;
         }
 

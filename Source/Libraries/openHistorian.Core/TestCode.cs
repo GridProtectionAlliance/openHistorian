@@ -11,46 +11,31 @@ namespace openHistorian.Core
         {
             Test2();
             System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.Batch;
-            //openHistorian.Core.StorageSystem.File.ArchiveConstants.Test();
-            //openHistorian.Core.StorageSystem.File.DiskIOMemoryStreamTest.Test();
-            //openHistorian.Core.StorageSystem.File.DiskIOUnbufferedTest.Test();
-            //openHistorian.Core.StorageSystem.File.FileMetaDataTest.Test();
-            //openHistorian.Core.StorageSystem.File.FileAllocationTableTest.Test();
-            //openHistorian.Core.StorageSystem.File.IndexMapperTest.Test();
-            //openHistorian.Core.StorageSystem.File.IndexParserTest.Test();
-            //openHistorian.Core.StorageSystem.File.ShadowCopyAllocatorTest.Test();
-            //openHistorian.Core.StorageSystem.File.ArchiveFileStreamTest.Test();
-            //openHistorian.Core.StorageSystem.File.TransactionalEditTest.Test();
-            //openHistorian.Core.StorageSystem.File.FileSystemSnapshotServiceTest.Test();
+            openHistorian.Core.StorageSystem.File.ArchiveConstants.Test();
+            openHistorian.Core.StorageSystem.File.DiskIOMemoryStreamTest.Test();
+            openHistorian.Core.StorageSystem.File.DiskIOUnbufferedTest.Test();
+            openHistorian.Core.StorageSystem.File.FileMetaDataTest.Test();
+            openHistorian.Core.StorageSystem.File.FileAllocationTableTest.Test();
+            openHistorian.Core.StorageSystem.File.IndexMapperTest.Test();
+            openHistorian.Core.StorageSystem.File.IndexParserTest.Test();
+            openHistorian.Core.StorageSystem.File.ShadowCopyAllocatorTest.Test();
+            openHistorian.Core.StorageSystem.File.ArchiveFileStreamTest.Test();
+            openHistorian.Core.StorageSystem.File.TransactionalEditTest.Test();
+            openHistorian.Core.StorageSystem.File.FileSystemSnapshotServiceTest.Test();
 
             openHistorian.Core.CompressionTest.Test();
 
             openHistorian.Core.PooledMemoryStreamTest.Test();
 
-            openHistorian.Core.StorageSystem.BinaryStreamTest.Test();
+            //openHistorian.Core.StorageSystem.BinaryStreamTest.Test();
 
             //openHistorian.Core.StorageSystem.File.BenchmarkPageSizes.Test();
 
             //openHistorian.Core.DataWriter.TestWritingPoints.Test();
 
             //openHistorian.Core.StorageSystem.Generic.LeafNodeTest.Test();
+            
             openHistorian.Core.StorageSystem.Generic.NodeTest.Test();
-
-
-            //openHistorian.Core.StorageSystem.BlockSorter.NodeHeaderTest.Test();
-            //openHistorian.Core.StorageSystem.BlockSorter.TreeHeaderTest.Test();
-            //openHistorian.Core.StorageSystem.BlockSorter.LeafNodeTest.Test();
-            //openHistorian.Core.StorageSystem.BlockSorter.InternalNodeTest.Test();
-            //openHistorian.Core.StorageSystem.BlockSorter.DataBucketTest.Test();
-            //openHistorian.Core.StorageSystem.BlockSorter.NodeTest.Test();
-
-            //openHistorian.Core.StorageSystem.Importer.NodeHeaderTest.Test();
-            //openHistorian.Core.StorageSystem.Importer.TreeHeaderTest.Test();
-            //openHistorian.Core.StorageSystem.Importer.LeafNodeTest.Test();
-            //openHistorian.Core.StorageSystem.Importer.InternalNodeTest.Test();
-            //openHistorian.Core.StorageSystem.QuickSort.NodeTest.Test();
-
-            //openHistorian.Core.StorageSystem.BlockSorter.Test.FileReaderTest.Test();
 
         }
         public static int Test2()

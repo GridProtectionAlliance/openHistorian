@@ -137,7 +137,7 @@ namespace openHistorian.Core.StorageSystem
                 {
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) bs.Write(*(byte*)lp);
-                    int skip = rand.Next(40)+1;
+                    int skip = rand.Next(40) + 1;
                     bs.Position += skip;
                     bs.Position -= rand.Next(skip);
                     rand.NextBytes(data);

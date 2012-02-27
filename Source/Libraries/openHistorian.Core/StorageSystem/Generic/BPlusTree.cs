@@ -13,10 +13,9 @@ namespace openHistorian.Core.StorageSystem.Generic
     {
         #region [ Members ]
 
-        public int KeySize;
-        public int ValueSize;
-        //TKey key = default(TKey);
-        //TKey value = default(TKey);
+        int KeySize;
+        int ValueSize;
+        BucketCache[] cache;
 
         #endregion
 
@@ -24,6 +23,7 @@ namespace openHistorian.Core.StorageSystem.Generic
 
         BPlusTree()
         {
+            cache=new BucketCache[5];
             TKey key = default(TKey);
             TValue value = default(TValue);
             //TKey key = new TKey();
@@ -56,11 +56,11 @@ namespace openHistorian.Core.StorageSystem.Generic
 
         public void AddData(TKey key, TValue value)
         {
-            uint indexAddress = RootIndexAddress;
-            byte indexLevel = RootIndexLevel;
-            AddItem(key, value, ref indexAddress, ref indexLevel);
-            if (indexAddress != RootIndexAddress || indexLevel != RootIndexLevel)
-                SetRootIndex(indexAddress, indexLevel);
+            AddItem(key, value, ref RootIndexAddress, ref RootIndexLevel);
+        }
+        public void ClearCache(byte level)
+        {
+            cache[level-1]=default(BucketCache);
         }
         //public void RemoveItem(IBlockKey8 key)
         //{

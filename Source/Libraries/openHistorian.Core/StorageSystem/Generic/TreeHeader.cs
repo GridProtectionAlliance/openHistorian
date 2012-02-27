@@ -28,20 +28,20 @@ namespace openHistorian.Core.StorageSystem.Generic
     public partial class BPlusTree<TKey, TValue>
     {
         public static Guid FileType = new Guid("{7bfa9083-701e-4596-8273-8680a739271d}");
-        public BinaryStream Stream { get; protected set; }
-        public int BlockSize { get; protected set; }
-        public uint RootIndexAddress { get; protected set; }
-        public byte RootIndexLevel { get; protected set; }
-        public int MaximumLeafNodeChildren { get; protected set; }
-        public int MaximumInternalNodeChildren { get; protected set; }
-        protected uint NextUnallocatedBlock { get; set; }
+        BinaryStream Stream;
+        int BlockSize;
+        uint RootIndexAddress;
+        byte RootIndexLevel;
+        int MaximumLeafNodeChildren;
+        int MaximumInternalNodeChildren;
+        uint NextUnallocatedBlock;
 
-        public void TreeHeader(BinaryStream stream)
+        void TreeHeader(BinaryStream stream)
         {
             Load(stream);
         }
 
-        public void TreeHeader(BinaryStream stream, int blockSize)
+        void TreeHeader(BinaryStream stream, int blockSize)
         {
             Stream = stream;
             BlockSize = blockSize;
@@ -53,7 +53,7 @@ namespace openHistorian.Core.StorageSystem.Generic
             Save(stream);
             Load(stream);
         }
-        public void Load(BinaryStream stream)
+        void Load(BinaryStream stream)
         {
             Stream = stream;
             Stream.Position = 0;
@@ -68,8 +68,7 @@ namespace openHistorian.Core.StorageSystem.Generic
             RootIndexAddress = stream.ReadUInt32();
             RootIndexLevel = stream.ReadByte();
         }
-
-        public void Save(BinaryStream stream)
+        void Save(BinaryStream stream)
         {
             stream.Position = 0;
             stream.Write(FileType);
@@ -85,19 +84,12 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// The node address is block alligned.
         /// </summary>
         /// <returns></returns>
-        public uint AllocateNewNode()
+        uint AllocateNewNode()
         {
             uint newBlock = NextUnallocatedBlock;
             NextUnallocatedBlock++;
             return newBlock;
         }
-
-        public void SetRootIndex(uint nodeIndex, byte level)
-        {
-            RootIndexAddress = nodeIndex;
-            RootIndexLevel = level;
-        }
-
 
     }
 }

@@ -5,26 +5,23 @@ using System.Text;
 
 namespace openHistorian.Core.StorageSystem.Generic
 {
-    struct TreeTypeLong : ITreeType<TreeTypeLong>
+    struct TreeTypeInt : ITreeType<TreeTypeInt>
     {
-       
-        public TreeTypeLong(long value)
+        public TreeTypeInt(int value)
         {
             Value = value;
         }
-
-        public long Value;
+        public int Value;
         public int SizeOf
         {
             get
             {
-                return 8;
+                return 4;
             }
         }
-
         public void LoadValue(BinaryStream stream)
         {
-            Value = stream.ReadInt64();
+            Value = stream.ReadInt32();
         }
 
         public void SaveValue(BinaryStream stream)
@@ -34,17 +31,17 @@ namespace openHistorian.Core.StorageSystem.Generic
 
         public int CompareToStream(BinaryStream stream)
         {
-            return Value.CompareTo(stream.ReadInt64());
+            return Value.CompareTo(stream.ReadInt32());
         }
 
-        public int CompareTo(TreeTypeLong key)
+        public int CompareTo(TreeTypeInt key)
         {
             return Value.CompareTo(key.Value);
         }
 
-        public static implicit operator TreeTypeLong(long value)
+        public static implicit operator TreeTypeInt(int value)
         {
-            return new TreeTypeLong(value);
+            return new TreeTypeInt(value);
         }
     }
 

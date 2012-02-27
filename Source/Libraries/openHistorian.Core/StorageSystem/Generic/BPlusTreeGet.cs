@@ -38,27 +38,46 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <param name="key">the key to match.</param>
         /// <returns>-1 if the key could not be found, the address if the key could be found.</returns>
         /// <remarks>this function is designed to be recursive and will continue calling itself until the data is reached.</remarks>
-        internal TValue GetKey(uint nodeIndex, byte nodeLevel, TKey key)
+        TValue GetKey(uint nodeIndex, byte nodeLevel, TKey key)
         {
+
+            if (nodeLevel > 0)
+            {
+                for (byte x = nodeLevel; x > 0; x--)
+                {
+                    if (cache[x - 1].IsMatch(key))
+                    {
+                        nodeIndex = cache[x - 1].Bucket;
+                        nodeLevel = (byte)(x - 1);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
             byte level;
             for (int levelCount = nodeLevel; levelCount > 0; levelCount--)
             {
 #if DEBUG
-                Stream.Position = nodeIndex * BlockSize;
+                Stream.Position = (nodeIndex * BlockSize);
                 level = Stream.ReadByte();
                 if (level != levelCount)
                     throw new Exception("Node levels corrupt");
 #endif
-                nodeIndex = InternalNodeGetNodeIndex( key, nodeIndex);
+                Stream.Position = (nodeIndex * BlockSize);
+                nodeIndex = InternalNodeGetNodeIndex(key);
+
             }
 
 #if DEBUG
-            Stream.Position = nodeIndex * BlockSize;
+            Stream.Position = (nodeIndex * BlockSize);
             level = Stream.ReadByte();
             if (level != 0)
                 throw new Exception("Node levels corrupt");
 #endif
-            Stream.Position = nodeIndex * BlockSize;
+            Stream.Position = (nodeIndex * BlockSize);
             return LeafNodeGetValueAddress(key);
         }
 
