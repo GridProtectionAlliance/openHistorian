@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BPlusTreeGet.cs - Gbtc
+//  BPlusTree_Get.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -40,45 +40,14 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <remarks>this function is designed to be recursive and will continue calling itself until the data is reached.</remarks>
         TValue GetKey(uint nodeIndex, byte nodeLevel, TKey key)
         {
-
-            if (nodeLevel > 0)
+            m_cache.GetCachedMatch(ref nodeLevel, ref nodeIndex, key);
+            
+            for (byte levelCount = nodeLevel; levelCount > 0; levelCount--)
             {
-                for (byte x = nodeLevel; x > 0; x--)
-                {
-                    if (cache[x - 1].IsMatch(key))
-                    {
-                        nodeIndex = cache[x - 1].Bucket;
-                        nodeLevel = (byte)(x - 1);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                nodeIndex = InternalNodeGetNodeIndex(key, nodeIndex, levelCount);
             }
 
-            byte level;
-            for (int levelCount = nodeLevel; levelCount > 0; levelCount--)
-            {
-#if DEBUG
-                Stream.Position = (nodeIndex * BlockSize);
-                level = Stream.ReadByte();
-                if (level != levelCount)
-                    throw new Exception("Node levels corrupt");
-#endif
-                Stream.Position = (nodeIndex * BlockSize);
-                nodeIndex = InternalNodeGetNodeIndex(key);
-
-            }
-
-#if DEBUG
-            Stream.Position = (nodeIndex * BlockSize);
-            level = Stream.ReadByte();
-            if (level != 0)
-                throw new Exception("Node levels corrupt");
-#endif
-            Stream.Position = (nodeIndex * BlockSize);
-            return LeafNodeGetValueAddress(key);
+            return LeafNodeGetValueAddress(key, nodeIndex);
         }
 
     }

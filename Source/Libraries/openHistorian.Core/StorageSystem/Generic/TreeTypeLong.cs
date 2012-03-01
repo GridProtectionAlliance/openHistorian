@@ -7,7 +7,10 @@ namespace openHistorian.Core.StorageSystem.Generic
 {
     struct TreeTypeLong : ITreeType<TreeTypeLong>
     {
-
+        //public TreeTypeLong()
+        //{
+            
+        //}
         public TreeTypeLong(long value)
         {
             Value = value;

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BPlusTreeAdd.cs - Gbtc
+//  BPlusTree_Add.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/18/2012 - Steven E. Chisholm
+//  2/27/2012 - Steven E. Chisholm
 //       Generated original version of source code.
 //
 //******************************************************************************************************
@@ -25,9 +25,6 @@ using System;
 
 namespace openHistorian.Core.StorageSystem.Generic
 {
-    /// <summary>
-    /// This class only concerns itself with the Add requirement of the B+ Tree.
-    /// </summary>
     public partial class BPlusTree<TKey, TValue>
     {
         #region [ Methods ]
@@ -37,79 +34,46 @@ namespace openHistorian.Core.StorageSystem.Generic
             uint currentNodeIndex = nodeIndex;
             byte currentNodeLevel = nodeLevel;
 
-            if (nodeLevel > 0)
+            m_cache.GetCachedMatch(ref currentNodeLevel, ref currentNodeIndex, key);
+
+            for (byte levelCount = currentNodeLevel; levelCount > 0; levelCount--)
             {
-                for (byte x = nodeLevel; x > 0; x--)
-                {
-                    if (cache[x - 1].IsMatch(key))
-                    {
-                        currentNodeIndex = cache[x - 1].Bucket;
-                        currentNodeLevel = (byte)(x - 1);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                currentNodeIndex = InternalNodeGetNodeIndex(key, currentNodeIndex, levelCount);
             }
 
-            for (int levelCount = currentNodeLevel; levelCount > 0; levelCount--)
-            {
-#if DEBUG
-                Stream.Position = (currentNodeIndex * BlockSize);
-                if (Stream.ReadByte() != levelCount)
-                    throw new Exception("Node levels corrupt");
-#endif
-                Stream.Position = currentNodeIndex * BlockSize;
-                currentNodeIndex = InternalNodeGetNodeIndex(key);
-            }
-
-
-#if DEBUG
-            Stream.Position = (currentNodeIndex * BlockSize);
-            if (Stream.ReadByte() != 0)
-                throw new Exception("Node levels corrupt");
-#endif
-
-            Stream.Position = currentNodeIndex * BlockSize;
-            InsertResults results = LeafNodeTryInsertKey(key, value);
+            InsertResults results = LeafNodeTryInsertKey(key, value, currentNodeIndex);
             if (results == InsertResults.InsertedOK)
                 return;
             if (results == InsertResults.DuplicateKeyError)
                 throw new Exception("Key already exists");
 
             AddItemSplitIsRequired(key, value, ref nodeIndex, ref nodeLevel);
-            
         }
 
         void AddItemSplitIsRequired(TKey key, TValue value, ref uint nodeIndex, ref byte nodeLevel)
         {
-            SplitDetails split = AddItemSplitIsRequiredRecursive(key, value, nodeIndex);
+            SplitDetails split = AddItemSplitIsRequiredRecursive(key, value, nodeIndex, nodeLevel);
             //if the highest layer requires a split, a new root must be created.
             if (split.IsSplit)
             {
                 nodeLevel += 1;
                 nodeIndex = InternalNodeCreateEmptyNode(nodeLevel, split.LesserIndex, split.Key, split.GreaterIndex);
-                ClearCache(nodeLevel);
+                m_cache.ClearCache(nodeLevel);
             }
         }
 
-        SplitDetails AddItemSplitIsRequiredRecursive(TKey key, TValue value, uint currentNodeIndex)
+        SplitDetails AddItemSplitIsRequiredRecursive(TKey key, TValue value, uint currentNodeIndex, byte nodeLevel)
         {
-            NodeHeader node = new NodeHeader(Stream, BlockSize, currentNodeIndex);
-            if (node.Level > 0)
+            if (nodeLevel > 0)
             {
-                //Get the child and call this function recursively
-                Stream.Position = currentNodeIndex * BlockSize;
-               
-                uint childIndex = InternalNodeGetNodeIndex(key);
-                
-                SplitDetails split = AddItemSplitIsRequiredRecursive(key, value, childIndex);
+                uint childIndex = InternalNodeGetNodeIndex(key, currentNodeIndex,nodeLevel);
+
+                SplitDetails split = AddItemSplitIsRequiredRecursive(key, value, childIndex, (byte) (nodeLevel-1));
                 
                 //if the child was split, add the new split item to this index with the option of splitting this index also
                 if (split.IsSplit)
                 {
-                    return AddToInternalNodeSplitIfRequired(split.Key, split.GreaterIndex, currentNodeIndex);
+                    return AddToInternalNodeSplitIfRequired(split.Key, split.GreaterIndex, currentNodeIndex, nodeLevel);
                 }
                 return default(SplitDetails);
             }
@@ -119,24 +83,17 @@ namespace openHistorian.Core.StorageSystem.Generic
             }
         }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="indexToAdd"></param>
-        /// <param name="currentNodeIndex"></param>
-        /// <returns>The details of the split if it was acomplished.</returns>
-        SplitDetails AddToInternalNodeSplitIfRequired(TKey key, uint indexToAdd, uint currentNodeIndex)
+        SplitDetails AddToInternalNodeSplitIfRequired(TKey key, uint indexToAdd, uint currentNodeIndex, byte nodeLevel)
         {
-
             SplitDetails split = default(SplitDetails);
-            NodeHeader node = new NodeHeader(Stream, BlockSize, currentNodeIndex);
-            if (node.Level == 0)
+            NodeHeader node = new NodeHeader(m_stream, m_blockSize, currentNodeIndex);
+            if (node.Level != nodeLevel)
                 throw new Exception();
 
-            InsertResults results = InternalNodeTryInsertKey(key, indexToAdd, currentNodeIndex);
+            InsertResults results = InternalNodeTryInsertKey(key, indexToAdd, currentNodeIndex,nodeLevel);
             if (results == InsertResults.InsertedOK)
             {
-                ClearCache(node.Level);
+                m_cache.ClearCache(node.Level);
                 return split;
             }
             if (results == InsertResults.DuplicateKeyError)
@@ -145,20 +102,19 @@ namespace openHistorian.Core.StorageSystem.Generic
             split.IsSplit = true;
             split.LesserIndex = currentNodeIndex;
 
-            InternalNodeSplitNode(split.LesserIndex, out split.GreaterIndex, out split.Key);
+            InternalNodeSplitNode(split.LesserIndex, out split.GreaterIndex, out split.Key,nodeLevel);
 
             if (key.CompareTo(split.Key) >= 0)//(key >= split.Key)
             {
-                InternalNodeTryInsertKey(key, indexToAdd, split.GreaterIndex);
+                InternalNodeTryInsertKey(key, indexToAdd, split.GreaterIndex, nodeLevel);
             }
             else
             {
-                InternalNodeTryInsertKey(key, indexToAdd, split.LesserIndex);
+                InternalNodeTryInsertKey(key, indexToAdd, split.LesserIndex, nodeLevel);
             }
-            ClearCache(node.Level);
+            m_cache.ClearCache(node.Level);
             return split;
         }
-
 
         /// <summary>
         /// If a node split is required, this recursive function will need to be called to accomplish the split.
@@ -170,12 +126,11 @@ namespace openHistorian.Core.StorageSystem.Generic
         SplitDetails AddToLeafNodeSplitIfRequired(TKey key, TValue value, uint currentNodeIndex)
         {
             SplitDetails split = default(SplitDetails);
-            NodeHeader node = new NodeHeader(Stream, BlockSize, currentNodeIndex);
+            NodeHeader node = new NodeHeader(m_stream, m_blockSize, currentNodeIndex);
             if (node.Level != 0)
                 throw new Exception();
 
-            Stream.Position = currentNodeIndex * BlockSize;
-            InsertResults results = LeafNodeTryInsertKey(key, value);
+            InsertResults results = LeafNodeTryInsertKey(key, value, currentNodeIndex);
             if (results == InsertResults.InsertedOK)
             {
                 return split;
@@ -191,13 +146,11 @@ namespace openHistorian.Core.StorageSystem.Generic
             //Add the data after the split
             if (key.CompareTo(split.Key) >= 0)//(key >= split.Key)
             {
-                Stream.Position = split.GreaterIndex * BlockSize;
-                LeafNodeTryInsertKey(key, value);
+                LeafNodeTryInsertKey(key, value, split.GreaterIndex);
             }
             else
             {
-                Stream.Position = split.LesserIndex * BlockSize;
-                LeafNodeTryInsertKey(key, value);
+                LeafNodeTryInsertKey(key, value, split.LesserIndex);
             }
             return split;
         }

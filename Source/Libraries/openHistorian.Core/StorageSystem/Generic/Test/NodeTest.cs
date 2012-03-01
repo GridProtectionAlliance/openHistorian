@@ -5,7 +5,6 @@ using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-
 namespace openHistorian.Core.StorageSystem.Generic
 {
     class NodeTest
@@ -68,8 +67,8 @@ namespace openHistorian.Core.StorageSystem.Generic
             }
 
             sw2.Stop();
-            //MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
-            //    (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
+            MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
+                (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
         }
         static void TestSortedList(int seed)
         {

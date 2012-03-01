@@ -8,7 +8,7 @@ namespace openHistorian.Core.StorageSystem.Generic
     public enum SearchResults
     {
         StartOfExactMatch,
-        RightAfterClosestMatchWithoutGoingOver,
+        StartOfInsertPosition,
         StartOfEndOfStream
     }
 }

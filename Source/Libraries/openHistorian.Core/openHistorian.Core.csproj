@@ -17,6 +17,21 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -98,23 +113,23 @@
     <Compile Include="PooledMemoryStream.cs" />
     <Compile Include="StorageSystem\BinaryStream.cs" />
     <Compile Include="StorageSystem\Generic\BPlusTree.cs" />
-    <Compile Include="StorageSystem\Generic\BPlusTreeAdd.cs" />
-    <Compile Include="StorageSystem\Generic\BPlusTreeGet.cs" />
-    <Compile Include="StorageSystem\Generic\BucketCache.cs" />
+    <Compile Include="StorageSystem\Generic\BPlusTree_Add.cs" />
+    <Compile Include="StorageSystem\Generic\BPlusTree_Get.cs" />
+    <Compile Include="StorageSystem\Generic\TreeLookupCache.cs" />
     <Compile Include="StorageSystem\Generic\TreeTypeInt.cs" />
     <Compile Include="StorageSystem\Generic\InsertResults.cs" />
-    <Compile Include="StorageSystem\Generic\InternalNode.cs" />
+    <Compile Include="StorageSystem\Generic\BPlusTree_InternalNode.cs" />
     <Compile Include="StorageSystem\Generic\ITreeType.cs" />
-    <Compile Include="StorageSystem\Generic\LeafNode.cs" />
+    <Compile Include="StorageSystem\Generic\BPlusTree_LeafNode.cs" />
     <Compile Include="StorageSystem\Generic\NodeHeader.cs" />
     <Compile Include="StorageSystem\Generic\SearchResults.cs" />
-    <Compile Include="StorageSystem\Generic\SplitDetails.cs" />
+    <Compile Include="StorageSystem\Generic\BPlusTree_SplitDetails.cs" />
     <Compile Include="StorageSystem\Generic\Test\InternalNodeTest.cs" />
     <Compile Include="StorageSystem\Generic\Test\LeafNodeTest.cs" />
     <Compile Include="StorageSystem\Generic\Test\NodeHeaderTest.cs" />
     <Compile Include="StorageSystem\Generic\Test\NodeTest.cs" />
     <Compile Include="StorageSystem\Generic\Test\TreeHeaderTest.cs" />
-    <Compile Include="StorageSystem\Generic\TreeHeader.cs" />
+    <Compile Include="StorageSystem\Generic\BPlusTree_TreeHeader.cs" />
     <Compile Include="StorageSystem\Generic\TreeTypeLong.cs" />
     <Compile Include="StorageSystem\File\IndexBufferPool.cs" />
     <Compile Include="StorageSystem\File\Test Procedures\BenchmarkPageSizes.cs" />
@@ -215,7 +230,28 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="PointStream\Sorting\" />
-    <Folder Include="StorageSystem\BlockSorter\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

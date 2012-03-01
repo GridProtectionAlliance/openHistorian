@@ -11,17 +11,17 @@ namespace openHistorian.Core
         {
             Test2();
             System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.Batch;
-            openHistorian.Core.StorageSystem.File.ArchiveConstants.Test();
-            openHistorian.Core.StorageSystem.File.DiskIOMemoryStreamTest.Test();
-            openHistorian.Core.StorageSystem.File.DiskIOUnbufferedTest.Test();
-            openHistorian.Core.StorageSystem.File.FileMetaDataTest.Test();
-            openHistorian.Core.StorageSystem.File.FileAllocationTableTest.Test();
-            openHistorian.Core.StorageSystem.File.IndexMapperTest.Test();
-            openHistorian.Core.StorageSystem.File.IndexParserTest.Test();
-            openHistorian.Core.StorageSystem.File.ShadowCopyAllocatorTest.Test();
-            openHistorian.Core.StorageSystem.File.ArchiveFileStreamTest.Test();
-            openHistorian.Core.StorageSystem.File.TransactionalEditTest.Test();
-            openHistorian.Core.StorageSystem.File.FileSystemSnapshotServiceTest.Test();
+            //openHistorian.Core.StorageSystem.File.ArchiveConstants.Test();
+            //openHistorian.Core.StorageSystem.File.DiskIOMemoryStreamTest.Test();
+            //openHistorian.Core.StorageSystem.File.DiskIOUnbufferedTest.Test();
+            //openHistorian.Core.StorageSystem.File.FileMetaDataTest.Test();
+            //openHistorian.Core.StorageSystem.File.FileAllocationTableTest.Test();
+            //openHistorian.Core.StorageSystem.File.IndexMapperTest.Test();
+            //openHistorian.Core.StorageSystem.File.IndexParserTest.Test();
+            //openHistorian.Core.StorageSystem.File.ShadowCopyAllocatorTest.Test();
+            //openHistorian.Core.StorageSystem.File.ArchiveFileStreamTest.Test();
+            //openHistorian.Core.StorageSystem.File.TransactionalEditTest.Test();
+            //openHistorian.Core.StorageSystem.File.FileSystemSnapshotServiceTest.Test();
 
             openHistorian.Core.CompressionTest.Test();
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeHeader.cs - Gbtc
+//  BPlusTree_TreeHeader.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,56 +27,39 @@ namespace openHistorian.Core.StorageSystem.Generic
 {
     public partial class BPlusTree<TKey, TValue>
     {
-        public static Guid FileType = new Guid("{7bfa9083-701e-4596-8273-8680a739271d}");
-        BinaryStream Stream;
-        int BlockSize;
-        uint RootIndexAddress;
-        byte RootIndexLevel;
-        int MaximumLeafNodeChildren;
-        int MaximumInternalNodeChildren;
-        uint NextUnallocatedBlock;
+        public static Guid s_fileType = new Guid("{7bfa9083-701e-4596-8273-8680a739271d}");
+        BinaryStream m_stream;
+        int m_blockSize;
+        uint m_rootIndexAddress;
+        byte m_rootIndexLevel;
+        int m_maximumLeafNodeChildren;
+        int m_maximumInternalNodeChildren;
+        uint m_nextUnallocatedBlock;
 
-        void TreeHeader(BinaryStream stream)
-        {
-            Load(stream);
-        }
-
-        void TreeHeader(BinaryStream stream, int blockSize)
-        {
-            Stream = stream;
-            BlockSize = blockSize;
-            MaximumLeafNodeChildren = LeafNodeCalculateMaximumChildren();
-            MaximumInternalNodeChildren = InternalNodeCalculateMaximumChildren();
-            NextUnallocatedBlock = 1;
-            RootIndexAddress = LeafNodeCreateEmptyNode();
-            RootIndexLevel = 0;
-            Save(stream);
-            Load(stream);
-        }
         void Load(BinaryStream stream)
         {
-            Stream = stream;
-            Stream.Position = 0;
-            if (FileType != stream.ReadGuid())
+            m_stream = stream;
+            m_stream.Position = 0;
+            if (s_fileType != stream.ReadGuid())
                 throw new Exception("Header Corrupt");
-            if (Stream.ReadByte() != 0)
+            if (m_stream.ReadByte() != 0)
                 throw new Exception("Header Corrupt");
-            NextUnallocatedBlock = stream.ReadUInt32();
-            BlockSize = stream.ReadInt32();
-            MaximumLeafNodeChildren = LeafNodeCalculateMaximumChildren();
-            MaximumInternalNodeChildren = InternalNodeCalculateMaximumChildren();
-            RootIndexAddress = stream.ReadUInt32();
-            RootIndexLevel = stream.ReadByte();
+            m_nextUnallocatedBlock = stream.ReadUInt32();
+            m_blockSize = stream.ReadInt32();
+            m_maximumLeafNodeChildren = LeafNodeCalculateMaximumChildren();
+            m_maximumInternalNodeChildren = InternalNodeCalculateMaximumChildren();
+            m_rootIndexAddress = stream.ReadUInt32();
+            m_rootIndexLevel = stream.ReadByte();
         }
         void Save(BinaryStream stream)
         {
             stream.Position = 0;
-            stream.Write(FileType);
+            stream.Write(s_fileType);
             stream.Write((byte)0); //Version
-            stream.Write(NextUnallocatedBlock);
-            stream.Write(BlockSize);
-            stream.Write(RootIndexAddress); //Root Index
-            stream.Write(RootIndexLevel); //Root Index
+            stream.Write(m_nextUnallocatedBlock);
+            stream.Write(m_blockSize);
+            stream.Write(m_rootIndexAddress); //Root Index
+            stream.Write(m_rootIndexLevel); //Root Index
         }
 
         /// <summary>
@@ -86,8 +69,8 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// <returns></returns>
         uint AllocateNewNode()
         {
-            uint newBlock = NextUnallocatedBlock;
-            NextUnallocatedBlock++;
+            uint newBlock = m_nextUnallocatedBlock;
+            m_nextUnallocatedBlock++;
             return newBlock;
         }
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  LeafNode.cs - Gbtc
+//  BPlusTree_LeafNode.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,26 +27,29 @@ namespace openHistorian.Core.StorageSystem.Generic
 {
     public partial class BPlusTree<TKey, TValue>
     {
-        int LeafStructureSize;
+        /// <summary>
+        /// The number of bytes in a leaf node.  This is the size of the key plus 4 byte pointer.
+        /// </summary>
+        int m_leafStructureSize;
 
         int LeafNodeCalculateMaximumChildren()
         {
-            return (BlockSize - NodeHeader.Size) / LeafStructureSize;
+            return (m_blockSize - NodeHeader.Size) / m_leafStructureSize;
         }
 
         /// <summary>
         /// Splits an existing node into two halfs
         /// </summary>
-        /// <param name="nodeToSplitIndex"></param>
-        /// <param name="greaterNodeIndex"></param>
-        /// <param name="firstKeyInGreaterNode"></param>
+        /// <param name="nodeToSplitIndex">the node index value to split</param>
+        /// <param name="greaterNodeIndex">the index value of the second half of the items in the list</param>
+        /// <param name="firstKeyInGreaterNode">the key that splits the two entries</param>
         void LeafNodeSplitNode(uint nodeToSplitIndex, out uint greaterNodeIndex, out TKey firstKeyInGreaterNode)
         {
             NodeHeader origionalNode = default(NodeHeader);
             NodeHeader newNode = default(NodeHeader);
             NodeHeader foreignNode = default(NodeHeader);
 
-            origionalNode.Load(Stream, BlockSize, nodeToSplitIndex);
+            origionalNode.Load(m_stream, m_blockSize, nodeToSplitIndex);
             if (origionalNode.Level != 0)
                 throw new Exception();
             if (origionalNode.ChildCount < 2)
@@ -57,59 +60,37 @@ namespace openHistorian.Core.StorageSystem.Generic
             short itemsInSecondNode = (short)(origionalNode.ChildCount - itemsInFirstNode);
 
             greaterNodeIndex = AllocateNewNode();
-            long sourceStartingAddress = nodeToSplitIndex * BlockSize + NodeHeader.Size + LeafStructureSize * itemsInFirstNode;
-            long targetStartingAddress = greaterNodeIndex * BlockSize + NodeHeader.Size;
+            long sourceStartingAddress = nodeToSplitIndex * m_blockSize + NodeHeader.Size + m_leafStructureSize * itemsInFirstNode;
+            long targetStartingAddress = greaterNodeIndex * m_blockSize + NodeHeader.Size;
 
             //lookup the first key that will be copied
-            Stream.Position = sourceStartingAddress;
+            m_stream.Position = sourceStartingAddress;
             firstKeyInGreaterNode=new TKey();
-            firstKeyInGreaterNode.LoadValue(Stream);
+            firstKeyInGreaterNode.LoadValue(m_stream);
 
             //do the copy
-            Stream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * LeafStructureSize);
+            m_stream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * m_leafStructureSize);
 
             //update the first header
             origionalNode.ChildCount = itemsInFirstNode;
             origionalNode.NextNode = greaterNodeIndex;
-            origionalNode.Save(Stream, BlockSize, nodeToSplitIndex);
+            origionalNode.Save(m_stream, m_blockSize, nodeToSplitIndex);
 
             //update the second header
             newNode.Level = 0;
             newNode.ChildCount = itemsInSecondNode;
             newNode.PreviousNode = nodeToSplitIndex;
             newNode.NextNode = nextNode;
-            newNode.Save(Stream, BlockSize, greaterNodeIndex);
+            newNode.Save(m_stream, m_blockSize, greaterNodeIndex);
 
             //update the node that used to be after the first one.
             if (nextNode != 0)
             {
-                foreignNode.Load(Stream, BlockSize, nextNode);
+                foreignNode.Load(m_stream, m_blockSize, nextNode);
                 foreignNode.PreviousNode = greaterNodeIndex;
-                foreignNode.Save(Stream, BlockSize, nextNode);
+                foreignNode.Save(m_stream, m_blockSize, nextNode);
             }
         }
-
-
-        /// <summary>
-        /// Starting from the first byte of the node, 
-        /// this method will return the value address for the key provided.
-        /// If the key could not be found, -1 is returned.
-        /// </summary>
-        /// <param name="key">the key to search for</param>
-        /// <returns></returns>
-        TValue LeafNodeGetValueAddress(TKey key)
-        {
-            if (LeafNodeSeekToKey(key) == SearchResults.StartOfExactMatch)
-            {
-                Stream.Position += KeySize;
-                TValue value = default(TValue);
-               // TValue value = new TValue();
-                value.LoadValue(Stream);
-                return value;
-            }
-            return default(TValue);
-        }
-
 
         /// <summary>
         /// Starting from the first byte of the node, 
@@ -118,25 +99,27 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// </summary>
         /// <param name="key">the key to insert</param>
         /// <param name="value">the address to insert into this node</param>
+        /// <param name="nodeIndex">the index of the node to be modified</param>
         /// <returns>The results of the insert</returns>
-        InsertResults LeafNodeTryInsertKey(TKey key, TValue value)
+        InsertResults LeafNodeTryInsertKey(TKey key, TValue value, uint nodeIndex)
         {
-            //Determine if the node is full. Reset the position afterwards
-            long nodePosition = Stream.Position;
+            long nodePositionStart = nodeIndex * m_blockSize;
+            m_stream.Position = nodePositionStart;
 
-            byte level = Stream.ReadByte();
-            short childCount = Stream.ReadInt16();
-            if (childCount >= MaximumLeafNodeChildren)
+            byte level = m_stream.ReadByte();
+            short childCount = m_stream.ReadInt16();
+            if (childCount >= m_maximumLeafNodeChildren)
                 return InsertResults.NodeIsFullError;
-            Stream.Position = nodePosition;
+
+            m_stream.Position = nodePositionStart;
 
             //Find the best location to insert
-            SearchResults search = LeafNodeSeekToKey(key);
+            SearchResults search = LeafNodeSeekToKey(key,nodeIndex);
             if (search == SearchResults.StartOfExactMatch)
                 return InsertResults.DuplicateKeyError;
 
 
-            int spaceToMove = NodeHeader.Size + LeafStructureSize * childCount - (int)(Stream.Position - nodePosition);
+            int spaceToMove = NodeHeader.Size + m_leafStructureSize * childCount - (int)(m_stream.Position - nodePositionStart);
 #if DEBUG
             if (spaceToMove < 0)
                 throw new Exception("Problem calculating the space to move");
@@ -146,16 +129,36 @@ namespace openHistorian.Core.StorageSystem.Generic
 
             //Insert the data
             if (spaceToMove>0) 
-                Stream.InsertBytes(LeafStructureSize, spaceToMove);
-            key.SaveValue(Stream);
-            value.SaveValue(Stream);
+                m_stream.InsertBytes(m_leafStructureSize, spaceToMove);
+            key.SaveValue(m_stream);
+            value.SaveValue(m_stream);
             
             //save the header
-            Stream.Position = nodePosition + 1;
+            m_stream.Position = nodePositionStart + 1;
             childCount++;
-            Stream.Write(childCount);
+            m_stream.Write(childCount);
 
             return InsertResults.InsertedOK;
+        }
+
+        /// <summary>
+        /// Starting from the first byte of the node, 
+        /// this method will return the value address for the key provided.
+        /// If the key could not be found, -1 is returned.
+        /// </summary>
+        /// <param name="key">the key to search for</param>
+        /// <param name="nodeIndex">the index of the node to be modified</param>
+        /// <returns></returns>
+        TValue LeafNodeGetValueAddress(TKey key, uint nodeIndex)
+        {
+            if (LeafNodeSeekToKey(key, nodeIndex) == SearchResults.StartOfExactMatch)
+            {
+                m_stream.Position += m_keySize;
+                TValue value = new TValue();
+                value.LoadValue(m_stream);
+                return value;
+            }
+            return default(TValue);
         }
 
         /// <summary>
@@ -163,19 +166,15 @@ namespace openHistorian.Core.StorageSystem.Generic
         /// this will seek the current node for the best match of the key provided.
         /// </summary>
         /// <param name="key">the key to search for</param>
+        /// <param name="nodeIndex">the index of the node to be modified</param>
         /// <returns>the stream positioned at the spot corresponding to the returned search results.</returns>
-        SearchResults LeafNodeSeekToKey(TKey key)
+        SearchResults LeafNodeSeekToKey(TKey key, uint nodeIndex)
         {
-            
+            m_stream.Position = nodeIndex * m_blockSize;
 
-#if DEBUG
-            if (Stream.Position % BlockSize != 0)
-                throw new Exception("The position must be set to the beginning of the stream");
-#endif
-
-            long startAddress = Stream.Position + NodeHeader.Size;
-            byte level = Stream.ReadByte();
-            short childCount = Stream.ReadInt16();
+            long startAddress = m_stream.Position + NodeHeader.Size;
+            byte level = m_stream.ReadByte();
+            short childCount = m_stream.ReadInt16();
             if (level != 0)
                 throw new Exception();
 
@@ -185,11 +184,11 @@ namespace openHistorian.Core.StorageSystem.Generic
             while (min <= max)
             {
                 int mid = min + (max - min >> 1);
-                Stream.Position = startAddress + LeafStructureSize * mid;
-                int tmpKey = key.CompareToStream(Stream);
+                m_stream.Position = startAddress + m_leafStructureSize * mid;
+                int tmpKey = key.CompareToStream(m_stream);
                 if (tmpKey == 0)
                 {
-                    Stream.Position -= KeySize;
+                    m_stream.Position -= m_keySize;
                     return SearchResults.StartOfExactMatch;
                 }
                 if (tmpKey > 0)
@@ -197,10 +196,10 @@ namespace openHistorian.Core.StorageSystem.Generic
                 else
                     max = mid - 1;
             }
-            Stream.Position = startAddress + LeafStructureSize * min;
+            m_stream.Position = startAddress + m_leafStructureSize * min;
             if (childCount == 0 || min == childCount)
                 return SearchResults.StartOfEndOfStream;
-            return SearchResults.RightAfterClosestMatchWithoutGoingOver;
+            return SearchResults.StartOfInsertPosition;
         }
 
 //        /// <summary>
@@ -260,15 +259,15 @@ namespace openHistorian.Core.StorageSystem.Generic
         uint LeafNodeCreateEmptyNode()
         {
             uint nodeAddress = AllocateNewNode();
-            Stream.Position = BlockSize * nodeAddress;
+            m_stream.Position = m_blockSize * nodeAddress;
 
             //Clearing the Node
             //Level = 0;
             //ChildCount = 0;
             //NextNode = 0;
             //PreviousNode = 0;
-            Stream.Write(0L);
-            Stream.Write(0);
+            m_stream.Write(0L);
+            m_stream.Write(0);
 
             return nodeAddress;
         }
