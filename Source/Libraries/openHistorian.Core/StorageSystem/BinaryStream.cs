@@ -101,26 +101,26 @@ namespace openHistorian.Core.StorageSystem
             Clear();
         }
 
-        //public bool GetRawDataBlock(bool isWriting, out byte[] buffer, out int currentIndex, out int validLength)
-        //{
-        //    if (isWriting)
-        //    {
-        //        if (RemainingLengthWrite<=0)
-        //            UpdateLocalBuffer(true);
-        //        buffer = m_buffer;
-        //        currentIndex = m_currentIndex;
-        //        validLength = RemainingLengthWrite;
-        //    }
-        //    else
-        //    {
-        //        if (RemainingLength <= 0)
-        //            UpdateLocalBuffer(false); 
-        //        buffer = m_buffer;
-        //        currentIndex = m_currentIndex;
-        //        validLength = RemainingLength;
-        //    }
-        //    return true;
-        //}
+        public bool GetRawDataBlock(bool isWriting, out byte[] buffer, out int currentIndex, out int validLength)
+        {
+            if (isWriting)
+            {
+                if (RemainingLengthWrite <= 0)
+                    UpdateLocalBuffer(true);
+                buffer = m_buffer;
+                currentIndex = m_currentIndex;
+                validLength = RemainingLengthWrite;
+            }
+            else
+            {
+                if (RemainingLength <= 0)
+                    UpdateLocalBuffer(false);
+                buffer = m_buffer;
+                currentIndex = m_currentIndex;
+                validLength = RemainingLength;
+            }
+            return true;
+        }
 
         //public void PositionSet(long value)
         //{

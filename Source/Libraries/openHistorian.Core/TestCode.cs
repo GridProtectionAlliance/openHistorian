@@ -34,8 +34,9 @@ namespace openHistorian.Core
             //openHistorian.Core.DataWriter.TestWritingPoints.Test();
 
             //openHistorian.Core.StorageSystem.Generic.LeafNodeTest.Test();
-            
-            openHistorian.Core.StorageSystem.Generic.NodeTest.Test();
+
+            //openHistorian.Core.StorageSystem.Generic.NodeTest.Test();
+            openHistorian.Core.StorageSystem.Specialized.NodeTest.Test();
 
         }
         public static int Test2()

@@ -42,8 +42,8 @@ namespace openHistorian.Core.StorageSystem.Generic
 
             for (int x = 0; x < count; x++)
             {
-                //key.Value = ((long)rand.Next() << 32) | rand.Next();
-                key.Value += rand.Next();
+                key.Value = ((long)rand.Next() << 32) | rand.Next();
+                //key.Value += rand.Next();
                 data.Value = rand.Next();
                 tree.AddData(key, data);
             }
@@ -57,8 +57,8 @@ namespace openHistorian.Core.StorageSystem.Generic
             key = origKey;
             for (int x = 0; x < count; x++)
             {
-                //key.Value = ((long)rand.Next() << 32) | rand.Next(); 
-                key.Value += rand.Next();
+                key.Value = ((long)rand.Next() << 32) | rand.Next(); 
+                //key.Value += rand.Next();
                 data.Value = rand.Next();
 
                 data2 = tree.GetData(key).Value;
