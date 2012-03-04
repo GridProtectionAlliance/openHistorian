@@ -113,6 +113,8 @@
     <Compile Include="PooledMemoryStream.cs" />
     <Compile Include="StorageSystem\BinaryStream.cs" />
     <Compile Include="StorageSystem\Specialized\BPlusTree.cs" />
+    <Compile Include="StorageSystem\Specialized\DataReader.cs" />
+    <Compile Include="StorageSystem\Specialized\InternalNodeMethods.cs" />
     <Compile Include="StorageSystem\Specialized\ITreeInternalNodeMethods.cs" />
     <Compile Include="StorageSystem\Specialized\Delegates.cs" />
     <Compile Include="StorageSystem\Specialized\BPlusTree_TreeHeader.cs" />
@@ -120,6 +122,7 @@
     <Compile Include="StorageSystem\Specialized\ITreeLeafNodeMethods.cs" />
     <Compile Include="StorageSystem\Specialized\IKeyType.cs" />
     <Compile Include="StorageSystem\Specialized\IValueType.cs" />
+    <Compile Include="StorageSystem\Specialized\LeafNodeMethods.cs" />
     <Compile Include="StorageSystem\Specialized\NodeHeader.cs" />
     <Compile Include="StorageSystem\Specialized\SearchResults.cs" />
     <Compile Include="StorageSystem\Specialized\Test\NodeTest.cs" />

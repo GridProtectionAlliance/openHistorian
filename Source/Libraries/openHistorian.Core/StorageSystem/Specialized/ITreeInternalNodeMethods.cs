@@ -9,9 +9,11 @@ namespace openHistorian.Core.StorageSystem.Specialized
     {
         void Initialize(BinaryStream stream, byte nodeLevel, int blockSize, AllocateNewNode allocateNewNode, NodeSplitRequired<TKey> nodeSplit);
 
-        void Insert(uint nodeIndex, byte nodeLevel, TKey key, uint childNodeIndex);
+        void SetCurrentNode(uint nodeIndex, bool isForWriting);
 
-        uint GetNodeIndex(uint nodeIndex, byte nodeLevel, TKey key);
+        void Insert(TKey key, uint childNodeIndex);
+
+        uint GetNodeIndex(TKey key);
 
         uint CreateEmptyNode(byte level, uint childNodeBefore, TKey key, uint childNodeAfter);
     }

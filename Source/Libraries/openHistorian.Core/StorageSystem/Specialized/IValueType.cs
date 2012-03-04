@@ -5,10 +5,20 @@ using System.Text;
 
 namespace openHistorian.Core.StorageSystem.Specialized
 {
-    public interface IValueType
+    public interface IValueType<T>
     {
         int SizeOf { get; }
         void LoadValue(BinaryStream stream);
         void SaveValue(BinaryStream stream);
+       
+        /// <summary>
+        /// Return 0 if equal. 
+        /// Return -1 if instance is before stream
+        /// Return 1 if instance is after stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        int CompareToStream(BinaryStream stream);
+        int CompareTo(T key);
     }
 }

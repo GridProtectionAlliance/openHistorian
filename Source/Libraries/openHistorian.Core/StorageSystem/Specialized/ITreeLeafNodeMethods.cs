@@ -7,13 +7,22 @@ namespace openHistorian.Core.StorageSystem.Specialized
 {
     public interface ITreeLeafNodeMethods<TKey>
     {
+
         void Initialize(BinaryStream stream, int blockSize, int valueSize, MethodCall writeValue, MethodCall readValue, AllocateNewNode allocateNewNode, NodeSplitRequired<TKey> nodeSplit);
-                
-        bool Insert(uint nodeIndex, TKey key);
+
+        void SetCurrentNode(uint nodeIndex, bool isForWriting);
+
+        bool Insert(TKey key);
         
-        bool GetValue(uint nodeIndex, TKey key);
+        bool GetValue(TKey key);
 
         uint CreateEmptyNode();
+
+        void PrepareForTableScan(TKey firstKey, TKey lastKey);
+
+        bool GetNextKeyTableScan(out TKey key);
+
+        void CloseTableScan();
 
     }
 }

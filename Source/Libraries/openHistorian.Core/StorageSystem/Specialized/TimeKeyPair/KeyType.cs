@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace openHistorian.Core.StorageSystem.Specialized.TimeKeyPair
 {
     [StructLayout(LayoutKind.Explicit)]
-    struct KeyType : IKeyType<KeyType>
+    struct KeyType : IKeyType<KeyType>, IValueType<KeyType>
     {
         [FieldOffset(0)]
         public DateTime Time;
@@ -16,37 +16,61 @@ namespace openHistorian.Core.StorageSystem.Specialized.TimeKeyPair
 
         public ITreeLeafNodeMethods<KeyType> GetLeafNodeMethods()
         {
-            return new LeafNodeMethods();
+            return new LeafNodeMethods<KeyType>();
         }
 
         public ITreeInternalNodeMethods<KeyType> GetInternalNodeMethods()
         {
-            return new InternalNodeMethods();
+            return new InternalNodeMethods<KeyType>();
         }
 
-        public static bool operator >(KeyType a, KeyType b)
+        public int SizeOf
         {
-            return (a.Time > b.Time) || (a.Time == b.Time && a.Key > b.Key);
+            get
+            {
+                return 16;
+            }
         }
-        public static bool operator <(KeyType a, KeyType b)
+
+        public void LoadValue(BinaryStream stream)
         {
-            return (a.Time < b.Time) || (a.Time == b.Time && a.Key < b.Key);
+            Time = stream.ReadDateTime();
+            Key = stream.ReadInt64();
         }
-        public static bool operator >=(KeyType a, KeyType b)
+
+        public void SaveValue(BinaryStream stream)
         {
-            return (a.Time >= b.Time) || (a.Time == b.Time && a.Key >= b.Key);
+            stream.Write(Time.Ticks);
+            stream.Write(Key);
         }
-        public static bool operator <=(KeyType a, KeyType b)
+
+        public int CompareToStream(BinaryStream stream)
         {
-            return (a.Time <= b.Time) || (a.Time == b.Time && a.Key <= b.Key);
+            DateTime time = stream.ReadDateTime();
+            long key = stream.ReadInt64();
+
+            if (Time.Ticks == time.Ticks && Key == key)
+                return 0;
+            if (Time.Ticks > time.Ticks)
+                return 1;
+            if (Time.Ticks < time.Ticks)
+                return -1;
+            if (Key > key)
+                return 1;
+            return -1;
+
         }
-        public static bool operator ==(KeyType a, KeyType b)
+        public int CompareTo(KeyType key)
         {
-            return (a.Time == b.Time && a.Key == b.Key);
-        }
-        public static bool operator !=(KeyType a, KeyType b)
-        {
-            return (a.Time != b.Time || a.Key != b.Key);
+            if (Time.Ticks == key.Time.Ticks && Key == key.Key)
+                return 0;
+            if (Time.Ticks > key.Time.Ticks)
+                return 1;
+            if (Time.Ticks < key.Time.Ticks)
+                return -1;
+            if (Key > key.Key)
+                return 1;
+            return -1;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace openHistorian.Core.StorageSystem.Specialized
     /// performance hit that a <see cref="SortedList{TKey,TValue}"/> does. </remarks>
     public partial class BPlusTree<TKey, TValue>
         where TKey : struct, IKeyType<TKey>
-        where TValue : struct, IValueType
+        where TValue : struct, IValueType<TValue>
     {
         #region [ Members ]
 
@@ -124,11 +124,13 @@ namespace openHistorian.Core.StorageSystem.Specialized
             uint nodeIndex = m_rootIndexAddress;
             for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
             {
-                nodeIndex = m_internalNode[levelCount].GetNodeIndex(nodeIndex, levelCount, key);
+                m_internalNode[levelCount].SetCurrentNode(nodeIndex,true);
+                nodeIndex = m_internalNode[levelCount].GetNodeIndex(key);
             }
             m_tmpValue = value;
-
-            if (m_leafNode.Insert(nodeIndex, key))
+            
+            m_leafNode.SetCurrentNode(nodeIndex,true);
+            if (m_leafNode.Insert(key))
                 return;
             throw new Exception("Key already exists");
         }
@@ -153,11 +155,20 @@ namespace openHistorian.Core.StorageSystem.Specialized
             uint nodeIndex = m_rootIndexAddress;
             for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
             {
-                nodeIndex = m_internalNode[levelCount].GetNodeIndex(nodeIndex, levelCount, key);
+                m_internalNode[levelCount].SetCurrentNode(nodeIndex, false);
+                nodeIndex = m_internalNode[levelCount].GetNodeIndex(key);
             }
-            if (m_leafNode.GetValue(nodeIndex, key))
+            
+            m_leafNode.SetCurrentNode(nodeIndex,false);
+            if (m_leafNode.GetValue(key))
                 return m_tmpValue;
             throw new Exception("Key Not Found");
+        }
+
+        public DataReader<TKey,TValue> ExecuteScan(TKey startKey, TKey stopKey)
+        {
+            return null;
+            //return new DataReader<TKey, TValue>(startKey, stopKey, this);
         }
 
         void ReadValueAtCurrentStreamPosition()
@@ -179,9 +190,11 @@ namespace openHistorian.Core.StorageSystem.Specialized
 
                 for (byte levelCount = nodeLevel; levelCount > level+1; levelCount--)
                 {
-                    nodeIndex = m_internalNode[levelCount].GetNodeIndex(nodeIndex, levelCount, middleKey);
+                    m_internalNode[levelCount].SetCurrentNode(nodeIndex, false);
+                    nodeIndex = m_internalNode[levelCount].GetNodeIndex(middleKey);
                 }
-                m_internalNode[level + 1].Insert(nodeIndex, (byte)(level + 1), middleKey, newIndex);
+                m_internalNode[level + 1].SetCurrentNode(nodeIndex, true);
+                m_internalNode[level + 1].Insert(middleKey, newIndex);
             }
             else
             {

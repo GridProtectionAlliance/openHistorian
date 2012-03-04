@@ -5,7 +5,7 @@ using System.Text;
 
 namespace openHistorian.Core.StorageSystem.Specialized
 {
-    struct TreeTypeLong : IValueType
+    struct TreeTypeLong : IValueType<TreeTypeLong>
     {
         //public TreeTypeLong()
         //{
