@@ -27,6 +27,12 @@ namespace openHistorian.Core.StorageSystem.Specialized
         uint m_nextNode;
         uint m_previousNode;
 
+        bool m_scanningTable;
+        TKey m_startKey;
+        TKey m_stopKey;
+        int m_oldIndex;
+
+
         public void Initialize(BinaryStream stream, int blockSize, int valueSize, MethodCall writeValue, MethodCall readValue, AllocateNewNode allocateNewNode, NodeSplitRequired<TKey> nodeSplit)
         {
             TKey key = default(TKey);
@@ -247,19 +253,41 @@ namespace openHistorian.Core.StorageSystem.Specialized
             return nodeAddress;
         }
 
+
         public void PrepareForTableScan(TKey firstKey, TKey lastKey)
         {
-            throw new NotImplementedException();
+            m_scanningTable = true;
+            m_startKey = firstKey;
+            m_stopKey = lastKey;
+            SeekToKey(firstKey, out m_oldIndex);
+            m_oldIndex = (m_oldIndex - NodeHeader.Size) / m_leafStructureSize;
         }
 
         public bool GetNextKeyTableScan(out TKey key)
         {
-            throw new NotImplementedException();
+            if (m_oldIndex >= m_childCount)
+            {
+                if (m_nextNode == 0)
+                {
+                    key = default(TKey);
+                    return false;
+                }
+                SetCurrentNode(m_nextNode, false);
+                m_oldIndex = 0;
+            }
+            m_stream.Position = m_currentNode * m_blockSize + m_oldIndex * m_leafStructureSize + NodeHeader.Size;
+            key = default(TKey);
+            key.LoadValue(m_stream);
+
+            if (m_stopKey.CompareTo(key) <= 0)
+                return false;
+            m_oldIndex++;
+            return true;
         }
 
         public void CloseTableScan()
         {
-            throw new NotImplementedException();
+            m_scanningTable = false;
         }
     }
 }

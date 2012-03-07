@@ -46,5 +46,9 @@ namespace openHistorian.Core.StorageSystem.Specialized
             }
             return m_value;
         }
+        public void Close()
+        {
+            m_leafMethods.CloseTableScan();
+        }
     }
 }

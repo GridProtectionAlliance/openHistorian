@@ -167,8 +167,16 @@ namespace openHistorian.Core.StorageSystem.Specialized
 
         public DataReader<TKey,TValue> ExecuteScan(TKey startKey, TKey stopKey)
         {
-            return null;
-            //return new DataReader<TKey, TValue>(startKey, stopKey, this);
+            uint nodeIndex = m_rootIndexAddress;
+            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            {
+                m_internalNode[levelCount].SetCurrentNode(nodeIndex, false);
+                nodeIndex = m_internalNode[levelCount].GetNodeIndex(startKey);
+            }
+
+            m_leafNode.SetCurrentNode(nodeIndex, false);
+            m_leafNode.PrepareForTableScan(startKey,stopKey);
+            return new DataReader<TKey, TValue>(m_leafNode,m_stream);
         }
 
         void ReadValueAtCurrentStreamPosition()

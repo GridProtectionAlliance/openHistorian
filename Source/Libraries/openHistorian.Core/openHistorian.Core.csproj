@@ -124,7 +124,6 @@
     <Compile Include="StorageSystem\Specialized\IValueType.cs" />
     <Compile Include="StorageSystem\Specialized\LeafNodeMethods.cs" />
     <Compile Include="StorageSystem\Specialized\NodeHeader.cs" />
-    <Compile Include="StorageSystem\Specialized\SearchResults.cs" />
     <Compile Include="StorageSystem\Specialized\Test\NodeTest.cs" />
     <Compile Include="StorageSystem\Specialized\TimeKeyPair\LeafNodeMethodsSafe.cs" />
     <Compile Include="StorageSystem\Specialized\TimeKeyPair\InternalNodeMethodsSafe.cs" />

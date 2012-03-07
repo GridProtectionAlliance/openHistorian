@@ -15,7 +15,8 @@ namespace openHistorian.Core.StorageSystem.Specialized
             TestSingleLevelAddGet();
             TestMultiLevel();
             //TestSortedList(1);
-            TestMultiLevelLongRandom(1);
+            //TestMultiLevelLongRandom(1);
+            TestScan(1);
         }
         static void TestMultiLevelLongRandom(int seed)
         {
@@ -84,153 +85,6 @@ namespace openHistorian.Core.StorageSystem.Specialized
             MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
                 (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
         }
-        //static void TestSortedList(int seed)
-        //{
-        //    const int count = 1000;
-
-        //    Random rand;
-        //    //int seed = rand.Next();
-        //    rand = new Random(seed);
-
-
-        //    var tree = new SortedList<long, long>();
-
-        //    long key = seed;
-        //    long data = 1;
-        //    long data2;
-
-        //    Stopwatch sw = new Stopwatch();
-        //    sw.Start();
-
-        //    for (int x = 0; x < count; x++)
-        //    {
-        //        key = ((long)rand.Next() << 32) | rand.Next();
-        //        data = rand.Next();
-        //        tree.Add(key, data);
-        //    }
-
-        //    sw.Stop();
-
-        //    Stopwatch sw2 = new Stopwatch();
-        //    sw2.Start();
-
-        //    rand = new Random(seed);
-        //    for (int x = 0; x < count; x++)
-        //    {
-        //        key = ((long)rand.Next() << 32) | rand.Next();
-        //        data = rand.Next();
-
-        //        data2 = tree[key];
-        //        if (data2 != data)
-        //            throw new Exception();
-        //    }
-
-        //    sw2.Stop();
-        //    //MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
-        //    //    (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
-        //}
-
-        //static void TestMultiLevelIntLong()
-        //{
-        //    const int count = 100000;
-
-        //    Random rand = new Random();
-        //    int seed = rand.Next();
-        //    rand = new Random(seed);
-
-        //    var ms = new PooledMemoryStream();
-        //    ms.Position = 1000 * 4096;
-        //    ms.Write(new byte[] { 1 }, 0, 1);
-        //    var bs = new BinaryStream(ms);
-        //    var tree = new BPlusTree<TreeTypeInt, TreeTypeLong>(bs, 4096);
-
-        //    int origKey = seed;
-        //    TreeTypeInt key = origKey;
-        //    TreeTypeLong data = 1;
-        //    long data2;
-
-        //    Stopwatch sw = new Stopwatch();
-        //    sw.Start();
-
-        //    for (int x = 0; x < count; x++)
-        //    {
-        //        key.Value += rand.Next(500) + 1;
-        //        data.Value = rand.Next();
-        //        tree.AddData(key, data);
-        //    }
-
-        //    sw.Stop();
-
-        //    Stopwatch sw2 = new Stopwatch();
-        //    sw2.Start();
-
-        //    rand = new Random(seed);
-        //    key = origKey;
-        //    for (int x = 0; x < count; x++)
-        //    {
-        //        key.Value += rand.Next(500) + 1;
-        //        data.Value = rand.Next();
-
-        //        data2 = tree.GetData(key).Value;
-        //        if (data2 != data.Value)
-        //            throw new Exception();
-        //    }
-
-        //    sw2.Stop();
-        //    //MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
-        //    //    (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
-        //}
-
-        //static void TestMultiLevelInt()
-        //{
-        //    const int count = 100000;
-
-        //    Random rand = new Random();
-        //    int seed = rand.Next();
-        //    rand = new Random(seed);
-
-        //    var ms = new PooledMemoryStream();
-        //    ms.Position = 1000 * 4096;
-        //    ms.Write(new byte[] { 1 }, 0, 1);
-        //    var bs = new BinaryStream(ms);
-        //    var tree = new BPlusTree<TreeTypeInt, TreeTypeInt>(bs, 4096);
-
-        //    int origKey = seed;
-        //    TreeTypeInt key = origKey;
-        //    TreeTypeInt data = 1;
-        //    int data2;
-
-        //    Stopwatch sw = new Stopwatch();
-        //    sw.Start();
-
-        //    for (int x = 0; x < count; x++)
-        //    {
-        //        key.Value += rand.Next(500) + 1;
-        //        data.Value = rand.Next();
-        //        tree.AddData(key, data);
-        //    }
-
-        //    sw.Stop();
-
-        //    Stopwatch sw2 = new Stopwatch();
-        //    sw2.Start();
-
-        //    rand = new Random(seed);
-        //    key = origKey;
-        //    for (int x = 0; x < count; x++)
-        //    {
-        //        key.Value += rand.Next(500) + 1;
-        //        data.Value = rand.Next();
-
-        //        data2 = tree.GetData(key).Value;
-        //        if (data2 != data.Value)
-        //            throw new Exception();
-        //    }
-
-        //    sw2.Stop();
-        //    //MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
-        //    //    (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
-        //}
 
         static void TestMultiLevel()
         {
@@ -326,6 +180,85 @@ namespace openHistorian.Core.StorageSystem.Specialized
                     throw new Exception();
             }
 
+        }
+
+        static void TestScan(int seed)
+        {
+            const int countTime = 1000;
+            const int countKey = 1000;
+            const int count = countTime * countKey;
+
+            Random rand;
+            rand = new Random(seed);
+
+            var ms = new PooledMemoryStream();
+            ms.Position = 6000 * 4096;
+            ms.Write(new byte[] { 1 }, 0, 1);
+            var bs = new BinaryStream(ms);
+            var tree = new BPlusTree<TimeKeyPair.KeyType, TreeTypeLong>(bs, 4096);
+
+            TimeKeyPair.KeyType origKey;
+            origKey.Time = new DateTime(DateTime.Now.Ticks);
+            origKey.Key = seed;
+            TimeKeyPair.KeyType key = origKey;
+            long data;
+            long data2;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int x = 0; x < countTime; x++)
+            {
+                for (int y = 0; y < countKey; y++)
+                {
+                    key.Time = key.Time.AddTicks(rand.Next() + 1);
+                    key.Key += rand.Next() + 1;
+                    data = rand.Next();
+                    tree.AddData(key, data);
+                }
+            }
+
+            sw.Stop();
+
+            Stopwatch sw2 = new Stopwatch();
+            sw2.Start();
+
+            rand = new Random(seed);
+            key = origKey;
+
+            TimeKeyPair.KeyType start = default(TimeKeyPair.KeyType);
+            TimeKeyPair.KeyType stop = default(TimeKeyPair.KeyType);
+            start.Time = DateTime.MinValue;
+            stop.Time = DateTime.MaxValue;
+
+            int cnt = 0;
+            var scan = tree.ExecuteScan(start, stop);
+            while (scan.Next())
+            {
+                TimeKeyPair.KeyType keyResult = scan.GetKey();
+                long valueResult = scan.GetValue().Value;
+
+                key.Time = key.Time.AddTicks(rand.Next() + 1);
+                key.Key += rand.Next() + 1;
+                data = rand.Next();
+
+                if (key.Time != keyResult.Time)
+                    throw new Exception();
+
+                if (key.Key != keyResult.Key)
+                    throw new Exception();
+
+                if (valueResult != data)
+                    throw new Exception();
+
+                cnt++;
+                if (cnt == 86)
+                    cnt = cnt;
+            }
+
+            sw2.Stop();
+            MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
+                (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
         }
 
     }

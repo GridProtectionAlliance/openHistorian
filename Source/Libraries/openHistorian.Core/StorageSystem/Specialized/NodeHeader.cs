@@ -34,18 +34,6 @@ namespace openHistorian.Core.StorageSystem.Specialized
         public uint PreviousNode;
         public uint NextNode;
 
-        public NodeHeader(BinaryStream stream)
-            : this()
-        {
-            Load(stream);
-        }
-
-        public NodeHeader(BinaryStream stream, int blockSize, uint nodeIndex)
-            : this()
-        {
-            Load(stream,blockSize, nodeIndex);
-        }
-
         public void Load(BinaryStream stream, int blockSize, uint nodeIndex)
         {
             stream.Position = blockSize * nodeIndex;
