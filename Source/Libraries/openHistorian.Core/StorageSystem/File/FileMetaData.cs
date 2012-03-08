@@ -37,17 +37,16 @@ namespace openHistorian.Core.StorageSystem.File
         /// The number of bytes that are required to save this class.
         /// </summary>
         internal const int SizeInBytes = 52;
-        bool m_IsReadOnly;
-        uint m_FileIDNumber;
-        Guid m_FileExtension;
-        uint m_FileFlags;
-        uint m_LastAllocatedCluster;
-        uint m_BlocksPerCluster;
-        uint m_DirectCluster;
-        uint m_SingleIndirectCluster;
-        uint m_DoubleIndirectCluster;
-        uint m_TripleIndirectCluster;
-        uint m_QuadrupleIndirectCluster;
+        bool m_isReadOnly;
+        uint m_fileIdNumber;
+        Guid m_fileExtension;
+        uint m_fileFlags;
+        uint m_lastAllocatedCluster;
+        uint m_directCluster;
+        uint m_singleIndirectCluster;
+        uint m_doubleIndirectCluster;
+        uint m_tripleIndirectCluster;
+        uint m_quadrupleIndirectCluster;
 
         #endregion
 
@@ -59,45 +58,40 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="dataReader"></param>
         FileMetaData(BinaryReader dataReader)
         {
-            m_IsReadOnly = true;
+            m_isReadOnly = true;
             Load(dataReader);
         }
 
         /// <summary>
         /// Creates an editable version of the archive header.
         /// </summary>
-        /// <param name="Orig"></param>
-        FileMetaData(FileMetaData Orig)
+        /// <param name="origionalFileMetaData"></param>
+        FileMetaData(FileMetaData origionalFileMetaData)
         {
-            m_IsReadOnly = false;
-            m_FileIDNumber = Orig.FileIDNumber;
-            m_FileExtension = Orig.FileExtension;
-            m_FileFlags = Orig.FileFlags;
-            m_LastAllocatedCluster = Orig.LastAllocatedCluster;
-            m_BlocksPerCluster = Orig.BlocksPerCluster;
-            m_DirectCluster = Orig.DirectCluster;
-            m_SingleIndirectCluster = Orig.SingleIndirectCluster;
-            m_DoubleIndirectCluster = Orig.DoubleIndirectCluster;
-            m_TripleIndirectCluster = Orig.TripleIndirectCluster;
-            m_QuadrupleIndirectCluster = Orig.QuadrupleIndirectCluster;
+            m_isReadOnly = false;
+            m_fileIdNumber = origionalFileMetaData.FileIdNumber;
+            m_fileExtension = origionalFileMetaData.FileExtension;
+            m_fileFlags = origionalFileMetaData.FileFlags;
+            m_lastAllocatedCluster = origionalFileMetaData.LastAllocatedCluster;
+            m_directCluster = origionalFileMetaData.DirectCluster;
+            m_singleIndirectCluster = origionalFileMetaData.SingleIndirectCluster;
+            m_doubleIndirectCluster = origionalFileMetaData.DoubleIndirectCluster;
+            m_tripleIndirectCluster = origionalFileMetaData.TripleIndirectCluster;
+            m_quadrupleIndirectCluster = origionalFileMetaData.QuadrupleIndirectCluster;
         }
 
         /// <summary>
         /// Creates a new inode that can be edited
         /// </summary>
-        /// <param name="fileID"></param>
+        /// <param name="fileId"></param>
         /// <param name="featureType"></param>
-        /// <param name="pagesPerBlock"></param>
-        FileMetaData(uint fileID, Guid featureType, uint pagesPerBlock)
+        FileMetaData(uint fileId, Guid featureType)
         {
-            m_IsReadOnly = false;
+            m_isReadOnly = false;
             if (featureType == Guid.Empty)
-                throw new ArgumentException("featureType", "The feature type cannot be an empty GUID value");
-            if (pagesPerBlock == 0)
-                throw new ArgumentException("pagesPerBlock", "Value cannot be zero");
-            m_FileIDNumber = fileID;
-            m_FileExtension = featureType;
-            m_BlocksPerCluster = pagesPerBlock;
+                throw new ArgumentException("The feature type cannot be an empty GUID value", "featureType");
+            m_fileIdNumber = fileId;
+            m_fileExtension = featureType;
         }
 
         #endregion
@@ -111,18 +105,18 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_IsReadOnly;
+                return m_isReadOnly;
             }
         }
 
         /// <summary>
         /// Gets the unique file identifier for this file.
         /// </summary>
-        public uint FileIDNumber
+        public uint FileIdNumber
         {
             get
             {
-                return m_FileIDNumber;
+                return m_fileIdNumber;
             }
         }
 
@@ -133,7 +127,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_FileExtension;
+                return m_fileExtension;
             }
         }
 
@@ -144,13 +138,13 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_FileFlags;
+                return m_fileFlags;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_FileFlags = value;
+                m_fileFlags = value;
             }
         }
 
@@ -161,24 +155,13 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_LastAllocatedCluster;
+                return m_lastAllocatedCluster;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_LastAllocatedCluster = value;
-            }
-        }
-
-        /// <summary>
-        /// The number of blocks that make up a cluster.
-        /// </summary>
-        public uint BlocksPerCluster
-        {
-            get
-            {
-                return m_BlocksPerCluster;
+                m_lastAllocatedCluster = value;
             }
         }
 
@@ -189,13 +172,13 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_DirectCluster;
+                return m_directCluster;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_DirectCluster = value;
+                m_directCluster = value;
             }
         }
         /// <summary>
@@ -205,13 +188,13 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_SingleIndirectCluster;
+                return m_singleIndirectCluster;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_SingleIndirectCluster = value;
+                m_singleIndirectCluster = value;
             }
         }
         /// <summary>
@@ -221,13 +204,13 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_DoubleIndirectCluster;
+                return m_doubleIndirectCluster;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_DoubleIndirectCluster = value;
+                m_doubleIndirectCluster = value;
             }
         }
         /// <summary>
@@ -237,13 +220,13 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_TripleIndirectCluster;
+                return m_tripleIndirectCluster;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_TripleIndirectCluster = value;
+                m_tripleIndirectCluster = value;
             }
         }
         /// <summary>
@@ -253,13 +236,13 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_QuadrupleIndirectCluster;
+                return m_quadrupleIndirectCluster;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_QuadrupleIndirectCluster = value;
+                m_quadrupleIndirectCluster = value;
             }
         }
 
@@ -282,16 +265,15 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="dataWriter"></param>
         internal void Save(BinaryWriter dataWriter)
         {
-            dataWriter.Write(m_FileIDNumber);
-            dataWriter.Write(m_FileExtension.ToByteArray());
-            dataWriter.Write(m_FileFlags);
-            dataWriter.Write(m_LastAllocatedCluster);
-            dataWriter.Write(m_BlocksPerCluster);
-            dataWriter.Write(m_DirectCluster);
-            dataWriter.Write(m_SingleIndirectCluster);
-            dataWriter.Write(m_DoubleIndirectCluster);
-            dataWriter.Write(m_TripleIndirectCluster);
-            dataWriter.Write(m_QuadrupleIndirectCluster);
+            dataWriter.Write(m_fileIdNumber);
+            dataWriter.Write(m_fileExtension.ToByteArray());
+            dataWriter.Write(m_fileFlags);
+            dataWriter.Write(m_lastAllocatedCluster);
+            dataWriter.Write(m_directCluster);
+            dataWriter.Write(m_singleIndirectCluster);
+            dataWriter.Write(m_doubleIndirectCluster);
+            dataWriter.Write(m_tripleIndirectCluster);
+            dataWriter.Write(m_quadrupleIndirectCluster);
         }
 
         /// <summary>
@@ -300,16 +282,15 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="dataReader"></param>
         void Load(BinaryReader dataReader)
         {
-            m_FileIDNumber = dataReader.ReadUInt32();
-            m_FileExtension = new Guid(dataReader.ReadBytes(16));
-            m_FileFlags = dataReader.ReadUInt32();
-            m_LastAllocatedCluster = dataReader.ReadUInt32();
-            m_BlocksPerCluster = dataReader.ReadUInt32();
-            m_DirectCluster = dataReader.ReadUInt32();
-            m_SingleIndirectCluster = dataReader.ReadUInt32();
-            m_DoubleIndirectCluster = dataReader.ReadUInt32();
-            m_TripleIndirectCluster = dataReader.ReadUInt32();
-            m_QuadrupleIndirectCluster = dataReader.ReadUInt32();
+            m_fileIdNumber = dataReader.ReadUInt32();
+            m_fileExtension = new Guid(dataReader.ReadBytes(16));
+            m_fileFlags = dataReader.ReadUInt32();
+            m_lastAllocatedCluster = dataReader.ReadUInt32();
+            m_directCluster = dataReader.ReadUInt32();
+            m_singleIndirectCluster = dataReader.ReadUInt32();
+            m_doubleIndirectCluster = dataReader.ReadUInt32();
+            m_tripleIndirectCluster = dataReader.ReadUInt32();
+            m_quadrupleIndirectCluster = dataReader.ReadUInt32();
         }
         /// <summary>
         /// Determines if the two objects are equal in value.
@@ -321,11 +302,10 @@ namespace openHistorian.Core.StorageSystem.File
             if (a == null)
                 return false;
 
-            if (FileIDNumber != a.FileIDNumber) return false;
+            if (FileIdNumber != a.FileIdNumber) return false;
             if (FileExtension != a.FileExtension) return false;
             if (FileFlags != a.FileFlags) return false;
             if (LastAllocatedCluster != a.LastAllocatedCluster) return false;
-            if (BlocksPerCluster != a.BlocksPerCluster) return false;
             if (DirectCluster != a.DirectCluster) return false;
             if (SingleIndirectCluster != a.SingleIndirectCluster) return false;
             if (DoubleIndirectCluster != a.DoubleIndirectCluster) return false;
@@ -353,12 +333,11 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Creates a new file that can be edited
         /// </summary>
-        /// <param name="fileIDNumber">A unique file ID number in the file system</param>
+        /// <param name="fileIdNumber">A unique file ID number in the file system</param>
         /// <param name="fileExtension">A <see cref="Guid"/> that represents what type of data is contained in this file.</param>
-        /// <param name="blocksPerCluster">The number of blocks that are contained in each file cluster.</param>
-        public static FileMetaData CreateFileMetaData(uint fileIDNumber, Guid fileExtension, uint blocksPerCluster)
+        public static FileMetaData CreateFileMetaData(uint fileIdNumber, Guid fileExtension)
         {
-            FileMetaData file =  new FileMetaData(fileIDNumber, fileExtension, blocksPerCluster);
+            FileMetaData file = new FileMetaData(fileIdNumber, fileExtension);
             if (file.IsReadOnly)
                 throw new Exception();
             return file;

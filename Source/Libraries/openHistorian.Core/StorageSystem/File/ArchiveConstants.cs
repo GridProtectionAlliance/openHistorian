@@ -22,41 +22,84 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace openHistorian.Core.StorageSystem.File
 {
-    public class ArchiveConstants
+    /// <summary>
+    /// Maintains some global constants for the archive file.
+    /// </summary>
+    public static class ArchiveConstants
     {
+        /// <summary>
+        /// The largest supported file system size
+        /// </summary>
         public const long MaxFileSystemSize = (long)BlockSize * UInt32.MaxValue;
+        /// <summary>
+        /// The number of bytes in a block. (the smallest unit of data space).
+        /// </summary>
         public const int BlockSize = 4096;
+        /// <summary>
+        /// The number of addresses that can fit in each indirect block
+        /// </summary>
         public const int AddressesPerBlock = IndexIndirectBlockDataLength / 4; //rounds down
+        /// <summary>
+        /// The number of addresses that can fit in a double indirect block
+        /// </summary>
         public const long AddressesPerBlockSquare = (long)AddressesPerBlock * (long)AddressesPerBlock;
+        /// <summary>
+        /// The number of addresses that can fit in a triple indirect block
+        /// </summary>
         public const long AddressesPerBlockCube = (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock;
+        /// <summary>
+        /// The number of bytes in the footer of the file allocation table block
+        /// </summary>
         public const int FileAllocationTableFooterLength = 21;
-        public const int FileAllocationTableDataLength = BlockSize-FileAllocationTableFooterLength;
+        /// <summary>
+        /// The number of data bytes available for a file allocation table block
+        /// </summary>
+        public const int FileAllocationTableDataLength = BlockSize - FileAllocationTableFooterLength;
+        /// <summary>
+        /// The number of bytes in the footer of the indirect block
+        /// </summary>
         public const int IndexIndirectBlockFooterLength = 22;
-        public const int IndexIndirectBlockDataLength = BlockSize-IndexIndirectBlockFooterLength;
+        /// <summary>
+        /// The number of data bytes available for a indirect block
+        /// </summary>
+        public const int IndexIndirectBlockDataLength = BlockSize - IndexIndirectBlockFooterLength;
+        /// <summary>
+        /// The number of bytes in the footer of a data block
+        /// </summary>
         public const int DataBlockFooterLength = 21;
-        public const int DataBlockDataLength = BlockSize-DataBlockFooterLength;
-        
-        const long _LastSingleIndirectBlockIndex = LastDirectBlockIndex + (long)AddressesPerBlock;
-        const long _LastDoubleIndirectBlockIndex = LastSingleIndirectBlockIndex + (long)AddressesPerBlock * (long)AddressesPerBlock;
-        const long _LastTripleIndirectBlockIndex = LastDoubleIndirectBlockIndex + (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock;
-        const long _LastQuadrupleIndirectBlockIndex = LastTripleIndirectBlockIndex + (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock;
+        /// <summary>
+        /// The number of data bytes available in a data block
+        /// </summary>
+        public const int DataBlockDataLength = BlockSize - DataBlockFooterLength;
 
-        public const uint LastDirectBlockIndex = 1;
-        public const uint LastSingleIndirectBlockIndex = (uint)(_LastSingleIndirectBlockIndex > uint.MaxValue ? uint.MaxValue : _LastSingleIndirectBlockIndex);
-        public const uint LastDoubleIndirectBlockIndex = (uint)(_LastDoubleIndirectBlockIndex > uint.MaxValue ? uint.MaxValue : _LastDoubleIndirectBlockIndex);
-        public const uint LastTripleIndirectBlockIndex = (uint)(_LastTripleIndirectBlockIndex > uint.MaxValue ? uint.MaxValue : _LastTripleIndirectBlockIndex);
-        public const uint LastQuadrupleIndirectBlockIndex = (uint)(_LastQuadrupleIndirectBlockIndex > uint.MaxValue ? uint.MaxValue : _LastQuadrupleIndirectBlockIndex);
 
-        public static void Test()
-        {
+        const long TmpFirstDoubleIndirectBlockIndex = FirstSingleIndirectBlockIndex + (long)AddressesPerBlock;
+        const long TmpFirstTripleIndirectIndex = FirstDoubleIndirectBlockIndex + (long)AddressesPerBlock * (long)AddressesPerBlock;
+        const long TmpFirstQuadrupleIndirectBlockIndex = FirstTripleIndirectIndex + (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock;
+        const long TmpLastValidQuadrupleIndirectBlockIndex = FirstQuadrupleIndirectBlockIndex + (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock;
 
-        }
-             
+        /// <summary>
+        /// The index of the first block in the single indirect blocks
+        /// </summary>
+        public const uint FirstSingleIndirectBlockIndex = 1;
+        /// <summary>
+        /// The index of the first block in the double indirect blocks
+        /// </summary>
+        public const uint FirstDoubleIndirectBlockIndex = (uint)(TmpFirstDoubleIndirectBlockIndex > uint.MaxValue ? uint.MaxValue : TmpFirstDoubleIndirectBlockIndex);
+        /// <summary>
+        /// The index of the first block in the triple indirect blocks
+        /// </summary>
+        public const uint FirstTripleIndirectIndex = (uint)(TmpFirstTripleIndirectIndex > uint.MaxValue ? uint.MaxValue : TmpFirstTripleIndirectIndex);
+        /// <summary>
+        /// The index of the first block in the quadruple indirect blocks
+        /// </summary>
+        public const uint FirstQuadrupleIndirectBlockIndex = (uint)(TmpFirstQuadrupleIndirectBlockIndex > uint.MaxValue ? uint.MaxValue : TmpFirstQuadrupleIndirectBlockIndex);
+        /// <summary>
+        /// The index of the last valid block in the quadruple indirect blocks
+        /// </summary>
+        public const uint LastValidQuadrupleIndirectBlock = (uint)(TmpLastValidQuadrupleIndirectBlockIndex > uint.MaxValue ? uint.MaxValue : TmpLastValidQuadrupleIndirectBlockIndex - 1);
     }
 }

@@ -37,30 +37,30 @@ namespace openHistorian.Core.StorageSystem.File
     {
         public static void Test()
         {
-            DiskIOMemoryStream stream = new DiskIOMemoryStream();
+            DiskIoMemoryStream stream = new DiskIoMemoryStream();
             TestReadAndWrites(stream);
             TestReadAndWritesWithCommit(stream);
             TestReadAndWritesToDifferentFilesWithCommit(stream);
             TestBinaryStream(stream);
 
         }
-        static void TestBinaryStream(DiskIOBase stream)
+        static void TestBinaryStream(DiskIoBase stream)
         {
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(stream);
-            FileMetaData node = header.CreateNewFile(Guid.NewGuid(), 1);
-            header.CreateNewFile(Guid.NewGuid(), 1);
-            header.CreateNewFile(Guid.NewGuid(), 1);
+            FileMetaData node = header.CreateNewFile(Guid.NewGuid());
+            header.CreateNewFile(Guid.NewGuid());
+            header.CreateNewFile(Guid.NewGuid());
 
             ArchiveFileStream ds = new ArchiveFileStream(stream, node, header, false);
             BinaryStreamTest.Test(ds);
         }
 
-        static void TestReadAndWrites(DiskIOBase stream)
+        static void TestReadAndWrites(DiskIoBase stream)
         {
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(stream);
-            FileMetaData node = header.CreateNewFile(Guid.NewGuid(), 1);
-            header.CreateNewFile(Guid.NewGuid(), 1);
-            header.CreateNewFile(Guid.NewGuid(), 1);
+            FileMetaData node = header.CreateNewFile(Guid.NewGuid());
+            header.CreateNewFile(Guid.NewGuid());
+            header.CreateNewFile(Guid.NewGuid());
 
             ArchiveFileStream ds = new ArchiveFileStream(stream, node, header, false);
             TestSingleByteWrite(ds);
@@ -74,11 +74,11 @@ namespace openHistorian.Core.StorageSystem.File
             header.WriteToFileSystem(stream);
         }
 
-        static void TestReadAndWritesWithCommit(DiskIOBase stream)
+        static void TestReadAndWritesWithCommit(DiskIoBase stream)
         {
             FileAllocationTable header;
             FileMetaData node;
-            ArchiveFileStream ds,ds1,ds2;
+            ArchiveFileStream ds, ds1, ds2;
             //Open The File For Editing
             header = FileAllocationTable.OpenHeader(stream).CreateEditableCopy(true);
             node = header.Files[0];
@@ -120,10 +120,10 @@ namespace openHistorian.Core.StorageSystem.File
             TestCustomSizeRead(ds2, 5);
         }
 
-        static void TestReadAndWritesToDifferentFilesWithCommit(DiskIOBase stream)
+        static void TestReadAndWritesToDifferentFilesWithCommit(DiskIoBase stream)
         {
             FileAllocationTable header;
-           
+
             ArchiveFileStream ds;
             //Open The File For Editing
             header = FileAllocationTable.OpenHeader(stream).CreateEditableCopy(true);

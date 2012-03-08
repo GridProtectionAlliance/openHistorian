@@ -22,22 +22,19 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
-namespace openHistorian.Core.StorageSystem.File 
+namespace openHistorian.Core.StorageSystem.File
 {
     /// <summary>
     /// Provides the interface layer that talkes to 
     /// both the memory buffer and the archive file.
     /// </summary>
-    internal class DiskIOUnbuffered : DiskIOBase
+    internal class DiskIoUnbuffered : DiskIoBase
     {
 
         #region [ Members ]
-        
+
         /// <summary>
         /// This file option is not provided under the .NET library, but still work.  
         /// This prevents the OS from caching the data read from the disk.  
@@ -45,15 +42,22 @@ namespace openHistorian.Core.StorageSystem.File
         /// if configured, all disk IO has to occur at the hardware sector level, 
         /// which used to be 512 bytes, but is now 4k
         /// </summary>
-        const FileOptions FILE_FLAG_NO_BUFFERING = (FileOptions)0; // I enabled buffering by commenting out this value: 0x20000000;
+        const FileOptions FileFlagNoBuffering = (FileOptions)0; // I enabled buffering by commenting out this value: 0x20000000;
 
-        private bool m_disposed;
+        /// <summary>
+        /// prevents duplicate calls to Dispose.
+        /// </summary>
+        bool m_disposed;
 
         /// <summary>
         /// The unbuffered file stream
         /// </summary>
-        protected FileStream m_file;
-        protected string m_FileName;
+        protected FileStream File;
+
+        /// <summary>
+        /// The name of the file that was opened.
+        /// </summary>
+        protected string FileName;
 
         /// <summary>
         /// Determines if the file is opened in readonly mode.
@@ -74,17 +78,17 @@ namespace openHistorian.Core.StorageSystem.File
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="isReadOnly">Determines if the file will be opened in read only mode.</param>
-        protected DiskIOUnbuffered(string fileName, bool isReadOnly)
+        protected DiskIoUnbuffered(string fileName, bool isReadOnly)
         {
-            m_FileName = fileName;
+            FileName = fileName;
             m_isReadOnly = isReadOnly;
             if (isReadOnly)
             {
-                m_file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 8, FileOptions.RandomAccess | FILE_FLAG_NO_BUFFERING);
+                File = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 8, FileOptions.RandomAccess | FileFlagNoBuffering);
             }
             else
             {
-                m_file = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, 8, FileOptions.RandomAccess | FILE_FLAG_NO_BUFFERING | FileOptions.WriteThrough);
+                File = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, 8, FileOptions.RandomAccess | FileFlagNoBuffering | FileOptions.WriteThrough);
             }
             m_fileSize = -1;
         }
@@ -93,17 +97,17 @@ namespace openHistorian.Core.StorageSystem.File
         /// Creates a new archive file
         /// </summary>
         /// <param name="fileName">the file name</param>
-        protected DiskIOUnbuffered(string fileName)
+        protected DiskIoUnbuffered(string fileName)
         {
             m_isReadOnly = false;
-            m_file = new FileStream(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, 8, FileOptions.RandomAccess | FILE_FLAG_NO_BUFFERING | FileOptions.WriteThrough);
+            File = new FileStream(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, 8, FileOptions.RandomAccess | FileFlagNoBuffering | FileOptions.WriteThrough);
             m_fileSize = -1;
         }
 
         /// <summary>
-        /// Releases the unmanaged resources before the <see cref="ArchiveIO"/> object is reclaimed by <see cref="GC"/>.
+        /// Releases the unmanaged resources before the <see cref="DiskIoUnbuffered"/> object is reclaimed by <see cref="GC"/>.
         /// </summary>
-        ~DiskIOUnbuffered()
+        ~DiskIoUnbuffered()
         {
             Dispose(false);
         }
@@ -111,7 +115,7 @@ namespace openHistorian.Core.StorageSystem.File
         #endregion
 
         #region [ Properties ]
-        
+
         /// <summary>
         /// Gets if the file has been opened in readonly mode
         /// </summary>
@@ -135,7 +139,7 @@ namespace openHistorian.Core.StorageSystem.File
             {
                 if (m_fileSize < 0)
                 {
-                    m_fileSize = m_file.Length;
+                    m_fileSize = File.Length;
                 }
                 return m_fileSize;
             }
@@ -152,13 +156,13 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_file.Position;
+                return File.Position;
             }
             set
             {
-                if (m_file.Position != value)
+                if (File.Position != value)
                 {
-                    m_file.Position = value;
+                    File.Position = value;
                 }
             }
         }
@@ -166,30 +170,44 @@ namespace openHistorian.Core.StorageSystem.File
         #endregion
 
         #region [ Methods ]
-     
+
+        /// <summary>
+        /// Resizes the file to the requested size
+        /// </summary>
+        /// <param name="requestedSize">The size to resize to</param>
+        /// <returns>The actual size of the file after the resize</returns>
         protected override long SetFileLength(long requestedSize)
         {
             m_fileSize = -1;
-            m_file.SetLength(requestedSize);
+            File.SetLength(requestedSize);
             return FileSize;
         }
-
-        protected override void WriteDataBlock(uint blockIndex, byte[] data)
+        /// <summary>
+        /// Writes the following data to the stream
+        /// </summary>
+        /// <param name="blockIndex">the block where to write the data</param>
+        /// <param name="data">the data to write</param>
+        protected override void WriteBlock(uint blockIndex, byte[] data)
         {
 
             Position = blockIndex * ArchiveConstants.BlockSize;
-            m_file.Write(data, 0, data.Length);
+            File.Write(data, 0, data.Length);
         }
-
-        protected override IOReadState ReadBlock(uint blockIndex, byte[] data)
+        /// <summary>
+        /// Tries to read data from the following file
+        /// </summary>
+        /// <param name="blockIndex">the block where to write the data</param>
+        /// <param name="data">the data to write</param>
+        /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
+        protected override IoReadState ReadBlock(uint blockIndex, byte[] data)
         {
             Position = blockIndex * ArchiveConstants.BlockSize;
-            m_file.Read(data, 0, data.Length);
-            return IOReadState.Valid;
+            File.Read(data, 0, data.Length);
+            return IoReadState.Valid;
         }
 
         /// <summary>
-        /// Releases all the resources used by the <see cref="ArchiveIO"/> object.
+        /// Releases all the resources used by the <see cref="DiskIoUnbuffered"/> object.
         /// </summary>
         public void Dispose()
         {
@@ -198,10 +216,10 @@ namespace openHistorian.Core.StorageSystem.File
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="ArchiveIO"/> object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="DiskIoUnbuffered"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
@@ -212,9 +230,9 @@ namespace openHistorian.Core.StorageSystem.File
                     if (disposing)
                     {
                         // This will be done only when the object is disposed by calling Dispose().
-                        if (m_file != null)
-                            m_file.Dispose();
-                        m_file = null;
+                        if (File != null)
+                            File.Dispose();
+                        File = null;
                     }
                 }
                 finally
@@ -232,15 +250,15 @@ namespace openHistorian.Core.StorageSystem.File
         /// Opens an existing file archive for unbuffered read/write operations.
         /// </summary>
         /// <param name="fileName">The path to the archive file.</param>
-        /// <param name="IsReadOnly">Determines if the file is going to be opened in readonly mode.</param>
+        /// <param name="isReadOnly">Determines if the file is going to be opened in readonly mode.</param>
         /// <remarks>
         /// Since buffering the data will be the responsibility of another layer, 
         /// allowing the OS to buffer the data decreases performance (slightly) and
         /// wastes system memory that can be better used by the historian's buffer.
         /// </remarks>
-        public static DiskIOUnbuffered OpenFile(string fileName, bool IsReadOnly)
+        public static DiskIoUnbuffered OpenFile(string fileName, bool isReadOnly)
         {
-            return new DiskIOUnbuffered(fileName, IsReadOnly);
+            return new DiskIoUnbuffered(fileName, isReadOnly);
         }
 
         /// <summary>
@@ -248,9 +266,9 @@ namespace openHistorian.Core.StorageSystem.File
         /// </summary>
         /// <param name="fileName">The file name of the archive to write.  This file must not already exist.</param>
         /// <returns></returns>
-        public static DiskIOUnbuffered CreateFile(string fileName)
+        public static DiskIoUnbuffered CreateFile(string fileName)
         {
-            return new DiskIOUnbuffered(fileName);
+            return new DiskIoUnbuffered(fileName);
         }
 
         #endregion

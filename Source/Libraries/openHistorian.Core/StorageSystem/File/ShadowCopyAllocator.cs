@@ -36,19 +36,19 @@ namespace openHistorian.Core.StorageSystem.File
         /// This address is used to determine if the block being referenced is an old block or a new one. 
         /// Any addresses greater than or equal to this are new blocks for this transaction. Values before this are old.
         /// </summary>
-        uint m_NewBlocksStartAtThisAddress;
+        uint m_newBlocksStartAtThisAddress;
         /// <summary>
         /// The file being read.
         /// </summary>
-        FileMetaData m_FileMetaData;
+        FileMetaData m_fileMetaData;
         /// <summary>
         /// The disk to make the IO requests to.
         /// </summary>
-        DiskIOBase m_DiskIO;
+        DiskIoBase m_diskIo;
         /// <summary>
         /// The FileAllocationTable that can be used to allocate space.
         /// </summary>
-        FileAllocationTable m_FileAllocationTable;
+        FileAllocationTable m_fileAllocationTable;
         /// <summary>
         /// A parser that is used to navigate to this block.
         /// This parser is in common with the one used in the <see cref="FileAddressTranslation"/>.
@@ -66,7 +66,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="fileAllocationTable">The file allocation table that is editable</param>
         /// <param name="fileMetaData">The file that is used</param>
         /// <param name="parser">The indexparser used by the caller to designate what block needs to be copied.</param>
-        public ShadowCopyAllocator(DiskIOBase dataReader, FileAllocationTable fileAllocationTable, FileMetaData fileMetaData, IndexParser parser)
+        public ShadowCopyAllocator(DiskIoBase dataReader, FileAllocationTable fileAllocationTable, FileMetaData fileMetaData, IndexParser parser)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -77,17 +77,17 @@ namespace openHistorian.Core.StorageSystem.File
             if (parser == null)
                 throw new ArgumentNullException("parser");
             if (dataReader.IsReadOnly)
-                throw new ArgumentException("dataReader", "DataReader is read only");
+                throw new ArgumentException("DataReader is read only", "dataReader");
             if (fileAllocationTable.IsReadOnly)
-                throw new ArgumentException("fileAllocationTable", "FileAllocationTable is read only");
+                throw new ArgumentException("FileAllocationTable is read only", "fileAllocationTable");
             if (fileMetaData.IsReadOnly)
-                throw new ArgumentException("fileMetaData", "FileMetaData is read only");
+                throw new ArgumentException("FileMetaData is read only", "fileMetaData");
 
             m_parser = parser;
-            m_NewBlocksStartAtThisAddress = fileAllocationTable.NextUnallocatedBlock;
-            m_FileAllocationTable = fileAllocationTable;
-            m_FileMetaData = fileMetaData;
-            m_DiskIO = dataReader;
+            m_newBlocksStartAtThisAddress = fileAllocationTable.NextUnallocatedBlock;
+            m_fileAllocationTable = fileAllocationTable;
+            m_fileMetaData = fileMetaData;
+            m_diskIo = dataReader;
         }
         #endregion
 
@@ -121,7 +121,7 @@ namespace openHistorian.Core.StorageSystem.File
             //    SkipDataBlockShadow = false;
 
             m_parser.SetPosition(position);
-            uint dataBlockAddress = 0; //The address to the shadowed data page.
+            uint dataBlockAddress; //The address to the shadowed data page.
             uint firstIndirectAddress = 0;
             uint secondIndirectAddress = 0;
             uint thirdIndirectAddress = 0;
@@ -131,14 +131,14 @@ namespace openHistorian.Core.StorageSystem.File
             if (m_parser.DataClusterAddress == 0)
             {
                 //if the page does not exist, create it.
-                dataBlockAddress = m_FileAllocationTable.AllocateFreeBlocks(m_FileMetaData.BlocksPerCluster);
+                dataBlockAddress = m_fileAllocationTable.AllocateFreeBlocks(1);
                 //if (!SkipDataBlockShadow)
                 ShadowCopyDataCluster(m_parser.DataClusterAddress, m_parser.BaseVirtualAddressIndexValue, dataBlockAddress);
             }
-            else if (m_parser.DataClusterAddress < m_NewBlocksStartAtThisAddress)
+            else if (m_parser.DataClusterAddress < m_newBlocksStartAtThisAddress)
             {
                 //if the data page is an old page, allocate space to create a new copy
-                dataBlockAddress = m_FileAllocationTable.AllocateFreeBlocks(m_FileMetaData.BlocksPerCluster);
+                dataBlockAddress = m_fileAllocationTable.AllocateFreeBlocks(1);
                 //if (!SkipDataBlockShadow)
                 ShadowCopyDataCluster(m_parser.DataClusterAddress, m_parser.BaseVirtualAddressIndexValue, dataBlockAddress);
             }
@@ -151,29 +151,29 @@ namespace openHistorian.Core.StorageSystem.File
             switch (m_parser.IndirectNumber)
             {
                 case 0:
-                    m_FileMetaData.DirectCluster = dataBlockAddress;
+                    m_fileMetaData.DirectCluster = dataBlockAddress;
                     break;
                 case 1:
                     firstIndirectAddress = ShadowCopyIndexIndirect1(dataBlockAddress);
-                    m_FileMetaData.SingleIndirectCluster = firstIndirectAddress;
+                    m_fileMetaData.SingleIndirectCluster = firstIndirectAddress;
                     break;
                 case 2:
                     secondIndirectAddress = ShadowCopyIndexIndirect2(dataBlockAddress);
                     firstIndirectAddress = ShadowCopyIndexIndirect1(secondIndirectAddress);
-                    m_FileMetaData.DoubleIndirectCluster = firstIndirectAddress;
+                    m_fileMetaData.DoubleIndirectCluster = firstIndirectAddress;
                     break;
                 case 3:
                     thirdIndirectAddress = ShadowCopyIndexIndirect3(dataBlockAddress);
                     secondIndirectAddress = ShadowCopyIndexIndirect2(thirdIndirectAddress);
                     firstIndirectAddress = ShadowCopyIndexIndirect1(secondIndirectAddress);
-                    m_FileMetaData.TripleIndirectCluster = firstIndirectAddress;
+                    m_fileMetaData.TripleIndirectCluster = firstIndirectAddress;
                     break;
                 case 4:
                     forthIndirectAddress = ShadowCopyIndexIndirect4(dataBlockAddress);
                     thirdIndirectAddress = ShadowCopyIndexIndirect3(forthIndirectAddress);
                     secondIndirectAddress = ShadowCopyIndexIndirect2(thirdIndirectAddress);
                     firstIndirectAddress = ShadowCopyIndexIndirect1(secondIndirectAddress);
-                    m_FileMetaData.QuadrupleIndirectCluster = firstIndirectAddress;
+                    m_fileMetaData.QuadrupleIndirectCluster = firstIndirectAddress;
                     break;
                 default:
                     throw new Exception("invalid redirect number");
@@ -224,6 +224,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Makes a shadow copy of the indirect index passed to this function. If the block does not exists, it creates it.
         /// </summary>
+        /// <param name="buffer"> </param>
         /// <param name="sourceBlockAddress">The block to be copied</param>
         /// <param name="indexValue">the index value that goes in the footer of the file.</param>
         /// <param name="indexIndirectNumber">the indirect number {1,2,3,4} that goes in the footer of the block.</param>
@@ -232,34 +233,35 @@ namespace openHistorian.Core.StorageSystem.File
         /// <returns>The address of the shadow copy.</returns>
         uint ShadowCopyIndexIndirect(IndexBufferPool.Buffer buffer, uint sourceBlockAddress, uint indexValue, byte indexIndirectNumber, int remoteAddressOffset, uint remoteBlockAddress)
         {
-            uint IndexIndirectBlock; //The address to the shadowed index block.
+            uint indexIndirectBlock; //The address to the shadowed index block.
 
             //Make a copy of the index block referenced
             if (sourceBlockAddress == 0)
             {
                 //if the block does not exist, create it.
-                IndexIndirectBlock = m_FileAllocationTable.AllocateFreeBlocks(1);
+                indexIndirectBlock = m_fileAllocationTable.AllocateFreeBlocks(1);
                 Array.Clear(buffer.Block, 0, buffer.Block.Length);
-                WriteIndexIndirectBlock(buffer, IndexIndirectBlock, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
+                WriteIndexIndirectBlock(buffer, indexIndirectBlock, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
             }
-            else if (sourceBlockAddress < m_NewBlocksStartAtThisAddress)
+            else if (sourceBlockAddress < m_newBlocksStartAtThisAddress)
             {
                 //if the data page is an old page, allocate space to create a new copy
-                IndexIndirectBlock = m_FileAllocationTable.AllocateFreeBlocks(1);
-                ReadThenWriteIndexIndirectBlock(buffer, sourceBlockAddress, IndexIndirectBlock, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress, false);
+                indexIndirectBlock = m_fileAllocationTable.AllocateFreeBlocks(1);
+                ReadThenWriteIndexIndirectBlock(buffer, sourceBlockAddress, indexIndirectBlock, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress, false);
             }
             else
             {
                 //The page has already been copied, use the existing address.
                 ReadThenWriteIndexIndirectBlock(buffer, sourceBlockAddress, sourceBlockAddress, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress, true);
-                IndexIndirectBlock = sourceBlockAddress;
+                indexIndirectBlock = sourceBlockAddress;
             }
-            return IndexIndirectBlock;
+            return indexIndirectBlock;
         }
 
         /// <summary>
         /// Makes a shadow copy of an index indirect block and updates a remote address. 
         /// </summary>
+        /// <param name="buffer"> </param>
         /// <param name="sourceBlockAddress">the address of the source.</param>
         /// <param name="destinationBlockAddress">the address of the destination. This can be the same as the source.</param>
         /// <param name="indexValue">the index value that goes in the footer of the file.</param>
@@ -269,19 +271,17 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="isCurrentRevision">If this is an inplace edit, set to true. If it is a true shadow copy, set false.</param>
         private void ReadThenWriteIndexIndirectBlock(IndexBufferPool.Buffer buffer, uint sourceBlockAddress, uint destinationBlockAddress, uint indexValue, byte indexIndirectNumber, int remoteAddressOffset, uint remoteBlockAddress, bool isCurrentRevision)
         {
-            BlockType blockType = BlockType.IndexIndirect;
-            uint fileIDNumber = m_FileMetaData.FileIDNumber;
-            uint snapshotSequenceNumber = m_FileAllocationTable.SnapshotSequenceNumber;
-
-            IOReadState readState;
+            uint fileIdNumber = m_fileMetaData.FileIdNumber;
+            uint snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
 
             if (buffer.Address != sourceBlockAddress)
             {
+                IoReadState readState;
                 if (isCurrentRevision)
-                    readState = m_DiskIO.ReadBlock(sourceBlockAddress, blockType, indexValue, fileIDNumber, snapshotSequenceNumber, buffer.Block);
+                    readState = m_diskIo.ReadBlock(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber, buffer.Block);
                 else
-                    readState = m_DiskIO.ReadBlock(sourceBlockAddress, blockType, indexValue, fileIDNumber, snapshotSequenceNumber - 1, buffer.Block);
-                if (readState != IOReadState.Valid)
+                    readState = m_diskIo.ReadBlock(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber - 1, buffer.Block);
+                if (readState != IoReadState.Valid)
                     throw new Exception("Error Reading File " + readState.ToString());
             }
             if (buffer.Block[ArchiveConstants.BlockSize - 22] != indexIndirectNumber)
@@ -299,6 +299,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Writes an Indirect Block to the drive. This sets the indexIndirectNumber and updates one of the addresses within this index.
         /// </summary>
+        /// <param name="buffer"> </param>
         /// <param name="blockAddress">the address of the index indirect to write to.</param>
         /// <param name="indexValue">the index value that goes in the footer of the file.</param>
         /// <param name="indexIndirectNumber">the indirect number {1,2,3,4} that goes in the footer of the block</param>
@@ -306,9 +307,8 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="remoteBlockAddress">the value of the remote address</param>
         private void WriteIndexIndirectBlock(IndexBufferPool.Buffer buffer, uint blockAddress, uint indexValue, byte indexIndirectNumber, int remoteAddressOffset, uint remoteBlockAddress)
         {
-            BlockType pageType = BlockType.IndexIndirect;
-            uint fileIDNumber = m_FileMetaData.FileIDNumber;
-            uint snapshotSequenceNumber = m_FileAllocationTable.SnapshotSequenceNumber;
+            uint fileIdNumber = m_fileMetaData.FileIdNumber;
+            uint snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
 
             buffer.Block[ArchiveConstants.BlockSize - 22] = indexIndirectNumber;
             buffer.Block[remoteAddressOffset] = (byte)(remoteBlockAddress);
@@ -316,7 +316,7 @@ namespace openHistorian.Core.StorageSystem.File
             buffer.Block[remoteAddressOffset + 2] = (byte)(remoteBlockAddress >> 16);
             buffer.Block[remoteAddressOffset + 3] = (byte)(remoteBlockAddress >> 24);
 
-            m_DiskIO.WriteBlock(blockAddress, pageType, indexValue, fileIDNumber, snapshotSequenceNumber, buffer.Block);
+            m_diskIo.WriteBlock(blockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber, buffer.Block);
             buffer.Address = blockAddress;
         }
 
@@ -329,34 +329,27 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="destinationClusterAddress">the first block of the destination cluster</param>
         private void ShadowCopyDataCluster(uint sourceClusterAddress, uint indexValue, uint destinationClusterAddress)
         {
-            BlockType blockType = BlockType.DataBlock;
 
-            uint fileIDNumber = m_FileMetaData.FileIDNumber;
-            uint snapshotSequenceNumber = m_FileAllocationTable.SnapshotSequenceNumber;
+            uint fileIdNumber = m_fileMetaData.FileIdNumber;
+            uint snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
 
-            //Copies one block at a time. For each block
-            for (uint x = 0; x < m_FileMetaData.BlocksPerCluster; x++)
+
+            //if source exist
+            if (sourceClusterAddress != 0)
             {
-                //if source exist
-                if (sourceClusterAddress != 0)
+                if (BufferPool.Data.Address != sourceClusterAddress)
                 {
-                    if (BufferPool.Data.Address != sourceClusterAddress + x)
-                    {
-                        IOReadState readState;
-                        readState = m_DiskIO.ReadBlock(sourceClusterAddress + x, blockType, indexValue + x, fileIDNumber, snapshotSequenceNumber - 1, BufferPool.Data.Block);
-                        if (readState != IOReadState.Valid)
-                            throw new Exception("Error Reading File " + readState.ToString());
-                    }
+                    IoReadState readState;
+                    readState = m_diskIo.ReadBlock(sourceClusterAddress, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber - 1, BufferPool.Data.Block);
+                    if (readState != IoReadState.Valid)
+                        throw new Exception("Error Reading File " + readState.ToString());
                 }
-                else //if source cluster does not exist.
-                {
-                    Array.Clear(BufferPool.Data.Block, 0, BufferPool.Data.Block.Length);
-                }
-                //Writes the block to the DiskIO
-                if (m_FileMetaData.BlocksPerCluster != 1) //This shadow data block only needs to be prewritten to the disk if there are more than 1 blocks per cluster.
-                    m_DiskIO.WriteBlock(destinationClusterAddress + x, blockType, indexValue + x, fileIDNumber, snapshotSequenceNumber, BufferPool.Data.Block);
-                BufferPool.Data.Address = destinationClusterAddress + x;
             }
+            else //if source cluster does not exist.
+            {
+                Array.Clear(BufferPool.Data.Block, 0, BufferPool.Data.Block.Length);
+            }
+            BufferPool.Data.Address = destinationClusterAddress;
         }
 
         #endregion

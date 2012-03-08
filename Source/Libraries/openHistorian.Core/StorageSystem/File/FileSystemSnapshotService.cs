@@ -22,9 +22,8 @@
 //******************************************************************************************************
 
 using System;
-using System.IO;
-using System.Threading;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace openHistorian.Core.StorageSystem.File
 {
@@ -41,32 +40,32 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Determines if this object has been disposed.
         /// </summary>
-        private bool m_disposed;
+        bool m_disposed;
 
         /// <summary>
         /// Constains the disk IO subsystem for accessing the file.
         /// </summary>
-        DiskIOUnbuffered m_DiskIO;
+        DiskIoUnbuffered m_diskIo;
 
         /// <summary>
         /// Contains the current snapshot of the file system.
         /// </summary>
-        FileAllocationTable m_FileAllocationTable;
+        FileAllocationTable m_fileAllocationTable;
 
         /// <summary>
         /// This object will be used to synchronize access to aquire a transaction.
         /// </summary>
-        object m_EditTransactionSynchronizationObject = new object();
+        object m_editTransactionSynchronizationObject = new object();
 
         /// <summary>
         /// Contains the current active transaction.  If this null, there is no active transaction.
         /// </summary>
-        TransactionalEdit m_CurrentTransaction;
+        TransactionalEdit m_currentTransaction;
 
         /// <summary>
         /// Contains all of the transactions that are currently reading.
         /// </summary>
-        List<TransactionalRead> m_ReadTransactions;
+        List<TransactionalRead> m_readTransactions;
 
         #endregion
 
@@ -78,9 +77,9 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="isReadOnly">Determines if the file will be opened in read only mode.</param>
         private FileSystemSnapshotService(string fileName, bool isReadOnly)
         {
-            m_DiskIO = DiskIOUnbuffered.OpenFile(fileName, isReadOnly);
-            m_FileAllocationTable = FileAllocationTable.OpenHeader(m_DiskIO);
-            m_ReadTransactions = new List<TransactionalRead>();
+            m_diskIo = DiskIoUnbuffered.OpenFile(fileName, isReadOnly);
+            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
+            m_readTransactions = new List<TransactionalRead>();
         }
 
         /// <summary>
@@ -89,10 +88,10 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="fileName">the file name</param>
         private FileSystemSnapshotService(string fileName)
         {
-            m_DiskIO = DiskIOUnbuffered.CreateFile(fileName);
-            FileAllocationTable.CreateFileAllocationTable(m_DiskIO);
-            m_FileAllocationTable = FileAllocationTable.OpenHeader(m_DiskIO);
-            m_ReadTransactions = new List<TransactionalRead>();
+            m_diskIo = DiskIoUnbuffered.CreateFile(fileName);
+            FileAllocationTable.CreateFileAllocationTable(m_diskIo);
+            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
+            m_readTransactions = new List<TransactionalRead>();
         }
 
         /// <summary>
@@ -104,8 +103,6 @@ namespace openHistorian.Core.StorageSystem.File
         }
         #endregion
 
-        #region [ Properties ].
-        #endregion
         #region [ Methods ]
 
         /// <summary>
@@ -115,17 +112,17 @@ namespace openHistorian.Core.StorageSystem.File
         /// <returns></returns>
         public TransactionalEdit BeginEditTransaction(int timeout = -1)
         {
-            if (m_DiskIO.IsReadOnly)
+            if (m_diskIo.IsReadOnly)
                 throw new Exception("File has been opened in readonly mode");
-            if (Monitor.TryEnter(m_EditTransactionSynchronizationObject, timeout))
+            if (Monitor.TryEnter(m_editTransactionSynchronizationObject, timeout))
             {
-                if (m_CurrentTransaction != null)
+                if (m_currentTransaction != null)
                     throw new Exception("A transaction has already been started");
-                m_CurrentTransaction = new TransactionalEdit(m_DiskIO, m_FileAllocationTable);
-                m_CurrentTransaction.HasBeenCommitted += new EventHandler(OnTransactionCommitted);
-                m_CurrentTransaction.HasBeenRolledBack += new EventHandler(OnTransactionRolledBack);
-                m_CurrentTransaction.HasBeenDisposed += new EventHandler(OnEditTransactionDisposed);
-                return m_CurrentTransaction;
+                m_currentTransaction = new TransactionalEdit(m_diskIo, m_fileAllocationTable);
+                m_currentTransaction.HasBeenCommitted += OnTransactionCommitted;
+                m_currentTransaction.HasBeenRolledBack += OnTransactionRolledBack;
+                m_currentTransaction.HasBeenDisposed += OnEditTransactionDisposed;
+                return m_currentTransaction;
             }
             return null;
         }
@@ -136,35 +133,35 @@ namespace openHistorian.Core.StorageSystem.File
         /// <returns></returns>
         public TransactionalRead BeginReadTransaction()
         {
-            TransactionalRead readTransaction = new TransactionalRead(m_DiskIO, m_FileAllocationTable);
-            readTransaction.HasBeenDisposed += new EventHandler(OnReadTransactionDisposed);
-            m_ReadTransactions.Add(readTransaction);
+            TransactionalRead readTransaction = new TransactionalRead(m_diskIo, m_fileAllocationTable);
+            readTransaction.HasBeenDisposed += OnReadTransactionDisposed;
+            m_readTransactions.Add(readTransaction);
             return readTransaction;
         }
 
         void OnReadTransactionDisposed(object sender, EventArgs e)
         {
-            m_ReadTransactions.Remove((TransactionalRead)sender);
+            m_readTransactions.Remove((TransactionalRead)sender);
         }
 
         void OnEditTransactionDisposed(object sender, EventArgs e)
         {
-            if (m_CurrentTransaction != sender)
+            if (m_currentTransaction != sender)
                 throw new Exception("Only the current transaction can raise this.");
-            m_CurrentTransaction = null;
-            Monitor.Exit(m_EditTransactionSynchronizationObject);
+            m_currentTransaction = null;
+            Monitor.Exit(m_editTransactionSynchronizationObject);
         }
 
         void OnTransactionCommitted(object sender, EventArgs e)
         {
-            if (m_CurrentTransaction != sender)
+            if (m_currentTransaction != sender)
                 throw new Exception("Only the current transaction can raise this.");
-            m_FileAllocationTable = FileAllocationTable.OpenHeader(m_DiskIO);
+            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
         }
 
         void OnTransactionRolledBack(object sender, EventArgs e)
         {
-            if (m_CurrentTransaction != sender)
+            if (m_currentTransaction != sender)
                 throw new Exception("Only the current transaction can raise this.");
         }
 
@@ -181,16 +178,16 @@ namespace openHistorian.Core.StorageSystem.File
         /// Releases the unmanaged resources used by the <see cref="FileSystemSnapshotService"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.
-                    if (m_DiskIO != null)
-                        m_DiskIO.Dispose();
-                    m_DiskIO = null;
+                    if (m_diskIo != null)
+                        m_diskIo.Dispose();
+                    m_diskIo = null;
                     if (disposing)
                     {
                         // This will be done only when the object is disposed by calling Dispose().
@@ -212,15 +209,15 @@ namespace openHistorian.Core.StorageSystem.File
         /// Opens an existing file archive for unbuffered read/write operations.
         /// </summary>
         /// <param name="fileName">The path to the archive file.</param>
-        /// <param name="IsReadOnly">Determines if the file is going to be opened in readonly mode.</param>
+        /// <param name="isReadOnly">Determines if the file is going to be opened in readonly mode.</param>
         /// <remarks>
         /// Since buffering the data will be the responsibility of another layer, 
         /// allowing the OS to buffer the data decreases performance (slightly) and
         /// wastes system memory that can be better used by the historian's buffer.
         /// </remarks>
-        public static FileSystemSnapshotService OpenFile(string fileName, bool IsReadOnly)
+        public static FileSystemSnapshotService OpenFile(string fileName, bool isReadOnly)
         {
-            return new FileSystemSnapshotService(fileName, IsReadOnly);
+            return new FileSystemSnapshotService(fileName, isReadOnly);
         }
 
         /// <summary>

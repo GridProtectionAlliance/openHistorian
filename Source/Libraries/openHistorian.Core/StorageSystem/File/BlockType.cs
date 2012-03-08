@@ -22,17 +22,16 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace openHistorian.Core.StorageSystem
 {
+    /// <summary>
+    /// Each block of bytes in a file is one of these types.
+    /// </summary>
     public enum BlockType : byte
     {
-        FileAllocationTable=1,
-        IndexIndirect=2,
-        DataBlock=3
+        FileAllocationTable = 1,
+        IndexIndirect = 2,
+        DataBlock = 3
     }
 }

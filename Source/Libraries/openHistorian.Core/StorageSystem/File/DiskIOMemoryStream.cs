@@ -23,72 +23,102 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 
 namespace openHistorian.Core.StorageSystem.File
 {
-    internal class DiskIOMemoryStream : DiskIOBase
+    /// <summary>
+    /// Provides a completely in memory implemention of a <see cref="DiskIoBase"/>.
+    /// </summary>
+    internal class DiskIoMemoryStream : DiskIoBase
     {
-        protected List<byte[]> m_dataBytes;
+        //ToDo: extend this to a list<byte[][]> to prevent the creation of a very large list.
+        /// <summary>
+        /// Contains all of the blocks of data.
+        /// </summary>
+        protected List<byte[]> DataBytes;
 
-        public DiskIOMemoryStream()
+
+        /// <summary>
+        /// Creates an empty <see cref="DiskIoMemoryStream"/>.
+        /// </summary>
+        public DiskIoMemoryStream()
         {
-            m_dataBytes = new List<byte[]>();
+            DataBytes = new List<byte[]>();
         }
 
+        /// <summary>
+        /// Always returns false.
+        /// </summary>
         public override bool IsReadOnly
         {
             get { return false; }
         }
 
+        /// <summary>
+        /// Resizes the file to the requested size
+        /// </summary>
+        /// <param name="requestedSize">The size to resize to</param>
+        /// <returns>The actual size of the file after the resize</returns>
         protected override long SetFileLength(long requestedSize)
         {
-             while (FileSize < requestedSize)
+            while (FileSize < requestedSize)
             {
-                m_dataBytes.Add(null);
+                DataBytes.Add(null);
             }
             while (FileSize > requestedSize)
             {
-                m_dataBytes.RemoveAt(m_dataBytes.Count - 1);
+                DataBytes.RemoveAt(DataBytes.Count - 1);
             }
             return FileSize;
         }
 
+        /// <summary>
+        /// Gets the current size of the file.
+        /// </summary>
         public override long FileSize
         {
-            get { return m_dataBytes.Count * ArchiveConstants.BlockSize; }
+            get { return DataBytes.Count * ArchiveConstants.BlockSize; }
         }
 
-        protected override void WriteDataBlock(uint blockIndex, byte[] data)
+        /// <summary>
+        /// Writes the following data to the stream
+        /// </summary>
+        /// <param name="blockIndex">the block where to write the data</param>
+        /// <param name="data">the data to write</param>
+        protected override void WriteBlock(uint blockIndex, byte[] data)
         {
-            while (blockIndex >= m_dataBytes.Count)
+            while (blockIndex >= DataBytes.Count)
             {
-                m_dataBytes.Add(null);
+                DataBytes.Add(null);
             }
-            byte[] localPage = m_dataBytes[(int)blockIndex];
+            byte[] localPage = DataBytes[(int)blockIndex];
             if (localPage == null)
             {
                 localPage = new byte[ArchiveConstants.BlockSize];
-                m_dataBytes[(int)blockIndex] = localPage;
+                DataBytes[(int)blockIndex] = localPage;
             }
             Array.Copy(data, 0, localPage, 0, data.Length);
         }
 
-        protected override IOReadState ReadBlock(uint blockIndex, byte[] data)
+        /// <summary>
+        /// Tries to read data from the following file
+        /// </summary>
+        /// <param name="blockIndex">the block where to write the data</param>
+        /// <param name="data">the data to write</param>
+        /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
+        protected override IoReadState ReadBlock(uint blockIndex, byte[] data)
         {
-            if (blockIndex > m_dataBytes.Count)
-                return IOReadState.ReadPastThenEndOfTheFile;
+            if (blockIndex > DataBytes.Count)
+                return IoReadState.ReadPastThenEndOfTheFile;
 
-            byte[] localPage = m_dataBytes[(int)blockIndex];
+            byte[] localPage = DataBytes[(int)blockIndex];
             if (localPage == null)
-                return IOReadState.ChecksumInvalidBecausePageIsNull;
+                return IoReadState.ChecksumInvalidBecausePageIsNull;
 
             Array.Copy(localPage, 0, data, 0, data.Length);
-            return IOReadState.Valid;
+            return IoReadState.Valid;
         }
 
-  
+
     }
 }

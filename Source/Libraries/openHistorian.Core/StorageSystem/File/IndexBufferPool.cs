@@ -49,7 +49,7 @@ namespace openHistorian.Core.StorageSystem.File
             internal Buffer()
             {
                 Block = new byte[ArchiveConstants.BlockSize];
-                Address=0;
+                Address = 0;
             }
         }
     }

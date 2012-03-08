@@ -29,7 +29,7 @@ using System.IO;
 
 namespace openHistorian.Core.StorageSystem.File
 {
-    internal class DiskIOMemoryStreamTest : DiskIOMemoryStream
+    internal class DiskIOMemoryStreamTest : DiskIoMemoryStream
     {
         internal static void Test()
         {
@@ -38,7 +38,7 @@ namespace openHistorian.Core.StorageSystem.File
         static void TestAllReadStates()
         {
             DiskIOMemoryStreamTest stream = new DiskIOMemoryStreamTest();
-            for (int x = 0; x < 2; x++) 
+            for (int x = 0; x < 2; x++)
             {
                 DiskIOTest.TestAllReadStatesExceptInvalid(stream);
                 TestChecksumInvalid(stream);
@@ -46,19 +46,19 @@ namespace openHistorian.Core.StorageSystem.File
         }
         static void TestChecksumInvalid(DiskIOMemoryStreamTest stream)
         {
-            IOReadState readState;
+            IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = DiskIOTest.GenerateRandomDataBlock(seed);
             uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
-            byte[] internalBlock = stream.m_dataBytes[(int)currentBlock];
+            byte[] internalBlock = stream.DataBytes[(int)currentBlock];
 
             internalBlock[0] = (byte)((int)internalBlock[0] + 1);
 
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
-            if (readState != IOReadState.ChecksumInvalid)
+            if (readState != IoReadState.ChecksumInvalid)
                 throw new Exception();
         }
     }

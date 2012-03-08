@@ -50,7 +50,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// Maintains a list of all of the files that have been opened 
         /// so they can be properly disposed of when the transaction ends.
         /// </summary>
-        List<ArchiveFileStream> m_OpenedFiles;
+        List<ArchiveFileStream> m_openedFiles;
 
         /// <summary>
         /// The readonly snapshot of the archive file.
@@ -60,7 +60,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// The underlying diskIO to do the reads against.
         /// </summary>
-        DiskIOBase m_DataReader;
+        DiskIoBase m_dataReader;
 
         #endregion
 
@@ -69,19 +69,20 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Creates a readonly copy of a transaction.
         /// </summary>
+        /// <param name="dataReader"> </param>
         /// <param name="fileAllocationTable">This parameter must be in a read only mode.
         /// This is to ensure that the value is not modified after it has been passed to this class.</param>
-        internal TransactionalRead(DiskIOBase dataReader, FileAllocationTable fileAllocationTable)
+        internal TransactionalRead(DiskIoBase dataReader, FileAllocationTable fileAllocationTable)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
             if (fileAllocationTable == null)
                 throw new ArgumentNullException("fileAllocationTable");
             if (!fileAllocationTable.IsReadOnly)
-                throw new ArgumentException("fileAllocationTable", "The file passed to this procedure must be read only.");
-            m_OpenedFiles = new List<ArchiveFileStream>();
+                throw new ArgumentException("The file passed to this procedure must be read only.", "fileAllocationTable");
+            m_openedFiles = new List<ArchiveFileStream>();
             m_fileAllocationTable = fileAllocationTable;
-            m_DataReader = dataReader;
+            m_dataReader = dataReader;
         }
 
         /// <summary>
@@ -132,10 +133,10 @@ namespace openHistorian.Core.StorageSystem.File
             if (fileIndex < 0 || fileIndex >= m_fileAllocationTable.Files.Count)
                 throw new ArgumentOutOfRangeException("fileIndex", "The file index provided could not be found in the header.");
 
-            ArchiveFileStream archiveFileStream = new ArchiveFileStream(m_DataReader, m_fileAllocationTable.Files[fileIndex], m_fileAllocationTable, true);
+            ArchiveFileStream archiveFileStream = new ArchiveFileStream(m_dataReader, m_fileAllocationTable.Files[fileIndex], m_fileAllocationTable, true);
             if (!archiveFileStream.IsReadOnly)
                 throw new Exception("Stream is supposed to be readonly.");
-            m_OpenedFiles.Add(archiveFileStream);
+            m_openedFiles.Add(archiveFileStream);
             return archiveFileStream;
         }
 
@@ -153,25 +154,25 @@ namespace openHistorian.Core.StorageSystem.File
         /// Releases the unmanaged resources used by the <see cref="TransactionalRead"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.
-                    if (m_OpenedFiles != null)
+                    if (m_openedFiles != null)
                     {
-                        for (int x = 0; x < m_OpenedFiles.Count; x++)
+                        for (int x = 0; x < m_openedFiles.Count; x++)
                         {
-                            ArchiveFileStream file = m_OpenedFiles[x];
+                            ArchiveFileStream file = m_openedFiles[x];
                             if (file != null)
                             {
                                 file.Dispose();
-                                m_OpenedFiles[x] = null;
+                                m_openedFiles[x] = null;
                             }
                         }
-                        m_OpenedFiles = null;
+                        m_openedFiles = null;
                     }
 
                     if (HasBeenDisposed != null)

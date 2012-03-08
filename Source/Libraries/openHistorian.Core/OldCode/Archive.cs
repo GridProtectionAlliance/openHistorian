@@ -31,7 +31,7 @@ namespace openHistorian.Core
         public static Archive CreateFileArchive(string FileName)
         {
             Archive archive = new Archive();
-            archive.m_storageSystem = openHistorian.Core.StorageSystem.File.VirtualFileSystem.CreateArchive(FileName, 4096, 10000000);
+            archive.m_storageSystem = openHistorian.Core.StorageSystem.File.VirtualFileSystem.CreateArchive(FileName);
             return archive;
         }
         public static Archive OpenFileArchive(string FileName)

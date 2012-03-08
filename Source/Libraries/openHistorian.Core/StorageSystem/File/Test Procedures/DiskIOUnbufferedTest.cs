@@ -29,7 +29,7 @@ using System.IO;
 
 namespace openHistorian.Core.StorageSystem.File
 {
-    internal class DiskIOUnbufferedTest : DiskIOUnbuffered, IDisposable
+    internal class DiskIOUnbufferedTest : DiskIoUnbuffered, IDisposable
     {
         internal DiskIOUnbufferedTest()
             : base(System.IO.Path.GetTempFileName(), false)
@@ -53,22 +53,22 @@ namespace openHistorian.Core.StorageSystem.File
         }
         static void TestChecksumInvalid(DiskIOUnbufferedTest stream)
         {
-            IOReadState readState;
+            IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = DiskIOTest.GenerateRandomDataBlock(seed);
             uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
-            stream.m_file.Position = currentBlock * ArchiveConstants.BlockSize;
+            stream.File.Position = currentBlock * ArchiveConstants.BlockSize;
             byte[] internalBlock = new byte[ArchiveConstants.BlockSize];
-            stream.m_file.Read(internalBlock, 0, internalBlock.Length);
+            stream.File.Read(internalBlock, 0, internalBlock.Length);
             internalBlock[0] = (byte)((int)internalBlock[0] + 1);
-            stream.m_file.Position = currentBlock * ArchiveConstants.BlockSize;
-            stream.m_file.Write(internalBlock, 0, internalBlock.Length);
+            stream.File.Position = currentBlock * ArchiveConstants.BlockSize;
+            stream.File.Write(internalBlock, 0, internalBlock.Length);
 
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
-            if (readState != IOReadState.ChecksumInvalid)
+            if (readState != IoReadState.ChecksumInvalid)
                 throw new Exception();
         }
 
@@ -77,12 +77,12 @@ namespace openHistorian.Core.StorageSystem.File
             base.Dispose();
             try
             {
-                System.IO.File.Delete(base.m_FileName);
+                System.IO.File.Delete(base.FileName);
             }
             catch
             {
             }
-            
+
         }
     }
 }

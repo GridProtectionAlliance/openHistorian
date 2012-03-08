@@ -33,11 +33,11 @@ namespace openHistorian.Core.StorageSystem.File
     {
         public static void Test()
         {
-            DiskIOMemoryStream stream = new DiskIOMemoryStream();
+            DiskIoMemoryStream stream = new DiskIoMemoryStream();
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(stream);
-            header.CreateNewFile(Guid.NewGuid(), 1);
-            header.CreateNewFile(Guid.NewGuid(), 1);
-            header.CreateNewFile(Guid.NewGuid(), 1);
+            header.CreateNewFile(Guid.NewGuid());
+            header.CreateNewFile(Guid.NewGuid());
+            header.CreateNewFile(Guid.NewGuid());
             header.WriteToFileSystem(stream);
             TestWrite(stream, 0);
             TestWrite(stream, 1);
@@ -48,25 +48,25 @@ namespace openHistorian.Core.StorageSystem.File
             header = FileAllocationTable.OpenHeader(stream);
         }
 
-        public static void TestWrite(DiskIOBase stream, int FileNumber)
+        public static void TestWrite(DiskIoBase stream, int FileNumber)
         {
             FileAllocationTable header = FileAllocationTable.OpenHeader(stream);
             header = header.CreateEditableCopy(true);
             FileMetaData node = header.Files[FileNumber];
-            IndexParser parse = new IndexParser(header.SnapshotSequenceNumber, stream,node);
+            IndexParser parse = new IndexParser(header.SnapshotSequenceNumber, stream, node);
             ShadowCopyAllocator shadow = new ShadowCopyAllocator(stream, header, node, parse);
 
             uint nextPage = header.NextUnallocatedBlock;
 
-            
+
             shadow.ShadowDataBlock(0);
             PositionData pd = parse.GetPositionData(0);
             if (node.DirectCluster != nextPage)
                 throw new Exception();
             if (parse.DataClusterAddress != nextPage)
                 throw new Exception();
-            stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock,  (uint)(pd.VirtualPosition/ArchiveConstants.DataBlockDataLength), node.FileIDNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
-            
+            stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
+
 
             //should do nothing since the page has already been allocated
             shadow.ShadowDataBlock(1024);
@@ -75,13 +75,13 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new Exception();
             if (parse.DataClusterAddress != nextPage)
                 throw new Exception();
-            stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIDNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
+            stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
 
             if (ArchiveConstants.BlockSize == 4096)
             {
                 //Allocate in the 4th indirect block
-                shadow.ShadowDataBlock(ArchiveConstants.LastTripleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
-                pd = parse.GetPositionData(ArchiveConstants.LastTripleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
+                shadow.ShadowDataBlock(ArchiveConstants.FirstQuadrupleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
+                pd = parse.GetPositionData(ArchiveConstants.FirstQuadrupleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
                 if (node.DirectCluster != nextPage)
                     throw new Exception();
                 if (parse.DataClusterAddress != nextPage + 1)
@@ -94,14 +94,14 @@ namespace openHistorian.Core.StorageSystem.File
                     throw new Exception();
                 if (parse.ForthIndirectBlockAddress != nextPage + 2)
                     throw new Exception();
-                stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIDNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
+                stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
 
             }
             else
             {
                 //Allocate in the 3th indirect block
-                shadow.ShadowDataBlock(ArchiveConstants.LastDoubleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
-                pd = parse.GetPositionData(ArchiveConstants.LastDoubleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
+                shadow.ShadowDataBlock(ArchiveConstants.FirstTripleIndirectIndex * (long)ArchiveConstants.DataBlockDataLength);
+                pd = parse.GetPositionData(ArchiveConstants.FirstTripleIndirectIndex * (long)ArchiveConstants.DataBlockDataLength);
                 if (node.DirectCluster != nextPage)
                     throw new Exception();
                 if (parse.DataClusterAddress != nextPage + 1)
@@ -112,7 +112,7 @@ namespace openHistorian.Core.StorageSystem.File
                     throw new Exception();
                 if (parse.ThirdIndirectBlockAddress != nextPage + 2)
                     throw new Exception();
-                stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIDNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
+                stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
             }
             //if (node.DirectCluster != nextPage)
             //    throw new Exception();
@@ -131,7 +131,7 @@ namespace openHistorian.Core.StorageSystem.File
         }
 
 
-       
+
 
 
     }

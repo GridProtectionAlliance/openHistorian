@@ -37,15 +37,15 @@ namespace openHistorian.Core.StorageSystem.File
             //That's 4kb * 1.7 million/sec or 6.8GB/sec of data.
             //TestSpeed();
 
-            TestMethod1(1);
+            TestMethod1();
         }
 
         public static void TestSpeed()
         {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
-            IndexMapper map = new IndexMapper(1);
-            long page = (long)ArchiveConstants.LastTripleIndirectBlockIndex * ArchiveConstants.DataBlockDataLength;
+            IndexMapper map = new IndexMapper();
+            long page = (long)ArchiveConstants.FirstQuadrupleIndirectBlockIndex * ArchiveConstants.DataBlockDataLength;
 
             for (int x = 0; x < 10000000; x++)
             {
@@ -57,14 +57,14 @@ namespace openHistorian.Core.StorageSystem.File
             System.Windows.Forms.MessageBox.Show(((int.MaxValue / ArchiveConstants.DataBlockDataLength) / sw.Elapsed.TotalSeconds).ToString());
         }
 
-        public static void TestMethod1(uint pagesPerBlock)
+        public static void TestMethod1()
         {
-            IndexMapper map = new IndexMapper(pagesPerBlock);
+            IndexMapper map = new IndexMapper();
             CheckValues check = new CheckValues();
             long lastAddress = Math.Min((long)uint.MaxValue * ArchiveConstants.DataBlockDataLength, ArchiveConstants.MaxFileSystemSize);
 
             //this line is to shortcut so the test is less comprehensive.
-            lastAddress = (long)ArchiveConstants.DataBlockDataLength * (long)ArchiveConstants.LastDoubleIndirectBlockIndex + 100;
+            lastAddress = (long)ArchiveConstants.DataBlockDataLength * (long)ArchiveConstants.FirstTripleIndirectIndex + 100;
 
             for (long x = 0; x < lastAddress; x += ArchiveConstants.DataBlockDataLength)
             {

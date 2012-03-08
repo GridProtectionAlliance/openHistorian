@@ -30,7 +30,7 @@ namespace openHistorian.Core.StorageSystem.File
     {
         public static void Test()
         {
-            DiskIOMemoryStream stream = new DiskIOMemoryStream();
+            DiskIoMemoryStream stream = new DiskIoMemoryStream();
             FileAllocationTable fat = FileAllocationTable.CreateFileAllocationTable(stream);
             //obtain a readonly copy of the file allocation table.
             fat = FileAllocationTable.OpenHeader(stream);
@@ -42,7 +42,7 @@ namespace openHistorian.Core.StorageSystem.File
             fat = FileAllocationTable.OpenHeader(stream);
             TestVerifyRollback(stream, fat);
         }
-        static void TestCreateNewFile(DiskIOBase stream, FileAllocationTable fat)
+        static void TestCreateNewFile(DiskIoBase stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
@@ -67,8 +67,8 @@ namespace openHistorian.Core.StorageSystem.File
 
             trans.Commit();
         }
-        
-        static void TestOpenExistingFile(DiskIOBase stream, FileAllocationTable fat)
+
+        static void TestOpenExistingFile(DiskIoBase stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
@@ -77,7 +77,7 @@ namespace openHistorian.Core.StorageSystem.File
             ArchiveFileStream fs1 = trans.OpenFile(0);
             ArchiveFileStream fs2 = trans.OpenFile(1);
             ArchiveFileStream fs3 = trans.OpenFile(2);
-                        
+
             //read from them and verify content.
             ArchiveFileStreamTest.TestSingleByteRead(fs1);
             ArchiveFileStreamTest.TestCustomSizeRead(fs2, 5);
@@ -99,11 +99,11 @@ namespace openHistorian.Core.StorageSystem.File
             trans.Commit();
         }
 
-        static void TestRollback(DiskIOBase stream, FileAllocationTable fat)
+        static void TestRollback(DiskIoBase stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
-           
+
             //create 3 files additional files
             ArchiveFileStream fs21 = trans.CreateFile(id, 1234);
             ArchiveFileStream fs22 = trans.CreateFile(id, 1234);
@@ -124,10 +124,10 @@ namespace openHistorian.Core.StorageSystem.File
             ArchiveFileStreamTest.TestCustomSizeWrite(fs1, 5);
             ArchiveFileStreamTest.TestCustomSizeWrite(fs2, ArchiveConstants.DataBlockDataLength + 20);
 
-           trans.Rollback();
+            trans.Rollback();
         }
 
-        static void TestVerifyRollback(DiskIOBase stream, FileAllocationTable fat)
+        static void TestVerifyRollback(DiskIoBase stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);

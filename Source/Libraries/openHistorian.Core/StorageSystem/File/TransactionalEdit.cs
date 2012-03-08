@@ -58,7 +58,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Prevents duplicate calls to Dispose;
         /// </summary>
-        private bool m_disposed;
+        bool m_disposed;
 
         /// <summary>
         /// Deteremins if the transaction is complete.  This is to 
@@ -72,7 +72,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// This only maintains files that are actively being written to since only one active file
         /// can be opened at a time.
         /// </summary>
-        SortedList<uint, ArchiveFileStream> m_OpenedFiles;
+        SortedList<uint, ArchiveFileStream> m_openedFiles;
 
         /// <summary>
         /// This provides a snapshot of the origional file system incase the owner 
@@ -83,7 +83,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// The underlying diskIO to do the read/writes against.
         /// </summary>
-        DiskIOBase m_DataReader;
+        DiskIoBase m_dataReader;
 
         /// <summary>
         /// The readonly snapshot of the archive file.
@@ -104,25 +104,26 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Creates an editable copy of the transaction
         /// </summary>
+        /// <param name="dataReader"> </param>
         /// <param name="fileAllocationTable">This parameter must be in a read only mode.
         /// This is to ensure that the value is not modified after it has been passed to this class.
         /// This will be converted into an editable version within the constructor of this class</param>
-        internal TransactionalEdit(DiskIOBase dataReader, FileAllocationTable fileAllocationTable)
+        internal TransactionalEdit(DiskIoBase dataReader, FileAllocationTable fileAllocationTable)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
             if (fileAllocationTable == null)
                 throw new ArgumentNullException("fileAllocationTable");
             if (!fileAllocationTable.IsReadOnly)
-                throw new ArgumentException("fileAllocationTable", "The file passed to this procedure must be read only.");
+                throw new ArgumentException("The file passed to this procedure must be read only.", "fileAllocationTable");
 
             m_disposed = false;
             m_transactionComplete = false;
             m_transactionalRead = new TransactionalRead(dataReader, fileAllocationTable);
             m_fileAllocationTable = fileAllocationTable.CreateEditableCopy(true);
-            m_DataReader = dataReader;
+            m_dataReader = dataReader;
             m_origionalFreePageIndex = m_fileAllocationTable.NextUnallocatedBlock;
-            m_OpenedFiles = new SortedList<uint, ArchiveFileStream>();
+            m_openedFiles = new SortedList<uint, ArchiveFileStream>();
         }
 
         #endregion
@@ -174,7 +175,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <returns></returns>
         public ArchiveFileStream CreateFile(Guid fileExtension, uint fileFlags)
         {
-            FileMetaData file = m_fileAllocationTable.CreateNewFile(fileExtension, 1);
+            FileMetaData file = m_fileAllocationTable.CreateNewFile(fileExtension);
             file.FileFlags = fileFlags;
             return OpenFile(file);
         }
@@ -189,14 +190,14 @@ namespace openHistorian.Core.StorageSystem.File
             if (fileIndex < 0 || fileIndex >= m_fileAllocationTable.Files.Count)
                 throw new ArgumentOutOfRangeException("fileIndex", "The file index provided could not be found in the header.");
             FileMetaData file = m_fileAllocationTable.Files[fileIndex];
-            if (m_OpenedFiles.ContainsKey(file.FileIDNumber))
+            if (m_openedFiles.ContainsKey(file.FileIdNumber))
                 throw new Exception("Only one file may be opened at a time");
 
-            ArchiveFileStream archiveFileStream = new ArchiveFileStream(m_DataReader, file, m_fileAllocationTable, false);
+            ArchiveFileStream archiveFileStream = new ArchiveFileStream(m_dataReader, file, m_fileAllocationTable, false);
             if (archiveFileStream.IsReadOnly)
                 throw new Exception("Stream is supposed to be editable.");
 
-            m_OpenedFiles.Add(file.FileIDNumber, archiveFileStream);
+            m_openedFiles.Add(file.FileIdNumber, archiveFileStream);
             return archiveFileStream;
         }
 
@@ -211,7 +212,7 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new ArgumentNullException("file");
             for (int x = 0; x < m_fileAllocationTable.Files.Count; x++)
             {
-                if (object.ReferenceEquals(file, m_fileAllocationTable.Files[x]))
+                if (ReferenceEquals(file, m_fileAllocationTable.Files[x]))
                     return OpenFile(x);
             }
             throw new Exception("The file provided does not belong in the file allocation table");
@@ -237,13 +238,13 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new Exception("Duplicate call to Commit/Rollback Transaction");
             try
             {
-                foreach (ArchiveFileStream fileStream in m_OpenedFiles.Values)
+                foreach (ArchiveFileStream fileStream in m_openedFiles.Values)
                 {
                     if (!fileStream.IsDisposed)
                         fileStream.Flush();
                 }
 
-                m_fileAllocationTable.WriteToFileSystem(m_DataReader);
+                m_fileAllocationTable.WriteToFileSystem(m_dataReader);
 
                 if (HasBeenCommitted != null)
                 {
@@ -289,7 +290,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             if (m_disposed)
                 throw new Exception("Duplicate call to Commit/Rollback Transaction");
-            return m_DataReader.SetFileLength(size, m_fileAllocationTable.NextUnallocatedBlock);
+            return m_dataReader.SetFileLength(size, m_fileAllocationTable.NextUnallocatedBlock);
         }
 
         /// <summary>
@@ -300,7 +301,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_DataReader.FileSize - m_fileAllocationTable.NextUnallocatedBlock * ArchiveConstants.BlockSize;
+                return m_dataReader.FileSize - m_fileAllocationTable.NextUnallocatedBlock * ArchiveConstants.BlockSize;
             }
         }
 
@@ -318,7 +319,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// Releases the unmanaged resources used by the <see cref="TransactionalRead"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
@@ -333,19 +334,19 @@ namespace openHistorian.Core.StorageSystem.File
                         m_transactionalRead.Dispose();
                     m_transactionalRead = null;
 
-                    if (m_OpenedFiles != null)
+                    if (m_openedFiles != null)
                     {
-                        for (int x = 0; x < m_OpenedFiles.Count; x++)
+                        for (int x = 0; x < m_openedFiles.Count; x++)
                         {
-                            ArchiveFileStream file = m_OpenedFiles.Values[x];
+                            ArchiveFileStream file = m_openedFiles.Values[x];
                             if (file != null)
                             {
                                 if (!file.IsDisposed)
                                     file.Dispose();
                             }
                         }
-                        m_OpenedFiles.Clear();
-                        m_OpenedFiles = null;
+                        m_openedFiles.Clear();
+                        m_openedFiles = null;
                     }
                     if (HasBeenDisposed != null)
                         HasBeenDisposed(this, EventArgs.Empty);

@@ -40,72 +40,70 @@ namespace openHistorian.Core.StorageSystem.File
         /// scrapped, and what can be kept.
         /// 0=Immediate, 1=Single, 2=Double, 3=Triple, 4=Quadruple, 5=NoChange
         /// </summary>
-        int m_LowestChange;
+        int m_lowestChange;
         /// <summary>
         /// The number of data bytes that are contained per address in the index indirect pages.
         /// </summary>
-        long m_DataPerCluster;
+        long m_dataPerCluster;
         /// <summary>
         /// 0=Immediate, 1=Single, 2=Double, 3=Triple
         /// </summary>
-        int m_IndirectNumber;
+        int m_indirectNumber;
         /// <summary>
         /// The offset inside the first indirect block
         /// that contains the address for the second indirect block or data cluster if IndirectNumber = 1
         /// </summary>
-        int m_FirstIndirectOffset;
+        int m_firstIndirectOffset;
         /// <summary>
         /// The offset inside the second indirect block
         /// that contains the address for the third indirect block or data cluster if IndirectNumber = 2
         /// </summary>
-        int m_SecondIndirectOffset;
+        int m_secondIndirectOffset;
         /// <summary>
         /// The offset inside the third indirect block
         /// that contains the address for the forth indirect block or data cluster if IndirectNumber = 3
         /// </summary>
-        int m_ThirdIndirectOffset;
+        int m_thirdIndirectOffset;
         /// <summary>
         /// The offset inside the forth indirect block
         /// that contains the address for the data cluster if IndirectNumber = 4
         /// </summary>
-        int m_ForthIndirectOffset;
+        int m_forthIndirectOffset;
         /// <summary>
         /// The value of the first data block index that can be referenced using this indirect block.
         /// </summary>
-        uint m_FirstIndirectBaseIndex;
+        uint m_firstIndirectBaseIndex;
         /// <summary>
         /// The value of the first data cluster index that can be referenced using this indirect block.
         /// </summary>
-        uint m_SecondIndirectBaseIndex;
+        uint m_secondIndirectBaseIndex;
         /// <summary>
         /// The value of the first data cluster index that can be referenced using this indirect block.
         /// </summary>
-        uint m_ThirdIndirectBaseIndex;
+        uint m_thirdIndirectBaseIndex;
         /// <summary>
         /// The value of the first data cluster index that can be referenced using this indirect block.
         /// </summary>
-        uint m_ForthIndirectBaseIndex;
+        uint m_forthIndirectBaseIndex;
         /// <summary>
         /// The first address that can be referenced in this cluster
         /// </summary>
-        long m_BaseVirtualAddress;
+        long m_baseVirtualAddress;
         /// <summary>
         /// The index value of the base virtual address.
         /// </summary>
-        uint m_BaseVirtualAddressIndexValue;
+        uint m_baseVirtualAddressIndexValue;
 
         #endregion
 
         #region [ Constructors ]
+
         /// <summary>
         /// Creates a index mapper that is based on a given cluster size,
         /// </summary>
-        /// <param name="blocksPerCluster">An integer value greater than 0  that can be used to compute the cluster size.</param>
-        public IndexMapper(uint blocksPerCluster)
+        public IndexMapper()
         {
-            if (blocksPerCluster == 0)
-                throw new ArgumentException("blocksPerCluster", "Value cannot be 0");
-            m_DataPerCluster = blocksPerCluster * ArchiveConstants.DataBlockDataLength;
+            m_dataPerCluster = ArchiveConstants.DataBlockDataLength;
             //initializes all of the values
             SetPosition(0);
         }
@@ -120,7 +118,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_IndirectNumber;
+                return m_indirectNumber;
             }
         }
         /// <summary>
@@ -133,7 +131,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_FirstIndirectOffset;
+                return m_firstIndirectOffset;
             }
         }
         /// <summary>
@@ -146,7 +144,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_SecondIndirectOffset;
+                return m_secondIndirectOffset;
             }
         }
         /// <summary>
@@ -159,7 +157,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_ThirdIndirectOffset;
+                return m_thirdIndirectOffset;
             }
         }
         /// <summary>
@@ -172,7 +170,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_ForthIndirectOffset;
+                return m_forthIndirectOffset;
             }
         }
         /// <summary>
@@ -183,7 +181,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_FirstIndirectBaseIndex;
+                return m_firstIndirectBaseIndex;
             }
         }
         /// <summary>
@@ -194,7 +192,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_SecondIndirectBaseIndex;
+                return m_secondIndirectBaseIndex;
             }
         }
         /// <summary>
@@ -205,7 +203,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_ThirdIndirectBaseIndex;
+                return m_thirdIndirectBaseIndex;
             }
         }
         /// <summary>
@@ -216,7 +214,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_ForthIndirectBaseIndex;
+                return m_forthIndirectBaseIndex;
             }
         }
         /// <summary>
@@ -226,7 +224,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_DataPerCluster;
+                return m_dataPerCluster;
             }
         }
         /// <summary>
@@ -236,7 +234,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_BaseVirtualAddressIndexValue;
+                return m_baseVirtualAddressIndexValue;
             }
         }
         /// <summary>
@@ -246,7 +244,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_BaseVirtualAddress;
+                return m_baseVirtualAddress;
             }
         }
 
@@ -266,21 +264,21 @@ namespace openHistorian.Core.StorageSystem.File
         /// </returns>
         public int SetPosition(long position)
         {
-            m_LowestChange = 5;
+            m_lowestChange = 5;
 
             if (position < 0)
-                throw new ArgumentException("position", "Position cannot be negative");
+                throw new ArgumentException("Position cannot be negative", "position");
 
             //the index if the data block
-            long indexNumber = position / m_DataPerCluster;
+            long indexNumber = position / m_dataPerCluster;
 
             if (indexNumber >= uint.MaxValue)
                 throw new IndexOutOfRangeException("Reading outside the bounds of the feature is not supported");
 
-            m_BaseVirtualAddress = indexNumber * m_DataPerCluster;
-            m_BaseVirtualAddressIndexValue = (uint)indexNumber;
+            m_baseVirtualAddress = indexNumber * m_dataPerCluster;
+            m_baseVirtualAddressIndexValue = (uint)indexNumber;
 
-            if (indexNumber < ArchiveConstants.LastDirectBlockIndex) //immediate
+            if (indexNumber < ArchiveConstants.FirstSingleIndirectBlockIndex) //immediate
             {
                 SetIndirectNumber(0);
                 SetFirstIndirectOffset(-1);
@@ -288,39 +286,39 @@ namespace openHistorian.Core.StorageSystem.File
                 SetThirdIndirectOffset(-1);
                 SetForthIndirectOffset(-1);
             }
-            else if (indexNumber < ArchiveConstants.LastSingleIndirectBlockIndex) //single redirect
+            else if (indexNumber < ArchiveConstants.FirstDoubleIndirectBlockIndex) //single redirect
             {
                 SetIndirectNumber(1);
-                indexNumber -= ArchiveConstants.LastDirectBlockIndex;
+                indexNumber -= ArchiveConstants.FirstSingleIndirectBlockIndex;
                 SetFirstIndirectOffset(CalculateRelativeIndexForIndexPosition(indexNumber));
                 SetSecondIndirectOffset(-1);
                 SetThirdIndirectOffset(-1);
                 SetForthIndirectOffset(-1);
             }
-            else if (indexNumber < ArchiveConstants.LastDoubleIndirectBlockIndex) //double redirect
+            else if (indexNumber < ArchiveConstants.FirstTripleIndirectIndex) //double redirect
             {
                 SetIndirectNumber(2);
-                indexNumber -= ArchiveConstants.LastSingleIndirectBlockIndex;
+                indexNumber -= ArchiveConstants.FirstDoubleIndirectBlockIndex;
 
                 SetFirstIndirectOffset(CalculateRelativeIndexForIndexPosition(indexNumber / ArchiveConstants.AddressesPerBlock));
                 SetSecondIndirectOffset(CalculateRelativeIndexForIndexPosition(indexNumber % ArchiveConstants.AddressesPerBlock));
                 SetThirdIndirectOffset(-1);
                 SetForthIndirectOffset(-1);
             }
-            else if (indexNumber < ArchiveConstants.LastTripleIndirectBlockIndex) //triple
+            else if (indexNumber < ArchiveConstants.FirstQuadrupleIndirectBlockIndex) //triple
             {
                 SetIndirectNumber(3);
-                indexNumber -= ArchiveConstants.LastDoubleIndirectBlockIndex;
+                indexNumber -= ArchiveConstants.FirstTripleIndirectIndex;
 
                 SetFirstIndirectOffset(CalculateRelativeIndexForIndexPosition(indexNumber / ArchiveConstants.AddressesPerBlockSquare));
                 SetSecondIndirectOffset(CalculateRelativeIndexForIndexPosition(indexNumber / ArchiveConstants.AddressesPerBlock % ArchiveConstants.AddressesPerBlock));
                 SetThirdIndirectOffset(CalculateRelativeIndexForIndexPosition(indexNumber % ArchiveConstants.AddressesPerBlock));
                 SetForthIndirectOffset(-1);
             }
-            else if (indexNumber < ArchiveConstants.LastQuadrupleIndirectBlockIndex)
+            else if (indexNumber < ArchiveConstants.LastValidQuadrupleIndirectBlock)
             {
                 SetIndirectNumber(4);
-                indexNumber -= ArchiveConstants.LastTripleIndirectBlockIndex;
+                indexNumber -= ArchiveConstants.FirstQuadrupleIndirectBlockIndex;
 
                 SetFirstIndirectOffset(CalculateRelativeIndexForIndexPosition(indexNumber / ArchiveConstants.AddressesPerBlockCube));
                 SetSecondIndirectOffset(CalculateRelativeIndexForIndexPosition(indexNumber / ArchiveConstants.AddressesPerBlockSquare % ArchiveConstants.AddressesPerBlock));
@@ -332,47 +330,47 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new Exception("Position goes beyond the valid address space of the inode");
             }
             ComputeBaseIndexValues();
-            return m_LowestChange;
+            return m_lowestChange;
         }
 
         private void SetIndirectNumber(int value)
         {
-            if (m_IndirectNumber != value)
+            if (m_indirectNumber != value)
             {
-                m_IndirectNumber = value;
-                m_LowestChange = Math.Min(0, m_LowestChange);
+                m_indirectNumber = value;
+                m_lowestChange = Math.Min(0, m_lowestChange);
             }
         }
         private void SetFirstIndirectOffset(int value)
         {
-            if (m_FirstIndirectOffset != value)
+            if (m_firstIndirectOffset != value)
             {
-                m_FirstIndirectOffset = value;
-                m_LowestChange = Math.Min(1, m_LowestChange);
+                m_firstIndirectOffset = value;
+                m_lowestChange = Math.Min(1, m_lowestChange);
             }
         }
         private void SetSecondIndirectOffset(int value)
         {
-            if (m_SecondIndirectOffset != value)
+            if (m_secondIndirectOffset != value)
             {
-                m_SecondIndirectOffset = value;
-                m_LowestChange = Math.Min(2, m_LowestChange);
+                m_secondIndirectOffset = value;
+                m_lowestChange = Math.Min(2, m_lowestChange);
             }
         }
         private void SetThirdIndirectOffset(int value)
         {
-            if (m_ThirdIndirectOffset != value)
+            if (m_thirdIndirectOffset != value)
             {
-                m_ThirdIndirectOffset = value;
-                m_LowestChange = Math.Min(3, m_LowestChange);
+                m_thirdIndirectOffset = value;
+                m_lowestChange = Math.Min(3, m_lowestChange);
             }
         }
         private void SetForthIndirectOffset(int value)
         {
-            if (m_ForthIndirectOffset != value)
+            if (m_forthIndirectOffset != value)
             {
-                m_ForthIndirectOffset = value;
-                m_LowestChange = Math.Min(4, m_LowestChange);
+                m_forthIndirectOffset = value;
+                m_lowestChange = Math.Min(4, m_lowestChange);
             }
         }
 
@@ -384,34 +382,34 @@ namespace openHistorian.Core.StorageSystem.File
             switch (IndirectNumber)
             {
                 case 0:
-                    m_FirstIndirectBaseIndex = 0;
-                    m_SecondIndirectBaseIndex = 0;
-                    m_ThirdIndirectBaseIndex = 0;
-                    m_ForthIndirectBaseIndex = 0;
+                    m_firstIndirectBaseIndex = 0;
+                    m_secondIndirectBaseIndex = 0;
+                    m_thirdIndirectBaseIndex = 0;
+                    m_forthIndirectBaseIndex = 0;
                     break;
                 case 1:
-                    m_FirstIndirectBaseIndex = ArchiveConstants.LastDirectBlockIndex;
-                    m_SecondIndirectBaseIndex = 0;
-                    m_ThirdIndirectBaseIndex = 0;
-                    m_ForthIndirectBaseIndex = 0;
+                    m_firstIndirectBaseIndex = ArchiveConstants.FirstSingleIndirectBlockIndex;
+                    m_secondIndirectBaseIndex = 0;
+                    m_thirdIndirectBaseIndex = 0;
+                    m_forthIndirectBaseIndex = 0;
                     break;
                 case 2:
-                    m_FirstIndirectBaseIndex = ArchiveConstants.LastDirectBlockIndex;
-                    m_SecondIndirectBaseIndex = (uint)(m_FirstIndirectBaseIndex + ArchiveConstants.AddressesPerBlock * (m_FirstIndirectOffset >> 2));
-                    m_ThirdIndirectBaseIndex = 0;
-                    m_ForthIndirectBaseIndex = 0;
+                    m_firstIndirectBaseIndex = ArchiveConstants.FirstSingleIndirectBlockIndex;
+                    m_secondIndirectBaseIndex = (uint)(m_firstIndirectBaseIndex + ArchiveConstants.AddressesPerBlock * (m_firstIndirectOffset >> 2));
+                    m_thirdIndirectBaseIndex = 0;
+                    m_forthIndirectBaseIndex = 0;
                     break;
                 case 3:
-                    m_FirstIndirectBaseIndex = ArchiveConstants.LastDirectBlockIndex;
-                    m_SecondIndirectBaseIndex = (uint)(m_FirstIndirectBaseIndex + ArchiveConstants.AddressesPerBlockSquare * (m_FirstIndirectOffset >> 2));
-                    m_ThirdIndirectBaseIndex = (uint)(m_SecondIndirectBaseIndex + ArchiveConstants.AddressesPerBlock * (m_SecondIndirectOffset >> 2));
-                    m_ForthIndirectBaseIndex = 0;
+                    m_firstIndirectBaseIndex = ArchiveConstants.FirstSingleIndirectBlockIndex;
+                    m_secondIndirectBaseIndex = (uint)(m_firstIndirectBaseIndex + ArchiveConstants.AddressesPerBlockSquare * (m_firstIndirectOffset >> 2));
+                    m_thirdIndirectBaseIndex = (uint)(m_secondIndirectBaseIndex + ArchiveConstants.AddressesPerBlock * (m_secondIndirectOffset >> 2));
+                    m_forthIndirectBaseIndex = 0;
                     break;
                 case 4:
-                    m_FirstIndirectBaseIndex = ArchiveConstants.LastDirectBlockIndex;
-                    m_SecondIndirectBaseIndex = (uint)(m_FirstIndirectBaseIndex + ArchiveConstants.AddressesPerBlockCube * (m_FirstIndirectOffset >> 2));
-                    m_ThirdIndirectBaseIndex = (uint)(m_SecondIndirectBaseIndex + ArchiveConstants.AddressesPerBlockSquare * (m_SecondIndirectOffset >> 2));
-                    m_ForthIndirectBaseIndex = (uint)(m_ThirdIndirectBaseIndex + ArchiveConstants.AddressesPerBlock * (m_ThirdIndirectOffset >> 2));
+                    m_firstIndirectBaseIndex = ArchiveConstants.FirstSingleIndirectBlockIndex;
+                    m_secondIndirectBaseIndex = (uint)(m_firstIndirectBaseIndex + ArchiveConstants.AddressesPerBlockCube * (m_firstIndirectOffset >> 2));
+                    m_thirdIndirectBaseIndex = (uint)(m_secondIndirectBaseIndex + ArchiveConstants.AddressesPerBlockSquare * (m_secondIndirectOffset >> 2));
+                    m_forthIndirectBaseIndex = (uint)(m_thirdIndirectBaseIndex + ArchiveConstants.AddressesPerBlock * (m_thirdIndirectOffset >> 2));
                     break;
                 default:
                     throw new Exception();
@@ -425,7 +423,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <returns></returns>
         public bool Containts(long virtualPos)
         {
-            return (virtualPos >= m_BaseVirtualAddress) && (virtualPos < m_BaseVirtualAddress + m_DataPerCluster);
+            return (virtualPos >= m_baseVirtualAddress) && (virtualPos < m_baseVirtualAddress + m_dataPerCluster);
         }
 
         #endregion
@@ -441,7 +439,7 @@ namespace openHistorian.Core.StorageSystem.File
         private static int CalculateRelativeIndexForIndexPosition(long index)
         {
             if (index > ArchiveConstants.AddressesPerBlock)
-                throw new ArgumentException("index", "The index position must be less than the number of indexes per page");
+                throw new ArgumentException("The index position must be less than the number of indexes per page", "index");
             //value = [number of indexes at this level * sizeof(uint)] 
             return (int)index << 2;
         }

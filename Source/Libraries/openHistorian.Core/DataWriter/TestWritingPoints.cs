@@ -19,7 +19,7 @@ namespace openHistorian.Core.DataWriter
         {
             ////Create a file
             //DiskIOUnbuffered stream = DiskIOUnbuffered.CreateFile("R:\\ArchiveFile.OHFS");
-            DiskIOMemoryStream stream = new DiskIOMemoryStream();
+            DiskIoMemoryStream stream = new DiskIoMemoryStream();
 
             FileAllocationTable fat = FileAllocationTable.CreateFileAllocationTable(stream);
             fat = FileAllocationTable.OpenHeader(stream);

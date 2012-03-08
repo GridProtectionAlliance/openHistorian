@@ -85,6 +85,7 @@
     <Compile Include="Archives\V1\ArchiveFile.cs" />
     <Compile Include="Archives\V1\ArchiveFileAllocationTable.cs" />
     <Compile Include="Archives\V1\ArchiveFileStatistics.cs" />
+    <Compile Include="Archives\V2\ArchiveFile.cs" />
     <Compile Include="IMetadata.cs" />
     <Compile Include="Archives\V1\IntercomFile.cs" />
     <Compile Include="Archives\V1\IntercomRecord.cs" />
@@ -136,6 +137,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\openHistorian.Core\openHistorian.Core.csproj">
+      <Project>{040E2AE7-021B-435A-ADBF-06D07EE0A67D}</Project>
+      <Name>openHistorian.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

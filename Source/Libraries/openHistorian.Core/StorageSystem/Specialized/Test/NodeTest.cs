@@ -15,7 +15,7 @@ namespace openHistorian.Core.StorageSystem.Specialized
             TestSingleLevelAddGet();
             TestMultiLevel();
             //TestSortedList(1);
-            //TestMultiLevelLongRandom(1);
+            TestMultiLevelLongRandom(1);
             TestScan(1);
         }
         static void TestMultiLevelLongRandom(int seed)

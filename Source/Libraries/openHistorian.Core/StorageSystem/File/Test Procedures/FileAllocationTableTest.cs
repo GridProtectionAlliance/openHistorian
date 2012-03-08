@@ -29,12 +29,12 @@ namespace openHistorian.Core.StorageSystem.File
     {
         internal static void Test()
         {
-            DiskIOMemoryStream data = new DiskIOMemoryStream();
+            DiskIoMemoryStream data = new DiskIoMemoryStream();
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(data);
 
-            header.CreateNewFile(Guid.NewGuid(), 1);
-            header.CreateNewFile(Guid.NewGuid(), 1);
-            header.CreateNewFile(Guid.NewGuid(), 1);
+            header.CreateNewFile(Guid.NewGuid());
+            header.CreateNewFile(Guid.NewGuid());
+            header.CreateNewFile(Guid.NewGuid());
             header.WriteToFileSystem(data);
 
             FileAllocationTable header2 = FileAllocationTable.OpenHeader(data);

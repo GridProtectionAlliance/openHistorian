@@ -44,7 +44,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Determines if the class was opened in read only mode.
         /// </summary>
-        bool m_IsReadOnly;
+        bool m_isReadOnly;
 
         #endregion
 
@@ -57,9 +57,9 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="dataReader">Disk Reader</param>
         /// <param name="fileAllocationTable">FileAllocationTable</param>
         /// <param name="openReadOnly">Determines if the file will be opened allowing shadow copies or not.</param>
-        public FileAddressTranslation(FileMetaData file, DiskIOBase dataReader, FileAllocationTable fileAllocationTable, bool openReadOnly)
+        public FileAddressTranslation(FileMetaData file, DiskIoBase dataReader, FileAllocationTable fileAllocationTable, bool openReadOnly)
         {
-            m_IsReadOnly = openReadOnly;
+            m_isReadOnly = openReadOnly;
             m_parser = new IndexParser(fileAllocationTable.SnapshotSequenceNumber, dataReader, file);
 
             if (!IsReadOnly)
@@ -91,7 +91,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_IsReadOnly;
+                return m_isReadOnly;
             }
         }
 
@@ -102,7 +102,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Converts a virtual address to a physical one.
         /// </summary>
-        /// <param name="VirtualPos"></param>
+        /// <param name="virtualPos"></param>
         /// <returns></returns>
         public PositionData VirtualToPhysical(long virtualPos)
         {
@@ -112,7 +112,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Converts a virtual address to a physical one. Makes a shadow copy of the block or creates one if it does not exist.
         /// </summary>
-        /// <param name="VirtualPos"></param>
+        /// <param name="virtualPos"></param>
         /// <returns></returns>
         /// <exception cref="Exception">Is thrown if the file is opened in readonly mode.</exception>
         public PositionData VirtualToShadowPagePhysical(long virtualPos)

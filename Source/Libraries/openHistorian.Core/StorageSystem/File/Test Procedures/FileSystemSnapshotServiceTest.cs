@@ -38,7 +38,7 @@ namespace openHistorian.Core.StorageSystem.File
                 {
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {
-                        ArchiveFileStream fs =  edit.CreateFile(Guid.NewGuid(), 1);
+                        ArchiveFileStream fs = edit.CreateFile(Guid.NewGuid(), 1);
                         fs.WriteByte(1);
                         edit.Commit();
                     }
@@ -52,7 +52,7 @@ namespace openHistorian.Core.StorageSystem.File
                             ArchiveFileStream f2 = edit.OpenFile(0);
                             if (f2.ReadByte() != 1)
                                 throw new Exception();
-                            f2.WriteByte(3); 
+                            f2.WriteByte(3);
                         } //rollback should be issued;
                         if (f1.ReadByte() != 0)
                             throw new Exception();
@@ -66,7 +66,7 @@ namespace openHistorian.Core.StorageSystem.File
                                 throw new Exception();
                         }
 
-                        
+
                     }
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {
@@ -78,7 +78,7 @@ namespace openHistorian.Core.StorageSystem.File
                             throw new Exception();
                         if (f3.ReadByte() != 0)
                             throw new Exception();
-                         edit.Rollback();
+                        edit.Rollback();
                     } //rollback should be issued;
                 }
             }

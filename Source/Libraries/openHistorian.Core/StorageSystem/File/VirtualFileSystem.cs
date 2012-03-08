@@ -20,60 +20,49 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-using System.Collections.Generic;
+
 using System;
-using System.IO;
 
 namespace openHistorian.Core.StorageSystem.File
 {
-    public class VirtualFileSystem : IStorageSystem , IDisposable
+    public class VirtualFileSystem : IStorageSystem, IDisposable
     {
         #region [ Members ]
-        #region [ Constants ]
-        #endregion
-        #region [ Delegates ]
-        #endregion
-        #region [ Events ]
-        #endregion
-        #region [ Fields ]
 
         FileSystemSnapshotService m_file;
 
-        #endregion
         #endregion
         #region [ Constructors ]
 
         /// <summary>
         /// Creates a new archive file
         /// </summary>
-        /// <param name="ArchiveFile"></param>
-        /// <param name="PageSize"></param>
-        /// <param name="InitialSize"></param>
-        private VirtualFileSystem(string ArchiveFile, int PageSize, long InitialSize)
+        /// <param name="archiveFile"></param>
+        private VirtualFileSystem(string archiveFile)
         {
-            if (ArchiveFile == null)
-                throw new ArgumentNullException("ArchiveFile");
+            if (archiveFile == null)
+                throw new ArgumentNullException("archiveFile");
 
-            if (System.IO.File.Exists(ArchiveFile))
+            if (System.IO.File.Exists(archiveFile))
                 throw new Exception("ArchiveFile Already Exists");
 
-            m_file = FileSystemSnapshotService.CreateFile(ArchiveFile);
+            m_file = FileSystemSnapshotService.CreateFile(archiveFile);
         }
-       
+
         /// <summary>
         /// Opens an existing archvie file.
         /// </summary>
-        /// <param name="ArchiveFile">The path to the archvie file</param>
+        /// <param name="archiveFile">The path to the archvie file</param>
         /// <param name="isReadOnly"></param>
-        private VirtualFileSystem(string ArchiveFile,bool isReadOnly)
+        private VirtualFileSystem(string archiveFile, bool isReadOnly)
         {
-            if (ArchiveFile == null)
-                throw new ArgumentNullException("ArchiveFile");
+            if (archiveFile == null)
+                throw new ArgumentNullException("archiveFile");
 
-            if (!System.IO.File.Exists(ArchiveFile))
+            if (!System.IO.File.Exists(archiveFile))
                 throw new Exception("ArchiveFile Does Not Exist");
 
-            m_file = FileSystemSnapshotService.OpenFile(ArchiveFile, isReadOnly);
+            m_file = FileSystemSnapshotService.OpenFile(archiveFile, isReadOnly);
         }
 
         ~VirtualFileSystem()
@@ -145,32 +134,17 @@ namespace openHistorian.Core.StorageSystem.File
         #region [ Operators ]
         #endregion
         #region [ Static ]
-        #region [ Fields ]
-        #endregion
-        #region [ Constructors ]
-        #endregion
-        #region [ Properties ]
-        #endregion
-        #region [ Methods ]
 
-        public static VirtualFileSystem CreateArchive(string File)
+        public static VirtualFileSystem CreateArchive(string archiveFile)
         {
-            int PageSize = 65536;
-            long InitialSize = 100000000;
-            return CreateArchive(File, PageSize, InitialSize);
+            return new VirtualFileSystem(archiveFile);
         }
 
-        public static VirtualFileSystem CreateArchive(string ArchiveFile, int PageSize, long InitialSize)
+        public static VirtualFileSystem OpenArchive(string archiveFile, bool isReadOnly)
         {
-            return new VirtualFileSystem(ArchiveFile, PageSize, InitialSize);
+            return new VirtualFileSystem(archiveFile, isReadOnly);
         }
 
-        public static VirtualFileSystem OpenArchive(string ArchiveFile, bool isReadOnly)
-        {
-            return new VirtualFileSystem(ArchiveFile, isReadOnly);
-        }
-
-        #endregion
         #endregion
 
     }

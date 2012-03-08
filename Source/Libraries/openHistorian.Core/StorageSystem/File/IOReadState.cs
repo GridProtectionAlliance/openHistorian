@@ -39,7 +39,7 @@ namespace openHistorian.Core.StorageSystem.File
     /// page being referenced is the correct page, it is up to the class
     /// to check the footer of the page to verify that the page being read
     /// is the correct page.</remarks>
-    internal enum IOReadState
+    internal enum IoReadState
     {
         /// <summary>
         /// Indicates that the read completed sucessfully.
@@ -66,7 +66,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// The page came from a different file.
         /// </summary>
-        FileIDNumberDidNotMatch,
+        FileIdNumberDidNotMatch,
         /// <summary>
         /// The index value did not match that of the file.
         /// </summary>

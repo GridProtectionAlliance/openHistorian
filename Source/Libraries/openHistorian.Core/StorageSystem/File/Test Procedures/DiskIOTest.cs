@@ -29,7 +29,7 @@ namespace openHistorian.Core.StorageSystem.File
 {
     internal class DiskIOTest
     {
-        internal static void TestAllReadStatesExceptInvalid(DiskIOBase stream)
+        internal static void TestAllReadStatesExceptInvalid(DiskIoBase stream)
         {
             TestReadPastTheEndOfTheFile(stream);
             TestChecksumInvalidBecausePageIsNull(stream);
@@ -41,9 +41,9 @@ namespace openHistorian.Core.StorageSystem.File
         }
 
 
-        static void TestResize(DiskIOBase stream)
+        static void TestResize(DiskIoBase stream)
         {
-            IOReadState readState;
+            IoReadState readState;
             long oldFileSize = stream.FileSize;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
@@ -52,13 +52,13 @@ namespace openHistorian.Core.StorageSystem.File
             stream.WriteBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
             stream.SetFileLength(0, currentBlock + 1);
             readState = stream.ReadBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
-            if (readState != IOReadState.Valid)
+            if (readState != IoReadState.Valid)
                 throw new Exception();
 
             stream.SetFileLength(0, currentBlock);
 
             readState = stream.ReadBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
-            if (readState != IOReadState.ReadPastThenEndOfTheFile)
+            if (readState != IoReadState.ReadPastThenEndOfTheFile)
                 throw new Exception();
 
             if (stream.FileSize != oldFileSize)
@@ -73,9 +73,9 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new Exception();
         }
 
-        static void TestBlockTypeMismatch(DiskIOBase stream)
+        static void TestBlockTypeMismatch(DiskIoBase stream)
         {
-            IOReadState readState;
+            IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
             uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
@@ -83,17 +83,17 @@ namespace openHistorian.Core.StorageSystem.File
             stream.WriteBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
-            if (readState != IOReadState.BlockTypeMismatch)
+            if (readState != IoReadState.BlockTypeMismatch)
                 throw new Exception();
 
             readState = stream.ReadBlock(currentBlock, BlockType.DataBlock, 1, 2, 3, buffer);
-            if (readState != IOReadState.BlockTypeMismatch)
+            if (readState != IoReadState.BlockTypeMismatch)
                 throw new Exception();
         }
 
-        static void TestIndexNumberMissmatch(DiskIOBase stream)
+        static void TestIndexNumberMissmatch(DiskIoBase stream)
         {
-            IOReadState readState;
+            IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
             uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
@@ -101,17 +101,17 @@ namespace openHistorian.Core.StorageSystem.File
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 0, 2, 3, buffer);
 
-            if (readState != IOReadState.IndexNumberMissmatch)
+            if (readState != IoReadState.IndexNumberMissmatch)
                 throw new Exception();
 
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 3, 2, 3, buffer);
-            if (readState != IOReadState.IndexNumberMissmatch)
+            if (readState != IoReadState.IndexNumberMissmatch)
                 throw new Exception();
         }
 
-        static void TestFileIDNumberDidNotMatch(DiskIOBase stream)
+        static void TestFileIDNumberDidNotMatch(DiskIoBase stream)
         {
-            IOReadState readState;
+            IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
             uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
@@ -119,18 +119,18 @@ namespace openHistorian.Core.StorageSystem.File
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 3, 3, buffer);
 
-            if (readState != IOReadState.FileIDNumberDidNotMatch)
+            if (readState != IoReadState.FileIdNumberDidNotMatch)
                 throw new Exception();
 
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 1, 3, buffer);
-            if (readState != IOReadState.FileIDNumberDidNotMatch)
+            if (readState != IoReadState.FileIdNumberDidNotMatch)
                 throw new Exception();
         }
 
-        static void TestPageNewerThanSnapshotSequenceNumber(DiskIOBase stream)
+        static void TestPageNewerThanSnapshotSequenceNumber(DiskIoBase stream)
         {
             //Writing sequence number 3, reading both 2 and 5.  2 should fail, 5 should not.
-            IOReadState readState;
+            IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
             uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
@@ -138,17 +138,17 @@ namespace openHistorian.Core.StorageSystem.File
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 2, buffer);
 
-            if (readState != IOReadState.PageNewerThanSnapshotSequenceNumber)
+            if (readState != IoReadState.PageNewerThanSnapshotSequenceNumber)
                 throw new Exception();
 
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 5, buffer);
-            if (readState != IOReadState.Valid)
+            if (readState != IoReadState.Valid)
                 throw new Exception();
         }
 
-        static void TestChecksumInvalidBecausePageIsNull(DiskIOBase stream)
+        static void TestChecksumInvalidBecausePageIsNull(DiskIoBase stream)
         {
-            IOReadState readState;
+            IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
             uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
@@ -156,28 +156,28 @@ namespace openHistorian.Core.StorageSystem.File
             stream.WriteBlock(currentBlock + 1, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
-            if (readState != IOReadState.ChecksumInvalidBecausePageIsNull)
+            if (readState != IoReadState.ChecksumInvalidBecausePageIsNull)
                 throw new Exception();
         }
-        static void TestReadPastTheEndOfTheFile(DiskIOBase stream)
+        static void TestReadPastTheEndOfTheFile(DiskIoBase stream)
         {
-            IOReadState readState;
+            IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
             uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
 
             //Testing IOReadState.ReadPastThenEndOfTheFile
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
-            if (readState != IOReadState.ReadPastThenEndOfTheFile)
+            if (readState != IoReadState.ReadPastThenEndOfTheFile)
                 throw new Exception();
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
-            if (readState != IOReadState.Valid)
+            if (readState != IoReadState.Valid)
                 throw new Exception();
 
             readState = stream.ReadBlock(currentBlock + 1, BlockType.FileAllocationTable, 1, 2, 3, buffer);
-            if (readState != IOReadState.ReadPastThenEndOfTheFile)
+            if (readState != IoReadState.ReadPastThenEndOfTheFile)
                 throw new Exception();
         }
 

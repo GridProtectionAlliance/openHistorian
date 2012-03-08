@@ -37,7 +37,6 @@ namespace openHistorian.Core.StorageSystem.File
             Guid fileExtension = Guid.NewGuid();
             uint fileFlags = (uint)rand.Next(int.MaxValue);
             uint allocatedBlocks = (uint)rand.Next(int.MaxValue);
-            uint blocksPerCluster = (uint)rand.Next(int.MaxValue);
             uint dataBlock1 = (uint)rand.Next(int.MaxValue);
             uint singleRedirect = (uint)rand.Next(int.MaxValue);
             uint doubleRedirect = (uint)rand.Next(int.MaxValue);
@@ -45,7 +44,7 @@ namespace openHistorian.Core.StorageSystem.File
             uint quadrupleRedirect = (uint)rand.Next(int.MaxValue);
 
             Guid gid = Guid.NewGuid();
-            FileMetaData node = FileMetaData.CreateFileMetaData(fileIDNumber, fileExtension, blocksPerCluster);
+            FileMetaData node = FileMetaData.CreateFileMetaData(fileIDNumber, fileExtension);
             node.FileFlags = fileFlags;
             node.LastAllocatedCluster = allocatedBlocks;
             node.DirectCluster = dataBlock1;
@@ -55,11 +54,10 @@ namespace openHistorian.Core.StorageSystem.File
             node.QuadrupleIndirectCluster = quadrupleRedirect;
             FileMetaData node2 = saveItem(node);
 
-            if (node2.FileIDNumber != fileIDNumber) throw new Exception();
+            if (node2.FileIdNumber != fileIDNumber) throw new Exception();
             if (node2.FileExtension != fileExtension) throw new Exception();
             if (node2.FileFlags != fileFlags) throw new Exception();
             if (node2.LastAllocatedCluster != allocatedBlocks) throw new Exception();
-            if (node2.BlocksPerCluster != blocksPerCluster) throw new Exception();
             if (node2.DirectCluster != dataBlock1) throw new Exception();
             if (node2.SingleIndirectCluster != singleRedirect) throw new Exception();
             if (node2.DoubleIndirectCluster != doubleRedirect) throw new Exception();
