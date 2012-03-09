@@ -114,6 +114,7 @@
     <Compile Include="PooledMemoryStream.cs" />
     <Compile Include="StorageSystem\BinaryStream.cs" />
     <Compile Include="StorageSystem\Specialized\BPlusTree.cs" />
+    <Compile Include="StorageSystem\Specialized\TreeTypeIntFloat.cs" />
     <Compile Include="StorageSystem\Specialized\DataReader.cs" />
     <Compile Include="StorageSystem\Specialized\InternalNodeMethods.cs" />
     <Compile Include="StorageSystem\Specialized\ITreeInternalNodeMethods.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompressorTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="OldCode\DataReadWrite.cs" />
+    <Compile Include="Test\ArchiveTest.cs" />
     <Compile Include="Test\CompressionTest.cs" />
     <Compile Include="StorageSystem\ISupportsBinaryStream.cs" />
     <Compile Include="StorageSystem\Test\BinaryStreamTest.cs" />

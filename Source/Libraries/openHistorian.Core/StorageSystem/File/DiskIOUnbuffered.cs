@@ -189,7 +189,6 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="data">the data to write</param>
         protected override void WriteBlock(uint blockIndex, byte[] data)
         {
-
             Position = blockIndex * ArchiveConstants.BlockSize;
             File.Write(data, 0, data.Length);
         }
@@ -209,7 +208,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Releases all the resources used by the <see cref="DiskIoUnbuffered"/> object.
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

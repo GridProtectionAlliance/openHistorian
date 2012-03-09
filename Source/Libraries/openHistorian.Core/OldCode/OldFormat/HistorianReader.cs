@@ -21,7 +21,7 @@ namespace openHistorian.Core
         public unsafe void Read()
         {
             //using (MemoryStream FS = new MemoryStream(System.IO.File.ReadAllBytes(File)))
-            using (System.IO.FileStream FS = new System.IO.FileStream(File, System.IO.FileMode.Open, System.IO.FileAccess.Read,System.IO.FileShare.None,8192,System.IO.FileOptions.SequentialScan))
+            using (System.IO.FileStream FS = new System.IO.FileStream(File, System.IO.FileMode.Open, System.IO.FileAccess.Read,System.IO.FileShare.Read,8192,System.IO.FileOptions.SequentialScan))
             {
                 int FooterPOS = (int) FS.Length - 32;
                 FS.Position = FooterPOS;

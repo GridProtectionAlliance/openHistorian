@@ -38,7 +38,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Determines if the file stream has been disposed.
         /// </summary>
-        private bool m_disposed;
+        bool m_disposed;
         /// <summary>
         /// Determines if the filestream can be written to.
         /// </summary>

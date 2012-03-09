@@ -94,9 +94,10 @@ namespace openHistorian.Core.StorageSystem
         /// <summary>
         /// Since all read/write operations are cached, calling this will update the underlying stream's position.
         /// </summary>
-        public void FlushToUnderlyingStream2()
+        public void FlushToUnderlyingStream()
         {
             m_stream.Position = Position;
+            m_currentPosition = Position;
             //ToDo: Consider not modifing any of the local buffer parameters.
             Clear();
         }
@@ -179,32 +180,34 @@ namespace openHistorian.Core.StorageSystem
         /// <param name="length"></param>
         public void Copy(long source, long destination, int length)
         {
-            byte[] buffer1, buffer2;
-            int firstIndex1, firstIndex2, lastIndex1, lastIndex2, currentIndex1, currentIndex2;
+            //ToDo: Consider finding some way to not require creating a temporary buffer.
+            //There is an error in this copy code. For an ArchiveDataStream, the same buffer is presented twice
+            //And therefore cannot 
 
-            long origionalPosition = Position;
-            m_stream.GetCurrentBlock(source, false, out buffer1, out firstIndex1, out lastIndex1, out currentIndex1);
-            m_stream.GetCurrentBlock(destination, true, out buffer2, out firstIndex2, out lastIndex2, out currentIndex2);
+            //byte[] buffer1, buffer2;
+            //int firstIndex1, firstIndex2, lastIndex1, lastIndex2, currentIndex1, currentIndex2;
+            
+            //m_stream.GetCurrentBlock(source, false, out buffer1, out firstIndex1, out lastIndex1, out currentIndex1);
+            //m_stream.GetCurrentBlock(destination, true, out buffer2, out firstIndex2, out lastIndex2, out currentIndex2);
 
-            if (lastIndex1 - currentIndex1 + 1 >= length && lastIndex2 - currentIndex2 + 1 >= length) //both source and destination are within the same buffer
-            {
-                Buffer.BlockCopy(buffer1, currentIndex1, buffer2, currentIndex2, length);
-            }
-            else if (lastIndex1 - currentIndex1 + 1 >= length) //only the source is within the same buffer
-            {
-                Position = source;
-                Read(buffer2, currentIndex2, length);
-            }
-            else
-            {
+            //if (lastIndex1 - currentIndex1 + 1 >= length && lastIndex2 - currentIndex2 + 1 >= length) //both source and destination are within the same buffer
+            //{
+            //    Buffer.BlockCopy(buffer1, currentIndex1, buffer2, currentIndex2, length);
+            //}
+            //else if (lastIndex1 - currentIndex1 + 1 >= length) //only the source is within the same buffer
+            //{
+            //    Position = source;
+            //    Read(buffer2, currentIndex2, length);
+            //}
+            //else
+            //{
                 //manually perform the copy
                 byte[] data = new byte[length];
                 Position = source;
                 Read(data, 0, data.Length);
                 Position = destination;
                 Write(data, 0, data.Length);
-            }
-            Position = origionalPosition;
+            //}
         }
 
         /// <summary>
@@ -788,7 +791,8 @@ namespace openHistorian.Core.StorageSystem
         void Write2(byte[] value, int offset, int count)
         {
             m_stream.Write(Position, value, offset, count);
-            m_currentIndex += count;
+            m_currentPosition += count;
+            FlushToUnderlyingStream();
         }
 
         #endregion
@@ -1330,7 +1334,8 @@ namespace openHistorian.Core.StorageSystem
         int Read2(byte[] value, int offset, int count)
         {
             int read = m_stream.Read(Position, value, offset, count);
-            m_currentIndex += count;
+            m_currentPosition += count;
+            FlushToUnderlyingStream();
             return read;
         }
         #endregion

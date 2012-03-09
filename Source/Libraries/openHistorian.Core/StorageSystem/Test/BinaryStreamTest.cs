@@ -197,27 +197,27 @@ namespace openHistorian.Core.StorageSystem
                     rand.NextBytes(data);
                     bs.Write(data, 0, data.Length);
 
-                    //while (rand.Next(4) < 2)
-                    //{
-                    //    if (bs.Position > 100)
-                    //    {
-                    //        bs.Position -= 100;
-                    //        int insertCount = rand.Next(16) + 1;
-                    //        bs.InsertBytes(insertCount, 100);
-                    //        bs.Write(data, 0, insertCount);
-                    //        bs.Position -= insertCount;
-                    //        bs.Read(data2, 0, insertCount);
-                    //        bs.Position -= insertCount;
-                    //        bs.RemoveBytes(insertCount, 100);
-                    //        bs.Position += 100;
+                    while (rand.Next(4) < 2)
+                    {
+                        if (bs.Position > 100)
+                        {
+                            bs.Position -= 100;
+                            int insertCount = rand.Next(16) + 1;
+                            bs.InsertBytes(insertCount, 100);
+                            bs.Write(data, 0, insertCount);
+                            bs.Position -= insertCount;
+                            bs.Read(data2, 0, insertCount);
+                            bs.Position -= insertCount;
+                            bs.RemoveBytes(insertCount, 100);
+                            bs.Position += 100;
 
-                    //        for (int y = 0; y < insertCount; y++)
-                    //        {
-                    //            if (data[y] != data2[y])
-                    //                throw new Exception();
-                    //        }
-                    //    }
-                    //}
+                            for (int y = 0; y < insertCount; y++)
+                            {
+                                if (data[y] != data2[y])
+                                    throw new Exception();
+                            }
+                        }
+                    }
                 }
                 rand = new Random(seed);
 
@@ -288,13 +288,13 @@ namespace openHistorian.Core.StorageSystem
                     bs.Read(data2, 0, 16);
                     if (!data2.SequenceEqual<byte>(data)) throw new Exception();
 
-                    //while (rand.Next(4) < 2)
-                    //{
-                    //    if (bs.Position > 100)
-                    //    {
-                    //        int insertCount = rand.Next(16);
-                    //    }
-                    //}
+                    while (rand.Next(4) < 2)
+                    {
+                        if (bs.Position > 100)
+                        {
+                            int insertCount = rand.Next(16);
+                        }
+                    }
                 }
             }
         }

@@ -120,5 +120,10 @@ namespace openHistorian.Core.StorageSystem.File
         }
 
 
+
+        public override void Dispose()
+        {
+            
+        }
     }
 }

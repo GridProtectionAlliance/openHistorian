@@ -167,32 +167,41 @@ namespace openHistorian.Core.StorageSystem.File
 
         internal static void TestCustomSizeWrite(ArchiveFileStream ds, int length)
         {
-            ds.Position = 0;
-            byte[] buffer = new byte[length];
+            Random r = new Random(length);
 
-            Random rand = new Random(length);
+            ds.Position = 0;
+            byte[] buffer = new byte[25];
+
             for (int x = 0; x < 1000; x++)
             {
                 for (int i = 0; i < buffer.Length; i++)
                 {
-                    buffer[i] = (byte)rand.Next();
+                    buffer[i] = (byte)r.Next();
                 }
-                ds.Write(buffer, 0, buffer.Length);
+                ds.Write(buffer, 0, r.Next(25));
             }
             ds.Flush();
         }
 
-        internal static void TestCustomSizeRead(ArchiveFileStream ds, int length)
+        internal static void TestCustomSizeRead(ArchiveFileStream ds, int seed)
         {
-            byte[] buffer = new byte[length];
+            Random r = new Random(seed);
+
+            byte[] buffer = new byte[25];
+            byte[] buffer2 = new byte[25];
             ds.Position = 0;
-            Random rand2 = new Random(length);
             for (int x = 0; x < 1000; x++)
             {
-                ds.Read(buffer, 0, buffer.Length);
                 for (int i = 0; i < buffer.Length; i++)
                 {
-                    if (buffer[i] != (byte)rand2.Next())
+                    buffer[i] = (byte)r.Next();
+                }
+                int length = r.Next(25);
+                ds.Read(buffer2, 0, length);
+
+                for (int i = 0; i < length; i++)
+                {
+                    if (buffer[i] != buffer2[i])
                         throw new Exception();
                 }
             }

@@ -45,7 +45,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// Constains the disk IO subsystem for accessing the file.
         /// </summary>
-        DiskIoUnbuffered m_diskIo;
+        DiskIoBase m_diskIo;
 
         /// <summary>
         /// Contains the current snapshot of the file system.
@@ -89,6 +89,17 @@ namespace openHistorian.Core.StorageSystem.File
         private FileSystemSnapshotService(string fileName)
         {
             m_diskIo = DiskIoUnbuffered.CreateFile(fileName);
+            FileAllocationTable.CreateFileAllocationTable(m_diskIo);
+            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
+            m_readTransactions = new List<TransactionalRead>();
+        }
+
+        /// <summary>
+        /// Creates a new archive file that is completely in memory
+        ///  </summary>
+        private FileSystemSnapshotService()
+        {
+            m_diskIo = new DiskIoMemoryStream();
             FileAllocationTable.CreateFileAllocationTable(m_diskIo);
             m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
             m_readTransactions = new List<TransactionalRead>();
@@ -228,6 +239,15 @@ namespace openHistorian.Core.StorageSystem.File
         public static FileSystemSnapshotService CreateFile(string fileName)
         {
             return new FileSystemSnapshotService(fileName);
+        }
+
+        /// <summary>
+        /// Creates a new archive file that resides completely in memory.
+        /// </summary>
+        /// <returns></returns>
+        public static FileSystemSnapshotService CreateInMemory()
+        {
+            return new FileSystemSnapshotService();
         }
 
         #endregion

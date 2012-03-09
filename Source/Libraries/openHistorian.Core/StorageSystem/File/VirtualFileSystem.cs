@@ -35,6 +35,14 @@ namespace openHistorian.Core.StorageSystem.File
         #region [ Constructors ]
 
         /// <summary>
+        /// Creates a new inMemory archive file
+        /// </summary>
+        private VirtualFileSystem()
+        {
+            m_file = FileSystemSnapshotService.CreateInMemory();
+        }
+
+        /// <summary>
         /// Creates a new archive file
         /// </summary>
         /// <param name="archiveFile"></param>
@@ -116,6 +124,12 @@ namespace openHistorian.Core.StorageSystem.File
         #endregion
         #region [ Methods ]
 
+        public TransactionalEdit BeginEdit()
+        {
+            return m_file.BeginEditTransaction();
+        }
+
+
         //public long GrowArchive(long GrowAmount)
         //{
         //    throw new NotImplementedException();
@@ -145,6 +159,12 @@ namespace openHistorian.Core.StorageSystem.File
             return new VirtualFileSystem(archiveFile, isReadOnly);
         }
 
+        public static VirtualFileSystem CreateInMemoryArchive()
+        {
+            return new VirtualFileSystem();
+        }
+
+     
         #endregion
 
     }

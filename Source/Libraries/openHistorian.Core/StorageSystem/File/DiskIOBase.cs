@@ -28,7 +28,7 @@ namespace openHistorian.Core.StorageSystem.File
     /// <summary>
     /// Abstract class for the basic Disk IO functions.
     /// </summary>
-    internal abstract class DiskIoBase
+    internal abstract class DiskIoBase : IDisposable
     {
         /// <summary>
         /// Writes a specific block of data to the disk system.
@@ -257,5 +257,6 @@ namespace openHistorian.Core.StorageSystem.File
             data[ArchiveConstants.BlockSize - 1] = (byte)(checksum >> 56);
         }
 
+        public abstract void Dispose();
     }
 }

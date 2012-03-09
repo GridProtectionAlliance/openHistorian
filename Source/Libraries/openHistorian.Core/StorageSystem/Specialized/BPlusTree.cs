@@ -211,6 +211,11 @@ namespace openHistorian.Core.StorageSystem.Specialized
             }
         }
 
+        public void Save()
+        {
+            Save(m_stream);
+        }
+
         #endregion
 
     }
