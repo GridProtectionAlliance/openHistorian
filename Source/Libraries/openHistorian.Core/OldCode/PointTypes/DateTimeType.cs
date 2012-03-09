@@ -3,10 +3,9 @@
 //using System.Linq;
 //using System.Text;
 
-//namespace openHistorian.Core.PluginDataFeatures.MetaDataLibrary
+//namespace openHistorian.Core.PointTypes
 //{
-//    interface IMetaDataLibrary : IPluginDataFeature
+//    class DateTimeQueue
 //    {
-
 //    }
 //}

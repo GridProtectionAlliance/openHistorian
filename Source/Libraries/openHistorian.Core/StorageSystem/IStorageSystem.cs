@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using openHistorian.Core.PluginDataFeatures;
 using openHistorian.Core.StorageSystem.File;
 
 namespace openHistorian.Core.StorageSystem

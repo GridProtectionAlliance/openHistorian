@@ -69,19 +69,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Archive.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="ContinuousBuffer.cs" />
-    <Compile Include="OldCompressionCode\CompressBlockUIn32_old2.cs" />
-    <Compile Include="OldCompressionCode\CompressBlockUIn32_old.cs" />
-    <Compile Include="OldCompressionCode\Compression_old.cs" />
-    <Compile Include="OldCompressionCode\CompressBlockUIn32.cs" />
-    <Compile Include="OldCompressionCode\CompressBlockUIn32Static.cs" />
-    <Compile Include="OldCompressionCode\CompressBlockUIn32_2.cs" />
-    <Compile Include="OldCompressionCode\Compression_old1.cs" />
-    <Compile Include="OldCompressionCode\CompressionTest_Old.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old2.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old.cs" />
+    <Compile Include="OldCode\OldCompressionCode\Compression_old.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32Static.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_2.cs" />
+    <Compile Include="OldCode\OldCompressionCode\Compression_old1.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressionTest_Old.cs" />
     <Compile Include="PooledBufferedStream.cs" />
-    <Compile Include="DataWriter\PointWriter.cs" />
-    <Compile Include="DataWriter\TestWritingPoints.cs" />
+    <Compile Include="OldCode\DataWriter\PointWriter.cs" />
+    <Compile Include="OldCode\DataWriter\TestWritingPoints.cs" />
     <Compile Include="OldCode\Archive.cs" />
     <Compile Include="OldCode\MemoryBuffer\BufferedStream.cs" />
     <Compile Include="OldCode\MemoryBuffer\MemoryUnit.cs" />
@@ -90,26 +91,26 @@
     <Compile Include="OldCode\PluginDataFeatures\TableOfContents\ITableOfContents.cs" />
     <Compile Include="OldCode\PluginDataFeatures\TableOfContents\TableOfContents.cs" />
     <Compile Include="OldCode\PointLibrary\PointLibrary.cs" />
-    <Compile Include="PointStream\PointWriter.cs" />
-    <Compile Include="PointStream\SinglePointMessage.cs" />
-    <Compile Include="PointStream\StreamCommands.cs" />
-    <Compile Include="PointStream\StreamWriter.cs" />
-    <Compile Include="PointStream\StreamReader.cs" />
-    <Compile Include="PointStream\Test\OpenPDCOutputAdapter.cs" />
-    <Compile Include="PointTypes\Definition.cs" />
-    <Compile Include="PointTypes\Float16Type.cs" />
-    <Compile Include="PointTypes\Float32Type.cs" />
-    <Compile Include="PointTypes\Float64Type.cs" />
+    <Compile Include="OldCode\PointStream\PointWriter.cs" />
+    <Compile Include="OldCode\PointStream\SinglePointMessage.cs" />
+    <Compile Include="OldCode\PointStream\StreamCommands.cs" />
+    <Compile Include="OldCode\PointStream\StreamWriter.cs" />
+    <Compile Include="OldCode\PointStream\StreamReader.cs" />
+    <Compile Include="OldCode\PointStream\Test\OpenPDCOutputAdapter.cs" />
+    <Compile Include="OldCode\PointTypes\Definition.cs" />
+    <Compile Include="OldCode\PointTypes\Float16Type.cs" />
+    <Compile Include="OldCode\PointTypes\Float32Type.cs" />
+    <Compile Include="OldCode\PointTypes\Float64Type.cs" />
     <Compile Include="OldCode\PointLibrary.cs" />
-    <Compile Include="PointTypes\PointDataTypes.cs" />
-    <Compile Include="PointTypes\TypeBase.cs" />
+    <Compile Include="OldCode\PointTypes\PointDataTypes.cs" />
+    <Compile Include="OldCode\PointTypes\TypeBase.cs" />
     <Compile Include="OldCode\IPointQueue.cs" />
-    <Compile Include="PointTypes\EmptyType.cs" />
-    <Compile Include="PointTypes\UInteger32Type.cs" />
-    <Compile Include="PointStream\PointReader.cs" />
+    <Compile Include="OldCode\PointTypes\EmptyType.cs" />
+    <Compile Include="OldCode\PointTypes\UInteger32Type.cs" />
+    <Compile Include="OldCode\PointStream\PointReader.cs" />
     <Compile Include="OldCode\SinglePrecisionFloatingPoint.cs" />
     <Compile Include="OldCode\SinglePrecisionFloatingPointQueue.cs" />
-    <Compile Include="PointTypes\DateTimeType.cs" />
+    <Compile Include="OldCode\PointTypes\DateTimeType.cs" />
     <Compile Include="PooledMemoryStream.cs" />
     <Compile Include="StorageSystem\BinaryStream.cs" />
     <Compile Include="StorageSystem\Specialized\BPlusTree.cs" />
@@ -181,12 +182,6 @@
     <Compile Include="StorageSystem\File\Test Procedures\FileMetaDataTest.cs" />
     <Compile Include="StorageSystem\File\Test Procedures\FileAllocationTableTest.cs" />
     <Compile Include="StorageSystem\File\FileSystemSnapshotService.cs" />
-    <Compile Include="OldCode\Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OldCode\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="OldCode\ArciveDataProcessor.cs" />
     <Compile Include="OldCode\FileStructure\ArchiveFileSystem.cs" />
     <Compile Include="OldCode\FileStructure\TimeSeriesData\CacheBuffer.cs" />
@@ -217,16 +212,13 @@
     <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompression.cs" />
     <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompressorTest.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="DataReadWrite.cs" />
+    <Compile Include="OldCode\DataReadWrite.cs" />
     <Compile Include="Test\CompressionTest.cs" />
     <Compile Include="StorageSystem\ISupportsBinaryStream.cs" />
     <Compile Include="StorageSystem\Test\BinaryStreamTest.cs" />
     <Compile Include="Test\PooledMemoryStreamTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCode.cs" />
-    <EmbeddedResource Include="OldCode\Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -249,7 +241,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="PointStream\Sorting\" />
+    <Folder Include="OldCode\PointStream\Sorting\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
