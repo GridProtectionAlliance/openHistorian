@@ -26,7 +26,7 @@ namespace openHistorian.Core
 
             openHistorian.Core.PooledMemoryStreamTest.Test();
 
-            openHistorian.Core.ArchiveTest.Test();
+            //openHistorian.Core.ArchiveTest.Test();
 
             //openHistorian.Core.StorageSystem.BinaryStreamTest.Test();
 
@@ -39,6 +39,8 @@ namespace openHistorian.Core
             //openHistorian.Core.StorageSystem.Generic.NodeTest.Test();
             //openHistorian.Core.StorageSystem.Specialized.NodeTest.Test();
 
+            openHistorian.Core.Unmanaged.UnmanagedArrayTest.Test();
+            //openHistorian.Core.StorageSystem.BufferPool.UnmanagedBufferPoolTest.Test();
         }
         public static int Test2()
         {

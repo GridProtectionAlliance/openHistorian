@@ -60,6 +60,7 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -72,6 +73,13 @@
     <Compile Include="Archive.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="ContinuousBuffer.cs" />
+    <Compile Include="HelperFunctions.cs" />
+    <Compile Include="StorageSystem\BufferPool\PoolList.cs" />
+    <Compile Include="Unmanaged\BitArray.cs" />
+    <Compile Include="Unmanaged\Test\UnmanagedArray.cs" />
+    <Compile Include="Unmanaged\Test\UnmanagedBufferPool.cs" />
+    <Compile Include="Unmanaged\UnmanagedArray.cs" />
+    <Compile Include="Unmanaged\UnmanagedBufferPool.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old2.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old.cs" />
     <Compile Include="OldCode\OldCompressionCode\Compression_old.cs" />
@@ -113,6 +121,12 @@
     <Compile Include="OldCode\PointTypes\DateTimeType.cs" />
     <Compile Include="PooledMemoryStream.cs" />
     <Compile Include="StorageSystem\BinaryStream.cs" />
+    <Compile Include="StorageSystem\BufferPool\DataSet.cs" />
+    <Compile Include="StorageSystem\BufferPool\IDataSetIo.cs" />
+    <Compile Include="StorageSystem\BufferPool\MemoryUnit.cs" />
+    <Compile Include="StorageSystem\BufferPool\Pool.cs" />
+    <Compile Include="Unmanaged\Memory.cs" />
+    <Compile Include="Unmanaged\WinApi.cs" />
     <Compile Include="StorageSystem\Specialized\BPlusTree.cs" />
     <Compile Include="StorageSystem\Specialized\TreeTypeIntFloat.cs" />
     <Compile Include="StorageSystem\Specialized\DataReader.cs" />
