@@ -7,6 +7,22 @@ namespace openHistorian.Core
 {
     static class HelperFunctions
     {
+        public static void ExpectError(Action errorFunction)
+        {
+            bool success;
+            try
+            {
+                errorFunction.Invoke();
+                success = true;
+            }
+            catch
+            {
+                success = false;
+            }
+            if (success)
+                throw new Exception("This procedure should have thrown an error.");
+
+        }
 
         public static bool IsPowerOfTwo(uint value, out int shiftBits, out uint bitMask)
         {

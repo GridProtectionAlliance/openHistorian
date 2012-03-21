@@ -18,9 +18,9 @@ namespace openHistorian.Core.Unmanaged
         public UnmanagedArray(int size)
         {
             m_size = size;
-            m_blockSize = UnmanagedBufferPool.PageSize;
-            m_blockMask = UnmanagedBufferPool.PageMask;
-            m_blockShiftBits = UnmanagedBufferPool.PageShiftBits;
+            m_blockSize = BufferPool.PageSize;
+            m_blockMask = BufferPool.PageMask;
+            m_blockShiftBits = BufferPool.PageShiftBits;
 
             int blocks = size / m_blockSize;
             if (blocks * m_blockSize < size)
@@ -31,8 +31,8 @@ namespace openHistorian.Core.Unmanaged
 
             for (int x = 0; x < blocks; x++)
             {
-                m_index[x] = UnmanagedBufferPool.AllocatePage();
-                m_intPtr[x] = (byte*)UnmanagedBufferPool.GetPageAddress(m_index[x]).ToPointer();
+                m_index[x] = BufferPool.AllocatePage();
+                m_intPtr[x] = (byte*)BufferPool.GetPageAddress(m_index[x]).ToPointer();
             }
         }
         ~UnmanagedArray()
@@ -62,7 +62,7 @@ namespace openHistorian.Core.Unmanaged
             {
                 foreach (int blockIndex in m_index)
                 {
-                    UnmanagedBufferPool.ReleasePage(blockIndex);
+                    BufferPool.ReleasePage(blockIndex);
                 }
                 m_disposed = true;
                 m_intPtr = null;

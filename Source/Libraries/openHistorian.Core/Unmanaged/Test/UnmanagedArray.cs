@@ -19,7 +19,7 @@ namespace openHistorian.Core.Unmanaged
 
             Stopwatch sw = new Stopwatch();
 
-            int* lp = (int*)UnmanagedBufferPool.GetPageAddress(0).ToPointer();
+            int* lp = (int*)BufferPool.GetPageAddress(0).ToPointer();
 
             sw.Start();
             //byte[] array = new byte[bufferSize];

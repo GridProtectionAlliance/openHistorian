@@ -22,9 +22,9 @@ namespace openHistorian.Core
             //openHistorian.Core.StorageSystem.File.TransactionalEditTest.Test();
             //openHistorian.Core.StorageSystem.File.FileSystemSnapshotServiceTest.Test();
 
-            openHistorian.Core.CompressionTest.Test();
+            //openHistorian.Core.CompressionTest.Test();
 
-            openHistorian.Core.PooledMemoryStreamTest.Test();
+            //openHistorian.Core.PooledMemoryStreamTest.Test();
 
             //openHistorian.Core.ArchiveTest.Test();
 
@@ -39,7 +39,12 @@ namespace openHistorian.Core
             //openHistorian.Core.StorageSystem.Generic.NodeTest.Test();
             //openHistorian.Core.StorageSystem.Specialized.NodeTest.Test();
 
-            openHistorian.Core.Unmanaged.UnmanagedArrayTest.Test();
+            Unmanaged.BitArrayTest.Test();
+            Unmanaged.MemoryTest.Test();
+
+            Unmanaged.BufferPoolTest.Test();
+
+            //openHistorian.Core.Unmanaged.UnmanagedArrayTest.Test();
             //openHistorian.Core.StorageSystem.BufferPool.UnmanagedBufferPoolTest.Test();
         }
         public static int Test2()

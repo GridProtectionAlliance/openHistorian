@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  UnmanagedBufferPool.cs - Gbtc
+//  BufferPool.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -34,7 +34,7 @@ namespace openHistorian.Core.Unmanaged
     /// <summary>
     /// This class allocates and pools unmanaged memory.
     /// </summary>
-    public static class UnmanagedBufferPool
+    public static class BufferPool
     {
         /// <summary>
         /// Used for synchronizing modifications to this class.
@@ -106,7 +106,7 @@ namespace openHistorian.Core.Unmanaged
         public static int PageCount { get; private set; }
         public static int PagesPerAllocation { get; private set; }
 
-        static UnmanagedBufferPool()
+        static BufferPool()
         {
             s_syncRoot = new object();
             InitializeDefaultMemorySettings();
@@ -123,12 +123,12 @@ namespace openHistorian.Core.Unmanaged
             var info = new Microsoft.VisualBasic.Devices.ComputerInfo();
             long totalMemory = (long)info.TotalPhysicalMemory;
             long availableMemory = (long)info.AvailablePhysicalMemory;
-            SystemTotalPhysicalMemory = availableMemory;
+            SystemTotalPhysicalMemory = totalMemory;
 
             //only use large pages if 64 bit OS detected, 
-            //There is at least 2GB of free physical memory, 
+            //There is at least 4GB of physical memory, 
             //and Windows supports
-            IsUsingLargePageSizes = (Environment.Is64BitProcess && availableMemory > 2 * 1024 * 1024 * 1024L &&
+            IsUsingLargePageSizes = (Environment.Is64BitProcess && totalMemory >= 4 * 1024 * 1024 * 1024L &&
                                      WinApi.CanAllocateLargePage && HelperFunctions.IsPowerOfTwo(WinApi.GetLargePageMinimum()));
 
             //Maximum size is at least 128MB
@@ -169,7 +169,7 @@ namespace openHistorian.Core.Unmanaged
                 
                 if (index >=0)
                 {
-                    s_pageAllocations[index] = true;
+                    s_pageAllocations.SetBit(index);
                     return index;
                 }
                 if (RequestCollection != null)
@@ -179,7 +179,7 @@ namespace openHistorian.Core.Unmanaged
 
         public static void ReleasePage(int pageIndex)
         {
-            s_pageAllocations[pageIndex] = false;
+            s_pageAllocations.ClearBit(pageIndex);
         }
 
         public static IntPtr GetPageAddress(int pageIndex)
@@ -191,15 +191,6 @@ namespace openHistorian.Core.Unmanaged
             return s_allocationPointer[allocationIndex].Address + blockOffset * PageSize;
         }
 
-        public static bool GetUsageBits(int pageIndex)
-        {
-            return s_pageAllocations[pageIndex];
-        }
-
-        public static void SetUsageBits(int pageIndex, bool value)
-        {
-            s_pageAllocations[pageIndex] = value;
-        }
 
         /// <summary>
         /// Sets the maximum amount of memory 
