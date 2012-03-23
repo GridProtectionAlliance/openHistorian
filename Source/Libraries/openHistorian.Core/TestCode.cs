@@ -47,19 +47,24 @@ namespace openHistorian.Core
             //openHistorian.Core.Unmanaged.UnmanagedArrayTest.Test();
             //openHistorian.Core.StorageSystem.BufferPool.UnmanagedBufferPoolTest.Test();
         }
-        public static int Test2()
+        public unsafe static void Test2()
         {
-            int[] data = new int[]{1};
-            int i1, i2, i3, i4, i5;
+            //long ptr1, ptr2, ptr3, ptr4, ptr5;
+            //Unmanaged.Memory data4 = Unmanaged.Memory.Allocate(200 * 1024 * 1024, true);
+            //Unmanaged.Memory data5 = Unmanaged.Memory.Allocate(200 * 1024 * 1024, true);
+            //byte[] data1 = new byte[200 * 1024 * 1024];
+            //byte[] data2 = new byte[20 * 1024 * 1024];
+            //byte[] data3 = new byte[2000 * 1024 * 1024];
 
-            i1 = ~Array.BinarySearch(data, 0, data.Length, 0);
-            i2 = ~Array.BinarySearch(data, 0, data.Length, 2);
-            i3 = ~Array.BinarySearch(data, 0, data.Length, 4);
-            i4 = ~Array.BinarySearch(data, 0, data.Length, 6);
-            i5 = ~Array.BinarySearch(data, 0, data.Length, 8);
 
-            int i6 = i1 + i2 + i3 + i4 + i5;
-            return i6;
+            //fixed (byte* ptr = data1) ptr1 = (long)ptr;
+            //fixed (byte* ptr = data2) ptr2 = (long)ptr;
+            //fixed (byte* ptr = data3) ptr3 = (long)ptr;
+            //ptr4 = data4.Address.ToInt64();
+            //ptr5 = data5.Address.ToInt64();
+
+            //if (ptr1 == ptr2 | ptr3 == ptr4 | ptr5 == ptr1)
+            //    return;
         }
     }
 }

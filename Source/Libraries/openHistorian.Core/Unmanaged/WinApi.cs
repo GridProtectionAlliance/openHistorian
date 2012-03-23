@@ -96,13 +96,17 @@ namespace openHistorian.Core.Unmanaged
                 if (returnValue == IntPtr.Zero)
                 {
                     int error = Marshal.GetLastWin32Error();
+                    if (error == 1450)
+                    {
+                        return VirtualAlloc(size, false);
+                    }
                     throw new Exception("error allocating large block: " + error);
                 }
                 return returnValue;
             }
             else
             {
-                IntPtr returnValue = VirtualAlloc(IntPtr.Zero, (UIntPtr)size, AllocationType.Commit | AllocationType.Reserve, MemoryProtection.Readwrite);
+                IntPtr returnValue = VirtualAlloc(IntPtr.Zero, (UIntPtr)size, AllocationType.Commit | AllocationType.Reserve, MemoryProtection.Readwrite | MemoryProtection.NocacheModifierflag);
                 if (returnValue == IntPtr.Zero)
                 {
                     int error = Marshal.GetLastWin32Error();
@@ -111,6 +115,7 @@ namespace openHistorian.Core.Unmanaged
                 return returnValue;
             }
         }
+      
 
         #endregion
 

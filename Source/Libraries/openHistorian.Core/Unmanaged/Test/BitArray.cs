@@ -21,7 +21,14 @@ namespace openHistorian.Core.Unmanaged
         }
         static void TestSequential(int count)
         {
-            BitArray array = new BitArray(count);
+            BitArray array = new BitArray(count, true);
+            for (int x = 0; x < count; x++)
+            {
+                if (!array.GetBit(x))
+                    throw new Exception("each bit should be set");
+            }
+
+            array = new BitArray(count,false);
             for (int x = 0; x < count; x++)
             {
                 if (array.GetBit(x))
@@ -49,7 +56,7 @@ namespace openHistorian.Core.Unmanaged
             int count = rand.Next(1000000);
 
             bool[] tmp = new bool[count];
-            BitArray array = new BitArray(count);
+            BitArray array = new BitArray(count,false);
             for (int x = 0; x < count << 1; x++)
             {
                 int index = rand.Next(count);
@@ -74,7 +81,7 @@ namespace openHistorian.Core.Unmanaged
 
             const int count = 20 * 1024 * 1024;
             //20 million, That's like 120GB
-            BitArray array = new BitArray(count);
+            BitArray array = new BitArray(count,false);
 
             sw1.Start();
             for (int x = 0; x<count; x++)

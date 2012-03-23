@@ -37,7 +37,12 @@ namespace openHistorian.Core.Unmanaged
         int m_setCount;
         int m_lastFoundClearedIndex;
 
-        public BitArray(int count)
+        /// <summary>
+        /// Initializes <see cref="BitArray"/>.
+        /// </summary>
+        /// <param name="count">The number of bit positions to support</param>
+        /// <param name="initialState">Set to true to initial will all elements set.  False to have all elements cleared.</param>
+        public BitArray(int count, bool initialState)
         {
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count");
@@ -45,8 +50,20 @@ namespace openHistorian.Core.Unmanaged
                 m_array = new int[(count >> 5) + 1];
             else
                 m_array = new int[count >> 5];
+
+            if (initialState)
+            {
+                m_setCount = count;
+                for (int x = 0; x < m_array.Length; x++)
+                {
+                    m_array[x] = -1;
+                }
+            }
+            else
+            {
+                m_setCount = 0;
+            }
             m_count = count;
-            m_setCount = 0;
         }
 
         /// <summary>
@@ -112,6 +129,14 @@ namespace openHistorian.Core.Unmanaged
             get
             {
                 return m_setCount;
+            }
+        }
+
+        public int ClearCount
+        {
+            get
+            {
+                return m_count - m_setCount;
             }
         }
 

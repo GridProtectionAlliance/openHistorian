@@ -215,8 +215,9 @@ namespace openHistorian.Core.Unmanaged
 
         void AllocateBlock(out int index, out byte* address)
         {
-            index = BufferPool.AllocatePage();
-            address = (byte*)BufferPool.GetPageAddress(index).ToPointer();
+            IntPtr ptr;
+            index = BufferPool.AllocatePage(out ptr);
+            address = (byte*)ptr.ToPointer();
             int* lpInt = (int*)address;
             for (int x = 0; x < 65536 / 4; x += 4)
             {

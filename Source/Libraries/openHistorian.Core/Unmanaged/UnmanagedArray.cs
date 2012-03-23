@@ -31,8 +31,9 @@ namespace openHistorian.Core.Unmanaged
 
             for (int x = 0; x < blocks; x++)
             {
-                m_index[x] = BufferPool.AllocatePage();
-                m_intPtr[x] = (byte*)BufferPool.GetPageAddress(m_index[x]).ToPointer();
+                IntPtr ptr;
+                m_index[x] = BufferPool.AllocatePage(out ptr);
+                m_intPtr[x] = (byte*)ptr.ToPointer();
             }
         }
         ~UnmanagedArray()

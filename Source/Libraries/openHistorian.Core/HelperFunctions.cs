@@ -68,5 +68,17 @@ namespace openHistorian.Core
             return value != 0 && ((value & (value - 1)) == 0);
         }
 
+        public static long RoundUpToNearestPowerOfTwo(long value)
+        {
+            long result = 1;
+            while (result <= value)
+            {
+                result <<= 1;
+            }
+            return result;
+        }
+
+       
+
     }
 }
