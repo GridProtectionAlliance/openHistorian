@@ -26,6 +26,7 @@ using System;
 
 namespace openHistorian.Core.Unmanaged
 {
+
     /// <summary>
     /// This class is used to allocate and free unmanaged memory.  To release memory allocated throught this class,
     /// call the Dispose method of the return value.
@@ -129,7 +130,7 @@ namespace openHistorian.Core.Unmanaged
             if (useLargePagesIfSupported && s_supportsLargePageSizes)
             {
                 uint roundDownAmount = requestedSize % s_largePageMinimumSize;
-                
+
                 if (roundDownAmount > 0)
                     requestedSize = requestedSize + s_largePageMinimumSize - roundDownAmount;
 
@@ -148,6 +149,43 @@ namespace openHistorian.Core.Unmanaged
         {
             WinApi.VirtualFree(pointer);
         }
+
+
+        public static unsafe void Copy(byte* src, byte* dest, int count)
+        {
+            WinApi.MoveMemory(dest, src, count);
+            return;
+            if (Math.Abs((long)src-(long)dest)<count)
+            {
+                
+            }
+
+            int block;
+
+            block = count >> 3;
+
+            long* pDest = (long*)dest;
+            long* pSrc = (long*)src;
+
+            for (int i = 0; i < block; i++)
+            {
+                *pDest = *pSrc; 
+                pDest++; 
+                pSrc++;
+            }
+            dest = (byte*)pDest;
+            src = (byte*)pSrc;
+            count = count - (block << 3);
+
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    *dest = *src; dest++; src++;
+                }
+            }
+        }
+    
 
         #endregion
 

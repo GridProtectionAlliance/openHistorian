@@ -37,6 +37,12 @@ namespace openHistorian.Core.Unmanaged
     /// </summary>
     static class WinApi
     {
+        [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
+        public static extern void MoveMemory(IntPtr dest, IntPtr src, int size);
+
+        [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
+        unsafe public static extern void MoveMemory(byte* dest, byte* src, int size);
+
         public static bool CanAllocateLargePage { get; private set; }
 
         static WinApi()
@@ -115,7 +121,7 @@ namespace openHistorian.Core.Unmanaged
                 return returnValue;
             }
         }
-      
+
 
         #endregion
 

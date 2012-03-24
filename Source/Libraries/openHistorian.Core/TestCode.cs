@@ -37,13 +37,18 @@ namespace openHistorian.Core
             //openHistorian.Core.StorageSystem.Generic.LeafNodeTest.Test();
 
             //openHistorian.Core.StorageSystem.Generic.NodeTest.Test();
-            //openHistorian.Core.StorageSystem.Specialized.NodeTest.Test();
+            openHistorian.Core.StorageSystem.Specialized.NodeTest.Test();
 
             Unmanaged.BitArrayTest.Test();
             Unmanaged.MemoryTest.Test();
 
             Unmanaged.BufferPoolTest.Test();
-            Unmanaged.IndexMapTest.Test();
+            
+            Unmanaged.MemoryStreamTest.Test();
+            Unmanaged.BinaryStreamTest.Test();
+
+            Unmanaged.Specialized.NodeTest.Test();
+            //Unmanaged.IndexMapTest.Test();
             //openHistorian.Core.Unmanaged.UnmanagedArrayTest.Test();
             //openHistorian.Core.StorageSystem.BufferPool.UnmanagedBufferPoolTest.Test();
         }

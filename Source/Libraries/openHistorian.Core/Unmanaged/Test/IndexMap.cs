@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace openHistorian.Core.Unmanaged
 {
@@ -9,6 +11,8 @@ namespace openHistorian.Core.Unmanaged
     {
         unsafe public static void Test()
         {
+            Test2();
+
             PageObject page;
             IndexMap<PageObject> lst = new IndexMap<PageObject>();
             for (int x = 1; x < 1 * 1024 * 1024 * 1024; x <<= 1)
@@ -48,7 +52,35 @@ namespace openHistorian.Core.Unmanaged
                 if (lst.Contains(x))
                     throw new Exception();
             }
+        }
+        static void Test2()
+        {
+            IndexMap<PageObject> lst = new IndexMap<PageObject>();
+            PageObject page = default(PageObject);
 
+            BufferPool.SetMinimumMemoryUsage(BufferPool.MaximumMemoryUsage);
+
+            for (int x = 0; x < 12000; x++)
+            {
+                lst.Add(x, page);
+            }
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int x = 0; x < 12000; x++)
+            {
+                lst.Get(x);
+            }
+
+            sw.Stop();
+            for (int x = 0; x < 12000; x++)
+            {
+                lst.Remove(x);
+            }
+
+
+            MessageBox.Show((12000 / sw.Elapsed.TotalSeconds / 1000000).ToString());
         }
     }
 }

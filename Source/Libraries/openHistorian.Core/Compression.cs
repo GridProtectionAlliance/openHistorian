@@ -40,6 +40,41 @@ namespace openHistorian.Core
             return 9;
         }
 
+        unsafe public static void Write7Bit(byte* stream, ref int position, uint value1)
+        {
+            if (value1 < 128)
+            {
+                stream[position] = (byte)value1;
+                position += 1;
+                return;
+            }
+            stream[position] = (byte)(value1 | 128);
+            if (value1 < 128 * 128)
+            {
+                stream[position + 1] = (byte)(value1 >> 7);
+                position += 2;
+                return;
+            }
+            stream[position + 1] = (byte)((value1 >> 7) | 128);
+            if (value1 < 128 * 128 * 128)
+            {
+                stream[position + 2] = (byte)(value1 >> 14);
+                position += 3;
+                return;
+            }
+            stream[position + 2] = (byte)((value1 >> 14) | 128);
+            if (value1 < 128 * 128 * 128 * 128)
+            {
+                stream[position + 3] = (byte)(value1 >> 21);
+                position += 4;
+                return;
+            }
+            stream[position + 3] = (byte)((value1 >> 21) | 128);
+            stream[position + 4] = (byte)(value1 >> 28);
+            position += 5;
+            return;
+        }
+
         public static void Write7Bit(byte[] stream, ref int position, uint value1)
         {
             if (value1 < 128)
@@ -74,6 +109,7 @@ namespace openHistorian.Core
             position += 5;
             return;
         }
+       
         public static void Read7BitUInt32(byte[] stream, ref int position, out uint value1)
         {
             int pos = position;
@@ -178,7 +214,69 @@ namespace openHistorian.Core
             return;
         }
 
-       
+        unsafe public static void Write7Bit(byte* stream, ref int position, ulong value1)
+        {
+            if (value1 < 128)
+            {
+                stream[position] = (byte)value1;
+                position += 1;
+                return;
+            }
+            stream[position] = (byte)(value1 | 128);
+            if (value1 < 128 * 128)
+            {
+                stream[position + 1] = (byte)(value1 >> 7);
+                position += 2;
+                return;
+            }
+            stream[position + 1] = (byte)((value1 >> 7) | 128);
+            if (value1 < 128 * 128 * 128)
+            {
+                stream[position + 2] = (byte)(value1 >> (7 + 7));
+                position += 3;
+                return;
+            }
+            stream[position + 2] = (byte)((value1 >> (7 + 7)) | 128);
+            if (value1 < 128 * 128 * 128 * 128)
+            {
+                stream[position + 3] = (byte)(value1 >> (7 + 7 + 7));
+                position += 4;
+                return;
+            }
+            stream[position + 3] = (byte)((value1 >> (7 + 7 + 7)) | 128);
+            if (value1 < 128L * 128 * 128 * 128 * 128)
+            {
+                stream[position + 4] = (byte)(value1 >> (7 + 7 + 7 + 7));
+                position += 5;
+                return;
+            }
+            stream[position + 4] = (byte)((value1 >> (7 + 7 + 7 + 7)) | 128);
+            if (value1 < 128L * 128 * 128 * 128 * 128 * 128)
+            {
+                stream[position + 5] = (byte)(value1 >> (7 + 7 + 7 + 7 + 7));
+                position += 6;
+                return;
+            }
+            stream[position + 5] = (byte)((value1 >> (7 + 7 + 7 + 7 + 7)) | 128);
+            if (value1 < 128L * 128 * 128 * 128 * 128 * 128 * 128)
+            {
+                stream[position + 6] = (byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7));
+                position += 7;
+                return;
+            }
+            stream[position + 6] = (byte)((value1 >> (7 + 7 + 7 + 7 + 7 + 7)) | 128);
+            if (value1 < 128L * 128 * 128 * 128 * 128 * 128 * 128 * 128)
+            {
+                stream[position + 7] = (byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7));
+                position += 8;
+                return;
+            }
+            stream[position + 7] = (byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7) | 128);
+            stream[position + 8] = (byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
+            position += 9;
+            return;
+        }
+      
         public static void Write7Bit(byte[] stream, ref int position, ulong value1)
         {
             if (value1 < 128)

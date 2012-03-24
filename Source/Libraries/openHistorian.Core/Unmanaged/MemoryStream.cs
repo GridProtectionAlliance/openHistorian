@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using openHistorian.Core.StorageSystem;
 
@@ -28,9 +29,9 @@ namespace openHistorian.Core.Unmanaged
         /// The byte position in the stream
         /// </summary>
         private long m_position;
-        
+
         private List<int> m_pageIndex;
-        private List<long> m_ptr;
+        private List<long> m_pagePointer;
 
         /// <summary>
         /// Create a new <see cref="PooledMemoryStream"/>
@@ -39,7 +40,7 @@ namespace openHistorian.Core.Unmanaged
         {
             m_position = 0;
             m_pageIndex = new List<int>(100);
-            m_ptr = new List<long>(100);
+            m_pagePointer = new List<long>(100);
         }
 
         /// <summary>
@@ -48,16 +49,20 @@ namespace openHistorian.Core.Unmanaged
         /// </summary>
         /// <param name="position">The position to use to calculate the page to retrieve</param>
         /// <returns></returns>
-        byte[] GetPage(long position)
+        byte* GetPage(long position)
         {
-            return null;
-            //int page = (int)(position >> ShiftLength);
-            ////If there are not enough pages in the stream, add enough.
-            //while (page >= m_stream.Count)
-            //{
-            //    m_stream.Add(new byte[Length]);
-            //}
-            //return m_stream[page];
+            int page = (int)(position >> ShiftLength);
+            //If there are not enough pages in the stream, add enough.
+            while (page >= m_pageIndex.Count)
+            {
+                int pageIndex;
+                IntPtr pagePointer;
+                pageIndex = BufferPool.AllocatePage(out pagePointer);
+
+                m_pageIndex.Add(pageIndex);
+                m_pagePointer.Add(pagePointer.ToInt64());
+            }
+            return (byte*)m_pagePointer[page];
         }
 
         /// <summary>
@@ -118,15 +123,18 @@ namespace openHistorian.Core.Unmanaged
         {
             int availableLength = RemainingLenght(position);
             int destOffset = CalculateOffset(position);
-            byte[] block = GetPage(position);
+            byte* block = GetPage(position);
 
             if (availableLength >= count)
             {
-                Array.Copy(data, offset, block, destOffset, count);
+
+                Marshal.Copy(data, offset, (IntPtr)(block + destOffset), count);
+                //Array.Copy(data, offset, block, destOffset, count);
             }
             else
             {
-                Array.Copy(data, offset, block, destOffset, availableLength);
+                Marshal.Copy(data, offset, (IntPtr)(block + destOffset), availableLength);
+                //Array.Copy(data, offset, block, destOffset, availableLength);
                 Write(position + availableLength, data, offset + availableLength, count - availableLength);
             }
         }
@@ -157,15 +165,15 @@ namespace openHistorian.Core.Unmanaged
         {
             int availableLength = RemainingLenght(position);
             int destOffset = CalculateOffset(position);
-            byte[] block = GetPage(position);
+            byte* block = GetPage(position);
 
             if (availableLength >= count)
             {
-                Array.Copy(block, destOffset, data, offset, count);
+                Marshal.Copy((IntPtr)(block + destOffset), data, offset, count);
             }
             else
             {
-                Array.Copy(block, destOffset, data, offset, availableLength);
+                Marshal.Copy((IntPtr)(block + destOffset), data, offset, availableLength);
                 Read(position + availableLength, data, offset + availableLength, count - availableLength);
             }
             return count;
@@ -175,12 +183,12 @@ namespace openHistorian.Core.Unmanaged
         /// Implementation of ISupportsBinaryStream to speed up writing to the stream.
         /// </summary>
         /// <returns></returns>
-        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out byte[] buffer, out int firstIndex, out int lastIndex, out int currentIndex)
+        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out long bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex)
         {
             firstIndex = 0;
             lastIndex = Length - 1;
             currentIndex = CalculateOffset(position);
-            buffer = GetPage(position);
+            bufferPointer = (long)GetPage(position);
         }
 
     }
