@@ -13,8 +13,17 @@ namespace openHistorian.Core.Unmanaged
         static List<int> lst;
         public static void Test()
         {
+            var del = new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
+            BufferPool.RequestCollection += del ;
+
+            //Test1();
+            Test2();
+
+            BufferPool.RequestCollection -= del;
+        }
+        static void Test1()
+        {
             Stopwatch sw = new Stopwatch();
-            BufferPool.RequestCollection += new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
             long memory = BufferPool.SystemTotalPhysicalMemory;
             if (!BufferPool.IsUsingLargePageSizes)
                 throw new Exception();
@@ -26,7 +35,7 @@ namespace openHistorian.Core.Unmanaged
             BufferPool.SetMinimumMemoryUsage(long.MaxValue);
             BufferPool.SetMaximumMemoryUsage(long.MaxValue);
             sw.Start();
-            lst = new List<int>(1000000);
+            lst = new List<int>(100000);
                 for (int x = 0; x < 10000000; x++)
                 {
                     IntPtr ptr;
@@ -39,10 +48,71 @@ namespace openHistorian.Core.Unmanaged
             sw.Stop();
             MessageBox.Show((10000000/sw.Elapsed.TotalSeconds/1000000).ToString());
             lst.Clear();
+            lst = null;
+        }
+      
+        unsafe static void Test2()
+        {
+            Random random = new Random();
+            int seed = random.Next();
+
+            var lstkeep = new List<int>(1000);
+            var lst = new List<int>(1000);
+            var lstp = new List<IntPtr>(1000);
+
+            for (int tryagain = 0; tryagain < 10; tryagain++)
+            {
+                random = new Random(seed);
+                for (int x = 0; x < 1000; x++)
+                {
+                    IntPtr ptr;
+                    lst.Add(BufferPool.AllocatePage(out ptr));
+                    lstp.Add(ptr);
+                }
+
+                foreach (IntPtr ptr in lstp)
+                {
+                    int* lp = (int*)ptr.ToPointer();
+                    *lp++ = random.Next();
+                    *lp++ = random.Next();
+                    *lp++ = random.Next();
+                    *lp++ = random.Next();
+                }
+
+                random = new Random(seed);
+                foreach (IntPtr ptr in lstp)
+                {
+                    int* lp = (int*)ptr.ToPointer();
+
+                    if (*lp++ != random.Next()) throw new Exception();
+                    if (*lp++ != random.Next()) throw new Exception();
+                    if (*lp++ != random.Next()) throw new Exception();
+                    if (*lp++ != random.Next()) throw new Exception();
+                }
+
+                for (int x = 0; x < 1000; x+=2)
+                {
+                    lstkeep.Add(lst[x]);
+                    BufferPool.ReleasePage(lst[x+1]);
+                }
+                lst.Clear();
+                lstp.Clear();
+            }
+
+            foreach (int x in lstkeep)
+            {
+                BufferPool.ReleasePage(x);
+            }
+            lst.Clear();
+            lst = null;
+            if (BufferPool.FreeSpacePercentage < 1.0f)
+                throw new Exception("");
         }
 
         static void BufferPool_RequestCollection(BufferPoolCollectionMode obj)
         {
+            if (lst == null)
+                return;
             if (obj == BufferPoolCollectionMode.Critical)
             {
                 int ItemsToRemove = lst.Count / 5;

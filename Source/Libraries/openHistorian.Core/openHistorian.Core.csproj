@@ -76,10 +76,13 @@
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="StorageSystem\BufferPool\PoolList.cs" />
     <Compile Include="Unmanaged\BitArray.cs" />
+    <Compile Include="Unmanaged\IKeyType.cs" />
     <Compile Include="Unmanaged\MemoryStream.cs" />
-    <Compile Include="Unmanaged\PageList.cs" />
+    <Compile Include="Unmanaged\IndexMap.cs" />
+    <Compile Include="Unmanaged\PageObject.cs" />
     <Compile Include="Unmanaged\Test\BitArray.cs" />
     <Compile Include="Unmanaged\Test\Memory.cs" />
+    <Compile Include="Unmanaged\Test\IndexMap.cs" />
     <Compile Include="Unmanaged\Test\UnmanagedArray.cs" />
     <Compile Include="Unmanaged\Test\BufferPool.cs" />
     <Compile Include="Unmanaged\UnmanagedArray.cs" />

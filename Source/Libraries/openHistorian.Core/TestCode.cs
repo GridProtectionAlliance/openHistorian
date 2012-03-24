@@ -43,7 +43,7 @@ namespace openHistorian.Core
             Unmanaged.MemoryTest.Test();
 
             Unmanaged.BufferPoolTest.Test();
-
+            Unmanaged.IndexMapTest.Test();
             //openHistorian.Core.Unmanaged.UnmanagedArrayTest.Test();
             //openHistorian.Core.StorageSystem.BufferPool.UnmanagedBufferPoolTest.Test();
         }
