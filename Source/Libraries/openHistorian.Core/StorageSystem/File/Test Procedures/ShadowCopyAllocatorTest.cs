@@ -33,7 +33,7 @@ namespace openHistorian.Core.StorageSystem.File
     {
         public static void Test()
         {
-            DiskIoMemoryStream stream = new DiskIoMemoryStream();
+            DiskIoEnhanced stream = new DiskIoEnhanced();
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(stream);
             header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
@@ -48,7 +48,7 @@ namespace openHistorian.Core.StorageSystem.File
             header = FileAllocationTable.OpenHeader(stream);
         }
 
-        public static void TestWrite(DiskIoBase stream, int FileNumber)
+        public static void TestWrite(DiskIoEnhanced stream, int FileNumber)
         {
             FileAllocationTable header = FileAllocationTable.OpenHeader(stream);
             header = header.CreateEditableCopy(true);

@@ -30,11 +30,12 @@ namespace openHistorian.Core.StorageSystem.File
     {
         internal static void Test()
         {
-            string file = Path.GetTempFileName();
-            System.IO.File.Delete(file);
+            //string file = Path.GetTempFileName();
+            //System.IO.File.Delete(file);
             try
             {
-                using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateFile(file))
+                //using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateFile(file))
+                using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateInMemory())
                 {
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {
@@ -84,7 +85,7 @@ namespace openHistorian.Core.StorageSystem.File
             }
             finally
             {
-                System.IO.File.Delete(file);
+                //System.IO.File.Delete(file);
             }
         }
 

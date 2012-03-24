@@ -27,9 +27,9 @@ using System.Text;
 
 namespace openHistorian.Core.StorageSystem.File
 {
-    internal class DiskIOTest
+    internal class DiskIOEnhancedTest
     {
-        internal static void TestAllReadStatesExceptInvalid(DiskIoBase stream)
+        internal static void TestAllReadStatesExceptInvalid(DiskIoEnhanced stream)
         {
             TestReadPastTheEndOfTheFile(stream);
             TestChecksumInvalidBecausePageIsNull(stream);
@@ -39,9 +39,8 @@ namespace openHistorian.Core.StorageSystem.File
             TestBlockTypeMismatch(stream);
             TestResize(stream);
         }
-
-
-        static void TestResize(DiskIoBase stream)
+        
+        static void TestResize(DiskIoEnhanced stream)
         {
             IoReadState readState;
             long oldFileSize = stream.FileSize;
@@ -73,7 +72,7 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new Exception();
         }
 
-        static void TestBlockTypeMismatch(DiskIoBase stream)
+        static void TestBlockTypeMismatch(DiskIoEnhanced stream)
         {
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
@@ -91,7 +90,7 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new Exception();
         }
 
-        static void TestIndexNumberMissmatch(DiskIoBase stream)
+        static void TestIndexNumberMissmatch(DiskIoEnhanced stream)
         {
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
@@ -109,7 +108,7 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new Exception();
         }
 
-        static void TestFileIDNumberDidNotMatch(DiskIoBase stream)
+        static void TestFileIDNumberDidNotMatch(DiskIoEnhanced stream)
         {
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
@@ -127,7 +126,7 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new Exception();
         }
 
-        static void TestPageNewerThanSnapshotSequenceNumber(DiskIoBase stream)
+        static void TestPageNewerThanSnapshotSequenceNumber(DiskIoEnhanced stream)
         {
             //Writing sequence number 3, reading both 2 and 5.  2 should fail, 5 should not.
             IoReadState readState;
@@ -146,7 +145,7 @@ namespace openHistorian.Core.StorageSystem.File
                 throw new Exception();
         }
 
-        static void TestChecksumInvalidBecausePageIsNull(DiskIoBase stream)
+        static void TestChecksumInvalidBecausePageIsNull(DiskIoEnhanced stream)
         {
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
@@ -159,7 +158,7 @@ namespace openHistorian.Core.StorageSystem.File
             if (readState != IoReadState.ChecksumInvalidBecausePageIsNull)
                 throw new Exception();
         }
-        static void TestReadPastTheEndOfTheFile(DiskIoBase stream)
+        static void TestReadPastTheEndOfTheFile(DiskIoEnhanced stream)
         {
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;

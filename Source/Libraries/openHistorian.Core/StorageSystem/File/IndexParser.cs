@@ -79,7 +79,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// The disk to issue read requests to.
         /// </summary>
-        DiskIoBase m_dataReader;
+        DiskIoEnhanced m_dataReader;
 
         #endregion
 
@@ -91,7 +91,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// being read or the one that is currently being written to.</param>
         /// <param name="dataReader">The disk that will be read to parse the cluster addresses from the file</param>
         /// <param name="file">The file that is to be read.</param>
-        public IndexParser(uint snapshotSequenceNumber, DiskIoBase dataReader, FileMetaData file)
+        public IndexParser(uint snapshotSequenceNumber, DiskIoEnhanced dataReader, FileMetaData file)
         {
             m_snapshotSequenceNumber = snapshotSequenceNumber;
             m_dataReader = dataReader;

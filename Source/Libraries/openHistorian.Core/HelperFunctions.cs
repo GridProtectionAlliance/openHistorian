@@ -7,8 +7,7 @@ namespace openHistorian.Core
 {
     static class HelperFunctions
     {
-
-
+        
         public static void ExpectError(Action errorFunction)
         {
             bool success;

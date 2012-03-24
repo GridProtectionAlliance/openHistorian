@@ -29,7 +29,7 @@ namespace openHistorian.Core
             s_archive.Close();
             s_archive = null;
             sw.Stop();
-            MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + openHistorian.Core.StorageSystem.File.DiskIoBase.ChecksumCount);
+            MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + openHistorian.Core.StorageSystem.File.DiskIoEnhanced.ChecksumCount);
 
         }
 

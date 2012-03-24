@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DiskIOBase.cs - Gbtc
+//  DiskIoEnhanced.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,20 +16,243 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/30/2011 - Steven E. Chisholm
+//  3/24/2012 - Steven E. Chisholm
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
 using System;
+using openHistorian.Core.Unmanaged;
 
 namespace openHistorian.Core.StorageSystem.File
 {
     /// <summary>
     /// Abstract class for the basic Disk IO functions.
     /// </summary>
-    internal abstract class DiskIoBase : IDisposable
+    unsafe internal class DiskIoEnhanced : IDisposable
     {
+        int m_AllocatedBlocksCount;
+
+        protected MemoryStream m_stream;
+        Unmanaged.ISupportsBinaryStream m_stream2;
+
+        public DiskIoEnhanced()
+        {
+            m_AllocatedBlocksCount = 0;
+            m_stream = new MemoryStream();
+            m_stream2 = m_stream;
+        }
+
+        //public void ReleaseBlock(MemoryUnit page, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber)
+        //{
+        //    GC.SuppressFinalize(page);
+        //}
+
+        //public IoReadState AquireBlockForRead(uint blockIndex, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, out MemoryUnit buffer)
+        //{
+        //    buffer = null;
+
+        //    long ptr;
+        //    int first, last, cur;
+
+
+        //    m_stream2.GetCurrentBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out first, out last, out cur);
+
+
+        //    byte* data = (byte*)(ptr + cur);
+
+        //    if (last + 1 - cur < ArchiveConstants.BlockSize)
+        //        throw new Exception("memory is not lining up on page boundries");
+
+        //    IoReadState readState = ReadBlock(blockIndex, data);
+
+        //    if (readState != IoReadState.Valid)
+        //        return readState;
+
+        //    readState = IsFooterValid(data, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
+
+        //    if (readState != IoReadState.Valid)
+        //        return readState;
+
+        //    buffer = new MemoryUnit(blockIndex, (byte*)(ptr + cur), ArchiveConstants.BlockSize);
+
+        //    return readState;
+
+        //    //if (IsReadOnly)
+        //    //    throw new Exception("File system is read only");
+
+        //    ////If the file is not large enought to set this block, autogrow the file.
+        //    //if ((long)(blockIndex + 1) * ArchiveConstants.BlockSize > FileSize)
+        //    //{
+        //    //    SetFileLength(0, blockIndex + 1);
+        //    //}
+
+        //    //WriteFooterData(data, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
+
+        //    //WriteBlock(blockIndex, data);
+
+        //    //if (data.Length != ArchiveConstants.BlockSize)
+        //    //    throw new Exception("All page IOs must be performed one page at a time.");
+        //    //if ((long)(blockIndex + 1) * ArchiveConstants.BlockSize > FileSize)
+        //    //    return IoReadState.ReadPastThenEndOfTheFile;
+
+        //}
+
+        
+        #region [ Abstract Methods/Properties ]
+
+        /// <summary>
+        /// Writes the following data to the stream
+        /// </summary>
+        /// <param name="blockIndex">the block where to write the data</param>
+        /// <param name="data">the data to write</param>
+        protected void WriteBlock(uint blockIndex, byte[] data)
+        {
+            m_stream.Write(blockIndex * ArchiveConstants.BlockSize, data, 0, data.Length);
+        }
+
+        /// <summary>
+        /// Resizes the file to the requested size
+        /// </summary>
+        /// <param name="requestedSize">The size to resize to</param>
+        /// <returns>The actual size of the file after the resize</returns>
+        protected long SetFileLength(long requestedSize)
+        {
+            m_stream.Position = requestedSize - 1;
+            m_stream.Read(requestedSize - 1, new byte[1], 0, 1);
+            m_AllocatedBlocksCount = (int)(requestedSize / ArchiveConstants.BlockSize);
+            return m_AllocatedBlocksCount * ArchiveConstants.BlockSize;
+        }
+
+        /// <summary>
+        /// Tries to read data from the following file
+        /// </summary>
+        /// <param name="blockIndex">the block where to write the data</param>
+        /// <param name="data">the data to write</param>
+        /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
+        protected IoReadState ReadBlock(uint blockIndex, byte[] data)
+        {
+            if (blockIndex > m_AllocatedBlocksCount)
+                return IoReadState.ReadPastThenEndOfTheFile;
+
+            m_stream.Read(blockIndex * ArchiveConstants.BlockSize, data, 0, data.Length);
+            return IoReadState.Valid;
+        }
+
+        /// <summary>
+        /// Always returns false.
+        /// </summary>
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
+
+
+        /// <summary>
+        /// Gets the current size of the file.
+        /// </summary>
+        public long FileSize
+        {
+            get
+            {
+                return m_AllocatedBlocksCount*(long)ArchiveConstants.BlockSize;
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// The calculated checksum for a page of all zeros.
+        /// </summary>
+        const long EmptyChecksum = 6845471437889732609;
+
+        /// <summary>
+        /// Checks how many times the checksum was computed.  This is used to see IO amplification.
+        /// It is currently a debug term that will soon disappear.
+        /// </summary>
+        static internal long ChecksumCount;
+
+        /// <summary>
+        /// Computes the custom checksum of the data.
+        /// </summary>
+        /// <param name="data">the data to compute the checksum for.</param>
+        /// <returns></returns>
+        static long ComputeChecksum(byte* data)
+        {
+            ChecksumCount += 1;
+            // return 0;
+
+            long a = 1; //Maximum size for A is 20 bits in length
+            long b = 0; //Maximum size for B is 31 bits in length
+            long c = 0; //Maximum size for C is 42 bits in length
+            for (int x = 0; x < ArchiveConstants.BlockSize - 8; x++)
+            {
+                a += data[x];
+                b += a;
+                c += b;
+            }
+            //Since only 13 bits of C will remain, xor all 42 bits of C into the first 13 bits.
+            c = c ^ (c >> 13) ^ (c >> 26) ^ (c >> 39);
+            return (c << 51) ^ (b << 20) ^ a;
+        }
+
+        /// <summary>
+        /// Determines if the footer data for the following page is valid.
+        /// </summary>
+        /// <param name="data">the block data to check</param>
+        /// <param name="blockType">the type of this block.</param>
+        /// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
+        /// <param name="fileIdNumber">the file number this block is associated with</param>
+        /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
+        /// <returns>State information about the state of the footer data</returns>
+        static IoReadState IsFooterValid(byte* data, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber)
+        {
+            long checksum = ComputeChecksum(data);
+            long checksumInData = *(long*)(data + ArchiveConstants.BlockSize - 8);
+
+            if (checksum == checksumInData)
+            {
+                if (data[ArchiveConstants.BlockSize - 21] != (byte)blockType)
+                    return IoReadState.BlockTypeMismatch;
+                if (*(uint*)(data + ArchiveConstants.BlockSize - 20) != indexValue)
+                    return IoReadState.IndexNumberMissmatch;
+                if (*(uint*)(data + ArchiveConstants.BlockSize - 12) > snapshotSequenceNumber)
+                    return IoReadState.PageNewerThanSnapshotSequenceNumber;
+                if (*(uint*)(data + ArchiveConstants.BlockSize - 16) != fileIdNumber)
+                    return IoReadState.FileIdNumberDidNotMatch;
+
+                return IoReadState.Valid;
+            }
+            if ((checksumInData == 0) && (checksum == EmptyChecksum))
+            {
+                return IoReadState.ChecksumInvalidBecausePageIsNull;
+            }
+            return IoReadState.ChecksumInvalid;
+        }
+
+        /// <summary>
+        /// Writes the following footer data to the block.
+        /// </summary>
+        /// <param name="data">the block data to write to</param>
+        /// <param name="blockType">the type of this block.</param>
+        /// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
+        /// <param name="fileIdNumber">the file number this block is associated with</param>
+        /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
+        /// <returns></returns>
+        static void WriteFooterData(byte* data, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber)
+        {
+            data[ArchiveConstants.BlockSize - 21] = (byte)blockType;
+            *(uint*)(data + ArchiveConstants.BlockSize - 20) = indexValue;
+            *(uint*)(data + ArchiveConstants.BlockSize - 16) = fileIdNumber;
+            *(uint*)(data + ArchiveConstants.BlockSize - 12) = snapshotSequenceNumber;
+
+            long checksum = ComputeChecksum(data);
+            *(long*)(data + ArchiveConstants.BlockSize - 8) = checksum;
+        }
+
+
+        #region [ OldMethods ]
+
         /// <summary>
         /// Writes a specific block of data to the disk system.
         /// </summary>
@@ -118,48 +341,6 @@ namespace openHistorian.Core.StorageSystem.File
             }
             return SetFileLength(size);
         }
-
-        #region [ Abstract Methods/Properties ]
-        /// <summary>
-        /// Writes the following data to the stream
-        /// </summary>
-        /// <param name="blockIndex">the block where to write the data</param>
-        /// <param name="data">the data to write</param>
-        abstract protected void WriteBlock(uint blockIndex, byte[] data);
-        /// <summary>
-        /// Resizes the file to the requested size
-        /// </summary>
-        /// <param name="requestedSize">The size to resize to</param>
-        /// <returns>The actual size of the file after the resize</returns>
-        abstract protected long SetFileLength(long requestedSize);
-        /// <summary>
-        /// Tries to read data from the following file
-        /// </summary>
-        /// <param name="blockIndex">the block where to write the data</param>
-        /// <param name="data">the data to write</param>
-        /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
-        abstract protected IoReadState ReadBlock(uint blockIndex, byte[] data);
-        /// <summary>
-        /// Determines if the file stream is read only.
-        /// </summary>
-        abstract public bool IsReadOnly { get; }
-        /// <summary>
-        /// Gets the current size of the file.
-        /// </summary>
-        abstract public long FileSize { get; }
-
-        #endregion
-
-        /// <summary>
-        /// The calculated checksum for a page of all zeros.
-        /// </summary>
-        const long EmptyChecksum = 6845471437889732609;
-
-        /// <summary>
-        /// Checks how many times the checksum was computed.  This is used to see IO amplification.
-        /// It is currently a debug term that will soon disappear.
-        /// </summary>
-        static internal long ChecksumCount;
 
         /// <summary>
         /// Computes the custom checksum of the data.
@@ -257,6 +438,12 @@ namespace openHistorian.Core.StorageSystem.File
             data[ArchiveConstants.BlockSize - 1] = (byte)(checksum >> 56);
         }
 
-        public abstract void Dispose();
+        public void Dispose()
+        {
+
+        }
+
+        #endregion
+
     }
 }

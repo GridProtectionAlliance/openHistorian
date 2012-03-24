@@ -30,7 +30,7 @@ namespace openHistorian.Core.StorageSystem.File
     {
         public static void Test()
         {
-            DiskIoMemoryStream stream = new DiskIoMemoryStream();
+            DiskIoEnhanced stream = new DiskIoEnhanced();
             FileAllocationTable fat = FileAllocationTable.CreateFileAllocationTable(stream);
             //obtain a readonly copy of the file allocation table.
             fat = FileAllocationTable.OpenHeader(stream);
@@ -42,7 +42,7 @@ namespace openHistorian.Core.StorageSystem.File
             fat = FileAllocationTable.OpenHeader(stream);
             TestVerifyRollback(stream, fat);
         }
-        static void TestCreateNewFile(DiskIoBase stream, FileAllocationTable fat)
+        static void TestCreateNewFile(DiskIoEnhanced stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
@@ -68,7 +68,7 @@ namespace openHistorian.Core.StorageSystem.File
             trans.Commit();
         }
 
-        static void TestOpenExistingFile(DiskIoBase stream, FileAllocationTable fat)
+        static void TestOpenExistingFile(DiskIoEnhanced stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
@@ -99,7 +99,7 @@ namespace openHistorian.Core.StorageSystem.File
             trans.Commit();
         }
 
-        static void TestRollback(DiskIoBase stream, FileAllocationTable fat)
+        static void TestRollback(DiskIoEnhanced stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
@@ -127,7 +127,7 @@ namespace openHistorian.Core.StorageSystem.File
             trans.Rollback();
         }
 
-        static void TestVerifyRollback(DiskIoBase stream, FileAllocationTable fat)
+        static void TestVerifyRollback(DiskIoEnhanced stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);

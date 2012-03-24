@@ -60,7 +60,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// The underlying diskIO to do the reads against.
         /// </summary>
-        DiskIoBase m_dataReader;
+        DiskIoEnhanced m_dataReader;
 
         #endregion
 
@@ -72,7 +72,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="dataReader"> </param>
         /// <param name="fileAllocationTable">This parameter must be in a read only mode.
         /// This is to ensure that the value is not modified after it has been passed to this class.</param>
-        internal TransactionalRead(DiskIoBase dataReader, FileAllocationTable fileAllocationTable)
+        internal TransactionalRead(DiskIoEnhanced dataReader, FileAllocationTable fileAllocationTable)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");

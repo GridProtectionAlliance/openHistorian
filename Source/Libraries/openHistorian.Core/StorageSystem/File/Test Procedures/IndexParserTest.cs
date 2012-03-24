@@ -34,7 +34,7 @@ namespace openHistorian.Core.StorageSystem.File
         public static void Test()
         {
             IndexMapper map = new IndexMapper();
-            DiskIoMemoryStream stream = new DiskIoMemoryStream();
+            DiskIoEnhanced stream = new DiskIoEnhanced();
             FileMetaData node = FileMetaData.CreateFileMetaData(1, Guid.NewGuid());
             IndexParser parse = new IndexParser(1, stream, node);
             parse.SetPosition(14312);

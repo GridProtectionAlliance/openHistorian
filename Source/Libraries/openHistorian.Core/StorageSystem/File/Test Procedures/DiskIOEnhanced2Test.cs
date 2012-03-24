@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DiskIOUnbufferedTest.cs - Gbtc
+//  DiskIOMemoryStreamTest.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,60 +29,47 @@ using System.IO;
 
 namespace openHistorian.Core.StorageSystem.File
 {
-    internal class DiskIOUnbufferedTest : DiskIoUnbuffered, IDisposable
+    internal class DiskIOEnhanced2Test : DiskIoEnhanced
     {
-        internal DiskIOUnbufferedTest()
-            : base(System.IO.Path.GetTempFileName(), false)
-        {
-        }
-
         internal static void Test()
         {
             TestAllReadStates();
         }
         static void TestAllReadStates()
         {
-            using (DiskIOUnbufferedTest stream = new DiskIOUnbufferedTest())
+            DiskIOEnhanced2Test stream = new DiskIOEnhanced2Test();
+            for (int x = 0; x < 2; x++)
             {
-                for (int x = 0; x < 2; x++)
-                {
-                    DiskIOTest.TestAllReadStatesExceptInvalid(stream);
-                    TestChecksumInvalid(stream);
-                }
+                DiskIOEnhancedTest.TestAllReadStatesExceptInvalid(stream);
+                TestChecksumInvalid(stream);
             }
         }
-        static void TestChecksumInvalid(DiskIOUnbufferedTest stream)
+        static void TestChecksumInvalid(DiskIOEnhanced2Test stream)
         {
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
-            byte[] buffer = DiskIOTest.GenerateRandomDataBlock(seed);
+            byte[] buffer = GenerateRandomDataBlock(seed);
             uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
-            stream.File.Position = currentBlock * ArchiveConstants.BlockSize;
-            byte[] internalBlock = new byte[ArchiveConstants.BlockSize];
-            stream.File.Read(internalBlock, 0, internalBlock.Length);
-            internalBlock[0] = (byte)((int)internalBlock[0] + 1);
-            stream.File.Position = currentBlock * ArchiveConstants.BlockSize;
-            stream.File.Write(internalBlock, 0, internalBlock.Length);
-
+            byte[] tmp = new byte[1];
+            stream.m_stream.Read(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
+            tmp[0] = (byte)(tmp[0] + 1);
+            stream.m_stream.Write(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
+           
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
             if (readState != IoReadState.ChecksumInvalid)
                 throw new Exception();
         }
 
-        void IDisposable.Dispose()
+        public static byte[] GenerateRandomDataBlock(int seed)
         {
-            base.Dispose();
-            try
-            {
-                System.IO.File.Delete(base.FileName);
-            }
-            catch
-            {
-            }
-
+            Random rand = new Random(seed);
+            byte[] buffer = new byte[ArchiveConstants.BlockSize];
+            for (int x = 0; x < ArchiveConstants.DataBlockDataLength; x++)
+                buffer[x] = (byte)rand.Next();
+            return buffer;
         }
     }
 }

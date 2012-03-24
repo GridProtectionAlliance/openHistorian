@@ -37,14 +37,14 @@ namespace openHistorian.Core.StorageSystem.File
     {
         public static void Test()
         {
-            DiskIoMemoryStream stream = new DiskIoMemoryStream();
+            DiskIoEnhanced stream = new DiskIoEnhanced();
             TestReadAndWrites(stream);
             TestReadAndWritesWithCommit(stream);
             TestReadAndWritesToDifferentFilesWithCommit(stream);
             TestBinaryStream(stream);
 
         }
-        static void TestBinaryStream(DiskIoBase stream)
+        static void TestBinaryStream(DiskIoEnhanced stream)
         {
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(stream);
             FileMetaData node = header.CreateNewFile(Guid.NewGuid());
@@ -55,7 +55,7 @@ namespace openHistorian.Core.StorageSystem.File
             BinaryStreamTest.Test(ds);
         }
 
-        static void TestReadAndWrites(DiskIoBase stream)
+        static void TestReadAndWrites(DiskIoEnhanced stream)
         {
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(stream);
             FileMetaData node = header.CreateNewFile(Guid.NewGuid());
@@ -74,7 +74,7 @@ namespace openHistorian.Core.StorageSystem.File
             header.WriteToFileSystem(stream);
         }
 
-        static void TestReadAndWritesWithCommit(DiskIoBase stream)
+        static void TestReadAndWritesWithCommit(DiskIoEnhanced stream)
         {
             FileAllocationTable header;
             FileMetaData node;
@@ -120,7 +120,7 @@ namespace openHistorian.Core.StorageSystem.File
             TestCustomSizeRead(ds2, 5);
         }
 
-        static void TestReadAndWritesToDifferentFilesWithCommit(DiskIoBase stream)
+        static void TestReadAndWritesToDifferentFilesWithCommit(DiskIoEnhanced stream)
         {
             FileAllocationTable header;
 

@@ -83,7 +83,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// The underlying diskIO to do the read/writes against.
         /// </summary>
-        DiskIoBase m_dataReader;
+        DiskIoEnhanced m_dataReader;
 
         /// <summary>
         /// The readonly snapshot of the archive file.
@@ -108,7 +108,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="fileAllocationTable">This parameter must be in a read only mode.
         /// This is to ensure that the value is not modified after it has been passed to this class.
         /// This will be converted into an editable version within the constructor of this class</param>
-        internal TransactionalEdit(DiskIoBase dataReader, FileAllocationTable fileAllocationTable)
+        internal TransactionalEdit(DiskIoEnhanced dataReader, FileAllocationTable fileAllocationTable)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");

@@ -59,7 +59,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// The Disk Subsystem.
         /// </summary>
-        DiskIoBase m_dataReader;
+        DiskIoEnhanced m_dataReader;
         /// <summary>
         /// The file used by the stream.
         /// </summary>
@@ -87,7 +87,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="file">The file to read.</param>
         /// <param name="fileAllocationTable">The FileAllocationTable</param>
         /// <param name="openReadOnly">Determines if the file stream allows writing.</param>
-        internal ArchiveFileStream(DiskIoBase dataReader, FileMetaData file, FileAllocationTable fileAllocationTable, bool openReadOnly)
+        internal ArchiveFileStream(DiskIoEnhanced dataReader, FileMetaData file, FileAllocationTable fileAllocationTable, bool openReadOnly)
         {
             m_isReadOnly = openReadOnly;
             m_isBlockDirty = false;

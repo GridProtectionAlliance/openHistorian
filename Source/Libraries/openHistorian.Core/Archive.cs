@@ -16,34 +16,34 @@ namespace openHistorian.Core
         BinaryStream m_binaryStream;
         BPlusTree<KeyType, TreeTypeIntFloat> m_tree;
 
-        public Archive(string file)
-        {
-            if (File.Exists(file))
-                OpenFile(file);
-            else
-                CreateFile(file);
-        }
+        //public Archive(string file)
+        //{
+        //    if (File.Exists(file))
+        //        OpenFile(file);
+        //    else
+        //        CreateFile(file);
+        //}
         public Archive()
         {
             CreateFileInMemory();
         }
      
-        void OpenFile(string file)
-        {
-            m_fileSystem = VirtualFileSystem.OpenArchive(file, false);
-            m_currentTransaction = m_fileSystem.BeginEdit();
-            m_stream = m_currentTransaction.OpenFile(0);
-            m_binaryStream = new BinaryStream(m_stream);
-            m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream);
-        }
-        void CreateFile(string file)
-        {
-            m_fileSystem = VirtualFileSystem.CreateArchive(file);
-            m_currentTransaction = m_fileSystem.BeginEdit();
-            m_stream = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271d}"), 1);
-            m_binaryStream = new BinaryStream(m_stream);
-            m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream, ArchiveConstants.DataBlockDataLength);
-        }
+        //void OpenFile(string file)
+        //{
+        //    m_fileSystem = VirtualFileSystem.OpenArchive(file, false);
+        //    m_currentTransaction = m_fileSystem.BeginEdit();
+        //    m_stream = m_currentTransaction.OpenFile(0);
+        //    m_binaryStream = new BinaryStream(m_stream);
+        //    m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream);
+        //}
+        //void CreateFile(string file)
+        //{
+        //    m_fileSystem = VirtualFileSystem.CreateArchive(file);
+        //    m_currentTransaction = m_fileSystem.BeginEdit();
+        //    m_stream = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271d}"), 1);
+        //    m_binaryStream = new BinaryStream(m_stream);
+        //    m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream, ArchiveConstants.DataBlockDataLength);
+        //}
         void CreateFileInMemory()
         {
             m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();

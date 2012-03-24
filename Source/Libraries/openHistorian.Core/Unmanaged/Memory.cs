@@ -155,9 +155,9 @@ namespace openHistorian.Core.Unmanaged
         {
             WinApi.MoveMemory(dest, src, count);
             return;
-            if (Math.Abs((long)src-(long)dest)<count)
+            if (Math.Abs((long)src - (long)dest) < count)
             {
-                
+
             }
 
             int block;
@@ -169,8 +169,8 @@ namespace openHistorian.Core.Unmanaged
 
             for (int i = 0; i < block; i++)
             {
-                *pDest = *pSrc; 
-                pDest++; 
+                *pDest = *pSrc;
+                pDest++;
                 pSrc++;
             }
             dest = (byte*)pDest;
@@ -185,7 +185,21 @@ namespace openHistorian.Core.Unmanaged
                 }
             }
         }
-    
+
+        public static unsafe void Clear(byte* pointer, int length)
+        {
+            int i;
+            for (i = 0; i < length - 8; i += 8)
+            {
+                *(long*)(pointer + i) = 0;
+            }
+
+            for (; i < length; i++)
+            {
+                *pointer = 0;
+            }
+        }
+
 
         #endregion
 

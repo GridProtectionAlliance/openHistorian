@@ -11,7 +11,7 @@ namespace openHistorian.Core.StorageSystem.File
         public static void Test()
         {
             //Create a file
-            DiskIoMemoryStream stream = new DiskIoMemoryStream();
+            DiskIoEnhanced stream = new DiskIoEnhanced();
             FileAllocationTable fat = FileAllocationTable.CreateFileAllocationTable(stream);
             fat = FileAllocationTable.OpenHeader(stream);
             Guid id = Guid.NewGuid();
@@ -29,7 +29,7 @@ namespace openHistorian.Core.StorageSystem.File
                 data[(byte)x] = new byte[ArchiveConstants.DataBlockDataLength];
             }
 
-            DiskIoBase.ChecksumCount = 0;
+            DiskIoEnhanced.ChecksumCount = 0;
             sw.Start();
             const int SizeMB = 10;
             int y = 0;
@@ -38,7 +38,7 @@ namespace openHistorian.Core.StorageSystem.File
                 fs1.Write(data[(byte)y], 0, data[(byte)y].Length);
             }
             sw.Stop();
-            System.Windows.Forms.MessageBox.Show((SizeMB / sw.Elapsed.TotalSeconds).ToString() + " " + ((DiskIoBase.ChecksumCount * 4.0 / 1024) / SizeMB).ToString());
+            System.Windows.Forms.MessageBox.Show((SizeMB / sw.Elapsed.TotalSeconds).ToString() + " " + ((DiskIoEnhanced.ChecksumCount * 4.0 / 1024) / SizeMB).ToString());
 
             trans.Commit();
 
@@ -46,17 +46,17 @@ namespace openHistorian.Core.StorageSystem.File
             trans = new TransactionalEdit(stream, fat);
             fs1 = trans.OpenFile(0);
 
-            DiskIoBase.ChecksumCount = 0;
+            DiskIoEnhanced.ChecksumCount = 0;
             sw.Start();
             for (int x = 0; x < SizeMB * 1024 * 1024; x += data[0].Length, y++)
             {
                 fs1.Write(data[(byte)y], 0, data[(byte)y].Length);
             }
             sw.Stop();
-            System.Windows.Forms.MessageBox.Show((SizeMB / sw.Elapsed.TotalSeconds).ToString() + " " + ((DiskIoBase.ChecksumCount * 4.0 / 1024) / SizeMB).ToString());
+            System.Windows.Forms.MessageBox.Show((SizeMB / sw.Elapsed.TotalSeconds).ToString() + " " + ((DiskIoEnhanced.ChecksumCount * 4.0 / 1024) / SizeMB).ToString());
 
             sw.Reset();
-            DiskIoBase.ChecksumCount = 0;
+            DiskIoEnhanced.ChecksumCount = 0;
 
             sw.Start();
             fs1.Position = 0;
@@ -65,8 +65,8 @@ namespace openHistorian.Core.StorageSystem.File
                 fs1.Write(data[(byte)y], 0, data[(byte)y].Length);
             }
             sw.Stop();
-            System.Windows.Forms.MessageBox.Show((SizeMB / sw.Elapsed.TotalSeconds).ToString() + " " + ((DiskIoBase.ChecksumCount * 4.0 / 1024) / SizeMB).ToString());
-            DiskIoBase.ChecksumCount = 0;
+            System.Windows.Forms.MessageBox.Show((SizeMB / sw.Elapsed.TotalSeconds).ToString() + " " + ((DiskIoEnhanced.ChecksumCount * 4.0 / 1024) / SizeMB).ToString());
+            DiskIoEnhanced.ChecksumCount = 0;
 
             sw.Reset();
             sw.Start();
@@ -76,8 +76,8 @@ namespace openHistorian.Core.StorageSystem.File
                 fs1.Read(data[(byte)y], 0, data[(byte)y].Length);
             }
             sw.Stop();
-            System.Windows.Forms.MessageBox.Show((SizeMB / sw.Elapsed.TotalSeconds).ToString() + " " + ((DiskIoBase.ChecksumCount * 4.0 / 1024) / SizeMB).ToString());
-            DiskIoBase.ChecksumCount = 0;
+            System.Windows.Forms.MessageBox.Show((SizeMB / sw.Elapsed.TotalSeconds).ToString() + " " + ((DiskIoEnhanced.ChecksumCount * 4.0 / 1024) / SizeMB).ToString());
+            DiskIoEnhanced.ChecksumCount = 0;
 
             trans.Commit();
         }

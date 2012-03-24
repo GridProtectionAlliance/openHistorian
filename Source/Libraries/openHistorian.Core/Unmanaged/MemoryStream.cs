@@ -58,7 +58,7 @@ namespace openHistorian.Core.Unmanaged
                 int pageIndex;
                 IntPtr pagePointer;
                 pageIndex = BufferPool.AllocatePage(out pagePointer);
-
+                Memory.Clear((byte*)pagePointer,BufferPool.PageSize);
                 m_pageIndex.Add(pageIndex);
                 m_pagePointer.Add(pagePointer.ToInt64());
             }
@@ -97,6 +97,14 @@ namespace openHistorian.Core.Unmanaged
             set
             {
                 m_position = value;
+            }
+        }
+
+        public long FileSize
+        {
+            get
+            {
+                return m_pageIndex.Count * BufferPool.PageSize;
             }
         }
 

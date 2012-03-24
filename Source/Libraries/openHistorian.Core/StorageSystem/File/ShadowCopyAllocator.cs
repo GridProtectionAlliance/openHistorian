@@ -44,7 +44,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <summary>
         /// The disk to make the IO requests to.
         /// </summary>
-        DiskIoBase m_diskIo;
+        DiskIoEnhanced m_diskIo;
         /// <summary>
         /// The FileAllocationTable that can be used to allocate space.
         /// </summary>
@@ -66,7 +66,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="fileAllocationTable">The file allocation table that is editable</param>
         /// <param name="fileMetaData">The file that is used</param>
         /// <param name="parser">The indexparser used by the caller to designate what block needs to be copied.</param>
-        public ShadowCopyAllocator(DiskIoBase dataReader, FileAllocationTable fileAllocationTable, FileMetaData fileMetaData, IndexParser parser)
+        public ShadowCopyAllocator(DiskIoEnhanced dataReader, FileAllocationTable fileAllocationTable, FileMetaData fileMetaData, IndexParser parser)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
