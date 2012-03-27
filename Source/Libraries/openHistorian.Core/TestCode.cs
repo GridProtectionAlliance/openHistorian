@@ -9,6 +9,8 @@ namespace openHistorian.Core
     {
         public static void Test()
         {
+
+            Unmanaged.BufferPool.SetMinimumMemoryUsage(Unmanaged.BufferPool.MaximumMemoryUsage);
             Test2();
             System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.Batch;
 
@@ -19,13 +21,13 @@ namespace openHistorian.Core
 
             Unmanaged.MemoryStreamTest.Test();
             Unmanaged.BinaryStreamTest.Test();
+            Unmanaged.BufferedStreamTest.Test();
+            //Unmanaged.BufferedStreamTest.BenchmarkTest();
+            
             //Unmanaged.Specialized.NodeTest.Test();
 
-            StorageSystem.File.DiskIOEnhanced2Test.Test();
+            //StorageSystem.File.DiskIOEnhanced2Test.Test();
 
-            //openHistorian.Core.StorageSystem.File.DiskIOMemoryStreamTest.Test();
-            //openHistorian.Core.StorageSystem.File.DiskIOUnbufferedTest.Test();
-            
             StorageSystem.File.FileMetaDataTest.Test();
             StorageSystem.File.FileAllocationTableTest.Test();
             StorageSystem.File.IndexMapperTest.Test();
@@ -38,6 +40,7 @@ namespace openHistorian.Core
             //openHistorian.Core.CompressionTest.Test();
 
             //openHistorian.Core.PooledMemoryStreamTest.Test();
+
 
             ArchiveTest.Test();
 

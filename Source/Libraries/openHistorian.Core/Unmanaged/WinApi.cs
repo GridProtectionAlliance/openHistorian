@@ -24,6 +24,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
 
 namespace openHistorian.Core.Unmanaged
 {
@@ -37,6 +38,9 @@ namespace openHistorian.Core.Unmanaged
     /// </summary>
     static class WinApi
     {
+        [DllImport("KERNEL32", SetLastError = true)]
+        public static extern void FlushFileBuffers(SafeFileHandle handle);
+
         [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
         public static extern void MoveMemory(IntPtr dest, IntPtr src, int size);
 

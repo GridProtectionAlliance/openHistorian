@@ -154,7 +154,7 @@ namespace openHistorian.Core.Unmanaged
         {
             //if (handle.IsAllocated)
             //    handle.Free();
-            long buffer;
+            IntPtr buffer;
             m_currentPosition = Position;
             m_stream.GetCurrentBlock(m_currentPosition, isWriting, out buffer, out m_firstIndex, out m_lastIndex, out m_currentIndex);
 

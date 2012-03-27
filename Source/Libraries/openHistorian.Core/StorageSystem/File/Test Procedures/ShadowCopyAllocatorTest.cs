@@ -50,84 +50,85 @@ namespace openHistorian.Core.StorageSystem.File
 
         public static void TestWrite(DiskIoEnhanced stream, int FileNumber)
         {
-            FileAllocationTable header = FileAllocationTable.OpenHeader(stream);
-            header = header.CreateEditableCopy(true);
-            FileMetaData node = header.Files[FileNumber];
-            IndexParser parse = new IndexParser(header.SnapshotSequenceNumber, stream, node);
-            ShadowCopyAllocator shadow = new ShadowCopyAllocator(stream, header, node, parse);
 
-            uint nextPage = header.NextUnallocatedBlock;
+            //FileAllocationTable header = FileAllocationTable.OpenHeader(stream);
+            //header = header.CreateEditableCopy(true);
+            //FileMetaData node = header.Files[FileNumber];
+            //IndexParser parse = new IndexParser(header.SnapshotSequenceNumber, stream, node);
+            //ShadowCopyAllocator shadow = new ShadowCopyAllocator(stream, header, node, parse);
 
-
-            shadow.ShadowDataBlock(0);
-            PositionData pd = parse.GetPositionData(0);
-            if (node.DirectCluster != nextPage)
-                throw new Exception();
-            if (parse.DataClusterAddress != nextPage)
-                throw new Exception();
-            stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
+            //uint nextPage = header.NextUnallocatedBlock;
 
 
-            //should do nothing since the page has already been allocated
-            shadow.ShadowDataBlock(1024);
-            pd = parse.GetPositionData(1024);
-            if (node.DirectCluster != nextPage)
-                throw new Exception();
-            if (parse.DataClusterAddress != nextPage)
-                throw new Exception();
-            stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
-
-            if (ArchiveConstants.BlockSize == 4096)
-            {
-                //Allocate in the 4th indirect block
-                shadow.ShadowDataBlock(ArchiveConstants.FirstQuadrupleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
-                pd = parse.GetPositionData(ArchiveConstants.FirstQuadrupleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
-                if (node.DirectCluster != nextPage)
-                    throw new Exception();
-                if (parse.DataClusterAddress != nextPage + 1)
-                    throw new Exception();
-                if (parse.FirstIndirectBlockAddress != nextPage + 5)
-                    throw new Exception();
-                if (parse.SecondIndirectBlockAddress != nextPage + 4)
-                    throw new Exception();
-                if (parse.ThirdIndirectBlockAddress != nextPage + 3)
-                    throw new Exception();
-                if (parse.ForthIndirectBlockAddress != nextPage + 2)
-                    throw new Exception();
-                stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
-
-            }
-            else
-            {
-                //Allocate in the 3th indirect block
-                shadow.ShadowDataBlock(ArchiveConstants.FirstTripleIndirectIndex * (long)ArchiveConstants.DataBlockDataLength);
-                pd = parse.GetPositionData(ArchiveConstants.FirstTripleIndirectIndex * (long)ArchiveConstants.DataBlockDataLength);
-                if (node.DirectCluster != nextPage)
-                    throw new Exception();
-                if (parse.DataClusterAddress != nextPage + 1)
-                    throw new Exception();
-                if (parse.FirstIndirectBlockAddress != nextPage + 4)
-                    throw new Exception();
-                if (parse.SecondIndirectBlockAddress != nextPage + 3)
-                    throw new Exception();
-                if (parse.ThirdIndirectBlockAddress != nextPage + 2)
-                    throw new Exception();
-                stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
-            }
+            //shadow.ShadowDataBlock(0);
+            //PositionData pd = parse.GetPositionData(0);
             //if (node.DirectCluster != nextPage)
             //    throw new Exception();
-            //if (parse.DataClusterAddress != nextPage + 1)
+            //if (parse.DataClusterAddress != nextPage)
             //    throw new Exception();
-            //if (parse.FirstIndirectBlockAddress != nextPage + 5)
-            //    throw new Exception();
-            //if (parse.SecondIndirectBlockAddress != nextPage + 4)
-            //    throw new Exception();
-            //if (parse.ThirdIndirectBlockAddress != nextPage + 3)
-            //    throw new Exception();
-            //if (parse.ForthIndirectBlockAddress != nextPage + 2)
-            //    throw new Exception();
+            //stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
 
-            header.WriteToFileSystem(stream);
+
+            ////should do nothing since the page has already been allocated
+            //shadow.ShadowDataBlock(1024);
+            //pd = parse.GetPositionData(1024);
+            //if (node.DirectCluster != nextPage)
+            //    throw new Exception();
+            //if (parse.DataClusterAddress != nextPage)
+            //    throw new Exception();
+            //stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
+
+            //if (ArchiveConstants.BlockSize == 4096)
+            //{
+            //    //Allocate in the 4th indirect block
+            //    shadow.ShadowDataBlock(ArchiveConstants.FirstQuadrupleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
+            //    pd = parse.GetPositionData(ArchiveConstants.FirstQuadrupleIndirectBlockIndex * (long)ArchiveConstants.DataBlockDataLength);
+            //    if (node.DirectCluster != nextPage)
+            //        throw new Exception();
+            //    if (parse.DataClusterAddress != nextPage + 1)
+            //        throw new Exception();
+            //    if (parse.FirstIndirectBlockAddress != nextPage + 5)
+            //        throw new Exception();
+            //    if (parse.SecondIndirectBlockAddress != nextPage + 4)
+            //        throw new Exception();
+            //    if (parse.ThirdIndirectBlockAddress != nextPage + 3)
+            //        throw new Exception();
+            //    if (parse.ForthIndirectBlockAddress != nextPage + 2)
+            //        throw new Exception();
+            //    stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
+
+            //}
+            //else
+            //{
+            //    //Allocate in the 3th indirect block
+            //    shadow.ShadowDataBlock(ArchiveConstants.FirstTripleIndirectIndex * (long)ArchiveConstants.DataBlockDataLength);
+            //    pd = parse.GetPositionData(ArchiveConstants.FirstTripleIndirectIndex * (long)ArchiveConstants.DataBlockDataLength);
+            //    if (node.DirectCluster != nextPage)
+            //        throw new Exception();
+            //    if (parse.DataClusterAddress != nextPage + 1)
+            //        throw new Exception();
+            //    if (parse.FirstIndirectBlockAddress != nextPage + 4)
+            //        throw new Exception();
+            //    if (parse.SecondIndirectBlockAddress != nextPage + 3)
+            //        throw new Exception();
+            //    if (parse.ThirdIndirectBlockAddress != nextPage + 2)
+            //        throw new Exception();
+            //    stream.WriteBlock(parse.DataClusterAddress, BlockType.DataBlock, (uint)(pd.VirtualPosition / ArchiveConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, parse.BufferPool.Data.Block);
+            //}
+            ////if (node.DirectCluster != nextPage)
+            ////    throw new Exception();
+            ////if (parse.DataClusterAddress != nextPage + 1)
+            ////    throw new Exception();
+            ////if (parse.FirstIndirectBlockAddress != nextPage + 5)
+            ////    throw new Exception();
+            ////if (parse.SecondIndirectBlockAddress != nextPage + 4)
+            ////    throw new Exception();
+            ////if (parse.ThirdIndirectBlockAddress != nextPage + 3)
+            ////    throw new Exception();
+            ////if (parse.ForthIndirectBlockAddress != nextPage + 2)
+            ////    throw new Exception();
+
+            //header.WriteToFileSystem(stream);
         }
 
 

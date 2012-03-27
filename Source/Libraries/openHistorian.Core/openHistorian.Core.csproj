@@ -75,12 +75,13 @@
     <Compile Include="ContinuousBuffer.cs" />
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="StorageSystem\BufferPool\PoolList.cs" />
-    <Compile Include="StorageSystem\File\DiskIOBufferEnhanced.cs" />
-    <Compile Include="StorageSystem\File\MemoryUnit.cs" />
+    <Compile Include="StorageSystem\File\DiskIoEnhanced.cs" />
+    <Compile Include="StorageSystem\File\IMemoryUnit.cs" />
     <Compile Include="StorageSystem\File\Test Procedures\DiskIOEnhanced2Test.cs" />
     <Compile Include="StorageSystem\File\Test Procedures\DiskIOEnhancedTest.cs" />
     <Compile Include="Unmanaged\BinaryStream.cs" />
     <Compile Include="Unmanaged\BitArray.cs" />
+    <Compile Include="Unmanaged\BufferedStream.cs" />
     <Compile Include="Unmanaged\IKeyType.cs" />
     <Compile Include="Unmanaged\ISupportsBinaryStream.cs" />
     <Compile Include="Unmanaged\MemoryStream.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Unmanaged\Specialized\TreeTypeLong.cs" />
     <Compile Include="Unmanaged\Test\BinaryStreamTest.cs" />
     <Compile Include="Unmanaged\Test\BitArray.cs" />
+    <Compile Include="Unmanaged\Test\BufferedStreamTest.cs" />
     <Compile Include="Unmanaged\Test\Memory.cs" />
     <Compile Include="Unmanaged\Test\IndexMap.cs" />
     <Compile Include="Unmanaged\Test\MemoryStreamTest.cs" />
@@ -266,7 +268,7 @@
     <Compile Include="OldCode\DataReadWrite.cs" />
     <Compile Include="Test\ArchiveTest.cs" />
     <Compile Include="Test\CompressionTest.cs" />
-    <Compile Include="StorageSystem\ISupportsBinaryStream.cs" />
+    <Compile Include="StorageSystem\ISupportsBinaryStream2.cs" />
     <Compile Include="StorageSystem\Test\BinaryStreamTest.cs" />
     <Compile Include="Test\PooledMemoryStreamTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

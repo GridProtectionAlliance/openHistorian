@@ -23,6 +23,8 @@
 
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
+using openHistorian.Core.Unmanaged;
 
 namespace openHistorian.Core.StorageSystem.File
 {
@@ -30,10 +32,11 @@ namespace openHistorian.Core.StorageSystem.File
     ///Provides a file stream that can be used to open a file and does all of the background work 
     ///required to translate virtual position data into physical ones.
     /// </summary>
-    public class ArchiveFileStream : Stream, ISupportsBinaryStream
+    unsafe public class ArchiveFileStream : Stream, ISupportsBinaryStream
     {
 
         #region [ Members ]
+
 
         /// <summary>
         /// Determines if the file stream has been disposed.
@@ -76,6 +79,10 @@ namespace openHistorian.Core.StorageSystem.File
         /// Used to convert physical addresses into virtual addresses.
         /// </summary>
         FileAddressTranslation m_addressTranslation;
+        /// <summary>
+        /// Contains the read/write buffer.
+        /// </summary>
+        IMemoryUnit m_buffer;
 
         #endregion
 
@@ -96,21 +103,12 @@ namespace openHistorian.Core.StorageSystem.File
             m_dataReader = dataReader;
             m_file = file;
             m_addressTranslation = new FileAddressTranslation(file, dataReader, m_fileAllocationTable, openReadOnly);
+            m_buffer = dataReader.GetMemoryUnit();
         }
         #endregion
 
         #region [ Properties ]
 
-        /// <summary>
-        /// The buffer that contains the most recent copy of a data block.
-        /// </summary>
-        IndexBufferPool.Buffer Buffer
-        {
-            get
-            {
-                return m_addressTranslation.DataBuffer;
-            }
-        }
         /// <summary>
         /// Returns the file that was used to make this stream.
         /// </summary>
@@ -222,8 +220,7 @@ namespace openHistorian.Core.StorageSystem.File
                 uint indexValue = (uint)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
                 uint fileIdNumber = m_file.FileIdNumber;
                 uint snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
-                m_dataReader.WriteBlock(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber, Buffer.Block);
-                Buffer.Address = m_positionBlock.PhysicalBlockIndex;
+                m_dataReader.WriteBlock(BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber, m_buffer);
                 m_isBlockDirty = false;
             }
         }
@@ -243,10 +240,9 @@ namespace openHistorian.Core.StorageSystem.File
                     uint fileIdNumber = m_file.FileIdNumber;
                     uint snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
 
-                    if (Buffer.Address != m_positionBlock.PhysicalBlockIndex)
+                    if (!m_buffer.IsValid || m_buffer.BlockIndex != m_positionBlock.PhysicalBlockIndex)
                     {
-                        IoReadState readState = m_dataReader.ReadBlock(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber, Buffer.Block);
-                        Buffer.Address = m_positionBlock.PhysicalBlockIndex;
+                        IoReadState readState = m_dataReader.AquireBlockForRead(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber, m_buffer);
                         if (readState != IoReadState.Valid)
                             throw new Exception("Error Reading File " + readState.ToString());
                     }
@@ -263,7 +259,7 @@ namespace openHistorian.Core.StorageSystem.File
         /// </summary>
         private void PrepareBlockForWrite()
         {
-            if (!m_positionBlock.Containts(m_position) || m_positionBlock.PhysicalBlockIndex < m_newBlocksStartAtThisAddress)
+            if (!m_positionBlock.Containts(m_position) || m_positionBlock.PhysicalBlockIndex < m_newBlocksStartAtThisAddress || !m_buffer.IsValid || m_buffer.IsReadOnly)
             {
                 Flush();
                 m_positionBlock = m_addressTranslation.VirtualToShadowPagePhysical(m_position);
@@ -272,12 +268,12 @@ namespace openHistorian.Core.StorageSystem.File
                     uint indexValue = (uint)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
                     uint featureSequenceNumber = m_file.FileIdNumber;
                     uint revisionSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
-                    if (Buffer.Address != m_positionBlock.PhysicalBlockIndex)
+                    if (!m_buffer.IsValid || m_buffer.IsReadOnly || m_buffer.BlockIndex != m_positionBlock.PhysicalBlockIndex)
                     {
-                        IoReadState readState = m_dataReader.ReadBlock(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber, Buffer.Block);
-                        Buffer.Address = m_positionBlock.PhysicalBlockIndex;
-                        if (readState != IoReadState.Valid)
-                            throw new Exception("Error Reading File " + readState.ToString());
+                        m_dataReader.AquireBlockForWrite(m_positionBlock.PhysicalBlockIndex, m_buffer);
+                        //IoReadState readState = m_dataReader.AquireBlockForWrite(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber, m_buffer);
+                        //if (readState != IoReadState.Valid)
+                        //    throw new Exception("Error Reading File " + readState.ToString());
                     }
                 }
                 else
@@ -299,7 +295,7 @@ namespace openHistorian.Core.StorageSystem.File
             long availableLength = m_positionBlock.ValidLength(m_position);
 
             // determine if there is enough bytes in the block to read the entire block
-            int value = Buffer.Block[m_positionBlock.Offset(m_position)];
+            int value = m_buffer.Pointer[m_positionBlock.Offset(m_position)];
             m_position += 1;
             return value;
         }
@@ -320,12 +316,14 @@ namespace openHistorian.Core.StorageSystem.File
             // determine if there is enough bytes in the block to read the entire block
             if (availableLength >= count)
             {
-                Array.Copy(Buffer.Block, m_positionBlock.Offset(m_position), buffer, offset, count);
+                Marshal.Copy((IntPtr)m_buffer.Pointer + m_positionBlock.Offset(m_position), buffer, offset, count);
+                //Array.Copy(m_buffer.Block, m_positionBlock.Offset(m_position), buffer, offset, count);
                 m_position += count;
             }
             else
             {
-                Array.Copy(Buffer.Block, m_positionBlock.Offset(m_position), buffer, offset, availableLength);
+                Marshal.Copy((IntPtr)m_buffer.Pointer + m_positionBlock.Offset(m_position), buffer, offset, (int)availableLength);
+                //Array.Copy(m_buffer.Block, m_positionBlock.Offset(m_position), buffer, offset, availableLength);
                 m_position += availableLength;
                 Read(buffer, offset + (int)availableLength, count - (int)availableLength);
             }
@@ -376,7 +374,7 @@ namespace openHistorian.Core.StorageSystem.File
             PrepareBlockForWrite();
             m_isBlockDirty = true;
 
-            Buffer.Block[m_positionBlock.Offset(m_position)] = value;
+            m_buffer.Pointer[m_positionBlock.Offset(m_position)] = value;
             m_position++;
         }
 
@@ -392,7 +390,7 @@ namespace openHistorian.Core.StorageSystem.File
             Write(data, start, count);
         }
 
-        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out byte[] buffer, out int firstIndex, out int lastIndex, out int curentPosition)
+        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out IntPtr bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex)
         {
             if (isWriting && IsReadOnly)
                 throw new Exception("File is read only");
@@ -402,8 +400,8 @@ namespace openHistorian.Core.StorageSystem.File
                 m_isBlockDirty = true;
             firstIndex = 0;
             lastIndex = (int)m_positionBlock.Length - 1;
-            curentPosition = m_positionBlock.Offset(m_position);
-            buffer = Buffer.Block;
+            currentIndex = m_positionBlock.Offset(m_position);
+            bufferPointer = (IntPtr)m_buffer.Pointer;
         }
 
         /// <summary>
@@ -423,12 +421,14 @@ namespace openHistorian.Core.StorageSystem.File
             // determine if there is enough bytes in the block to read the entire block
             if (availableLength >= count)
             {
-                Array.Copy(buffer, offset, Buffer.Block, m_positionBlock.Offset(m_position), count);
+                Marshal.Copy(buffer, offset, (IntPtr)m_buffer.Pointer + m_positionBlock.Offset(m_position), count);
+                //Array.Copy(buffer, offset, m_buffer.Block, m_positionBlock.Offset(m_position), count);
                 m_position += count;
             }
             else
             {
-                Array.Copy(buffer, offset, Buffer.Block, m_positionBlock.Offset(m_position), availableLength);
+                Marshal.Copy(buffer, offset, (IntPtr)m_buffer.Pointer + m_positionBlock.Offset(m_position), (int)availableLength);
+                //Array.Copy(buffer, offset, m_buffer.Block, m_positionBlock.Offset(m_position), availableLength);
                 m_position += availableLength;
                 Write(buffer, offset + (int)availableLength, count - (int)availableLength);
             }

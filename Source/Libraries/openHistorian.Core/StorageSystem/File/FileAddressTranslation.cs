@@ -74,17 +74,6 @@ namespace openHistorian.Core.StorageSystem.File
         #region [ Properties ]
 
         /// <summary>
-        /// Contains the buffer that should be used for realtime data reads.
-        /// </summary>
-        internal IndexBufferPool.Buffer DataBuffer
-        {
-            get
-            {
-                return m_parser.BufferPool.Data;
-            }
-        }
-
-        /// <summary>
         /// Determines if the class was opened in read only mode.
         /// </summary>
         public bool IsReadOnly

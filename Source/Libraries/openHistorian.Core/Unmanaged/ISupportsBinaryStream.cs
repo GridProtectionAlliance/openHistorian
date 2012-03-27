@@ -21,6 +21,8 @@
 //
 //******************************************************************************************************
 
+using System;
+
 namespace openHistorian.Core.Unmanaged
 {
     /// <summary>
@@ -37,7 +39,7 @@ namespace openHistorian.Core.Unmanaged
         /// <param name="firstIndex">the first valid index in the buffer</param>
         /// <param name="lastIndex">the last valid index in the buffer</param>
         /// <param name="currentIndex">the index of the current position</param>
-        void GetCurrentBlock(long position, bool isWriting, out long bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex);
+        void GetCurrentBlock(long position, bool isWriting, out IntPtr bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex);
         /// <summary>
         /// Reads data from the underlying stream. Advancing the current position of the stream.
         /// </summary>

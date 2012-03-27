@@ -29,7 +29,7 @@ namespace openHistorian.Core.StorageSystem.File
     /// This class provides passthrough properties for the <see cref="IndexMapper"/> class as well follows the directions
     /// of the Index Mapper to find the data cluster that contains the point in question.
     /// </summary>
-    internal class IndexParser
+    unsafe internal class IndexParser
     {
 
         #region [ Members ]
@@ -97,7 +97,7 @@ namespace openHistorian.Core.StorageSystem.File
             m_dataReader = dataReader;
             m_mapping = new IndexMapper();
             m_file = file;
-            m_bufferPool = new IndexBufferPool();
+            m_bufferPool = new IndexBufferPool(dataReader);
             //m_TempBlockBuffer = new byte[ArchiveConstants.BlockSize];
         }
         #endregion
@@ -431,32 +431,32 @@ namespace openHistorian.Core.StorageSystem.File
         /// <param name="indexIndirectNumber">the value 1-4 which tell what indirect block this is</param>
         /// <param name="blockBaseIndex">the lowest virtual address that can be referenced from this indirect block</param>
         /// <returns></returns>
-        private uint GetBlockIndexValue(IndexBufferPool.Buffer buffer, uint blockIndex, int offset, byte indexIndirectNumber, uint blockBaseIndex)
+        private uint GetBlockIndexValue(IMemoryUnit buffer, uint blockIndex, int offset, byte indexIndirectNumber, uint blockBaseIndex)
         {
             if (blockIndex == 0)
                 return 0;
             ReadBlockCheckForErrors(buffer, blockIndex, indexIndirectNumber, blockBaseIndex);
-            return BitConverter.ToUInt32(buffer.Block, offset);
+            return *(uint*)(buffer.Pointer + offset);
         }
 
         /// <summary>
         /// This function reads a block from the file and checks to make sure it is the block that was expected to be read.
         /// Errors are thrown if any exceptions are encountered.
         /// </summary>
+        /// <param name="buffer">the buffer to use to read data</param>
         /// <param name="blockIndex">the index of the block to read</param>
         /// <param name="indexIndirectNumber">the indirect page number</param>
         /// <param name="indexBaseIndex">the base address of this block</param>
-        private void ReadBlockCheckForErrors(IndexBufferPool.Buffer buffer, uint blockIndex, byte indexIndirectNumber, uint indexBaseIndex)
+        private void ReadBlockCheckForErrors(IMemoryUnit buffer, uint blockIndex, byte indexIndirectNumber, uint indexBaseIndex)
         {
-            if (buffer.Address != blockIndex)
+            if (!buffer.IsValid || buffer.BlockIndex != blockIndex)
             {
-                IoReadState readState = m_dataReader.ReadBlock(blockIndex, BlockType.IndexIndirect, indexBaseIndex, m_file.FileIdNumber, m_snapshotSequenceNumber, buffer.Block);
-                buffer.Address = blockIndex;
+                IoReadState readState = m_dataReader.AquireBlockForRead(blockIndex, BlockType.IndexIndirect, indexBaseIndex, m_file.FileIdNumber, m_snapshotSequenceNumber, buffer);
 
                 if (readState != IoReadState.Valid)
                     throw new Exception("Error Reading File " + readState.ToString());
             }
-            if (buffer.Block[ArchiveConstants.BlockSize - 22] != (byte)indexIndirectNumber)
+            if (buffer.Pointer[ArchiveConstants.BlockSize - 22] != indexIndirectNumber)
                 throw new Exception("The redirect value of this page is incorrect");
         }
         #endregion

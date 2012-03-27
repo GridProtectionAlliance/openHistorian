@@ -52,7 +52,7 @@ namespace openHistorian.Core.StorageSystem.File
             header.CreateNewFile(Guid.NewGuid());
 
             ArchiveFileStream ds = new ArchiveFileStream(stream, node, header, false);
-            BinaryStreamTest.Test(ds);
+            Unmanaged.BinaryStreamTest.Test(ds);
         }
 
         static void TestReadAndWrites(DiskIoEnhanced stream)

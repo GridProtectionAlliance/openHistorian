@@ -34,6 +34,36 @@ namespace openHistorian.Core.StorageSystem.File
         internal static void Test()
         {
             TestAllReadStates();
+            TestNewMethods();
+        }
+        unsafe static void TestNewMethods()
+        {
+            DiskIoEnhanced disk = new DiskIoEnhanced();
+            IMemoryUnit buffer = disk.GetMemoryUnit();
+            if (disk.AquireBlockForRead(1, BlockType.DataBlock, 1, 2, 3, buffer) != IoReadState.ReadPastThenEndOfTheFile)
+                throw new Exception("Outside Bounds");
+            disk.AquireBlockForWrite(1, buffer);
+
+            *(long*)buffer.Pointer = 23425;
+            *(long*)(buffer.Pointer + 20) = 23425;
+            disk.WriteBlock(BlockType.DataBlock, 1, 2, 3, buffer);
+
+            byte[] data = new byte[4096];
+
+            if (disk.AquireBlockForRead(1, BlockType.DataBlock, 1, 2, 3, buffer) != IoReadState.Valid)
+                throw new Exception();
+
+            if (disk.ReadBlock(1, BlockType.DataBlock, 1, 2, 3, data) != IoReadState.Valid)
+                throw new Exception();
+
+
+            for (int x = 0; x<ArchiveConstants.BlockSize; x++)
+            {
+                if (data[x] != buffer.Pointer[x])
+                    throw new Exception();
+            }
+            buffer.Dispose();
+
         }
         static void TestAllReadStates()
         {
@@ -57,7 +87,7 @@ namespace openHistorian.Core.StorageSystem.File
             stream.m_stream.Read(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
             tmp[0] = (byte)(tmp[0] + 1);
             stream.m_stream.Write(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
-           
+
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
             if (readState != IoReadState.ChecksumInvalid)
                 throw new Exception();

@@ -31,74 +31,205 @@ namespace openHistorian.Core.StorageSystem.File
     /// </summary>
     unsafe internal class DiskIoEnhanced : IDisposable
     {
-        int m_AllocatedBlocksCount;
+
+        /// <summary>
+        /// Contains basic information about a page of memory
+        /// </summary>
+        private class MemoryUnit : IMemoryUnit
+        {
+            DiskIoEnhanced m_diskIo;
+            bool m_isValid;
+            bool m_isReadOnly;
+            int m_length;
+            uint m_blockAddress;
+            public byte* m_pointer;
+
+            public bool IsValid
+            {
+                get
+                {
+                    return m_isValid;
+                }
+                set
+                {
+                    m_isValid = value;
+                }
+            }
+            public bool IsReadOnly
+            {
+                get
+                {
+                    if (!m_isValid)
+                        throw new Exception("Value is invalid");
+                    return m_isReadOnly;
+                }
+                set
+                {
+                    m_isReadOnly = value;
+                }
+            }
+            public int Length
+            {
+                get
+                {
+                    if (!m_isValid)
+                        throw new Exception("Value is invalid");
+                    return m_length;
+                }
+                set
+                {
+                    m_length = value;
+                }
+            }
+            public uint BlockIndex
+            {
+                get
+                {
+                    if (!m_isValid)
+                        throw new Exception("Value is invalid");
+                    return m_blockAddress;
+                }
+                set
+                {
+                    m_blockAddress = value;
+                }
+            }
+            public byte* Pointer
+            {
+                get
+                {
+                    if (!m_isValid)
+                        throw new Exception("Value is invalid");
+                    return m_pointer;
+                }
+                set
+                {
+                    m_pointer = value;
+                }
+            }
+
+            public MemoryUnit(DiskIoEnhanced diskIo)
+            {
+                m_diskIo = diskIo;
+                m_isValid = false;
+                m_diskIo.RegisterBlock(this);
+            }
+
+            ~MemoryUnit()
+            {
+                m_diskIo.UnregisterBlock(this);
+                //Debugger.Break();
+                //Debug.Assert(false, "Memory object failed to properly be disposed of.");
+            }
+
+            public void Dispose()
+            {
+                m_diskIo.UnregisterBlock(this);
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        int m_allocatedBlocksCount;
 
         protected MemoryStream m_stream;
-        Unmanaged.ISupportsBinaryStream m_stream2;
+        ISupportsBinaryStream m_stream2;
 
         public DiskIoEnhanced()
         {
-            m_AllocatedBlocksCount = 0;
+            m_allocatedBlocksCount = 0;
             m_stream = new MemoryStream();
             m_stream2 = m_stream;
         }
 
-        //public void ReleaseBlock(MemoryUnit page, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber)
-        //{
-        //    GC.SuppressFinalize(page);
-        //}
+        public IMemoryUnit GetMemoryUnit()
+        {
+            return new MemoryUnit(this);
+        }
+        void RegisterBlock(MemoryUnit page)
+        {
+            //Do Nothing
+        }
+        void UnregisterBlock(MemoryUnit page)
+        {
+            //Do Nothing
+        }
 
-        //public IoReadState AquireBlockForRead(uint blockIndex, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, out MemoryUnit buffer)
-        //{
-        //    buffer = null;
+        /// <summary>
+        /// Writes a specific block of data to the disk system.
+        /// </summary>
+        /// <param name="blockType">the type of this block.</param>
+        /// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
+        /// <param name="fileIdNumber">the file number this block is associated with</param>
+        /// <param name="snapshotSequenceNumber">the file system sequence number of this write</param>
+        /// <param name="buffer">the data to write. It must be equal to <see cref="ArchiveConstants.BlockSize"/>.</param>
+        public void WriteBlock(BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, IMemoryUnit buffer)
+        {
+            MemoryUnit data = (MemoryUnit)buffer;
+            if (!data.IsValid)
+                throw new Exception("Buffer is not defined");
+            if (data.IsReadOnly)
+                throw new Exception("Buffer was opened as read only");
+            //ToDo: Consider reloading the origional data if a buffer was modified when it wasn't supposed to be
+            //This is actually a pretty serious bug.
 
-        //    long ptr;
-        //    int first, last, cur;
+            if (IsReadOnly)
+                throw new Exception("File system is read only");
 
+            //If the file is not large enought to set this block, autogrow the file.
+            if ((long)(data.BlockIndex + 1) * ArchiveConstants.BlockSize > FileSize)
+            {
+                SetFileLength(0, data.BlockIndex + 1);
+            }
 
-        //    m_stream2.GetCurrentBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out first, out last, out cur);
+            WriteFooterData(buffer.Pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
+        }
 
+        public void AquireBlockForWrite(uint blockIndex, IMemoryUnit buffer)
+        {
+            if (IsReadOnly)
+                throw new Exception("File system is read only");
+            MemoryUnit data = (MemoryUnit)buffer;
+            data.IsValid = false;
+            ReadForWrite(blockIndex, data);
+            data.IsValid = true;
+        }
+        public IoReadState AquireBlockForWrite(uint blockIndex, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, IMemoryUnit buffer)
+        {
+            MemoryUnit data = (MemoryUnit)buffer;
+            data.IsValid = false;
+            IoReadState readState = ReadBlock(blockIndex, data);
 
-        //    byte* data = (byte*)(ptr + cur);
+            if (readState != IoReadState.Valid)
+                return readState;
 
-        //    if (last + 1 - cur < ArchiveConstants.BlockSize)
-        //        throw new Exception("memory is not lining up on page boundries");
+            readState = IsFooterValid(data.m_pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
 
-        //    IoReadState readState = ReadBlock(blockIndex, data);
+            if (readState != IoReadState.Valid)
+                return readState;
+            data.IsReadOnly = false;
+            data.IsValid = true;
+            return readState;
+        }
 
-        //    if (readState != IoReadState.Valid)
-        //        return readState;
+        public IoReadState AquireBlockForRead(uint blockIndex, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, IMemoryUnit buffer)
+        {
+            MemoryUnit data = (MemoryUnit)buffer;
+            data.IsValid = false;
+            IoReadState readState = ReadBlock(blockIndex, data);
 
-        //    readState = IsFooterValid(data, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
+            if (readState != IoReadState.Valid)
+                return readState;
 
-        //    if (readState != IoReadState.Valid)
-        //        return readState;
+            readState = IsFooterValid(data.m_pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
 
-        //    buffer = new MemoryUnit(blockIndex, (byte*)(ptr + cur), ArchiveConstants.BlockSize);
+            if (readState != IoReadState.Valid)
+                return readState;
 
-        //    return readState;
+            data.IsValid = true;
 
-        //    //if (IsReadOnly)
-        //    //    throw new Exception("File system is read only");
+            return readState;
+        }
 
-        //    ////If the file is not large enought to set this block, autogrow the file.
-        //    //if ((long)(blockIndex + 1) * ArchiveConstants.BlockSize > FileSize)
-        //    //{
-        //    //    SetFileLength(0, blockIndex + 1);
-        //    //}
-
-        //    //WriteFooterData(data, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
-
-        //    //WriteBlock(blockIndex, data);
-
-        //    //if (data.Length != ArchiveConstants.BlockSize)
-        //    //    throw new Exception("All page IOs must be performed one page at a time.");
-        //    //if ((long)(blockIndex + 1) * ArchiveConstants.BlockSize > FileSize)
-        //    //    return IoReadState.ReadPastThenEndOfTheFile;
-
-        //}
-
-        
         #region [ Abstract Methods/Properties ]
 
         /// <summary>
@@ -120,8 +251,8 @@ namespace openHistorian.Core.StorageSystem.File
         {
             m_stream.Position = requestedSize - 1;
             m_stream.Read(requestedSize - 1, new byte[1], 0, 1);
-            m_AllocatedBlocksCount = (int)(requestedSize / ArchiveConstants.BlockSize);
-            return m_AllocatedBlocksCount * ArchiveConstants.BlockSize;
+            m_allocatedBlocksCount = (int)(requestedSize / ArchiveConstants.BlockSize);
+            return m_allocatedBlocksCount * ArchiveConstants.BlockSize;
         }
 
         /// <summary>
@@ -132,11 +263,67 @@ namespace openHistorian.Core.StorageSystem.File
         /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
         protected IoReadState ReadBlock(uint blockIndex, byte[] data)
         {
-            if (blockIndex > m_AllocatedBlocksCount)
+            if (blockIndex > m_allocatedBlocksCount)
                 return IoReadState.ReadPastThenEndOfTheFile;
 
             m_stream.Read(blockIndex * ArchiveConstants.BlockSize, data, 0, data.Length);
             return IoReadState.Valid;
+        }
+
+        /// <summary>
+        /// Tries to read data from the following file
+        /// </summary>
+        /// <param name="blockIndex">the block where to write the data</param>
+        /// <param name="memory">the data to write</param>
+        /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
+        IoReadState ReadBlock(uint blockIndex, MemoryUnit memory)
+        {
+
+            if (blockIndex > m_allocatedBlocksCount)
+                return IoReadState.ReadPastThenEndOfTheFile;
+
+            IntPtr ptr;
+            int first, last, cur;
+
+            m_stream2.GetCurrentBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out first, out last, out cur);
+
+            if (last + 1 - cur < ArchiveConstants.BlockSize)
+                throw new Exception("memory is not lining up on page boundries");
+
+            byte* data = (byte*)(ptr + cur);
+
+            memory.BlockIndex = blockIndex;
+            memory.Pointer = data;
+            memory.Length = ArchiveConstants.BlockSize;
+            memory.IsReadOnly = true;
+
+            return IoReadState.Valid;
+        }
+
+        /// <summary>
+        /// Tries to read data from the following file
+        /// </summary>
+        /// <param name="blockIndex">the block where to write the data</param>
+        /// <param name="memory">the data to write</param>
+        /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
+        void ReadForWrite(uint blockIndex, MemoryUnit memory)
+        {
+
+            IntPtr ptr;
+            int first, last, cur;
+
+            m_stream2.GetCurrentBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out first, out last, out cur);
+
+            if (last + 1 - cur < ArchiveConstants.BlockSize)
+                throw new Exception("memory is not lining up on page boundries");
+
+            byte* data = (byte*)(ptr + cur);
+
+
+            memory.BlockIndex = blockIndex;
+            memory.Pointer = data;
+            memory.Length = ArchiveConstants.BlockSize;
+            memory.IsReadOnly = false;
         }
 
         /// <summary>
@@ -155,7 +342,7 @@ namespace openHistorian.Core.StorageSystem.File
         {
             get
             {
-                return m_AllocatedBlocksCount*(long)ArchiveConstants.BlockSize;
+                return m_allocatedBlocksCount * (long)ArchiveConstants.BlockSize;
             }
         }
 
@@ -180,7 +367,7 @@ namespace openHistorian.Core.StorageSystem.File
         static long ComputeChecksum(byte* data)
         {
             ChecksumCount += 1;
-            // return 0;
+             return 0;
 
             long a = 1; //Maximum size for A is 20 bits in length
             long b = 0; //Maximum size for B is 31 bits in length

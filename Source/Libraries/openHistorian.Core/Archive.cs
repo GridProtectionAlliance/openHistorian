@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using openHistorian.Core.StorageSystem;
 using openHistorian.Core.StorageSystem.File;
-using openHistorian.Core.StorageSystem.Specialized;
-using openHistorian.Core.StorageSystem.Specialized.TimeKeyPair;
+using openHistorian.Core.Unmanaged.Specialized;
+using openHistorian.Core.Unmanaged.Specialized.TimeKeyPair;
 
 namespace openHistorian.Core
 {
@@ -13,7 +13,7 @@ namespace openHistorian.Core
         VirtualFileSystem m_fileSystem;
         TransactionalEdit m_currentTransaction;
         ArchiveFileStream m_stream;
-        BinaryStream m_binaryStream;
+        Unmanaged.BinaryStream m_binaryStream;
         BPlusTree<KeyType, TreeTypeIntFloat> m_tree;
 
         //public Archive(string file)
@@ -49,7 +49,7 @@ namespace openHistorian.Core
             m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();
             m_currentTransaction = m_fileSystem.BeginEdit();
             m_stream = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271d}"), 1);
-            m_binaryStream = new BinaryStream(m_stream);
+            m_binaryStream = new Unmanaged.BinaryStream(m_stream);
             m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream, ArchiveConstants.DataBlockDataLength);
         }
 

@@ -122,7 +122,7 @@ namespace openHistorian.Core.StorageSystem
 
         }
 
-        public unsafe static void Test(ISupportsBinaryStream stream)
+        public unsafe static void Test(ISupportsBinaryStream2 stream)
         {
             BinaryStream bs = new BinaryStream(stream);
             Random rand = new Random();

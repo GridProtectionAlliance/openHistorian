@@ -26,7 +26,7 @@ namespace openHistorian.Core.StorageSystem
     /// <summary>
     /// Implementing this interface allows a binary stream to be attached to a buffer.
     /// </summary>
-    public interface ISupportsBinaryStream
+    public interface ISupportsBinaryStream2
     {
         /// <summary>
         /// Returns an underlying buffer that can be used to read/write data from the stream.

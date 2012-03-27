@@ -19,10 +19,10 @@ namespace openHistorian.Core.StorageSystem
         //GCHandle handle;
         //byte* f_buffer;
         byte[] m_buffer;
-        ISupportsBinaryStream m_stream;
+        ISupportsBinaryStream2 m_stream;
         byte[] m_temp;
 
-        public BinaryStream(ISupportsBinaryStream stream)
+        public BinaryStream(ISupportsBinaryStream2 stream)
         {
             m_temp = new byte[16];
             m_stream = stream;

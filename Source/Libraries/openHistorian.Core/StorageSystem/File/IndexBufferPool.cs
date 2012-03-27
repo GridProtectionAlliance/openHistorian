@@ -29,28 +29,16 @@ namespace openHistorian.Core.StorageSystem.File
     /// </summary>
     internal class IndexBufferPool
     {
-        public Buffer FirstIndirect;
-        public Buffer SecondIndirect;
-        public Buffer ThirdIndirect;
-        public Buffer ForthIndirect;
-        public Buffer Data;
-        public IndexBufferPool()
+        public IMemoryUnit FirstIndirect;
+        public IMemoryUnit SecondIndirect;
+        public IMemoryUnit ThirdIndirect;
+        public IMemoryUnit ForthIndirect;
+        public IndexBufferPool(DiskIoEnhanced diskIo)
         {
-            FirstIndirect = new Buffer();
-            SecondIndirect = new Buffer();
-            ThirdIndirect = new Buffer();
-            ForthIndirect = new Buffer();
-            Data = new Buffer();
-        }
-        internal class Buffer
-        {
-            public byte[] Block;
-            public uint Address;
-            internal Buffer()
-            {
-                Block = new byte[ArchiveConstants.BlockSize];
-                Address = 0;
-            }
+            FirstIndirect = diskIo.GetMemoryUnit();
+            SecondIndirect = diskIo.GetMemoryUnit();
+            ThirdIndirect = diskIo.GetMemoryUnit();
+            ForthIndirect = diskIo.GetMemoryUnit();
         }
     }
 }

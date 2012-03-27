@@ -12,7 +12,7 @@ namespace openHistorian.Core
     /// making it superior to System.IO.MemorySteam.
     /// It also provides binary read and write operations.
     /// </summary>
-    public class PooledMemoryStream : ISupportsBinaryStream
+    public class PooledMemoryStream : ISupportsBinaryStream2
     {
         /// <summary>
         /// The number of bits in the page size.
@@ -177,7 +177,7 @@ namespace openHistorian.Core
         /// Implementation of ISupportsBinaryStream to speed up writing to the stream.
         /// </summary>
         /// <returns></returns>
-        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out byte[] buffer, out int firstIndex, out int lastIndex, out int currentIndex)
+        void ISupportsBinaryStream2.GetCurrentBlock(long position, bool isWriting, out byte[] buffer, out int firstIndex, out int lastIndex, out int currentIndex)
         {
             firstIndex = 0;
             lastIndex = Length - 1;

@@ -191,12 +191,12 @@ namespace openHistorian.Core.Unmanaged
         /// Implementation of ISupportsBinaryStream to speed up writing to the stream.
         /// </summary>
         /// <returns></returns>
-        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out long bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex)
+        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out IntPtr bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex)
         {
             firstIndex = 0;
             lastIndex = Length - 1;
             currentIndex = CalculateOffset(position);
-            bufferPointer = (long)GetPage(position);
+            bufferPointer = (IntPtr)GetPage(position);
         }
 
     }
