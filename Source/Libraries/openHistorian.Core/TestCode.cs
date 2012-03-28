@@ -14,17 +14,21 @@ namespace openHistorian.Core
             Test2();
             System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.Batch;
 
-            Unmanaged.BitArrayTest.Test();
-            Unmanaged.MemoryTest.Test();
+            //Unmanaged.BitArrayTest.Test();
+            //Unmanaged.MemoryTest.Test();
 
-            Unmanaged.BufferPoolTest.Test();
+            //Unmanaged.BufferPoolTest.Test();
 
-            Unmanaged.MemoryStreamTest.Test();
-            Unmanaged.BinaryStreamTest.Test();
-            Unmanaged.BufferedStreamTest.Test();
+            //Unmanaged.MemoryStreamTest.Test();
+            //Unmanaged.BinaryStreamTest.Test();
+            //Unmanaged.BufferedStreamTest.Test();
+
+
             //Unmanaged.BufferedStreamTest.BenchmarkTest();
-            
+
             //Unmanaged.Specialized.NodeTest.Test();
+            //Unmanaged.Generic.NodeTest.Test();
+            Unmanaged.Generic.NodeTest2.Test();
 
             //StorageSystem.File.DiskIOEnhanced2Test.Test();
 
@@ -42,7 +46,7 @@ namespace openHistorian.Core
             //openHistorian.Core.PooledMemoryStreamTest.Test();
 
 
-            ArchiveTest.Test();
+            //ArchiveTest.Test();
 
             //openHistorian.Core.StorageSystem.BinaryStreamTest.Test();
 
