@@ -120,6 +120,7 @@ namespace openHistorian.Core.Unmanaged
             return true;
         }
 
+
         //public void PositionSet(long value)
         //{
         //    //If set outside the bounds of the current block.
@@ -150,7 +151,7 @@ namespace openHistorian.Core.Unmanaged
         /// </summary>
         /// <param name="isWriting"></param>
         /// <remarks>This is called when there is not enough bytes in the buffer to store the available data.</remarks>
-        void UpdateLocalBuffer(bool isWriting)
+        public void UpdateLocalBuffer(bool isWriting)
         {
             //if (handle.IsAllocated)
             //    handle.Free();

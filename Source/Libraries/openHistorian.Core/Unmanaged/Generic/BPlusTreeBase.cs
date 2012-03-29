@@ -29,17 +29,14 @@ namespace openHistorian.Core.Unmanaged.Generic
     /// <summary>
     /// Provides support for an in memory binary (plus) tree.  
     /// </summary>
-    /// <typeparam name="TKey">The unique key to sort on. Must implement <seealso cref="IKeyType{TKey}"/>.</typeparam>
-    /// <typeparam name="TValue">They value type to store. Must implement <seealso cref="IValueType"/>.</typeparam>
+    /// <typeparam name="TKey">The unique key to sort on.</typeparam>
+    /// <typeparam name="TValue">They value type to store.</typeparam>
     /// <remarks>Think of this class as a <see cref="SortedList{TKey,TValue}"/> 
     /// for sorting thousands, millions, billions, or more items.  B+ trees do not suffer the same
     /// performance hit that a <see cref="SortedList{TKey,TValue}"/> does. </remarks>
     public abstract partial class BPlusTreeBase<TKey, TValue>
     {
         #region [ Members ]
-
-        TValue m_tmpValue;
-        TKey m_tmpKey;
 
         #endregion
 
@@ -49,7 +46,7 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// Opens an existing <see cref="BPlusTreeBase{TKey,TValue}"/> from the stream.
         /// </summary>
         /// <param name="stream">A dedicated stream where data can be read/written to/from.</param>
-        public BPlusTreeBase(BinaryStream stream)
+        protected BPlusTreeBase(BinaryStream stream)
         {
             Load(stream);
             Initialize();
@@ -63,7 +60,7 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// <param name="blockSize">the size of one block.  This should exactly match the
         /// amount of data space available in the underlying data object. BPlus trees get their 
         /// performance benefit because there is fewer I/O's required to find and insert blocks.</param>
-        public BPlusTreeBase(BinaryStream stream, int blockSize)
+        protected BPlusTreeBase(BinaryStream stream, int blockSize)
         {
             m_stream = stream;
             m_blockSize = blockSize;
@@ -74,22 +71,21 @@ namespace openHistorian.Core.Unmanaged.Generic
             m_rootIndexLevel = 0;
             Save(stream);
             Load(stream);
-
         }
 
         #endregion
 
         #region [Abstract Methods]
 
-        public abstract void SaveValue(TValue value, BinaryStream stream);
-        public abstract TValue LoadValue(BinaryStream stream);
-
-        public abstract int SizeOfValue();
-        public abstract int SizeOfKey();
-        public abstract void SaveKey(TKey value, BinaryStream stream);
-        public abstract TKey LoadKey(BinaryStream stream);
-        public abstract int CompareKeys(TKey first, TKey last);
-        public abstract int CompareKeys(TKey first, BinaryStream stream);
+        protected abstract void SaveValue(TValue value, BinaryStream stream);
+        protected abstract TValue LoadValue(BinaryStream stream);
+        protected abstract int SizeOfValue();
+        protected abstract int SizeOfKey();
+        protected abstract void SaveKey(TKey value, BinaryStream stream);
+        protected abstract TKey LoadKey(BinaryStream stream);
+        protected abstract int CompareKeys(TKey first, TKey last);
+        protected abstract int CompareKeys(TKey first, BinaryStream stream);
+       
         #endregion
 
         #region [ Properties ]
@@ -120,10 +116,9 @@ namespace openHistorian.Core.Unmanaged.Generic
                 InternalNodeSetCurrentNode(levelCount, nodeIndex, true);
                 nodeIndex = InternalNodeGetNodeIndex(key);
             }
-            m_tmpValue = value;
 
             LeafNodeSetCurrentNode(nodeIndex, true);
-            if (LeafNodeInsert(key))
+            if (LeafNodeInsert(key,value))
                 return;
             throw new Exception("Key already exists");
         }
@@ -151,35 +146,25 @@ namespace openHistorian.Core.Unmanaged.Generic
                 InternalNodeSetCurrentNode(levelCount, nodeIndex, false);
                 nodeIndex = InternalNodeGetNodeIndex(key);
             }
-
+            TValue value;
             LeafNodeSetCurrentNode(nodeIndex, false);
-            if (LeafNodeGetValue(key))
-                return m_tmpValue;
+            if (LeafNodeGetValue(key, out value))
+                return value;
             throw new Exception("Key Not Found");
         }
 
-        //public DataReader<TKey, TValue> ExecuteScan(TKey startKey, TKey stopKey)
-        //{
-        //    uint nodeIndex = m_rootIndexAddress;
-        //    for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
-        //    {
-        //        InternalNodeSetCurrentNode(levelCount, nodeIndex, false);
-        //        InternalNodeGetNodeIndex(startKey);
-        //    }
-
-        //    LeafNodeSetCurrentNode(nodeIndex, false);
-        //    LeafNodePrepareForTableScan(startKey, stopKey);
-        //    return null;//new DataReader<TKey, TValue>(null, m_stream);
-        //}
-
-        void ReadValueAtCurrentStreamPosition()
+        public DataReader ExecuteScan(TKey startKey, TKey stopKey)
         {
-            m_tmpValue = LoadValue(m_stream);
-        }
+            uint nodeIndex = m_rootIndexAddress;
+            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            {
+                InternalNodeSetCurrentNode(levelCount, nodeIndex, false);
+                nodeIndex = InternalNodeGetNodeIndex(startKey);
+            }
 
-        void WriteValueToCurrentStreamPosition()
-        {
-            SaveValue(m_tmpValue, m_stream);
+            LeafNodeSetCurrentNode(nodeIndex, false);
+            LeafNodePrepareForTableScan(startKey, stopKey);
+            return new DataReader(this, m_stream);
         }
 
         void NodeWasSplit(byte level, uint currentIndex, TKey middleKey, uint newIndex)

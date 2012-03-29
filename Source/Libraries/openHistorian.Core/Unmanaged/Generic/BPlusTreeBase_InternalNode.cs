@@ -34,6 +34,7 @@ namespace openHistorian.Core.Unmanaged.Generic
         {
             m_internalNodeCurrentNode = nodeIndex;
             m_stream.Position = nodeIndex * m_blockSize;
+            m_stream.UpdateLocalBuffer(isForWriting);
 
             m_stream.ReadByte(); //node level
             m_internalNodeChildCount = m_stream.ReadInt16();
@@ -43,8 +44,10 @@ namespace openHistorian.Core.Unmanaged.Generic
 
         public void InternalNodeSetCurrentNode(byte nodeLevel, uint nodeIndex, bool isForWriting)
         {
+            
             m_internalNodeCurrentNode = nodeIndex;
             m_stream.Position = nodeIndex * m_blockSize;
+            m_stream.UpdateLocalBuffer(isForWriting);
 
             if (m_stream.ReadByte() != nodeLevel)
                 throw new Exception("The current node is not a leaf.");

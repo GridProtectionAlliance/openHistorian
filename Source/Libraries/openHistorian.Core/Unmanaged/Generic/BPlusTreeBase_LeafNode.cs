@@ -56,6 +56,7 @@ namespace openHistorian.Core.Unmanaged.Generic
         {
             m_currentNode = nodeIndex;
             m_stream.Position = nodeIndex * m_blockSize;
+            m_stream.UpdateLocalBuffer(isForWriting);
 
             if (m_stream.ReadByte() != 0)
                 throw new Exception("The current node is not a leaf.");
@@ -69,7 +70,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             m_stream.Position = m_currentNode * m_blockSize + position;
         }
 
-        void LeafNodeSplitNode(TKey key)
+        void LeafNodeSplitNode(TKey key, TValue value)
         {
             uint currentNode = m_currentNode;
             uint oldNextNode = m_nextNode;
@@ -125,12 +126,12 @@ namespace openHistorian.Core.Unmanaged.Generic
             if (LeafNodeCompareKeys(key, firstKeyInGreaterNode) > 0)
             {
                 LeafNodeSetCurrentNode(greaterNodeIndex, true);
-                LeafNodeInsert(key);
+                LeafNodeInsert(key, value);
             }
             else
             {
                 LeafNodeSetCurrentNode(currentNode, true);
-                LeafNodeInsert(key);
+                LeafNodeInsert(key, value);
             }
         }
 
@@ -171,14 +172,14 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// </summary>
         /// <param name="key"></param>
         /// <returns>True if sucessfully inserted, false if a duplicate key was detected.</returns>
-        public bool LeafNodeInsert(TKey key)
+        public bool LeafNodeInsert(TKey key, TValue value)
         {
             int offset;
             long nodePositionStart = m_currentNode * m_blockSize;
 
             if (m_childCount >= m_maximumLeafNodeChildren)
             {
-                LeafNodeSplitNode(key);
+                LeafNodeSplitNode(key,value);
                 return true;
             }
 
@@ -197,7 +198,7 @@ namespace openHistorian.Core.Unmanaged.Generic
 
             LeafNodeSetStreamOffset(offset);
             LeafNodeSaveKeyValue(key, m_stream);
-            WriteValueToCurrentStreamPosition();
+            SaveValue(value, m_stream);
 
             //save the header
             m_childCount++;
@@ -206,15 +207,16 @@ namespace openHistorian.Core.Unmanaged.Generic
             return true;
         }
 
-        public bool LeafNodeGetValue(TKey key)
+        public bool LeafNodeGetValue(TKey key, out TValue value)
         {
             int offset;
             if (LeafNodeSeekToKey(key, out offset))
             {
                 LeafNodeSetStreamOffset(offset + m_keySize);
-                ReadValueAtCurrentStreamPosition();
+                value = LoadValue(m_stream);
                 return true;
             }
+            value = default(TValue);
             return false;
         }
 

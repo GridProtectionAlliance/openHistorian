@@ -153,37 +153,66 @@ namespace openHistorian.Core.Unmanaged
 
         public static unsafe void Copy(byte* src, byte* dest, int count)
         {
-            WinApi.MoveMemory(dest, src, count);
-            return;
-            if (Math.Abs((long)src - (long)dest) < count)
+            //WinApi.MoveMemory(dest, src, count);
+            //return;
+            if (src < dest && src + count > dest) //Requires a copy right to left
             {
+                int block;
 
-            }
+                block = count >> 3;
 
-            int block;
+                long* pDest = (long*)(dest + count);
+                long* pSrc = (long*)(src + count);
 
-            block = count >> 3;
-
-            long* pDest = (long*)dest;
-            long* pSrc = (long*)src;
-
-            for (int i = 0; i < block; i++)
-            {
-                *pDest = *pSrc;
-                pDest++;
-                pSrc++;
-            }
-            dest = (byte*)pDest;
-            src = (byte*)pSrc;
-            count = count - (block << 3);
-
-            if (count > 0)
-            {
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < block; i++)
                 {
-                    *dest = *src; dest++; src++;
+                    pDest--;
+                    pSrc--;
+                    *pDest = *pSrc;
+                }
+                dest = (byte*)(pDest);
+                src = (byte*)(pSrc);
+                count = count - (block << 3);
+
+                if (count > 0)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        dest--; src--;
+                        *dest = *src;
+                    }
                 }
             }
+            else
+            {
+                int block;
+
+                block = count >> 3;
+
+                long* pDest = (long*)dest;
+                long* pSrc = (long*)src;
+
+                for (int i = 0; i < block; i++)
+                {
+                    *pDest = *pSrc;
+                    pDest++;
+                    pSrc++;
+                }
+                dest = (byte*)pDest;
+                src = (byte*)pSrc;
+                count = count - (block << 3);
+
+                if (count > 0)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        *dest = *src; dest++; src++;
+                    }
+                }
+            }
+
+
+
         }
 
         public static unsafe void Clear(byte* pointer, int length)

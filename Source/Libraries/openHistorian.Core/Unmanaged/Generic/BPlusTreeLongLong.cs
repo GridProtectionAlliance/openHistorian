@@ -16,48 +16,49 @@ namespace openHistorian.Core.Unmanaged.Generic
         {
         }
 
-        public override void SaveValue(long value, BinaryStream stream)
+        protected override void SaveValue(long value, BinaryStream stream)
         {
             stream.Write(value);
         }
 
-        public override long LoadValue(BinaryStream stream)
+        protected override long LoadValue(BinaryStream stream)
         {
             return stream.ReadInt64();
         }
 
-        public override int SizeOfValue()
+        protected override int SizeOfValue()
         {
             return 8;
         }
 
-        public override int SizeOfKey()
+        protected override int SizeOfKey()
         {
             return 8;
         }
 
-        public override void SaveKey(long value, BinaryStream stream)
+        protected override void SaveKey(long value, BinaryStream stream)
         {
             stream.Write(value);
         }
 
-        public override long LoadKey(BinaryStream stream)
+        protected override long LoadKey(BinaryStream stream)
         {
             return stream.ReadInt64();
         }
 
-        public override int CompareKeys(long first, long last)
+        protected override int CompareKeys(long first, long last)
         {
             return first.CompareTo(last);
         }
 
-        public override int CompareKeys(long first, BinaryStream stream)
+        protected override int CompareKeys(long first, BinaryStream stream)
         {
             return first.CompareTo(stream.ReadInt64());
         }
 
         unsafe protected override bool LeafNodeSeekToKey(long key, out int offset)
         {
+            int leafStructureSize = m_leafStructureSize;
             long startAddress = m_currentNode * m_blockSize + NodeHeader.Size;
             m_stream.Position = startAddress;
 
@@ -77,12 +78,12 @@ namespace openHistorian.Core.Unmanaged.Generic
             while (min <= max)
             {
                 int mid = min + (max - min >> 1);
-                pos = start + m_leafStructureSize * mid;
+                pos = start + leafStructureSize * mid;
 
                 //int tmpKey = LeafNodeCompareKeys(key, m_stream);
                 if (key == *(long*)pos)
                 {
-                    offset = NodeHeader.Size + m_leafStructureSize * mid;
+                    offset = NodeHeader.Size + leafStructureSize * mid;
                     return true;
                 }
                 if (key > *(long*)pos)
@@ -90,14 +91,13 @@ namespace openHistorian.Core.Unmanaged.Generic
                 else
                     max = mid - 1;
             }
-            offset = NodeHeader.Size + m_leafStructureSize * min;
+            offset = NodeHeader.Size + leafStructureSize * min;
             return false;
         }
 
-
-
         unsafe protected override bool InternalNodeSeekToKey(long key, out int offset)
         {
+            int internalStructureSize = m_internalNodeStructureSize;
             long startAddress = m_internalNodeCurrentNode * m_blockSize + NodeHeader.Size + sizeof(uint);
 
             m_stream.Position = startAddress;
@@ -118,12 +118,11 @@ namespace openHistorian.Core.Unmanaged.Generic
             while (min <= max)
             {
                 int mid = min + (max - min >> 1);
-                pos = start + m_internalNodeStructureSize * mid;
+                pos = start + internalStructureSize * mid;
 
-                int tmpKey = CompareKeys(key, m_stream); ;
                 if (key == *(long*)pos)
                 {
-                    offset = NodeHeader.Size + sizeof(uint) + m_internalNodeStructureSize * mid;
+                    offset = NodeHeader.Size + sizeof(uint) + internalStructureSize * mid;
                     return true;
                 }
                 if (key > *(long*)pos)
@@ -132,7 +131,7 @@ namespace openHistorian.Core.Unmanaged.Generic
                     max = mid - 1;
             }
 
-            offset = NodeHeader.Size + sizeof(uint) + m_internalNodeStructureSize * min;
+            offset = NodeHeader.Size + sizeof(uint) + internalStructureSize * min;
             return false;
         }
 

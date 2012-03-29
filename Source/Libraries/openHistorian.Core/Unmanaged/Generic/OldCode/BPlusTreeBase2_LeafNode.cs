@@ -1,64 +1,29 @@
 ﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
 
 //namespace openHistorian.Core.Unmanaged.Generic
 //{
-//    unsafe public class LeafNodeMethods<TKey>
+//    abstract partial class BPlusTreeBase
 //    {
 //        int m_keySize;
 
-//        BinaryStream m_stream;
-//        int m_blockSize;
-//        MethodCall m_writeValue;
-//        MethodCall m_readValue;
-//        AllocateNewNode m_allocateNewNode;
-//        NodeSplitRequired<TKey> m_nodeSplit;
 //        int m_maximumLeafNodeChildren;
-//        int m_leafStructureSize;
+//        protected int m_leafStructureSize;
 
-//        uint m_currentNode;
-//        short m_childCount;
+//        protected uint m_currentNode;
+//        protected short m_childCount;
 //        uint m_nextNode;
 //        uint m_previousNode;
 
 //        bool m_scanningTable;
-//        TKey m_startKey;
-//        TKey m_stopKey;
 //        int m_oldIndex;
 
-//        #region [Abstract Methods]
-//        public int LeafNodeSizeOfKey()
+//        public void LeafNodeInitialize()
 //        {
-//            return 1;
-//        }
-//        public void LeafNodeSaveKeyValue(TKey value, BinaryStream stream)
-//        {
-
-//        }
-//        public TKey LeafNodeLoadKeyValue(BinaryStream stream)
-//        {
-//            return default(TKey);
-//        }
-//        public int LeafNodeCompareKeys(TKey first, TKey last)
-//        {
-//            return 0;
-//        }
-//        public int LeafNodeCompareKeys(TKey first, BinaryStream stream)
-//        {
-//            return 0;
-//        }
-//        #endregion
-
-//        public void LeafNodeInitialize(BinaryStream stream, int blockSize, int valueSize, MethodCall writeValue, MethodCall readValue, AllocateNewNode allocateNewNode, NodeSplitRequired<TKey> nodeSplit)
-//        {
-//            TKey key = default(TKey);
-//            m_keySize = LeafNodeSizeOfKey();
-//            m_stream = stream;
-//            m_blockSize = blockSize;
-//            m_writeValue = writeValue;
-//            m_readValue = readValue;
-//            m_allocateNewNode = allocateNewNode;
-//            m_nodeSplit = nodeSplit;
-//            m_leafStructureSize = m_keySize + valueSize;
+//            m_keySize = SizeOfKey();
+//            m_leafStructureSize = m_keySize + SizeOfValue();
 //            m_maximumLeafNodeChildren = (m_blockSize - NodeHeader.Size) / (m_leafStructureSize);
 //        }
 
@@ -66,6 +31,7 @@
 //        {
 //            m_currentNode = nodeIndex;
 //            m_stream.Position = nodeIndex * m_blockSize;
+//            m_stream.UpdateLocalBuffer(isForWriting);
 
 //            if (m_stream.ReadByte() != 0)
 //                throw new Exception("The current node is not a leaf.");
@@ -79,11 +45,14 @@
 //            m_stream.Position = m_currentNode * m_blockSize + position;
 //        }
 
-//        void LeafNodeSplitNode(TKey key)
+//        /// <summary>
+//        /// Splits the node into two parts.
+//        /// Key2 contains the dividing key
+//        /// </summary>
+//        void LeafNodeSplitNode()
 //        {
 //            uint currentNode = m_currentNode;
 //            uint oldNextNode = m_nextNode;
-//            TKey firstKeyInGreaterNode = default(TKey);
 
 //            NodeHeader origionalNode = default(NodeHeader);
 //            NodeHeader newNode = default(NodeHeader);
@@ -97,13 +66,13 @@
 //            short itemsInFirstNode = (short)(m_childCount >> 1); // divide by 2.
 //            short itemsInSecondNode = (short)(m_childCount - itemsInFirstNode);
 
-//            uint greaterNodeIndex = m_allocateNewNode();
+//            uint greaterNodeIndex = AllocateNewNode();
 //            long sourceStartingAddress = m_currentNode * m_blockSize + NodeHeader.Size + m_leafStructureSize * itemsInFirstNode;
 //            long targetStartingAddress = greaterNodeIndex * m_blockSize + NodeHeader.Size;
 
 //            //lookup the first key that will be copied
 //            m_stream.Position = sourceStartingAddress;
-//            firstKeyInGreaterNode = LeafNodeLoadKeyValue(m_stream);
+//            LoadKey2();
 
 //            //do the copy
 //            m_stream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * m_leafStructureSize);
@@ -131,26 +100,25 @@
 //                foreignNode.Save(m_stream, m_blockSize, oldNextNode);
 //            }
 
-//            m_nodeSplit(0, currentNode, firstKeyInGreaterNode, greaterNodeIndex);
-//            if (LeafNodeCompareKeys(key, firstKeyInGreaterNode) > 0)
+//            if (CompareKeys12() >= 0)
 //            {
 //                LeafNodeSetCurrentNode(greaterNodeIndex, true);
-//                LeafNodeInsert(key);
+//                LeafNodeInsert();
 //            }
 //            else
 //            {
 //                LeafNodeSetCurrentNode(currentNode, true);
-//                LeafNodeInsert(key);
+//                LeafNodeInsert();
 //            }
+//            NodeWasSplit(0, currentNode, greaterNodeIndex);
 //        }
 
 //        /// <summary>
-//        /// Seeks to the location of the key. Or the position where the key could be inserted to preserve order.
+//        /// Seeks to the location of Key1. Or the position where the key could be inserted to preserve order.
 //        /// </summary>
-//        /// <param name="key">the key to look for</param>
 //        /// <param name="offset">the offset from the start of the node where the index was found</param>
 //        /// <returns>true if a match was found, false if no match</returns>
-//        bool LeafNodeSeekToKey(TKey key, out int offset)
+//        protected virtual bool LeafNodeSeekToKey(out int offset)
 //        {
 //            long startAddress = m_currentNode * m_blockSize + NodeHeader.Size;
 
@@ -161,7 +129,7 @@
 //            {
 //                int mid = min + (max - min >> 1);
 //                m_stream.Position = startAddress + m_leafStructureSize * mid;
-//                int tmpKey = LeafNodeCompareKeys(key, m_stream);
+//                int tmpKey = CompareKey1WithStream();
 //                if (tmpKey == 0)
 //                {
 //                    offset = NodeHeader.Size + m_leafStructureSize * mid;
@@ -177,23 +145,22 @@
 //        }
 
 //        /// <summary>
-//        /// Inserts the following key into the current node. Splits the node if required.
+//        /// Inserts Key1,Value1 into the current node. Splits the node if required.
 //        /// </summary>
-//        /// <param name="key"></param>
 //        /// <returns>True if sucessfully inserted, false if a duplicate key was detected.</returns>
-//        public bool LeafNodeInsert(TKey key)
+//        public bool LeafNodeInsert()
 //        {
 //            int offset;
 //            long nodePositionStart = m_currentNode * m_blockSize;
 
 //            if (m_childCount >= m_maximumLeafNodeChildren)
 //            {
-//                LeafNodeSplitNode(key);
+//                LeafNodeSplitNode();
 //                return true;
 //            }
 
 //            //Find the best location to insert
-//            if (LeafNodeSeekToKey(key, out offset)) //If found
+//            if (LeafNodeSeekToKey(out offset)) //If found
 //                return false;
 
 //            int spaceToMove = NodeHeader.Size + m_leafStructureSize * m_childCount - offset;
@@ -206,8 +173,8 @@
 //            }
 
 //            LeafNodeSetStreamOffset(offset);
-//            LeafNodeSaveKeyValue(key, m_stream);
-//            m_writeValue();
+//            SaveKey1();
+//            SaveValue1();
 
 //            //save the header
 //            m_childCount++;
@@ -216,21 +183,29 @@
 //            return true;
 //        }
 
-//        public bool LeafNodeGetValue(TKey key)
+//        /// <summary>
+//        /// Uses Key1 to find the associated value and stores to Value1
+//        /// </summary>
+//        /// <returns>true if key is found, false if not found.</returns>
+//        bool LeafNodeGetValue()
 //        {
 //            int offset;
-//            if (LeafNodeSeekToKey(key, out offset))
+//            if (LeafNodeSeekToKey(out offset))
 //            {
 //                LeafNodeSetStreamOffset(offset + m_keySize);
-//                m_readValue();
+//                LoadValue1();
 //                return true;
 //            }
 //            return false;
 //        }
 
-//        public uint LeafNodeCreateEmptyNode()
+//        /// <summary>
+//        /// Creates an empty leaf node.
+//        /// </summary>
+//        /// <returns>The index for the node.</returns>
+//        uint LeafNodeCreateEmptyNode()
 //        {
-//            uint nodeAddress = m_allocateNewNode();
+//            uint nodeAddress = AllocateNewNode();
 //            m_stream.Position = m_blockSize * nodeAddress;
 
 //            //Clearing the Node
@@ -240,44 +215,8 @@
 //            //PreviousNode = 0;
 //            m_stream.Write(0L);
 //            m_stream.Write(0);
-
 //            return nodeAddress;
 //        }
 
-//        public void LeafNodePrepareForTableScan(TKey firstKey, TKey lastKey)
-//        {
-//            m_scanningTable = true;
-//            m_startKey = firstKey;
-//            m_stopKey = lastKey;
-//            LeafNodeSeekToKey(firstKey, out m_oldIndex);
-//            m_oldIndex = (m_oldIndex - NodeHeader.Size) / m_leafStructureSize;
-//        }
-
-//        public bool LeafNodeGetNextKeyTableScan(out TKey key)
-//        {
-//            if (m_oldIndex >= m_childCount)
-//            {
-//                if (m_nextNode == 0)
-//                {
-//                    key = default(TKey);
-//                    return false;
-//                }
-//                LeafNodeSetCurrentNode(m_nextNode, false);
-//                m_oldIndex = 0;
-//            }
-//            m_stream.Position = m_currentNode * m_blockSize + m_oldIndex * m_leafStructureSize + NodeHeader.Size;
-//            key = default(TKey);
-//            key = LeafNodeLoadKeyValue(m_stream);
-
-//            if (LeafNodeCompareKeys(m_stopKey, key) <= 0)
-//                return false;
-//            m_oldIndex++;
-//            return true;
-//        }
-
-//        public void LeafNodeCloseTableScan()
-//        {
-//            m_scanningTable = false;
-//        }
 //    }
 //}

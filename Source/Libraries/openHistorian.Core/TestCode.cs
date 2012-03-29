@@ -19,17 +19,19 @@ namespace openHistorian.Core
 
             //Unmanaged.BufferPoolTest.Test();
 
-            //Unmanaged.MemoryStreamTest.Test();
-            //Unmanaged.BinaryStreamTest.Test();
+            Unmanaged.MemoryStreamTest.Test();
+            Unmanaged.BinaryStreamTest.Test();
             //Unmanaged.BufferedStreamTest.Test();
-
 
             //Unmanaged.BufferedStreamTest.BenchmarkTest();
 
             //Unmanaged.Specialized.NodeTest.Test();
-            //Unmanaged.Generic.NodeTest.Test();
-            Unmanaged.Generic.NodeTest2.Test();
 
+            //Unmanaged.Generic.NodeTest.Test();
+            //Unmanaged.Generic.NodeTest2.Test();
+
+            //Unmanaged.Generic.NodeTestStack.Test();
+            
             //StorageSystem.File.DiskIOEnhanced2Test.Test();
 
             StorageSystem.File.FileMetaDataTest.Test();
@@ -45,8 +47,7 @@ namespace openHistorian.Core
 
             //openHistorian.Core.PooledMemoryStreamTest.Test();
 
-
-            //ArchiveTest.Test();
+            ArchiveTest.Test();
 
             //openHistorian.Core.StorageSystem.BinaryStreamTest.Test();
 

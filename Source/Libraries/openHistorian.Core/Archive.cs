@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using openHistorian.Core.StorageSystem;
 using openHistorian.Core.StorageSystem.File;
-using openHistorian.Core.Unmanaged.Specialized;
-using openHistorian.Core.Unmanaged.Specialized.TimeKeyPair;
+using openHistorian.Core.Unmanaged.Generic;
+using openHistorian.Core.Unmanaged.Generic.TimeKeyPair;
 
 namespace openHistorian.Core
 {
@@ -27,7 +27,7 @@ namespace openHistorian.Core
         {
             CreateFileInMemory();
         }
-     
+
         //void OpenFile(string file)
         //{
         //    m_fileSystem = VirtualFileSystem.OpenArchive(file, false);
@@ -59,12 +59,12 @@ namespace openHistorian.Core
             key.Time = date;
             key.Key = pointId;
 
-            TreeTypeIntFloat value = new TreeTypeIntFloat(flags,data);
+            TreeTypeIntFloat value = new TreeTypeIntFloat(flags, data);
 
-            m_tree.AddData(key,value);
+            m_tree.AddData(key, value);
         }
 
-        public IEnumerable<Tuple<DateTime,long,int,float>> GetData(long pointId, DateTime startDate, DateTime stopDate)
+        public IEnumerable<Tuple<DateTime, long, int, float>> GetData(long pointId, DateTime startDate, DateTime stopDate)
         {
             KeyType start = default(KeyType);
             KeyType end = default(KeyType);
@@ -80,8 +80,25 @@ namespace openHistorian.Core
                 if (reader.GetKey().Key == pointId)
                 {
                     TreeTypeIntFloat value = reader.GetValue();
-                    yield return new Tuple<DateTime, long, int, float>(key.Time,key.Key,value.Value1,value.Value2);
+                    yield return new Tuple<DateTime, long, int, float>(key.Time, key.Key, value.Value1, value.Value2);
                 }
+            }
+        }
+        public IEnumerable<Tuple<DateTime, long, int, float>> GetData(DateTime startDate, DateTime stopDate)
+        {
+            KeyType start = default(KeyType);
+            KeyType end = default(KeyType);
+            start.Time = startDate;
+            start.Key = long.MinValue;
+            end.Time = stopDate;
+            end.Key = long.MaxValue;
+
+            var reader = m_tree.ExecuteScan(start, end);
+            while (reader.Next())
+            {
+                KeyType key = reader.GetKey();
+                TreeTypeIntFloat value = reader.GetValue();
+                yield return new Tuple<DateTime, long, int, float>(key.Time, key.Key, value.Value1, value.Value2);
             }
         }
 
