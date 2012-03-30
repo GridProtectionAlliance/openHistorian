@@ -5,7 +5,7 @@ using System.Text;
 
 namespace openHistorian.Core.Unmanaged.Generic
 {
-    struct TreeTypeIntFloat : IValueType<TreeTypeIntFloat>
+    public struct TreeTypeIntFloat : IValueType<TreeTypeIntFloat>
     {
        
         public TreeTypeIntFloat(int value1, float value2)

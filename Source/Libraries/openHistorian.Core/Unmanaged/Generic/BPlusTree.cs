@@ -5,16 +5,28 @@ using System.Text;
 
 namespace openHistorian.Core.Unmanaged.Generic
 {
-    public class BPlusTree<TKey, TValue> : BPlusTreeBase<TKey,TValue> 
+    public class BPlusTree<TKey, TValue> : BPlusTreeBase<TKey, TValue>
         where TKey : struct, IValueType<TKey>
         where TValue : struct, IValueType<TValue>
-        
     {
-        public BPlusTree(BinaryStream stream) : base(stream)
+
+        public BPlusTree(BinaryStream leafNodeStream, BinaryStream internNodeStream)
+            : base(leafNodeStream, internNodeStream)
+        {
+
+        }
+        public BPlusTree(BinaryStream leafNodeStream, BinaryStream internNodeStream, int blockSize)
+            : base(leafNodeStream, internNodeStream, blockSize)
+        {
+
+        }
+        public BPlusTree(BinaryStream stream)
+            : base(stream)
         {
         }
 
-        public BPlusTree(BinaryStream stream, int blockSize) : base(stream, blockSize)
+        public BPlusTree(BinaryStream stream, int blockSize)
+            : base(stream, blockSize)
         {
         }
 

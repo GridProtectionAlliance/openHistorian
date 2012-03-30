@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace openHistorian.Core.Unmanaged.Generic.TimeKeyPair
 {
     [StructLayout(LayoutKind.Explicit)]
-    struct KeyType : IValueType<KeyType>
+    public struct KeyType : IValueType<KeyType>
     {
         [FieldOffset(0)]
         public DateTime Time;

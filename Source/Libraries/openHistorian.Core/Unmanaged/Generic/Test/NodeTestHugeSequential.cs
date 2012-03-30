@@ -13,67 +13,134 @@ namespace openHistorian.Core.Unmanaged.Generic
         internal static void Test()
         {
             TestArchive();
-            TestMultiLevelLong(10);
-            //TestMultiLevelLongRandomSpecific(1);
+            //TestMultiLevelLong(10);
+            //TestMultiLevelLongRandomSpecific(10);
+            //TestMultiLevelLongRandomSpecificSingleStream(10);
             //TestScan(1);
         }
 
-        static void TestMultiLevelLongRandomSpecific(int seed)
+        static void TestMultiLevelLongRandomSpecificSingleStream(int hundredThousand)
         {
-            const int countTime = 1000;
-            const int countKey = 1000;
-            const int count = countTime * countKey;
+            const int countTime = 100 * 1000;
+            int count = countTime * hundredThousand;
 
-            Random rand;
-            rand = new Random(seed);
+            //var ms = new MemoryStream();
+            //ms.Position = 6000 * 4096;
+            //ms.Write(new byte[] { 1 }, 0, 1);
+            //var bs = new BinaryStream(ms);
+            //var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs, 4096);
 
-            var ms = new MemoryStream();
-            ms.Position = 6000 * 4096;
-            ms.Write(new byte[] { 1 }, 0, 1);
-            var bs = new BinaryStream(ms);
-            var tree = new BPlusTreeLongLong(bs, 4096);
+            var ms1 = new MemoryStream();
+            ms1.Position = 6000 * 4096;
+            ms1.Write(new byte[] { 1 }, 0, 1);
+            var bs1 = new BinaryStream(ms1);
+            var tree = new BPlusTreeLongLong(bs1, 4096);
 
-            long key;
-            long data;
+            long key = 0;
+            long data = 0;
             long data2;
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            for (int x = 0; x < countTime; x++)
+            for (int z = 0; z < hundredThousand; z++)
             {
-                for (int y = 0; y < countKey; y++)
+                for (int x = 0; x < countTime; x++)
                 {
-                    key = (long)rand.Next() << 30 | rand.Next();
-                    data = rand.Next();
+                    key = key + 1;
                     tree.AddData(key, data);
                 }
             }
-
             sw.Stop();
+
+            long lookup1 = ms1.LookupCount;
 
             Stopwatch sw2 = new Stopwatch();
             sw2.Start();
 
-            rand = new Random(seed);
+            key = 0;
 
-            for (int x = 0; x < countTime; x++)
+            for (int z = 0; z < hundredThousand; z++)
             {
-                for (int y = 0; y < countKey; y++)
+                for (int x = 0; x < countTime; x++)
                 {
-                    key = (long)rand.Next() << 30 | rand.Next();
-                    data = rand.Next();
-
+                    key = key + 1;
                     data2 = tree.GetData(key);
                     if (data2 != data)
                         throw new Exception();
                 }
             }
 
+            sw2.Stop();
+
+            long lookup2 = ms1.LookupCount - lookup1;
+
+            MessageBox.Show("Sequential Single Stream LongLong" + Environment.NewLine +
+                (count / sw.Elapsed.TotalSeconds / 1000000).ToString() + " " + lookup1 + Environment.NewLine +
+                (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + " " + lookup2 + Environment.NewLine);
+        }
+
+        static void TestMultiLevelLongRandomSpecific(int hundredThousand)
+        {
+            const int countTime = 100 * 1000;
+            int count = countTime * hundredThousand;
+
+            //var ms = new MemoryStream();
+            //ms.Position = 6000 * 4096;
+            //ms.Write(new byte[] { 1 }, 0, 1);
+            //var bs = new BinaryStream(ms);
+            //var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs, 4096);
+
+            var ms1 = new MemoryStream();
+            var ms2 = new MemoryStream();
+            ms1.Position = 6000 * 4096;
+            ms1.Write(new byte[] { 1 }, 0, 1);
+            var bs1 = new BinaryStream(ms1);
+            var bs2 = new BinaryStream(ms2);
+            var tree = new BPlusTreeLongLong(bs1, bs2, 4096);
+
+            long key = 0;
+            long data = 0;
+            long data2;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int z = 0; z < hundredThousand; z++)
+            {
+                for (int x = 0; x < countTime; x++)
+                {
+                    key = key + 1;
+                    tree.AddData(key, data);
+                }
+            }
+            sw.Stop();
+
+            long lookup1 = ms1.LookupCount + ms2.LookupCount;
+
+            Stopwatch sw2 = new Stopwatch();
+            sw2.Start();
+
+            key = 0;
+
+            for (int z = 0; z < hundredThousand; z++)
+            {
+                for (int x = 0; x < countTime; x++)
+                {
+                    key = key + 1;
+                    data2 = tree.GetData(key);
+                    if (data2 != data)
+                        throw new Exception();
+                }
+            }
 
             sw2.Stop();
-            MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine +
-                (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + Environment.NewLine);
+
+            long lookup2 = ms1.LookupCount + ms2.LookupCount - lookup1;
+
+            MessageBox.Show("Sequential Dual Stream LongLong" + Environment.NewLine +
+                (count / sw.Elapsed.TotalSeconds / 1000000).ToString() + " " + lookup1 + Environment.NewLine +
+                (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + " " + lookup2 + Environment.NewLine);
         }
 
         static void TestMultiLevelLong(int hundredThousand)
@@ -81,11 +148,19 @@ namespace openHistorian.Core.Unmanaged.Generic
             const int countTime = 100 * 1000;
             int count = countTime * hundredThousand;
 
-            var ms = new MemoryStream();
-            ms.Position = 6000 * 4096;
-            ms.Write(new byte[] { 1 }, 0, 1);
-            var bs = new BinaryStream(ms);
-            var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs, 4096);
+            //var ms = new MemoryStream();
+            //ms.Position = 6000 * 4096;
+            //ms.Write(new byte[] { 1 }, 0, 1);
+            //var bs = new BinaryStream(ms);
+            //var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs, 4096);
+
+            var ms1 = new MemoryStream();
+            var ms2 = new MemoryStream();
+            ms1.Position = 6000 * 4096;
+            ms1.Write(new byte[] { 1 }, 0, 1);
+            var bs1 = new BinaryStream(ms1);
+            var bs2 = new BinaryStream(ms2);
+            var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs1, bs2, 4096);
 
             TreeTypeLong key = 0;
             long data = 0;
@@ -104,7 +179,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             }
             sw.Stop();
 
-            long lookup1 = ms.LookupCount;
+            long lookup1 = ms1.LookupCount + ms2.LookupCount;
 
             Stopwatch sw2 = new Stopwatch();
             sw2.Start();
@@ -124,9 +199,10 @@ namespace openHistorian.Core.Unmanaged.Generic
 
             sw2.Stop();
 
-            long lookup2 = ms.LookupCount - lookup1;
+            long lookup2 = ms1.LookupCount + ms2.LookupCount - lookup1;
 
-            MessageBox.Show((count / sw.Elapsed.TotalSeconds / 1000000).ToString() + " " + lookup1 + Environment.NewLine +
+            MessageBox.Show("Sequential Dual Stream BPlusTree<Long,Long>" + Environment.NewLine +
+                (count / sw.Elapsed.TotalSeconds / 1000000).ToString() + " " + lookup1 + Environment.NewLine +
                 (count / sw2.Elapsed.TotalSeconds / 1000000).ToString() + " " + lookup2 + Environment.NewLine);
         }
 
@@ -217,10 +293,13 @@ namespace openHistorian.Core.Unmanaged.Generic
             //    File.Delete(file);
             //s_archive = new Archive(file);
 
-            MemoryStream ms = new MemoryStream();
-            BinaryStream bs = new BinaryStream(ms);
+            MemoryStream ms1 = new MemoryStream();
+            BinaryStream bs1 = new BinaryStream(ms1);
 
-            m_tree=new BPlusTree<KeyType, TreeTypeIntFloat>(bs,4096);
+            MemoryStream ms2 = new MemoryStream();
+            BinaryStream bs2 = new BinaryStream(ms2);
+
+            m_tree = new BPlusTreeTSD(bs1, bs2, 4096);
             HistorianReader reader = new HistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
             reader.NewPoint += ReaderNewPoint;
             Stopwatch sw = new Stopwatch();
@@ -230,6 +309,10 @@ namespace openHistorian.Core.Unmanaged.Generic
             sw.Stop();
             int cnt = 0;
             sw2.Start();
+
+            long lookup1 = ms1.LookupCount;
+            long lookup2 = ms2.LookupCount;
+
 
             foreach (var pts in GetData(DateTime.MinValue, DateTime.MaxValue))
             {
@@ -242,12 +325,12 @@ namespace openHistorian.Core.Unmanaged.Generic
 
             m_tree = null;
 
-            MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + openHistorian.Core.StorageSystem.File.DiskIoEnhanced.ChecksumCount);
+            MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + lookup1 + " " + lookup2);
             MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt);
 
         }
 
-        static BPlusTree<KeyType,TreeTypeIntFloat> m_tree;
+        static BPlusTreeTSD m_tree;
         static int s_points;
 
         static void ReaderNewPoint(Points pt)

@@ -12,9 +12,11 @@ namespace openHistorian.Core
     {
         VirtualFileSystem m_fileSystem;
         TransactionalEdit m_currentTransaction;
-        ArchiveFileStream m_stream;
-        Unmanaged.BinaryStream m_binaryStream;
-        BPlusTree<KeyType, TreeTypeIntFloat> m_tree;
+        ArchiveFileStream m_stream1;
+        ArchiveFileStream m_stream2;
+        Unmanaged.BinaryStream m_binaryStream1;
+        Unmanaged.BinaryStream m_binaryStream2;
+        BPlusTreeTSD m_tree;
 
         //public Archive(string file)
         //{
@@ -48,9 +50,11 @@ namespace openHistorian.Core
         {
             m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();
             m_currentTransaction = m_fileSystem.BeginEdit();
-            m_stream = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271d}"), 1);
-            m_binaryStream = new Unmanaged.BinaryStream(m_stream);
-            m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream, ArchiveConstants.DataBlockDataLength);
+            m_stream1 = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271c}"), 1);
+            m_stream2 = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271d}"), 1);
+            m_binaryStream1 = new Unmanaged.BinaryStream(m_stream1);
+            m_binaryStream2 = new Unmanaged.BinaryStream(m_stream2);
+            m_tree = new BPlusTreeTSD(m_binaryStream1, m_binaryStream2, ArchiveConstants.DataBlockDataLength);
         }
 
         public void AddPoint(DateTime date, long pointId, int flags, float data)
@@ -105,8 +109,10 @@ namespace openHistorian.Core
         public void Close()
         {
             m_tree.Save();
-            m_binaryStream.FlushToUnderlyingStream();
-            m_stream.Flush();
+            m_binaryStream1.FlushToUnderlyingStream();
+            m_binaryStream2.FlushToUnderlyingStream();
+            m_stream1.Flush();
+            m_stream2.Flush();
             m_currentTransaction.Commit();
             m_fileSystem.Dispose();
 

@@ -89,6 +89,7 @@
     <Compile Include="Unmanaged\Generic\BPlusTreeBase_TreeHeader.cs" />
     <Compile Include="Unmanaged\Generic\BPlusTreeLongLong.cs" />
     <Compile Include="Unmanaged\Generic\BPlusTreeBase_Cache.cs" />
+    <Compile Include="Unmanaged\Generic\BPlusTreeTSD.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\BPlusTreeBase2.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\BPlusTreeBase2_InternalNode.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\BPlusTreeBase2_LeafNode.cs" />

@@ -34,22 +34,22 @@ namespace openHistorian.Core.Unmanaged.Generic
         {
             bool changed = (m_currentNode != nodeIndex);
             m_currentNode = nodeIndex;
-            m_stream.Position = nodeIndex * m_blockSize;
-            m_stream.UpdateLocalBuffer(isForWriting);
+            m_leafNodeStream.Position = nodeIndex * m_blockSize;
+            m_leafNodeStream.UpdateLocalBuffer(isForWriting);
 
             if (changed)
             {
-                if (m_stream.ReadByte() != 0)
+                if (m_leafNodeStream.ReadByte() != 0)
                     throw new Exception("The current node is not a leaf.");
-                m_childCount = m_stream.ReadInt16();
-                m_previousNode = m_stream.ReadUInt32();
-                m_nextNode = m_stream.ReadUInt32();
+                m_childCount = m_leafNodeStream.ReadInt16();
+                m_previousNode = m_leafNodeStream.ReadUInt32();
+                m_nextNode = m_leafNodeStream.ReadUInt32();
             }
         }
 
         void LeafNodeSetStreamOffset(int position)
         {
-            m_stream.Position = m_currentNode * m_blockSize + position;
+            m_leafNodeStream.Position = m_currentNode * m_blockSize + position;
         }
 
         void LeafNodeSplitNode(TKey key, TValue value)
@@ -62,7 +62,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             NodeHeader newNode = default(NodeHeader);
             NodeHeader foreignNode = default(NodeHeader);
 
-            origionalNode.Load(m_stream, m_blockSize, m_currentNode);
+            origionalNode.Load(m_leafNodeStream, m_blockSize, m_currentNode);
 
             if (m_childCount < 2)
                 throw new Exception("cannot split a node with fewer than 2 children");
@@ -70,16 +70,16 @@ namespace openHistorian.Core.Unmanaged.Generic
             short itemsInFirstNode = (short)(m_childCount >> 1); // divide by 2.
             short itemsInSecondNode = (short)(m_childCount - itemsInFirstNode);
 
-            uint greaterNodeIndex = AllocateNewNode();
+            uint greaterNodeIndex = AllocateNewLeafNode();
             long sourceStartingAddress = m_currentNode * m_blockSize + NodeHeader.Size + m_leafStructureSize * itemsInFirstNode;
             long targetStartingAddress = greaterNodeIndex * m_blockSize + NodeHeader.Size;
 
             //lookup the first key that will be copied
-            m_stream.Position = sourceStartingAddress;
-            firstKeyInGreaterNode = LoadKey(m_stream);
+            m_leafNodeStream.Position = sourceStartingAddress;
+            firstKeyInGreaterNode = LoadKey(m_leafNodeStream);
 
             //do the copy
-            m_stream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * m_leafStructureSize);
+            m_leafNodeStream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * m_leafStructureSize);
 
             //update the first header
             m_childCount = itemsInFirstNode;
@@ -87,21 +87,21 @@ namespace openHistorian.Core.Unmanaged.Generic
 
             origionalNode.ChildCount = itemsInFirstNode;
             origionalNode.NextNode = greaterNodeIndex;
-            origionalNode.Save(m_stream, m_blockSize, currentNode);
+            origionalNode.Save(m_leafNodeStream, m_blockSize, currentNode);
 
             //update the second header
             newNode.Level = 0;
             newNode.ChildCount = itemsInSecondNode;
             newNode.PreviousNode = currentNode;
             newNode.NextNode = oldNextNode;
-            newNode.Save(m_stream, m_blockSize, greaterNodeIndex);
+            newNode.Save(m_leafNodeStream, m_blockSize, greaterNodeIndex);
 
             //update the node that used to be after the first one.
             if (oldNextNode != 0)
             {
-                foreignNode.Load(m_stream, m_blockSize, oldNextNode);
+                foreignNode.Load(m_leafNodeStream, m_blockSize, oldNextNode);
                 foreignNode.PreviousNode = greaterNodeIndex;
-                foreignNode.Save(m_stream, m_blockSize, oldNextNode);
+                foreignNode.Save(m_leafNodeStream, m_blockSize, oldNextNode);
             }
 
             NodeWasSplit(0, currentNode, firstKeyInGreaterNode, greaterNodeIndex);
@@ -133,8 +133,8 @@ namespace openHistorian.Core.Unmanaged.Generic
             while (min <= max)
             {
                 int mid = min + (max - min >> 1);
-                m_stream.Position = startAddress + m_leafStructureSize * mid;
-                int tmpKey = CompareKeys(key, m_stream);
+                m_leafNodeStream.Position = startAddress + m_leafStructureSize * mid;
+                int tmpKey = CompareKeys(key, m_leafNodeStream);
                 if (tmpKey == 0)
                 {
                     offset = NodeHeader.Size + m_leafStructureSize * mid;
@@ -175,17 +175,17 @@ namespace openHistorian.Core.Unmanaged.Generic
             if (spaceToMove > 0)
             {
                 LeafNodeSetStreamOffset(offset);
-                m_stream.InsertBytes(m_leafStructureSize, spaceToMove);
+                m_leafNodeStream.InsertBytes(m_leafStructureSize, spaceToMove);
             }
 
             LeafNodeSetStreamOffset(offset);
-            SaveKey(key, m_stream);
-            SaveValue(value, m_stream);
+            SaveKey(key, m_leafNodeStream);
+            SaveValue(value, m_leafNodeStream);
 
             //save the header
             m_childCount++;
             LeafNodeSetStreamOffset(1);
-            m_stream.Write(m_childCount);
+            m_leafNodeStream.Write(m_childCount);
             return true;
         }
 
@@ -195,7 +195,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             if (LeafNodeSeekToKey(key, out offset))
             {
                 LeafNodeSetStreamOffset(offset + m_keySize);
-                value = LoadValue(m_stream);
+                value = LoadValue(m_leafNodeStream);
                 return true;
             }
             value = default(TValue);
@@ -204,16 +204,16 @@ namespace openHistorian.Core.Unmanaged.Generic
 
         public uint LeafNodeCreateEmptyNode()
         {
-            uint nodeAddress = AllocateNewNode();
-            m_stream.Position = m_blockSize * nodeAddress;
+            uint nodeAddress = AllocateNewLeafNode();
+            m_leafNodeStream.Position = m_blockSize * nodeAddress;
 
             //Clearing the Node
             //Level = 0;
             //ChildCount = 0;
             //NextNode = 0;
             //PreviousNode = 0;
-            m_stream.Write(0L);
-            m_stream.Write(0);
+            m_leafNodeStream.Write(0L);
+            m_leafNodeStream.Write(0);
 
             return nodeAddress;
         }
@@ -239,9 +239,9 @@ namespace openHistorian.Core.Unmanaged.Generic
                 LeafNodeSetCurrentNode(m_nextNode, false);
                 m_oldIndex = 0;
             }
-            m_stream.Position = m_currentNode * m_blockSize + m_oldIndex * m_leafStructureSize + NodeHeader.Size;
+            m_leafNodeStream.Position = m_currentNode * m_blockSize + m_oldIndex * m_leafStructureSize + NodeHeader.Size;
             key = default(TKey);
-            key = LoadKey(m_stream);
+            key = LoadKey(m_leafNodeStream);
 
             if (CompareKeys(m_stopKey, key) <= 0)
                 return false;

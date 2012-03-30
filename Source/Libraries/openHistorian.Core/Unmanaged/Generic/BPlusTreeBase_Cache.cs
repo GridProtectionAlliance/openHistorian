@@ -150,17 +150,17 @@ namespace openHistorian.Core.Unmanaged.Generic
                 if (offset == NodeHeader.Size + sizeof(uint) + m_internalNodeChildCount * m_internalNodeStructureSize)
                 {
                     InternalNodeSetStreamOffset(offset);
-                    cache.LowerBound = LoadKey(m_stream);
-                    cache.Bucket = m_stream.ReadUInt32();
+                    cache.LowerBound = LoadKey(m_internalNodeStream);
+                    cache.Bucket = m_internalNodeStream.ReadUInt32();
                     cache.Mode = CacheMode.UpperIsMissing;
                     return cache.Bucket;
                 }
                 else
                 {
                     InternalNodeSetStreamOffset(offset);
-                    cache.LowerBound = LoadKey(m_stream);
-                    cache.Bucket = m_stream.ReadUInt32();
-                    cache.UpperBound = LoadKey(m_stream);
+                    cache.LowerBound = LoadKey(m_internalNodeStream);
+                    cache.Bucket = m_internalNodeStream.ReadUInt32();
+                    cache.UpperBound = LoadKey(m_internalNodeStream);
                     cache.Mode = CacheMode.Bounded;
                     return cache.Bucket;
                 }
@@ -168,15 +168,15 @@ namespace openHistorian.Core.Unmanaged.Generic
                 //InternalNodeSetStreamOffset(offset + m_internalNodeKeySize);
                 //return m_stream.ReadUInt32();
                 InternalNodeSetStreamOffset(offset + m_internalNodeKeySize);
-                return m_stream.ReadUInt32();
+                return m_internalNodeStream.ReadUInt32();
             }
 
             //Check if offset is the first entry.
             if (offset == NodeHeader.Size + sizeof(uint))
             {
                 InternalNodeSetStreamOffset(offset - 4);
-                cache.Bucket = m_stream.ReadUInt32();
-                cache.UpperBound = LoadKey(m_stream);
+                cache.Bucket = m_internalNodeStream.ReadUInt32();
+                cache.UpperBound = LoadKey(m_internalNodeStream);
                 cache.Mode = CacheMode.LowerIsMissing;
                 return cache.Bucket;
             }
@@ -184,8 +184,8 @@ namespace openHistorian.Core.Unmanaged.Generic
             {
                 //if offset is last entry
                 InternalNodeSetStreamOffset(offset - 4 - m_internalNodeKeySize);
-                cache.LowerBound = LoadKey(m_stream);
-                cache.Bucket = m_stream.ReadUInt32();
+                cache.LowerBound = LoadKey(m_internalNodeStream);
+                cache.Bucket = m_internalNodeStream.ReadUInt32();
                 cache.Mode = CacheMode.UpperIsMissing;
                 return cache.Bucket;
             }
@@ -193,9 +193,9 @@ namespace openHistorian.Core.Unmanaged.Generic
             {
                 //if offset is bounded
                 InternalNodeSetStreamOffset(offset - 4 - m_internalNodeKeySize);
-                cache.LowerBound = LoadKey(m_stream);
-                cache.Bucket = m_stream.ReadUInt32();
-                cache.UpperBound = LoadKey(m_stream);
+                cache.LowerBound = LoadKey(m_internalNodeStream);
+                cache.Bucket = m_internalNodeStream.ReadUInt32();
+                cache.UpperBound = LoadKey(m_internalNodeStream);
                 cache.Mode = CacheMode.Bounded;
                 return cache.Bucket;
             }
@@ -203,7 +203,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             //InternalNodeSetStreamOffset(offset - 4);
             //return m_stream.ReadUInt32();
             InternalNodeSetStreamOffset(offset - 4);
-            return m_stream.ReadUInt32();
+            return m_internalNodeStream.ReadUInt32();
         }
 
         /// <summary>

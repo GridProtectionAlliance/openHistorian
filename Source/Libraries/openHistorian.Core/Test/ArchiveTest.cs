@@ -43,12 +43,8 @@ namespace openHistorian.Core
             s_archive.Close();
             s_archive = null;
 
-
             MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + openHistorian.Core.StorageSystem.File.DiskIoEnhanced.ChecksumCount);
             MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt);
-
-
-
         }
 
         static void ReaderNewPoint(Points pt)

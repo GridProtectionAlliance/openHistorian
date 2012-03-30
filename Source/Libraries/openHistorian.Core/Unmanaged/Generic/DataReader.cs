@@ -16,12 +16,10 @@ namespace openHistorian.Core.Unmanaged.Generic
             bool m_isValueValid;
             TKey m_key;
             bool m_isKeyValid;
-            BinaryStream m_stream;
 
-            public DataReader(BPlusTreeBase<TKey, TValue> leafMethods, BinaryStream stream)
+            public DataReader(BPlusTreeBase<TKey, TValue> leafMethods)
             {
                 m_value = default(TValue);
-                m_stream = stream;
                 m_leafMethods = leafMethods;
                 m_isKeyValid = false;
                 m_isValueValid = false;
@@ -42,7 +40,7 @@ namespace openHistorian.Core.Unmanaged.Generic
                     throw new Exception("Key is no longer valid.  Either the end of the stream has been encoutered or the initial read was never performed");
                 if (!m_isValueValid)
                 {
-                    m_value= m_leafMethods.LoadValue(m_stream);
+                    m_value= m_leafMethods.LoadValue(m_leafMethods.m_leafNodeStream);
                     m_isValueValid = true;
                 }
                 return m_value;

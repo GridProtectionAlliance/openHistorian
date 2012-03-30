@@ -36,8 +36,7 @@ namespace openHistorian.Core.StorageSystem.File
     {
 
         #region [ Members ]
-
-
+        
         /// <summary>
         /// Determines if the file stream has been disposed.
         /// </summary>

@@ -28,34 +28,38 @@ namespace openHistorian.Core.Unmanaged.Generic
     abstract partial class BPlusTreeBase<TKey, TValue>
     {
         public static Guid s_fileType = new Guid("{7bfa9083-701e-4596-8273-8680a739271d}");
-        protected BinaryStream m_stream;
+        protected BinaryStream m_internalNodeStream;
+        protected BinaryStream m_leafNodeStream;
+        
         protected int m_blockSize;
         uint m_rootIndexAddress;
         byte m_rootIndexLevel;
-        uint m_nextUnallocatedBlock;
+        uint m_nextUnallocatedInternalNodeBlock;
+        uint m_nextUnallocatedLeafNodeBlock;
 
-        void Load(BinaryStream stream)
+        void Load()
         {
-            m_stream = stream;
-            m_stream.Position = 0;
-            if (s_fileType != stream.ReadGuid())
+            m_internalNodeStream.Position = 0;
+            if (s_fileType != m_internalNodeStream.ReadGuid())
                 throw new Exception("Header Corrupt");
-            if (m_stream.ReadByte() != 0)
+            if (m_internalNodeStream.ReadByte() != 0)
                 throw new Exception("Header Corrupt");
-            m_nextUnallocatedBlock = stream.ReadUInt32();
-            m_blockSize = stream.ReadInt32();
-            m_rootIndexAddress = stream.ReadUInt32();
-            m_rootIndexLevel = stream.ReadByte();
+            m_nextUnallocatedLeafNodeBlock = m_internalNodeStream.ReadUInt32();
+            m_nextUnallocatedInternalNodeBlock = m_internalNodeStream.ReadUInt32();
+            m_blockSize = m_internalNodeStream.ReadInt32();
+            m_rootIndexAddress = m_internalNodeStream.ReadUInt32();
+            m_rootIndexLevel = m_internalNodeStream.ReadByte();
         }
-        void Save(BinaryStream stream)
+        public void Save()
         {
-            stream.Position = 0;
-            stream.Write(s_fileType);
-            stream.Write((byte)0); //Version
-            stream.Write(m_nextUnallocatedBlock);
-            stream.Write(m_blockSize);
-            stream.Write(m_rootIndexAddress); //Root Index
-            stream.Write(m_rootIndexLevel); //Root Index
+            m_internalNodeStream.Position = 0;
+            m_internalNodeStream.Write(s_fileType);
+            m_internalNodeStream.Write((byte)0); //Version
+            m_internalNodeStream.Write(m_nextUnallocatedLeafNodeBlock);
+            m_internalNodeStream.Write(m_nextUnallocatedInternalNodeBlock);
+            m_internalNodeStream.Write(m_blockSize);
+            m_internalNodeStream.Write(m_rootIndexAddress); //Root Index
+            m_internalNodeStream.Write(m_rootIndexLevel); //Root Index
         }
 
         /// <summary>
@@ -63,10 +67,26 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// The node address is block alligned.
         /// </summary>
         /// <returns></returns>
-        uint AllocateNewNode()
+        uint AllocateNewLeafNode()
         {
-            uint newBlock = m_nextUnallocatedBlock;
-            m_nextUnallocatedBlock++;
+            uint newBlock = m_nextUnallocatedLeafNodeBlock;
+            m_nextUnallocatedLeafNodeBlock++;
+            if (m_sameStreams)
+                m_nextUnallocatedInternalNodeBlock++;
+            return newBlock;
+        }
+        /// <summary>
+        /// Returns the node index address for a freshly allocated block.
+        /// The node address is block alligned.
+        /// </summary>
+        /// <returns></returns>
+        uint AllocateNewInternalNode()
+        {
+            uint newBlock = m_nextUnallocatedInternalNodeBlock;
+            m_nextUnallocatedInternalNodeBlock++;
+            if (m_sameStreams)
+                m_nextUnallocatedLeafNodeBlock++;
+
             return newBlock;
         }
 

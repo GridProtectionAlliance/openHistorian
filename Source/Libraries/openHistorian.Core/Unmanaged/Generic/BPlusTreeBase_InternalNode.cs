@@ -29,31 +29,31 @@ namespace openHistorian.Core.Unmanaged.Generic
         void InternalNodeSetCurrentNode(uint nodeIndex, bool isForWriting)
         {
             m_internalNodeCurrentNode = nodeIndex;
-            m_stream.Position = nodeIndex * m_blockSize;
-            m_stream.UpdateLocalBuffer(isForWriting);
+            m_internalNodeStream.Position = nodeIndex * m_blockSize;
+            m_internalNodeStream.UpdateLocalBuffer(isForWriting);
 
-            m_stream.ReadByte(); //node level
-            m_internalNodeChildCount = m_stream.ReadInt16();
-            m_internalNodePreviousNode = m_stream.ReadUInt32();
-            m_internalNodeNextNode = m_stream.ReadUInt32();
+            m_internalNodeStream.ReadByte(); //node level
+            m_internalNodeChildCount = m_internalNodeStream.ReadInt16();
+            m_internalNodePreviousNode = m_internalNodeStream.ReadUInt32();
+            m_internalNodeNextNode = m_internalNodeStream.ReadUInt32();
         }
 
         public void InternalNodeSetCurrentNode(byte nodeLevel, uint nodeIndex, bool isForWriting)
         {
             m_internalNodeCurrentNode = nodeIndex;
-            m_stream.Position = nodeIndex * m_blockSize;
-            m_stream.UpdateLocalBuffer(isForWriting);
+            m_internalNodeStream.Position = nodeIndex * m_blockSize;
+            m_internalNodeStream.UpdateLocalBuffer(isForWriting);
 
-            if (m_stream.ReadByte() != nodeLevel)
+            if (m_internalNodeStream.ReadByte() != nodeLevel)
                 throw new Exception("The current node is not a leaf.");
-            m_internalNodeChildCount = m_stream.ReadInt16();
-            m_internalNodePreviousNode = m_stream.ReadUInt32();
-            m_internalNodeNextNode = m_stream.ReadUInt32();
+            m_internalNodeChildCount = m_internalNodeStream.ReadInt16();
+            m_internalNodePreviousNode = m_internalNodeStream.ReadUInt32();
+            m_internalNodeNextNode = m_internalNodeStream.ReadUInt32();
         }
 
         void InternalNodeSetStreamOffset(int position)
         {
-            m_stream.Position = m_internalNodeCurrentNode * m_blockSize + position;
+            m_internalNodeStream.Position = m_internalNodeCurrentNode * m_blockSize + position;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             NodeHeader newNode = default(NodeHeader);
             NodeHeader foreignNode = default(NodeHeader);
 
-            origionalNode.Load(m_stream, m_blockSize, m_internalNodeCurrentNode);
+            origionalNode.Load(m_internalNodeStream, m_blockSize, m_internalNodeCurrentNode);
 
             if (origionalNode.ChildCount < 2)
                 throw new Exception("cannot split a node with fewer than 2 children");
@@ -77,38 +77,38 @@ namespace openHistorian.Core.Unmanaged.Generic
             short itemsInFirstNode = (short)(origionalNode.ChildCount >> 1); // divide by 2.
             short itemsInSecondNode = (short)(origionalNode.ChildCount - itemsInFirstNode);
 
-            uint greaterNodeIndex = AllocateNewNode();
+            uint greaterNodeIndex = AllocateNewInternalNode();
             long sourceStartingAddress = m_internalNodeCurrentNode * m_blockSize + NodeHeader.Size + sizeof(uint) + m_internalNodeStructureSize * itemsInFirstNode;
             long targetStartingAddress = greaterNodeIndex * m_blockSize + NodeHeader.Size + sizeof(uint);
 
             //lookup the first key that will be copied
-            m_stream.Position = sourceStartingAddress;
-            firstKeyInGreaterNode = LoadKey(m_stream);
+            m_internalNodeStream.Position = sourceStartingAddress;
+            firstKeyInGreaterNode = LoadKey(m_internalNodeStream);
 
             //do the copy
-            m_stream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * m_internalNodeStructureSize);
+            m_internalNodeStream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * m_internalNodeStructureSize);
             //Set the lookback position as invalid since this node should never be parsed for data before the first key.
-            m_stream.Position = targetStartingAddress - sizeof(uint);
-            m_stream.Write(0u);
+            m_internalNodeStream.Position = targetStartingAddress - sizeof(uint);
+            m_internalNodeStream.Write(0u);
             
             //update the first header
             origionalNode.ChildCount = itemsInFirstNode;
             origionalNode.NextNode = greaterNodeIndex;
-            origionalNode.Save(m_stream, m_blockSize, currentNode);
+            origionalNode.Save(m_internalNodeStream, m_blockSize, currentNode);
 
             //update the second header
             newNode.Level = origionalNode.Level;
             newNode.ChildCount = itemsInSecondNode;
             newNode.PreviousNode = currentNode;
             newNode.NextNode = oldNextNode;
-            newNode.Save(m_stream, m_blockSize, greaterNodeIndex);
+            newNode.Save(m_internalNodeStream, m_blockSize, greaterNodeIndex);
 
             //update the node that used to be after the first one.
             if (oldNextNode != 0)
             {
-                foreignNode.Load(m_stream, m_blockSize, oldNextNode);
+                foreignNode.Load(m_internalNodeStream, m_blockSize, oldNextNode);
                 foreignNode.PreviousNode = greaterNodeIndex;
-                foreignNode.Save(m_stream, m_blockSize, oldNextNode);
+                foreignNode.Save(m_internalNodeStream, m_blockSize, oldNextNode);
             }
             NodeWasSplit(origionalNode.Level, currentNode, firstKeyInGreaterNode, greaterNodeIndex);
             if (CompareKeys(key, firstKeyInGreaterNode) > 0)
@@ -154,16 +154,16 @@ namespace openHistorian.Core.Unmanaged.Generic
             if (spaceToMove > 0)
             {
                 InternalNodeSetStreamOffset(offset);
-                m_stream.InsertBytes(m_internalNodeStructureSize, spaceToMove);
+                m_internalNodeStream.InsertBytes(m_internalNodeStructureSize, spaceToMove);
             }
 
             InternalNodeSetStreamOffset(offset);
-            SaveKey(key,m_stream);
-            m_stream.Write(childNodeIndex);
+            SaveKey(key, m_internalNodeStream);
+            m_internalNodeStream.Write(childNodeIndex);
 
             m_internalNodeChildCount++;
             InternalNodeSetStreamOffset(1);
-            m_stream.Write(m_internalNodeChildCount);
+            m_internalNodeStream.Write(m_internalNodeChildCount);
 
         }
 
@@ -179,10 +179,10 @@ namespace openHistorian.Core.Unmanaged.Generic
             if (InternalNodeSeekToKey(key, out offset))
             {
                 InternalNodeSetStreamOffset(offset + m_internalNodeKeySize);
-                return m_stream.ReadUInt32();
+                return m_internalNodeStream.ReadUInt32();
             }
             InternalNodeSetStreamOffset(offset - 4);
-            return m_stream.ReadUInt32();
+            return m_internalNodeStream.ReadUInt32();
         }
 
         /// <summary>
@@ -201,9 +201,9 @@ namespace openHistorian.Core.Unmanaged.Generic
             while (min <= max)
             {
                 int mid = min + (max - min >> 1);
-                m_stream.Position = startAddress + m_internalNodeStructureSize * mid;
+                m_internalNodeStream.Position = startAddress + m_internalNodeStructureSize * mid;
 
-                int tmpKey = CompareKeys(key, m_stream); ;
+                int tmpKey = CompareKeys(key, m_internalNodeStream); ;
                 if (tmpKey == 0)
                 {
                     offset = NodeHeader.Size + sizeof(uint) + m_internalNodeStructureSize * mid;
@@ -229,20 +229,20 @@ namespace openHistorian.Core.Unmanaged.Generic
         ///<returns>the index value of this new node.</returns>
         public uint InternalNodeCreateEmptyNode(byte level, uint childNodeBefore, TKey key, uint childNodeAfter)
         {
-            uint nodeAddress = AllocateNewNode();
-            m_stream.Position = nodeAddress * m_blockSize;
+            uint nodeAddress = AllocateNewInternalNode();
+            m_internalNodeStream.Position = nodeAddress * m_blockSize;
 
             //Clearing the Node
             //Level = level;
             //ChildCount = 1;
             //NextNode = 0;
             //PreviousNode = 0;
-            m_stream.Write(level);
-            m_stream.Write((short)1);
-            m_stream.Write(0L);
-            m_stream.Write(childNodeBefore);
-            SaveKey(key,m_stream);
-            m_stream.Write(childNodeAfter);
+            m_internalNodeStream.Write(level);
+            m_internalNodeStream.Write((short)1);
+            m_internalNodeStream.Write(0L);
+            m_internalNodeStream.Write(childNodeBefore);
+            SaveKey(key, m_internalNodeStream);
+            m_internalNodeStream.Write(childNodeAfter);
             return nodeAddress;
         }
 
