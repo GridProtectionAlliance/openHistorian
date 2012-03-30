@@ -88,6 +88,7 @@
     <Compile Include="Unmanaged\Generic\BPlusTreeBase_LeafNode.cs" />
     <Compile Include="Unmanaged\Generic\BPlusTreeBase_TreeHeader.cs" />
     <Compile Include="Unmanaged\Generic\BPlusTreeLongLong.cs" />
+    <Compile Include="Unmanaged\Generic\BPlusTreeBase_Cache.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\BPlusTreeBase2.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\BPlusTreeBase2_InternalNode.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\BPlusTreeBase2_LeafNode.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Unmanaged\Generic\NodeHeader.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\NodeTestStack.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\NodeTest3.cs" />
+    <Compile Include="Unmanaged\Generic\Test\NodeTestHugeSequential.cs" />
     <Compile Include="Unmanaged\Generic\Test\NodeTest2.cs" />
     <Compile Include="Unmanaged\Generic\Test\NodeTest.cs" />
     <Compile Include="Unmanaged\Generic\TimeKeyPair\KeyType.cs" />

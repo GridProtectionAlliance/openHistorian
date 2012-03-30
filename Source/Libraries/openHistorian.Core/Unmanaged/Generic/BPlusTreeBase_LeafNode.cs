@@ -22,47 +22,29 @@ namespace openHistorian.Core.Unmanaged.Generic
         TKey m_stopKey;
         int m_oldIndex;
 
-        #region [Abstract Methods]
-        public int LeafNodeSizeOfKey()
-        {
-            return SizeOfKey();
-        }
-        public void LeafNodeSaveKeyValue(TKey value, BinaryStream stream)
-        {
-            SaveKey(value, stream);
-        }
-        public TKey LeafNodeLoadKeyValue(BinaryStream stream)
-        {
-            return LoadKey(stream);
-        }
-        public int LeafNodeCompareKeys(TKey first, TKey last)
-        {
-            return CompareKeys(first, last);
-        }
-        public int LeafNodeCompareKeys(TKey first, BinaryStream stream)
-        {
-            return CompareKeys(first, stream);
-        }
-        #endregion
 
         public void LeafNodeInitialize()
         {
-            m_keySize = LeafNodeSizeOfKey();
+            m_keySize = SizeOfKey();
             m_leafStructureSize = m_keySize + SizeOfValue();
             m_maximumLeafNodeChildren = (m_blockSize - NodeHeader.Size) / (m_leafStructureSize);
         }
 
         public void LeafNodeSetCurrentNode(uint nodeIndex, bool isForWriting)
         {
+            bool changed = (m_currentNode != nodeIndex);
             m_currentNode = nodeIndex;
             m_stream.Position = nodeIndex * m_blockSize;
             m_stream.UpdateLocalBuffer(isForWriting);
 
-            if (m_stream.ReadByte() != 0)
-                throw new Exception("The current node is not a leaf.");
-            m_childCount = m_stream.ReadInt16();
-            m_previousNode = m_stream.ReadUInt32();
-            m_nextNode = m_stream.ReadUInt32();
+            if (changed)
+            {
+                if (m_stream.ReadByte() != 0)
+                    throw new Exception("The current node is not a leaf.");
+                m_childCount = m_stream.ReadInt16();
+                m_previousNode = m_stream.ReadUInt32();
+                m_nextNode = m_stream.ReadUInt32();
+            }
         }
 
         void LeafNodeSetStreamOffset(int position)
@@ -94,7 +76,7 @@ namespace openHistorian.Core.Unmanaged.Generic
 
             //lookup the first key that will be copied
             m_stream.Position = sourceStartingAddress;
-            firstKeyInGreaterNode = LeafNodeLoadKeyValue(m_stream);
+            firstKeyInGreaterNode = LoadKey(m_stream);
 
             //do the copy
             m_stream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * m_leafStructureSize);
@@ -123,7 +105,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             }
 
             NodeWasSplit(0, currentNode, firstKeyInGreaterNode, greaterNodeIndex);
-            if (LeafNodeCompareKeys(key, firstKeyInGreaterNode) > 0)
+            if (CompareKeys(key, firstKeyInGreaterNode) > 0)
             {
                 LeafNodeSetCurrentNode(greaterNodeIndex, true);
                 LeafNodeInsert(key, value);
@@ -152,7 +134,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             {
                 int mid = min + (max - min >> 1);
                 m_stream.Position = startAddress + m_leafStructureSize * mid;
-                int tmpKey = LeafNodeCompareKeys(key, m_stream);
+                int tmpKey = CompareKeys(key, m_stream);
                 if (tmpKey == 0)
                 {
                     offset = NodeHeader.Size + m_leafStructureSize * mid;
@@ -197,7 +179,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             }
 
             LeafNodeSetStreamOffset(offset);
-            LeafNodeSaveKeyValue(key, m_stream);
+            SaveKey(key, m_stream);
             SaveValue(value, m_stream);
 
             //save the header
@@ -259,9 +241,9 @@ namespace openHistorian.Core.Unmanaged.Generic
             }
             m_stream.Position = m_currentNode * m_blockSize + m_oldIndex * m_leafStructureSize + NodeHeader.Size;
             key = default(TKey);
-            key = LeafNodeLoadKeyValue(m_stream);
+            key = LoadKey(m_stream);
 
-            if (LeafNodeCompareKeys(m_stopKey, key) <= 0)
+            if (CompareKeys(m_stopKey, key) <= 0)
                 return false;
             m_oldIndex++;
             return true;

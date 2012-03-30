@@ -14,6 +14,11 @@ namespace openHistorian.Core
             Test2();
             System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.Batch;
 
+            Unmanaged.Generic.NodeTestHugeSequential.Test();
+            //return;
+            
+            ArchiveTest.Test();
+            return;
             //Unmanaged.BitArrayTest.Test();
             //Unmanaged.MemoryTest.Test();
 

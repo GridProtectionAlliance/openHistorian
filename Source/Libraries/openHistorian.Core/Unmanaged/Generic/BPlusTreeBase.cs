@@ -99,6 +99,7 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// </summary>
         void Initialize()
         {
+            InitializeCache();
             InternalNodeInitialize();
             LeafNodeInitialize();
         }
@@ -110,12 +111,13 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// <param name="value">The value to insert.</param>
         public void AddData(TKey key, TValue value)
         {
-            uint nodeIndex = m_rootIndexAddress;
-            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
-            {
-                InternalNodeSetCurrentNode(levelCount, nodeIndex, true);
-                nodeIndex = InternalNodeGetNodeIndex(key);
-            }
+            uint nodeIndex = CachedGetInternalNodeIndex(m_rootIndexLevel, m_rootIndexAddress, key);
+            //uint nodeIndex = m_rootIndexAddress;
+            //for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            //{
+            //    InternalNodeSetCurrentNode(levelCount, nodeIndex, true);
+            //    nodeIndex = InternalNodeGetNodeIndex(key);
+            //}
 
             LeafNodeSetCurrentNode(nodeIndex, true);
             if (LeafNodeInsert(key,value))
@@ -140,12 +142,15 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// <returns>Null or the Default structure value if the key does not exist.</returns>
         public TValue GetData(TKey key)
         {
-            uint nodeIndex = m_rootIndexAddress;
-            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
-            {
-                InternalNodeSetCurrentNode(levelCount, nodeIndex, false);
-                nodeIndex = InternalNodeGetNodeIndex(key);
-            }
+            uint nodeIndex = CachedGetInternalNodeIndex(m_rootIndexLevel, m_rootIndexAddress, key);
+
+            //uint nodeIndex = m_rootIndexAddress;
+            //for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            //{
+            //    InternalNodeSetCurrentNode(levelCount, nodeIndex, false);
+            //    nodeIndex = InternalNodeGetNodeIndex(key);
+            //}
+
             TValue value;
             LeafNodeSetCurrentNode(nodeIndex, false);
             if (LeafNodeGetValue(key, out value))
@@ -169,6 +174,8 @@ namespace openHistorian.Core.Unmanaged.Generic
 
         void NodeWasSplit(byte level, uint currentIndex, TKey middleKey, uint newIndex)
         {
+            ClearCache((byte)(level+1));
+            
             if (m_rootIndexLevel > level)
             {
                 uint nodeIndex = m_rootIndexAddress;

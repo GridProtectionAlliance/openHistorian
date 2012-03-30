@@ -12,6 +12,7 @@ namespace openHistorian.Core.Unmanaged
     /// </summary>
     unsafe public class MemoryStream : ISupportsBinaryStream
     {
+        public long LookupCount = 0;
         /// <summary>
         /// The number of bits in the page size.
         /// </summary>
@@ -193,6 +194,7 @@ namespace openHistorian.Core.Unmanaged
         /// <returns></returns>
         void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out IntPtr bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex)
         {
+            LookupCount++;
             firstIndex = 0;
             lastIndex = Length - 1;
             currentIndex = CalculateOffset(position);

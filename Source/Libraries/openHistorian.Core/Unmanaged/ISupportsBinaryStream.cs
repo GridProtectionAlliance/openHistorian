@@ -61,5 +61,13 @@ namespace openHistorian.Core.Unmanaged
         /// Modifies the position of the underlying stream.
         /// </summary>
         long Position { get; set; }
+        
+        ///// <summary>
+        ///// Determines if the stream can be cloned.  
+        ///// True means that cloned streams will see the exact same 
+        ///// underlying data set
+        ///// </summary>
+        ///// <returns></returns>
+        //bool SupportsCloning();
     }
 }

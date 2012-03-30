@@ -19,10 +19,6 @@ namespace openHistorian.Core.Unmanaged.Generic
         uint m_internalNodeNextNode;
         uint m_internalNodePreviousNode;
 
-        #region [Abstract Methods]
-
-        #endregion
-
         public void InternalNodeInitialize()
         {
             m_internalNodeKeySize = SizeOfKey();
@@ -44,7 +40,6 @@ namespace openHistorian.Core.Unmanaged.Generic
 
         public void InternalNodeSetCurrentNode(byte nodeLevel, uint nodeIndex, bool isForWriting)
         {
-            
             m_internalNodeCurrentNode = nodeIndex;
             m_stream.Position = nodeIndex * m_blockSize;
             m_stream.UpdateLocalBuffer(isForWriting);

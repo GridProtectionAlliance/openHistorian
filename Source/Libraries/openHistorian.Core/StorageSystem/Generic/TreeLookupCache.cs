@@ -290,8 +290,7 @@ namespace openHistorian.Core.StorageSystem.Generic
 
             m_cache[level - 1].Clear();
         }
-
-
+        
         public void GetCachedMatch(ref byte nodeLevel, ref uint nodeIndex, TKey key)
         {
             if (nodeLevel > 0)
