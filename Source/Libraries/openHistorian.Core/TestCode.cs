@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace openHistorian.Core
 {
@@ -9,16 +11,20 @@ namespace openHistorian.Core
     {
         public static void Test()
         {
-
             Unmanaged.BufferPool.SetMinimumMemoryUsage(Unmanaged.BufferPool.MaximumMemoryUsage);
-            Test2();
             System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.Batch;
-
-            //Unmanaged.Generic.NodeTestHugeSequential.Test();
+            //Test2();
             //return;
-            
-            ArchiveTest.Test();
+            //Unmanaged.Generic.NodeTestPageSize.Test();
+
+            //Unmanaged.BinaryStreamBenchmark.Run();
+            //return;
+
+            Unmanaged.Generic.NodeTestHugeSequential.Test();
             return;
+
+            //ArchiveTest.Test();
+            //return;
             //Unmanaged.BitArrayTest.Test();
             //Unmanaged.MemoryTest.Test();
 
@@ -32,21 +38,21 @@ namespace openHistorian.Core
 
             //Unmanaged.Specialized.NodeTest.Test();
 
-            //Unmanaged.Generic.NodeTest.Test();
+            Unmanaged.Generic.NodeTest.Test();
             //Unmanaged.Generic.NodeTest2.Test();
 
             //Unmanaged.Generic.NodeTestStack.Test();
-            
+
             //StorageSystem.File.DiskIOEnhanced2Test.Test();
 
-            StorageSystem.File.FileMetaDataTest.Test();
-            StorageSystem.File.FileAllocationTableTest.Test();
-            StorageSystem.File.IndexMapperTest.Test();
-            StorageSystem.File.IndexParserTest.Test();
-            StorageSystem.File.ShadowCopyAllocatorTest.Test();
-            StorageSystem.File.ArchiveFileStreamTest.Test();
-            StorageSystem.File.TransactionalEditTest.Test();
-            StorageSystem.File.FileSystemSnapshotServiceTest.Test();
+            //StorageSystem.File.FileMetaDataTest.Test();
+            //StorageSystem.File.FileAllocationTableTest.Test();
+            //StorageSystem.File.IndexMapperTest.Test();
+            //StorageSystem.File.IndexParserTest.Test();
+            //StorageSystem.File.ShadowCopyAllocatorTest.Test();
+            //StorageSystem.File.ArchiveFileStreamTest.Test();
+            //StorageSystem.File.TransactionalEditTest.Test();
+            //StorageSystem.File.FileSystemSnapshotServiceTest.Test();
 
             //openHistorian.Core.CompressionTest.Test();
 
@@ -71,11 +77,51 @@ namespace openHistorian.Core
         }
         public unsafe static void Test2()
         {
+            byte[] data = new byte[1024 * 1024];
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("size\tmicroseconds");
+
+            fixed (byte* lp = data)
+            {
+
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                for (int bit = 1; bit < 1024*1024; bit *= 2)
+                {
+                    for (int x = 0; x < 1000; x++)
+                    {
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                    }
+                    sw.Start();
+                    for (int x = 0; x < 100; x++)
+                    {
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
+                    }
+                    sw.Stop();
+                    sb.AppendLine(bit + "\t" + sw.Elapsed.TotalMilliseconds);
+                }
+
+            }
+
+            Clipboard.SetText(sb.ToString());
+            MessageBox.Show(sb.ToString());
+
+
             //long ptr1, ptr2, ptr3, ptr4, ptr5;
             //Unmanaged.Memory data4 = Unmanaged.Memory.Allocate(200 * 1024 * 1024, true);
             //Unmanaged.Memory data5 = Unmanaged.Memory.Allocate(200 * 1024 * 1024, true);
             //byte[] data1 = new byte[200 * 1024 * 1024];
-            //byte[] data2 = new byte[20 * 1024 * 1024];
+
             //byte[] data3 = new byte[2000 * 1024 * 1024];
 
 

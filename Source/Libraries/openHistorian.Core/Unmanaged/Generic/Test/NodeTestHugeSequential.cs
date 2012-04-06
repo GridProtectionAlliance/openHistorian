@@ -92,12 +92,10 @@ namespace openHistorian.Core.Unmanaged.Generic
             //var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs, 4096);
 
             var ms1 = new MemoryStream();
-            var ms2 = new MemoryStream();
             ms1.Position = 6000 * 4096;
             ms1.Write(new byte[] { 1 }, 0, 1);
             var bs1 = new BinaryStream(ms1);
-            var bs2 = new BinaryStream(ms2);
-            var tree = new BPlusTreeLongLong(bs1, bs2, 4096);
+            var tree = new BPlusTreeLongLong(bs1, 4096);
 
             long key = 0;
             long data = 0;
@@ -116,7 +114,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             }
             sw.Stop();
 
-            long lookup1 = ms1.LookupCount + ms2.LookupCount;
+            long lookup1 = ms1.LookupCount;
 
             Stopwatch sw2 = new Stopwatch();
             sw2.Start();
@@ -136,7 +134,7 @@ namespace openHistorian.Core.Unmanaged.Generic
 
             sw2.Stop();
 
-            long lookup2 = ms1.LookupCount + ms2.LookupCount - lookup1;
+            long lookup2 = ms1.LookupCount - lookup1;
 
             MessageBox.Show("Sequential Dual Stream LongLong" + Environment.NewLine +
                 (count / sw.Elapsed.TotalSeconds / 1000000).ToString() + " " + lookup1 + Environment.NewLine +
@@ -155,12 +153,10 @@ namespace openHistorian.Core.Unmanaged.Generic
             //var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs, 4096);
 
             var ms1 = new MemoryStream();
-            var ms2 = new MemoryStream();
             ms1.Position = 6000 * 4096;
             ms1.Write(new byte[] { 1 }, 0, 1);
             var bs1 = new BinaryStream(ms1);
-            var bs2 = new BinaryStream(ms2);
-            var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs1, bs2, 4096);
+            var tree = new BPlusTree<TreeTypeLong, TreeTypeLong>(bs1, 4096);
 
             TreeTypeLong key = 0;
             long data = 0;
@@ -179,7 +175,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             }
             sw.Stop();
 
-            long lookup1 = ms1.LookupCount + ms2.LookupCount;
+            long lookup1 = ms1.LookupCount;
 
             Stopwatch sw2 = new Stopwatch();
             sw2.Start();
@@ -199,7 +195,7 @@ namespace openHistorian.Core.Unmanaged.Generic
 
             sw2.Stop();
 
-            long lookup2 = ms1.LookupCount + ms2.LookupCount - lookup1;
+            long lookup2 = ms1.LookupCount - lookup1;
 
             MessageBox.Show("Sequential Dual Stream BPlusTree<Long,Long>" + Environment.NewLine +
                 (count / sw.Elapsed.TotalSeconds / 1000000).ToString() + " " + lookup1 + Environment.NewLine +
@@ -296,10 +292,8 @@ namespace openHistorian.Core.Unmanaged.Generic
             MemoryStream ms1 = new MemoryStream();
             BinaryStream bs1 = new BinaryStream(ms1);
 
-            MemoryStream ms2 = new MemoryStream();
-            BinaryStream bs2 = new BinaryStream(ms2);
 
-            m_tree = new BPlusTreeTSD(bs1, bs2, 4096);
+            m_tree = new BPlusTreeTSD(bs1, 4096);
             HistorianReader reader = new HistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
             reader.NewPoint += ReaderNewPoint;
             Stopwatch sw = new Stopwatch();
@@ -311,7 +305,6 @@ namespace openHistorian.Core.Unmanaged.Generic
             sw2.Start();
 
             long lookup1 = ms1.LookupCount;
-            long lookup2 = ms2.LookupCount;
 
 
             foreach (var pts in GetData(DateTime.MinValue, DateTime.MaxValue))
@@ -325,7 +318,7 @@ namespace openHistorian.Core.Unmanaged.Generic
 
             m_tree = null;
 
-            MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + lookup1 + " " + lookup2);
+            MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + lookup1);
             MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt);
 
         }

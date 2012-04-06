@@ -28,46 +28,49 @@ namespace openHistorian.Core.Unmanaged
     /// <summary>
     /// Implementing this interface allows a binary stream to be attached to a buffer.
     /// </summary>
-    unsafe public interface ISupportsBinaryStream
+    public interface ISupportsBinaryStream : IDisposable
     {
+        event EventHandler StreamDisposed;
+
         /// <summary>
-        /// Returns an underlying buffer that can be used to read/write data from the stream.
+        /// Gets the number of available simultaneous read/write sessions.
         /// </summary>
-        /// <param name="position">The position to use when referencing</param>
-        /// <param name="isWriting">Notifies the class the caller's intent to write to this block.</param>
-        /// <param name="bufferPointer">a buffer where reads/writes can be performed</param>
-        /// <param name="firstIndex">the first valid index in the buffer</param>
-        /// <param name="lastIndex">the last valid index in the buffer</param>
-        /// <param name="currentIndex">the index of the current position</param>
-        void GetCurrentBlock(long position, bool isWriting, out IntPtr bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex);
+        /// <remarks>This value is used to determine if a binary stream can be cloned
+        /// to improve read/write/copy performance.</remarks>
+        int RemainingSupportedIoSessions { get; }
+
         /// <summary>
-        /// Reads data from the underlying stream. Advancing the current position of the stream.
+        /// Gets a block for the following Io session.
         /// </summary>
-        /// <param name="position">The position to use when referencing</param>
-        /// <param name="data">the buffer to read into</param>
-        /// <param name="start">the starting postion in data</param>
-        /// <param name="count">the number of bytes to read.</param>
-        /// <returns>the number of bytes read.</returns>
-        int Read(long position, byte[] data, int start, int count);
+        /// <param name="ioSession">the id value for the ioSession</param>
+        /// <param name="position">the block returned must contain this position</param>
+        /// <param name="isWriting">indicates if the stream plans to write to this block</param>
+        /// <param name="firstPointer">the pointer for the first byte of the block</param>
+        /// <param name="firstPosition">the position that corresponds to <see cref="firstPointer"/></param>
+        /// <param name="length">the length of the block</param>
+        /// <param name="supportsWriting">notifies the calling class if this block supports 
+        /// writing without requiring this function to be called again if <see cref="isWriting"/> was set to false.</param>
+        void GetBlock(int ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting);
+
         /// <summary>
-        /// Writes data to the underlying stream. Advancing the current position of the stream.
+        /// Notifies the underlying stream that this IO session is not longer required.
         /// </summary>
-        /// <param name="position">The position to use when referencing</param>
-        /// <param name="data">the buffer to write to</param>
-        /// <param name="start">the starting position in data.</param>
-        /// <param name="count">the number of bytes to write.</param>
-        void Write(long position, byte[] data, int start, int count);
-        /// <summary>
-        /// Modifies the position of the underlying stream.
-        /// </summary>
-        long Position { get; set; }
+        /// <param name="ioSession">the io session id to release</param>
+        void ReleaseIoSession(int ioSession);
         
+        /// <summary>
+        /// Aquire a positive ID value for a new IO session.
+        /// </summary>
+        /// <returns>A non-negative value that may also be non-unique to represent a io session.</returns>
+        /// <remarks>If the underlying stream does not require io session ID numbers, 
+        /// it is free to return a non-unique number since it will be ignoring the value anyway.
+        /// this value cannot be negative</remarks>
+        int GetNextIoSession();
+       
         ///// <summary>
-        ///// Determines if the stream can be cloned.  
-        ///// True means that cloned streams will see the exact same 
-        ///// underlying data set
+        ///// Modifies the position of the underlying stream.
         ///// </summary>
-        ///// <returns></returns>
-        //bool SupportsCloning();
+        //long Position { get; set; }
+        
     }
 }

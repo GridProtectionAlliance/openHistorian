@@ -9,17 +9,6 @@ namespace openHistorian.Core.Unmanaged.Generic
     public class BPlusTreeTSD : BPlusTreeBase<KeyType, TreeTypeIntFloat>
     {
 
-        public BPlusTreeTSD(BinaryStream leafNodeStream, BinaryStream internNodeStream)
-            : base(leafNodeStream, internNodeStream)
-        {
-
-        }
-        public BPlusTreeTSD(BinaryStream leafNodeStream, BinaryStream internNodeStream, int blockSize)
-            : base(leafNodeStream, internNodeStream, blockSize)
-        {
-
-        }
-
         public BPlusTreeTSD(BinaryStream stream)
             : base(stream)
         {

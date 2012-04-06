@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BPlusTree_TreeHeader.cs - Gbtc
+//  BPlusTreeBase_TreeHeader.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -34,8 +34,7 @@ namespace openHistorian.Core.Unmanaged.Generic
         protected int m_blockSize;
         uint m_rootIndexAddress;
         byte m_rootIndexLevel;
-        uint m_nextUnallocatedInternalNodeBlock;
-        uint m_nextUnallocatedLeafNodeBlock;
+        uint m_nextUnallocatedBlock;
 
         void Load()
         {
@@ -44,8 +43,7 @@ namespace openHistorian.Core.Unmanaged.Generic
                 throw new Exception("Header Corrupt");
             if (m_internalNodeStream.ReadByte() != 0)
                 throw new Exception("Header Corrupt");
-            m_nextUnallocatedLeafNodeBlock = m_internalNodeStream.ReadUInt32();
-            m_nextUnallocatedInternalNodeBlock = m_internalNodeStream.ReadUInt32();
+            m_nextUnallocatedBlock = m_internalNodeStream.ReadUInt32();
             m_blockSize = m_internalNodeStream.ReadInt32();
             m_rootIndexAddress = m_internalNodeStream.ReadUInt32();
             m_rootIndexLevel = m_internalNodeStream.ReadByte();
@@ -55,8 +53,7 @@ namespace openHistorian.Core.Unmanaged.Generic
             m_internalNodeStream.Position = 0;
             m_internalNodeStream.Write(s_fileType);
             m_internalNodeStream.Write((byte)0); //Version
-            m_internalNodeStream.Write(m_nextUnallocatedLeafNodeBlock);
-            m_internalNodeStream.Write(m_nextUnallocatedInternalNodeBlock);
+            m_internalNodeStream.Write(m_nextUnallocatedBlock);
             m_internalNodeStream.Write(m_blockSize);
             m_internalNodeStream.Write(m_rootIndexAddress); //Root Index
             m_internalNodeStream.Write(m_rootIndexLevel); //Root Index
@@ -67,26 +64,10 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// The node address is block alligned.
         /// </summary>
         /// <returns></returns>
-        uint AllocateNewLeafNode()
+        uint AllocateNewNode()
         {
-            uint newBlock = m_nextUnallocatedLeafNodeBlock;
-            m_nextUnallocatedLeafNodeBlock++;
-            if (m_sameStreams)
-                m_nextUnallocatedInternalNodeBlock++;
-            return newBlock;
-        }
-        /// <summary>
-        /// Returns the node index address for a freshly allocated block.
-        /// The node address is block alligned.
-        /// </summary>
-        /// <returns></returns>
-        uint AllocateNewInternalNode()
-        {
-            uint newBlock = m_nextUnallocatedInternalNodeBlock;
-            m_nextUnallocatedInternalNodeBlock++;
-            if (m_sameStreams)
-                m_nextUnallocatedLeafNodeBlock++;
-
+            uint newBlock = m_nextUnallocatedBlock;
+            m_nextUnallocatedBlock++;
             return newBlock;
         }
 

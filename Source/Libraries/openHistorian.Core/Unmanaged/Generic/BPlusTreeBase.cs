@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BPlusTree.cs - Gbtc
+//  BPlusTreeBase.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -38,7 +38,6 @@ namespace openHistorian.Core.Unmanaged.Generic
     {
         #region [ Members ]
 
-        bool m_sameStreams=false;
         #endregion
 
         #region [ Constructors ]
@@ -46,45 +45,13 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// <summary>
         /// Opens an existing <see cref="BPlusTreeBase{TKey,TValue}"/> from the stream.
         /// </summary>
-        protected BPlusTreeBase(BinaryStream leafNodeStream, BinaryStream internNodeStream)
-        {
-            m_internalNodeStream = internNodeStream;
-            m_leafNodeStream = leafNodeStream;
-            Load();
-            Initialize();
-        }
-
-        /// <summary>
-        /// Creates an empty <see cref="BPlusTreeBase{TKey,TValue}"/>
-        /// and uses the underlying stream to save data to it.
-        /// </summary>
-        /// <param name="stream">A dedicated stream where data can be read/written to/from.</param>
-        /// <param name="blockSize">the size of one block.  This should exactly match the
-        /// amount of data space available in the underlying data object. BPlus trees get their 
-        /// performance benefit because there is fewer I/O's required to find and insert blocks.</param>
-        protected BPlusTreeBase(BinaryStream leafNodeStream, BinaryStream internNodeStream, int blockSize)
-        {
-            m_internalNodeStream = internNodeStream;
-            m_leafNodeStream = leafNodeStream;
-            m_blockSize = blockSize;
-            Initialize();
-
-            m_nextUnallocatedLeafNodeBlock = 1; //After calling m_leafNode.CreateEmptyNode, this will become 2
-            m_nextUnallocatedInternalNodeBlock = 2; //After calling m_leafNode.CreateEmptyNode, this will become 2
-            m_rootIndexAddress = LeafNodeCreateEmptyNode();
-            m_rootIndexLevel = 0;
-            Save();
-            Load();
-        }
-
-        /// <summary>
-        /// Opens an existing <see cref="BPlusTreeBase{TKey,TValue}"/> from the stream.
-        /// </summary>
         /// <param name="stream">A dedicated stream where data can be read/written to/from.</param>
         protected BPlusTreeBase(BinaryStream stream)
-            : this(stream, stream)
         {
-            m_sameStreams = true;
+            m_internalNodeStream = stream;
+            m_leafNodeStream = stream;
+            Load();
+            Initialize();
         }
 
         /// <summary>
@@ -96,9 +63,17 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// amount of data space available in the underlying data object. BPlus trees get their 
         /// performance benefit because there is fewer I/O's required to find and insert blocks.</param>
         protected BPlusTreeBase(BinaryStream stream, int blockSize)
-            : this(stream, stream, blockSize)
         {
-            m_sameStreams = true;
+            m_internalNodeStream = stream;
+            m_leafNodeStream = stream;
+            m_blockSize = blockSize;
+            Initialize();
+
+            m_nextUnallocatedBlock = 1;
+            m_rootIndexAddress = LeafNodeCreateEmptyNode();
+            m_rootIndexLevel = 0;
+            Save();
+            Load();
         }
 
         #endregion
@@ -140,12 +115,6 @@ namespace openHistorian.Core.Unmanaged.Generic
         public void AddData(TKey key, TValue value)
         {
             uint nodeIndex = CachedGetInternalNodeIndex(m_rootIndexLevel, m_rootIndexAddress, key);
-            //uint nodeIndex = m_rootIndexAddress;
-            //for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
-            //{
-            //    InternalNodeSetCurrentNode(levelCount, nodeIndex, true);
-            //    nodeIndex = InternalNodeGetNodeIndex(key);
-            //}
 
             LeafNodeSetCurrentNode(nodeIndex, true);
             if (LeafNodeInsert(key, value))
@@ -171,13 +140,6 @@ namespace openHistorian.Core.Unmanaged.Generic
         public TValue GetData(TKey key)
         {
             uint nodeIndex = CachedGetInternalNodeIndex(m_rootIndexLevel, m_rootIndexAddress, key);
-
-            //uint nodeIndex = m_rootIndexAddress;
-            //for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
-            //{
-            //    InternalNodeSetCurrentNode(levelCount, nodeIndex, false);
-            //    nodeIndex = InternalNodeGetNodeIndex(key);
-            //}
 
             TValue value;
             LeafNodeSetCurrentNode(nodeIndex, false);

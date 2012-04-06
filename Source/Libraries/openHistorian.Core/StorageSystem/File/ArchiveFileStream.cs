@@ -36,7 +36,9 @@ namespace openHistorian.Core.StorageSystem.File
     {
 
         #region [ Members ]
-        
+
+        public event EventHandler StreamDisposed;
+
         /// <summary>
         /// Determines if the file stream has been disposed.
         /// </summary>
@@ -377,32 +379,6 @@ namespace openHistorian.Core.StorageSystem.File
             m_position++;
         }
 
-        int ISupportsBinaryStream.Read(long position, byte[] data, int start, int count)
-        {
-            Position = position;
-            return Read(data, start, count);
-        }
-
-        void ISupportsBinaryStream.Write(long position, byte[] data, int start, int count)
-        {
-            Position = position;
-            Write(data, start, count);
-        }
-
-        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out IntPtr bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex)
-        {
-            if (isWriting && IsReadOnly)
-                throw new Exception("File is read only");
-            Position = position;
-            PrepareBlockForWrite();
-            if (isWriting)
-                m_isBlockDirty = true;
-            firstIndex = 0;
-            lastIndex = (int)m_positionBlock.Length - 1;
-            currentIndex = m_positionBlock.Offset(m_position);
-            bufferPointer = (IntPtr)m_buffer.Pointer;
-        }
-
         /// <summary>
         /// Writes the following data to the stream.
         /// </summary>
@@ -441,6 +417,8 @@ namespace openHistorian.Core.StorageSystem.File
         {
             if (!m_disposed)
             {
+                if (StreamDisposed != null)
+                    StreamDisposed.Invoke(this, EventArgs.Empty);
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.
@@ -460,11 +438,38 @@ namespace openHistorian.Core.StorageSystem.File
 
         #endregion
 
+        int m_remainingSessions = 1;
+        int ISupportsBinaryStream.RemainingSupportedIoSessions
+        {
+            get
+            {
+                return m_remainingSessions;
+            }
+        }
 
+        void ISupportsBinaryStream.GetBlock(int ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+        {
+            if (isWriting && IsReadOnly)
+                throw new Exception("File is read only");
+            Position = position;
+            PrepareBlockForWrite();
+            if (isWriting)
+                m_isBlockDirty = true;
+            firstPosition = m_positionBlock.VirtualPosition;
+            length = (int)m_positionBlock.Length;
+            firstPointer = (IntPtr)m_buffer.Pointer;
+            supportsWriting = m_isBlockDirty;
+        }
 
+        void ISupportsBinaryStream.ReleaseIoSession(int ioSession)
+        {
+            m_remainingSessions = 1;
+        }
 
-
-
-
+        int ISupportsBinaryStream.GetNextIoSession()
+        {
+            m_remainingSessions = 0;
+            return 0;
+        }
     }
 }

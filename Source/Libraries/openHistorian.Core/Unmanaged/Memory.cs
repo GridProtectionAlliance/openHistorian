@@ -151,68 +151,265 @@ namespace openHistorian.Core.Unmanaged
         }
 
 
+        public static unsafe void CopyWinApi(byte* src, byte* dest, int count)
+        {
+            //Test.MemoryMethod.MemCpy.Invoke(dest, src, (uint)count);
+            //return;
+
+            WinApi.MoveMemory(dest, src, count);
+            return;
+        }
+
+        public static unsafe void Copy4(byte* src, byte* dest, int count)
+        {
+            long* pDest = (long*)(dest + count);
+            long* pSrc = (long*)(src + count);
+
+            int block = count >> 4;
+            for (int i = 0; i < block; i++)
+            {
+                pDest[-1] = pSrc[-1];
+                pDest[-2] = pSrc[-2];
+                pDest -= 2;
+                pSrc -= 2;
+            }
+
+            dest = (byte*)(pDest);
+            src = (byte*)(pSrc);
+            count = count - (block << 4);
+
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    dest--; src--;
+                    *dest = *src;
+                }
+            }
+        }
+
+        public static unsafe void Copy32(byte* src, byte* dest, int count)
+        {
+            while (count >= 32)
+            {
+                count -= 8;
+                *(long*)(dest + count) = *(long*)(src + count);
+                count -= 8;
+                *(long*)(dest + count) = *(long*)(src + count);
+                count -= 8;
+                *(long*)(dest + count) = *(long*)(src + count);
+                count -= 8;
+                *(long*)(dest + count) = *(long*)(src + count);
+            }
+            if (count >= 16)
+            {
+                count -= 16;
+                *(long*)(dest + count + 8) = *(long*)(src + count + 8);
+                *(long*)(dest + count) = *(long*)(src + count);
+            }
+            if (count >= 8)
+            {
+                count -= 8;
+                *(long*)(dest + count) = *(long*)(src + count);
+            }
+            if (count >= 2)
+            {
+                count -= 4;
+                *(int*)(dest + count) = *(int*)(src + count);
+            }
+            if (count >= 2)
+            {
+                count -= 2;
+                *(short*)(dest + count) = *(short*)(src + count);
+            }
+            if (count > 0)
+            {
+                dest[0] = src[0];
+            }
+        }
+        
+        public static unsafe void CopyLong2(byte* src, byte* dest, int count)
+        {
+            while (count >= 16)
+            {
+                count -= 16;
+                *(long*)(dest + count+8) = *(long*)(src + count+8);
+                *(long*)(dest + count) = *(long*)(src + count);
+            }
+            if (count >= 8)
+            {
+                count -= 8;
+                *(long*)(dest + count) = *(long*)(src + count);
+            }
+            if (count >= 2)
+            {
+                count -= 4;
+                *(int*)(dest + count) = *(int*)(src + count);
+            }
+            if (count >= 2)
+            {
+                count -= 2;
+                *(short*)(dest + count) = *(short*)(src + count);
+            }
+            if (count > 0)
+            {
+                dest[0] = src[0];
+            }
+        }
+
         public static unsafe void Copy(byte* src, byte* dest, int count)
         {
-            //WinApi.MoveMemory(dest, src, count);
+            //WinApi.MoveMemory(dest,src,count);
+
+            while (count >= 8)
+            {
+                count -= 8;
+                *(long*)(dest + count) = *(long*)(src + count);
+            }
+            if (count >= 2)
+            {
+                count -= 4;
+                *(int*)(dest + count) = *(int*)(src + count);
+            }
+            if (count >= 2)
+            {
+                count -= 2;
+                *(short*)(dest + count) = *(short*)(src + count);
+            }
+            if (count > 0)
+            {
+                dest[0] = src[0];
+            }
+        }
+        public static unsafe void CopyInt(byte* src, byte* dest, int count)
+        {
+            while (count >= 4)
+            {
+                count -= 4;
+                *(int*)(dest + count) = *(int*)(src + count);
+            }
+            if (count >= 2)
+            {
+                count -= 2;
+                *(short*)(dest + count) = *(short*)(src + count);
+            }
+            if (count > 0)
+            {
+                dest[0] = src[0];
+            }
+        }
+
+        public static unsafe void CopyShort(byte* src, byte* dest, int count)
+        {
+            while (count >= 2)
+            {
+                count -= 2;
+                *(short*)(dest + count) = *(short*)(src + count);
+            }
+            if ((count & 1) != 0)
+            {
+                dest[0] = src[0];
+            }
+        }
+
+        public static unsafe void CopyByte(byte* src, byte* dest, int count)
+        {
+            while (count > 0)
+            {
+                count--;
+                dest[count] = src[count];
+            }
+        }
+
+        public static unsafe void Copy2(byte* src, byte* dest, int count)
+        {
+            //Test.MemoryMethod.MemCpy.Invoke(dest, src, (uint)count);
             //return;
-            if (src < dest && src + count > dest) //Requires a copy right to left
+            int block = count >> 3;
+
+
+            //if (src < dest && src + count > dest) //Requires a copy right to left
+            //{
+            //    //WinApi.MoveMemory(dest, src, count);
+            //return;
+
+
+
+            long* pDest = (long*)(dest + count);
+            long* pSrc = (long*)(src + count);
+
+            for (int i = 0; i < block; i++)
             {
-                int block;
+                pDest--;
+                pSrc--;
+                *pDest = *pSrc;
+            }
+            dest = (byte*)(pDest);
+            src = (byte*)(pSrc);
+            count = count - (block << 3);
 
-                block = count >> 3;
-
-                long* pDest = (long*)(dest + count);
-                long* pSrc = (long*)(src + count);
-
-                for (int i = 0; i < block; i++)
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
                 {
-                    pDest--;
-                    pSrc--;
-                    *pDest = *pSrc;
-                }
-                dest = (byte*)(pDest);
-                src = (byte*)(pSrc);
-                count = count - (block << 3);
-
-                if (count > 0)
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        dest--; src--;
-                        *dest = *src;
-                    }
+                    dest--; src--;
+                    *dest = *src;
                 }
             }
-            else
+            //}
+            //else
+            //{
+            //    //Test.MemoryMethod.MemCpy.Invoke(dest, src, (uint)count);
+            //    //return;
+
+            //    long* pDest = (long*)dest;
+            //    long* pSrc = (long*)src;
+
+            //    for (int i = 0; i < block; i++)
+            //    {
+            //        *pDest = *pSrc;
+            //        pDest++;
+            //        pSrc++;
+            //    }
+            //    dest = (byte*)pDest;
+            //    src = (byte*)pSrc;
+            //    count = count - (block << 3);
+
+            //    if (count > 0)
+            //    {
+            //        for (int i = 0; i < count; i++)
+            //        {
+            //            *dest = *src; dest++; src++;
+            //        }
+            //    }
+            //}
+        }
+
+        public static unsafe void Copy3(byte* src, byte* dest, int count)
+        {
+            int block = count >> 3;
+
+            long* pDest = (long*)(dest + count);
+            long* pSrc = (long*)(src + count);
+
+            for (int i = 0; i < block; i++)
             {
-                int block;
+                pDest--;
+                pSrc--;
+                *pDest = *pSrc;
+            }
+            dest = (byte*)(pDest);
+            src = (byte*)(pSrc);
+            count = count - (block << 3);
 
-                block = count >> 3;
-
-                long* pDest = (long*)dest;
-                long* pSrc = (long*)src;
-
-                for (int i = 0; i < block; i++)
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
                 {
-                    *pDest = *pSrc;
-                    pDest++;
-                    pSrc++;
-                }
-                dest = (byte*)pDest;
-                src = (byte*)pSrc;
-                count = count - (block << 3);
-
-                if (count > 0)
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        *dest = *src; dest++; src++;
-                    }
+                    dest--; src--;
+                    *dest = *src;
                 }
             }
-
-
-
         }
 
         public static unsafe void Clear(byte* pointer, int length)

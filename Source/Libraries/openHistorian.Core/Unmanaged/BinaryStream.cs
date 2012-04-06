@@ -1,42 +1,126 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.CompilerServices;
+﻿//******************************************************************************************************
+//  BinaryStream.cs - Gbtc
+//
+//  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://www.opensource.org/licenses/eclipse-1.0.php
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  4/6/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
+//       
+//
+//******************************************************************************************************
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace openHistorian.Core.Unmanaged
 {
-    public unsafe class BinaryStream
+    public unsafe class BinaryStream : IDisposable
     {
-        int m_currentIndex;
-        int m_lastIndex;
-        int m_lastIndexWrite;
-        int m_firstIndex;
-        int m_origionalIndex;
-        long m_currentPosition;
 
-        byte* m_buffer;
+        #region [ Members ]
+
+        bool m_disposed;
+        /// <summary>
+        /// The position that corresponds to the first byte in the buffer.
+        /// </summary>
+        long m_firstPosition;
+        /// <summary>
+        /// Contains the position for the last position
+        /// </summary>
+        long m_lastPosition;
+        /// <summary>
+        /// the current position data.
+        /// </summary>
+        byte* m_current;
+        /// <summary>
+        /// the first position of the block
+        /// </summary>
+        byte* m_first;
+        /// <summary>
+        /// one past the last address for reading
+        /// </summary>
+        byte* m_lastRead;
+        /// <summary>
+        /// one past the last address for writing
+        /// </summary>
+        byte* m_lastWrite;
+
+        int m_mainIoSession;
+
+        int m_secondaryIoSession;
 
         ISupportsBinaryStream m_stream;
+
         byte[] m_temp;
 
+        #endregion
+
+        #region [ Constructors ]
+
+        /// <summary>
+        /// Creates a <see cref="BinaryStream"/> that is at position 0 of the provided stream.
+        /// </summary>
+        /// <param name="stream">The base stream to use.</param>
         public BinaryStream(ISupportsBinaryStream stream)
         {
             m_temp = new byte[16];
             m_stream = stream;
-            m_currentPosition = stream.Position;
-            Clear();
+            m_firstPosition = 0;
+            m_current = null;
+            m_first = null;
+            m_lastRead = null;
+            m_lastWrite = null;
+            if (stream.RemainingSupportedIoSessions < 1)
+                throw new Exception("Stream has run out of read sessions");
+            m_mainIoSession = stream.GetNextIoSession();
+            if (m_mainIoSession < 0)
+                throw new Exception("Invalid Session ID");
+            if (stream.RemainingSupportedIoSessions >= 1)
+            {
+                m_secondaryIoSession = stream.GetNextIoSession();
+                if (m_secondaryIoSession < 0)
+                    throw new Exception("Invalid Session ID");
+            }
+            m_stream.StreamDisposed += OnStreamDisposed;
         }
 
-        void Clear()
+        /// <summary>
+        /// Releases the unmanaged resources before the <see cref="BinaryStream"/> object is reclaimed by <see cref="GC"/>.
+        /// </summary>
+        ~BinaryStream()
         {
-            m_buffer = null;
-            m_firstIndex = 0;
-            m_lastIndex = -1;
-            m_lastIndexWrite = -1;
-            m_currentIndex = 0;
-            m_origionalIndex = 0;
+            Dispose(false);
+        }
+
+        #endregion
+
+        #region [ Properties ]
+
+        /// <summary>
+        /// Determines if the binary stream can be cloned.  
+        /// Since a base stream may only be able to support a definate 
+        /// number of concurrent IO Sessions, this should be analized
+        /// before cloning the stream.
+        /// </summary>
+        public bool SupportsAnotherClone
+        {
+            get
+            {
+                return m_stream.RemainingSupportedIoSessions > 0;
+            }
         }
 
         /// <summary>
@@ -49,20 +133,22 @@ namespace openHistorian.Core.Unmanaged
         {
             get
             {
-                return m_currentPosition + (m_currentIndex - m_origionalIndex);
+                return m_firstPosition + (m_current - m_first);
             }
             set
             {
-                long newCurrentIndex = m_origionalIndex + (value - m_currentPosition);
-                if (newCurrentIndex >= m_firstIndex && newCurrentIndex <= m_lastIndex)
+                if (m_firstPosition <= value && value < m_lastPosition)
                 {
-                    m_currentIndex = (int)newCurrentIndex;
+                    m_current = m_first + (value - m_firstPosition);
                 }
                 else
                 {
-                    //If set outside the bounds of the current block.
-                    Clear();
-                    m_currentPosition = value;
+                    m_firstPosition = value;
+                    m_lastPosition = value;
+                    m_current = null;
+                    m_first = null;
+                    m_lastRead = null;
+                    m_lastWrite = null;
                 }
             }
         }
@@ -70,110 +156,93 @@ namespace openHistorian.Core.Unmanaged
         /// <summary>
         /// Returns the number of bytes available at the end of the stream.
         /// </summary>
-        int RemainingLength
+        long RemainingReadLength
         {
             get
             {
-                return (m_lastIndex - m_currentIndex) + 1;
+                return (m_lastRead - m_current);
             }
         }
         /// <summary>
         /// Returns the number of bytes available at the end of the stream for writing purposes.
         /// </summary>
-        int RemainingLengthWrite
+        long RemainingWriteLength
         {
             get
             {
-                return (m_lastIndexWrite - m_currentIndex) + 1;
+                return (m_lastWrite - m_current);
             }
         }
+        #endregion
+
+        #region [ Methods ]
 
         /// <summary>
-        /// Since all read/write operations are cached, calling this will update the underlying stream's position.
+        /// Clones a binary stream if it is supported.  Check <see cref="SupportsAnotherClone"/> before calling this method.
         /// </summary>
-        public void FlushToUnderlyingStream()
+        /// <returns></returns>
+        public BinaryStream CloneStream()
         {
-            m_stream.Position = Position;
-            m_currentPosition = Position;
-            //ToDo: Consider not modifing any of the local buffer parameters.
-            Clear();
+            if (!SupportsAnotherClone)
+                throw new Exception("Base stream does not support additional clones");
+            return new BinaryStream(m_stream);
         }
 
-        public bool GetRawDataBlock(bool isWriting, out byte* buffer, out int currentIndex, out int validLength)
+
+        /// <summary>
+        /// Aquires the underlying block if direct read/write access is desired to increase speed.
+        /// However, once the position of this stream has been moved, this block is no longer valid.
+        /// So be careful.
+        /// </summary>
+        /// <param name="isWriting">determines if writing access is desired.</param>
+        /// <param name="buffer">the pointer to the first byte of the structure</param>
+        /// <param name="currentIndex">the index of the current position</param>
+        /// <param name="validLength">the length of the block</param>
+        public void GetRawDataBlock(bool isWriting, out byte* buffer, out int currentIndex, out int validLength)
         {
             if (isWriting)
             {
-                if (RemainingLengthWrite <= 0)
+                if (RemainingWriteLength <= 0)
                     UpdateLocalBuffer(true);
-                buffer = m_buffer;
-                currentIndex = m_currentIndex;
-                validLength = RemainingLengthWrite;
+                buffer = m_first;
+                currentIndex = (int)(m_current - m_first);
+                validLength = (int)RemainingWriteLength;
             }
             else
             {
-                if (RemainingLength <= 0)
+                if (RemainingReadLength <= 0)
                     UpdateLocalBuffer(false);
-                buffer = m_buffer;
-                currentIndex = m_currentIndex;
-                validLength = RemainingLength;
+                buffer = m_first;
+                currentIndex = (int)(m_current - m_first);
+                validLength = (int)RemainingReadLength;
             }
-            return true;
         }
-
-
-        //public void PositionSet(long value)
-        //{
-        //    //If set outside the bounds of the current block.
-        //    Clear();
-        //    m_currentPosition = value;
-        //}
-        //public void PositionDecrement(int value)
-        //{
-        //    m_currentIndex -= value;
-        //    //if (m_currentIndex < m_firstIndex)
-        //    //{
-        //    //    m_currentPosition = Position;
-        //    //    Clear();
-        //    //}
-        //}
-        //public void PositionIncrement(int value)
-        //{
-        //    m_currentIndex += value;
-        //    //if (m_currentIndex < m_firstIndex)
-        //    //{
-        //    //    m_currentPosition = Position;
-        //    //    Clear();
-        //    //}
-        //}
 
         /// <summary>
         /// Updates the local buffer data.
         /// </summary>
-        /// <param name="isWriting"></param>
-        /// <remarks>This is called when there is not enough bytes in the buffer to store the available data.</remarks>
+        /// <param name="isWriting">hints to the stream if write access is desired.</param>
         public void UpdateLocalBuffer(bool isWriting)
         {
-            //if (handle.IsAllocated)
-            //    handle.Free();
-            if (isWriting && RemainingLengthWrite > 0 || !isWriting && RemainingLength>0)
+            //If the block block is already looked up, skip this step.
+            if (isWriting && RemainingWriteLength > 0 || !isWriting && RemainingReadLength > 0)
                 return;
 
-
             IntPtr buffer;
-            m_currentPosition = Position;
-            m_stream.GetCurrentBlock(m_currentPosition, isWriting, out buffer, out m_firstIndex, out m_lastIndex, out m_currentIndex);
+            long position = Position;
+            bool supportsWrite;
+            int validLength;
 
-            m_buffer = (byte*)buffer;
+            m_stream.GetBlock(m_mainIoSession, position, isWriting, out buffer, out m_firstPosition, out validLength, out supportsWrite);
+            m_first = (byte*)buffer;
+            m_lastRead = m_first + validLength;
+            m_current = m_first + (position - m_firstPosition);
+            m_lastPosition = m_firstPosition + validLength;
 
-            m_origionalIndex = m_currentIndex;
-
-            //handle = GCHandle.Alloc(m_buffer, GCHandleType.Pinned);
-            //f_buffer = (byte*)handle.AddrOfPinnedObject().ToPointer();
-
-            if (isWriting)
-                m_lastIndexWrite = m_lastIndex;
+            if (supportsWrite)
+                m_lastWrite = m_lastRead;
             else
-                m_lastIndexWrite = -1;
+                m_lastWrite = m_first;
         }
 
         #region Writing
@@ -186,34 +255,67 @@ namespace openHistorian.Core.Unmanaged
         /// <param name="length"></param>
         public void Copy(long source, long destination, int length)
         {
-            //ToDo: Consider finding some way to not require creating a temporary buffer.
-            //There is an error in this copy code. For an ArchiveDataStream, the same buffer is presented twice
-            //And therefore cannot 
+            if (source < 0)
+                throw new ArgumentException("value cannot be less than zero", "source");
+            if (destination < 0)
+                throw new ArgumentException("value cannot be less than zero", "destination");
+            if (length < 0)
+                throw new ArgumentException("value cannot be less than zero", "length");
 
-            //byte[] buffer1, buffer2;
-            //int firstIndex1, firstIndex2, lastIndex1, lastIndex2, currentIndex1, currentIndex2;
+            if (length == 0 || source == destination)
+                return;
 
-            //m_stream.GetCurrentBlock(source, false, out buffer1, out firstIndex1, out lastIndex1, out currentIndex1);
-            //m_stream.GetCurrentBlock(destination, true, out buffer2, out firstIndex2, out lastIndex2, out currentIndex2);
+            Position = source;
+            UpdateLocalBuffer(false);
 
-            //if (lastIndex1 - currentIndex1 + 1 >= length && lastIndex2 - currentIndex2 + 1 >= length) //both source and destination are within the same buffer
-            //{
-            //    Buffer.BlockCopy(buffer1, currentIndex1, buffer2, currentIndex2, length);
-            //}
-            //else if (lastIndex1 - currentIndex1 + 1 >= length) //only the source is within the same buffer
-            //{
-            //    Position = source;
-            //    Read(buffer2, currentIndex2, length);
-            //}
-            //else
-            //{
+            bool sourceAndDesinationOverlap = (source < destination && source + length >= destination);
+            bool containsSource = (length <= RemainingReadLength);
+            bool containsDestination = (m_firstPosition <= destination && destination + length < m_lastPosition);
+
+            if (containsSource && containsDestination)
+            {
+                UpdateLocalBuffer(true);
+
+                byte* src = m_current;
+                byte* dst = m_current + (destination - source);
+
+                if (sourceAndDesinationOverlap)
+                    Memory.CopyWinApi(src, dst, length);
+                else
+                    MemoryMethod.MemCpy.Invoke(dst,src,(uint)length);
+                return;
+            }
+
+            if (m_secondaryIoSession >= 0)
+            {
+                IntPtr prt;
+                long pos;
+                int secLength;
+                bool supportsWrite;
+                m_stream.GetBlock(m_secondaryIoSession, destination, true, out prt, out pos, out secLength, out supportsWrite);
+                containsDestination = (pos <= destination && destination + length < pos + secLength);
+
+                if (containsSource && containsDestination)
+                {
+                    byte* src = m_current;
+                    byte* dst = (byte*)prt + (destination - pos);
+
+                    if (sourceAndDesinationOverlap)
+                        Memory.CopyWinApi(src, dst, length);
+                    else
+                        MemoryMethod.MemCpy.Invoke(dst, src, (uint)length);
+                    
+                    return;
+                }
+
+            }
+
             //manually perform the copy
             byte[] data = new byte[length];
             Position = source;
             Read(data, 0, data.Length);
             Position = destination;
             Write(data, 0, data.Length);
-            //}
         }
 
         /// <summary>
@@ -228,39 +330,8 @@ namespace openHistorian.Core.Unmanaged
         /// </remarks>
         public void InsertBytes(int numberOfBytes, int lengthOfValidDataToShift)
         {
-            //Future Improvements: Add more functions for popular moves, like shift by 8 or shift by 12...
-            //   Also if on a boundry, do something other than copy the entire contents into an array.
-            //   However, all inserts will likely on be on the same page and therefore this last speed optimization may just complecate the code.
-
-            if (numberOfBytes < 0)
-                throw new ArgumentException("numberOfBytes", "value cannot be less than zero");
-            if (lengthOfValidDataToShift < 0)
-                throw new ArgumentException("lengthOfValidDataToShift", "value cannot be less than zero");
-
-            if (numberOfBytes == 0 || lengthOfValidDataToShift == 0)
-                return;
-
-            if (m_lastIndexWrite < 0) //Make sure we are in write mode.
-                UpdateLocalBuffer(true);
-
-            if (RemainingLengthWrite >= numberOfBytes + lengthOfValidDataToShift)
-            {
-
-                Memory.Copy(m_buffer + m_currentIndex, m_buffer + m_currentIndex + numberOfBytes, lengthOfValidDataToShift);
-                //Buffer.BlockCopy(m_buffer, m_currentIndex, m_buffer, m_currentIndex + numberOfBytes, lengthOfValidDataToShift);
-                //Array.Copy(m_buffer, m_currentIndex, m_buffer, m_currentIndex + numberOfBytes, lengthOfValidDataToShift);
-            }
-            else
-            {
-                byte[] data = new byte[lengthOfValidDataToShift];
-                Read(data, 0, lengthOfValidDataToShift);
-                Position -= lengthOfValidDataToShift - numberOfBytes;
-                Write(data, 0, lengthOfValidDataToShift);
-                Position -= lengthOfValidDataToShift + numberOfBytes;
-            }
+            Copy(Position, Position + numberOfBytes, lengthOfValidDataToShift);
         }
-
-
 
         /// <summary>
         /// Removes a certain number of bytes from the stream, shifting valid data after this location to the left.  The stream's position remains unchanged. 
@@ -276,54 +347,26 @@ namespace openHistorian.Core.Unmanaged
         /// </remarks>
         public void RemoveBytes(int numberOfBytes, int lengthOfValidDataToShift)
         {
-            //Future Improvements: Add more functions for popular moves, like shift by 8 or shift by 12...
-            //   Also if on a boundry, do something other than copy the entire contents into an array.
-            //   However, all inserts will likely on be on the same page and therefore this last speed optimization may just complecate the code.
-
-            if (numberOfBytes < 0)
-                throw new ArgumentException("numberOfBytes", "value cannot be less than zero");
-            if (lengthOfValidDataToShift < 0)
-                throw new ArgumentException("lengthOfValidDataToShift", "value cannot be less than zero");
-
-            if (numberOfBytes == 0 || lengthOfValidDataToShift == 0)
-                return;
-
-            if (m_lastIndexWrite < 0) //Make sure we are in write mode.
-                UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= numberOfBytes + lengthOfValidDataToShift)
-            {
-                Memory.Copy(m_buffer + m_currentIndex + numberOfBytes, m_buffer + m_currentIndex, lengthOfValidDataToShift);
-                //Array.Copy(m_buffer, m_currentIndex + numberOfBytes, m_buffer, m_currentIndex, lengthOfValidDataToShift);
-                //Array.Copy(m_buffer, m_currentIndex + numberOfBytes, m_buffer, m_currentIndex, lengthOfValidDataToShift);
-            }
-            else
-            {
-                byte[] data = new byte[lengthOfValidDataToShift];
-                Position += numberOfBytes;
-                Read(data, 0, lengthOfValidDataToShift);
-                Position -= lengthOfValidDataToShift + numberOfBytes;
-                Write(data, 0, lengthOfValidDataToShift);
-                Position -= lengthOfValidDataToShift;
-            }
+            Copy(Position + numberOfBytes, Position, lengthOfValidDataToShift);
         }
 
-        #region Helper Types
+        //#region Helper Types
 
-        public void Write(long value1, long value2)
-        {
-            const int size = 16;
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
-            {
-                *(long*)(m_buffer + m_currentIndex) = value1;
-                *(long*)(m_buffer + m_currentIndex + 8) = value2;
-                m_currentIndex += size;
-                return;
-            }
-            Write2(value1);
-            Write2(value2);
-        }
+        //public void Write(long value1, long value2)
+        //{
+        //    const int size = 16;
+        //    if (m_lastIndexWrite - m_currentIndex >= size - 1)
+        //    {
+        //        *(long*)(m_buffer + m_currentIndex) = value1;
+        //        *(long*)(m_buffer + m_currentIndex + 8) = value2;
+        //        m_currentIndex += size;
+        //        return;
+        //    }
+        //    Write2(value1);
+        //    Write2(value2);
+        //}
 
-        #endregion
+        //#endregion
 
         #region Derived Types
         public void Write(sbyte value)
@@ -356,11 +399,11 @@ namespace openHistorian.Core.Unmanaged
         public void Write(byte value)
         {
             const int size = sizeof(byte);
-            if (m_lastIndexWrite >= m_currentIndex) //RemainingLenghtWrite >= size.
+            byte* cur = m_current;
+            if (cur < m_lastWrite)
             {
-                //f_buffer[m_currentIndex] = value;
-                m_buffer[m_currentIndex] = value;
-                m_currentIndex += size;
+                *cur = value;
+                m_current = cur + size;
                 return;
             }
             Write2(value);
@@ -368,12 +411,12 @@ namespace openHistorian.Core.Unmanaged
         void Write2(byte value)
         {
             const int size = sizeof(byte);
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                m_buffer[m_currentIndex] = value;
-                m_currentIndex += size;
+                *m_current = value;
+                m_current += size;
                 return;
             }
             m_temp[0] = value;
@@ -382,10 +425,11 @@ namespace openHistorian.Core.Unmanaged
         public void Write(short value)
         {
             const int size = sizeof(short);
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* cur = m_current;
+            if (cur + size <= m_lastWrite)
             {
-                *(short*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(short*)cur = value;
+                m_current = cur + size;
                 return;
             }
             Write2(value);
@@ -393,12 +437,12 @@ namespace openHistorian.Core.Unmanaged
         void Write2(short value)
         {
             const int size = sizeof(short);
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                *(short*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(short*)m_current = value;
+                m_current += size;
                 return;
             }
             m_temp[0] = (byte)value;
@@ -408,10 +452,11 @@ namespace openHistorian.Core.Unmanaged
         public void Write(int value)
         {
             const int size = sizeof(int);
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* cur = m_current;
+            if (cur + size <= m_lastWrite)
             {
-                *(int*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(int*)cur = value;
+                m_current = cur + size;
                 return;
             }
             Write2(value);
@@ -419,12 +464,12 @@ namespace openHistorian.Core.Unmanaged
         void Write2(int value)
         {
             const int size = sizeof(int);
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                *(int*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(int*)m_current = value;
+                m_current = m_current + size;
                 return;
             }
             fixed (byte* lp = m_temp)
@@ -436,10 +481,11 @@ namespace openHistorian.Core.Unmanaged
         public void Write(float value)
         {
             const int size = sizeof(float);
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* cur = m_current;
+            if (cur + size <= m_lastWrite)
             {
-                *(float*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(float*)cur = value;
+                m_current = cur + size;
                 return;
             }
             Write2(value);
@@ -447,12 +493,12 @@ namespace openHistorian.Core.Unmanaged
         void Write2(float value)
         {
             const int size = sizeof(float);
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                *(float*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(float*)m_current = value;
+                m_current = m_current + size;
                 return;
             }
             fixed (byte* lp = m_temp)
@@ -464,10 +510,11 @@ namespace openHistorian.Core.Unmanaged
         public void Write(long value)
         {
             const int size = sizeof(long);
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* cur = m_current;
+            if (cur + size <= m_lastWrite)
             {
-                *(long*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(long*)cur = value;
+                m_current = cur + size;
                 return;
             }
             Write2(value);
@@ -475,12 +522,12 @@ namespace openHistorian.Core.Unmanaged
         void Write2(long value)
         {
             const int size = sizeof(long);
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                *(long*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(long*)m_current = value;
+                m_current = m_current + size;
                 return;
             }
             fixed (byte* lp = m_temp)
@@ -492,10 +539,11 @@ namespace openHistorian.Core.Unmanaged
         public void Write(double value)
         {
             const int size = sizeof(double);
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* cur = m_current;
+            if (cur + size <= m_lastWrite)
             {
-                *(double*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(double*)cur = value;
+                m_current = cur + size;
                 return;
             }
             Write2(value);
@@ -503,12 +551,12 @@ namespace openHistorian.Core.Unmanaged
         void Write2(double value)
         {
             const int size = sizeof(double);
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                *(double*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(double*)m_current = value;
+                m_current = m_current + size;
                 return;
             }
             fixed (byte* lp = m_temp)
@@ -520,10 +568,11 @@ namespace openHistorian.Core.Unmanaged
         public void Write(DateTime value)
         {
             const int size = 8;
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* cur = m_current;
+            if (cur + size <= m_lastWrite)
             {
-                *(DateTime*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(DateTime*)cur = value;
+                m_current = cur + size;
                 return;
             }
             Write2(value);
@@ -531,12 +580,12 @@ namespace openHistorian.Core.Unmanaged
         void Write2(DateTime value)
         {
             const int size = 8;
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                *(DateTime*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(DateTime*)m_current = value;
+                m_current = m_current + size;
                 return;
             }
             fixed (byte* lp = m_temp)
@@ -548,10 +597,11 @@ namespace openHistorian.Core.Unmanaged
         public void Write(decimal value)
         {
             const int size = sizeof(decimal);
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* cur = m_current;
+            if (cur + size <= m_lastWrite)
             {
-                *(decimal*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(decimal*)cur = value;
+                m_current = cur + size;
                 return;
             }
             Write2(value);
@@ -559,12 +609,12 @@ namespace openHistorian.Core.Unmanaged
         void Write2(decimal value)
         {
             const int size = sizeof(decimal);
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                *(decimal*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(decimal*)m_current = value;
+                m_current = m_current + size;
                 return;
             }
             fixed (byte* lp = m_temp)
@@ -576,10 +626,11 @@ namespace openHistorian.Core.Unmanaged
         public void Write(Guid value)
         {
             const int size = 16;
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* cur = m_current;
+            if (cur + size <= m_lastWrite)
             {
-                *(Guid*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(Guid*)cur = value;
+                m_current = cur + size;
                 return;
             }
             Write2(value);
@@ -587,12 +638,12 @@ namespace openHistorian.Core.Unmanaged
         void Write2(Guid value)
         {
             const int size = 16;
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                *(Guid*)(m_buffer + m_currentIndex) = value;
-                m_currentIndex += size;
+                *(Guid*)m_current = value;
+                m_current = m_current + size;
                 return;
             }
             fixed (byte* lp = m_temp)
@@ -604,40 +655,39 @@ namespace openHistorian.Core.Unmanaged
         public void Write7Bit(uint value)
         {
             const int size = 5;
-            byte* stream = m_buffer;
-            int position = m_currentIndex;
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* stream = m_current;
+            if (stream + size <= m_lastWrite)
             {
                 if (value < 128)
                 {
-                    stream[position] = (byte)value;
-                    m_currentIndex += 1;
+                    stream[0] = (byte)value;
+                    m_current += 1;
                     return;
                 }
-                stream[position] = (byte)(value | 128);
+                stream[0] = (byte)(value | 128);
                 if (value < 128 * 128)
                 {
-                    stream[position + 1] = (byte)(value >> 7);
-                    m_currentIndex += 2;
+                    stream[1] = (byte)(value >> 7);
+                    m_current += 2;
                     return;
                 }
-                stream[position + 1] = (byte)((value >> 7) | 128);
+                stream[1] = (byte)((value >> 7) | 128);
                 if (value < 128 * 128 * 128)
                 {
-                    stream[position + 2] = (byte)(value >> 14);
-                    m_currentIndex += 3;
+                    stream[2] = (byte)(value >> 14);
+                    m_current += 3;
                     return;
                 }
-                stream[position + 2] = (byte)((value >> 14) | 128);
+                stream[2] = (byte)((value >> 14) | 128);
                 if (value < 128 * 128 * 128 * 128)
                 {
-                    stream[position + 3] = (byte)(value >> 21);
-                    m_currentIndex += 4;
+                    stream[3] = (byte)(value >> 21);
+                    m_current += 4;
                     return;
                 }
-                stream[position + 3] = (byte)((value >> 21) | 128);
-                stream[position + 4] = (byte)(value >> 28);
-                m_currentIndex += 5;
+                stream[3] = (byte)((value >> 21) | 128);
+                stream[4] = (byte)(value >> 28);
+                m_current += 5;
                 return;
             }
             Write7Bit2(value);
@@ -645,83 +695,83 @@ namespace openHistorian.Core.Unmanaged
         void Write7Bit2(uint value)
         {
             int size = Compression.Get7BitSize(value);
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                Compression.Write7Bit(m_buffer, ref m_currentIndex, value);
+                int index = 0;
+                Compression.Write7Bit(m_current, ref index, value);
+                m_current += index;
                 return;
             }
             int pos = 0;
             Compression.Write7Bit(m_temp, ref pos, value);
             Write(m_temp, 0, size);
         }
-
         public void Write7Bit(ulong value)
         {
             const int size = 9;
-            byte* stream = m_buffer;
-            int position = m_currentIndex;
-            if (m_lastIndexWrite - m_currentIndex >= size - 1)
+            byte* stream = m_current;
+            if (stream + size <= m_lastWrite)
             {
                 if (value < 128)
                 {
-                    stream[position] = (byte)value;
-                    m_currentIndex += 1;
+                    stream[0] = (byte)value;
+                    m_current += 1;
                     return;
                 }
-                stream[position] = (byte)(value | 128);
+                stream[0] = (byte)(value | 128);
                 if (value < 128 * 128)
                 {
-                    stream[position + 1] = (byte)(value >> 7);
-                    m_currentIndex += 2;
+                    stream[1] = (byte)(value >> 7);
+                    m_current += 2;
                     return;
                 }
-                stream[position + 1] = (byte)((value >> 7) | 128);
+                stream[1] = (byte)((value >> 7) | 128);
                 if (value < 128 * 128 * 128)
                 {
-                    stream[position + 2] = (byte)(value >> 14);
-                    m_currentIndex += 3;
+                    stream[2] = (byte)(value >> 14);
+                    m_current += 3;
                     return;
                 }
-                stream[position + 2] = (byte)((value >> 14) | 128);
+                stream[2] = (byte)((value >> 14) | 128);
                 if (value < 128 * 128 * 128 * 128)
                 {
-                    stream[position + 3] = (byte)(value >> 21);
-                    m_currentIndex += 4;
+                    stream[3] = (byte)(value >> 21);
+                    m_current += 4;
                     return;
                 }
-                stream[position + 3] = (byte)((value >> (7 + 7 + 7)) | 128);
+                stream[3] = (byte)((value >> (7 + 7 + 7)) | 128);
                 if (value < 128L * 128 * 128 * 128 * 128)
                 {
-                    stream[position + 4] = (byte)(value >> (7 + 7 + 7 + 7));
-                    m_currentIndex += 5;
+                    stream[4] = (byte)(value >> (7 + 7 + 7 + 7));
+                    m_current += 5;
                     return;
                 }
-                stream[position + 4] = (byte)((value >> (7 + 7 + 7 + 7)) | 128);
+                stream[4] = (byte)((value >> (7 + 7 + 7 + 7)) | 128);
                 if (value < 128L * 128 * 128 * 128 * 128 * 128)
                 {
-                    stream[position + 5] = (byte)(value >> (7 + 7 + 7 + 7 + 7));
-                    m_currentIndex += 6;
+                    stream[5] = (byte)(value >> (7 + 7 + 7 + 7 + 7));
+                    m_current += 6;
                     return;
                 }
-                stream[position + 5] = (byte)((value >> (7 + 7 + 7 + 7 + 7)) | 128);
+                stream[5] = (byte)((value >> (7 + 7 + 7 + 7 + 7)) | 128);
                 if (value < 128L * 128 * 128 * 128 * 128 * 128 * 128)
                 {
-                    stream[position + 6] = (byte)(value >> (7 + 7 + 7 + 7 + 7 + 7));
-                    m_currentIndex += 7;
+                    stream[6] = (byte)(value >> (7 + 7 + 7 + 7 + 7 + 7));
+                    m_current += 7;
                     return;
                 }
-                stream[position + 6] = (byte)((value >> (7 + 7 + 7 + 7 + 7 + 7)) | 128);
+                stream[6] = (byte)((value >> (7 + 7 + 7 + 7 + 7 + 7)) | 128);
                 if (value < 128L * 128 * 128 * 128 * 128 * 128 * 128 * 128)
                 {
-                    stream[position + 7] = (byte)(value >> (7 + 7 + 7 + 7 + 7 + 7 + 7));
-                    m_currentIndex += 8;
+                    stream[7] = (byte)(value >> (7 + 7 + 7 + 7 + 7 + 7 + 7));
+                    m_current += 8;
                     return;
                 }
-                stream[position + 7] = (byte)(value >> (7 + 7 + 7 + 7 + 7 + 7 + 7) | 128);
-                stream[position + 8] = (byte)(value >> (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
-                m_currentIndex += 9;
+                stream[7] = (byte)(value >> (7 + 7 + 7 + 7 + 7 + 7 + 7) | 128);
+                stream[8] = (byte)(value >> (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
+                m_current += 9;
                 return;
             }
             Write7Bit2(value);
@@ -729,34 +779,43 @@ namespace openHistorian.Core.Unmanaged
         void Write7Bit2(ulong value)
         {
             int size = Compression.Get7BitSize(value);
-            if (RemainingLengthWrite <= 0)
+            if (RemainingWriteLength <= 0)
                 UpdateLocalBuffer(true);
-            if (RemainingLengthWrite >= size)
+            if (RemainingWriteLength >= size)
             {
-                Compression.Write7Bit(m_buffer, ref m_currentIndex, value);
+                int index = 0;
+                Compression.Write7Bit(m_current, ref index, value);
+                m_current += index;
                 return;
             }
             int pos = 0;
             Compression.Write7Bit(m_temp, ref pos, value);
             Write(m_temp, 0, size);
         }
-
         public void Write(byte[] value, int offset, int count)
         {
-            if (m_lastIndexWrite - m_currentIndex >= count - 1)
+            if (m_current + count <= m_lastWrite)
             {
-                Marshal.Copy(value, offset, (IntPtr)(m_buffer + m_currentIndex), count);
-                //Array.Copy(value, offset, m_buffer, m_currentIndex, count);
-                m_currentIndex += count;
+                Marshal.Copy(value, offset, (IntPtr)m_current, count);
+                m_current += count;
                 return;
             }
             Write2(value, offset, count);
         }
         void Write2(byte[] value, int offset, int count)
         {
-            m_stream.Write(Position, value, offset, count);
-            m_currentPosition += count;
-            FlushToUnderlyingStream();
+            while (count > 0)
+            {
+                if (RemainingWriteLength <= 0)
+                    UpdateLocalBuffer(true);
+                int availableLength = Math.Min((int)RemainingWriteLength, count);
+
+                Marshal.Copy(value, offset, (IntPtr)m_current, availableLength);
+                m_current += availableLength;
+
+                count -= availableLength;
+                offset += availableLength;
+            }
         }
 
         #endregion
@@ -765,21 +824,21 @@ namespace openHistorian.Core.Unmanaged
 
         #region Reading
 
-        #region Helper Types
-        public void ReadInt128(out long value1, out long value2)
-        {
-            const int size = 16;
-            if (m_lastIndex - m_currentIndex >= size - 1)
-            {
-                value1 = *(long*)(m_buffer + m_currentIndex);
-                value2 = *(long*)(m_buffer + m_currentIndex + 8);
-                m_currentIndex += size;
-                return;
-            }
-            value1 = ReadInt642();
-            value2 = ReadInt642();
-        }
-        #endregion
+        //#region Helper Types
+        //public void ReadInt128(out long value1, out long value2)
+        //{
+        //    const int size = 16;
+        //    if (m_lastIndex - m_currentIndex >= size - 1)
+        //    {
+        //        value1 = *(long*)(m_buffer + m_currentIndex);
+        //        value2 = *(long*)(m_buffer + m_currentIndex + 8);
+        //        m_currentIndex += size;
+        //        return;
+        //    }
+        //    value1 = ReadInt642();
+        //    value2 = ReadInt642();
+        //}
+        //#endregion
 
         #region Derived Types
 
@@ -787,6 +846,7 @@ namespace openHistorian.Core.Unmanaged
         {
             return (sbyte)ReadByte();
         }
+
         public bool ReadBoolean()
         {
             return (ReadByte() != 0);
@@ -803,18 +863,16 @@ namespace openHistorian.Core.Unmanaged
         {
             return (ulong)ReadInt64();
         }
-
         #endregion
 
         #region Core Types
-
         public byte ReadByte()
         {
             const int size = sizeof(byte);
-            if (m_lastIndex >= m_currentIndex) //RemainingLength >= size;
+            if (m_current < m_lastRead)
             {
-                byte value = m_buffer[m_currentIndex];
-                m_currentIndex += size;
+                byte value = *m_current;
+                m_current += size;
                 return value;
             }
             return ReadByte2();
@@ -822,24 +880,25 @@ namespace openHistorian.Core.Unmanaged
         byte ReadByte2()
         {
             const int size = sizeof(byte);
-            if (RemainingLength <= 0)
+            if (RemainingReadLength <= 0)
                 UpdateLocalBuffer(false);
-            if (RemainingLength >= size)
+            if (RemainingReadLength >= size)
             {
-                byte value = m_buffer[m_currentIndex];
-                m_currentIndex += size;
+                byte value = *m_current;
+                m_current += size;
                 return value;
             }
             Read(m_temp, 0, size);
             return m_temp[0];
         }
+
         public short ReadInt16()
         {
             const int size = sizeof(short);
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            if (m_current + size <= m_lastRead)
             {
-                short value = *(short*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                short value = *(short*)m_current;
+                m_current += size;
                 return value;
             }
             return ReadInt162();
@@ -847,12 +906,12 @@ namespace openHistorian.Core.Unmanaged
         short ReadInt162()
         {
             const int size = sizeof(short);
-            if (RemainingLength <= 0)
+            if (RemainingReadLength <= 0)
                 UpdateLocalBuffer(false);
-            if (RemainingLength >= size)
+            if (RemainingReadLength >= size)
             {
-                short value = *(short*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                short value = *(short*)m_current;
+                m_current += size;
                 return value;
             }
             Read(m_temp, 0, size);
@@ -861,11 +920,10 @@ namespace openHistorian.Core.Unmanaged
         public int ReadInt32()
         {
             const int size = sizeof(int);
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            if (m_current + size <= m_lastRead)
             {
-                int value;
-                value = *(int*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                int value = *(int*)m_current;
+                m_current += size;
                 return value;
             }
             return ReadInt322();
@@ -873,13 +931,12 @@ namespace openHistorian.Core.Unmanaged
         int ReadInt322()
         {
             const int size = sizeof(int);
-            if (RemainingLength <= 0)
+            if (RemainingReadLength <= 0)
                 UpdateLocalBuffer(false);
-            if (RemainingLength >= size)
+            if (RemainingReadLength >= size)
             {
-                int value;
-                value = *(int*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                int value = *(int*)m_current;
+                m_current += size;
                 return value;
             }
             Read(m_temp, 0, size);
@@ -891,11 +948,10 @@ namespace openHistorian.Core.Unmanaged
         public float ReadSingle()
         {
             const int size = sizeof(float);
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            if (m_current + size <= m_lastRead)
             {
-                float value;
-                value = *(float*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                float value = *(float*)m_current;
+                m_current += size;
                 return value;
             }
             return ReadSingle2();
@@ -903,13 +959,12 @@ namespace openHistorian.Core.Unmanaged
         float ReadSingle2()
         {
             const int size = sizeof(float);
-            if (RemainingLength <= 0)
+            if (RemainingReadLength <= 0)
                 UpdateLocalBuffer(false);
-            if (RemainingLength >= size)
+            if (RemainingReadLength >= size)
             {
-                float value;
-                value = *(float*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                float value = *(float*)m_current;
+                m_current += size;
                 return value;
             }
             Read(m_temp, 0, size);
@@ -921,12 +976,10 @@ namespace openHistorian.Core.Unmanaged
         public long ReadInt64()
         {
             const int size = sizeof(long);
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            if (m_current + size <= m_lastRead)
             {
-                long value;
-
-                value = *(long*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                long value = *(long*)m_current;
+                m_current += size;
                 return value;
             }
             return ReadInt642();
@@ -934,13 +987,12 @@ namespace openHistorian.Core.Unmanaged
         long ReadInt642()
         {
             const int size = sizeof(long);
-            if (RemainingLength <= 0)
+            if (RemainingReadLength <= 0)
                 UpdateLocalBuffer(false);
-            if (RemainingLength >= size)
+            if (RemainingReadLength >= size)
             {
-                long value;
-                value = *(long*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                long value = *(long*)m_current;
+                m_current += size;
                 return value;
             }
             Read(m_temp, 0, size);
@@ -952,12 +1004,10 @@ namespace openHistorian.Core.Unmanaged
         public double ReadDouble()
         {
             const int size = sizeof(double);
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            if (m_current + size <= m_lastRead)
             {
-                double value;
-
-                value = *(double*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                double value = *(double*)m_current;
+                m_current += size;
                 return value;
             }
             return ReadDouble2();
@@ -965,13 +1015,12 @@ namespace openHistorian.Core.Unmanaged
         double ReadDouble2()
         {
             const int size = sizeof(double);
-            if (RemainingLength <= 0)
+            if (RemainingReadLength <= 0)
                 UpdateLocalBuffer(false);
-            if (RemainingLength >= size)
+            if (RemainingReadLength >= size)
             {
-                double value;
-                value = *(double*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                double value = *(double*)m_current;
+                m_current += size;
                 return value;
             }
             Read(m_temp, 0, size);
@@ -983,11 +1032,10 @@ namespace openHistorian.Core.Unmanaged
         public DateTime ReadDateTime()
         {
             const int size = 8;
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            if (m_current + size <= m_lastRead)
             {
-                DateTime value;
-                value = *(DateTime*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                DateTime value = *(DateTime*)m_current;
+                m_current += size;
                 return value;
             }
             return ReadDateTime2();
@@ -995,13 +1043,12 @@ namespace openHistorian.Core.Unmanaged
         DateTime ReadDateTime2()
         {
             const int size = 8;
-            if (RemainingLength <= 0)
+            if (RemainingReadLength <= 0)
                 UpdateLocalBuffer(false);
-            if (RemainingLength >= size)
+            if (RemainingReadLength >= size)
             {
-                DateTime value;
-                value = *(DateTime*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                DateTime value = *(DateTime*)m_current;
+                m_current += size;
                 return value;
             }
             Read(m_temp, 0, size);
@@ -1013,23 +1060,23 @@ namespace openHistorian.Core.Unmanaged
         public decimal ReadDecimal()
         {
             const int size = sizeof(decimal);
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            if (m_current + size <= m_lastRead)
             {
-                m_currentIndex += size;
-                return *(decimal*)(m_buffer + m_currentIndex - size);
+                decimal value = *(decimal*)m_current;
+                m_current += size;
+                return value;
             }
             return ReadDecimal2();
         }
         decimal ReadDecimal2()
         {
             const int size = sizeof(decimal);
-            if (RemainingLength <= 0)
+            if (RemainingReadLength <= 0)
                 UpdateLocalBuffer(false);
-            if (RemainingLength >= size)
+            if (RemainingReadLength >= size)
             {
-                decimal value;
-                value = *(decimal*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                decimal value = *(decimal*)m_current;
+                m_current += size;
                 return value;
             }
             Read(m_temp, 0, size);
@@ -1041,23 +1088,23 @@ namespace openHistorian.Core.Unmanaged
         public Guid ReadGuid()
         {
             const int size = 16;
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            if (m_current + size <= m_lastRead)
             {
-                m_currentIndex += size;
-                return *(Guid*)(m_buffer + m_currentIndex - size);
+                Guid value = *(Guid*)m_current;
+                m_current += size;
+                return value;
             }
             return ReadGuid2();
         }
         Guid ReadGuid2()
         {
             const int size = 16;
-            if (RemainingLength <= 0)
+            if (RemainingReadLength <= 0)
                 UpdateLocalBuffer(false);
-            if (RemainingLength >= size)
+            if (RemainingReadLength >= size)
             {
-                Guid value;
-                value = *(Guid*)(m_buffer + m_currentIndex);
-                m_currentIndex += size;
+                Guid value = *(Guid*)m_current;
+                m_current += size;
                 return value;
             }
             Read(m_temp, 0, size);
@@ -1070,37 +1117,36 @@ namespace openHistorian.Core.Unmanaged
         public uint Read7BitUInt32()
         {
             const int size = 5;
-            byte* stream = m_buffer;
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            byte* stream = m_current;
+            if (stream + size <= m_lastRead)
             {
-                int pos = m_currentIndex;
                 uint value11;
-                value11 = stream[pos];
+                value11 = stream[0];
                 if (value11 < 128)
                 {
-                    m_currentIndex += 1;
+                    m_current += 1;
                     return value11;
                 }
-                value11 ^= ((uint)stream[pos + 1] << 7);
+                value11 ^= ((uint)stream[1] << 7);
                 if (value11 < 128 * 128)
                 {
-                    m_currentIndex += 2;
+                    m_current += 2;
                     return value11 ^ 0x80;
                 }
-                value11 ^= ((uint)stream[pos + 2] << 14);
+                value11 ^= ((uint)stream[2] << 14);
                 if (value11 < 128 * 128 * 128)
                 {
-                    m_currentIndex += 3;
+                    m_current += 3;
                     return value11 ^ 0x4080;
                 }
-                value11 ^= ((uint)stream[pos + 3] << 21);
+                value11 ^= ((uint)stream[3] << 21);
                 if (value11 < 128 * 128 * 128 * 128)
                 {
-                    m_currentIndex += 4;
+                    m_current += 4;
                     return value11 ^ 0x204080;
                 }
-                value11 ^= ((uint)stream[pos + 4] << 28) ^ 0x10204080;
-                m_currentIndex += 5;
+                value11 ^= ((uint)stream[4] << 28) ^ 0x10204080;
+                m_current += 5;
                 return value11;
             }
             return Read7BitUInt322();
@@ -1135,61 +1181,60 @@ namespace openHistorian.Core.Unmanaged
         public ulong Read7BitUInt64()
         {
             const int size = 9;
-            byte* stream = m_buffer;
-            if (m_lastIndex - m_currentIndex >= size - 1)
+            byte* stream = m_current;
+            if (stream + size <= m_lastRead)
             {
-                int pos = m_currentIndex;
                 ulong value11;
-                value11 = stream[pos];
+                value11 = stream[0];
                 if (value11 < 128)
                 {
-                    m_currentIndex += 1;
+                    m_current += 1;
                     return value11;
                 }
-                value11 ^= ((ulong)stream[pos + 1] << (7));
+                value11 ^= ((ulong)stream[1] << (7));
                 if (value11 < 128 * 128)
                 {
-                    m_currentIndex += 2;
+                    m_current += 2;
                     return value11 ^ 0x80;
                 }
-                value11 ^= ((ulong)stream[pos + 2] << (7 + 7));
+                value11 ^= ((ulong)stream[2] << (7 + 7));
                 if (value11 < 128 * 128 * 128)
                 {
-                    m_currentIndex += 3;
+                    m_current += 3;
                     return value11 ^ 0x4080;
                 }
-                value11 ^= ((ulong)stream[pos + 3] << (7 + 7 + 7));
+                value11 ^= ((ulong)stream[3] << (7 + 7 + 7));
                 if (value11 < 128 * 128 * 128 * 128)
                 {
-                    m_currentIndex += 4;
+                    m_current += 4;
                     return value11 ^ 0x204080;
                 }
-                value11 ^= ((ulong)stream[pos + 4] << (7 + 7 + 7 + 7));
+                value11 ^= ((ulong)stream[4] << (7 + 7 + 7 + 7));
                 if (value11 < 128L * 128 * 128 * 128 * 128)
                 {
-                    m_currentIndex += 5;
+                    m_current += 5;
                     return value11 ^ 0x10204080L;
                 }
-                value11 ^= ((ulong)stream[pos + 5] << (7 + 7 + 7 + 7 + 7));
+                value11 ^= ((ulong)stream[5] << (7 + 7 + 7 + 7 + 7));
                 if (value11 < 128L * 128 * 128 * 128 * 128 * 128)
                 {
-                    m_currentIndex += 6;
+                    m_current += 6;
                     return value11 ^ 0x810204080L;
                 }
-                value11 ^= ((ulong)stream[pos + 6] << (7 + 7 + 7 + 7 + 7 + 7));
+                value11 ^= ((ulong)stream[6] << (7 + 7 + 7 + 7 + 7 + 7));
                 if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128)
                 {
-                    m_currentIndex += 7;
+                    m_current += 7;
                     return value11 ^ 0x40810204080L;
                 }
-                value11 ^= ((ulong)stream[pos + 7] << (7 + 7 + 7 + 7 + 7 + 7 + 7));
+                value11 ^= ((ulong)stream[7] << (7 + 7 + 7 + 7 + 7 + 7 + 7));
                 if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128 * 128)
                 {
-                    m_currentIndex += 8;
+                    m_current += 8;
                     return value11 ^ 0x2040810204080L;
                 }
-                value11 ^= ((ulong)stream[pos + 8] << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
-                m_currentIndex += 9;
+                value11 ^= ((ulong)stream[8] << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
+                m_current += 9;
                 return value11 ^ 0x102040810204080L;
             }
             return Read7BitUInt642();
@@ -1242,25 +1287,94 @@ namespace openHistorian.Core.Unmanaged
 
         public int Read(byte[] value, int offset, int count)
         {
-            if (m_lastIndex - m_currentIndex >= count - 1)
+            if (RemainingReadLength >= count)
             {
-                Marshal.Copy((IntPtr)(m_buffer + m_currentIndex), value, offset, count);
-                //Array.Copy(m_buffer, m_currentIndex, value, offset, count);
-                m_currentIndex += count;
+                Marshal.Copy((IntPtr)(m_current), value, offset, count);
+                m_current += count;
                 return count;
             }
             return Read2(value, offset, count);
         }
         int Read2(byte[] value, int offset, int count)
         {
-            int read = m_stream.Read(Position, value, offset, count);
-            m_currentPosition += count;
-            FlushToUnderlyingStream();
-            return read;
+            int origionalCount = count;
+            while (count > 0)
+            {
+                if (RemainingReadLength <= 0)
+                    UpdateLocalBuffer(false);
+                int availableLength = Math.Min((int)RemainingReadLength, count);
+
+                Marshal.Copy((IntPtr)m_current, value, offset, availableLength);
+
+                m_current += availableLength;
+                count -= availableLength;
+                offset += availableLength;
+            }
+            return origionalCount;
         }
+
         #endregion
 
         #endregion
+
+
+        /// <summary>
+        /// Releases all the resources used by the <see cref="BinaryStream"/> object.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="BinaryStream"/> object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        void Dispose(bool disposing)
+        {
+            if (!m_disposed)
+            {
+                try
+                {
+                    m_firstPosition = 0;
+                    m_lastPosition = 0;
+                    m_current = null;
+                    m_first = null;
+                    m_lastRead = null;
+                    m_lastWrite = null;
+
+                    // This will be done regardless of whether the object is finalized or disposed.
+                    if (m_mainIoSession >= 0)
+                        m_stream.ReleaseIoSession(m_mainIoSession);
+                    if (m_secondaryIoSession >= 0)
+                        m_stream.ReleaseIoSession(m_secondaryIoSession);
+                    m_mainIoSession = -1;
+                    m_secondaryIoSession = -1;
+
+                    m_stream.StreamDisposed -= OnStreamDisposed;
+
+                    m_stream = null;
+
+                    if (disposing)
+                    {
+                        // This will be done only when the object is disposed by calling Dispose().
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;  // Prevent duplicate dispose.
+                }
+            }
+        }
+
+        void OnStreamDisposed(object sender, EventArgs e)
+        {
+            Dispose();
+        }
+
+        #endregion
+
 
     }
 }

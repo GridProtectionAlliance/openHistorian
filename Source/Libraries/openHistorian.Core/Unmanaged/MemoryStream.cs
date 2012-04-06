@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using openHistorian.Core.StorageSystem;
 
 namespace openHistorian.Core.Unmanaged
 {
@@ -12,7 +9,8 @@ namespace openHistorian.Core.Unmanaged
     /// </summary>
     unsafe public class MemoryStream : ISupportsBinaryStream
     {
-        public long LookupCount = 0;
+
+        public event EventHandler StreamDisposed;
         /// <summary>
         /// The number of bits in the page size.
         /// </summary>
@@ -29,10 +27,21 @@ namespace openHistorian.Core.Unmanaged
         /// <summary>
         /// The byte position in the stream
         /// </summary>
-        private long m_position;
+        long m_position;
 
-        private List<int> m_pageIndex;
-        private List<long> m_pagePointer;
+        List<int> m_pageIndex;
+
+        List<long> m_pagePointer;
+
+        /// <summary>
+        /// Releases all the resources used by the <see cref="MemoryStream"/> object.
+        /// </summary>
+        bool m_disposed;
+
+        /// <summary>
+        /// A debug counter that keep track of the number of time a lookup is performed.
+        /// </summary>
+        public long LookupCount = 0;
 
         /// <summary>
         /// Create a new <see cref="PooledMemoryStream"/>
@@ -45,6 +54,15 @@ namespace openHistorian.Core.Unmanaged
         }
 
         /// <summary>
+        /// Releases the unmanaged resources before the <see cref="MemoryStream"/> object is reclaimed by <see cref="GC"/>.
+        /// </summary>
+        ~MemoryStream()
+        {
+            Dispose(false);
+        }
+
+
+        /// <summary>
         /// Returns the page that corresponds to the absolute position.  
         /// This function will also autogrow the stream.
         /// </summary>
@@ -52,6 +70,9 @@ namespace openHistorian.Core.Unmanaged
         /// <returns></returns>
         byte* GetPage(long position)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException("MemoryStream");
+
             int page = (int)(position >> ShiftLength);
             //If there are not enough pages in the stream, add enough.
             while (page >= m_pageIndex.Count)
@@ -59,7 +80,7 @@ namespace openHistorian.Core.Unmanaged
                 int pageIndex;
                 IntPtr pagePointer;
                 pageIndex = BufferPool.AllocatePage(out pagePointer);
-                Memory.Clear((byte*)pagePointer,BufferPool.PageSize);
+                Memory.Clear((byte*)pagePointer, BufferPool.PageSize);
                 m_pageIndex.Add(pageIndex);
                 m_pagePointer.Add(pagePointer.ToInt64());
             }
@@ -188,18 +209,71 @@ namespace openHistorian.Core.Unmanaged
             return count;
         }
 
-        /// <summary>
-        /// Implementation of ISupportsBinaryStream to speed up writing to the stream.
-        /// </summary>
-        /// <returns></returns>
-        void ISupportsBinaryStream.GetCurrentBlock(long position, bool isWriting, out IntPtr bufferPointer, out int firstIndex, out int lastIndex, out int currentIndex)
+
+        int ISupportsBinaryStream.RemainingSupportedIoSessions
         {
-            LookupCount++;
-            firstIndex = 0;
-            lastIndex = Length - 1;
-            currentIndex = CalculateOffset(position);
-            bufferPointer = (IntPtr)GetPage(position);
+            get
+            {
+                return int.MaxValue;
+            }
         }
 
+        void ISupportsBinaryStream.GetBlock(int ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+        {
+            LookupCount++;
+            length = Length;
+            firstPosition = position & ~(length - 1);
+            firstPointer = (IntPtr)GetPage(position);
+            supportsWriting = true;
+        }
+
+        void ISupportsBinaryStream.ReleaseIoSession(int ioSession)
+        {
+
+        }
+
+        int ISupportsBinaryStream.GetNextIoSession()
+        {
+            return 0;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="MemoryStream"/> object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        void Dispose(bool disposing)
+        {
+            if (!m_disposed)
+            {
+                try
+                {
+                    if (StreamDisposed != null)
+                        StreamDisposed.Invoke(this, EventArgs.Empty);
+
+                    // This will be done regardless of whether the object is finalized or disposed.
+                    foreach (int index in m_pageIndex)
+                    {
+                        BufferPool.ReleasePage(index);
+                    }
+                    m_pageIndex = null;
+                    m_pagePointer = null;
+
+                    if (disposing)
+                    {
+                        // This will be done only when the object is disposed by calling Dispose().
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;  // Prevent duplicate dispose.
+                }
+            }
+        }
     }
 }

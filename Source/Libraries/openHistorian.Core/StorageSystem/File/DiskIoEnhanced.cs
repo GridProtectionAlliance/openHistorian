@@ -283,11 +283,16 @@ namespace openHistorian.Core.StorageSystem.File
                 return IoReadState.ReadPastThenEndOfTheFile;
 
             IntPtr ptr;
-            int first, last, cur;
+            int length;
+            long pos;
+            bool supportsWriting;
 
-            m_stream2.GetCurrentBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out first, out last, out cur);
+            m_stream2.GetBlock(0,blockIndex * ArchiveConstants.BlockSize, false, out ptr, out pos, out length, out supportsWriting);
 
-            if (last + 1 - cur < ArchiveConstants.BlockSize)
+            int cur = (int)(blockIndex * ArchiveConstants.BlockSize - pos);
+            //m_stream2.GetCurrentBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out first, out last, out cur);
+
+            if (length - cur < ArchiveConstants.BlockSize)
                 throw new Exception("memory is not lining up on page boundries");
 
             byte* data = (byte*)(ptr + cur);
@@ -308,13 +313,16 @@ namespace openHistorian.Core.StorageSystem.File
         /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
         void ReadForWrite(uint blockIndex, MemoryUnit memory)
         {
-
             IntPtr ptr;
-            int first, last, cur;
+            int length;
+            long pos;
+            bool supportsWriting;
 
-            m_stream2.GetCurrentBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out first, out last, out cur);
+            m_stream2.GetBlock(0, blockIndex * ArchiveConstants.BlockSize, false, out ptr, out pos, out length, out supportsWriting);
 
-            if (last + 1 - cur < ArchiveConstants.BlockSize)
+            int cur = (int)(blockIndex * ArchiveConstants.BlockSize - pos);
+
+            if (length - cur < ArchiveConstants.BlockSize)
                 throw new Exception("memory is not lining up on page boundries");
 
             byte* data = (byte*)(ptr + cur);

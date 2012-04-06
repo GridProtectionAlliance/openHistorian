@@ -8,17 +8,6 @@ namespace openHistorian.Core.Unmanaged.Generic
     public class BPlusTreeLongLong : BPlusTreeBase<long,long> 
     {
 
-        public BPlusTreeLongLong(BinaryStream leafNodeStream, BinaryStream internNodeStream)
-            : base(leafNodeStream, internNodeStream)
-        {
-
-        }
-        public BPlusTreeLongLong(BinaryStream leafNodeStream, BinaryStream internNodeStream, int blockSize)
-            : base(leafNodeStream, internNodeStream, blockSize)
-        {
-
-        }
-
         public BPlusTreeLongLong(BinaryStream stream) : base(stream)
         {
         }
