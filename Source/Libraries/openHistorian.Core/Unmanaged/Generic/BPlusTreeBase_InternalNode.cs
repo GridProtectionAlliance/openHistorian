@@ -30,37 +30,36 @@ namespace openHistorian.Core.Unmanaged.Generic
 {
     abstract partial class BPlusTreeBase<TKey, TValue>
     {
+
+        #region [ Members ]
+
         int m_internalNodeKeySize;
 
         int m_internalNodeMaximumChildren;
         protected int m_internalNodeStructureSize;
-
         protected uint m_internalNodeCurrentNode;
-
         protected short m_internalNodeChildCount;
         uint m_internalNodeNextNode;
         uint m_internalNodePreviousNode;
 
-        public void InternalNodeInitialize()
+        #endregion
+
+        #region [ Properties ]
+
+        #endregion
+
+        #region [ Methods ]
+
+        #region [ Main Methods ]
+
+        void InternalNodeInitialize()
         {
             m_internalNodeKeySize = SizeOfKey();
             m_internalNodeStructureSize = m_internalNodeKeySize + sizeof(uint);
             m_internalNodeMaximumChildren = (m_blockSize - NodeHeader.Size) / (m_internalNodeStructureSize);
         }
 
-        void InternalNodeSetCurrentNode(uint nodeIndex, bool isForWriting)
-        {
-            m_internalNodeCurrentNode = nodeIndex;
-            m_internalNodeStream.Position = nodeIndex * m_blockSize;
-            m_internalNodeStream.UpdateLocalBuffer(isForWriting);
-
-            m_internalNodeStream.ReadByte(); //node level
-            m_internalNodeChildCount = m_internalNodeStream.ReadInt16();
-            m_internalNodePreviousNode = m_internalNodeStream.ReadUInt32();
-            m_internalNodeNextNode = m_internalNodeStream.ReadUInt32();
-        }
-
-        public void InternalNodeSetCurrentNode(byte nodeLevel, uint nodeIndex, bool isForWriting)
+        void InternalNodeSetCurrentNode(byte nodeLevel, uint nodeIndex, bool isForWriting)
         {
             m_internalNodeCurrentNode = nodeIndex;
             m_internalNodeStream.Position = nodeIndex * m_blockSize;
@@ -79,74 +78,6 @@ namespace openHistorian.Core.Unmanaged.Generic
         }
 
         /// <summary>
-        /// Splits an existing node into two halfs
-        /// </summary>
-        void InternalNodeSplitNode(TKey key, uint childNodeIndex)
-        {
-            uint currentNode = m_internalNodeCurrentNode;
-            uint oldNextNode = m_internalNodeNextNode;
-            TKey firstKeyInGreaterNode = default(TKey);
-
-            NodeHeader origionalNode = default(NodeHeader);
-            NodeHeader newNode = default(NodeHeader);
-            NodeHeader foreignNode = default(NodeHeader);
-
-            origionalNode.Load(m_internalNodeStream, m_blockSize, m_internalNodeCurrentNode);
-
-            if (origionalNode.ChildCount < 2)
-                throw new Exception("cannot split a node with fewer than 2 children");
-
-            short itemsInFirstNode = (short)(origionalNode.ChildCount >> 1); // divide by 2.
-            short itemsInSecondNode = (short)(origionalNode.ChildCount - itemsInFirstNode);
-
-            uint greaterNodeIndex = AllocateNewNode();
-            long sourceStartingAddress = m_internalNodeCurrentNode * m_blockSize + NodeHeader.Size + sizeof(uint) + m_internalNodeStructureSize * itemsInFirstNode;
-            long targetStartingAddress = greaterNodeIndex * m_blockSize + NodeHeader.Size + sizeof(uint);
-
-            //lookup the first key that will be copied
-            m_internalNodeStream.Position = sourceStartingAddress;
-            firstKeyInGreaterNode = LoadKey(m_internalNodeStream);
-
-            //do the copy
-            m_internalNodeStream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * m_internalNodeStructureSize);
-            //Set the lookback position as invalid since this node should never be parsed for data before the first key.
-            m_internalNodeStream.Position = targetStartingAddress - sizeof(uint);
-            m_internalNodeStream.Write(0u);
-            
-            //update the first header
-            origionalNode.ChildCount = itemsInFirstNode;
-            origionalNode.NextNode = greaterNodeIndex;
-            origionalNode.Save(m_internalNodeStream, m_blockSize, currentNode);
-
-            //update the second header
-            newNode.Level = origionalNode.Level;
-            newNode.ChildCount = itemsInSecondNode;
-            newNode.PreviousNode = currentNode;
-            newNode.NextNode = oldNextNode;
-            newNode.Save(m_internalNodeStream, m_blockSize, greaterNodeIndex);
-
-            //update the node that used to be after the first one.
-            if (oldNextNode != 0)
-            {
-                foreignNode.Load(m_internalNodeStream, m_blockSize, oldNextNode);
-                foreignNode.PreviousNode = greaterNodeIndex;
-                foreignNode.Save(m_internalNodeStream, m_blockSize, oldNextNode);
-            }
-            NodeWasSplit(origionalNode.Level, currentNode, firstKeyInGreaterNode, greaterNodeIndex);
-            if (CompareKeys(key, firstKeyInGreaterNode) > 0)
-            {
-                InternalNodeSetCurrentNode(greaterNodeIndex, true);
-                InternalNodeInsert(key, childNodeIndex);
-            }
-            else
-            {
-                InternalNodeSetCurrentNode(currentNode, true);
-                InternalNodeInsert(key, childNodeIndex);
-            }
-
-        }
-
-        /// <summary>
         /// Starting from the first byte of the node, 
         /// this method will seek to the most appropriate location for 
         /// the key to be inserted and insert the data if the leaf is not full. 
@@ -156,7 +87,7 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// <param name="nodeIndex">the index of the node to be modified</param>
         /// <param name="nodeLevel">the level of the node</param>
         /// <returns>The results of the insert</returns>
-        public void InternalNodeInsert(TKey key, uint childNodeIndex)
+        void InternalNodeInsert(TKey key, uint childNodeIndex)
         {
             int offset;
 
@@ -195,7 +126,7 @@ namespace openHistorian.Core.Unmanaged.Generic
         /// </summary>
         /// <param name="key">the key to search for</param>
         /// <returns></returns>
-        public uint InternalNodeGetNodeIndex(TKey key)
+        uint InternalNodeGetNodeIndex(TKey key)
         {
             int offset;
             if (InternalNodeSeekToKey(key, out offset))
@@ -206,6 +137,37 @@ namespace openHistorian.Core.Unmanaged.Generic
             InternalNodeSetStreamOffset(offset - 4);
             return m_internalNodeStream.ReadUInt32();
         }
+
+        ///<summary>
+        ///Allocates a new empty tree node.
+        ///</summary>
+        ///<param name="level">the level of the internal node</param>
+        ///<param name="childNodeBefore">the child value before</param>
+        ///<param name="key">the key that seperates the children</param>
+        ///<param name="childNodeAfter">the child after or equal to the key</param>
+        ///<returns>the index value of this new node.</returns>
+        uint InternalNodeCreateEmptyNode(byte level, uint childNodeBefore, TKey key, uint childNodeAfter)
+        {
+            uint nodeAddress = AllocateNewNode();
+            m_internalNodeStream.Position = nodeAddress * m_blockSize;
+
+            //Clearing the Node
+            //Level = level;
+            //ChildCount = 1;
+            //NextNode = 0;
+            //PreviousNode = 0;
+            m_internalNodeStream.Write(level);
+            m_internalNodeStream.Write((short)1);
+            m_internalNodeStream.Write(0L);
+            m_internalNodeStream.Write(childNodeBefore);
+            SaveKey(key, m_internalNodeStream);
+            m_internalNodeStream.Write(childNodeAfter);
+            return nodeAddress;
+        }
+
+        #endregion
+
+        #region [Helper Methods ]
 
         /// <summary>
         /// Starting from the first byte of the node, 
@@ -241,32 +203,91 @@ namespace openHistorian.Core.Unmanaged.Generic
             return false;
         }
 
-        ///<summary>
-        ///Allocates a new empty tree node.
-        ///</summary>
-        ///<param name="level">the level of the internal node</param>
-        ///<param name="childNodeBefore">the child value before</param>
-        ///<param name="key">the key that seperates the children</param>
-        ///<param name="childNodeAfter">the child after or equal to the key</param>
-        ///<returns>the index value of this new node.</returns>
-        public uint InternalNodeCreateEmptyNode(byte level, uint childNodeBefore, TKey key, uint childNodeAfter)
+        void InternalNodeSetCurrentNode(uint nodeIndex, bool isForWriting)
         {
-            uint nodeAddress = AllocateNewNode();
-            m_internalNodeStream.Position = nodeAddress * m_blockSize;
+            m_internalNodeCurrentNode = nodeIndex;
+            m_internalNodeStream.Position = nodeIndex * m_blockSize;
+            m_internalNodeStream.UpdateLocalBuffer(isForWriting);
 
-            //Clearing the Node
-            //Level = level;
-            //ChildCount = 1;
-            //NextNode = 0;
-            //PreviousNode = 0;
-            m_internalNodeStream.Write(level);
-            m_internalNodeStream.Write((short)1);
-            m_internalNodeStream.Write(0L);
-            m_internalNodeStream.Write(childNodeBefore);
-            SaveKey(key, m_internalNodeStream);
-            m_internalNodeStream.Write(childNodeAfter);
-            return nodeAddress;
+            m_internalNodeStream.ReadByte(); //node level
+            m_internalNodeChildCount = m_internalNodeStream.ReadInt16();
+            m_internalNodePreviousNode = m_internalNodeStream.ReadUInt32();
+            m_internalNodeNextNode = m_internalNodeStream.ReadUInt32();
         }
+
+        /// <summary>
+        /// Splits an existing node into two halfs
+        /// </summary>
+        void InternalNodeSplitNode(TKey key, uint childNodeIndex)
+        {
+            uint currentNode = m_internalNodeCurrentNode;
+            uint oldNextNode = m_internalNodeNextNode;
+            TKey firstKeyInGreaterNode = default(TKey);
+
+            NodeHeader origionalNode = default(NodeHeader);
+            NodeHeader newNode = default(NodeHeader);
+            NodeHeader foreignNode = default(NodeHeader);
+
+            origionalNode.Load(m_internalNodeStream, m_blockSize, m_internalNodeCurrentNode);
+
+            if (origionalNode.ChildCount < 2)
+                throw new Exception("cannot split a node with fewer than 2 children");
+
+            short itemsInFirstNode = (short)(origionalNode.ChildCount >> 1); // divide by 2.
+            short itemsInSecondNode = (short)(origionalNode.ChildCount - itemsInFirstNode);
+
+            uint greaterNodeIndex = AllocateNewNode();
+            long sourceStartingAddress = m_internalNodeCurrentNode * m_blockSize + NodeHeader.Size + sizeof(uint) + m_internalNodeStructureSize * itemsInFirstNode;
+            long targetStartingAddress = greaterNodeIndex * m_blockSize + NodeHeader.Size + sizeof(uint);
+
+            //lookup the first key that will be copied
+            m_internalNodeStream.Position = sourceStartingAddress;
+            firstKeyInGreaterNode = LoadKey(m_internalNodeStream);
+
+            //do the copy
+            m_internalNodeStream.Copy(sourceStartingAddress, targetStartingAddress, itemsInSecondNode * m_internalNodeStructureSize);
+            //Set the lookback position as invalid since this node should never be parsed for data before the first key.
+            m_internalNodeStream.Position = targetStartingAddress - sizeof(uint);
+            m_internalNodeStream.Write(0u);
+
+            //update the first header
+            origionalNode.ChildCount = itemsInFirstNode;
+            origionalNode.NextNode = greaterNodeIndex;
+            origionalNode.Save(m_internalNodeStream, m_blockSize, currentNode);
+
+            //update the second header
+            newNode.Level = origionalNode.Level;
+            newNode.ChildCount = itemsInSecondNode;
+            newNode.PreviousNode = currentNode;
+            newNode.NextNode = oldNextNode;
+            newNode.Save(m_internalNodeStream, m_blockSize, greaterNodeIndex);
+
+            //update the node that used to be after the first one.
+            if (oldNextNode != 0)
+            {
+                foreignNode.Load(m_internalNodeStream, m_blockSize, oldNextNode);
+                foreignNode.PreviousNode = greaterNodeIndex;
+                foreignNode.Save(m_internalNodeStream, m_blockSize, oldNextNode);
+            }
+            NodeWasSplit(origionalNode.Level, currentNode, firstKeyInGreaterNode, greaterNodeIndex);
+            if (CompareKeys(key, firstKeyInGreaterNode) > 0)
+            {
+                InternalNodeSetCurrentNode(greaterNodeIndex, true);
+                InternalNodeInsert(key, childNodeIndex);
+            }
+            else
+            {
+                InternalNodeSetCurrentNode(currentNode, true);
+                InternalNodeInsert(key, childNodeIndex);
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+
+
 
     }
 }

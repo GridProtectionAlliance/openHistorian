@@ -80,6 +80,10 @@
     <Compile Include="StorageSystem\File\Test Procedures\DiskIOEnhanced2Test.cs" />
     <Compile Include="StorageSystem\File\Test Procedures\DiskIOEnhancedTest.cs" />
     <Compile Include="Unmanaged\Benchmarks\BinaryStreamTest.cs" />
+    <Compile Include="Unmanaged\Generic2\BPlusTreeBase.cs" />
+    <Compile Include="Unmanaged\Generic2\BPlusTreeInternalNodeBase.cs" />
+    <Compile Include="Unmanaged\Generic2\BPlusTreeLeafNodeBase.cs" />
+    <Compile Include="Unmanaged\Generic2\LeafNodeBase.cs" />
     <Compile Include="Unmanaged\Generic\Test\NodeTestPageSize.cs" />
     <Compile Include="Unmanaged\MemoryMethod.cs" />
     <Compile Include="Unmanaged\OldCode\BinaryStream2Test.cs" />
@@ -101,7 +105,7 @@
     <Compile Include="Unmanaged\Generic\OldCode\BPlusTreeBase2_TreeHeader.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\BPlusTree2.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\BPlusTree2LongLong.cs" />
-    <Compile Include="Unmanaged\Generic\DataReader.cs" />
+    <Compile Include="Unmanaged\Generic\BPlusTreeBase_DataReader.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\DataReader.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\Delegates.cs" />
     <Compile Include="Unmanaged\Generic\OldCode\InsertResults.cs" />
