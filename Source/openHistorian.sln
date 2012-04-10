@@ -25,9 +25,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HistorianPlaybackUtility", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HistorianView", "Tools\HistorianView\HistorianView.csproj", "{2E9DA7CC-960A-40A6-BC90-1FBD7B7994F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.V2", "Libraries\openHistorian.V2\openHistorian.V2.csproj", "{040E2AE7-021B-435A-ADBF-06D07EE0A67D}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -47,6 +49,10 @@ Global
 		SccProjectTopLevelParentUniqueName4 = openHistorian.sln
 		SccProjectName4 = Tools/HistorianView
 		SccLocalPath4 = Tools\\HistorianView
+		SccProjectUniqueName5 = Libraries\\openHistorian.V2\\openHistorian.V2.csproj
+		SccProjectTopLevelParentUniqueName5 = openHistorian.sln
+		SccProjectName5 = Libraries/openHistorian.V2
+		SccLocalPath5 = Libraries\\openHistorian.V2
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +105,16 @@ Global
 		{2E9DA7CC-960A-40A6-BC90-1FBD7B7994F0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2E9DA7CC-960A-40A6-BC90-1FBD7B7994F0}.Release|x86.ActiveCfg = Release|x86
 		{2E9DA7CC-960A-40A6-BC90-1FBD7B7994F0}.Release|x86.Build.0 = Release|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Debug|x86.ActiveCfg = Debug|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Debug|x86.Build.0 = Debug|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Release|Any CPU.ActiveCfg = Release|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Release|Mixed Platforms.Build.0 = Release|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Release|x86.ActiveCfg = Release|x86
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +122,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{DF68DFD7-789B-4DFD-B00F-FBF991FEDAC0} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{55C394DB-9504-49B1-B2E4-AFAF9E99F63B} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{460BEC91-29E7-4574-9E85-0FD62D43D683} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{4D912150-86EF-44C4-ABBC-C869FE82C829} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{DA2EF5C4-6C06-49F7-AFA7-FD5720E8DEBD} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
