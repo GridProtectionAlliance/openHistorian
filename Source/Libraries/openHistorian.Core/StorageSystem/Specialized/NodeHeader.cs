@@ -21,7 +21,7 @@
 //     
 //******************************************************************************************************
 
-namespace openHistorian.Core.StorageSystem.Specialized
+namespace openHistorian.V2.StorageSystem.Specialized
 {
     /// <summary>
     /// Assists in the read/write operations of the header of a node.

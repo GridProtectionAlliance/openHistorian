@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace openHistorian.Core.Unmanaged.Generic.TimeKeyPair
+namespace openHistorian.V2.Unmanaged.Generic.TimeKeyPair
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct KeyType : IValueType<KeyType>

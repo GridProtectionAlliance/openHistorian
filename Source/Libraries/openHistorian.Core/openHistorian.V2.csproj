@@ -339,6 +339,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\openHistorian\openHistorian.csproj">
+      <Project>{55C394DB-9504-49B1-B2E4-AFAF9E99F63B}</Project>
+      <Name>openHistorian</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

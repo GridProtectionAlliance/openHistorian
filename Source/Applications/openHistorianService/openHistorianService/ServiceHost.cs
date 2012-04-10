@@ -17,9 +17,6 @@ using System.ComponentModel;
 using System.Runtime.Remoting;
 using System.ServiceProcess;
 using System.Threading.Tasks;
-using openHistorian.Adapters;
-using openHistorian.Archives;
-using TVA;
 using TVA.Adapters;
 
 namespace openHistorianService
@@ -109,12 +106,12 @@ namespace openHistorianService
             IDataArchive archive = e.Argument;
             archive.StatusUpdate += Adapters_StatusUpdate;
             archive.ExecutionException += Adapters_ExecutionException;
-            
+
             // Notify about the newly loaded data archive.
             m_serviceHelper.UpdateStatus(UpdateType.Information, "[SYSTEM] Data archive \"{0}\" of type \"{1}\" loaded\r\n\r\n", archive.Name, archive.GetType().Name);
 
             // Open the archive asynchronously.
-            Task.Factory.StartNew(() => 
+            Task.Factory.StartNew(() =>
             {
                 try
                 {

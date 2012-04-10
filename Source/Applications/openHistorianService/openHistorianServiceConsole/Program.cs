@@ -8,8 +8,8 @@ namespace openHistorianServiceConsole
         static void Main(string[] args)
         {
             // Enable console events.
-            TVA.Console.Events.ConsoleClosing += OnConsoleClosing;
-            TVA.Console.Events.EnableRaisingEvents();
+            openHistorian.Console.Events.ConsoleClosing += OnConsoleClosing;
+            openHistorian.Console.Events.EnableRaisingEvents();
 
             // Start the client component.
             m_serviceClient = new ServiceClient();

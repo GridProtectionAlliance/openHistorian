@@ -24,9 +24,9 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using openHistorian.Core.Unmanaged;
+using openHistorian.V2.Unmanaged;
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     /// <summary>
     ///Provides a file stream that can be used to open a file and does all of the background work 

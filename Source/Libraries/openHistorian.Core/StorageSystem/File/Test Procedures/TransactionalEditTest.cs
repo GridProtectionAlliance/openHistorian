@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     public class TransactionalEditTest
     {

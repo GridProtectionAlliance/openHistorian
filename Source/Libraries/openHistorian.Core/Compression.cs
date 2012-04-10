@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace openHistorian.Core
+namespace openHistorian.V2
 {
     public static class Compression
     {

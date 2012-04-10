@@ -23,7 +23,7 @@
 //******************************************************************************************************
 using System;
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     /// <summary>
     /// This class will make shadow copies of blocks or, if the block has never been written to, prepare the block to be written to.

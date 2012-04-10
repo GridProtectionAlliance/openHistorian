@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.

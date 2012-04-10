@@ -23,7 +23,7 @@
 using System;
 using System.IO;
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     internal class FileAllocationTableTest
     {

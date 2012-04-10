@@ -27,7 +27,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     /// <summary>
     /// Contains the information that is in the header page of an archive file.  

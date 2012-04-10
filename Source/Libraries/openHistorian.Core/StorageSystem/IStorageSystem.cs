@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using openHistorian.Core.StorageSystem.File;
+using openHistorian.V2.StorageSystem.File;
 
-namespace openHistorian.Core.StorageSystem
+namespace openHistorian.V2.StorageSystem
 {
     public interface IStorageSystem
     {

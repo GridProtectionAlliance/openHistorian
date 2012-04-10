@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     class MemoryStreamTest
     {
@@ -8,7 +8,7 @@ namespace openHistorian.Core.Unmanaged
         {
             SelfTest();
             MemoryStream ms = new MemoryStream();
-            openHistorian.Core.Unmanaged.BinaryStreamTest.Test(ms);
+            openHistorian.V2.Unmanaged.BinaryStreamTest.Test(ms);
         }
         static void SelfTest()
         {

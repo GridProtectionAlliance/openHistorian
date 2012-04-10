@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.Core.MemoryBuffer
+namespace openHistorian.V2.MemoryBuffer
 {
     public interface IMemoryBuffer
     {

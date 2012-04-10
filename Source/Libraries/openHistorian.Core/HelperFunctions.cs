@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.Core
+namespace openHistorian.V2
 {
     static class HelperFunctions
     {

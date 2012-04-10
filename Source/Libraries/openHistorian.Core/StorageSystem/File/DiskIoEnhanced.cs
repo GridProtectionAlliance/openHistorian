@@ -22,9 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.Core.Unmanaged;
+using openHistorian.V2.Unmanaged;
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     /// <summary>
     /// Abstract class for the basic Disk IO functions.

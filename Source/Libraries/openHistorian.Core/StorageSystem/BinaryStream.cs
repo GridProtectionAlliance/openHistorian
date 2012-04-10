@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace openHistorian.Core.StorageSystem
+namespace openHistorian.V2.StorageSystem
 {
     public unsafe class BinaryStream
     {

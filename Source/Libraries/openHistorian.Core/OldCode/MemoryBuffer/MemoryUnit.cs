@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace openHistorian.Core.MemoryBuffer
+namespace openHistorian.V2.MemoryBuffer
 {
     public class MemoryUnit
     {

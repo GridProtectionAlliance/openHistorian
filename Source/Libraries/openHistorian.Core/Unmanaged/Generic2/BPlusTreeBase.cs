@@ -25,7 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace openHistorian.Core.Unmanaged.Generic2
+namespace openHistorian.V2.Unmanaged.Generic2
 {
     /// <summary>
     /// Provides the basic user methods with any derived B+Tree.  

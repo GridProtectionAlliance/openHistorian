@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace openHistorian.Core.StorageSystem.Specialized
+namespace openHistorian.V2.StorageSystem.Specialized
 {
     class NodeTest
     {

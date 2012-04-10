@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.Core.StorageSystem.Generic
+namespace openHistorian.V2.StorageSystem.Generic
 {
     /// <summary>
     /// This class only concerns itself with the get requirement of the B+ Tree.

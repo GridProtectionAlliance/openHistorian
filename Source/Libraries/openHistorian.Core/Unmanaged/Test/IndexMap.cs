@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     static class IndexMapTest
     {

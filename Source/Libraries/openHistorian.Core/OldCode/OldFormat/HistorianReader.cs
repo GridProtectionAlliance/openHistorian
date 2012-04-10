@@ -5,7 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 
-namespace openHistorian.Core
+namespace openHistorian.V2
 {
     public class HistorianReader
     {

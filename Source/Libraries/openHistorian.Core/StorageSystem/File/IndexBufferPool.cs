@@ -22,7 +22,7 @@
 //
 //******************************************************************************************************
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     /// <summary>
     /// This buffer pool is here to minimize the amount of data that must be re-read from the DiskIO

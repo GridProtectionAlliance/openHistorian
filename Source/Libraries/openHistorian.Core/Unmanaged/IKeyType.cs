@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     unsafe public interface IKeyType<T>
     {

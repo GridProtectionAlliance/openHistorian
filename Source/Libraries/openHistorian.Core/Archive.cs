@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using openHistorian.Core.StorageSystem;
-using openHistorian.Core.StorageSystem.File;
-using openHistorian.Core.Unmanaged.Generic;
-using openHistorian.Core.Unmanaged.Generic.TimeKeyPair;
+using openHistorian.V2.StorageSystem;
+using openHistorian.V2.StorageSystem.File;
+using openHistorian.V2.Unmanaged.Generic;
+using openHistorian.V2.Unmanaged.Generic.TimeKeyPair;
 
-namespace openHistorian.Core
+namespace openHistorian.V2
 {
     public class Archive
     {

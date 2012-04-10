@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian.Core.StorageSystem.Specialized
+namespace openHistorian.V2.StorageSystem.Specialized
 {
     /// <summary>
     /// Provides support for an in memory binary (plus) tree.  

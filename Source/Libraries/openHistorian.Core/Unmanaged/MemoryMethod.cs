@@ -1,6 +1,6 @@
 ﻿using System.Reflection.Emit;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     internal unsafe class MemoryMethod
     {

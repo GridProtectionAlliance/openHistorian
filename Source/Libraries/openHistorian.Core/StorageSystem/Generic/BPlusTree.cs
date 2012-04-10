@@ -23,7 +23,7 @@
 
 using System.Collections.Generic;
 
-namespace openHistorian.Core.StorageSystem.Generic
+namespace openHistorian.V2.StorageSystem.Generic
 {
     /// <summary>
     /// Provides support for an in memory binary (plus) tree.  

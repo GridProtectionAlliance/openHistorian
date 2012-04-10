@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.Core.Unmanaged.Generic
+namespace openHistorian.V2.Unmanaged.Generic
 {
     abstract partial class BPlusTreeBase<TKey, TValue>
     {

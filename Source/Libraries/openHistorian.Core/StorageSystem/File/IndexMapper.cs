@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     /// <summary>
     /// This class is used to convert the position of a file into a set of directions that <see cref="IndexParser"/> can use to 

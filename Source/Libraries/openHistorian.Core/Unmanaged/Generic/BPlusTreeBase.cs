@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian.Core.Unmanaged.Generic
+namespace openHistorian.V2.Unmanaged.Generic
 {
     /// <summary>
     /// Provides support for an in memory binary (plus) tree.  

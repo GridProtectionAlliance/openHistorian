@@ -21,7 +21,7 @@
 //     
 //******************************************************************************************************
 
-namespace openHistorian.Core.Unmanaged.Generic
+namespace openHistorian.V2.Unmanaged.Generic
 {
     /// <summary>
     /// Assists in the read/write operations of the header of a node.

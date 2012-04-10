@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     /// <summary>
     /// Provides a high speed lookup table. 

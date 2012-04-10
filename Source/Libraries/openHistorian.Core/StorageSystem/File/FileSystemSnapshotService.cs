@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     /// <summary>
     /// This class is responsible for managing the transactions that occur on the file system.

@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 
-namespace openHistorian.Core.StorageSystem.Generic
+namespace openHistorian.V2.StorageSystem.Generic
 {
     public partial class BPlusTree<TKey, TValue>
     {

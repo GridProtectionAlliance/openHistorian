@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.IO;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     unsafe public class BufferedFileStream : ISupportsBinaryStream
     {

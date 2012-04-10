@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.Core.StorageSystem.Specialized
+namespace openHistorian.V2.StorageSystem.Specialized
 {
     public partial class BPlusTree<TKey, TValue>
     {

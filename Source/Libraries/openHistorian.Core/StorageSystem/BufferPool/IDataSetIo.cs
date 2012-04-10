@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.Core.StorageSystem.BufferPool
+namespace openHistorian.V2.StorageSystem.BufferPool
 {
     public unsafe interface IDataSetIo
     {

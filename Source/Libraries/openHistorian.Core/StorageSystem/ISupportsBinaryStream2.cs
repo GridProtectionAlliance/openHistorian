@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 
-namespace openHistorian.Core.StorageSystem
+namespace openHistorian.V2.StorageSystem
 {
     /// <summary>
     /// Implementing this interface allows a binary stream to be attached to a buffer.

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace openHistorian.Core.Properties {
+namespace openHistorian.V2.Properties {
     using System;
     
     

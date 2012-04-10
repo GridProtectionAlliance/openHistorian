@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace openHistorian.Core.MemoryBuffer
+namespace openHistorian.V2.MemoryBuffer
 {
     /// <summary>
     /// This class implements a memory buffer method similiar to the way MySQL does it in InnoDB.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace openHistorian.Core.StorageSystem.Specialized
+namespace openHistorian.V2.StorageSystem.Specialized
 {
 
     unsafe public class LeafNodeMethods<TKey> : ITreeLeafNodeMethods<TKey>

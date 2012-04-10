@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.Core.Unmanaged.Generic2
+namespace openHistorian.V2.Unmanaged.Generic2
 {
     public abstract class BPlusTreeLeafNodeBase<TKey,TValue> : BPlusTreeInternalNodeBase<TKey,TValue>
     {

@@ -14,9 +14,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using openHistorian.Adapters;
-using openHistorian.Archives;
-using TVA;
 using TVA.Scheduling;
 
 namespace openHistorian.DR.Adapters
@@ -61,7 +58,7 @@ namespace openHistorian.DR.Adapters
 
         #region [ Properties ]
 
-        public string SystemTime 
+        public string SystemTime
         {
             get
             {
@@ -176,7 +173,7 @@ namespace openHistorian.DR.Adapters
             }
         }
 
-        private void m_scheduler_ScheduleDue(object sender, TVA.EventArgs<Schedule> e)
+        private void m_scheduler_ScheduleDue(object sender, openHistorian.EventArgs<Schedule> e)
         {
             try
             {

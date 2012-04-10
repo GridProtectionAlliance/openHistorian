@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     /// <summary>
     /// Creates a fixed size array of unmanaged bytes.

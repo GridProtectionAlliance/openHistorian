@@ -68,8 +68,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.m_serviceHelper = new TVA.ServiceProcess.ServiceHelper(this.components);
-            this.m_remotingServer = new TVA.Communication.TcpServer(this.components);
+            this.m_serviceHelper = new openHistorian.ServiceProcess.ServiceHelper(this.components);
+            this.m_remotingServer = new openHistorian.Communication.TcpServer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.m_serviceHelper)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_serviceHelper.ErrorLogger)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_serviceHelper.ErrorLogger.ErrorLog)).BeginInit();
@@ -127,7 +127,7 @@
 
         #endregion
 
-        private TVA.ServiceProcess.ServiceHelper m_serviceHelper;
-        private TVA.Communication.TcpServer m_remotingServer;
+        private openHistorian.ServiceProcess.ServiceHelper m_serviceHelper;
+        private openHistorian.Communication.TcpServer m_remotingServer;
     }
 }

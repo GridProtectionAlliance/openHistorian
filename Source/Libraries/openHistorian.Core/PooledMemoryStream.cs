@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using openHistorian.Core.StorageSystem;
+using openHistorian.V2.StorageSystem;
 
-namespace openHistorian.Core
+namespace openHistorian.V2
 {
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in common. 

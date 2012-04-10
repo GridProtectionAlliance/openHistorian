@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using openHistorian.Core.Unmanaged.Generic.TimeKeyPair;
+using openHistorian.V2.Unmanaged.Generic.TimeKeyPair;
 
-namespace openHistorian.Core.Unmanaged.Generic
+namespace openHistorian.V2.Unmanaged.Generic
 {
     public class BPlusTreeTSD : BPlusTreeBase<KeyType, TreeTypeIntFloat>
     {

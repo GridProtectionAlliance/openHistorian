@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.Core.StorageSystem.Importer
+namespace openHistorian.V2.StorageSystem.Importer
 {
     class TimeBucket
     {

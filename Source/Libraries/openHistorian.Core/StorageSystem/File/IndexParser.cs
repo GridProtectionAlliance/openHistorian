@@ -23,7 +23,7 @@
 //******************************************************************************************************
 using System;
 
-namespace openHistorian.Core.StorageSystem.File
+namespace openHistorian.V2.StorageSystem.File
 {
     /// <summary>
     /// This class provides passthrough properties for the <see cref="IndexMapper"/> class as well follows the directions

@@ -23,7 +23,7 @@
 
 using System.Collections.Generic;
 
-namespace openHistorian.Core.Unmanaged.Generic
+namespace openHistorian.V2.Unmanaged.Generic
 {
     /// <summary>
     /// Represents a collection of key/values pairs that is very similiar to a <see cref="SortedList{TKey,TValue}"/> 

@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.Core.StorageSystem.Generic
+namespace openHistorian.V2.StorageSystem.Generic
 {
     internal class TreeLookupCache<TKey>
         where TKey : struct, ITreeType<TKey>

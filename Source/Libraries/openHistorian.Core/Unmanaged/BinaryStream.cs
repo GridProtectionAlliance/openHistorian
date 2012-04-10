@@ -25,7 +25,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     public unsafe class BinaryStream : IDisposable
     {

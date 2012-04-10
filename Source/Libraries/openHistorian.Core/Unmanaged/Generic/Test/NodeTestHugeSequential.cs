@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
-using openHistorian.Core.Unmanaged.Generic.TimeKeyPair;
+using openHistorian.V2.Unmanaged.Generic.TimeKeyPair;
 
-namespace openHistorian.Core.Unmanaged.Generic
+namespace openHistorian.V2.Unmanaged.Generic
 {
     class NodeTestHugeSequential
     {

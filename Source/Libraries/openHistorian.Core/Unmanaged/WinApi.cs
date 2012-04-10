@@ -26,7 +26,7 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
-namespace openHistorian.Core.Unmanaged
+namespace openHistorian.V2.Unmanaged
 {
     /// <summary>
     /// This class allows allocating large memory pages.  In order to do this,
