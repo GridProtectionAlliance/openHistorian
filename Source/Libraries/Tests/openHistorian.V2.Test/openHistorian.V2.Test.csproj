@@ -37,10 +37,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TimeSeriesFramework">
+      <HintPath>..\..\..\Dependencies\TimeSeriesFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="TVA.Core">
+      <HintPath>..\..\..\Dependencies\TVA.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +68,16 @@
     <None Include="OrderedTest1.orderedtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\openHistorian.V2\openHistorian.V2.csproj">
+      <Project>{040E2AE7-021B-435A-ADBF-06D07EE0A67D}</Project>
+      <Name>openHistorian.V2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\openHistorian\openHistorian.csproj">
+      <Project>{55C394DB-9504-49B1-B2E4-AFAF9E99F63B}</Project>
+      <Name>openHistorian</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
