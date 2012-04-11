@@ -1,50 +1,85 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using openHistorian.V2.Unmanaged;
 using openHistorian.V2.Unmanaged.Generic;
 using openHistorian.V2.Unmanaged.Generic.TimeKeyPair;
-
 namespace openHistorian.V2
 {
     public class ArchiveEngine : IArchive
     {
-        MemoryStream m_stream;
-        BinaryStream m_binaryStream;
-        BPlusTreeTSD m_tree;
+        IncommingQueue m_newPointQueue;
+        ArchiveLookupClass m_lookupClass;
+        Thread m_insertThread;
+        Thread m_rolloverThread;
+        Archive m_currentArchive;
 
         public ArchiveEngine()
         {
-            m_stream = new MemoryStream();
-            m_binaryStream = new BinaryStream(m_stream);
-            m_tree = new BPlusTreeTSD(m_binaryStream, 4096);
+
         }
 
         public void Open()
         {
-            m_stream = new MemoryStream();
-            m_binaryStream = new BinaryStream(m_stream);
-            m_tree = new BPlusTreeTSD(m_binaryStream, 4096);
-            //throw new NotImplementedException();
+            m_newPointQueue = new IncommingQueue();
+            m_lookupClass = new ArchiveLookupClass();
+            m_insertThread = new Thread(ProcessInsertingData);
+            m_insertThread.Start();
+            m_rolloverThread = new Thread(ProcessRolloverData);
+            m_rolloverThread.Start();
         }
 
         public void Close()
         {
-            m_tree = null;
-            m_binaryStream = null;
-            m_stream = null;
+
+        }
+
+        void ProcessRolloverData()
+        {
+            while (true)
+            {
+                Thread.Sleep(10000);
+
+                var oldFiles = m_lookupClass.GetLatestSnapshot().Clone();
+                //determine what files need to be recombined.
+                //recombine them
+                //update the snapshot library
+                //post update.
+            }
+        }
+
+        /// <summary>
+        /// This process fires 10 times per second and populates the 
+        /// </summary>
+        void ProcessInsertingData()
+        {
+            while (true)
+            {
+                Thread.Sleep(100);
+                BinaryStream stream;
+                int pointCount;
+                m_newPointQueue.GetPointBlock(out stream, out pointCount);
+
+                if (pointCount > 0)
+                {
+                    while (pointCount > 0)
+                    {
+                        pointCount--;
+
+                        long time = stream.ReadInt64();
+                        int id = stream.ReadInt32();
+                        int flags = stream.ReadInt32();
+                        float value = stream.ReadSingle();
+
+                        m_currentArchive.AddPoint(new DateTime(time), id, flags, value);
+                    }
+                }
+            }
         }
 
         public void WriteData(IDataPoint dataPoint)
         {
-            KeyType key = default(KeyType);
-            key.Time = dataPoint.Time;
-            key.Key = dataPoint.HistorianID;
-
-            TreeTypeIntFloat value = new TreeTypeIntFloat((int)dataPoint.Flags, dataPoint.Value);
-
-            m_tree.AddData(key, value);
+            m_newPointQueue.WriteData(dataPoint);
         }
 
         public IEnumerable<IDataPoint> ReadData(int historianID, string startTime, string endTime)
@@ -58,14 +93,22 @@ namespace openHistorian.V2
             end.Time = TimeSeriesFramework.Adapters.AdapterBase.ParseTimeTag(endTime).AddTicks(1);
             end.Key = 0;
 
-            var reader = m_tree.ExecuteScan(start, end);
-            while (reader.Next())
+            var lookup =  m_lookupClass.GetLatestSnapshot();
+
+            foreach (var c in lookup.ArchiveTables)
             {
-                KeyType key = reader.GetKey();
-                if (key.Key == historianID)
+                if (c.Contains(start.Time,end.Time))
                 {
-                    yield return new DataPoint(key, reader.GetValue());
+
+                    foreach (var data in c.ArchiveFile.GetData(start.Time,end.Time))
+                    {
+                        if (data.Item2 == historianID)
+                        {
+                            yield return new DataPoint(default(KeyType), default(TreeTypeIntFloat));
+                        }
+                    }
                 }
+                
             }
         }
 
@@ -86,19 +129,26 @@ namespace openHistorian.V2
 
             KeyType start = default(KeyType);
             KeyType end = default(KeyType);
+
             start.Time = TimeSeriesFramework.Adapters.AdapterBase.ParseTimeTag(startTime);
             start.Key = 0;
 
             end.Time = TimeSeriesFramework.Adapters.AdapterBase.ParseTimeTag(endTime).AddTicks(1);
             end.Key = 0;
 
-            var reader = m_tree.ExecuteScan(start, end);
-            while (reader.Next())
+            var lookup = m_lookupClass.GetLatestSnapshot();
+
+            foreach (var c in lookup.ArchiveTables)
             {
-                KeyType key = reader.GetKey();
-                if (key.Key <=maxID && items.GetBit((int)key.Key))
+                if (c.Contains(start.Time, end.Time))
                 {
-                    yield return new DataPoint(key, reader.GetValue());
+                    foreach (var data in c.ArchiveFile.GetData(start.Time, end.Time))
+                    {
+                        if (data.Item2 <= maxID && items.GetBit((int)data.Item2))
+                        {
+                            yield return new DataPoint(default(KeyType), default(TreeTypeIntFloat));
+                        }
+                    }
                 }
             }
         }

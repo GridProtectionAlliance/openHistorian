@@ -78,15 +78,20 @@
   <ItemGroup>
     <Compile Include="Archive.cs" />
     <Compile Include="ArchiveEngine.cs" />
+    <Compile Include="ArchiveLookupClass.cs" />
+    <Compile Include="ArchiveLookupSnapshot.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="ContinuousBuffer.cs" />
+    <Compile Include="ArchiveEngineShell.cs" />
     <Compile Include="DataPoint.cs" />
     <Compile Include="HelperFunctions.cs" />
+    <Compile Include="IncommingQueue.cs" />
     <Compile Include="StorageSystem\BufferPool\PoolList.cs" />
     <Compile Include="StorageSystem\File\DiskIoEnhanced.cs" />
     <Compile Include="StorageSystem\File\IMemoryUnit.cs" />
     <Compile Include="StorageSystem\File\Test Procedures\DiskIOEnhanced2Test.cs" />
     <Compile Include="StorageSystem\File\Test Procedures\DiskIOEnhancedTest.cs" />
+    <Compile Include="TableSummaryInfo.cs" />
     <Compile Include="Unmanaged\Benchmarks\BinaryStreamTest.cs" />
     <Compile Include="Unmanaged\BufferedFileStream.cs" />
     <Compile Include="Unmanaged\Generic2\BPlusTreeBase.cs" />
