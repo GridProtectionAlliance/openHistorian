@@ -27,6 +27,7 @@ using System.Collections.Generic;
 
 namespace openHistorian.V2.Unmanaged.Generic2
 {
+
     /// <summary>
     /// Provides the basic user methods with any derived B+Tree.  
     /// This base class translates all of the core methods into simple methods
@@ -34,61 +35,117 @@ namespace openHistorian.V2.Unmanaged.Generic2
     /// </summary>
     /// <typeparam name="TKey">The unique key that will be used to store data in this tree.</typeparam>
     /// <typeparam name="TValue">The value that will be associated with each key.</typeparam>
+    /// <remarks>This class does not support concurrent read operations.  This is due to the caching method of each tree.
+    /// If concurrent read operations are desired, clone the tree.  
+    /// Trees cannot be cloned if the user plans to write to the tree.</remarks>
     public abstract class BPlusTreeBase<TKey, TValue>
     {
         #region [ Nested Types ]
 
-        public abstract class DataReaderBase : IEnumerable<KeyValuePair<TKey, TValue>>
+        /// <summary>
+        /// Provides a way to iterate over the results of a query. 
+        /// </summary>
+        /// <remarks>
+        /// It is recommended to implement this class at the leaf node layer and 
+        /// also make the implementation support the concurrent read operations.
+        /// </remarks>
+        public abstract class DataReaderBase : IEnumerable<KeyValuePair<TKey, TValue>>, IEnumerator<KeyValuePair<TKey, TValue>>
         {
-            protected abstract void Reset();
-            protected abstract bool Next();
-            protected abstract TValue GetValue();
-            protected abstract TKey GetKey();
+            /// <summary>
+            /// Resets the position of the reader to the start
+            /// </summary>
+            protected abstract void ReaderReset();
+            protected abstract bool ReaderNext();
+            protected abstract TValue ReaderGetValue();
+            protected abstract TKey ReaderGetKey();
 
             protected virtual KeyValuePair<TKey, TValue> GetKeyValue()
             {
-                return new KeyValuePair<TKey, TValue>(GetKey(), GetValue());
+                return new KeyValuePair<TKey, TValue>(ReaderGetKey(), ReaderGetValue());
             }
 
             public virtual IEnumerable<TKey> Keys()
             {
-                Reset();
-                while (Next())
+                ReaderReset();
+                while (ReaderNext())
                 {
-                    yield return GetKey();
+                    yield return ReaderGetKey();
                 }
             }
             public virtual IEnumerable<TValue> Values()
             {
-                Reset();
-                while (Next())
+                ReaderReset();
+                while (ReaderNext())
                 {
-                    yield return GetValue();
+                    yield return ReaderGetValue();
                 }
             }
 
-            public virtual IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+            /// <summary>
+            /// Since these base classes do not need IDispose, I left the implementation blank.
+            /// If at a future date this is needed, it will need to be properly written.
+            /// But I anticipate this will not occur within a BPlusTree;
+            /// </summary>
+            void IDisposable.Dispose()
             {
-                Reset();
-                while (Next())
+                //do nothing.
+            }
+
+            /// <summary>
+            /// Gets the current item.  The results returned here 
+            /// do not thow exceptions if it is before the beginning of the list.
+            /// </summary>
+            KeyValuePair<TKey, TValue> IEnumerator<KeyValuePair<TKey, TValue>>.Current
+            {
+                get
                 {
-                    yield return GetKeyValue();
+                    return GetKeyValue();
                 }
+            }
+
+            /// <summary>
+            /// Gets the current item.  The results returned here 
+            /// do not thow exceptions if it is before the beginning of the list.
+            /// </summary>
+            object IEnumerator.Current
+            {
+                get
+                {
+                    return GetKeyValue();
+                }
+            }
+
+            bool IEnumerator.MoveNext()
+            {
+                return ReaderNext();
+            }
+
+            void IEnumerator.Reset()
+            {
+                ReaderReset();
+            }
+
+
+
+            IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
+            {
+                return this;
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return GetEnumerator();
+                return this;
             }
         }
 
         #endregion
 
         static Guid s_fileType = new Guid("{7bfa9083-701e-4596-8273-8680a739271d}");
+
         int m_blockSize;
         BinaryStream m_stream;
-        uint m_rootIndexAddress;
-        byte m_rootIndexLevel;
+        uint m_rootNodeIndex;
+        byte m_rootNodeLevel;
         uint m_nextUnallocatedBlock;
 
         /// <summary>
@@ -99,7 +156,6 @@ namespace openHistorian.V2.Unmanaged.Generic2
         {
             m_stream = stream;
             Load();
-            //Initialize();
         }
 
         /// <summary>
@@ -114,17 +170,33 @@ namespace openHistorian.V2.Unmanaged.Generic2
         {
             m_stream = stream;
             m_blockSize = blockSize;
-            //Initialize();
-
             m_nextUnallocatedBlock = 1;
-            m_rootIndexAddress = 0;
-            m_rootIndexLevel = 0;
+            m_rootNodeIndex = 0;
+            m_rootNodeLevel = 0;
             Save();
             Load();
         }
 
         #region [ Properties ]
 
+        uint RootNodeIndex
+        {
+            get
+            {
+                if (m_rootNodeIndex == 0)
+                    m_rootNodeIndex = LeafNodeCreateEmptyNode();
+                return m_rootNodeIndex;
+            }
+            set
+            {
+                m_rootNodeIndex = value;
+            }
+
+        }
+
+        /// <summary>
+        /// Contains the stream for reading and writing and optional cloning.
+        /// </summary>
         protected BinaryStream Stream
         {
             get
@@ -132,6 +204,9 @@ namespace openHistorian.V2.Unmanaged.Generic2
                 return m_stream;
             }
         }
+        /// <summary>
+        /// Contains the block size that the tree nodes will be alligned on.
+        /// </summary>
         protected int BlockSize
         {
             get
@@ -144,50 +219,58 @@ namespace openHistorian.V2.Unmanaged.Generic2
 
         #region [ Public Methods ]
 
+        /// <summary>
+        /// Requests a range of data from the BPlusTree.
+        /// </summary>
+        /// <param name="filter">An optional filter that returns true if the provided key should be included in the scan.</param>
+        /// <returns>
+        /// An Enumerable class for getting the results of the query.
+        /// </returns>
         public DataReaderBase GetRange(Func<TKey, bool> filter = null)
         {
-            VerifyRootIsNotNull();
-            uint nodeIndex = m_rootIndexAddress;
-            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            uint nodeIndex = RootNodeIndex;
+            for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
-                nodeIndex = InternalNodeGetFirstIndex(levelCount, nodeIndex);
+                nodeIndex = InternalNodeGetFirstIndex(nodeLevel, nodeIndex);
             }
             TKey key;
             TValue value;
             LeafNodeGetFirstKeyValue(nodeIndex, out key, out value);
-
-            return LeafNodeScan(nodeIndex, key, null);
+            return LeafNodeScan(nodeIndex, key, filter);
         }
-
+        /// <summary>
+        /// Requests a range of data from the BPlusTree.
+        /// </summary>
+        /// <param name="filter">An optional filter that returns true if the provided key should be included in the scan.</param>
+        /// <returns>
+        /// An Enumerable class for getting the results of the query.
+        /// </returns>
         public DataReaderBase GetRange(TKey startKey, Func<TKey, bool> filter = null)
         {
-            VerifyRootIsNotNull();
-            uint nodeIndex = m_rootIndexAddress;
-            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            uint nodeIndex = RootNodeIndex;
+            for (byte levelCount = m_rootNodeLevel; levelCount > 0; levelCount--)
             {
                 nodeIndex = InternalNodeGetFirstIndex(levelCount, nodeIndex);
             }
 
-            return LeafNodeScan(nodeIndex, startKey, null);
+            return LeafNodeScan(nodeIndex, startKey, filter);
         }
 
         public DataReaderBase GetRange(TKey startKey, TKey stopKey, Func<TKey, bool> filter = null)
         {
-            VerifyRootIsNotNull();
-            uint nodeIndex = m_rootIndexAddress;
-            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            uint nodeIndex = RootNodeIndex;
+            for (byte levelCount = m_rootNodeLevel; levelCount > 0; levelCount--)
             {
                 nodeIndex = InternalNodeGetFirstIndex(levelCount, nodeIndex);
             }
 
-            return LeafNodeScan(nodeIndex, startKey, stopKey, null);
+            return LeafNodeScan(nodeIndex, startKey, stopKey, filter);
         }
 
         public void Remove(TKey key)
         {
-            VerifyRootIsNotNull();
-            uint nodeIndex = m_rootIndexAddress;
-            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            uint nodeIndex = RootNodeIndex;
+            for (byte levelCount = m_rootNodeLevel; levelCount > 0; levelCount--)
             {
                 nodeIndex = InternalNodeGetIndex(levelCount, nodeIndex, key);
             }
@@ -199,9 +282,8 @@ namespace openHistorian.V2.Unmanaged.Generic2
 
         public void Update(TKey key, TValue value)
         {
-            VerifyRootIsNotNull();
-            uint nodeIndex = m_rootIndexAddress;
-            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            uint nodeIndex = RootNodeIndex;
+            for (byte levelCount = m_rootNodeLevel; levelCount > 0; levelCount--)
             {
                 nodeIndex = InternalNodeGetIndex(levelCount, nodeIndex, key);
             }
@@ -218,9 +300,8 @@ namespace openHistorian.V2.Unmanaged.Generic2
         /// <param name="value">The value to insert.</param>
         public void Add(TKey key, TValue value)
         {
-            VerifyRootIsNotNull();
-            uint nodeIndex = m_rootIndexAddress;
-            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            uint nodeIndex = RootNodeIndex;
+            for (byte levelCount = m_rootNodeLevel; levelCount > 0; levelCount--)
             {
                 nodeIndex = InternalNodeGetIndex(levelCount, nodeIndex, key);
             }
@@ -237,9 +318,8 @@ namespace openHistorian.V2.Unmanaged.Generic2
         /// <returns>Null or the Default structure value if the key does not exist.</returns>
         public TValue Get(TKey key)
         {
-            VerifyRootIsNotNull();
-            uint nodeIndex = m_rootIndexAddress;
-            for (byte levelCount = m_rootIndexLevel; levelCount > 0; levelCount--)
+            uint nodeIndex = RootNodeIndex;
+            for (byte levelCount = m_rootNodeLevel; levelCount > 0; levelCount--)
             {
                 nodeIndex = InternalNodeGetIndex(levelCount, nodeIndex, key);
             }
@@ -317,10 +397,10 @@ namespace openHistorian.V2.Unmanaged.Generic2
         /// or create a new root if the current root is split.</remarks>
         protected void NodeWasSplit(byte level, uint firstNodeIndex, TKey middleKey, uint laterNodeIndex)
         {
-            if (m_rootIndexLevel > level)
+            if (m_rootNodeLevel > level)
             {
-                uint nodeIndex = m_rootIndexAddress;
-                for (byte levelCount = m_rootIndexLevel; levelCount > level + 1; levelCount--)
+                uint nodeIndex = m_rootNodeIndex;
+                for (byte levelCount = m_rootNodeLevel; levelCount > level + 1; levelCount--)
                 {
                     nodeIndex = InternalNodeGetIndex(levelCount, nodeIndex, middleKey);
                 }
@@ -328,8 +408,8 @@ namespace openHistorian.V2.Unmanaged.Generic2
             }
             else
             {
-                m_rootIndexLevel += 1;
-                m_rootIndexAddress = InternalNodeCreateEmptyNode(m_rootIndexLevel, firstNodeIndex, middleKey, laterNodeIndex);
+                m_rootNodeLevel += 1;
+                m_rootNodeIndex = InternalNodeCreateEmptyNode(m_rootNodeLevel, firstNodeIndex, middleKey, laterNodeIndex);
             }
         }
 
@@ -342,10 +422,10 @@ namespace openHistorian.V2.Unmanaged.Generic2
         /// <remarks>When a child node is rebalanced, it is important to update the parent node to reflect this new change.</remarks>
         protected void NodeWasRebalanced(byte level, TKey oldKeyInLaterBlock, TKey newFirstKeyInLaterBlock)
         {
-            if (m_rootIndexLevel > level)
+            if (m_rootNodeLevel > level)
             {
-                uint nodeIndex = m_rootIndexAddress;
-                for (byte levelCount = m_rootIndexLevel; levelCount > level + 1; levelCount--)
+                uint nodeIndex = m_rootNodeIndex;
+                for (byte levelCount = m_rootNodeLevel; levelCount > level + 1; levelCount--)
                 {
                     nodeIndex = InternalNodeGetIndex(levelCount, nodeIndex, oldKeyInLaterBlock);
                 }
@@ -367,10 +447,10 @@ namespace openHistorian.V2.Unmanaged.Generic2
         protected void NodeWasCombined(byte level, TKey oldKeyInRemovedBlock, uint nodeToKeep, uint nodeToDelete)
         {
             //ToDo: There needs to be some kind of free page allocation routine so when nodes are removed, there location isn't lost.
-            if (m_rootIndexLevel > level)
+            if (m_rootNodeLevel > level)
             {
-                uint nodeIndex = m_rootIndexAddress;
-                for (byte levelCount = m_rootIndexLevel; levelCount > level + 1; levelCount--)
+                uint nodeIndex = m_rootNodeIndex;
+                for (byte levelCount = m_rootNodeLevel; levelCount > level + 1; levelCount--)
                 {
                     nodeIndex = InternalNodeGetIndex(levelCount, nodeIndex, oldKeyInRemovedBlock);
                 }
@@ -378,8 +458,8 @@ namespace openHistorian.V2.Unmanaged.Generic2
             }
             else
             {
-                m_rootIndexLevel = 0;
-                m_rootIndexAddress = nodeToKeep;
+                m_rootNodeLevel = 0;
+                m_rootNodeIndex = nodeToKeep;
             }
         }
 
@@ -396,8 +476,8 @@ namespace openHistorian.V2.Unmanaged.Generic2
                 throw new Exception("Header Corrupt");
             m_nextUnallocatedBlock = Stream.ReadUInt32();
             m_blockSize = Stream.ReadInt32();
-            m_rootIndexAddress = Stream.ReadUInt32();
-            m_rootIndexLevel = Stream.ReadByte();
+            m_rootNodeIndex = Stream.ReadUInt32();
+            m_rootNodeLevel = Stream.ReadByte();
         }
         void Save()
         {
@@ -406,15 +486,11 @@ namespace openHistorian.V2.Unmanaged.Generic2
             Stream.Write((byte)0); //Version
             Stream.Write(m_nextUnallocatedBlock);
             Stream.Write(BlockSize);
-            Stream.Write(m_rootIndexAddress); //Root Index
-            Stream.Write(m_rootIndexLevel); //Root Index
+            Stream.Write(m_rootNodeIndex); //Root Index
+            Stream.Write(m_rootNodeLevel); //Root Index
         }
 
-        void VerifyRootIsNotNull()
-        {
-            if (m_rootIndexAddress == 0)
-                m_rootIndexAddress = LeafNodeCreateEmptyNode();
-        }
+      
 
         #endregion
 

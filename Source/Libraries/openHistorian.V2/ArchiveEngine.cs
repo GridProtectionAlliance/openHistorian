@@ -99,7 +99,6 @@ namespace openHistorian.V2
             {
                 if (c.Contains(start.Time,end.Time))
                 {
-
                     foreach (var data in c.ArchiveFile.GetData(start.Time,end.Time))
                     {
                         if (data.Item2 == historianID)

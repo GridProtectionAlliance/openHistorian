@@ -94,6 +94,7 @@
     <Compile Include="TableSummaryInfo.cs" />
     <Compile Include="Unmanaged\Benchmarks\BinaryStreamTest.cs" />
     <Compile Include="Unmanaged\BufferedFileStream.cs" />
+    <Compile Include="Unmanaged\Generic2\BPlusTree.cs" />
     <Compile Include="Unmanaged\Generic2\BPlusTreeBase.cs" />
     <Compile Include="Unmanaged\Generic2\BPlusTreeInternalNodeBase.cs" />
     <Compile Include="Unmanaged\Generic2\BPlusTreeLeafNodeBase.cs" />

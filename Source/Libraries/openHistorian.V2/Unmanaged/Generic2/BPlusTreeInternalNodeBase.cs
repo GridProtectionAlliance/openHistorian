@@ -146,10 +146,6 @@ namespace openHistorian.V2.Unmanaged.Generic2
         int m_keySize;
         int m_maximumChildren;
         int m_structureSize;
-        uint m_currentNode;
-        short m_childCount;
-        uint m_nextNode;
-        uint m_previousNode;
 
         #endregion
 
@@ -169,6 +165,12 @@ namespace openHistorian.V2.Unmanaged.Generic2
 
         #endregion
 
+        #region [ Properties ]
+
+        #endregion
+
+        #region [ Methods ]
+
         #region [ Abstract Methods ]
 
         protected abstract int SizeOfKey();
@@ -179,19 +181,13 @@ namespace openHistorian.V2.Unmanaged.Generic2
 
         #endregion
 
-        #region [ Properties ]
-
-        #endregion
-
-        #region [ Methods ]
-
-        #endregion
+        #region [ Override Methods ]
 
         protected override void InternalNodeUpdate(int indexLevel, uint nodeIndex, TKey oldFirstKey, TKey newFirstKey)
         {
             throw new NotImplementedException();
         }
-       
+
         protected override uint InternalNodeCreateEmptyNode(int indexLevel, uint currentIndex, TKey middleKey, uint newIndex)
         {
             uint nodeAddress = AllocateNewNode();
@@ -215,9 +211,16 @@ namespace openHistorian.V2.Unmanaged.Generic2
         {
             throw new NotImplementedException();
         }
-        
+
         protected override uint InternalNodeGetIndex(int indexLevel, uint nodeIndex, TKey key)
         {
+            short childCount;
+            uint previousNode;
+            uint nextNode;
+
+            LoadCurrentNode(indexLevel, nodeIndex, false, out childCount, out previousNode, out nextNode);
+
+
             BucketCache cache = m_cache[indexLevel - 1];
             if (IsMatch(key, cache))
             {
@@ -225,41 +228,45 @@ namespace openHistorian.V2.Unmanaged.Generic2
             }
             else
             {
-                InternalNodeSetCurrentNode((byte)indexLevel, nodeIndex, true);
-                return GetIndexAndCacheResult(key, cache);
+                return GetIndexAndCacheResult(key, cache, childCount, nodeIndex);
             }
         }
 
         protected override void InternalNodeInsert(int indexLevel, uint nodeIndex, TKey key, uint childNodeIndex)
         {
+
+            short childCount;
+            uint previousNode;
+            uint nextNode;
+
+            LoadCurrentNode(indexLevel, nodeIndex, false, out childCount, out previousNode, out nextNode);
+
             int offset;
 
-            long nodePositionStart = m_currentNode * BlockSize;
-
-            if (m_childCount >= m_maximumChildren)
+            if (childCount >= m_maximumChildren)
             {
-                InternalNodeSplitNode(key, nodeIndex);
+                SplitNode(key, nodeIndex, nodeIndex, nextNode);
                 return;
             }
 
-            if (InternalNodeSeekToKey(key, out offset))
+            if (SeekToKey(key, out offset, nodeIndex, childCount))
                 throw new Exception("Duplicate Key");
 
-            int spaceToMove = NodeHeader.Size + sizeof(uint) + m_structureSize * m_childCount - offset;
+            int spaceToMove = NodeHeader.Size + sizeof(uint) + m_structureSize * childCount - offset;
 
             if (spaceToMove > 0)
             {
-                Stream.Position = m_currentNode * BlockSize + offset;
+                Stream.Position = nodeIndex * BlockSize + offset;
                 Stream.InsertBytes(m_structureSize, spaceToMove);
             }
 
-            Stream.Position = m_currentNode * BlockSize + offset;
+            Stream.Position = nodeIndex * BlockSize + offset;
             SaveKey(key, Stream);
             Stream.Write(nodeIndex);
 
-            m_childCount++;
-            Stream.Position = m_currentNode * BlockSize + 1;
-            Stream.Write(m_childCount);
+            childCount++;
+            Stream.Position = nodeIndex * BlockSize + 1;
+            Stream.Write(childCount);
         }
 
         protected override void InternalNodeRemove(int indexLevel, uint nodeIndex, TKey key)
@@ -267,7 +274,7 @@ namespace openHistorian.V2.Unmanaged.Generic2
             throw new NotImplementedException();
         }
 
-        #region [ Methods ]
+        #endregion
 
         #region [Helper Methods ]
 
@@ -283,30 +290,17 @@ namespace openHistorian.V2.Unmanaged.Generic2
             }
         }
 
-        void InternalNodeSetCurrentNode(byte nodeLevel, uint nodeIndex, bool isForWriting)
+        void LoadCurrentNode(int nodeLevel, uint nodeIndex, bool isForWriting, out short childCount, out uint previousNode, out uint nextNode)
         {
-            m_currentNode = nodeIndex;
             Stream.Position = nodeIndex * BlockSize;
             Stream.UpdateLocalBuffer(isForWriting);
 
             if (Stream.ReadByte() != nodeLevel)
                 throw new Exception("The current node is not a leaf.");
-            m_childCount = Stream.ReadInt16();
-            m_previousNode = Stream.ReadUInt32();
-            m_nextNode = Stream.ReadUInt32();
+            childCount = Stream.ReadInt16();
+            previousNode = Stream.ReadUInt32();
+            nextNode = Stream.ReadUInt32();
         }
-        void InternalNodeSetCurrentNode(uint nodeIndex, bool isForWriting)
-        {
-            m_currentNode = nodeIndex;
-            Stream.Position = nodeIndex * BlockSize;
-            Stream.UpdateLocalBuffer(isForWriting);
-
-            Stream.ReadByte(); //node level
-            m_childCount = Stream.ReadInt16();
-            m_previousNode = Stream.ReadUInt32();
-            m_nextNode = Stream.ReadUInt32();
-        }
-
 
         /// <summary>
         /// Starting from the first byte of the node, 
@@ -314,13 +308,15 @@ namespace openHistorian.V2.Unmanaged.Generic2
         /// </summary>
         /// <param name="key">the key to search for</param>
         /// <param name="offset"></param>
+        /// <param name="currentNode"> </param>
+        /// <param name="childCount"> </param>
         /// <returns>the stream positioned at the spot corresponding to the returned search results.</returns>
-        bool InternalNodeSeekToKey(TKey key, out int offset)
+        bool SeekToKey(TKey key, out int offset, uint currentNode, int childCount)
         {
-            long startAddress = m_currentNode * BlockSize + NodeHeader.Size + sizeof(uint);
+            long startAddress = currentNode * BlockSize + NodeHeader.Size + sizeof(uint);
 
             int min = 0;
-            int max = m_childCount - 1;
+            int max = childCount - 1;
 
             while (min <= max)
             {
@@ -343,22 +339,19 @@ namespace openHistorian.V2.Unmanaged.Generic2
             return false;
         }
 
-  
-
         /// <summary>
         /// Splits an existing node into two halfs
         /// </summary>
-        void InternalNodeSplitNode(TKey key, uint childNodeIndex)
+        void SplitNode(TKey key, uint childNodeIndex, uint currentNode, uint nextNode)
         {
-            uint currentNode = m_currentNode;
-            uint oldNextNode = m_nextNode;
+            uint oldNextNode = nextNode;
             TKey firstKeyInGreaterNode = default(TKey);
 
             NodeHeader origionalNode = default(NodeHeader);
             NodeHeader newNode = default(NodeHeader);
             NodeHeader foreignNode = default(NodeHeader);
 
-            origionalNode.Load(Stream, BlockSize, m_currentNode);
+            origionalNode.Load(Stream, BlockSize, currentNode);
 
             if (origionalNode.ChildCount < 2)
                 throw new Exception("cannot split a node with fewer than 2 children");
@@ -367,7 +360,7 @@ namespace openHistorian.V2.Unmanaged.Generic2
             short itemsInSecondNode = (short)(origionalNode.ChildCount - itemsInFirstNode);
 
             uint greaterNodeIndex = AllocateNewNode();
-            long sourceStartingAddress = m_currentNode * BlockSize + NodeHeader.Size + sizeof(uint) + m_structureSize * itemsInFirstNode;
+            long sourceStartingAddress = currentNode * BlockSize + NodeHeader.Size + sizeof(uint) + m_structureSize * itemsInFirstNode;
             long targetStartingAddress = greaterNodeIndex * BlockSize + NodeHeader.Size + sizeof(uint);
 
             //lookup the first key that will be copied
@@ -402,7 +395,7 @@ namespace openHistorian.V2.Unmanaged.Generic2
             NodeWasSplit(origionalNode.Level, currentNode, firstKeyInGreaterNode, greaterNodeIndex);
             if (CompareKeys(key, firstKeyInGreaterNode) > 0)
             {
-                InternalNodeInsert(origionalNode.Level,greaterNodeIndex,key,childNodeIndex);
+                InternalNodeInsert(origionalNode.Level, greaterNodeIndex, key, childNodeIndex);
             }
             else
             {
@@ -414,8 +407,6 @@ namespace openHistorian.V2.Unmanaged.Generic2
         #endregion
 
         #endregion
-
-
 
         /// <summary>
         /// If an internal node is modified. The local cache for that node may no longer be valid.
@@ -458,17 +449,17 @@ namespace openHistorian.V2.Unmanaged.Generic2
         /// this method will return the node index value that contains the provided key
         /// </summary>
         /// <returns></returns>
-        uint GetIndexAndCacheResult(TKey key, BucketCache cache)
+        uint GetIndexAndCacheResult(TKey key, BucketCache cache, int childCount, uint currentNode)
         {
             int offset;
 
             //Look forward only if an exact match, otherwise the position is behind me.
-            if (InternalNodeSeekToKey(key, out offset))
+            if (SeekToKey(key, out offset, currentNode, childCount))
             {
                 //Check if offset is the last valid position.
-                if (offset == NodeHeader.Size + sizeof(uint) + m_childCount * m_structureSize)
+                if (offset == NodeHeader.Size + sizeof(uint) + childCount * m_structureSize)
                 {
-                    Stream.Position = m_currentNode * BlockSize + offset;
+                    Stream.Position = currentNode * BlockSize + offset;
                     cache.LowerBound = LoadKey(Stream);
                     cache.Bucket = Stream.ReadUInt32();
                     cache.Mode = CacheMode.UpperIsMissing;
@@ -476,7 +467,7 @@ namespace openHistorian.V2.Unmanaged.Generic2
                 }
                 else
                 {
-                    Stream.Position = m_currentNode * BlockSize + offset;
+                    Stream.Position = currentNode * BlockSize + offset;
                     cache.LowerBound = LoadKey(Stream);
                     cache.Bucket = Stream.ReadUInt32();
                     cache.UpperBound = LoadKey(Stream);
@@ -488,16 +479,16 @@ namespace openHistorian.V2.Unmanaged.Generic2
             //Check if offset is the first entry.
             if (offset == NodeHeader.Size + sizeof(uint))
             {
-                Stream.Position = m_currentNode * BlockSize + (offset - 4);
+                Stream.Position = currentNode * BlockSize + (offset - 4);
                 cache.Bucket = Stream.ReadUInt32();
                 cache.UpperBound = LoadKey(Stream);
                 cache.Mode = CacheMode.LowerIsMissing;
                 return cache.Bucket;
             }
-            else if (offset == NodeHeader.Size + sizeof(uint) + m_childCount * m_structureSize)
+            else if (offset == NodeHeader.Size + sizeof(uint) + childCount * m_structureSize)
             {
                 //if offset is last entry
-                Stream.Position = m_currentNode * BlockSize + (offset - 4 - m_keySize);
+                Stream.Position = currentNode * BlockSize + (offset - 4 - m_keySize);
                 cache.LowerBound = LoadKey(Stream);
                 cache.Bucket = Stream.ReadUInt32();
                 cache.Mode = CacheMode.UpperIsMissing;
@@ -506,7 +497,7 @@ namespace openHistorian.V2.Unmanaged.Generic2
             else
             {
                 //if offset is bounded
-                Stream.Position = m_currentNode * BlockSize + (offset - 4 - m_keySize);
+                Stream.Position = currentNode * BlockSize + (offset - 4 - m_keySize);
                 cache.LowerBound = LoadKey(Stream);
                 cache.Bucket = Stream.ReadUInt32();
                 cache.UpperBound = LoadKey(Stream);
