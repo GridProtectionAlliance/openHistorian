@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using openHistorian.V2.IO.Unmanaged;
 using openHistorian.V2.Unmanaged;
 
 namespace openHistorian.V2

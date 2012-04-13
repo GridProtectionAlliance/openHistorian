@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using openHistorian.V2.IO.Unmanaged;
 using openHistorian.V2.Unmanaged;
 
 namespace openHistorian.V2.StorageSystem.File

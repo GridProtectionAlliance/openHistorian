@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using openHistorian.V2.Collections.BPlusTreeTypes;
+using openHistorian.V2.Collections.Specialized;
 using openHistorian.V2.StorageSystem;
 using openHistorian.V2.StorageSystem.File;
-using openHistorian.V2.Unmanaged.Generic;
-using openHistorian.V2.Unmanaged.Generic.TimeKeyPair;
+
 
 namespace openHistorian.V2
 {
@@ -13,7 +14,7 @@ namespace openHistorian.V2
         VirtualFileSystem m_fileSystem;
         TransactionalEdit m_currentTransaction;
         ArchiveFileStream m_stream1;
-        Unmanaged.BinaryStream m_binaryStream1;
+        IO.Unmanaged.BinaryStream m_binaryStream1;
         BPlusTreeTSD m_tree;
 
         //public Archive(string file)
@@ -49,62 +50,59 @@ namespace openHistorian.V2
             m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();
             m_currentTransaction = m_fileSystem.BeginEdit();
             m_stream1 = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271c}"), 1);
-            m_binaryStream1 = new Unmanaged.BinaryStream(m_stream1);
+            m_binaryStream1 = new IO.Unmanaged.BinaryStream(m_stream1);
             m_tree = new BPlusTreeTSD(m_binaryStream1, ArchiveConstants.DataBlockDataLength);
         }
 
         public void AddPoint(DateTime date, long pointId, int flags, float data)
         {
-            KeyType key = default(KeyType);
+            DateTimeLong key = default(DateTimeLong);
             key.Time = date;
             key.Key = pointId;
 
-            TreeTypeIntFloat value = new TreeTypeIntFloat(flags, data);
+            IntegerFloat value = new IntegerFloat(flags, data);
 
-            m_tree.AddData(key, value);
+            m_tree.Add(key, value);
         }
 
         public IEnumerable<Tuple<DateTime, long, int, float>> GetData(long pointId, DateTime startDate, DateTime stopDate)
         {
-            KeyType start = default(KeyType);
-            KeyType end = default(KeyType);
+            DateTimeLong start = default(DateTimeLong);
+            DateTimeLong end = default(DateTimeLong);
             start.Time = startDate;
             start.Key = pointId;
             end.Time = stopDate;
             end.Key = pointId;
 
-            var reader = m_tree.ExecuteScan(start, end);
-            while (reader.Next())
+            foreach (var kvp in m_tree.GetRange(start, end))
             {
-                KeyType key = reader.GetKey();
-                if (reader.GetKey().Key == pointId)
-                {
-                    TreeTypeIntFloat value = reader.GetValue();
+                DateTimeLong key = kvp.Key;
+                IntegerFloat value = kvp.Value;
+                if (key.Key == pointId)
                     yield return new Tuple<DateTime, long, int, float>(key.Time, key.Key, value.Value1, value.Value2);
-                }
             }
+
         }
         public IEnumerable<Tuple<DateTime, long, int, float>> GetData(DateTime startDate, DateTime stopDate)
         {
-            KeyType start = default(KeyType);
-            KeyType end = default(KeyType);
+            DateTimeLong start = default(DateTimeLong);
+            DateTimeLong end = default(DateTimeLong);
             start.Time = startDate;
             start.Key = long.MinValue;
             end.Time = stopDate;
             end.Key = long.MaxValue;
 
-            var reader = m_tree.ExecuteScan(start, end);
-            while (reader.Next())
+            foreach (var kvp in m_tree.GetRange(start, end))
             {
-                KeyType key = reader.GetKey();
-                TreeTypeIntFloat value = reader.GetValue();
+                DateTimeLong key = kvp.Key;
+                IntegerFloat value = kvp.Value;
                 yield return new Tuple<DateTime, long, int, float>(key.Time, key.Key, value.Value1, value.Value2);
             }
         }
 
         public void Close()
         {
-            m_tree.Save();
+            //m_tree.Save();
             m_stream1.Flush();
             m_currentTransaction.Commit();
             m_fileSystem.Dispose();

@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Unmanaged
 {

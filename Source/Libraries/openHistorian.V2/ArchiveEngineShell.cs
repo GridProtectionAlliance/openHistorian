@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using openHistorian.V2.Collections;
+using openHistorian.V2.Collections.BPlusTreeTypes;
+using openHistorian.V2.Collections.Specialized;
+using openHistorian.V2.IO.Unmanaged;
 using openHistorian.V2.Unmanaged;
-using openHistorian.V2.Unmanaged.Generic;
-using openHistorian.V2.Unmanaged.Generic.TimeKeyPair;
 
 namespace openHistorian.V2
 {
@@ -39,19 +41,19 @@ namespace openHistorian.V2
 
         public void WriteData(IDataPoint dataPoint)
         {
-            KeyType key = default(KeyType);
+            DateTimeLong key = default(DateTimeLong);
             key.Time = dataPoint.Time;
             key.Key = dataPoint.HistorianID;
 
-            TreeTypeIntFloat value = new TreeTypeIntFloat((int)dataPoint.Flags, dataPoint.Value);
+            IntegerFloat value = new IntegerFloat((int)dataPoint.Flags, dataPoint.Value);
 
-            m_tree.AddData(key, value);
+            m_tree.Add(key, value);
         }
 
         public IEnumerable<IDataPoint> ReadData(int historianID, string startTime, string endTime)
         {
-            KeyType start = default(KeyType);
-            KeyType end = default(KeyType);
+            DateTimeLong start = default(DateTimeLong);
+            DateTimeLong end = default(DateTimeLong);
 
             start.Time = TimeSeriesFramework.Adapters.AdapterBase.ParseTimeTag(startTime);
             start.Key = 0;
@@ -59,14 +61,12 @@ namespace openHistorian.V2
             end.Time = TimeSeriesFramework.Adapters.AdapterBase.ParseTimeTag(endTime).AddTicks(1);
             end.Key = 0;
 
-            var reader = m_tree.ExecuteScan(start, end);
-            while (reader.Next())
+            foreach (var kvp in m_tree.GetRange(start, end))
             {
-                KeyType key = reader.GetKey();
+                DateTimeLong key = kvp.Key;
+                IntegerFloat value = kvp.Value;
                 if (key.Key == historianID)
-                {
-                    yield return new DataPoint(key, reader.GetValue());
-                }
+                    yield return new DataPoint(key, value);
             }
         }
 
@@ -85,22 +85,20 @@ namespace openHistorian.V2
                 items.SetBit(historianID);
             }
 
-            KeyType start = default(KeyType);
-            KeyType end = default(KeyType);
+            DateTimeLong start = default(DateTimeLong);
+            DateTimeLong end = default(DateTimeLong);
             start.Time = TimeSeriesFramework.Adapters.AdapterBase.ParseTimeTag(startTime);
             start.Key = 0;
 
             end.Time = TimeSeriesFramework.Adapters.AdapterBase.ParseTimeTag(endTime).AddTicks(1);
             end.Key = 0;
 
-            var reader = m_tree.ExecuteScan(start, end);
-            while (reader.Next())
+            foreach (var kvp in m_tree.GetRange(start, end))
             {
-                KeyType key = reader.GetKey();
-                if (key.Key <=maxID && items.GetBit((int)key.Key))
-                {
-                    yield return new DataPoint(key, reader.GetValue());
-                }
+                DateTimeLong key = kvp.Key;
+                IntegerFloat value = kvp.Value;
+                if (key.Key <= maxID && items.GetBit((int)key.Key))
+                    yield return new DataPoint(key, value);
             }
         }
     }

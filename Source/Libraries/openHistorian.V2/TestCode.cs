@@ -11,7 +11,7 @@ namespace openHistorian.V2
     {
         public static void Test()
         {
-            Unmanaged.BufferPool.SetMinimumMemoryUsage(Unmanaged.BufferPool.MaximumMemoryUsage);
+            //Unmanaged.BufferPool.SetMinimumMemoryUsage(Unmanaged.BufferPool.MaximumMemoryUsage);
             System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.Batch;
             //Test2();
             //return;
@@ -20,7 +20,7 @@ namespace openHistorian.V2
             //Unmanaged.BinaryStreamBenchmark.Run();
             //return;
 
-            Unmanaged.Generic.NodeTestHugeSequential.Test();
+            //Unmanaged.Generic.NodeTestHugeSequential.Test();
             return;
 
             //ArchiveTest.Test();
@@ -30,7 +30,7 @@ namespace openHistorian.V2
 
             //Unmanaged.BufferPoolTest.Test();
 
-            Unmanaged.MemoryStreamTest.Test();
+            //Unmanaged.MemoryStreamTest.Test();
             Unmanaged.BinaryStreamTest.Test();
             //Unmanaged.BufferedStreamTest.Test();
 
@@ -38,7 +38,7 @@ namespace openHistorian.V2
 
             //Unmanaged.Specialized.NodeTest.Test();
 
-            Unmanaged.Generic.NodeTest.Test();
+            //Unmanaged.Generic.NodeTest.Test();
             //Unmanaged.Generic.NodeTest2.Test();
 
             //Unmanaged.Generic.NodeTestStack.Test();
@@ -77,44 +77,44 @@ namespace openHistorian.V2
         }
         public unsafe static void Test2()
         {
-            byte[] data = new byte[1024 * 1024];
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("size\tmicroseconds");
+            //byte[] data = new byte[1024 * 1024];
+            //StringBuilder sb = new StringBuilder();
+            //sb.AppendLine("size\tmicroseconds");
 
-            fixed (byte* lp = data)
-            {
+            //fixed (byte* lp = data)
+            //{
 
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
+            //    Stopwatch sw = new Stopwatch();
+            //    sw.Start();
 
-                for (int bit = 1; bit < 1024*1024; bit *= 2)
-                {
-                    for (int x = 0; x < 1000; x++)
-                    {
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                    }
-                    sw.Start();
-                    for (int x = 0; x < 100; x++)
-                    {
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                        Unmanaged.Memory.Copy(lp, lp + 1, bit);
-                    }
-                    sw.Stop();
-                    sb.AppendLine(bit + "\t" + sw.Elapsed.TotalMilliseconds);
-                }
+            //    for (int bit = 1; bit < 1024*1024; bit *= 2)
+            //    {
+            //        for (int x = 0; x < 1000; x++)
+            //        {
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //        }
+            //        sw.Start();
+            //        for (int x = 0; x < 100; x++)
+            //        {
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //            Unmanaged.Memory.Copy(lp, lp + 1, bit);
+            //        }
+            //        sw.Stop();
+            //        sb.AppendLine(bit + "\t" + sw.Elapsed.TotalMilliseconds);
+            //    }
 
-            }
+            //}
 
-            Clipboard.SetText(sb.ToString());
-            MessageBox.Show(sb.ToString());
+            //Clipboard.SetText(sb.ToString());
+            //MessageBox.Show(sb.ToString());
 
 
             //long ptr1, ptr2, ptr3, ptr4, ptr5;

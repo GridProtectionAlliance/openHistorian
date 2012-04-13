@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TVA;
-using openHistorian.V2.Unmanaged.Generic;
-using openHistorian.V2.Unmanaged.Generic.TimeKeyPair;
+using openHistorian.V2.Collections.BPlusTreeTypes;
 
 namespace openHistorian.V2
 {
@@ -15,7 +14,7 @@ namespace openHistorian.V2
         uint m_flags;
         float m_value;
 
-        public DataPoint(KeyType key, TreeTypeIntFloat value)
+        public DataPoint(DateTimeLong key, IntegerFloat value)
         {
             m_historianId = (int)key.Key;
             m_timeTag = key.Time;

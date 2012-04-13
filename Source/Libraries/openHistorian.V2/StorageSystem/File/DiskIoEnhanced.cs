@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using openHistorian.V2.IO.Unmanaged;
 using openHistorian.V2.Unmanaged;
 
 namespace openHistorian.V2.StorageSystem.File

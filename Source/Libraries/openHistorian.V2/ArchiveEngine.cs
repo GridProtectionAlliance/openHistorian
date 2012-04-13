@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using openHistorian.V2.Collections;
+using openHistorian.V2.Collections.BPlusTreeTypes;
+using openHistorian.V2.IO.Unmanaged;
 using openHistorian.V2.Unmanaged;
-using openHistorian.V2.Unmanaged.Generic;
-using openHistorian.V2.Unmanaged.Generic.TimeKeyPair;
 namespace openHistorian.V2
 {
     public class ArchiveEngine : IArchive
@@ -84,8 +85,8 @@ namespace openHistorian.V2
 
         public IEnumerable<IDataPoint> ReadData(int historianID, string startTime, string endTime)
         {
-            KeyType start = default(KeyType);
-            KeyType end = default(KeyType);
+            DateTimeLong start = default(DateTimeLong);
+            DateTimeLong end = default(DateTimeLong);
 
             start.Time = TimeSeriesFramework.Adapters.AdapterBase.ParseTimeTag(startTime);
             start.Key = 0;
@@ -103,7 +104,7 @@ namespace openHistorian.V2
                     {
                         if (data.Item2 == historianID)
                         {
-                            yield return new DataPoint(default(KeyType), default(TreeTypeIntFloat));
+                            yield return new DataPoint(default(DateTimeLong), default(IntegerFloat));
                         }
                     }
                 }
@@ -126,8 +127,8 @@ namespace openHistorian.V2
                 items.SetBit(historianID);
             }
 
-            KeyType start = default(KeyType);
-            KeyType end = default(KeyType);
+            DateTimeLong start = default(DateTimeLong);
+            DateTimeLong end = default(DateTimeLong);
 
             start.Time = TimeSeriesFramework.Adapters.AdapterBase.ParseTimeTag(startTime);
             start.Key = 0;
@@ -145,7 +146,7 @@ namespace openHistorian.V2
                     {
                         if (data.Item2 <= maxID && items.GetBit((int)data.Item2))
                         {
-                            yield return new DataPoint(default(KeyType), default(TreeTypeIntFloat));
+                            yield return new DataPoint(default(DateTimeLong), default(IntegerFloat));
                         }
                     }
                 }

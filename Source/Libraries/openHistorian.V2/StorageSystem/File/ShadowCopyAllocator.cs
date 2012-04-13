@@ -22,6 +22,7 @@
 //
 //******************************************************************************************************
 using System;
+using openHistorian.V2.UnmanagedMemory;
 
 namespace openHistorian.V2.StorageSystem.File
 {
@@ -242,7 +243,7 @@ namespace openHistorian.V2.StorageSystem.File
                 indexIndirectBlock = m_fileAllocationTable.AllocateFreeBlocks(1);
                 m_diskIo.AquireBlockForWrite(indexIndirectBlock, buffer);
 
-                Unmanaged.Memory.Clear(buffer.Pointer,buffer.Length);
+                Memory.Clear(buffer.Pointer,buffer.Length);
 
                 WriteIndexIndirectBlock(buffer, indexIndirectBlock, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
             }
@@ -298,7 +299,7 @@ namespace openHistorian.V2.StorageSystem.File
                 using (IMemoryUnit data = m_diskIo.GetMemoryUnit())
                 {
                     m_diskIo.AquireBlockForWrite(destinationBlockAddress, data);
-                    Unmanaged.Memory.Copy(buffer.Pointer,data.Pointer,data.Length);
+                    Memory.Copy(buffer.Pointer,data.Pointer,data.Length);
                     WriteIndexIndirectBlock(data, destinationBlockAddress, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
                 }
 
@@ -351,12 +352,12 @@ namespace openHistorian.V2.StorageSystem.File
                     throw new Exception("Error Reading File " + readState.ToString());
 
                 m_diskIo.AquireBlockForWrite(destinationClusterAddress, destinationData);
-                Unmanaged.Memory.Copy(sourceData.Pointer, destinationData.Pointer, sourceData.Length);
+                Memory.Copy(sourceData.Pointer, destinationData.Pointer, sourceData.Length);
             }
             else //if source cluster does not exist.
             {
                 m_diskIo.AquireBlockForWrite(destinationClusterAddress, destinationData);
-                Unmanaged.Memory.Clear(destinationData.Pointer, destinationData.Length);
+                Memory.Clear(destinationData.Pointer, destinationData.Length);
             }
             sourceData.Dispose();
             destinationData.Dispose();
