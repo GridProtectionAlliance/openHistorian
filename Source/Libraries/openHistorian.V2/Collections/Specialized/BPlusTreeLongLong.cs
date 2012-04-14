@@ -138,7 +138,7 @@ namespace openHistorian.V2.Collections.Specialized
         {
             get
             {
-                return Guid.NewGuid();
+                return Guid.Empty;
             }
         }
     }

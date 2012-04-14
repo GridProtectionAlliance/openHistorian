@@ -331,7 +331,9 @@ namespace openHistorian.V2.IO.Unmanaged
         /// </remarks>
         public void InsertBytes(int numberOfBytes, int lengthOfValidDataToShift)
         {
+            long pos = Position;
             Copy(Position, Position + numberOfBytes, lengthOfValidDataToShift);
+            Position = pos;
         }
 
         /// <summary>
@@ -348,7 +350,9 @@ namespace openHistorian.V2.IO.Unmanaged
         /// </remarks>
         public void RemoveBytes(int numberOfBytes, int lengthOfValidDataToShift)
         {
+            long pos = Position;
             Copy(Position + numberOfBytes, Position, lengthOfValidDataToShift);
+            Position = pos;
         }
 
         //#region Helper Types

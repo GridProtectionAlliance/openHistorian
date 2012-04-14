@@ -108,7 +108,7 @@ namespace openHistorian.V2.Collections
         {
             get
             {
-                return Guid.NewGuid();
+                return Guid.Empty;
             }
         }
     }

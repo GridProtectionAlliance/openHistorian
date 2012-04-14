@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -61,11 +62,40 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinaryStreamTest.cs" />
+    <Compile Include="Collections\BitArray.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
+    <Compile Include="Collections\Test\NodeTest.cs" />
+    <Compile Include="Collections\Test\NodeTest2.cs" />
+    <Compile Include="Collections\Test\NodeTestHugeSequential.cs" />
+    <Compile Include="Collections\Test\NodeTestPageSize.cs" />
+    <Compile Include="Collections\UnmanagedArray.cs" />
+    <Compile Include="IO\BinaryStreamBenchmark.cs" />
+    <Compile Include="IO\BinaryStreamTest.cs" />
+    <Compile Include="IO\BufferedStreamTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="FileSystem\ArchiveFileStreamTest.cs" />
+    <Compile Include="FileSystem\BenchmarkPageSizes.cs" />
+    <Compile Include="FileSystem\DiskIOEnhanced2Test.cs" />
+    <Compile Include="FileSystem\DiskIOEnhancedTest.cs" />
+    <Compile Include="FileSystem\FileAllocationTableTest.cs" />
+    <Compile Include="FileSystem\FileMetaDataTest.cs" />
+    <Compile Include="FileSystem\FileSystemSnapshotServiceTest.cs" />
+    <Compile Include="FileSystem\IndexMapperTest.cs" />
+    <Compile Include="FileSystem\IndexParserTest.cs" />
+    <Compile Include="FileSystem\ShadowCopyAllocatorTest.cs" />
+    <Compile Include="FileSystem\TransactionalEditTest.cs" />
+    <Compile Include="Test\ArchiveTest.cs" />
+    <Compile Include="Test\CompressionTest.cs" />
+    <Compile Include="Test\PooledMemoryStreamTest.cs" />
+    <Compile Include="UnmanagedMemory\BufferPool.cs" />
+    <Compile Include="UnmanagedMemory\Memory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OrderedTest1.orderedtest">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFileStream.orderedtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -79,6 +109,7 @@
       <Name>openHistorian</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

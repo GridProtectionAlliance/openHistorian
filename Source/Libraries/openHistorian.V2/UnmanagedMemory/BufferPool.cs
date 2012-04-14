@@ -146,19 +146,30 @@ namespace openHistorian.V2.UnmanagedMemory
             get
             {
                 if (s_memoryBlockCount == 0)
-                    return 0;
-                return s_pageAllocations.ClearCount * (float)PageSize / AllocatedMemory;
+                    return 0.0f;
+                return s_pageAllocations.ClearCount * (float)PageSize / TotalBufferSize;
             }
         }
 
         /// <summary>
         /// Returns the number of bytes currently allocated
         /// </summary>
-        public static long AllocatedMemory
+        public static long TotalBufferSize
         {
             get
             {
                 return (long)s_memoryBlockCount * s_memoryBlockSize;
+            }
+        }
+
+        /// <summary>
+        /// Returns the number of bytes currently allocated
+        /// </summary>
+        public static long AllocatedBytes
+        {
+            get
+            {
+                return TotalBufferSize - (long)s_pageAllocations.ClearCount * PageSize;
             }
         }
 
@@ -386,7 +397,7 @@ namespace openHistorian.V2.UnmanagedMemory
             while (FreeSpacePercentage < DesiredFreeSpaceAfterCollection)
             {
                 //If this goes beyond the desired maximum, exit
-                if (AllocatedMemory + s_memoryBlockSize > MaximumMemoryUsage)
+                if (TotalBufferSize + s_memoryBlockSize > MaximumMemoryUsage)
                     return;
                 AllocateBlock();
             }
@@ -469,7 +480,7 @@ namespace openHistorian.V2.UnmanagedMemory
         /// </summary>
         static void VerifyMinimumMemoryBounds()
         {
-            while (AllocatedMemory < MinimumMemoryUsage)
+            while (TotalBufferSize < MinimumMemoryUsage)
             {
                 AllocateBlock();
             }
