@@ -7,7 +7,7 @@
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4CF92B76-BD91-41C7-BB5B-D290B1730DEF}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>openHistorian.V2.Test</RootNamespace>
     <AssemblyName>openHistorian.V2.Test</AssemblyName>
@@ -37,6 +37,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -62,11 +65,11 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryStreamTest.cs" />
+    <Compile Include="Collections\BPlusTreeBaseTest.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
     <Compile Include="Collections\Test\NodeTest.cs" />
-    <Compile Include="Collections\Test\NodeTest2.cs" />
+    <Compile Include="Collections\BPlusTreeBasicTests.cs" />
     <Compile Include="Collections\Test\NodeTestHugeSequential.cs" />
     <Compile Include="Collections\Test\NodeTestPageSize.cs" />
     <Compile Include="Collections\UnmanagedArray.cs" />
@@ -85,19 +88,12 @@
     <Compile Include="FileSystem\IndexParserTest.cs" />
     <Compile Include="FileSystem\ShadowCopyAllocatorTest.cs" />
     <Compile Include="FileSystem\TransactionalEditTest.cs" />
+    <Compile Include="TestCode.cs" />
     <Compile Include="Test\ArchiveTest.cs" />
     <Compile Include="Test\CompressionTest.cs" />
     <Compile Include="Test\PooledMemoryStreamTest.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="UnmanagedMemory\Memory.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OrderedTest1.orderedtest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFileStream.orderedtest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\openHistorian.V2\openHistorian.V2.csproj">
@@ -109,7 +105,9 @@
       <Name>openHistorian</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Collections\Specialized\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

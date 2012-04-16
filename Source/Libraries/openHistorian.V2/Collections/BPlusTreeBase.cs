@@ -244,7 +244,7 @@ namespace openHistorian.V2.Collections
             uint nodeIndex = m_rootNodeIndex;
             for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
-                nodeIndex = InternalNodeGetFirstIndex(nodeLevel, nodeIndex);
+                nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, beginKey);
             }
 
             return LeafNodeScan(nodeIndex, beginKey, filter);
@@ -255,37 +255,39 @@ namespace openHistorian.V2.Collections
             uint nodeIndex = m_rootNodeIndex;
             for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
-                nodeIndex = InternalNodeGetFirstIndex(nodeLevel, nodeIndex);
+                nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, beginKey);
             }
 
             return LeafNodeScan(nodeIndex, beginKey, endKey, filter);
         }
 
-        public void Remove(TKey key)
-        {
-            uint nodeIndex = m_rootNodeIndex;
-            for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-            {
-                nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, key);
-            }
+        ////ToDo: Fix this feature
+        //public void Remove(TKey key)
+        //{
+        //    uint nodeIndex = m_rootNodeIndex;
+        //    for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
+        //    {
+        //        nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, key);
+        //    }
 
-            if (LeafNodeRemove(nodeIndex, key))
-                return;
-            throw new Exception("Key Not Found");
-        }
+        //    if (LeafNodeRemove(nodeIndex, key))
+        //        return;
+        //    throw new Exception("Key Not Found");
+        //}
 
-        public void Update(TKey key, TValue value)
-        {
-            uint nodeIndex = m_rootNodeIndex;
-            for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-            {
-                nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, key);
-            }
+        ////ToDo: Fix this feature.
+        //public void Update(TKey key, TValue value)
+        //{
+        //    uint nodeIndex = m_rootNodeIndex;
+        //    for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
+        //    {
+        //        nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, key);
+        //    }
 
-            if (LeafNodeUpdate(nodeIndex, key, value))
-                return;
-            throw new Exception("Key Not Found");
-        }
+        //    if (LeafNodeUpdate(nodeIndex, key, value))
+        //        return;
+        //    throw new Exception("Key Not Found");
+        //}
 
         /// <summary>
         /// Inserts the following data into the tree.
@@ -331,34 +333,28 @@ namespace openHistorian.V2.Collections
         protected abstract Guid FileType { get; }
 
         #region [ Internal Node Methods ]
-        protected abstract void InternalNodeUpdate(int nodeLevel, uint nodeIndex, TKey oldFirstKey, TKey newFirstKey);
+        //protected abstract void InternalNodeUpdate(int nodeLevel, uint nodeIndex, TKey oldFirstKey, TKey newFirstKey);
 
         protected abstract uint InternalNodeGetFirstIndex(int nodeLevel, uint nodeIndex);
+        //protected abstract uint InternalNodeGetLastIndex(int nodeLevel, uint nodeIndex);
         protected abstract uint InternalNodeGetIndex(int nodeLevel, uint nodeIndex, TKey key);
 
         protected abstract void InternalNodeInsert(int nodeLevel, uint nodeIndex, TKey key, uint childNodeIndex);
         protected abstract void InternalNodeCreateNode(uint newNodeIndex, int nodeLevel, uint firstNodeIndex, TKey dividingKey, uint secondNodeIndex);
 
-        /// <summary>
-        /// Removes the index that matches the closes location for the key.  The key will likely not be an
-        /// exact match found in this node level.
-        /// </summary>
-        /// <param name="nodeLevel"></param>
-        /// <param name="nodeIndex"></param>
-        /// <param name="key"></param>
-        protected abstract void InternalNodeRemove(int nodeLevel, uint nodeIndex, TKey key);
+        //protected abstract void InternalNodeRemove(int nodeLevel, uint nodeIndex, TKey key);
 
         #endregion
 
         #region [ Leaf Node Methods ]
 
-        protected abstract bool LeafNodeUpdate(uint nodeIndex, TKey key, TValue value);
+        //protected abstract bool LeafNodeUpdate(uint nodeIndex, TKey key, TValue value);
         protected abstract bool LeafNodeInsert(uint nodeIndex, TKey key, TValue value);
-        protected abstract bool LeafNodeRemove(uint nodeIndex, TKey key);
+        //protected abstract bool LeafNodeRemove(uint nodeIndex, TKey key);
 
         protected abstract bool LeafNodeGetValue(uint nodeIndex, TKey key, out TValue value);
         protected abstract bool LeafNodeGetFirstKeyValue(uint nodeIndex, out TKey key, out TValue value);
-        protected abstract bool LeafNodeGetLastKeyValue(uint nodeIndex, out TKey key, out TValue value);
+        //protected abstract bool LeafNodeGetLastKeyValue(uint nodeIndex, out TKey key, out TValue value);
         protected abstract void LeafNodeCreateEmptyNode(uint newNodeIndex);
 
         protected abstract DataReaderBase LeafNodeScan(uint nodeIndex, TKey beginKey, TKey endKey, Func<TKey, bool> filter);
@@ -386,79 +382,82 @@ namespace openHistorian.V2.Collections
         /// Notifies the base class that a node was split. This will then add the new node data to the parent.
         /// </summary>
         /// <param name="nodeLevel">the level of the node being added</param>
-        /// <param name="firstNodeIndex">the index of the existing node that contains the lower half of the data.</param>
-        /// <param name="middleKey">the first key in the later node</param>
-        /// <param name="laterNodeIndex">the index of the later node</param>
+        /// <param name="nodeIndexOfSplitNode">the index of the existing node that contains the lower half of the data.</param>
+        /// <param name="dividingKey">the first key in the <see cref="nodeIndexOfRightSibling"/></param>
+        /// <param name="nodeIndexOfRightSibling">the index of the later node</param>
         /// <remarks>This class will add the new node data to the parent node, 
         /// or create a new root if the current root is split.</remarks>
-        protected void NodeWasSplit(byte nodeLevel, uint firstNodeIndex, TKey middleKey, uint laterNodeIndex)
+        protected void NodeWasSplit(int nodeLevel, uint nodeIndexOfSplitNode, TKey dividingKey, uint nodeIndexOfRightSibling)
         {
             if (m_rootNodeLevel > nodeLevel)
             {
                 uint nodeIndex = m_rootNodeIndex;
                 for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
                 {
-                    nodeIndex = InternalNodeGetIndex(level, nodeIndex, middleKey);
+                    nodeIndex = InternalNodeGetIndex(level, nodeIndex, dividingKey);
                 }
-                InternalNodeInsert(nodeLevel + 1, nodeIndex, middleKey, laterNodeIndex);
+                InternalNodeInsert(nodeLevel + 1, nodeIndex, dividingKey, nodeIndexOfRightSibling);
             }
             else
             {
                 m_rootNodeLevel += 1;
                 m_rootNodeIndex = GetNextNewNodeIndex();
-                InternalNodeCreateNode(m_rootNodeIndex, m_rootNodeLevel, firstNodeIndex, middleKey, laterNodeIndex);
+                InternalNodeCreateNode(m_rootNodeIndex, m_rootNodeLevel, nodeIndexOfSplitNode, dividingKey, nodeIndexOfRightSibling);
             }
         }
 
-        /// <summary>
-        /// Notifies the base class that two nodes were rebalanced. On a rebalance, the parent key needs to be updated.
-        /// </summary>
-        /// <param name="nodeLevel">the level of the node being rebalanced</param>
-        /// <param name="oldKeyInLaterBlock">any key that used to be contained in the greater of the two nodes being rebalanced</param>
-        /// <param name="newFirstKeyInLaterBlock">the first key in the greater of the two nodes after being rebalanced</param>
-        /// <remarks>When a child node is rebalanced, it is important to update the parent node to reflect this new change.</remarks>
-        protected void NodeWasRebalanced(byte nodeLevel, TKey oldKeyInLaterBlock, TKey newFirstKeyInLaterBlock)
-        {
-            if (m_rootNodeLevel > nodeLevel)
-            {
-                uint nodeIndex = m_rootNodeIndex;
-                for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
-                {
-                    nodeIndex = InternalNodeGetIndex(level, nodeIndex, oldKeyInLaterBlock);
-                }
+        //ToDo: Fix this feature
+        ///// <summary>
+        ///// Notifies the base class that two nodes were rebalanced. On a rebalance, the parent key needs to be updated.
+        ///// </summary>
+        ///// <param name="nodeLevel">the level of the node being rebalanced</param>
+        ///// <param name="oldKeyInLaterBlock">any key that used to be contained in the greater of the two nodes being rebalanced</param>
+        ///// <param name="newFirstKeyInLaterBlock">the first key in the greater of the two nodes after being rebalanced</param>
+        ///// <remarks>When a child node is rebalanced, it is important to update the parent node to reflect this new change.</remarks>
+        //protected void NodeWasRebalanced(byte nodeLevel, TKey oldKeyInLaterBlock, TKey newFirstKeyInLaterBlock)
+        //{
+        //    if (m_rootNodeLevel > nodeLevel)
+        //    {
+        //        uint nodeIndex = m_rootNodeIndex;
+        //        for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
+        //        {
+        //            nodeIndex = InternalNodeGetIndex(level, nodeIndex, oldKeyInLaterBlock);
+        //        }
 
-                InternalNodeUpdate(nodeLevel + 1, nodeIndex, oldKeyInLaterBlock, newFirstKeyInLaterBlock);
-            }
-            else
-            {
-                throw new Exception("Logic Error: The code should have never entered here");
-            }
-        }
-        /// <summary>
-        /// When two nodes are combined, the second node needs to be removed from the parent collection.
-        /// </summary>
-        /// <param name="nodeLevel">the level of the node being combined</param>
-        /// <param name="oldKeyInRemovedBlock">A key that used to be contained in the old block that is being removed.</param>
-        /// <param name="nodeToKeep">the node that is being kept</param>
-        /// <param name="nodeToDelete">the node that is being deleted</param>
-        protected void NodeWasCombined(byte nodeLevel, TKey oldKeyInRemovedBlock, uint nodeToKeep, uint nodeToDelete)
-        {
-            //ToDo: There needs to be some kind of free page allocation routine so when nodes are removed, there location isn't lost.
-            if (m_rootNodeLevel > nodeLevel)
-            {
-                uint nodeIndex = m_rootNodeIndex;
-                for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
-                {
-                    nodeIndex = InternalNodeGetIndex(level, nodeIndex, oldKeyInRemovedBlock);
-                }
-                InternalNodeRemove(nodeLevel + 1, nodeIndex, oldKeyInRemovedBlock);
-            }
-            else
-            {
-                m_rootNodeLevel = 0;
-                m_rootNodeIndex = nodeToKeep;
-            }
-        }
+        //        InternalNodeUpdate(nodeLevel + 1, nodeIndex, oldKeyInLaterBlock, newFirstKeyInLaterBlock);
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("Logic Error: The code should have never entered here");
+        //    }
+        //}
+
+        //ToDo: Fix this
+        ///// <summary>
+        ///// When two nodes are combined, the second node needs to be removed from the parent collection.
+        ///// </summary>
+        ///// <param name="nodeLevel">the level of the node being combined</param>
+        ///// <param name="oldKeyInRemovedBlock">A key that used to be contained in the old block that is being removed.</param>
+        ///// <param name="nodeToKeep">the node that is being kept</param>
+        ///// <param name="nodeToDelete">the node that is being deleted</param>
+        //protected void NodeWasCombined(byte nodeLevel, TKey oldKeyInRemovedBlock, uint nodeToKeep, uint nodeToDelete)
+        //{
+        //    //ToDo: There needs to be some kind of free page allocation routine so when nodes are removed, there location isn't lost.
+        //    if (m_rootNodeLevel > nodeLevel)
+        //    {
+        //        uint nodeIndex = m_rootNodeIndex;
+        //        for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
+        //        {
+        //            nodeIndex = InternalNodeGetIndex(level, nodeIndex, oldKeyInRemovedBlock);
+        //        }
+        //        InternalNodeRemove(nodeLevel + 1, nodeIndex, oldKeyInRemovedBlock);
+        //    }
+        //    else
+        //    {
+        //        m_rootNodeLevel = 0;
+        //        m_rootNodeIndex = nodeToKeep;
+        //    }
+        //}
 
         #endregion
 
