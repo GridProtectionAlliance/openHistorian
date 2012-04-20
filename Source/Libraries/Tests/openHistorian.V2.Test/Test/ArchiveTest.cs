@@ -47,7 +47,7 @@ namespace openHistorian.V2
             MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt);
         }
 
-        static void ReaderNewPoint(Points pt)
+        static void ReaderNewPoint(HistorianReader.Points pt)
         {
             s_points++;
             s_archive.AddPoint(pt.Time, pt.PointID, pt.flags, pt.Value);

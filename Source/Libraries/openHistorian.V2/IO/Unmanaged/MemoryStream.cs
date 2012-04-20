@@ -45,7 +45,7 @@ namespace openHistorian.V2.IO.Unmanaged
         public long LookupCount = 0;
 
         /// <summary>
-        /// Create a new <see cref="PooledMemoryStream"/>
+        /// Create a new <see cref="MemoryStream"/>
         /// </summary>
         public MemoryStream()
         {
