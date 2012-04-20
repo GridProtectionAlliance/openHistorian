@@ -44,8 +44,6 @@ namespace openHistorian.V2.Unmanaged
     /// </remarks>
     unsafe public class BufferedFileStream : ISupportsBinaryStream
     {
-
-
         /// <summary>
         /// Gets the size of a sub page. A sub page is the smallest
         /// unit of I/O that can occur. This will then set dirty bits on this level.
@@ -60,40 +58,40 @@ namespace openHistorian.V2.Unmanaged
         /// ToDo: Create multiple static blocks so concurrent IO can occur.
         static byte[] s_tmpBuffer = new byte[BufferPool.PageSize];
 
-        /// <summary>
-        /// Contains meta data about each page that is allocated.  
-        /// Check <see cref="BufferedFileStream.m_isPageMetaDataNotNull"/> to see if the page is used.
-        /// </summary>
-        struct PageMetaData
-        {
-            public byte* Location;
-            public int Index;
-            public int ReferencedCount;
-            public ushort IsDirtyFlags;
-        }
+        ///// <summary>
+        ///// Contains meta data about each page that is allocated.  
+        ///// Check <see cref="BufferedFileStream.m_isPageMetaDataNotNull"/> to see if the page is used.
+        ///// </summary>
+        //struct PageMetaData
+        //{
+        //    public byte* Location;
+        //    public int Index;
+        //    public int ReferencedCount;
+        //    public ushort IsDirtyFlags;
+        //}
 
-        /// <summary>
-        /// contains a list of all the meta pages.
-        /// </summary>
-        /// <remarks>These items in the list are not in any particular order.
-        /// To lookup the correct pages, use <see cref="m_allocatedPagesLookupList"/> </remarks>
-        List<PageMetaData> m_listOfPageMetaData;
+        ///// <summary>
+        ///// contains a list of all the meta pages.
+        ///// </summary>
+        ///// <remarks>These items in the list are not in any particular order.
+        ///// To lookup the correct pages, use <see cref="m_allocatedPagesLookupList"/> </remarks>
+        //List<PageMetaData> m_listOfPageMetaData;
 
-        /// <summary>
-        /// A bit array to quickly find which <see cref="PageMetaData"/> entries are being used in
-        /// <see cref="m_listOfPageMetaData"/>
-        /// </summary>
-        BitArray m_isPageMetaDataNotNull;
+        ///// <summary>
+        ///// A bit array to quickly find which <see cref="PageMetaData"/> entries are being used in
+        ///// <see cref="m_listOfPageMetaData"/>
+        ///// </summary>
+        //BitArray m_isPageMetaDataNotNull;
 
-        /// <summary>
-        /// Contains the currently active IO sessions that cannot be cleaned up by a collection.
-        /// </summary>
-        List<int> m_activeBlockIndexes;
+        ///// <summary>
+        ///// Contains the currently active IO sessions that cannot be cleaned up by a collection.
+        ///// </summary>
+        //List<int> m_activeBlockIndexes;
 
-        /// <summary>
-        /// Contains all of the pages that are cached for the file stream.
-        /// </summary>
-        SortedList<int, int> m_allocatedPagesLookupList;
+        ///// <summary>
+        ///// Contains all of the pages that are cached for the file stream.
+        ///// </summary>
+        //SortedList<int, int> m_allocatedPagesLookupList;
 
         /// <summary>
         /// An event raised when this class has been disposed.
@@ -107,12 +105,15 @@ namespace openHistorian.V2.Unmanaged
         /// </summary>
         FileStream m_baseStream;
 
+        LeastRecentlyUsedPageReplacement m_pageReplacementAlgorithm;
+
         public BufferedFileStream(FileStream stream)
         {
-            m_listOfPageMetaData = new List<PageMetaData>();
-            m_isPageMetaDataNotNull = new BitArray(80000, false);
-            m_activeBlockIndexes = new List<int>();
-            m_allocatedPagesLookupList = new SortedList<int, int>();
+            m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement();
+            //m_listOfPageMetaData = new List<PageMetaData>();
+            //m_isPageMetaDataNotNull = new BitArray(80000, false);
+            //m_activeBlockIndexes = new List<int>();
+            //m_allocatedPagesLookupList = new SortedList<int, int>();
             m_baseStream = stream;
 
             BufferPool.RequestCollection += new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
@@ -202,11 +203,13 @@ namespace openHistorian.V2.Unmanaged
         /// </summary>
         public void Flush(bool waitForWriteToDisk = false)
         {
-            foreach (var block in m_allocatedPagesLookupList)
+            foreach (var block in m_pageReplacementAlgorithm.GetDirtyPages())
             {
-                m_baseStream.Position = block.Key * (long)BufferPool.PageSize;
-                Marshal.Copy((IntPtr)m_listOfPageMetaData[block.Value].Location, s_tmpBuffer, 0, s_tmpBuffer.Length);
+                m_baseStream.Position = block.StreamPosition;
+                Marshal.Copy((IntPtr)block.LocationOfPage, s_tmpBuffer, 0, s_tmpBuffer.Length);
                 m_baseStream.Write(s_tmpBuffer, 0, s_tmpBuffer.Length);
+
+                m_pageReplacementAlgorithm.ClearDirtyBits(block.StreamPosition);
             }
             m_baseStream.Flush(waitForWriteToDisk);
             //ToDo: Call the actual WinAPI function which is the WaitForFlush.
@@ -226,93 +229,32 @@ namespace openHistorian.V2.Unmanaged
             int blockIndexWithinPageAddress = (int)(position & BufferPool.PageMask) / 4096;
             long startingFileStreamPositionForPage = (position & ~BufferPool.PageMask);
 
-            int cachePageIndex = GetCachePageIndex(position);
-
-            m_activeBlockIndexes[ioSession] = cachePageIndex;
-            firstPointer = (IntPtr)m_listOfPageMetaData[cachePageIndex].Location + blockIndexWithinPageAddress * 4096;
-            length = 4096;
-            firstPosition = startingFileStreamPositionForPage + blockIndexWithinPageAddress * 4096;
-            supportsWriting = (((m_listOfPageMetaData[cachePageIndex].IsDirtyFlags >> blockIndexWithinPageAddress) & 1) == 1);
-        }
-
-        /// <summary>
-        /// Gets the index that corresponds to the location of the <see cref="PageMetaData"/> in the <see cref="m_listOfPageMetaData"/> array.
-        /// If this block has not been cached, it will be read from disk.
-        /// </summary>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        int GetCachePageIndex(long position)
-        {
-            int pageIndex = (int)(position >> BufferPool.PageShiftBits);
-            long startingFileStreamPositionForPage = (position & ~BufferPool.PageMask);
-
-            int cachePageIndex;
-            if (!m_allocatedPagesLookupList.TryGetValue(pageIndex, out cachePageIndex))
+            bool isEmptyPage;
+            var pageMetaData = m_pageReplacementAlgorithm.TryGetPageOrCreateNew(position, ioSession, isWriting, out isEmptyPage);
+            if (isEmptyPage)
             {
-                IntPtr ptr;
-                cachePageIndex = GetUnusedCachePageBlockIndex(out ptr);
-
-                m_baseStream.Position = startingFileStreamPositionForPage;
+                IntPtr ptr = (IntPtr)pageMetaData.LocationOfPage;
+                m_baseStream.Position = pageMetaData.StreamPosition;
                 lock (s_tmpBuffer)
                 {
                     m_baseStream.Read(s_tmpBuffer, 0, s_tmpBuffer.Length);
                     Marshal.Copy(s_tmpBuffer, 0, ptr, s_tmpBuffer.Length);
                 }
-
-                m_allocatedPagesLookupList.Add(pageIndex, cachePageIndex);
             }
-            return cachePageIndex;
-        }
-
-        /// <summary>
-        /// Finds the next available cache page index that is not being used.
-        /// If all are being used, a new block is allocated.
-        /// </summary>
-        /// <param name="ptr"></param>
-        /// <returns></returns>
-        int GetUnusedCachePageBlockIndex(out IntPtr ptr)
-        {
-            int cachePageIndex;
-            //Get a free block to read the data to.
-            cachePageIndex = m_isPageMetaDataNotNull.FindClearedBit();
-            PageMetaData cachePage;
-            if (cachePageIndex < 0)
-            {
-                //Allocate a new one
-                cachePage.Index = BufferPool.AllocatePage(out ptr);
-                cachePage.Location = (byte*)ptr;
-                cachePage.IsDirtyFlags = 0;
-                cachePage.ReferencedCount = 0;
-                m_listOfPageMetaData.Add(cachePage);
-                cachePageIndex = m_listOfPageMetaData.Count - 1;
-            }
-            else
-            {
-                //Use a free one
-                m_isPageMetaDataNotNull.SetBit(cachePageIndex);
-                cachePage = m_listOfPageMetaData[cachePageIndex];
-                ptr = (IntPtr)cachePage.Location;
-            }
-            return cachePageIndex;
+            firstPointer = (IntPtr)pageMetaData.StreamPosition + blockIndexWithinPageAddress * 4096;
+            length = 4096;
+            firstPosition = startingFileStreamPositionForPage + blockIndexWithinPageAddress * 4096;
+            supportsWriting = (((pageMetaData.IsDirtyFlags >> blockIndexWithinPageAddress) & 1) == 1);
         }
 
         void ISupportsBinaryStream.ReleaseIoSession(int ioSession)
         {
-            m_activeBlockIndexes[ioSession] = -2;
+            m_pageReplacementAlgorithm.ReleaseIoSession(ioSession);
         }
 
         int ISupportsBinaryStream.GetNextIoSession()
         {
-            for (int x = 0; x < m_activeBlockIndexes.Count; x++)
-            {
-                if (m_activeBlockIndexes[x] == -2)
-                {
-                    m_activeBlockIndexes[x] = -1;
-                    return x;
-                }
-            }
-            m_activeBlockIndexes.Add(-1);
-            return m_activeBlockIndexes.Count - 1;
+            return m_pageReplacementAlgorithm.GetFreeIoSession();
         }
 
         void IDisposable.Dispose()
@@ -327,23 +269,7 @@ namespace openHistorian.V2.Unmanaged
             {
                 Flush();
             }
-            for (int x = 0; x < m_listOfPageMetaData.Count; x++)
-            {
-                if (m_isPageMetaDataNotNull.GetBit(x)) //if used.
-                {
-                    var block = m_listOfPageMetaData[x];
-                    block.ReferencedCount >>= 1; //Divide by 2
-                    m_listOfPageMetaData[x] = block;
-                    if (block.ReferencedCount == 0 && block.IsDirtyFlags == 0) //If used counter is zero, release the block
-                    {
-                        if (!m_activeBlockIndexes.Contains(x))
-                        {
-                            BufferPool.ReleasePage(block.Index);
-                            m_isPageMetaDataNotNull.ClearBit(x);
-                        }
-                    }
-                }
-            }
+            m_pageReplacementAlgorithm.DoCollection();
         }
     }
 }
