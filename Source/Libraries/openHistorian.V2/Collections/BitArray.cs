@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Threading;
 
 namespace openHistorian.V2.Collections
 {
@@ -36,6 +37,7 @@ namespace openHistorian.V2.Collections
         int m_count;
         int m_setCount;
         int m_lastFoundClearedIndex;
+        bool m_initialState;
 
         /// <summary>
         /// Initializes <see cref="BitArray"/>.
@@ -64,7 +66,34 @@ namespace openHistorian.V2.Collections
                 m_setCount = 0;
             }
             m_count = count;
+            m_initialState = initialState;
         }
+
+        /// <summary>
+        /// Initializes <see cref="BitArray"/>.
+        /// </summary>
+        /// <param name="initialState">Set to true to initial will all elements set.  False to have all elements cleared.</param>
+        public BitArray(bool initialState) :
+            this(32, initialState)
+        {
+        }
+
+        public bool this[int index]
+        {
+            get
+            {
+                return GetBit(index);
+            }
+            set
+            {
+                if (value)
+                    SetBit(index);
+                else
+                    ClearBit(index);
+            }
+        }
+
+
 
         /// <summary>
         /// Gets the status of the corresponding bit.
@@ -138,6 +167,35 @@ namespace openHistorian.V2.Collections
             {
                 return m_count - m_setCount;
             }
+        }
+
+        /// <summary>
+        /// Increases the capacity of the bit array. Decreasing capacity is currently not supported
+        /// </summary>
+        /// <param name="capacity">the number of bits to support</param>
+        /// <returns></returns>
+        public void SetCapacity(int capacity)
+        {
+            int[] array;
+
+            if (m_count >= capacity)
+                return;
+            if ((capacity & 31) != 0)
+                array = new int[(capacity >> 5) + 1];
+            else
+                array = new int[capacity >> 5];
+
+            m_array.CopyTo(array, 0);
+            if (m_initialState)
+            {
+                m_setCount += capacity - m_count;
+                for (int x = m_array.Length; x < array.Length; x++)
+                {
+                    array[x] = -1;
+                }
+            }
+            m_array = array;
+            m_count = capacity;
         }
 
         /// <summary>

@@ -23,10 +23,8 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.IO;
-using openHistorian.V2.Collections;
+using System.Runtime.InteropServices;
 using openHistorian.V2.IO.Unmanaged;
 using openHistorian.V2.UnmanagedMemory;
 
@@ -42,13 +40,69 @@ namespace openHistorian.V2.Unmanaged
     /// once that are rarely accessed. This is accomplised by incrementing a counter
     /// every time a page is accessed and dividing by 2 every time a collection occurs from the buffer pool.
     /// </remarks>
-    unsafe public class BufferedFileStream : ISupportsBinaryStream
+    unsafe public class BufferedFileStream : ISupportsBinaryStream2
     {
-        /// <summary>
-        /// Gets the size of a sub page. A sub page is the smallest
-        /// unit of I/O that can occur. This will then set dirty bits on this level.
-        /// </summary>
-        const int SubPageSize = 4096;
+
+        // Nested Types
+        class IoSession : IBinaryStreamIoSession
+        {
+            public event EventHandler StreamDisposed;
+            bool m_disposed;
+            BufferedFileStream m_stream;
+            LeastRecentlyUsedPageReplacement.IoSession m_ioSession;
+
+            public IoSession(BufferedFileStream stream, LeastRecentlyUsedPageReplacement.IoSession ioSession)
+            {
+                m_stream = stream;
+                m_ioSession = ioSession;
+            }
+
+            /// <summary>
+            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
+            /// </summary>
+            ~IoSession()
+            {
+                Dispose(false);
+            }
+
+            /// <summary>
+            /// Releases all the resources used by the <see cref="IoSession"/> object.
+            /// </summary>
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            /// <summary>
+            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
+            /// </summary>
+            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!m_disposed)
+                {
+                    try
+                    {
+                        // This will be done regardless of whether the object is finalized or disposed.
+                        m_ioSession.Dispose();
+                        if (disposing)
+                        {
+                            // This will be done only when the object is disposed by calling Dispose().
+                        }
+                    }
+                    finally
+                    {
+                        m_disposed = true;  // Prevent duplicate dispose.
+                    }
+                }
+            }
+
+            public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+            {
+                m_stream.GetBlock(m_ioSession,position,isWriting,out firstPointer, out firstPosition, out length, out supportsWriting);
+            }
+        }
 
         /// <summary>
         /// A buffer to use to read/write from a disk.
@@ -57,41 +111,6 @@ namespace openHistorian.V2.Unmanaged
         /// This buffer provides a means to do the disk IO</remarks>
         /// ToDo: Create multiple static blocks so concurrent IO can occur.
         static byte[] s_tmpBuffer = new byte[BufferPool.PageSize];
-
-        ///// <summary>
-        ///// Contains meta data about each page that is allocated.  
-        ///// Check <see cref="BufferedFileStream.m_isPageMetaDataNotNull"/> to see if the page is used.
-        ///// </summary>
-        //struct PageMetaData
-        //{
-        //    public byte* Location;
-        //    public int Index;
-        //    public int ReferencedCount;
-        //    public ushort IsDirtyFlags;
-        //}
-
-        ///// <summary>
-        ///// contains a list of all the meta pages.
-        ///// </summary>
-        ///// <remarks>These items in the list are not in any particular order.
-        ///// To lookup the correct pages, use <see cref="m_allocatedPagesLookupList"/> </remarks>
-        //List<PageMetaData> m_listOfPageMetaData;
-
-        ///// <summary>
-        ///// A bit array to quickly find which <see cref="PageMetaData"/> entries are being used in
-        ///// <see cref="m_listOfPageMetaData"/>
-        ///// </summary>
-        //BitArray m_isPageMetaDataNotNull;
-
-        ///// <summary>
-        ///// Contains the currently active IO sessions that cannot be cleaned up by a collection.
-        ///// </summary>
-        //List<int> m_activeBlockIndexes;
-
-        ///// <summary>
-        ///// Contains all of the pages that are cached for the file stream.
-        ///// </summary>
-        //SortedList<int, int> m_allocatedPagesLookupList;
 
         /// <summary>
         /// An event raised when this class has been disposed.
@@ -110,13 +129,16 @@ namespace openHistorian.V2.Unmanaged
         public BufferedFileStream(FileStream stream)
         {
             m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement();
-            //m_listOfPageMetaData = new List<PageMetaData>();
-            //m_isPageMetaDataNotNull = new BitArray(80000, false);
-            //m_activeBlockIndexes = new List<int>();
-            //m_allocatedPagesLookupList = new SortedList<int, int>();
             m_baseStream = stream;
-
             BufferPool.RequestCollection += new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
+        }
+
+        int ISupportsBinaryStream2.RemainingSupportedIoSessions
+        {
+            get
+            {
+                return int.MaxValue;
+            }
         }
 
         //public void Read(long position, byte[] data, int start, int length)
@@ -198,69 +220,46 @@ namespace openHistorian.V2.Unmanaged
         //    }
         //}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Flush(bool waitForWriteToDisk = false)
+        public void Flush(bool waitForWriteToDisk = false, bool skipPagesInUse = true)
         {
-            foreach (var block in m_pageReplacementAlgorithm.GetDirtyPages())
+            foreach (var block in m_pageReplacementAlgorithm.GetDirtyPages(skipPagesInUse))
             {
-                m_baseStream.Position = block.StreamPosition;
+                m_baseStream.Position = block.PositionIndex * (long)BufferPool.PageSize;
                 Marshal.Copy((IntPtr)block.LocationOfPage, s_tmpBuffer, 0, s_tmpBuffer.Length);
                 m_baseStream.Write(s_tmpBuffer, 0, s_tmpBuffer.Length);
-
-                m_pageReplacementAlgorithm.ClearDirtyBits(block.StreamPosition);
+                m_pageReplacementAlgorithm.ClearDirtyBits(block);
             }
             m_baseStream.Flush(waitForWriteToDisk);
-            //ToDo: Call the actual WinAPI function which is the WaitForFlush.
+            if (waitForWriteToDisk)
+                WinApi.FlushFileBuffers(m_baseStream.SafeFileHandle);
         }
 
-        int ISupportsBinaryStream.RemainingSupportedIoSessions
+
+
+        void GetBlock(LeastRecentlyUsedPageReplacement.IoSession ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
         {
-            get
+            var pageMetaData = ioSession.TryGetSubPageOrCreateNew(position, isWriting, LoadFromFile);
+            firstPointer = (IntPtr)pageMetaData.Location;
+            length = pageMetaData.Length;
+            firstPosition = pageMetaData.Position;
+            supportsWriting = pageMetaData.IsDirty;
+        }
+
+        void LoadFromFile(IntPtr pageLocation, long pagePosition)
+        {
+            m_baseStream.Position = pagePosition;
+            lock (s_tmpBuffer)
             {
-                return int.MaxValue;
+                m_baseStream.Read(s_tmpBuffer, 0, s_tmpBuffer.Length);
+                Marshal.Copy(s_tmpBuffer, 0, pageLocation, s_tmpBuffer.Length);
             }
-        }
-
-        void ISupportsBinaryStream.GetBlock(int ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
-        {
-            int pageIndex = (int)(position >> BufferPool.PageShiftBits);
-            int blockIndexWithinPageAddress = (int)(position & BufferPool.PageMask) / 4096;
-            long startingFileStreamPositionForPage = (position & ~BufferPool.PageMask);
-
-            bool isEmptyPage;
-            var pageMetaData = m_pageReplacementAlgorithm.TryGetPageOrCreateNew(position, ioSession, isWriting, out isEmptyPage);
-            if (isEmptyPage)
-            {
-                IntPtr ptr = (IntPtr)pageMetaData.LocationOfPage;
-                m_baseStream.Position = pageMetaData.StreamPosition;
-                lock (s_tmpBuffer)
-                {
-                    m_baseStream.Read(s_tmpBuffer, 0, s_tmpBuffer.Length);
-                    Marshal.Copy(s_tmpBuffer, 0, ptr, s_tmpBuffer.Length);
-                }
-            }
-            firstPointer = (IntPtr)pageMetaData.StreamPosition + blockIndexWithinPageAddress * 4096;
-            length = 4096;
-            firstPosition = startingFileStreamPositionForPage + blockIndexWithinPageAddress * 4096;
-            supportsWriting = (((pageMetaData.IsDirtyFlags >> blockIndexWithinPageAddress) & 1) == 1);
-        }
-
-        void ISupportsBinaryStream.ReleaseIoSession(int ioSession)
-        {
-            m_pageReplacementAlgorithm.ReleaseIoSession(ioSession);
-        }
-
-        int ISupportsBinaryStream.GetNextIoSession()
-        {
-            return m_pageReplacementAlgorithm.GetFreeIoSession();
         }
 
         void IDisposable.Dispose()
         {
             if (StreamDisposed != null)
                 StreamDisposed.Invoke(this, EventArgs.Empty);
+            m_pageReplacementAlgorithm.Dispose();
         }
 
         void BufferPool_RequestCollection(BufferPoolCollectionMode obj)
@@ -270,6 +269,11 @@ namespace openHistorian.V2.Unmanaged
                 Flush();
             }
             m_pageReplacementAlgorithm.DoCollection();
+        }
+
+        IBinaryStreamIoSession ISupportsBinaryStream2.GetNextIoSession()
+        {
+            return new IoSession(this, m_pageReplacementAlgorithm.CreateNewIoSession());
         }
     }
 }

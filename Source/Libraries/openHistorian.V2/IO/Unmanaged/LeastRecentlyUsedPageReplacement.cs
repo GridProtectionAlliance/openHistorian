@@ -24,55 +24,122 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.Collections;
 using openHistorian.V2.Unmanaged;
 using openHistorian.V2.UnmanagedMemory;
 
 namespace openHistorian.V2.IO.Unmanaged
 {
-    unsafe public class LeastRecentlyUsedPageReplacement
+    /// <summary>
+    /// A page replacement algorithm that utilizes a quasi LRU algorithm.
+    /// </summary>
+    /// <remarks>
+    /// This class is used by <see cref="BufferedFileStream"/> to decide which pages should be replaced.
+    /// </remarks>
+    unsafe public class LeastRecentlyUsedPageReplacement : IDisposable
     {
-        /// <summary>
-        /// Contains meta data about each page that is allocated.  
-        /// Check <see cref="BufferedFileStream.m_isPageMetaDataNotNull"/> to see if the page is used.
-        /// </summary>
-        public struct PageMetaDataStruct
+        #region [ Members ]
+
+        // Nested Types
+        public class IoSession : IDisposable
         {
-            public byte* LocationOfPage;
-            public int BufferPoolIndex;
-            public int ReferencedCount;
-            public ushort IsDirtyFlags;
+            LeastRecentlyUsedPageReplacement m_lru;
+            bool m_disposed;
+            public readonly int IoSessionId;
+
+            public IoSession(LeastRecentlyUsedPageReplacement lru, int ioSessionId)
+            {
+                m_lru = lru;
+                IoSessionId = ioSessionId;
+            }
+            /// <summary>
+            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
+            /// </summary>
+            ~IoSession()
+            {
+                Dispose(false);
+            }
+
+            public SubPageMetaData TryGetSubPageOrCreateNew(long position, bool isWriting, Action<IntPtr, long> delLoadFromFile)
+            {
+                return m_lru.TryGetSubPageOrCreateNew(position, IoSessionId, isWriting, delLoadFromFile);
+            }
+
+            public void Clear()
+            {
+                m_lru.ClearIoSession(IoSessionId);
+            }
+
+            /// <summary>
+            /// Releases all the resources used by the <see cref="IoSession"/> object.
+            /// </summary>
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            /// <summary>
+            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
+            /// </summary>
+            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!m_disposed)
+                {
+                    try
+                    {
+                        // This will be done regardless of whether the object is finalized or disposed.
+                        m_lru.ReleaseIoSession(IoSessionId);
+
+                        if (disposing)
+                        {
+                            // This will be done only when the object is disposed by calling Dispose().
+                        }
+                    }
+                    finally
+                    {
+                        m_disposed = true;  // Prevent duplicate dispose.
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Contains meta data about each page that is allocated.  
-        /// Check <see cref="BufferedFileStream.m_isPageMetaDataNotNull"/> to see if the page is used.
         /// </summary>
-        public struct PageMetaData
+        /// <remarks>This structure is passed to the users of this class.</remarks>
+        public struct SubPageMetaData
         {
-            public byte* LocationOfPage;
-            public long StreamPosition;
-            public ushort IsDirtyFlags;
-            public PageMetaData(PageMetaDataStruct page, long streamPosition)
-            {
-                LocationOfPage = page.LocationOfPage;
-                StreamPosition = streamPosition;
-                IsDirtyFlags = page.IsDirtyFlags;
-            }
+            public byte* Location;
+            public long Position;
+            public bool IsDirty;
+            public int Length;
         }
+
+        // Constants
+        /// <summary>
+        /// Gets the size of a sub page. A sub page is the smallest
+        /// unit of I/O that can occur. This will then set dirty bits on this level.
+        /// </summary>
+        const int SubPageSize = 4096;
+
+        const int SubPageShiftBits = 12;
+
+        const int SubPageMask = SubPageSize - 1;
+
+        // Delegates
+
+        // Events
+
+        // Fields
+        bool m_disposed;
 
         /// <summary>
         /// contains a list of all the meta pages.
         /// </summary>
         /// <remarks>These items in the list are not in any particular order.
         /// To lookup the correct pages, use <see cref="m_allocatedPagesLookupList"/> </remarks>
-        List<PageMetaDataStruct> m_listOfPageMetaData;
-
-        /// <summary>
-        /// A bit array to quickly find which <see cref="PageMetaDataStruct"/> entries are being used in
-        /// <see cref="m_listOfPageMetaData"/>
-        /// </summary>
-        BitArray m_isPageMetaDataNotNull;
+        PageMetaDataList m_pageList;
 
         /// <summary>
         /// Contains the currently active IO sessions that cannot be cleaned up by a collection.
@@ -82,109 +149,147 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <summary>
         /// Contains all of the pages that are cached for the file stream.
         /// </summary>
+        /// ToDO: Change this type to a b+ tree so it can store more pages efficiently.
         SortedList<int, int> m_allocatedPagesLookupList;
+
+        #endregion
+
+        #region [ Constructors ]
 
         public LeastRecentlyUsedPageReplacement()
         {
-            m_listOfPageMetaData = new List<PageMetaDataStruct>();
-            m_isPageMetaDataNotNull = new BitArray(80000, false);
+            m_pageList = new PageMetaDataList();
             m_activeBlockIndexes = new List<int>();
             m_allocatedPagesLookupList = new SortedList<int, int>();
         }
-
-
-        public PageMetaData TryGetPageOrCreateNew(long position, int ioSession, bool isWriting, out bool isEmptyPage)
+        /// <summary>
+        /// Releases the unmanaged resources before the <see cref="LeastRecentlyUsedPageReplacement"/> object is reclaimed by <see cref="GC"/>.
+        /// </summary>
+        ~LeastRecentlyUsedPageReplacement()
         {
+            Dispose(false);
+        }
+
+        #endregion
+
+        #region [ Properties ]
+
+        #endregion
+
+        #region [ Methods ]
+
+        SubPageMetaData TryGetSubPageOrCreateNew(long position, int ioSession, bool isWriting, Action<IntPtr, long> delLoadFromFile)
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             int pageIndex = (int)(position >> BufferPool.PageShiftBits);
-            int cachePageIndex;
-            isEmptyPage = !m_allocatedPagesLookupList.TryGetValue(pageIndex, out cachePageIndex);
-            if (isEmptyPage)
+            int subPageIndex = (int)((position & BufferPool.PageMask) >> SubPageShiftBits);
+            ushort subPageDirtyFlag = (ushort)(1 << subPageIndex);
+            bool existsInLookupTable;
+            int pageMetaDataIndex = GetPageMetaDataIndex(pageIndex, out existsInLookupTable);
+
+            m_activeBlockIndexes[ioSession] = pageMetaDataIndex;
+
+            var pageMetaData = GetPageMetaData(isWriting, subPageDirtyFlag, pageMetaDataIndex);
+            bool isSubPageDirty = ((pageMetaData.IsDirtyFlags & subPageDirtyFlag) != 0);
+
+            if (!existsInLookupTable)
+                delLoadFromFile.Invoke((IntPtr)pageMetaData.LocationOfPage, (long)pageMetaData.PositionIndex * BufferPool.PageSize);
+
+            return new SubPageMetaData
             {
-                cachePageIndex = GetUnusedPageMetaDataIndex();
-                m_allocatedPagesLookupList.Add(pageIndex, cachePageIndex);
-                return new PageMetaData(m_listOfPageMetaData[cachePageIndex],position);
-            }
-            return new PageMetaData(m_listOfPageMetaData[cachePageIndex], position);
+                IsDirty = isSubPageDirty,
+                Location = pageMetaData.LocationOfPage + subPageIndex * SubPageSize,
+                Position = position & ~(long)SubPageMask,
+                Length = SubPageSize
+            };
         }
 
-        public void ReleaseIoSession(int ioSession)
+        /// <summary>
+        /// Creates a new IO Session.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// In order to prevent pages that are currently in use from being garbage collected,
+        /// IO Sessions are used to keep track of currently used blocks.
+        /// One IO session should be used for each unique request.  
+        /// </remarks>
+        public IoSession CreateNewIoSession()
         {
-            m_activeBlockIndexes[ioSession] = -2;
-        }
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
 
-        public int GetFreeIoSession()
-        {
             for (int x = 0; x < m_activeBlockIndexes.Count; x++)
             {
                 if (m_activeBlockIndexes[x] == -2)
                 {
                     m_activeBlockIndexes[x] = -1;
-                    return x;
+                    return new IoSession(this, x);
                 }
             }
             m_activeBlockIndexes.Add(-1);
-            return m_activeBlockIndexes.Count - 1;
+            return new IoSession(this, m_activeBlockIndexes.Count - 1);
         }
 
+        void ReleaseIoSession(int ioSession)
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            m_activeBlockIndexes[ioSession] = -2;
+        }
+
+        void ClearIoSession(int ioSession)
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            m_activeBlockIndexes[ioSession] = -1;
+        }
 
         /// <summary>
-        /// Finds the next unused cache page index. Marks it as used.
+        /// Executes a collection cycle of the pages that are unused.
         /// </summary>
         /// <returns></returns>
-        int GetUnusedPageMetaDataIndex()
+        public int DoCollection()
         {
-            //Get a free block to read the data to.
-            int cachePageIndex = m_isPageMetaDataNotNull.FindClearedBit();
-            if (cachePageIndex < 0)
-                throw new Exception("Out of room to store blocks");
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
 
-            IntPtr ptr;
-
-            //Allocate a new one
-            PageMetaDataStruct cachePage;
-            cachePage.BufferPoolIndex = BufferPool.AllocatePage(out ptr);
-            cachePage.LocationOfPage = (byte*)ptr;
-            cachePage.IsDirtyFlags = 0;
-            cachePage.ReferencedCount = 0;
-
-            m_isPageMetaDataNotNull.SetBit(cachePageIndex);
-            if (cachePageIndex < m_listOfPageMetaData.Count)
-                m_listOfPageMetaData[cachePageIndex] = cachePage;
-            else
-                m_listOfPageMetaData.Add(cachePage);
-            return cachePageIndex;
+            return m_pageList.DoCollection(1, x => !m_activeBlockIndexes.Contains(x));
         }
 
-        public void DoCollection()
-        {
-            for (int x = 0; x < m_listOfPageMetaData.Count; x++)
-            {
-                if (m_isPageMetaDataNotNull.GetBit(x)) //if used.
-                {
-                    var block = m_listOfPageMetaData[x];
-                    block.ReferencedCount >>= 1; //Divide by 2
-                    m_listOfPageMetaData[x] = block;
-                    if (block.ReferencedCount == 0 && block.IsDirtyFlags == 0) //If used counter is zero, release the block
-                    {
-                        if (!m_activeBlockIndexes.Contains(x))
-                        {
-                            BufferPool.ReleasePage(block.BufferPoolIndex);
-                            m_isPageMetaDataNotNull.ClearBit(x);
-                        }
-                    }
-                }
-            }
-        }
+        //public bool PageInUse(long position)
+        //{
+        //    if (m_disposed)
+        //        throw new ObjectDisposedException(GetType().FullName);
+
+        //    int pageIndex = (int)(position >> BufferPool.PageShiftBits);
+        //    int pageMetaDataIndex;
+
+        //    if (m_allocatedPagesLookupList.TryGetValue(pageIndex, out pageMetaDataIndex))
+        //    {
+        //        var metaDataPage = m_pageList[pageMetaDataIndex];
+        //        metaDataPage.IsDirtyFlags = 0;
+        //        m_pageList[pageMetaDataIndex] = metaDataPage;
+        //    }
+        //    return false;
+        //}
 
         /// <summary>
         /// Marks the entire page as written to the disk.
         /// </summary>
-        /// <param name="position"></param>
+        /// <param name="pageMetaData"></param>
         /// <remarks>These pages are 64KB in size. Calling this function does not write the data to the 
         /// base stream.  It only sets the status of the corresponding page.</remarks>
-        public void ClearDirtyBits(long position)
+        public void ClearDirtyBits(PageMetaDataList.PageMetaData pageMetaData)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
 
+            if (m_activeBlockIndexes.Contains(pageMetaData.MetaDataIndex))
+                throw new NotSupportedException("A page's dirty bits can only be cleared if the page is currently not being used.");
+
+            m_pageList.ClearDirtyBits(pageMetaData.MetaDataIndex);
         }
 
         /// <summary>
@@ -192,15 +297,79 @@ namespace openHistorian.V2.IO.Unmanaged
         /// be sure to clear the dirty bits via <see cref="ClearDirtyBits"/>.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<PageMetaData> GetDirtyPages()
+        public IEnumerable<PageMetaDataList.PageMetaData> GetDirtyPages(bool skipPagesInUse = false)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             foreach (var block in m_allocatedPagesLookupList)
             {
-                var page = m_listOfPageMetaData[block.Value];
-                if (page.IsDirtyFlags != 0)
-                    yield return new PageMetaData(m_listOfPageMetaData[block.Value], block.Key * (long)BufferPool.PageSize);
+                var pageMetaData = m_pageList.GetMetaDataPage(block.Value);
+                if (pageMetaData.IsDirtyFlags != 0 &&  //Page must be dirty
+                    !(skipPagesInUse && m_activeBlockIndexes.Contains(block.Value)) //and not an actively used page if skip pages in use is set
+                    )
+                    yield return pageMetaData;
             }
         }
+
+
+        /// <summary>
+        /// Releases all the resources used by the <see cref="LeastRecentlyUsedPageReplacement"/> object.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="LeastRecentlyUsedPageReplacement"/> object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!m_disposed)
+            {
+                try
+                {
+                    m_pageList.Dispose();
+                    if (disposing)
+                    {
+                        // This will be done only when the object is disposed by calling Dispose().
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;  // Prevent duplicate dispose.
+                }
+            }
+        }
+
+        #region [ Helper Methods ]
+
+        PageMetaDataList.PageMetaData GetPageMetaData(bool isWriting, ushort subPageDirtyFlag, int pageMetaDataIndex)
+        {
+            if (isWriting)
+                return m_pageList.GetMetaDataPage(pageMetaDataIndex, subPageDirtyFlag, true);
+            else
+                return m_pageList.GetMetaDataPage(pageMetaDataIndex, 0, true);
+        }
+
+        int GetPageMetaDataIndex(int pageIndex, out bool existsInLookupTable)
+        {
+            int pageMetaDataIndex;
+            existsInLookupTable = m_allocatedPagesLookupList.TryGetValue(pageIndex, out pageMetaDataIndex);
+            if (!existsInLookupTable)
+            {
+                pageMetaDataIndex = m_pageList.AllocateNewPage(pageIndex);
+                m_allocatedPagesLookupList.Add(pageIndex, pageMetaDataIndex);
+            }
+            return pageMetaDataIndex;
+        }
+
+        #endregion
+
+        #endregion
 
     }
 }

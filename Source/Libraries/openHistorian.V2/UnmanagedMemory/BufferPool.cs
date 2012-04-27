@@ -152,7 +152,7 @@ namespace openHistorian.V2.UnmanagedMemory
         }
 
         /// <summary>
-        /// Returns the number of bytes currently allocated
+        /// Returns the number of bytes currently allocated to the buffer pool from windows.
         /// </summary>
         public static long TotalBufferSize
         {
@@ -163,7 +163,7 @@ namespace openHistorian.V2.UnmanagedMemory
         }
 
         /// <summary>
-        /// Returns the number of bytes currently allocated
+        /// Returns the number of bytes currently allocated by the buffer pool to other objects
         /// </summary>
         public static long AllocatedBytes
         {

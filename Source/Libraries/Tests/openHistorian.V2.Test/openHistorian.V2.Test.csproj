@@ -76,6 +76,7 @@
     <Compile Include="IO\BinaryStreamBenchmark.cs" />
     <Compile Include="IO\BinaryStreamTest.cs" />
     <Compile Include="IO\BufferedStreamTest.cs" />
+    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileSystem\ArchiveFileStreamTest.cs" />
     <Compile Include="FileSystem\BenchmarkPageSizes.cs" />
@@ -107,6 +108,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collections\Specialized\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Shadow Include="Test References\openHistorian.V2.accessor" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
