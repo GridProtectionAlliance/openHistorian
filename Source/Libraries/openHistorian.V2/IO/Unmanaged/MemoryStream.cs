@@ -10,6 +10,68 @@ namespace openHistorian.V2.IO.Unmanaged
     /// </summary>
     unsafe public class MemoryStream : ISupportsBinaryStream
     {
+        // Nested Types
+        class IoSession : IBinaryStreamIoSession
+        {
+            bool m_disposed;
+            MemoryStream m_stream;
+
+            public IoSession(MemoryStream stream)
+            {
+                m_stream = stream;
+            }
+
+            /// <summary>
+            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
+            /// </summary>
+            ~IoSession()
+            {
+                Dispose(false);
+            }
+
+            /// <summary>
+            /// Releases all the resources used by the <see cref="IoSession"/> object.
+            /// </summary>
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            /// <summary>
+            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
+            /// </summary>
+            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!m_disposed)
+                {
+                    try
+                    {
+                        // This will be done regardless of whether the object is finalized or disposed.
+                        if (disposing)
+                        {
+                            // This will be done only when the object is disposed by calling Dispose().
+                        }
+                    }
+                    finally
+                    {
+                        m_disposed = true;  // Prevent duplicate dispose.
+                    }
+                }
+            }
+
+            public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+            {
+                m_stream.GetBlock(position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
+            }
+
+
+            public void Clear()
+            {
+                
+            }
+        }
 
         public event EventHandler StreamDisposed;
         /// <summary>
@@ -219,23 +281,13 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
-        void ISupportsBinaryStream.GetBlock(int ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+        void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
         {
             LookupCount++;
             length = Length;
             firstPosition = position & ~(length - 1);
             firstPointer = (IntPtr)GetPage(position);
             supportsWriting = true;
-        }
-
-        void ISupportsBinaryStream.ReleaseIoSession(int ioSession)
-        {
-
-        }
-
-        int ISupportsBinaryStream.GetNextIoSession()
-        {
-            return 0;
         }
 
         public void Dispose()
@@ -275,6 +327,11 @@ namespace openHistorian.V2.IO.Unmanaged
                     m_disposed = true;  // Prevent duplicate dispose.
                 }
             }
+        }
+
+        public IBinaryStreamIoSession GetNextIoSession()
+        {
+            return new IoSession(this);
         }
     }
 }

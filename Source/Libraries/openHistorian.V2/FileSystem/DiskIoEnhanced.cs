@@ -134,12 +134,14 @@ namespace openHistorian.V2.FileSystem
 
         protected MemoryStream m_stream;
         ISupportsBinaryStream m_stream2;
+        IBinaryStreamIoSession m_streamIo;
 
         public DiskIoEnhanced()
         {
             m_allocatedBlocksCount = 0;
             m_stream = new MemoryStream();
             m_stream2 = m_stream;
+            m_streamIo = m_stream2.GetNextIoSession();
         }
 
         public IMemoryUnit GetMemoryUnit()
@@ -288,7 +290,7 @@ namespace openHistorian.V2.FileSystem
             long pos;
             bool supportsWriting;
 
-            m_stream2.GetBlock(0,blockIndex * ArchiveConstants.BlockSize, false, out ptr, out pos, out length, out supportsWriting);
+            m_streamIo.GetBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out pos, out length, out supportsWriting);
 
             int cur = (int)(blockIndex * ArchiveConstants.BlockSize - pos);
             //m_stream2.GetCurrentBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out first, out last, out cur);
@@ -319,7 +321,7 @@ namespace openHistorian.V2.FileSystem
             long pos;
             bool supportsWriting;
 
-            m_stream2.GetBlock(0, blockIndex * ArchiveConstants.BlockSize, false, out ptr, out pos, out length, out supportsWriting);
+            m_streamIo.GetBlock(blockIndex * ArchiveConstants.BlockSize, false, out ptr, out pos, out length, out supportsWriting);
 
             int cur = (int)(blockIndex * ArchiveConstants.BlockSize - pos);
 

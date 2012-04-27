@@ -59,9 +59,9 @@ namespace openHistorian.V2.IO.Unmanaged
         /// </summary>
         byte* m_lastWrite;
 
-        int m_mainIoSession;
+        IBinaryStreamIoSession m_mainIoSession;
 
-        int m_secondaryIoSession;
+        IBinaryStreamIoSession m_secondaryIoSession;
 
         ISupportsBinaryStream m_stream;
 
@@ -87,14 +87,8 @@ namespace openHistorian.V2.IO.Unmanaged
             if (stream.RemainingSupportedIoSessions < 1)
                 throw new Exception("Stream has run out of read sessions");
             m_mainIoSession = stream.GetNextIoSession();
-            if (m_mainIoSession < 0)
-                throw new Exception("Invalid Session ID");
             if (stream.RemainingSupportedIoSessions >= 1)
-            {
                 m_secondaryIoSession = stream.GetNextIoSession();
-                if (m_secondaryIoSession < 0)
-                    throw new Exception("Invalid Session ID");
-            }
             m_stream.StreamDisposed += OnStreamDisposed;
         }
 
@@ -234,7 +228,7 @@ namespace openHistorian.V2.IO.Unmanaged
             bool supportsWrite;
             int validLength;
 
-            m_stream.GetBlock(m_mainIoSession, position, isWriting, out buffer, out m_firstPosition, out validLength, out supportsWrite);
+            m_mainIoSession.GetBlock(position, isWriting, out buffer, out m_firstPosition, out validLength, out supportsWrite);
             m_first = (byte*)buffer;
             m_lastRead = m_first + validLength;
             m_current = m_first + (position - m_firstPosition);
@@ -287,13 +281,13 @@ namespace openHistorian.V2.IO.Unmanaged
                 return;
             }
 
-            if (m_secondaryIoSession >= 0)
+            if (m_secondaryIoSession != null)
             {
                 IntPtr prt;
                 long pos;
                 int secLength;
                 bool supportsWrite;
-                m_stream.GetBlock(m_secondaryIoSession, destination, true, out prt, out pos, out secLength, out supportsWrite);
+                m_secondaryIoSession.GetBlock(destination, true, out prt, out pos, out secLength, out supportsWrite);
                 containsDestination = (pos <= destination && destination + length < pos + secLength);
 
                 if (containsSource && containsDestination)
@@ -1350,13 +1344,13 @@ namespace openHistorian.V2.IO.Unmanaged
                     m_lastWrite = null;
 
                     // This will be done regardless of whether the object is finalized or disposed.
-                    if (m_mainIoSession >= 0)
-                        m_stream.ReleaseIoSession(m_mainIoSession);
-                    if (m_secondaryIoSession >= 0)
-                        m_stream.ReleaseIoSession(m_secondaryIoSession);
-                    m_mainIoSession = -1;
-                    m_secondaryIoSession = -1;
+                    if (m_mainIoSession != null)
+                        m_mainIoSession.Dispose();
+                    if (m_secondaryIoSession != null)
+                        m_secondaryIoSession.Dispose();
 
+                    m_mainIoSession = null;
+                    m_secondaryIoSession = null;
                     m_stream.StreamDisposed -= OnStreamDisposed;
 
                     m_stream = null;

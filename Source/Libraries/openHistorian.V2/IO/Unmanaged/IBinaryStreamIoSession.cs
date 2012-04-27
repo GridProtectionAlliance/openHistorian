@@ -30,8 +30,6 @@ namespace openHistorian.V2.IO.Unmanaged
     /// </summary>
     public interface IBinaryStreamIoSession : IDisposable
     {
-        event EventHandler StreamDisposed;
-
         /// <summary>
         /// Gets a block for the following Io session.
         /// </summary>
@@ -43,6 +41,9 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <param name="supportsWriting">notifies the calling class if this block supports 
         /// writing without requiring this function to be called again if <see cref="isWriting"/> was set to false.</param>
         void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting);
-    
+        /// <summary>
+        /// Sets the current usage of the <see cref="IBinaryStreamIoSession"/> to null.
+        /// </summary>
+        void Clear();
     }
 }

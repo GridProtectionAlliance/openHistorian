@@ -35,7 +35,74 @@ namespace openHistorian.V2.FileSystem
     unsafe public class ArchiveFileStream : Stream, ISupportsBinaryStream
     {
 
+
+        // Nested Types
+        class IoSession : IBinaryStreamIoSession
+        {
+            bool m_disposed;
+            ArchiveFileStream m_stream;
+
+            public IoSession(ArchiveFileStream stream)
+            {
+                m_stream = stream;
+            }
+
+            /// <summary>
+            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
+            /// </summary>
+            ~IoSession()
+            {
+                Dispose(false);
+            }
+
+            /// <summary>
+            /// Releases all the resources used by the <see cref="IoSession"/> object.
+            /// </summary>
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            /// <summary>
+            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
+            /// </summary>
+            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!m_disposed)
+                {
+                    try
+                    {
+                        // This will be done regardless of whether the object is finalized or disposed.
+                        m_stream.m_ioStream = null;
+                        if (disposing)
+                        {
+                            // This will be done only when the object is disposed by calling Dispose().
+                        }
+                    }
+                    finally
+                    {
+                        m_disposed = true;  // Prevent duplicate dispose.
+                    }
+                }
+            }
+
+            public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+            {
+                m_stream.GetBlock(position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
+            }
+
+
+            public void Clear()
+            {
+                
+            }
+        }
+
         #region [ Members ]
+
+        IoSession m_ioStream;
 
         public event EventHandler StreamDisposed;
 
@@ -438,16 +505,17 @@ namespace openHistorian.V2.FileSystem
 
         #endregion
 
-        int m_remainingSessions = 1;
-        int ISupportsBinaryStream.RemainingSupportedIoSessions
+        public int RemainingSupportedIoSessions
         {
             get
             {
-                return m_remainingSessions;
+                if (m_ioStream == null)
+                    return 1;
+                return 0;
             }
         }
 
-        void ISupportsBinaryStream.GetBlock(int ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+        void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
         {
             if (isWriting && IsReadOnly)
                 throw new Exception("File is read only");
@@ -461,15 +529,12 @@ namespace openHistorian.V2.FileSystem
             supportsWriting = m_isBlockDirty;
         }
 
-        void ISupportsBinaryStream.ReleaseIoSession(int ioSession)
+        IBinaryStreamIoSession ISupportsBinaryStream.GetNextIoSession()
         {
-            m_remainingSessions = 1;
-        }
-
-        int ISupportsBinaryStream.GetNextIoSession()
-        {
-            m_remainingSessions = 0;
-            return 0;
+            if (RemainingSupportedIoSessions == 0)
+                throw new Exception("There are not any remaining IO Sessions");
+            m_ioStream = new IoSession(this);
+            return m_ioStream;
         }
     }
 }

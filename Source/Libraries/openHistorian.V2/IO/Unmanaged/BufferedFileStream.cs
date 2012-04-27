@@ -40,13 +40,12 @@ namespace openHistorian.V2.Unmanaged
     /// once that are rarely accessed. This is accomplised by incrementing a counter
     /// every time a page is accessed and dividing by 2 every time a collection occurs from the buffer pool.
     /// </remarks>
-    unsafe public class BufferedFileStream : ISupportsBinaryStream2
+    unsafe public class BufferedFileStream : ISupportsBinaryStream
     {
 
         // Nested Types
         class IoSession : IBinaryStreamIoSession
         {
-            public event EventHandler StreamDisposed;
             bool m_disposed;
             BufferedFileStream m_stream;
             LeastRecentlyUsedPageReplacement.IoSession m_ioSession;
@@ -102,6 +101,11 @@ namespace openHistorian.V2.Unmanaged
             {
                 m_stream.GetBlock(m_ioSession,position,isWriting,out firstPointer, out firstPosition, out length, out supportsWriting);
             }
+
+            public void Clear()
+            {
+                m_ioSession.Clear();
+            }
         }
 
         /// <summary>
@@ -133,7 +137,7 @@ namespace openHistorian.V2.Unmanaged
             BufferPool.RequestCollection += new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
         }
 
-        int ISupportsBinaryStream2.RemainingSupportedIoSessions
+        public int RemainingSupportedIoSessions
         {
             get
             {
@@ -271,7 +275,7 @@ namespace openHistorian.V2.Unmanaged
             m_pageReplacementAlgorithm.DoCollection();
         }
 
-        IBinaryStreamIoSession ISupportsBinaryStream2.GetNextIoSession()
+        IBinaryStreamIoSession ISupportsBinaryStream.GetNextIoSession()
         {
             return new IoSession(this, m_pageReplacementAlgorithm.CreateNewIoSession());
         }

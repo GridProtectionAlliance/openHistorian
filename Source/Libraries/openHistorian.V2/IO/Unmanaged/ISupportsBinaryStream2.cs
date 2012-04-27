@@ -28,8 +28,13 @@ namespace openHistorian.V2.IO.Unmanaged
     /// <summary>
     /// Implementing this interface allows a binary stream to be attached to a buffer.
     /// </summary>
-    public interface ISupportsBinaryStream2 : IDisposable
+    public interface ISupportsBinaryStream : IDisposable
     {
+        /// <summary>
+        /// This event is critical because it will notify a <see cref="BinaryStream"/> that the stream is closed. 
+        /// Failing to raise this event on a close may result subsequent calls to the <see cref="BinaryStream"/> to 
+        /// corrupt memory.
+        /// </summary>
         event EventHandler StreamDisposed;
 
         /// <summary>

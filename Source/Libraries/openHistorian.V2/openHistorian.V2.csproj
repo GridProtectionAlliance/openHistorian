@@ -108,7 +108,6 @@
     <Compile Include="Collections\BPlusTreeTypes\DateTimeLong.cs" />
     <Compile Include="Collections\BPlusTreeTypes\IntegerFloat.cs" />
     <Compile Include="Collections\BPlusTreeTypes\Long.cs" />
-    <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream.cs" />
     <Compile Include="UnmanagedMemory\UnmanagedArray.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
