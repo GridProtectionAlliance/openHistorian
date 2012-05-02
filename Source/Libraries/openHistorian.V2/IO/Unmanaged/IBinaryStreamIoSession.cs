@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ISupportsBinaryStream.cs - Gbtc
+//  IBinaryStreamIoSession.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/11/2012 - Steven E. Chisholm
+//  4/26/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************

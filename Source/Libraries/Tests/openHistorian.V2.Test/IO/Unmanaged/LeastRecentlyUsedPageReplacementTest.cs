@@ -16,7 +16,6 @@ namespace openHistorian.V2.Test
     public class LeastRecentlyUsedPageReplacementTest
     {
 
-
         private TestContext testContextInstance;
 
         /// <summary>
@@ -66,214 +65,145 @@ namespace openHistorian.V2.Test
         #endregion
 
 
-        ///// <summary>
-        /////A test for LeastRecentlyUsedPageReplacement Constructor
-        /////</summary>
-        //[TestMethod()]
-        //public void LeastRecentlyUsedPageReplacementConstructorTest()
-        //{
-        //    using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
-        //    {
-        //    }
-        //}
+        /// <summary>
+        ///A test for LeastRecentlyUsedPageReplacement Constructor
+        ///</summary>
+        [TestMethod()]
+        public void LeastRecentlyUsedPageReplacementConstructorTest()
+        {
 
-        ///// <summary>
-        /////A test for AllocateNewPageMetaDataIndex
-        /////</summary>
-        //[TestMethod()]
-        //[DeploymentItem("openHistorian.V2.dll")]
-        //public void AllocateNewPageMetaDataIndexTest()
-        //{
-        //    using (LeastRecentlyUsedPageReplacement_Accessor target = new LeastRecentlyUsedPageReplacement_Accessor())
-        //    {
-        //        Assert.AreEqual(0, BufferPool.AllocatedBytes);
-        //        for (int x = 0; x < 10; x++)
-        //        {
-        //            int index = target.AllocateNewPageMetaDataIndex(1);
-        //            Assert.AreEqual(x, index);
-        //            Assert.AreEqual(true, target.m_isPageMetaDataNotNull.GetBit(index));
-        //            Assert.AreEqual(index + 1, target.m_isPageMetaDataNotNull.FindClearedBit());
-        //        }
-        //        Assert.AreNotEqual(0, BufferPool.AllocatedBytes);
+            Assert.AreEqual(0, BufferPool.AllocatedBytes);
 
-        //    }
-        //    Assert.AreEqual(0, BufferPool.AllocatedBytes);
-        //}
+            using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
+            {
+                Assert.AreEqual(0, BufferPool.AllocatedBytes);
+                using (var io = target.CreateNewIoSession())
+                {
+                    Assert.AreEqual(0, BufferPool.AllocatedBytes);
+                    io.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
+                    Assert.AreNotEqual(0, BufferPool.AllocatedBytes);
+                }
+                target.Dispose();
+            }
+            Assert.AreEqual(0, BufferPool.AllocatedBytes);
 
-        ///// <summary>
-        /////A test for CreateNewIoSession
-        /////</summary>
-        //[TestMethod()]
-        //public void CreateNewIoSessionTest()
-        //{
-        //    using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
-        //    {
-        //        for (int x = 0; x < 100; x++)
-        //        {
-        //            Assert.AreEqual(x, target.CreateNewIoSession());
-        //        }
-        //        for (int x = 1; x < 100; x += 2)
-        //        {
-        //            target.ReleaseIoSession(x);
-        //        }
-        //        for (int x = 1; x < 100; x += 2)
-        //        {
-        //            Assert.AreEqual(x, target.CreateNewIoSession());
-        //        }
-        //    }
-        //}
+            var target2 = new LeastRecentlyUsedPageReplacement();
+            var io2 = target2.CreateNewIoSession();
+            io2.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
+            Assert.AreNotEqual(0, BufferPool.AllocatedBytes);
 
-        ///// <summary>
-        /////A test for DoCollection
-        /////</summary>
-        //[TestMethod()]
-        //unsafe public void DoCollectionTest()
-        //{
-        //    long bufferPoolBytes;
-        //    Assert.AreEqual(0, BufferPool.AllocatedBytes);
-        //    using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
-        //    {
-        //        int ioSession = target.CreateNewIoSession();
-        //        bool isWriting = false;
-        //        bool isEmptyPage;
+            target2 = null;
+            io2 = null;
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
-        //        for (long position = 0; position < 1000000; position += 1024)
-        //        {
-        //            var pageMetaData = target.TryGetPageOrCreateNew(position, ioSession, false, out isEmptyPage);
-        //            Assert.AreEqual((position & BufferPool.PageMask) == 0, isEmptyPage);
-        //            Assert.AreEqual(position & ~(long)BufferPool.PageMask, pageMetaData.PagePosition);
-        //            Assert.AreEqual(position & ~4095L, pageMetaData.SubPagePosition);
-        //        }
-        //        bufferPoolBytes = BufferPool.AllocatedBytes;
-        //        target.ReleaseIoSession(ioSession);
+            Assert.AreEqual(0, BufferPool.AllocatedBytes);
+        }
 
-        //        for (int x = 0; x < 32; x++) //Collect All Pages
-        //            target.DoCollection();
+        /// <summary>
+        ///A test for ClearDirtyBits
+        ///</summary>
+        [TestMethod()]
+        public void ClearDirtyBitsTest()
+        {
+            Assert.AreEqual(0, BufferPool.AllocatedBytes);
+            using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
+            {
+                Assert.AreEqual(0, BufferPool.AllocatedBytes);
+                using (var io = target.CreateNewIoSession())
+                {
+                    Assert.AreEqual(0, BufferPool.AllocatedBytes);
+                    var metaData = io.TryGetSubPageOrCreateNew(0, true, (x, y) => y = y);
+                    foreach (var page in target.GetDirtyPages(true))
+                    {
+                        Assert.Fail();
+                    }
+                    io.Clear();
+                    foreach (var page in target.GetDirtyPages(true))
+                    {
+                        target.ClearDirtyBits(page);
+                    }
+                    foreach (var page in target.GetDirtyPages())
+                    {
+                        Assert.Fail();
+                    }
+                    Assert.AreNotEqual(0, BufferPool.AllocatedBytes);
+                }
 
-        //        Assert.AreEqual(0, BufferPool.AllocatedBytes);
-                
-        //        ioSession = target.CreateNewIoSession();
+                target.Dispose();
+            }
+            Assert.AreEqual(0, BufferPool.AllocatedBytes);
+        }
 
-        //        for (int count = 0; count < 10; count++)
-        //        {
-        //            for (int x = 0; x < (1 << count); x++)
-        //            {
-        //                var pageMetaData = target.TryGetPageOrCreateNew(count * 65536, ioSession, false, out isEmptyPage);
-        //                Assert.AreEqual(x==0,isEmptyPage);
-        //            }
-        //        }
-        //        target.ReleaseIoSession(ioSession);
-        //        bufferPoolBytes = BufferPool.AllocatedBytes;
+        /// <summary>
+        ///A test for CreateNewIoSession
+        ///</summary>
+        [TestMethod()]
+        public void CreateNewIoSessionTest()
+        {
+            Assert.AreEqual(0, BufferPool.AllocatedBytes);
+            using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
+            {
+                Assert.AreEqual(0, BufferPool.AllocatedBytes);
+                var io1 = target.CreateNewIoSession();
+                var metaData1 = io1.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
+                var io2 = target.CreateNewIoSession();
+                var metaData2 = io2.TryGetSubPageOrCreateNew(200, true, (x, y) => y = y);
+                var io3 = target.CreateNewIoSession();
+                var metaData3 = io3.TryGetSubPageOrCreateNew(4099, true, (x, y) => y = y);
+                var io4 = target.CreateNewIoSession();
+                var metaData4 = io4.TryGetSubPageOrCreateNew(65536, true, (x, y) => y = y);
 
-        //        while (BufferPool.AllocatedBytes > 0)
-        //        {
-        //            target.DoCollection();
-        //            Assert.AreEqual(bufferPoolBytes - 65536, BufferPool.AllocatedBytes);
-        //            bufferPoolBytes = BufferPool.AllocatedBytes;
-        //        }
-        //    }
-        //}
+                Assert.AreEqual(false, metaData1.IsDirty);
+                Assert.AreEqual(0, metaData1.Position);
 
-        ///// <summary>
-        /////A test for TryGetPageOrCreateNew
-        /////</summary>
-        //[TestMethod()]
-        //unsafe public void TryGetPageOrCreateNewTest()
-        //{
-        //    long bufferPoolBytes;
-        //    Assert.AreEqual(0, BufferPool.AllocatedBytes);
+                Assert.AreEqual(true, metaData2.IsDirty);
+                Assert.AreEqual(0, metaData2.Position);
+                metaData1 = io1.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
 
-        //    using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
-        //    {
-        //        int ioSession = target.CreateNewIoSession();
-        //        bool isWriting = false;
-        //        bool isEmptyPage;
+                Assert.AreEqual(true, metaData1.IsDirty);
+                Assert.AreEqual(0, metaData1.Position);
 
-        //        for (long position = 0; position < 100000; position += 8192)
-        //        {
-        //            int subPageIndex = (int)((position & BufferPool.PageMask) >> LeastRecentlyUsedPageReplacement_Accessor.SubPageShiftBits);
+                Assert.AreEqual(true, metaData3.IsDirty);
+                Assert.AreEqual(4096, metaData3.Position);
 
-        //            var pageMetaData = target.TryGetPageOrCreateNew(position, ioSession, isWriting, out isEmptyPage);
+                Assert.AreEqual(true, metaData4.IsDirty);
+                Assert.AreEqual(65536, metaData4.Position);
 
-        //            Assert.AreEqual((position & BufferPool.PageMask) == 0, isEmptyPage);
-        //            Assert.AreEqual(GenerateDirtyFlags(subPageIndex, isWriting), pageMetaData.IsDirtyFlags);
-        //            Assert.AreEqual(isWriting, pageMetaData.IsSubPageDirty);
-        //            Assert.AreEqual(true, pageMetaData.SubPageLocation == pageMetaData.PageLocation + (position & BufferPool.PageMask));
-        //            Assert.AreEqual(position & ~(long)BufferPool.PageMask, pageMetaData.PagePosition);
-        //            Assert.AreEqual(position, pageMetaData.SubPagePosition);
-        //            *(long*)pageMetaData.SubPageLocation = position;
-        //            isWriting = !isWriting;
-        //        }
+                foreach (var page in target.GetDirtyPages(true))
+                {
+                    Assert.Fail();
+                }
+             
+                io1.Clear();
+                io2 = null;
+                io3.Clear();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
-        //        bufferPoolBytes = BufferPool.AllocatedBytes;
+                foreach (var page in target.GetDirtyPages(true))
+                {
+                    target.ClearDirtyBits(page);
+                }
 
-        //        isWriting = false;
-        //        for (long position = 0; position < 100000; position += 8192)
-        //        {
-        //            int subPageIndex = (int)((position & BufferPool.PageMask) >> LeastRecentlyUsedPageReplacement_Accessor.SubPageShiftBits);
+                Assert.AreEqual(0, target.DoCollection());
+                Assert.AreEqual(0, target.DoCollection());
+                Assert.AreEqual(1, target.DoCollection()); //There have been 4 calls
 
-        //            var pageMetaData = target.TryGetPageOrCreateNew(position, ioSession, false, out isEmptyPage);
+                io4.Clear();
 
-        //            Assert.AreEqual(false, isEmptyPage);
-        //            Assert.AreEqual(isWriting, ((pageMetaData.IsDirtyFlags >> subPageIndex) & 1) == 1);
-        //            Assert.AreEqual(isWriting, pageMetaData.IsSubPageDirty);
-        //            Assert.AreEqual(true, pageMetaData.SubPageLocation == pageMetaData.PageLocation + (position & BufferPool.PageMask));
-        //            Assert.AreEqual(position & ~(long)BufferPool.PageMask, pageMetaData.PagePosition);
-        //            Assert.AreEqual(position, pageMetaData.SubPagePosition);
-        //            Assert.AreEqual(*(long*)pageMetaData.SubPageLocation, position);
-        //            isWriting = !isWriting;
-        //        }
+                Assert.AreEqual(0, target.DoCollection()); 
+                foreach (var page in target.GetDirtyPages(true))
+                {
+                    target.ClearDirtyBits(page);
+                }
+                Assert.AreEqual(1, target.DoCollection()); //There have been 4 calls
 
-        //        for (int x = 0; x < 32; x++) //Since each page is dirty, no pages should be collected.
-        //            target.DoCollection();
 
-        //        Assert.AreEqual(bufferPoolBytes, BufferPool.AllocatedBytes);
-
-        //        //Free one block at a time until only one block is remaining.
-        //        while (BufferPool.AllocatedBytes > 65536)
-        //        {
-        //            foreach (var dirtyPage in target.GetDirtyPages())
-        //            {
-        //                target.ClearDirtyBits(dirtyPage.PagePosition);
-        //                break;
-        //            }
-        //            target.DoCollection();
-        //            Assert.AreEqual(bufferPoolBytes - 65536, BufferPool.AllocatedBytes);
-        //            bufferPoolBytes = BufferPool.AllocatedBytes;
-        //        }
-
-        //        //Removing the last block should do nothing since an IO Session prevents it from being removed.
-        //        foreach (var dirtyPage in target.GetDirtyPages())
-        //        {
-        //            target.ClearDirtyBits(dirtyPage.PagePosition);
-        //            break;
-        //        }
-        //        target.DoCollection();
-        //        Assert.AreEqual(bufferPoolBytes, BufferPool.AllocatedBytes);
-        //        bufferPoolBytes = BufferPool.AllocatedBytes;
-
-        //        target.ReleaseIoSession(ioSession);
-        //        foreach (var dirtyPage in target.GetDirtyPages())
-        //        {
-        //            target.ClearDirtyBits(dirtyPage.PagePosition);
-        //            break;
-        //        }
-        //        target.DoCollection();
-        //        Assert.AreEqual(0, BufferPool.AllocatedBytes);
-        //    }
-        //}
-        //ushort GenerateDirtyFlags(int subPageIndex, bool isWriting)
-        //{
-        //    if (!isWriting)
-        //        subPageIndex -= 2;
-        //    ushort value = 0;
-        //    for (int x = subPageIndex; x >= 0; x -= 4)
-        //    {
-        //        value |= (ushort)(1 << x);
-        //    }
-        //    return value;
-
-        //}
+                target.Dispose();
+            }
+            Assert.AreEqual(0, BufferPool.AllocatedBytes);
+        }
 
     }
 }

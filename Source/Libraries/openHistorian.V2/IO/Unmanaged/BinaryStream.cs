@@ -173,6 +173,24 @@ namespace openHistorian.V2.IO.Unmanaged
         #region [ Methods ]
 
         /// <summary>
+        /// When accessing the underlying stream, a lock is placed on the data. Calling this method clears that lock.
+        /// </summary>
+        public void ClearLocks()
+        {
+            m_firstPosition = Position;
+            m_lastPosition = m_firstPosition;
+            m_current = null;
+            m_first = null;
+            m_lastRead = null;
+            m_lastWrite = null;
+
+           if (m_mainIoSession != null)
+               m_mainIoSession.Clear();
+           if (m_secondaryIoSession != null)
+               m_secondaryIoSession.Clear();
+        }
+        
+        /// <summary>
         /// Clones a binary stream if it is supported.  Check <see cref="SupportsAnotherClone"/> before calling this method.
         /// </summary>
         /// <returns></returns>

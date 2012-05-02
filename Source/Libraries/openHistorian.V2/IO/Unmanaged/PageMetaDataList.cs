@@ -210,12 +210,19 @@ namespace openHistorian.V2.IO.Unmanaged
             return cachePageIndex;
         }
 
-        public PageMetaData GetMetaDataPage(int index, ushort isWritingFlag = 0, bool incrementReferencedCount = false)
+        public PageMetaData GetMetaDataPage(int index, ushort isWritingFlag = 0, int incrementReferencedCount = 0)
         {
             var metaData = GetPage(index);
             metaData.IsDirtyFlags |= isWritingFlag;
-            if (incrementReferencedCount && metaData.ReferencedCount != int.MaxValue)
-                metaData.ReferencedCount++;
+            if (incrementReferencedCount > 0)
+            {
+                long newValue = metaData.ReferencedCount + (long)incrementReferencedCount;
+                if (newValue > int.MaxValue)
+                    metaData.ReferencedCount = int.MaxValue;
+                else
+                    metaData.ReferencedCount = (int)newValue;
+            }
+
             SetPage(index, metaData);
             return metaData.ToPageMetaData(index);
         }
@@ -248,7 +255,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <param name="shouldCollect">a function that notifies the caller what page is about to be
         /// collected and gives the caller an opertunity to override this collection attempt.</param>
         /// <returns>The number of pages returned to the buffer pool</returns>
-        public int DoCollection(int shiftLevel, Func<int, bool> shouldCollect)
+        public int DoCollection(int shiftLevel, Func<int, int, bool> shouldCollect)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -266,7 +273,7 @@ namespace openHistorian.V2.IO.Unmanaged
                     m_listOfPages[x] = block;
                     if (block.ReferencedCount == 0 && block.IsDirtyFlags == 0)
                     {
-                        if (shouldCollect(x))
+                        if (shouldCollect(x, block.PositionIndex))
                         {
                             collectionCount++;
                             BufferPool.ReleasePage(block.BufferPoolIndex);

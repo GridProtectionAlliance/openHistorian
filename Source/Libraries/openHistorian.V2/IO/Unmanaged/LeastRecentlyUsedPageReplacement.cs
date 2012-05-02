@@ -235,7 +235,7 @@ namespace openHistorian.V2.IO.Unmanaged
         void ReleaseIoSession(int ioSession)
         {
             if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+                return;
             m_activeBlockIndexes[ioSession] = -2;
         }
 
@@ -255,7 +255,15 @@ namespace openHistorian.V2.IO.Unmanaged
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return m_pageList.DoCollection(1, x => !m_activeBlockIndexes.Contains(x));
+            return m_pageList.DoCollection(1, CheckForCollection);
+        }
+
+        bool CheckForCollection(int index, int positionIndex)
+        {
+            if (m_activeBlockIndexes.Contains(index))
+                return false;
+            m_allocatedPagesLookupList.Remove(positionIndex);
+            return true;
         }
 
         //public bool PageInUse(long position)
@@ -350,9 +358,9 @@ namespace openHistorian.V2.IO.Unmanaged
         PageMetaDataList.PageMetaData GetPageMetaData(bool isWriting, ushort subPageDirtyFlag, int pageMetaDataIndex)
         {
             if (isWriting)
-                return m_pageList.GetMetaDataPage(pageMetaDataIndex, subPageDirtyFlag, true);
+                return m_pageList.GetMetaDataPage(pageMetaDataIndex, subPageDirtyFlag, 1);
             else
-                return m_pageList.GetMetaDataPage(pageMetaDataIndex, 0, true);
+                return m_pageList.GetMetaDataPage(pageMetaDataIndex, 0, 1);
         }
 
         int GetPageMetaDataIndex(int pageIndex, out bool existsInLookupTable)
