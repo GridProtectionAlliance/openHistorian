@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using openHistorian.V2.IO.Unmanaged;
 using openHistorian.V2.Collections.BPlusTreeTypes;
 using openHistorian.V2.Collections.Specialized;
 using openHistorian.V2.FileSystem;
-
+using openHistorian.V2.Providers;
 
 namespace openHistorian.V2
 {
@@ -13,7 +13,7 @@ namespace openHistorian.V2
         VirtualFileSystem m_fileSystem;
         TransactionalEdit m_currentTransaction;
         ArchiveFileStream m_stream1;
-        IO.Unmanaged.BinaryStream m_binaryStream1;
+        BinaryStream m_binaryStream1;
         BPlusTreeTSD m_tree;
 
         //public Archive(string file)
@@ -49,10 +49,13 @@ namespace openHistorian.V2
             m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();
             m_currentTransaction = m_fileSystem.BeginEdit();
             m_stream1 = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271c}"), 1);
-            m_binaryStream1 = new IO.Unmanaged.BinaryStream(m_stream1);
+            m_binaryStream1 = new BinaryStream(m_stream1);
             m_tree = new BPlusTreeTSD(m_binaryStream1, ArchiveConstants.DataBlockDataLength);
         }
 
+        public IMetaDataProvider[] MetaData;
+        public ITimeSeriesDataProvider[] TimeSeriesData;
+        
         public void AddPoint(DateTime date, long pointId, int flags, float data)
         {
             DateTimeLong key = default(DateTimeLong);
@@ -105,11 +108,7 @@ namespace openHistorian.V2
             m_stream1.Flush();
             m_currentTransaction.Commit();
             m_fileSystem.Dispose();
-
         }
-
-
-
 
     }
 }

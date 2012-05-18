@@ -80,6 +80,10 @@
     <Compile Include="ArchiveEngine.cs" />
     <Compile Include="ArchiveLookupClass.cs" />
     <Compile Include="ArchiveLookupSnapshot.cs" />
+    <Compile Include="Collections\KeyValue\BasicTree.cs" />
+    <Compile Include="Collections\KeyValue\BasicTreeBase.cs" />
+    <Compile Include="Collections\KeyValue\BasicTreeInternalNodeBase.cs" />
+    <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="ContinuousBuffer.cs" />
     <Compile Include="ArchiveEngineShell.cs" />
@@ -89,10 +93,16 @@
     <Compile Include="IO\IBinaryStream.cs" />
     <Compile Include="FileSystem\DiskIoEnhanced.cs" />
     <Compile Include="FileSystem\IMemoryUnit.cs" />
+    <Compile Include="IO\IStreamingTransport.cs" />
     <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
+    <Compile Include="Providers\IMetaDataProvider.cs" />
+    <Compile Include="Providers\ITimeSeriesDataProvider.cs" />
+    <Compile Include="Streaming\ClientSocket.cs" />
+    <Compile Include="Streaming\ProcessClientConnection.cs" />
+    <Compile Include="Streaming\ServerSocket.cs" />
     <Compile Include="TableSummaryInfo.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
     <Compile Include="Collections\BPlusTree.cs" />

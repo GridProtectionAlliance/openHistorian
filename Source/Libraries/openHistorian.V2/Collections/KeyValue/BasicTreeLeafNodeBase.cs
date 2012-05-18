@@ -24,9 +24,9 @@
 using System;
 using openHistorian.V2.IO;
 
-namespace openHistorian.V2.Collections
+namespace openHistorian.V2.Collections.KeyValue
 {
-    public abstract class BPlusTreeLeafNodeBase<TKey, TValue> : BPlusTreeInternalNodeBase<TKey, TValue>
+    public abstract class BasicTreeLeafNodeBase : BasicTreeInternalNodeBase
     {
         #region [ Nexted Types ]
 
@@ -58,145 +58,27 @@ namespace openHistorian.V2.Collections
                 stream.Write(RightSiblingNodeIndex);
             }
         }
-
-        private class DataReader : DataReaderBase
-        {
-
-            /// <summary>
-            /// A reference to the tree data to reference.
-            /// </summary>
-            BPlusTreeLeafNodeBase<TKey, TValue> m_tree;
-            /// <summary>
-            /// The key to start with
-            /// </summary>
-            TKey m_beginKey;
-            /// <summary>
-            /// The key to end on.  The query will not include this key.
-            /// </summary>
-            TKey m_endKey;
-            /// <summary>
-            /// The node index of the first key
-            /// </summary>
-            uint m_origionalNodeIndexOfBeginKey;
-            /// <summary>
-            /// A filter to apply if the value is not null.
-            /// </summary>
-            Func<TKey, bool> m_filter;
-            /// <summary>
-            /// Determines if the reader should stop at the end key or continue on to the end of the stream
-            /// </summary>
-            bool m_readToEndOfStream;
-
-            //Node Data
-            short m_nodeRecordCount;
-            uint m_rightSiblingNodeIndex;
-            uint m_nodeIndex;
-
-            bool m_isValid;
-            /// <summary>
-            /// The zero based index of the key that the cursor currently points to.  
-            /// </summary>
-            int m_keyIndexOfCurrentKey;
-
-            TKey m_key;
-            TValue m_value;
-
-            public DataReader(BPlusTreeLeafNodeBase<TKey, TValue> tree, TKey beginKey, TKey endKey, uint nodeIndexOfBeginKey, Func<TKey, bool> filter, bool readToEndOfStream)
-            {
-                m_tree = tree;
-                m_beginKey = beginKey;
-                m_endKey = endKey;
-                m_origionalNodeIndexOfBeginKey = nodeIndexOfBeginKey;
-                m_filter = filter;
-                m_readToEndOfStream = readToEndOfStream;
-                ReaderReset();
-            }
-
-            protected sealed override void ReaderReset()
-            {
-                uint leftSiblingNodeIndex;
-                m_nodeIndex = m_origionalNodeIndexOfBeginKey;
-                m_tree.LoadNodeHeader(m_nodeIndex, false, out m_nodeRecordCount, out leftSiblingNodeIndex, out m_rightSiblingNodeIndex);
-
-                m_tree.FindOffsetOfKey(m_nodeIndex, m_nodeRecordCount, m_beginKey, out m_keyIndexOfCurrentKey);
-                m_keyIndexOfCurrentKey = (m_keyIndexOfCurrentKey - NodeHeader.Size) / m_tree.m_structureSize;
-            }
-
-            protected override bool ReaderNext()
-            {
-                while (true)
-                {
-                    //If there are no more records in the current node.
-                    if (m_keyIndexOfCurrentKey >= m_nodeRecordCount)
-                    {
-                        //If the last leaf node, return false
-                        if (m_rightSiblingNodeIndex == 0)
-                            return false;
-
-                        //Move to the next node in the linked list.
-                        uint previousNode;
-                        m_nodeIndex = m_rightSiblingNodeIndex;
-                        m_tree.LoadNodeHeader(m_nodeIndex, false, out m_nodeRecordCount, out previousNode, out m_rightSiblingNodeIndex);
-                        m_keyIndexOfCurrentKey = 0;
-                    }
-
-                    m_tree.Stream.Position = m_nodeIndex * m_tree.BlockSize + m_keyIndexOfCurrentKey * m_tree.m_structureSize + NodeHeader.Size;
-
-                    m_key = m_tree.LoadKey(m_tree.Stream);
-
-                    //Check and see if the end of the query has occured
-                    if (!m_readToEndOfStream && m_tree.CompareKeys(m_endKey, m_key) <= 0)
-                        return false;
-
-                    //move to the next key
-                    m_keyIndexOfCurrentKey++;
-
-                    if (m_filter == null || m_filter.Invoke(m_key))
-                    {
-                        //Load the current value
-                        m_value = m_tree.LoadValue(m_tree.Stream);
-                        return true;
-
-                    }
-                } 
-
-            }
-
-            protected override TValue ReaderGetValue()
-            {
-                if (!m_isValid)
-                    throw new Exception("Value is no longer valid.  Either the end of the stream has been encoutered or the initial read was never performed");
-                return m_value;
-            }
-
-            protected override TKey ReaderGetKey()
-            {
-                if (!m_isValid)
-                    throw new Exception("Key is no longer valid.  Either the end of the stream has been encoutered or the initial read was never performed");
-                return m_key;
-            }
-        }
-
+    
         #endregion
 
         #region [ Members ]
 
-        int m_keySize;
+        const int KeySize = 16;
         int m_maximumRecordsPerNode;
-        int m_structureSize;
+        const int StructureSize = KeySize + 16;
 
         #endregion
 
         #region [ Constructors ]
 
-        protected BPlusTreeLeafNodeBase(IBinaryStream stream)
+        protected BasicTreeLeafNodeBase(IBinaryStream stream)
             : base(stream)
         {
             Initialize();
         }
 
 
-        protected BPlusTreeLeafNodeBase(IBinaryStream stream, int blockSize)
+        protected BasicTreeLeafNodeBase(IBinaryStream stream, int blockSize)
             : base(stream, blockSize)
         {
             Initialize();
@@ -210,13 +92,6 @@ namespace openHistorian.V2.Collections
 
         #region [ Methods ]
 
-        #region [ Abstract Methods ]
-
-        protected abstract void SaveValue(TValue value, IBinaryStream stream);
-        protected abstract TValue LoadValue(IBinaryStream stream);
-        protected abstract int SizeOfValue();
-
-        #endregion
         #region [ Override Methods ]
 
         protected override void LeafNodeCreateEmptyNode(uint newNodeIndex)
@@ -242,7 +117,7 @@ namespace openHistorian.V2.Collections
         //    throw new NotImplementedException();
         //}
 
-        protected override bool LeafNodeInsert(uint nodeIndex, TKey key, TValue value)
+        protected override bool LeafNodeInsert(uint nodeIndex, long key1, long key2, long value1, long value2)
         {
             short nodeRecordCount;
             uint leftSiblingNodeIndex;
@@ -254,13 +129,13 @@ namespace openHistorian.V2.Collections
             //Find the best location to insert
             //This is done before checking if a split is required to prevent splitting 
             //if a duplicate key is found
-            if (FindOffsetOfKey(nodeIndex, nodeRecordCount, key, out offset)) //If found
+            if (FindOffsetOfKey(nodeIndex, nodeRecordCount, key1, key2, out offset)) //If found
                 return false;
 
             //Check if the node needs to be split
             if (nodeRecordCount >= m_maximumRecordsPerNode)
             {
-                SplitNodeThenInsert(key, value, nodeIndex);
+                SplitNodeThenInsert(key1, key2, value1, value2, nodeIndex);
                 return true;
             }
 
@@ -268,15 +143,17 @@ namespace openHistorian.V2.Collections
             Stream.Position = nodeIndex * BlockSize + offset;
 
             //Determine the number of bytes that need to be shifted in order to insert the key
-            int bytesAfterInsertPositionToShift = NodeHeader.Size + m_structureSize * nodeRecordCount - offset;
+            int bytesAfterInsertPositionToShift = NodeHeader.Size + StructureSize * nodeRecordCount - offset;
             if (bytesAfterInsertPositionToShift > 0)
             {
-                Stream.InsertBytes(m_structureSize, bytesAfterInsertPositionToShift);
+                Stream.InsertBytes(StructureSize, bytesAfterInsertPositionToShift);
             }
 
             //Insert the data
-            SaveKey(key, Stream);
-            SaveValue(value, Stream);
+            Stream.Write(key1);
+            Stream.Write(key2);
+            Stream.Write(value1);
+            Stream.Write(value2);
 
             //save the header
             SaveNodeHeader(nodeIndex, (short)(nodeRecordCount + 1));
@@ -290,7 +167,7 @@ namespace openHistorian.V2.Collections
         /// <param name="key">the key to look for</param>
         /// <param name="value">the associated value.  Null/Default if key is not found</param>
         /// <returns>true if the key was found, false if the key was not found.</returns>
-        protected override bool LeafNodeGetValue(uint nodeIndex, TKey key, out TValue value)
+        protected override bool LeafNodeGetValue(uint nodeIndex, long key1, long key2, out long value1, out long value2)
         {
             short nodeRecordCount;
             uint leftSiblingNodeIndex;
@@ -299,17 +176,19 @@ namespace openHistorian.V2.Collections
 
             LoadNodeHeader(nodeIndex, false, out nodeRecordCount, out leftSiblingNodeIndex, out rightSiblingNodeIndex);
 
-            if (FindOffsetOfKey(nodeIndex, nodeRecordCount, key, out offset))
+            if (FindOffsetOfKey(nodeIndex, nodeRecordCount, key1, key2, out offset))
             {
-                Stream.Position = nodeIndex * BlockSize + (offset + m_keySize);
-                value = LoadValue(Stream);
+                Stream.Position = nodeIndex * BlockSize + (offset + KeySize);
+                value1 = Stream.ReadInt64();
+                value2 = Stream.ReadInt64();
                 return true;
             }
-            value = default(TValue);
+            value1 = 0;
+            value2 = 0;
             return false;
         }
 
-        protected override bool LeafNodeGetFirstKeyValue(uint nodeIndex, out TKey key, out TValue value)
+        protected override bool LeafNodeGetFirstKeyValue(uint nodeIndex, out long key1, out long key2, out long value1, out long value2)
         {
             short nodeRecordCount;
             uint leftSiblingNodeIndex;
@@ -319,12 +198,16 @@ namespace openHistorian.V2.Collections
             if (nodeRecordCount > 0)
             {
                 Stream.Position = nodeIndex * BlockSize + NodeHeader.Size;
-                key = LoadKey(Stream);
-                value = LoadValue(Stream);
+                key1 = Stream.ReadInt64();
+                key2 = Stream.ReadInt64();
+                value1 = Stream.ReadInt64();
+                value2 = Stream.ReadInt64();
                 return true;
             }
-            key = default(TKey);
-            value = default(TValue);
+            key1 = 0;
+            key2 = 0;
+            value1 = 0;
+            value2 = 0;
             return false;
         }
 
@@ -334,14 +217,59 @@ namespace openHistorian.V2.Collections
         //}
 
 
-        protected override DataReaderBase LeafNodeScan(uint nodeIndex, TKey beginKey, Func<TKey, bool> filter)
+        protected override void LeafNodeScan(uint nodeIndex, long beginKey1, long beginKey2, Func<long, long, long, long, bool> callback)
         {
-            return new DataReader(this, beginKey, default(TKey), nodeIndex, filter, true);
+
+
         }
 
-        protected override DataReaderBase LeafNodeScan(uint nodeIndex, TKey beginKey, TKey endKey, Func<TKey, bool> filter)
+        protected override void LeafNodeScan(uint nodeIndex, long beginKey1, long beginKey2, long endKey1, long endKey2, Func<long, long, long, long, bool> callback)
         {
-            return new DataReader(this, beginKey, endKey, nodeIndex, filter, false);
+            short m_nodeRecordCount;
+            uint leftSiblingNodeIndex, m_rightSiblingNodeIndex;
+            int m_keyIndexOfCurrentKey;
+
+            LoadNodeHeader(nodeIndex, false, out m_nodeRecordCount, out leftSiblingNodeIndex, out m_rightSiblingNodeIndex);
+
+            FindOffsetOfKey(nodeIndex, m_nodeRecordCount, beginKey1, beginKey2, out m_keyIndexOfCurrentKey);
+            m_keyIndexOfCurrentKey = (m_keyIndexOfCurrentKey - NodeHeader.Size) / StructureSize;
+
+            while (true)
+            {
+                //If there are no more records in the current node.
+                if (m_keyIndexOfCurrentKey >= m_nodeRecordCount)
+                {
+                    //If the last leaf node, return false
+                    if (m_rightSiblingNodeIndex == 0)
+                        return;
+
+                    //Move to the next node in the linked list.
+                    uint previousNode;
+                    nodeIndex = m_rightSiblingNodeIndex;
+                    LoadNodeHeader(nodeIndex, false, out m_nodeRecordCount, out previousNode, out m_rightSiblingNodeIndex);
+                    m_keyIndexOfCurrentKey = 0;
+                }
+
+                Stream.Position = nodeIndex * BlockSize + m_keyIndexOfCurrentKey * StructureSize + NodeHeader.Size;
+
+                long key1 = Stream.ReadInt64();
+                long key2 = Stream.ReadInt64();
+                long value1 = Stream.ReadInt64();
+                long value2 = Stream.ReadInt64();
+
+                //Check and see if the end of the query has occured
+                if (CompareKeys(endKey1, endKey2, key1, key2) <= 0)
+                    return;
+
+                //move to the next key
+                m_keyIndexOfCurrentKey++;
+
+                if (callback(key1,key2,value1,value2))
+                {
+                    return;
+                }
+            }
+
         }
 
         #endregion
@@ -350,9 +278,7 @@ namespace openHistorian.V2.Collections
 
         void Initialize()
         {
-            m_keySize = SizeOfKey();
-            m_structureSize = m_keySize + SizeOfValue();
-            m_maximumRecordsPerNode = (BlockSize - NodeHeader.Size) / (m_structureSize);
+            m_maximumRecordsPerNode = (BlockSize - NodeHeader.Size) / (StructureSize);
         }
 
         NodeHeader LoadNodeHeader(uint nodeIndex)
@@ -387,7 +313,7 @@ namespace openHistorian.V2.Collections
         /// <param name="key">the key to look for</param>
         /// <param name="offset">the offset from the start of the node where the index was found</param>
         /// <returns>true the key was found in the node, false if was not found.</returns>
-        bool FindOffsetOfKey(uint nodeIndex, int nodeRecordCount, TKey key, out int offset)
+        bool FindOffsetOfKey(uint nodeIndex, int nodeRecordCount, long key1, long key2, out int offset)
         {
             long addressOfFirstKey = nodeIndex * BlockSize + NodeHeader.Size;
             int searchLowerBoundsIndex = 0;
@@ -396,11 +322,13 @@ namespace openHistorian.V2.Collections
             while (searchLowerBoundsIndex <= searchHigherBoundsIndex)
             {
                 int currentTestIndex = searchLowerBoundsIndex + (searchHigherBoundsIndex - searchLowerBoundsIndex >> 1);
-                Stream.Position = addressOfFirstKey + m_structureSize * currentTestIndex;
-                int compareKeysResults = CompareKeys(key, Stream);
+                Stream.Position = addressOfFirstKey + StructureSize * currentTestIndex;
+                long compareKey1 = Stream.ReadInt64();
+                long compareKey2 = Stream.ReadInt64();
+                int compareKeysResults = CompareKeys(key1, key2, compareKey1, compareKey2);
                 if (compareKeysResults == 0) //if keys match, result is found.
                 {
-                    offset = NodeHeader.Size + m_structureSize * currentTestIndex;
+                    offset = NodeHeader.Size + StructureSize * currentTestIndex;
                     return true;
                 }
                 if (compareKeysResults > 0) //if the key is greater than the test index, change the lower bounds
@@ -408,11 +336,11 @@ namespace openHistorian.V2.Collections
                 else //if the key is less than the current test index, change the upper bounds.
                     searchHigherBoundsIndex = currentTestIndex - 1;
             }
-            offset = NodeHeader.Size + m_structureSize * searchLowerBoundsIndex;
+            offset = NodeHeader.Size + StructureSize * searchLowerBoundsIndex;
             return false;
         }
 
-        void SplitNodeThenInsert(TKey key, TValue value, uint nodeIndex)
+        void SplitNodeThenInsert(long key1, long key2, long value1, long value2, uint nodeIndex)
         {
             NodeHeader firstNodeHeader = LoadNodeHeader(nodeIndex);
             NodeHeader secondNodeHeader = default(NodeHeader);
@@ -426,15 +354,16 @@ namespace openHistorian.V2.Collections
             short recordsInTheSecondNode = (short)(firstNodeHeader.NodeRecordCount - recordsInTheFirstNode);
 
             uint secondNodeIndex = GetNextNewNodeIndex();
-            long sourceStartingAddress = nodeIndex * BlockSize + NodeHeader.Size + m_structureSize * recordsInTheFirstNode;
+            long sourceStartingAddress = nodeIndex * BlockSize + NodeHeader.Size + StructureSize * recordsInTheFirstNode;
             long targetStartingAddress = secondNodeIndex * BlockSize + NodeHeader.Size;
 
             //lookup the first key that will be copied
             Stream.Position = sourceStartingAddress;
-            TKey dividingKey = LoadKey(Stream);
+            long dividingKey1 = Stream.ReadInt64();
+            long dividingKey2 = Stream.ReadInt64();
 
             //do the copy
-            Stream.Copy(sourceStartingAddress, targetStartingAddress, recordsInTheSecondNode * m_structureSize);
+            Stream.Copy(sourceStartingAddress, targetStartingAddress, recordsInTheSecondNode * StructureSize);
 
             //update the node that was the old right sibling
             if (firstNodeHeader.RightSiblingNodeIndex != 0)
@@ -456,14 +385,14 @@ namespace openHistorian.V2.Collections
             firstNodeHeader.RightSiblingNodeIndex = secondNodeIndex;
             firstNodeHeader.Save(Stream, BlockSize, nodeIndex);
 
-            NodeWasSplit(0, nodeIndex, dividingKey, secondNodeIndex);
-            if (CompareKeys(key, dividingKey) > 0)
+            NodeWasSplit(0, nodeIndex, dividingKey1, dividingKey2, secondNodeIndex);
+            if (CompareKeys(key1, key2, dividingKey1, dividingKey2) > 0)
             {
-                LeafNodeInsert(secondNodeIndex, key, value);
+                LeafNodeInsert(secondNodeIndex, key1, key2, value1, value2);
             }
             else
             {
-                LeafNodeInsert(nodeIndex, key, value);
+                LeafNodeInsert(nodeIndex, key1, key2, value1, value2);
             }
         }
 
