@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using openHistorian.V2.IO.Unmanaged;
-using openHistorian.V2.Unmanaged;
+﻿using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2
+namespace openHistorian.V2.Service.Instance
 {
 
-    class IncommingQueue
+    class InboundPointQueue
     {
         //ToDO: make the queue be an in memory b+ tree.  This may speed up the inserting 
         //to the main database.
@@ -18,9 +13,9 @@ namespace openHistorian.V2
 
         BinaryStream m_processingQueue;
         BinaryStream m_activeQueue;
-        const int SizeOfData = 20;
+        const int SizeOfData = 32;
 
-        public IncommingQueue()
+        public InboundPointQueue()
         {
             m_memoryStream1 = new MemoryStream();
             m_activeQueue = new BinaryStream(m_memoryStream1);
@@ -29,14 +24,14 @@ namespace openHistorian.V2
 
         }
 
-        public void WriteData(IDataPoint dataPoint)
+        public void WriteData(long key1, long key2, long value1, long value2)
         {
             lock (this)
             {
-                m_activeQueue.Write((long)dataPoint.Time);
-                m_activeQueue.Write(dataPoint.HistorianID);
-                m_activeQueue.Write(dataPoint.Flags);
-                m_activeQueue.Write(dataPoint.Value);
+                m_activeQueue.Write(key1);
+                m_activeQueue.Write(key2);
+                m_activeQueue.Write(value1);
+                m_activeQueue.Write(value2);
             }
         }
 

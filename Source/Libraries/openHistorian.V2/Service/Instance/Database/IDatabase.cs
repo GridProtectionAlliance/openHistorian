@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.V2.Streaming
+namespace openHistorian.V2.Service.Instance.Database
 {
-    class ClientSocket
+    interface IDatabase
     {
+
     }
 }

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
+using openHistorian.V2.Service.Instance.File;
 
 namespace openHistorian.V2
 {
@@ -50,7 +47,7 @@ namespace openHistorian.V2
         static void ReaderNewPoint(HistorianReader.Points pt)
         {
             s_points++;
-            s_archive.AddPoint(pt.Time, pt.PointID, pt.flags, pt.Value);
+            //s_archive.AddPoint(pt.Time, pt.PointID, pt.flags, pt.Value);
         }
     }
 }

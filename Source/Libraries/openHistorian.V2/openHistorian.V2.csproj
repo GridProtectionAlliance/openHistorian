@@ -64,6 +64,10 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.1, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Microsoft SQL Server Compact Edition\v4.0\Private\System.Data.SqlServerCe.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -76,20 +80,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Archive.cs" />
-    <Compile Include="ArchiveEngine.cs" />
-    <Compile Include="ArchiveLookupClass.cs" />
-    <Compile Include="ArchiveLookupSnapshot.cs" />
+    <Compile Include="Service\Instance\Database\CreateDatabase.cs" />
+    <Compile Include="Service\Instance\Database\File.cs" />
+    <Compile Include="Service\Instance\Database\IDatabase.cs" />
+    <Compile Include="Service\Instance\File\Archive.cs" />
+    <Compile Include="Service\Instance\Engine.cs" />
+    <Compile Include="Service\Instance\LookupTable.cs" />
+    <Compile Include="Service\Instance\LookupTableSnapshot.cs" />
     <Compile Include="Collections\KeyValue\BasicTree.cs" />
     <Compile Include="Collections\KeyValue\BasicTreeBase.cs" />
     <Compile Include="Collections\KeyValue\BasicTreeInternalNodeBase.cs" />
     <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="ContinuousBuffer.cs" />
-    <Compile Include="ArchiveEngineShell.cs" />
     <Compile Include="DataPoint.cs" />
     <Compile Include="HelperFunctions.cs" />
-    <Compile Include="IncommingQueue.cs" />
+    <Compile Include="Service\Instance\InboundPointQueue.cs" />
     <Compile Include="IO\IBinaryStream.cs" />
     <Compile Include="FileSystem\DiskIoEnhanced.cs" />
     <Compile Include="FileSystem\IMemoryUnit.cs" />
@@ -100,10 +106,21 @@
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
     <Compile Include="Providers\IMetaDataProvider.cs" />
     <Compile Include="Providers\ITimeSeriesDataProvider.cs" />
-    <Compile Include="Streaming\ClientSocket.cs" />
-    <Compile Include="Streaming\ProcessClientConnection.cs" />
-    <Compile Include="Streaming\ServerSocket.cs" />
-    <Compile Include="TableSummaryInfo.cs" />
+    <Compile Include="Service\HistorianEngine.cs" />
+    <Compile Include="Streaming\Client\ClientSocket.cs" />
+    <Compile Include="Streaming\IInboundBuffer.cs" />
+    <Compile Include="Streaming\ITransportStreaming.cs" />
+    <Compile Include="Streaming\IOutboundBuffer.cs" />
+    <Compile Include="Streaming\Server\ProcessDatabaseInstance.cs" />
+    <Compile Include="Streaming\Server\ITransportHost.cs" />
+    <Compile Include="Streaming\Server\ProcessAuthentication.cs" />
+    <Compile Include="Streaming\Server\ProcessDisconnect.cs" />
+    <Compile Include="Streaming\Server\ITransportCommand.cs" />
+    <Compile Include="Streaming\Server\ProcessArchivePoints.cs" />
+    <Compile Include="Streaming\Server\ProcessClientStream.cs" />
+    <Compile Include="Streaming\Server\ProcessKeepAlive.cs" />
+    <Compile Include="Streaming\Server\ServerSocket.cs" />
+    <Compile Include="Service\Instance\TableSummaryInfo.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
     <Compile Include="Collections\BPlusTree.cs" />
     <Compile Include="Collections\BPlusTreeBase.cs" />

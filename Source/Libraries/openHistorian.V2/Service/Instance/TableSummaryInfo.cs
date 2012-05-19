@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
+using openHistorian.V2.Service.Instance.File;
 using TVA;
 
-namespace openHistorian.V2
+namespace openHistorian.V2.Service.Instance
 {
     class TableSummaryInfo
     {
