@@ -129,6 +129,10 @@ namespace openHistorian.V2.FileSystem
             return m_file.BeginEditTransaction();
         }
 
+        public TransactionalRead BeginRead()
+        {
+            return m_file.BeginReadTransaction();
+        }
 
         //public long GrowArchive(long GrowAmount)
         //{

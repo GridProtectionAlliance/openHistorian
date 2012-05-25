@@ -141,6 +141,23 @@ namespace openHistorian.V2.FileSystem
         }
 
         /// <summary>
+        /// Opens a ArchiveFileStream that can be used to read/write to the file passed to this function.
+        /// </summary>
+        /// <returns></returns>
+        public ArchiveFileStream OpenFile(Guid fileExtension, uint fileFlags)
+        {
+            for (int x = 0; x < Files.Count; x++)
+            {
+                var file = Files[x];
+                if (file.FileExtension == fileExtension && file.FileFlags == fileFlags)
+                {
+                    return OpenFile(x);
+                }
+            }
+            throw new Exception("File does not exist");
+        }
+
+        /// <summary>
         /// Releases all the resources used by the <see cref="TransactionalRead"/> object.
         /// This also closes all ArchiveFileStream objects that were opened in this transaction.
         /// </summary>

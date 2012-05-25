@@ -22,7 +22,6 @@
 //
 //******************************************************************************************************
 
-
 using System;
 using System.Threading;
 using openHistorian.V2.IO.Unmanaged;
@@ -115,7 +114,6 @@ namespace openHistorian.V2.Service.Instance
         public void WriteData(long key1, long key2, long value1, long value2)
         {
             m_newPointQueue.WriteData(key1, key2, value1, value2);
-
         }
      
     }

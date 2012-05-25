@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  Archive.cs - Gbtc
+//  ArchiveSnapshotInstance.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/19/2012 - Steven E. Chisholm
+//  5/22/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
@@ -32,15 +32,13 @@ namespace openHistorian.V2.Service.Instance.File
     /// <summary>
     /// Represents a individual self-contained archive file. This is one of many files that are part of a given <see cref="Engine"/>.
     /// </summary>
-    public class Archive
+    public class ArchiveSnapshotInstance
     {
         static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
         static Guid s_pointMappingGuidToLocalFile = new Guid("{19352E28-A474-11E1-9A11-992D6288709B}");
         static Guid s_pointMappingLocalToGuidFile = new Guid("{1E458732-A474-11E1-9B1B-A82D6288709B}");
 
-        VirtualFileSystem m_fileSystem;
-
-        TransactionalEdit m_currentTransaction;
+        TransactionalRead m_currentTransaction;
 
         ArchiveFileStream m_streamPointData;
         BinaryStream m_binaryStreamPointData;
@@ -54,48 +52,9 @@ namespace openHistorian.V2.Service.Instance.File
         BinaryStream m_binaryStreamPointMappingLocalToGuid;
         BasicTree m_pointMappingLocalToGuid;
 
-        //public Archive(string file)
-        //{
-        //    if (File.Exists(file))
-        //        OpenFile(file);
-        //    else
-        //        CreateFile(file);
-        //}
-        public Archive()
+        public ArchiveSnapshotInstance(TransactionalRead currentTransaction)
         {
-            CreateFileInMemory();
-        }
-
-        //void OpenFile(string file)
-        //{
-        //    m_fileSystem = VirtualFileSystem.OpenArchive(file, false);
-        //    m_currentTransaction = m_fileSystem.BeginEdit();
-        //    m_stream = m_currentTransaction.OpenFile(0);
-        //    m_binaryStream = new BinaryStream(m_stream);
-        //    m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream);
-        //}
-        //void CreateFile(string file)
-        //{
-        //    m_fileSystem = VirtualFileSystem.CreateArchive(file);
-        //    m_currentTransaction = m_fileSystem.BeginEdit();
-        //    m_stream = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271d}"), 1);
-        //    m_binaryStream = new BinaryStream(m_stream);
-        //    m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream, ArchiveConstants.DataBlockDataLength);
-        //}
-        void CreateFileInMemory()
-        {
-            m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();
-        }
-
-        public ArchiveSnapshot CreateSnapshot()
-        {
-            return null;
-        }
-
-        public void BeginEdit()
-        {
-            m_currentTransaction = m_fileSystem.BeginEdit();
-
+            m_currentTransaction = currentTransaction;
             m_streamPointData = m_currentTransaction.OpenFile(s_pointDataFile, 1);
             m_binaryStreamPointData = new BinaryStream(m_streamPointData);
             m_pointData = new BasicTree(m_binaryStreamPointData);
@@ -108,56 +67,24 @@ namespace openHistorian.V2.Service.Instance.File
             m_binaryStreamPointMappingLocalToGuid = new BinaryStream(m_streamPointMappingLocalToGuid);
             m_pointMappingLocalToGuid = new BasicTree(m_binaryStreamPointMappingLocalToGuid);
         }
-        public void CommitEdit()
-        {
-            //m_pointMappingLocalToGuid.Dispose();
-            m_binaryStreamPointMappingLocalToGuid.Dispose();
-            m_streamPointMappingLocalToGuid.Dispose();
-
-            //m_pointMappingGuidToLocal.Dispose();
-            m_binaryStreamPointMappingGuidToLocal.Dispose();
-            m_streamPointMappingGuidToLocal.Dispose();
-
-            //m_pointData.Dispose();
-            m_binaryStreamPointData.Dispose();
-            m_streamPointData.Dispose();
-
-            m_currentTransaction.Commit();
-        }
-        public void RollbackEdit()
-        {
-            //m_pointMappingLocalToGuid.Dispose();
-            m_binaryStreamPointMappingLocalToGuid.Dispose();
-            m_streamPointMappingLocalToGuid.Dispose();
-
-            //m_pointMappingGuidToLocal.Dispose();
-            m_binaryStreamPointMappingGuidToLocal.Dispose();
-            m_streamPointMappingGuidToLocal.Dispose();
-
-            //m_pointData.Dispose();
-            m_binaryStreamPointData.Dispose();
-            m_streamPointData.Dispose();
-
-            m_currentTransaction.Rollback();
-        }
-
+        
         public void AddPoint(long date, long pointId, long value1, long value2)
         {
-            m_pointData.Add(date, pointId, value1, value2);
+            m_pointData.Add(date,pointId,value1,value2);
         }
 
-        public IEnumerable<Tuple<DateTime, long, int, float>> GetData(long pointId, DateTime startDate, DateTime stopDate)
+        public IEnumerable<Tuple<long, long, long, long>> GetData(long pointId, DateTime startDate, DateTime stopDate)
         {
             return null;
         }
-        public IEnumerable<Tuple<DateTime, long, int, float>> GetData(DateTime startDate, DateTime stopDate)
+        public IEnumerable<Tuple<long, long, long, long>> GetData(DateTime startDate, DateTime stopDate)
         {
             return null;
         }
 
         public void Close()
         {
-            m_fileSystem.Dispose();
+            //m_tree.Save();
         }
 
     }

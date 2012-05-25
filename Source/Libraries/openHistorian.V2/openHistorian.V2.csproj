@@ -85,6 +85,8 @@
     <Compile Include="Service\Instance\Database\IDatabase.cs" />
     <Compile Include="Service\Instance\File\Archive.cs" />
     <Compile Include="Service\Instance\Engine.cs" />
+    <Compile Include="Service\Instance\File\ArchiveSnapshot.cs" />
+    <Compile Include="Service\Instance\File\ArchiveSnapshotInstance.cs" />
     <Compile Include="Service\Instance\LookupTable.cs" />
     <Compile Include="Service\Instance\LookupTableSnapshot.cs" />
     <Compile Include="Collections\KeyValue\BasicTree.cs" />
