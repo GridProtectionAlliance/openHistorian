@@ -88,7 +88,6 @@
     <Compile Include="Service\Instance\File\ArchiveSnapshot.cs" />
     <Compile Include="Service\Instance\File\ArchiveSnapshotInstance.cs" />
     <Compile Include="Service\Instance\LookupTable.cs" />
-    <Compile Include="Service\Instance\LookupTableSnapshot.cs" />
     <Compile Include="Collections\KeyValue\BasicTree.cs" />
     <Compile Include="Collections\KeyValue\BasicTreeBase.cs" />
     <Compile Include="Collections\KeyValue\BasicTreeInternalNodeBase.cs" />
@@ -109,6 +108,10 @@
     <Compile Include="Providers\IMetaDataProvider.cs" />
     <Compile Include="Providers\ITimeSeriesDataProvider.cs" />
     <Compile Include="Service\HistorianEngine.cs" />
+    <Compile Include="Service\Instance\RolloverEngine.cs" />
+    <Compile Include="Service\Instance\TableSnapshot.cs" />
+    <Compile Include="Service\Instance\ResourceSharingEngine.cs" />
+    <Compile Include="Service\Instance\TableLockInformation.cs" />
     <Compile Include="Streaming\Client\ClientSocket.cs" />
     <Compile Include="Streaming\IInboundBuffer.cs" />
     <Compile Include="Streaming\ITransportStreaming.cs" />

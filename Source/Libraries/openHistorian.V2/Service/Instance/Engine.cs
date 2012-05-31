@@ -36,12 +36,12 @@ namespace openHistorian.V2.Service.Instance
     public class Engine
     {
         Thread m_insertThread;
-        Thread m_rolloverThread;
+        RolloverEngine m_rolloverEngine;
+        ResourceSharingEngine m_resourceSharingEngine;
 
         InboundPointQueue m_newPointQueue;
-        LookupTable m_lookupClass;
-        Archive m_currentArchive;
         IDatabase m_database;
+        object m_snapshotLock;
 
         public Engine()
         {
@@ -51,16 +51,16 @@ namespace openHistorian.V2.Service.Instance
         public long LookupPointId(Guid pointId)
         {
             return -1;
-            }
+        }
 
         public void Open()
         {
+            m_snapshotLock = new object();
             m_newPointQueue = new InboundPointQueue();
-            m_lookupClass = new LookupTable();
             m_insertThread = new Thread(ProcessInsertingData);
             m_insertThread.Start();
-            m_rolloverThread = new Thread(ProcessRolloverData);
-            m_rolloverThread.Start();
+            m_resourceSharingEngine = new ResourceSharingEngine();
+            m_rolloverEngine = new RolloverEngine(m_resourceSharingEngine);
         }
 
         public void Close()
@@ -74,7 +74,27 @@ namespace openHistorian.V2.Service.Instance
             {
                 Thread.Sleep(10000);
 
-                var oldFiles = m_lookupClass.GetLatestSnapshot().Clone();
+                lock (m_snapshotLock)
+                {
+                    Archive newArchive = new Archive();
+                    TableSummaryInfo newTableInfo = new TableSummaryInfo();
+                    newTableInfo.ArchiveFile = newArchive;
+                    newTableInfo.ActiveSnapshot = newArchive.CreateSnapshot();
+                    newTableInfo.FirstTime = DateTime.MinValue;
+                    newTableInfo.LastTime = DateTime.MaxValue;
+                    newTableInfo.TimeMatchMode = TableSummaryInfo.MatchMode.UniverseEntry;
+                    newTableInfo.IsReadOnly = true;
+
+                    //LookupTable currentLookupTable = m_lookupTable.CloneEditableCopy();
+
+                    //TableSummaryInfo existingTableInfo = currentLookupTable.GetGeneration(0);
+                    //currentLookupTable.SetGeneration(0, newTableInfo);
+                    //currentLookupTable.SetGeneration(1, existingTableInfo);
+
+
+                    //var oldFiles = m_lookupTable.GetLatestSnapshot().Clone();
+                }
+
                 //determine what files need to be recombined.
                 //recombine them
                 //update the snapshot library
@@ -83,7 +103,7 @@ namespace openHistorian.V2.Service.Instance
         }
 
         /// <summary>
-        /// This process fires 10 times per second and populates the 
+        /// This process fires 10 times per second and populates the must current archive file.
         /// </summary>
         void ProcessInsertingData()
         {
@@ -92,21 +112,28 @@ namespace openHistorian.V2.Service.Instance
                 Thread.Sleep(100);
                 BinaryStream stream;
                 int pointCount;
-                m_newPointQueue.GetPointBlock(out stream, out pointCount);
 
+                m_newPointQueue.GetPointBlock(out stream, out pointCount);
                 if (pointCount > 0)
                 {
-                    while (pointCount > 0)
+                    Action<Archive> callback = (currentArchive) =>
                     {
-                        pointCount--;
+                        currentArchive.BeginEdit();
+                        while (pointCount > 0)
+                        {
+                            pointCount--;
 
-                        long time = stream.ReadInt64();
-                        long id = stream.ReadInt64();
-                        long flags = stream.ReadInt64();
-                        long value = stream.ReadInt64();
+                            long time = stream.ReadInt64();
+                            long id = stream.ReadInt64();
+                            long flags = stream.ReadInt64();
+                            long value = stream.ReadInt64();
 
-                        m_currentArchive.AddPoint(time, id, flags, value);
-                    }
+                            currentArchive.AddPoint(time, id, flags, value);
+                        }
+                        currentArchive.CommitEdit();
+                    };
+
+                    m_resourceSharingEngine.RequestInsertIntoGeneration0(callback);
                 }
             }
         }
@@ -115,6 +142,6 @@ namespace openHistorian.V2.Service.Instance
         {
             m_newPointQueue.WriteData(key1, key2, value1, value2);
         }
-     
+
     }
 }

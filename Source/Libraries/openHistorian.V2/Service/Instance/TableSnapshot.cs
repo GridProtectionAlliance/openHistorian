@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveSnapshot.cs - Gbtc
+//  TableSnapshot.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,48 +16,31 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/22/2012 - Steven E. Chisholm
+//  5/29/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
+//       
 //
 //******************************************************************************************************
 
-using openHistorian.V2.FileSystem;
+using System;
+using System.Collections.Generic;
 
-namespace openHistorian.V2.Service.Instance.File
+namespace openHistorian.V2.Service.Instance
 {
-    /// <summary>
-    /// Aquires a read transaction on the current archive file. This will allow all user created
-    /// transactions to have snapshot isolation of the entire data set.
-    /// </summary>
-    public class ArchiveSnapshot
+    class TableSnapshot : IDisposable
     {
-        VirtualFileSystem m_fileSystem;
-
-        TransactionalRead m_currentTransaction;
-
-        public ArchiveSnapshot(VirtualFileSystem fileSystem)
+        Action<TableSnapshot> m_disposeDelegate;
+        public List<TableSummaryInfo> Tables;
+        
+        public TableSnapshot(Action<TableSnapshot> disposeDelegate)
         {
-            m_fileSystem = fileSystem;
-
-            m_currentTransaction = m_fileSystem.BeginRead();
+            m_disposeDelegate = disposeDelegate;
+            Tables = new List<TableSummaryInfo>();
         }
 
-        /// <summary>
-        /// Opens an instance of the archive file to allow for concurrent reading of a snapshot.
-        /// </summary>
-        /// <returns></returns>
-        public ArchiveSnapshotInstance OpenInstance()
+        public void Dispose()
         {
-            return new ArchiveSnapshotInstance(m_currentTransaction);
+            throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// Closes the current read transaction.
-        /// </summary>
-        public void Close()
-        {
-            m_currentTransaction.Dispose();
-        }
-
     }
 }

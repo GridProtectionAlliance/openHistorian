@@ -30,7 +30,8 @@ using openHistorian.V2.IO.Unmanaged;
 namespace openHistorian.V2.Service.Instance.File
 {
     /// <summary>
-    /// Represents a individual self-contained archive file. This is one of many files that are part of a given <see cref="Engine"/>.
+    /// Represents a individual self-contained archive file. 
+    /// This is one of many files that are part of a given <see cref="Engine"/>.
     /// </summary>
     public class Archive
     {
@@ -87,11 +88,18 @@ namespace openHistorian.V2.Service.Instance.File
             m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();
         }
 
+        /// <summary>
+        /// Aquires a snapshot of the current file system.
+        /// </summary>
+        /// <returns></returns>
         public ArchiveSnapshot CreateSnapshot()
         {
-            return null;
+            return new ArchiveSnapshot(m_fileSystem);
         }
 
+        /// <summary>
+        /// Begins an edit of the current archive file.
+        /// </summary>
         public void BeginEdit()
         {
             m_currentTransaction = m_fileSystem.BeginEdit();
@@ -108,6 +116,9 @@ namespace openHistorian.V2.Service.Instance.File
             m_binaryStreamPointMappingLocalToGuid = new BinaryStream(m_streamPointMappingLocalToGuid);
             m_pointMappingLocalToGuid = new BasicTree(m_binaryStreamPointMappingLocalToGuid);
         }
+        /// <summary>
+        /// Commits the edits to the current archive file.
+        /// </summary>
         public void CommitEdit()
         {
             //m_pointMappingLocalToGuid.Dispose();
@@ -124,6 +135,10 @@ namespace openHistorian.V2.Service.Instance.File
 
             m_currentTransaction.Commit();
         }
+
+        /// <summary>
+        /// Rolls back all edits that are made to the archive file.
+        /// </summary>
         public void RollbackEdit()
         {
             //m_pointMappingLocalToGuid.Dispose();
@@ -139,6 +154,21 @@ namespace openHistorian.V2.Service.Instance.File
             m_streamPointData.Dispose();
 
             m_currentTransaction.Rollback();
+        }
+
+        public DateTime GetFirstTimeStamp
+        {
+            get
+            {
+                return DateTime.Now;
+            }
+        }
+        public DateTime GetLastTimeStamp
+        {
+            get
+            {
+                return DateTime.Now;
+            } 
         }
 
         public void AddPoint(long date, long pointId, long value1, long value2)

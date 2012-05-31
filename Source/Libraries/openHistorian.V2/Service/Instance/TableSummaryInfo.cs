@@ -1,17 +1,36 @@
-﻿using System;
+﻿//******************************************************************************************************
+//  TableSummaryInfo.cs - Gbtc
+//
+//  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://www.opensource.org/licenses/eclipse-1.0.php
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  5/25/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
+//       
+//
+//******************************************************************************************************
+
+using System;
 using System.Data;
 using openHistorian.V2.Service.Instance.File;
-using TVA;
 
 namespace openHistorian.V2.Service.Instance
 {
+   
     class TableSummaryInfo
     {
-        public TableSummaryInfo()
-        {
-            m_isReadOnly = false;
-        }
-
         public enum MatchMode : byte
         {
             /// <summary>
@@ -42,34 +61,36 @@ namespace openHistorian.V2.Service.Instance
             LowerIsValidMask = 1,
             UpperIsValidMask = 2,
         }
-        [Flags]
-        public enum DataClass : long
+        
+        bool m_isReadOnly;
+        DateTime m_firstTime;
+        DateTime m_lastTime;
+        MatchMode m_timeMatchMode;
+        int m_rolloverGeneration;
+        Archive m_archiveFile;
+        ArchiveSnapshot m_activeSnapshot;
+
+        public TableSummaryInfo()
         {
-            All = -1,
-            None = 0,
-            Synchrophasor = 1,
-            Scada = 2,
+            m_isReadOnly = false;
         }
 
-        bool m_isReadOnly;
-        Ticks m_firstTime;
-        Ticks m_lastTime;
-        MatchMode m_timeMatchMode;
-        DataClass m_containsPointClasses;
-        Archive m_archiveFile;
-        object m_activeSnapshot;
+        public TableSummaryInfo(TableSummaryInfo table)
+        {
+            m_firstTime = table.m_firstTime;
+            m_lastTime = table.m_lastTime;
+            m_timeMatchMode = table.m_timeMatchMode;
+            m_rolloverGeneration = table.m_rolloverGeneration;
+            m_archiveFile = table.m_archiveFile;
+            m_activeSnapshot = table.m_activeSnapshot;
+            m_isReadOnly = false;
+        }
 
         public TableSummaryInfo CloneEditableCopy()
         {
-            TableSummaryInfo table = new TableSummaryInfo();
-            table.m_firstTime = m_firstTime;
-            table.m_lastTime = m_lastTime;
-            table.m_timeMatchMode = m_timeMatchMode;
-            table.m_containsPointClasses = m_containsPointClasses;
-            table.m_archiveFile = m_archiveFile;
-            table.m_activeSnapshot = m_activeSnapshot;
-            return table;
+           return new TableSummaryInfo(this);
         }
+
         public bool IsReadOnly
         {
             get
@@ -83,6 +104,7 @@ namespace openHistorian.V2.Service.Instance
                 m_isReadOnly = value;
             }
         }
+
         public Archive ArchiveFile
         {
             get
@@ -96,7 +118,8 @@ namespace openHistorian.V2.Service.Instance
                 m_archiveFile = value;
             }
         }
-        public Ticks FirstTime
+
+        public DateTime FirstTime
         {
             get
             {
@@ -109,7 +132,8 @@ namespace openHistorian.V2.Service.Instance
                 m_firstTime = value;
             }
         }
-        public Ticks LastTime
+
+        public DateTime LastTime
         {
             get
             {
@@ -122,6 +146,7 @@ namespace openHistorian.V2.Service.Instance
                 m_lastTime = value;
             }
         }
+
         public MatchMode TimeMatchMode
         {
             get
@@ -135,20 +160,27 @@ namespace openHistorian.V2.Service.Instance
                 m_timeMatchMode = value;
             }
         }
-        public DataClass ContainsPointClasses
+
+        /// <summary>
+        /// Specifies the generation of the archive file. A generation is
+        /// essentially the number of time that the archive file has been rolled over. 
+        /// The perminent storage generation is -1
+        /// </summary>
+        public int RolloverGeneration
         {
             get
             {
-                return m_containsPointClasses;
+                return m_rolloverGeneration;
             }
             set
             {
                 if (m_isReadOnly)
                     throw new ReadOnlyException("Object is read only");
-                m_containsPointClasses = value;
+                m_rolloverGeneration = value;
             }
         }
-        public object ActiveSnapshot
+
+        public ArchiveSnapshot ActiveSnapshot
         {
             get
             {
@@ -162,7 +194,7 @@ namespace openHistorian.V2.Service.Instance
             }
         }
 
-        public bool Contains(Ticks startTime, Ticks stopTime)
+        public bool Contains(DateTime startTime, DateTime stopTime)
         {
             //ToDo: Don't be lazy and always return true
             return true;

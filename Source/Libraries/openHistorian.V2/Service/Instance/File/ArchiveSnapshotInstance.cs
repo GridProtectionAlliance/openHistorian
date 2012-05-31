@@ -30,7 +30,7 @@ using openHistorian.V2.IO.Unmanaged;
 namespace openHistorian.V2.Service.Instance.File
 {
     /// <summary>
-    /// Represents a individual self-contained archive file. This is one of many files that are part of a given <see cref="Engine"/>.
+    /// Provides a user with a read-only instance of an archive.
     /// </summary>
     public class ArchiveSnapshotInstance
     {
@@ -68,11 +68,6 @@ namespace openHistorian.V2.Service.Instance.File
             m_pointMappingLocalToGuid = new BasicTree(m_binaryStreamPointMappingLocalToGuid);
         }
         
-        public void AddPoint(long date, long pointId, long value1, long value2)
-        {
-            m_pointData.Add(date,pointId,value1,value2);
-        }
-
         public IEnumerable<Tuple<long, long, long, long>> GetData(long pointId, DateTime startDate, DateTime stopDate)
         {
             return null;
@@ -80,6 +75,10 @@ namespace openHistorian.V2.Service.Instance.File
         public IEnumerable<Tuple<long, long, long, long>> GetData(DateTime startDate, DateTime stopDate)
         {
             return null;
+        }
+        public void GetData(Func<long, long, long, long, bool> callback)
+        {
+            m_pointData.GetRange(callback);
         }
 
         public void Close()
