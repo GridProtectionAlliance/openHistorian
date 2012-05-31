@@ -82,14 +82,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BufferedFileStreamTest.cs" />
-    <Compile Include="Collections\BPlusTreeBaseTest.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeBaseTest.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
-    <Compile Include="Collections\Test\NodeTest.cs" />
-    <Compile Include="Collections\BPlusTreeBasicTests.cs" />
-    <Compile Include="Collections\Test\NodeTestHugeSequential.cs" />
-    <Compile Include="Collections\Test\NodeTestPageSize.cs" />
-    <Compile Include="Collections\UnmanagedArray.cs" />
+    <Compile Include="OldCode\Test\NodeTest.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeBasicTests.cs" />
+    <Compile Include="OldCode\Test\NodeTestHugeSequential.cs" />
+    <Compile Include="OldCode\Test\NodeTestPageSize.cs" />
+    <Compile Include="OldCode\Collections\UnmanagedArray.cs" />
     <Compile Include="IO\BinaryStreamBenchmark.cs" />
     <Compile Include="IO\BinaryStreamTest.cs" />
     <Compile Include="IO\BufferedStreamTest.cs" />
@@ -126,7 +126,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Collections\Specialized\" />
+    <Folder Include="OldCode\Specialized\" />
   </ItemGroup>
   <ItemGroup>
     <Shadow Include="Test References\openHistorian.V2.accessor" />

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BPlusTreeInternalNodeBase.cs - Gbtc
+//  BasicTreeInternalNodeBase.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -324,7 +324,8 @@ namespace openHistorian.V2.Collections.KeyValue
         /// </summary>
         /// <param name="nodeIndex">the index of the node to search</param>
         /// <param name="nodeRecordCount">the number of records already in the current node</param>
-        /// <param name="key">the key to search for</param>
+        /// <param name="key1">the key to search for</param>
+        /// <param name="key2">the key to search for</param>
         /// <param name="offset">the offset from the start of the node where the index was found</param>
         /// <returns>true the key was found in the node, false if was not found.</returns>
         bool FindOffsetOfKey(uint nodeIndex, int nodeRecordCount, long key1, long key2, out int offset)

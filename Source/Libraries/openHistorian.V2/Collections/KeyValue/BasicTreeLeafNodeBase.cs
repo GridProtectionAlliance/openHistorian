@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BPlusTreeLeafNodeBase.cs - Gbtc
+//  BasicTreeLeafNodeBase.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -164,8 +164,10 @@ namespace openHistorian.V2.Collections.KeyValue
         /// Outputs the value associated with the provided key in the given node.
         /// </summary>
         /// <param name="nodeIndex">the node to search</param>
-        /// <param name="key">the key to look for</param>
-        /// <param name="value">the associated value.  Null/Default if key is not found</param>
+        /// <param name="key1"></param>
+        /// <param name="key2"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
         /// <returns>true if the key was found, false if the key was not found.</returns>
         protected override bool LeafNodeGetValue(uint nodeIndex, long key1, long key2, out long value1, out long value2)
         {
@@ -220,37 +222,36 @@ namespace openHistorian.V2.Collections.KeyValue
         protected override void LeafNodeScan(uint nodeIndex, long beginKey1, long beginKey2, Func<long, long, long, long, bool> callback)
         {
 
-
         }
 
         protected override void LeafNodeScan(uint nodeIndex, long beginKey1, long beginKey2, long endKey1, long endKey2, Func<long, long, long, long, bool> callback)
         {
-            short m_nodeRecordCount;
-            uint leftSiblingNodeIndex, m_rightSiblingNodeIndex;
-            int m_keyIndexOfCurrentKey;
+            short nodeRecordCount;
+            uint leftSiblingNodeIndex, rightSiblingNodeIndex;
+            int keyIndexOfCurrentKey;
 
-            LoadNodeHeader(nodeIndex, false, out m_nodeRecordCount, out leftSiblingNodeIndex, out m_rightSiblingNodeIndex);
+            LoadNodeHeader(nodeIndex, false, out nodeRecordCount, out leftSiblingNodeIndex, out rightSiblingNodeIndex);
 
-            FindOffsetOfKey(nodeIndex, m_nodeRecordCount, beginKey1, beginKey2, out m_keyIndexOfCurrentKey);
-            m_keyIndexOfCurrentKey = (m_keyIndexOfCurrentKey - NodeHeader.Size) / StructureSize;
+            FindOffsetOfKey(nodeIndex, nodeRecordCount, beginKey1, beginKey2, out keyIndexOfCurrentKey);
+            keyIndexOfCurrentKey = (keyIndexOfCurrentKey - NodeHeader.Size) / StructureSize;
 
             while (true)
             {
                 //If there are no more records in the current node.
-                if (m_keyIndexOfCurrentKey >= m_nodeRecordCount)
+                if (keyIndexOfCurrentKey >= nodeRecordCount)
                 {
                     //If the last leaf node, return false
-                    if (m_rightSiblingNodeIndex == 0)
+                    if (rightSiblingNodeIndex == 0)
                         return;
 
                     //Move to the next node in the linked list.
                     uint previousNode;
-                    nodeIndex = m_rightSiblingNodeIndex;
-                    LoadNodeHeader(nodeIndex, false, out m_nodeRecordCount, out previousNode, out m_rightSiblingNodeIndex);
-                    m_keyIndexOfCurrentKey = 0;
+                    nodeIndex = rightSiblingNodeIndex;
+                    LoadNodeHeader(nodeIndex, false, out nodeRecordCount, out previousNode, out rightSiblingNodeIndex);
+                    keyIndexOfCurrentKey = 0;
                 }
 
-                Stream.Position = nodeIndex * BlockSize + m_keyIndexOfCurrentKey * StructureSize + NodeHeader.Size;
+                Stream.Position = nodeIndex * BlockSize + keyIndexOfCurrentKey * StructureSize + NodeHeader.Size;
 
                 long key1 = Stream.ReadInt64();
                 long key2 = Stream.ReadInt64();
@@ -262,7 +263,7 @@ namespace openHistorian.V2.Collections.KeyValue
                     return;
 
                 //move to the next key
-                m_keyIndexOfCurrentKey++;
+                keyIndexOfCurrentKey++;
 
                 if (callback(key1,key2,value1,value2))
                 {
@@ -310,7 +311,8 @@ namespace openHistorian.V2.Collections.KeyValue
         /// </summary>
         /// <param name="nodeIndex">the index of the node to search</param>
         /// <param name="nodeRecordCount">the number of records already in the current node</param>
-        /// <param name="key">the key to look for</param>
+        /// <param name="key1">the key to look for</param>
+        /// <param name="key2">the key to look for</param>
         /// <param name="offset">the offset from the start of the node where the index was found</param>
         /// <returns>true the key was found in the node, false if was not found.</returns>
         bool FindOffsetOfKey(uint nodeIndex, int nodeRecordCount, long key1, long key2, out int offset)

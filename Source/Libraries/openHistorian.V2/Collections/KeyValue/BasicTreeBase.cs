@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BPlusTreeBase.cs - Gbtc
+//  BasicTreeBase.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -32,8 +32,6 @@ namespace openHistorian.V2.Collections.KeyValue
     /// This base class translates all of the core methods into simple methods
     /// that must be implemented by classes derived from this base class.
     /// </summary>
-    /// <typeparam name="TKey">The unique key that will be used to store data in this tree.</typeparam>
-    /// <typeparam name="TValue">The value that will be associated with each key.</typeparam>
     /// <remarks>This class does not support concurrent read operations.  This is due to the caching method of each tree.
     /// If concurrent read operations are desired, clone the tree.  
     /// Trees cannot be cloned if the user plans to write to the tree.</remarks>
@@ -54,7 +52,7 @@ namespace openHistorian.V2.Collections.KeyValue
         #region [ Constructors ]
 
         /// <summary>
-        /// Opens an existing <see cref="BPlusTreeBase{TKey,TValue}"/> from the stream.
+        /// Opens an existing <see cref="BasicTreeBase"/> from the stream.
         /// </summary>
         /// <param name="stream">A dedicated stream where data can be read/written to/from.</param>
         protected BasicTreeBase(IBinaryStream stream)
@@ -64,7 +62,7 @@ namespace openHistorian.V2.Collections.KeyValue
         }
 
         /// <summary>
-        /// Creates an empty <see cref="BPlusTreeBase{TKey,TValue}"/>
+        /// Creates an empty <see cref="BasicTreeBase"/>
         /// and uses the underlying stream to save data to it.
         /// </summary>
         /// <param name="stream">A dedicated stream where data can be read/written to/from.</param>
@@ -191,8 +189,10 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <summary>
         /// Inserts the following data into the tree.
         /// </summary>
-        /// <param name="key">The unique key value.</param>
-        /// <param name="value">The value to insert.</param>
+        /// <param name="key1">The unique key value.</param>
+        /// <param name="key2">The unique key value.</param>
+        /// <param name="value1">The value to insert.</param>
+        /// <param name="value2">The value to insert.</param>
         public void Add(long key1, long key2, long value1, long value2)
         {
             uint nodeIndex = m_rootNodeIndex;
@@ -209,7 +209,10 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <summary>
         /// Returns the data for the following key. 
         /// </summary>
-        /// <param name="key">The key to look up.</param>
+        /// <param name="key1">The key to look up.</param>
+        /// <param name="key2">The key to look up.</param>
+        /// <param name="value1">the value output</param>
+        /// <param name="value2">the value output</param>
         /// <returns>Null or the Default structure value if the key does not exist.</returns>
         public void Get(long key1, long key2, out long value1, out long value2)
         {
@@ -281,7 +284,8 @@ namespace openHistorian.V2.Collections.KeyValue
         /// </summary>
         /// <param name="nodeLevel">the level of the node being added</param>
         /// <param name="nodeIndexOfSplitNode">the index of the existing node that contains the lower half of the data.</param>
-        /// <param name="dividingKey">the first key in the <see cref="nodeIndexOfRightSibling"/></param>
+        /// <param name="dividingKey1">the first key in the <see cref="nodeIndexOfRightSibling"/></param>
+        /// <param name="dividingKey2">the first key in the <see cref="nodeIndexOfRightSibling"/></param>
         /// <param name="nodeIndexOfRightSibling">the index of the later node</param>
         /// <remarks>This class will add the new node data to the parent node, 
         /// or create a new root if the current root is split.</remarks>

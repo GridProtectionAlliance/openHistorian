@@ -93,20 +93,18 @@
     <Compile Include="Collections\KeyValue\BasicTreeInternalNodeBase.cs" />
     <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase.cs" />
     <Compile Include="Compression.cs" />
-    <Compile Include="ContinuousBuffer.cs" />
-    <Compile Include="DataPoint.cs" />
+    <Compile Include="OldCode\ContinuousBuffer.cs" />
+    <Compile Include="OldCode\DataPoint.cs" />
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="Service\Instance\InboundPointQueue.cs" />
     <Compile Include="IO\IBinaryStream.cs" />
     <Compile Include="FileSystem\DiskIoEnhanced.cs" />
     <Compile Include="FileSystem\IMemoryUnit.cs" />
-    <Compile Include="IO\IStreamingTransport.cs" />
+    <Compile Include="OldCode\IO\IStreamingTransport.cs" />
     <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
-    <Compile Include="Providers\IMetaDataProvider.cs" />
-    <Compile Include="Providers\ITimeSeriesDataProvider.cs" />
     <Compile Include="Service\HistorianEngine.cs" />
     <Compile Include="Service\Instance\RolloverEngine.cs" />
     <Compile Include="Service\Instance\TableSnapshot.cs" />
@@ -127,21 +125,21 @@
     <Compile Include="Streaming\Server\ServerSocket.cs" />
     <Compile Include="Service\Instance\TableSummaryInfo.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
-    <Compile Include="Collections\BPlusTree.cs" />
-    <Compile Include="Collections\BPlusTreeBase.cs" />
-    <Compile Include="Collections\BPlusTreeInternalNodeBase.cs" />
-    <Compile Include="Collections\BPlusTreeLeafNodeBase.cs" />
-    <Compile Include="Collections\IBPlusTreeType.cs" />
+    <Compile Include="OldCode\Collections\BPlusTree.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeBase.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeInternalNodeBase.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeLeafNodeBase.cs" />
+    <Compile Include="OldCode\Collections\IBPlusTreeType.cs" />
     <Compile Include="UnmanagedMemory\MemoryMethod.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="IO\Unmanaged\BinaryStream.cs" />
-    <Compile Include="Collections\Specialized\BPlusTreeLongLong.cs" />
-    <Compile Include="Collections\Specialized\BPlusTreeTSD.cs" />
-    <Compile Include="Collections\BPlusTreeTypes\DateTimeLong.cs" />
-    <Compile Include="Collections\BPlusTreeTypes\IntegerFloat.cs" />
-    <Compile Include="Collections\BPlusTreeTypes\Long.cs" />
+    <Compile Include="OldCode\Collections\Specialized\BPlusTreeLongLong.cs" />
+    <Compile Include="OldCode\Collections\Specialized\BPlusTreeTSD.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeTypes\DateTimeLong.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeTypes\IntegerFloat.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeTypes\Long.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream.cs" />
-    <Compile Include="UnmanagedMemory\UnmanagedArray.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\UnmanagedArray.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old2.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old.cs" />
@@ -151,7 +149,7 @@
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_2.cs" />
     <Compile Include="OldCode\OldCompressionCode\Compression_old1.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressionTest_Old.cs" />
-    <Compile Include="PooledBufferedStream.cs" />
+    <Compile Include="OldCode\PooledBufferedStream.cs" />
     <Compile Include="OldCode\MemoryBuffer\BufferedStream.cs" />
     <Compile Include="OldCode\MemoryBuffer\MemoryUnit.cs" />
     <Compile Include="OldCode\MemoryBuffer\IMemoryBuffer.cs" />
@@ -172,21 +170,21 @@
     <Compile Include="OldCode\PointTypes\UInteger32Type.cs" />
     <Compile Include="OldCode\PointStream\PointReader.cs" />
     <Compile Include="OldCode\PointTypes\DateTimeType.cs" />
-    <Compile Include="PooledMemoryStream.cs" />
-    <Compile Include="IO\BinaryStream.cs" />
+    <Compile Include="OldCode\PooledMemoryStream.cs" />
+    <Compile Include="OldCode\IO\BinaryStream.cs" />
     <Compile Include="UnmanagedMemory\Memory.cs" />
     <Compile Include="UnmanagedMemory\WinApi.cs" />
     <Compile Include="FileSystem\IndexBufferPool.cs" />
-    <Compile Include="FileSystem\Old Code\Test\DiskIOUnbufferedTest.cs" />
-    <Compile Include="FileSystem\Old Code\Test\DiskIOMemoryStreamTest.cs" />
-    <Compile Include="FileSystem\Old Code\DiskIOBase.cs" />
+    <Compile Include="OldCode\FileSystem\Test\DiskIOUnbufferedTest.cs" />
+    <Compile Include="OldCode\FileSystem\Test\DiskIOMemoryStreamTest.cs" />
+    <Compile Include="OldCode\FileSystem\DiskIOBase.cs" />
     <Compile Include="FileSystem\IndexMapper.cs" />
     <Compile Include="FileSystem\ArchiveConstants.cs" />
-    <Compile Include="FileSystem\Old Code\Test\DiskIOTest.cs" />
+    <Compile Include="OldCode\FileSystem\Test\DiskIOTest.cs" />
     <Compile Include="FileSystem\VirtualFileSystem.cs" />
     <Compile Include="FileSystem\FileAllocationTable.cs" />
-    <Compile Include="FileSystem\Old Code\DiskIOUnbuffered.cs" />
-    <Compile Include="FileSystem\Old Code\DiskIOMemoryStream.cs" />
+    <Compile Include="OldCode\FileSystem\DiskIOUnbuffered.cs" />
+    <Compile Include="OldCode\FileSystem\DiskIOMemoryStream.cs" />
     <Compile Include="FileSystem\ShadowCopyAllocator.cs" />
     <Compile Include="FileSystem\IndexParser.cs" />
     <Compile Include="FileSystem\FileAddressTranslation.cs" />
@@ -204,7 +202,7 @@
     <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\Method1.cs" />
     <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompression.cs" />
     <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompressorTest.cs" />
-    <Compile Include="IO\ISupportsBinaryStream.cs" />
+    <Compile Include="OldCode\IO\ISupportsBinaryStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -228,6 +226,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="FileSystem\Old Code\" />
     <Folder Include="OldCode\PointStream\Sorting\" />
   </ItemGroup>
   <ItemGroup>

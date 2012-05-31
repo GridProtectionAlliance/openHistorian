@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BPlusTree.cs - Gbtc
+//  BasicTree.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,17 +28,14 @@ using openHistorian.V2.IO;
 namespace openHistorian.V2.Collections.KeyValue
 {
     /// <summary>
-    /// Represents a collection of key/values pairs that is very similiar to a <see cref="SortedList{TKey,TValue}"/> 
+    /// Represents a collection of 128-bit key/128-bit values pairs that is very similiar to a <see cref="SortedList{int128,int128}"/> 
     /// except it is optimal for storing millions to billions of entries and doing sequential scan of the data.
-    /// Each type must be structs and implement <see cref="IBPlusTreeType{T}"/>.
     /// </summary>
-    /// <typeparam name="TKey">The unique key</typeparam>
-    /// <typeparam name="TValue">The unique value</typeparam>
     public class BasicTree : BasicTreeLeafNodeBase
     {
 
         /// <summary>
-        /// Loads an existing <see cref="BPlusTree{TKey,TValue}"/>
+        /// Loads an existing <see cref="BasicTree"/>
         /// from the provided stream.
         /// </summary>
         /// <param name="stream">The stream to load from</param>
@@ -48,7 +45,7 @@ namespace openHistorian.V2.Collections.KeyValue
         }
 
         /// <summary>
-        /// Creates an empty <see cref="BPlusTree{TKey,TValue}"/> 
+        /// Creates an empty <see cref="BasicTree"/> 
         /// and writes the data to the provided stream. 
         /// </summary>
         /// <param name="stream">The stream to use to store the tree.</param>

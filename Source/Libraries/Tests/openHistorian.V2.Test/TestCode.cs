@@ -45,9 +45,7 @@ namespace openHistorian.V2.Test
             }
             return;
 
-            BPlusTreeBaseTest c = new BPlusTreeBaseTest();
-            c.BenchmarkGetRange();
-
+           
 
         }
     }
