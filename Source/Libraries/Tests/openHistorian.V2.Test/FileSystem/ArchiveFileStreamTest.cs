@@ -157,64 +157,64 @@ namespace openHistorian.V2.FileSystem
 
         internal static void TestSingleByteWrite(ArchiveFileStream ds)
         {
-            ds.Position = 0;
-            for (int x = 0; x < 10000; x++)
-            {
-                ds.WriteByte((byte)x);
-            }
-            ds.Flush();
+            //ds.Position = 0;
+            //for (int x = 0; x < 10000; x++)
+            //{
+            //    ds.WriteByte((byte)x);
+            //}
+            //ds.Flush();
         }
         internal static void TestSingleByteRead(ArchiveFileStream ds)
         {
-            ds.Position = 0;
-            for (int x = 0; x < 10000; x++)
-            {
-                if ((byte)x != ds.ReadByte())
-                    throw new Exception();
-            }
+            //ds.Position = 0;
+            //for (int x = 0; x < 10000; x++)
+            //{
+            //    if ((byte)x != ds.ReadByte())
+            //        throw new Exception();
+            //}
         }
 
         internal static void TestCustomSizeWrite(ArchiveFileStream ds, int length)
         {
-            Random r = new Random(length);
+            //Random r = new Random(length);
 
-            ds.Position = 0;
-            byte[] buffer = new byte[25];
+            //ds.Position = 0;
+            //byte[] buffer = new byte[25];
 
-            for (int x = 0; x < 1000; x++)
-            {
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    buffer[i] = (byte)r.Next();
-                }
-                ds.Write(buffer, 0, r.Next(25));
-            }
-            ds.Flush();
+            //for (int x = 0; x < 1000; x++)
+            //{
+            //    for (int i = 0; i < buffer.Length; i++)
+            //    {
+            //        buffer[i] = (byte)r.Next();
+            //    }
+            //    ds.Write(buffer, 0, r.Next(25));
+            //}
+            //ds.Flush();
         }
 
         internal static void TestCustomSizeRead(ArchiveFileStream ds, int seed)
         {
-            Random r = new Random(seed);
+            //Random r = new Random(seed);
 
-            byte[] buffer = new byte[25];
-            byte[] buffer2 = new byte[25];
-            ds.Position = 0;
-            for (int x = 0; x < 1000; x++)
-            {
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    buffer[i] = (byte)r.Next();
-                }
-                int length = r.Next(25);
-                ds.Read(buffer2, 0, length);
+            //byte[] buffer = new byte[25];
+            //byte[] buffer2 = new byte[25];
+            //ds.Position = 0;
+            //for (int x = 0; x < 1000; x++)
+            //{
+            //    for (int i = 0; i < buffer.Length; i++)
+            //    {
+            //        buffer[i] = (byte)r.Next();
+            //    }
+            //    int length = r.Next(25);
+            //    ds.Read(buffer2, 0, length);
 
-                for (int i = 0; i < length; i++)
-                {
-                    if (buffer[i] != buffer2[i])
-                        throw new Exception();
-                }
-            }
-            ds.Flush();
+            //    for (int i = 0; i < length; i++)
+            //    {
+            //        if (buffer[i] != buffer2[i])
+            //            throw new Exception();
+            //    }
+            //}
+            //ds.Flush();
         }
 
     }

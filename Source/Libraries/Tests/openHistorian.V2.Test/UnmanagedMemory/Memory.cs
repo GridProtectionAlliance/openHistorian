@@ -10,7 +10,7 @@ namespace openHistorian.V2.UnmanagedMemory
         [TestMethod()]
         public void Test()
         {
-            Assert.AreEqual(openHistorian.V2.UnmanagedMemory.BufferPool.AllocatedBytes, 0L);
+            Assert.AreEqual(BufferPool.AllocatedBytes, 0L);
 
             Memory block = Memory.Allocate(1, false);
             if (block.Address == IntPtr.Zero)
@@ -24,17 +24,24 @@ namespace openHistorian.V2.UnmanagedMemory
                 throw new Exception();
             block.Release();
 
-            block = Memory.Allocate(1, true);
-            if (block.Address == IntPtr.Zero)
-                throw new Exception();
-            if (block.Size != 2 * 1024 * 1024)
-                throw new Exception();
-            block.Release();
-            if (block.Address != IntPtr.Zero)
-                throw new Exception();
-            if (block.Size != 0)
-                throw new Exception();
-            block.Release();
+            if (WinApi.CanAllocateLargePage)
+            {
+                block = Memory.Allocate(1, true);
+                if (block.Address == IntPtr.Zero)
+                    throw new Exception();
+                if (block.Size != 2 * 1024 * 1024)
+                    throw new Exception();
+                block.Release();
+                if (block.Address != IntPtr.Zero)
+                    throw new Exception();
+                if (block.Size != 0)
+                    throw new Exception();
+                block.Release();
+            }
+            else
+            {
+                //Assert.Inconclusive("Could not test large pages");
+            }
 
             var info = new Microsoft.VisualBasic.Devices.ComputerInfo();
             GC.Collect();
@@ -68,7 +75,7 @@ namespace openHistorian.V2.UnmanagedMemory
                 throw new Exception();
             }
 
-            Assert.AreEqual(openHistorian.V2.UnmanagedMemory.BufferPool.AllocatedBytes, 0L);
+            Assert.AreEqual(BufferPool.AllocatedBytes, 0L);
         }
     }
 }

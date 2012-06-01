@@ -357,5 +357,10 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             return new IoSession(this);
         }
+        
+        public IBinaryStream CreateBinaryStream()
+        {
+            return new BinaryStream(this);
+        }
     }
 }

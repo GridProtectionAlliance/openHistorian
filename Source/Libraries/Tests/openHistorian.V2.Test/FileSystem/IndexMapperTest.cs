@@ -87,10 +87,9 @@ namespace openHistorian.V2.FileSystem
             public int SecondRedirectOffset = -1;
             public int ThirdRedirectOffset = -1;
             public int ForthRedirectOffset = -1;
-            public uint FirstRedirectBaseIndex;
-            public uint SecondRedirectBaseIndex;
-            public uint ThirdRedirectBaseIndex;
-            public uint ForthRedirectBaseIndex;
+            public int FirstRedirectBaseIndex;
+            public int SecondRedirectBaseIndex;
+            public int ThirdRedirectBaseIndex;
             public long Length;
             public uint BaseVirtualAddressIndexValue;
             public long BaseVirtualAddress;
@@ -107,8 +106,6 @@ namespace openHistorian.V2.FileSystem
                     throw new Exception();
                 if (ThirdRedirectOffset != map.ThirdIndirectOffset)
                     throw new Exception();
-                if (ForthRedirectOffset != map.ForthIndirectOffset)
-                    throw new Exception();
 
                 if (BaseVirtualAddressIndexValue != map.BaseVirtualAddressIndexValue)
                     throw new Exception();
@@ -120,7 +117,6 @@ namespace openHistorian.V2.FileSystem
                 FirstRedirectBaseIndex = map.FirstIndirectBaseIndex;
                 SecondRedirectBaseIndex = map.SecondIndirectBaseIndex;
                 ThirdRedirectBaseIndex = map.ThirdIndirectBaseIndex;
-                ForthRedirectBaseIndex = map.ForthIndirectBaseIndex;
 
 
                 Increment();

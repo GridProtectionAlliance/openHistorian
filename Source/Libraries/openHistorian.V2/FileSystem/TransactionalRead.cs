@@ -144,7 +144,7 @@ namespace openHistorian.V2.FileSystem
         /// Opens a ArchiveFileStream that can be used to read/write to the file passed to this function.
         /// </summary>
         /// <returns></returns>
-        public ArchiveFileStream OpenFile(Guid fileExtension, uint fileFlags)
+        public ArchiveFileStream OpenFile(Guid fileExtension, int fileFlags)
         {
             for (int x = 0; x < Files.Count; x++)
             {

@@ -36,17 +36,16 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// The number of bytes that are required to save this class.
         /// </summary>
-        internal const int SizeInBytes = 52;
+        internal const int SizeInBytes = 48;
         bool m_isReadOnly;
-        uint m_fileIdNumber;
+        int m_fileIdNumber;
         Guid m_fileExtension;
-        uint m_fileFlags;
-        uint m_lastAllocatedCluster;
-        uint m_directCluster;
-        uint m_singleIndirectCluster;
-        uint m_doubleIndirectCluster;
-        uint m_tripleIndirectCluster;
-        uint m_quadrupleIndirectCluster;
+        int m_fileFlags;
+        int m_lastAllocatedCluster;
+        int m_directCluster;
+        int m_singleIndirectCluster;
+        int m_doubleIndirectCluster;
+        int m_tripleIndirectCluster;
 
         #endregion
 
@@ -77,7 +76,6 @@ namespace openHistorian.V2.FileSystem
             m_singleIndirectCluster = origionalFileMetaData.SingleIndirectCluster;
             m_doubleIndirectCluster = origionalFileMetaData.DoubleIndirectCluster;
             m_tripleIndirectCluster = origionalFileMetaData.TripleIndirectCluster;
-            m_quadrupleIndirectCluster = origionalFileMetaData.QuadrupleIndirectCluster;
         }
 
         /// <summary>
@@ -85,7 +83,7 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         /// <param name="fileId"></param>
         /// <param name="featureType"></param>
-        FileMetaData(uint fileId, Guid featureType)
+        FileMetaData(int fileId, Guid featureType)
         {
             m_isReadOnly = false;
             if (featureType == Guid.Empty)
@@ -112,7 +110,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Gets the unique file identifier for this file.
         /// </summary>
-        public uint FileIdNumber
+        public int FileIdNumber
         {
             get
             {
@@ -134,7 +132,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Gets a flag which can be used to help distinguish different files with the same <see cref="FileExtension"/>.
         /// </summary>
-        public uint FileFlags
+        public int FileFlags
         {
             get
             {
@@ -151,7 +149,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// The last cluster index value that is assigned.
         /// </summary>
-        internal uint LastAllocatedCluster
+        internal int LastAllocatedCluster
         {
             get
             {
@@ -168,7 +166,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Gets the block address for the first direct cluster of this file.
         /// </summary>
-        internal uint DirectCluster
+        internal int DirectCluster
         {
             get
             {
@@ -184,7 +182,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Gets the block address for the single indirect cluster.
         /// </summary>
-        internal uint SingleIndirectCluster
+        internal int SingleIndirectCluster
         {
             get
             {
@@ -200,7 +198,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Gets the block address for the double indirect cluster.
         /// </summary>
-        internal uint DoubleIndirectCluster
+        internal int DoubleIndirectCluster
         {
             get
             {
@@ -216,7 +214,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Gets the block address for the tripple indirect cluster.
         /// </summary>
-        internal uint TripleIndirectCluster
+        internal int TripleIndirectCluster
         {
             get
             {
@@ -229,23 +227,7 @@ namespace openHistorian.V2.FileSystem
                 m_tripleIndirectCluster = value;
             }
         }
-        /// <summary>
-        /// Gets the block address for the quadruple indirect cluster.
-        /// </summary>
-        internal uint QuadrupleIndirectCluster
-        {
-            get
-            {
-                return m_quadrupleIndirectCluster;
-            }
-            set
-            {
-                if (IsReadOnly)
-                    throw new Exception("Class is read only");
-                m_quadrupleIndirectCluster = value;
-            }
-        }
-
+     
         #endregion
 
         #region [ Methods ]
@@ -273,7 +255,6 @@ namespace openHistorian.V2.FileSystem
             dataWriter.Write(m_singleIndirectCluster);
             dataWriter.Write(m_doubleIndirectCluster);
             dataWriter.Write(m_tripleIndirectCluster);
-            dataWriter.Write(m_quadrupleIndirectCluster);
         }
 
         /// <summary>
@@ -282,15 +263,14 @@ namespace openHistorian.V2.FileSystem
         /// <param name="dataReader"></param>
         void Load(BinaryReader dataReader)
         {
-            m_fileIdNumber = dataReader.ReadUInt32();
+            m_fileIdNumber = dataReader.ReadInt32();
             m_fileExtension = new Guid(dataReader.ReadBytes(16));
-            m_fileFlags = dataReader.ReadUInt32();
-            m_lastAllocatedCluster = dataReader.ReadUInt32();
-            m_directCluster = dataReader.ReadUInt32();
-            m_singleIndirectCluster = dataReader.ReadUInt32();
-            m_doubleIndirectCluster = dataReader.ReadUInt32();
-            m_tripleIndirectCluster = dataReader.ReadUInt32();
-            m_quadrupleIndirectCluster = dataReader.ReadUInt32();
+            m_fileFlags = dataReader.ReadInt32();
+            m_lastAllocatedCluster = dataReader.ReadInt32();
+            m_directCluster = dataReader.ReadInt32();
+            m_singleIndirectCluster = dataReader.ReadInt32();
+            m_doubleIndirectCluster = dataReader.ReadInt32();
+            m_tripleIndirectCluster = dataReader.ReadInt32();
         }
         /// <summary>
         /// Determines if the two objects are equal in value.
@@ -310,7 +290,6 @@ namespace openHistorian.V2.FileSystem
             if (SingleIndirectCluster != a.SingleIndirectCluster) return false;
             if (DoubleIndirectCluster != a.DoubleIndirectCluster) return false;
             if (TripleIndirectCluster != a.TripleIndirectCluster) return false;
-            if (QuadrupleIndirectCluster != a.QuadrupleIndirectCluster) return false;
             return true;
         }
 
@@ -335,7 +314,7 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         /// <param name="fileIdNumber">A unique file ID number in the file system</param>
         /// <param name="fileExtension">A <see cref="Guid"/> that represents what type of data is contained in this file.</param>
-        public static FileMetaData CreateFileMetaData(uint fileIdNumber, Guid fileExtension)
+        public static FileMetaData CreateFileMetaData(int fileIdNumber, Guid fileExtension)
         {
             FileMetaData file = new FileMetaData(fileIdNumber, fileExtension);
             if (file.IsReadOnly)

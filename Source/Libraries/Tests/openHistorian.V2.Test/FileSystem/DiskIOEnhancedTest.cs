@@ -47,7 +47,7 @@ namespace openHistorian.V2.FileSystem
             long oldFileSize = stream.FileSize;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
-            uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
+            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
             stream.SetFileLength(0, currentBlock + 1);
@@ -78,7 +78,7 @@ namespace openHistorian.V2.FileSystem
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
-            uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
+            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
@@ -96,7 +96,7 @@ namespace openHistorian.V2.FileSystem
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
-            uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
+            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 0, 2, 3, buffer);
@@ -114,7 +114,7 @@ namespace openHistorian.V2.FileSystem
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
-            uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
+            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 3, 3, buffer);
@@ -133,7 +133,7 @@ namespace openHistorian.V2.FileSystem
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
-            uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
+            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 2, buffer);
@@ -151,7 +151,7 @@ namespace openHistorian.V2.FileSystem
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
-            uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
+            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock + 1, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
@@ -164,7 +164,7 @@ namespace openHistorian.V2.FileSystem
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
-            uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
+            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
             //Testing IOReadState.ReadPastThenEndOfTheFile
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);

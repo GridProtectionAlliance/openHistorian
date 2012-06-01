@@ -34,17 +34,16 @@ namespace openHistorian.V2.FileSystem
         [TestMethod()]
         public void Test()
         {
-            Assert.AreEqual(openHistorian.V2.UnmanagedMemory.BufferPool.AllocatedBytes, 0L);
+            Assert.AreEqual(UnmanagedMemory.BufferPool.AllocatedBytes, 0L);
             Random rand = new Random();
-            uint fileIDNumber = (uint)rand.Next(int.MaxValue);
+            int fileIDNumber = rand.Next(int.MaxValue);
             Guid fileExtension = Guid.NewGuid();
-            uint fileFlags = (uint)rand.Next(int.MaxValue);
-            uint allocatedBlocks = (uint)rand.Next(int.MaxValue);
-            uint dataBlock1 = (uint)rand.Next(int.MaxValue);
-            uint singleRedirect = (uint)rand.Next(int.MaxValue);
-            uint doubleRedirect = (uint)rand.Next(int.MaxValue);
-            uint tripleRedirect = (uint)rand.Next(int.MaxValue);
-            uint quadrupleRedirect = (uint)rand.Next(int.MaxValue);
+            int fileFlags = rand.Next(int.MaxValue);
+            int allocatedBlocks = rand.Next(int.MaxValue);
+            int dataBlock1 = rand.Next(int.MaxValue);
+            int singleRedirect = rand.Next(int.MaxValue);
+            int doubleRedirect = rand.Next(int.MaxValue);
+            int tripleRedirect = rand.Next(int.MaxValue);
 
             Guid gid = Guid.NewGuid();
             FileMetaData node = FileMetaData.CreateFileMetaData(fileIDNumber, fileExtension);
@@ -54,7 +53,6 @@ namespace openHistorian.V2.FileSystem
             node.SingleIndirectCluster = singleRedirect;
             node.DoubleIndirectCluster = doubleRedirect;
             node.TripleIndirectCluster = tripleRedirect;
-            node.QuadrupleIndirectCluster = quadrupleRedirect;
             FileMetaData node2 = saveItem(node);
 
             if (node2.FileIdNumber != fileIDNumber) throw new Exception();
@@ -65,7 +63,6 @@ namespace openHistorian.V2.FileSystem
             if (node2.SingleIndirectCluster != singleRedirect) throw new Exception();
             if (node2.DoubleIndirectCluster != doubleRedirect) throw new Exception();
             if (node2.TripleIndirectCluster != tripleRedirect) throw new Exception();
-            if (node2.QuadrupleIndirectCluster != quadrupleRedirect) throw new Exception();
             Assert.IsTrue(true);
 
             Assert.AreEqual(openHistorian.V2.UnmanagedMemory.BufferPool.AllocatedBytes, 0L);

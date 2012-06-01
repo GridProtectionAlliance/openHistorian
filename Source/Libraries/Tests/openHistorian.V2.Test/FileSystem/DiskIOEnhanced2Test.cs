@@ -95,7 +95,7 @@ namespace openHistorian.V2.FileSystem
             IoReadState readState;
             int seed = (int)DateTime.Now.Ticks;
             byte[] buffer = GenerateRandomDataBlock(seed);
-            uint currentBlock = (uint)(stream.FileSize / ArchiveConstants.BlockSize);
+            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 

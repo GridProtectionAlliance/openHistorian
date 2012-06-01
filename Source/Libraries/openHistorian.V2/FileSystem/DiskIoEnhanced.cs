@@ -42,7 +42,7 @@ namespace openHistorian.V2.FileSystem
             bool m_isValid;
             bool m_isReadOnly;
             int m_length;
-            uint m_blockAddress;
+            int m_blockAddress;
             public byte* m_pointer;
 
             public bool IsValid
@@ -82,7 +82,7 @@ namespace openHistorian.V2.FileSystem
                     m_length = value;
                 }
             }
-            public uint BlockIndex
+            public int BlockIndex
             {
                 get
                 {
@@ -165,7 +165,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number of this write</param>
         /// <param name="buffer">the data to write. It must be equal to <see cref="ArchiveConstants.BlockSize"/>.</param>
-        public void WriteBlock(BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, IMemoryUnit buffer)
+        public void WriteBlock(BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, IMemoryUnit buffer)
         {
             MemoryUnit data = (MemoryUnit)buffer;
             if (!data.IsValid)
@@ -187,7 +187,7 @@ namespace openHistorian.V2.FileSystem
             WriteFooterData(buffer.Pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
         }
 
-        public void AquireBlockForWrite(uint blockIndex, IMemoryUnit buffer)
+        public void AquireBlockForWrite(int blockIndex, IMemoryUnit buffer)
         {
             if (IsReadOnly)
                 throw new Exception("File system is read only");
@@ -196,7 +196,8 @@ namespace openHistorian.V2.FileSystem
             ReadForWrite(blockIndex, data);
             data.IsValid = true;
         }
-        public IoReadState AquireBlockForWrite(uint blockIndex, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, IMemoryUnit buffer)
+      
+        public IoReadState AquireBlockForWrite(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, IMemoryUnit buffer)
         {
             MemoryUnit data = (MemoryUnit)buffer;
             data.IsValid = false;
@@ -214,7 +215,7 @@ namespace openHistorian.V2.FileSystem
             return readState;
         }
 
-        public IoReadState AquireBlockForRead(uint blockIndex, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, IMemoryUnit buffer)
+        public IoReadState AquireBlockForRead(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, IMemoryUnit buffer)
         {
             MemoryUnit data = (MemoryUnit)buffer;
             data.IsValid = false;
@@ -240,7 +241,7 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         /// <param name="blockIndex">the block where to write the data</param>
         /// <param name="data">the data to write</param>
-        protected void WriteBlock(uint blockIndex, byte[] data)
+        protected void WriteBlock(int blockIndex, byte[] data)
         {
             m_stream.Write(blockIndex * ArchiveConstants.BlockSize, data, 0, data.Length);
         }
@@ -264,7 +265,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="blockIndex">the block where to write the data</param>
         /// <param name="data">the data to write</param>
         /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
-        protected IoReadState ReadBlock(uint blockIndex, byte[] data)
+        protected IoReadState ReadBlock(int blockIndex, byte[] data)
         {
             if (blockIndex > m_allocatedBlocksCount)
                 return IoReadState.ReadPastThenEndOfTheFile;
@@ -279,7 +280,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="blockIndex">the block where to write the data</param>
         /// <param name="memory">the data to write</param>
         /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
-        IoReadState ReadBlock(uint blockIndex, MemoryUnit memory)
+        IoReadState ReadBlock(int blockIndex, MemoryUnit memory)
         {
 
             if (blockIndex > m_allocatedBlocksCount)
@@ -314,7 +315,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="blockIndex">the block where to write the data</param>
         /// <param name="memory">the data to write</param>
         /// <returns>A status whether the read was sucessful. See <see cref="IoReadState"/>.</returns>
-        void ReadForWrite(uint blockIndex, MemoryUnit memory)
+        void ReadForWrite(int blockIndex, MemoryUnit memory)
         {
             IntPtr ptr;
             int length;
@@ -403,7 +404,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
         /// <returns>State information about the state of the footer data</returns>
-        static IoReadState IsFooterValid(byte* data, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber)
+        static IoReadState IsFooterValid(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
             long checksum = ComputeChecksum(data);
             long checksumInData = *(long*)(data + ArchiveConstants.BlockSize - 8);
@@ -412,11 +413,11 @@ namespace openHistorian.V2.FileSystem
             {
                 if (data[ArchiveConstants.BlockSize - 21] != (byte)blockType)
                     return IoReadState.BlockTypeMismatch;
-                if (*(uint*)(data + ArchiveConstants.BlockSize - 20) != indexValue)
+                if (*(int*)(data + ArchiveConstants.BlockSize - 20) != indexValue)
                     return IoReadState.IndexNumberMissmatch;
-                if (*(uint*)(data + ArchiveConstants.BlockSize - 12) > snapshotSequenceNumber)
+                if (*(int*)(data + ArchiveConstants.BlockSize - 12) > snapshotSequenceNumber)
                     return IoReadState.PageNewerThanSnapshotSequenceNumber;
-                if (*(uint*)(data + ArchiveConstants.BlockSize - 16) != fileIdNumber)
+                if (*(int*)(data + ArchiveConstants.BlockSize - 16) != fileIdNumber)
                     return IoReadState.FileIdNumberDidNotMatch;
 
                 return IoReadState.Valid;
@@ -437,12 +438,12 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
         /// <returns></returns>
-        static void WriteFooterData(byte* data, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber)
+        static void WriteFooterData(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
             data[ArchiveConstants.BlockSize - 21] = (byte)blockType;
-            *(uint*)(data + ArchiveConstants.BlockSize - 20) = indexValue;
-            *(uint*)(data + ArchiveConstants.BlockSize - 16) = fileIdNumber;
-            *(uint*)(data + ArchiveConstants.BlockSize - 12) = snapshotSequenceNumber;
+            *(int*)(data + ArchiveConstants.BlockSize - 20) = indexValue;
+            *(int*)(data + ArchiveConstants.BlockSize - 16) = fileIdNumber;
+            *(int*)(data + ArchiveConstants.BlockSize - 12) = snapshotSequenceNumber;
 
             long checksum = ComputeChecksum(data);
             *(long*)(data + ArchiveConstants.BlockSize - 8) = checksum;
@@ -460,7 +461,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number of this write</param>
         /// <param name="data">the data to write. It must be equal to <see cref="ArchiveConstants.BlockSize"/>.</param>
-        public void WriteBlock(uint blockIndex, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, byte[] data)
+        public void WriteBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] data)
         {
             if (IsReadOnly)
                 throw new Exception("File system is read only");
@@ -490,7 +491,7 @@ namespace openHistorian.V2.FileSystem
         /// <returns>
         /// The result of the read operation. See <see cref="IoReadState"/> for details.
         /// </returns>
-        public IoReadState ReadBlock(uint blockIndex, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber, byte[] data)
+        public IoReadState ReadBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] data)
         {
             if (data.Length != ArchiveConstants.BlockSize)
                 throw new Exception("All page IOs must be performed one page at a time.");
@@ -518,7 +519,7 @@ namespace openHistorian.V2.FileSystem
         /// <returns>The size that the file is after this call</returns>
         /// <remarks>Passing 0 to this function will effectively trim out 
         /// all of the free space in this file.</remarks>
-        public long SetFileLength(long size, uint nextUnallocatedBlock)
+        public long SetFileLength(long size, int nextUnallocatedBlock)
         {
             if (nextUnallocatedBlock * ArchiveConstants.BlockSize > size)
             {
@@ -577,7 +578,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
         /// <returns>State information about the state of the footer data</returns>
-        static IoReadState IsFooterValid(byte[] data, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber)
+        static IoReadState IsFooterValid(byte[] data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
             long checksum = ComputeChecksum(data);
             long checksumInData = BitConverter.ToInt64(data, ArchiveConstants.BlockSize - 8);
@@ -585,11 +586,11 @@ namespace openHistorian.V2.FileSystem
             {
                 if (data[ArchiveConstants.BlockSize - 21] != (byte)blockType)
                     return IoReadState.BlockTypeMismatch;
-                if (BitConverter.ToUInt32(data, ArchiveConstants.BlockSize - 20) != indexValue)
+                if (BitConverter.ToInt32(data, ArchiveConstants.BlockSize - 20) != indexValue)
                     return IoReadState.IndexNumberMissmatch;
-                if (BitConverter.ToUInt32(data, ArchiveConstants.BlockSize - 12) > snapshotSequenceNumber)
+                if (BitConverter.ToInt32(data, ArchiveConstants.BlockSize - 12) > snapshotSequenceNumber)
                     return IoReadState.PageNewerThanSnapshotSequenceNumber;
-                if (BitConverter.ToUInt32(data, ArchiveConstants.BlockSize - 16) != fileIdNumber)
+                if (BitConverter.ToInt32(data, ArchiveConstants.BlockSize - 16) != fileIdNumber)
                     return IoReadState.FileIdNumberDidNotMatch;
                 return IoReadState.Valid;
             }
@@ -609,7 +610,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
         /// <returns></returns>
-        static void WriteFooterData(byte[] data, BlockType blockType, uint indexValue, uint fileIdNumber, uint snapshotSequenceNumber)
+        static void WriteFooterData(byte[] data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
             data[ArchiveConstants.BlockSize - 21] = (byte)blockType;
             data[ArchiveConstants.BlockSize - 20] = (byte)(indexValue);

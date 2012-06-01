@@ -98,7 +98,7 @@
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileSystem\ArchiveFileStreamTest.cs" />
-    <Compile Include="FileSystem\BenchmarkPageSizes.cs" />
+    <Compile Include="OldCode\FileSystem\BenchmarkPageSizes.cs" />
     <Compile Include="FileSystem\DiskIOEnhanced2Test.cs" />
     <Compile Include="FileSystem\DiskIOEnhancedTest.cs" />
     <Compile Include="FileSystem\FileAllocationTableTest.cs" />

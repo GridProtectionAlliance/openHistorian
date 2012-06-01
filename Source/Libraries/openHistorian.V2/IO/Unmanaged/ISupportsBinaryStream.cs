@@ -45,12 +45,15 @@ namespace openHistorian.V2.IO.Unmanaged
         int RemainingSupportedIoSessions { get; }
 
         /// <summary>
-        /// Aquire a positive ID value for a new IO session.
+        /// Aquire an IO Session.
         /// </summary>
-        /// <returns>A non-negative value that may also be non-unique to represent a io session.</returns>
-        /// <remarks>If the underlying stream does not require io session ID numbers, 
-        /// it is free to return a non-unique number since it will be ignoring the value anyway.
-        /// this value cannot be negative</remarks>
         IBinaryStreamIoSession GetNextIoSession();
+
+        /// <summary>
+        /// Creates a new binary from an IO session
+        /// </summary>
+        /// <returns></returns>
+        IBinaryStream CreateBinaryStream();
+    
     }
 }

@@ -41,50 +41,50 @@ namespace openHistorian.V2.FileSystem
                 //using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateFile(file))
                 using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateInMemory())
                 {
-                    using (TransactionalEdit edit = service.BeginEditTransaction())
-                    {
-                        ArchiveFileStream fs = edit.CreateFile(Guid.NewGuid(), 1);
-                        fs.WriteByte(1);
-                        edit.Commit();
-                    }
-                    using (TransactionalRead read = service.BeginReadTransaction())
-                    {
-                        ArchiveFileStream f1 = read.OpenFile(0);
-                        if (f1.ReadByte() != 1)
-                            throw new Exception();
-                        using (TransactionalEdit edit = service.BeginEditTransaction())
-                        {
-                            ArchiveFileStream f2 = edit.OpenFile(0);
-                            if (f2.ReadByte() != 1)
-                                throw new Exception();
-                            f2.WriteByte(3);
-                        } //rollback should be issued;
-                        if (f1.ReadByte() != 0)
-                            throw new Exception();
+                //    using (TransactionalEdit edit = service.BeginEditTransaction())
+                //    {
+                //        ArchiveFileStream fs = edit.CreateFile(Guid.NewGuid(), 1);
+                //        fs.WriteByte(1);
+                //        edit.Commit();
+                //    }
+                //    using (TransactionalRead read = service.BeginReadTransaction())
+                //    {
+                //        ArchiveFileStream f1 = read.OpenFile(0);
+                //        if (f1.ReadByte() != 1)
+                //            throw new Exception();
+                //        using (TransactionalEdit edit = service.BeginEditTransaction())
+                //        {
+                //            ArchiveFileStream f2 = edit.OpenFile(0);
+                //            if (f2.ReadByte() != 1)
+                //                throw new Exception();
+                //            f2.WriteByte(3);
+                //        } //rollback should be issued;
+                //        if (f1.ReadByte() != 0)
+                //            throw new Exception();
 
-                        using (TransactionalRead read2 = service.BeginReadTransaction())
-                        {
-                            ArchiveFileStream f2 = read2.OpenFile(0);
-                            if (f2.ReadByte() != 1)
-                                throw new Exception();
-                            if (f2.ReadByte() != 0)
-                                throw new Exception();
-                        }
+                //        using (TransactionalRead read2 = service.BeginReadTransaction())
+                //        {
+                //            ArchiveFileStream f2 = read2.OpenFile(0);
+                //            if (f2.ReadByte() != 1)
+                //                throw new Exception();
+                //            if (f2.ReadByte() != 0)
+                //                throw new Exception();
+                //        }
 
 
-                    }
-                    using (TransactionalEdit edit = service.BeginEditTransaction())
-                    {
-                        ArchiveFileStream f2 = edit.OpenFile(0);
-                        f2.WriteByte(13);
-                        f2.WriteByte(23);
-                        ArchiveFileStream f3 = edit.OpenOrigionalFile(0);
-                        if (f3.ReadByte() != 1)
-                            throw new Exception();
-                        if (f3.ReadByte() != 0)
-                            throw new Exception();
-                        edit.Rollback();
-                    } //rollback should be issued;
+                //    }
+                //    using (TransactionalEdit edit = service.BeginEditTransaction())
+                //    {
+                //        ArchiveFileStream f2 = edit.OpenFile(0);
+                //        f2.WriteByte(13);
+                //        f2.WriteByte(23);
+                //        ArchiveFileStream f3 = edit.OpenOrigionalFile(0);
+                //        if (f3.ReadByte() != 1)
+                //            throw new Exception();
+                //        if (f3.ReadByte() != 0)
+                //            throw new Exception();
+                //        edit.Rollback();
+                //    } //rollback should be issued;
                 }
             }
             finally

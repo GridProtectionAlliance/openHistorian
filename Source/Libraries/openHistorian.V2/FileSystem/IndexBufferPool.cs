@@ -32,13 +32,11 @@ namespace openHistorian.V2.FileSystem
         public IMemoryUnit FirstIndirect;
         public IMemoryUnit SecondIndirect;
         public IMemoryUnit ThirdIndirect;
-        public IMemoryUnit ForthIndirect;
         public IndexBufferPool(DiskIoEnhanced diskIo)
         {
             FirstIndirect = diskIo.GetMemoryUnit();
             SecondIndirect = diskIo.GetMemoryUnit();
             ThirdIndirect = diskIo.GetMemoryUnit();
-            ForthIndirect = diskIo.GetMemoryUnit();
         }
     }
 }

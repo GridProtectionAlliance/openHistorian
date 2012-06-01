@@ -26,7 +26,7 @@ namespace openHistorian.V2.FileSystem
 {
     public struct PositionData
     {
-        public uint PhysicalBlockIndex;
+        public int PhysicalBlockIndex;
         public long VirtualPosition;
         public long Length;
         /// <summary>

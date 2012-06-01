@@ -16,7 +16,7 @@ namespace openHistorian.V2.UnmanagedMemory
         [TestMethod()]
         public void TestMemoryLeak()
         {
-            Assert.AreEqual(openHistorian.V2.UnmanagedMemory.BufferPool.AllocatedBytes, 0L);
+            Assert.AreEqual(BufferPool.AllocatedBytes, 0L);
         }
     }
     [TestClass()]
@@ -29,7 +29,7 @@ namespace openHistorian.V2.UnmanagedMemory
         [TestMethod()]
         public void Test()
         {
-            Assert.AreEqual(openHistorian.V2.UnmanagedMemory.BufferPool.AllocatedBytes, 0L);
+            Assert.AreEqual(BufferPool.AllocatedBytes, 0L);
 
 
             var del = new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
@@ -40,7 +40,7 @@ namespace openHistorian.V2.UnmanagedMemory
 
             BufferPool.RequestCollection -= del;
 
-            Assert.AreEqual(openHistorian.V2.UnmanagedMemory.BufferPool.AllocatedBytes, 0L);
+            Assert.AreEqual(BufferPool.AllocatedBytes, 0L);
 
 
             Assert.IsTrue(true);

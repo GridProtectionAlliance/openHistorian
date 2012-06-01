@@ -37,7 +37,7 @@ namespace openHistorian.V2.FileSystem
         /// This address is used to determine if the block being referenced is an old block or a new one. 
         /// Any addresses greater than or equal to this are new blocks for this transaction. Values before this are old.
         /// </summary>
-        uint m_newBlocksStartAtThisAddress;
+        int m_newBlocksStartAtThisAddress;
         /// <summary>
         /// The file being read.
         /// </summary>
@@ -122,11 +122,10 @@ namespace openHistorian.V2.FileSystem
             //    SkipDataBlockShadow = false;
 
             m_parser.SetPosition(position);
-            uint dataBlockAddress; //The address to the shadowed data page.
-            uint firstIndirectAddress = 0;
-            uint secondIndirectAddress = 0;
-            uint thirdIndirectAddress = 0;
-            uint forthIndirectAddress = 0;
+            int dataBlockAddress; //The address to the shadowed data page.
+            int firstIndirectAddress = 0;
+            int secondIndirectAddress = 0;
+            int thirdIndirectAddress = 0;
 
             //Make a copy of the data page referenced
             if (m_parser.DataClusterAddress == 0)
@@ -169,17 +168,10 @@ namespace openHistorian.V2.FileSystem
                     firstIndirectAddress = ShadowCopyIndexIndirect1(secondIndirectAddress);
                     m_fileMetaData.TripleIndirectCluster = firstIndirectAddress;
                     break;
-                case 4:
-                    forthIndirectAddress = ShadowCopyIndexIndirect4(dataBlockAddress);
-                    thirdIndirectAddress = ShadowCopyIndexIndirect3(forthIndirectAddress);
-                    secondIndirectAddress = ShadowCopyIndexIndirect2(thirdIndirectAddress);
-                    firstIndirectAddress = ShadowCopyIndexIndirect1(secondIndirectAddress);
-                    m_fileMetaData.QuadrupleIndirectCluster = firstIndirectAddress;
-                    break;
                 default:
                     throw new Exception("invalid redirect number");
             }
-            m_parser.UpdateAddressesFromShadowCopy(dataBlockAddress, firstIndirectAddress, secondIndirectAddress, thirdIndirectAddress, forthIndirectAddress);
+            m_parser.UpdateAddressesFromShadowCopy(dataBlockAddress, firstIndirectAddress, secondIndirectAddress, thirdIndirectAddress);
         }
 
         /// <summary>
@@ -187,7 +179,7 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         /// <param name="remoteBlockAddress">The remote address that needs to be referenced by the shadow copied page.</param>
         /// <returns></returns>
-        uint ShadowCopyIndexIndirect1(uint remoteBlockAddress)
+        int ShadowCopyIndexIndirect1(int remoteBlockAddress)
         {
             return ShadowCopyIndexIndirect(BufferPool.FirstIndirect, m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, remoteBlockAddress);
         }
@@ -197,7 +189,7 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         /// <param name="remoteBlockAddress">The remote address that needs to be referenced by the shadow copied page.</param>
         /// <returns></returns>
-        uint ShadowCopyIndexIndirect2(uint remoteBlockAddress)
+        int ShadowCopyIndexIndirect2(int remoteBlockAddress)
         {
             return ShadowCopyIndexIndirect(BufferPool.SecondIndirect, m_parser.SecondIndirectBlockAddress, m_parser.SecondIndirectBaseIndex, 2, m_parser.SecondIndirectOffset, remoteBlockAddress);
         }
@@ -207,22 +199,12 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         /// <param name="remoteBlockAddress">The remote address that needs to be referenced by the shadow copied page.</param>
         /// <returns></returns>
-        uint ShadowCopyIndexIndirect3(uint remoteBlockAddress)
+        int ShadowCopyIndexIndirect3(int remoteBlockAddress)
         {
             return ShadowCopyIndexIndirect(BufferPool.ThirdIndirect, m_parser.ThirdIndirectBlockAddress, m_parser.ThirdIndirectBaseIndex, 3, m_parser.ThirdIndirectOffset, remoteBlockAddress);
         }
 
-        /// <summary>
-        /// Helper function to make a shadow index of a forth indirect block.
-        /// </summary>
-        /// <param name="remoteBlockAddress">The remote address that needs to be referenced by the shadow copied page.</param>
-        /// <returns></returns>
-        uint ShadowCopyIndexIndirect4(uint remoteBlockAddress)
-        {
-            return ShadowCopyIndexIndirect(BufferPool.ForthIndirect, m_parser.ForthIndirectBlockAddress, m_parser.ForthIndirectBaseIndex, 4, m_parser.ForthIndirectOffset, remoteBlockAddress);
-        }
-
-        /// <summary>
+  /// <summary>
         /// Makes a shadow copy of the indirect index passed to this function. If the block does not exists, it creates it.
         /// </summary>
         /// <param name="buffer"> </param>
@@ -232,9 +214,9 @@ namespace openHistorian.V2.FileSystem
         /// <param name="remoteAddressOffset">the offset of the remote address that needs to be updated.</param>
         /// <param name="remoteBlockAddress">the value of the remote address.</param>
         /// <returns>The address of the shadow copy.</returns>
-        uint ShadowCopyIndexIndirect(IMemoryUnit buffer, uint sourceBlockAddress, uint indexValue, byte indexIndirectNumber, int remoteAddressOffset, uint remoteBlockAddress)
+        int ShadowCopyIndexIndirect(IMemoryUnit buffer, int sourceBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
         {
-            uint indexIndirectBlock; //The address to the shadowed index block.
+            int indexIndirectBlock; //The address to the shadowed index block.
 
             //Make a copy of the index block referenced
             if (sourceBlockAddress == 0)
@@ -273,10 +255,10 @@ namespace openHistorian.V2.FileSystem
         /// <param name="remoteAddressOffset">the offset of the remote address that needs to be updated.</param>
         /// <param name="remoteBlockAddress">the value of the remote address.</param>
         /// <param name="isCurrentRevision">If this is an inplace edit, set to true. If it is a true shadow copy, set false.</param>
-        private void ReadThenWriteIndexIndirectBlock(IMemoryUnit buffer, uint sourceBlockAddress, uint destinationBlockAddress, uint indexValue, byte indexIndirectNumber, int remoteAddressOffset, uint remoteBlockAddress, bool isCurrentRevision)
+        private void ReadThenWriteIndexIndirectBlock(IMemoryUnit buffer, int sourceBlockAddress, int destinationBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress, bool isCurrentRevision)
         {
-            uint fileIdNumber = m_fileMetaData.FileIdNumber;
-            uint snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
+            int fileIdNumber = m_fileMetaData.FileIdNumber;
+            int snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
 
             if (buffer.BlockIndex != sourceBlockAddress)
             {
@@ -294,7 +276,7 @@ namespace openHistorian.V2.FileSystem
             //we only need to update the base address if something has changed.
             //Therefore, if the source and the destination are the same, and the remote block is the same
             //everything else is going to be the same.
-            if (sourceBlockAddress != destinationBlockAddress || *(uint*)(buffer.Pointer + remoteAddressOffset) != remoteBlockAddress)
+            if (sourceBlockAddress != destinationBlockAddress || *(int*)(buffer.Pointer + remoteAddressOffset) != remoteBlockAddress)
             {
                 using (IMemoryUnit data = m_diskIo.GetMemoryUnit())
                 {
@@ -315,13 +297,13 @@ namespace openHistorian.V2.FileSystem
         /// <param name="indexIndirectNumber">the indirect number {1,2,3,4} that goes in the footer of the block</param>
         /// <param name="remoteAddressOffset">the offset of the remote address that needs to be updated</param>
         /// <param name="remoteBlockAddress">the value of the remote address</param>
-        private void WriteIndexIndirectBlock(IMemoryUnit buffer, uint blockAddress, uint indexValue, byte indexIndirectNumber, int remoteAddressOffset, uint remoteBlockAddress)
+        private void WriteIndexIndirectBlock(IMemoryUnit buffer, int blockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
         {
-            uint fileIdNumber = m_fileMetaData.FileIdNumber;
-            uint snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
+            int fileIdNumber = m_fileMetaData.FileIdNumber;
+            int snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
 
             buffer.Pointer[ArchiveConstants.BlockSize - 22] = indexIndirectNumber;
-            *(uint*)(buffer.Pointer + remoteAddressOffset) = remoteBlockAddress;
+            *(int*)(buffer.Pointer + remoteAddressOffset) = remoteBlockAddress;
 
             if (buffer.BlockIndex != blockAddress )
                 throw new Exception("Addresses do not match");
@@ -336,12 +318,12 @@ namespace openHistorian.V2.FileSystem
         /// If address is zero, it simply creates an empty cluster.</param>
         /// <param name="indexValue">the index value of this first block</param>
         /// <param name="destinationClusterAddress">the first block of the destination cluster</param>
-        private void ShadowCopyDataCluster(uint sourceClusterAddress, uint indexValue, uint destinationClusterAddress)
+        private void ShadowCopyDataCluster(int sourceClusterAddress, int indexValue, int destinationClusterAddress)
         {
             IMemoryUnit sourceData = m_diskIo.GetMemoryUnit();
             IMemoryUnit destinationData = m_diskIo.GetMemoryUnit();
-            uint fileIdNumber = m_fileMetaData.FileIdNumber;
-            uint snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
+            int fileIdNumber = m_fileMetaData.FileIdNumber;
+            int snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
 
             //if source exist
             if (sourceClusterAddress != 0)

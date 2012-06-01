@@ -72,7 +72,7 @@ namespace openHistorian.V2.FileSystem
         /// This only maintains files that are actively being written to since only one active file
         /// can be opened at a time.
         /// </summary>
-        SortedList<uint, ArchiveFileStream> m_openedFiles;
+        SortedList<int, ArchiveFileStream> m_openedFiles;
 
         /// <summary>
         /// This provides a snapshot of the origional file system incase the owner 
@@ -95,7 +95,7 @@ namespace openHistorian.V2.FileSystem
         /// If the page being written to is less than this marker, it needs
         /// to be copied instead of written to.
         /// </summary>
-        uint m_origionalFreePageIndex;
+        int m_origionalFreePageIndex;
 
         #endregion
 
@@ -123,7 +123,7 @@ namespace openHistorian.V2.FileSystem
             m_fileAllocationTable = fileAllocationTable.CreateEditableCopy(true);
             m_dataReader = dataReader;
             m_origionalFreePageIndex = m_fileAllocationTable.NextUnallocatedBlock;
-            m_openedFiles = new SortedList<uint, ArchiveFileStream>();
+            m_openedFiles = new SortedList<int, ArchiveFileStream>();
         }
 
         #endregion
@@ -155,7 +155,7 @@ namespace openHistorian.V2.FileSystem
         /// If the page being written to is less than this marker, it needs
         /// to be copied instead of written to.
         /// </summary>
-        public uint OrigionalFreePageIndex
+        public int OrigionalFreePageIndex
         {
             get
             {
@@ -173,7 +173,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileFlags">Flags that can be used to differentiate between 
         /// files with common extensions. These are not required.</param>
         /// <returns></returns>
-        public ArchiveFileStream CreateFile(Guid fileExtension, uint fileFlags)
+        public ArchiveFileStream CreateFile(Guid fileExtension, int fileFlags)
         {
             FileMetaData file = m_fileAllocationTable.CreateNewFile(fileExtension);
             file.FileFlags = fileFlags;
@@ -205,7 +205,7 @@ namespace openHistorian.V2.FileSystem
         /// Opens a ArchiveFileStream that can be used to read/write to the file passed to this function.
         /// </summary>
         /// <returns></returns>
-        public ArchiveFileStream OpenFile(Guid fileExtension, uint fileFlags)
+        public ArchiveFileStream OpenFile(Guid fileExtension, int fileFlags)
         {
             for (int x = 0; x < Files.Count; x++ )
             {

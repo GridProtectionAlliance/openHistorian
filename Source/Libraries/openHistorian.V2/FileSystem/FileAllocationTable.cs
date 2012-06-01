@@ -49,7 +49,7 @@ namespace openHistorian.V2.FileSystem
         /// The file header bytes which equals: "openHistorian Archive 2.0\00"
         /// </summary>
         static byte[] s_fileAllocationTableHeaderBytes = new byte[] { 0x6F, 0x70, 0x65, 0x6E, 0x48, 0x69, 0x73, 0x74, 0x6F, 0x72, 0x69, 0x61, 0x6E, 0x20, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x20, 0x32, 0x2E, 0x30, 0x00 };
-        const uint FileAllocationTableVersion = 0;
+        const int FileAllocationTableVersion = 0;
 
         #endregion
         #region [ Fields ]
@@ -65,11 +65,11 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// The version number required to read the file system.
         /// </summary>
-        uint m_minimumReadVersion;
+        int m_minimumReadVersion;
         /// <summary>
         /// The version number required to write to the file system.
         /// </summary>
-        uint m_minimumWriteVersion;
+        int m_minimumWriteVersion;
         /// <summary>
         /// The GUID for this archive file system.
         /// </summary>
@@ -85,15 +85,15 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         ///This will be updated every time the file system has been modified. Initially, it will be zero.
         /// </summary>
-        uint m_snapshotSequenceNumber;
+        int m_snapshotSequenceNumber;
         /// <summary>
         /// Since files are allocated sequentially, this value is the next file id that is not used.
         /// </summary>
-        uint m_nextFileId;
+        int m_nextFileId;
         /// <summary>
         /// Returns the next unallocated free block.
         /// </summary>
-        uint m_nextUnallocatedBlock;
+        int m_nextUnallocatedBlock;
         /// <summary>
         /// Provides a list of all of the Features that are contained within the file.
         /// </summary>
@@ -232,7 +232,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Maintains a sequential number that represents the version of the file.
         /// </summary>
-        internal uint SnapshotSequenceNumber
+        internal int SnapshotSequenceNumber
         {
             get
             {
@@ -243,7 +243,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Represents the next block that has not been allocated.
         /// </summary>
-        internal uint NextUnallocatedBlock
+        internal int NextUnallocatedBlock
         {
             get
             {
@@ -294,13 +294,13 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         /// <param name="count">the number of blocks to allocate</param>
         /// <returns>the address of the first block of the allocation </returns>
-        public uint AllocateFreeBlocks(uint count)
+        public int AllocateFreeBlocks(int count)
         {
             if (count == 0)
                 throw new ArgumentException("the value 0 is not valid", "count");
             if (IsReadOnly)
                 throw new Exception("class is read only");
-            uint blockAddress = m_nextUnallocatedBlock;
+            int blockAddress = m_nextUnallocatedBlock;
             m_nextUnallocatedBlock += count;
             return blockAddress;
         }
@@ -367,7 +367,7 @@ namespace openHistorian.V2.FileSystem
             byte[] data = GetBytes();
 
             //write the file header to the first 10 pages of the file.
-            for (uint x = 0; x < 10; x++)
+            for (int x = 0; x < 10; x++)
             {
                 diskIo.WriteBlock(x, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
             }
@@ -395,14 +395,14 @@ namespace openHistorian.V2.FileSystem
             //Write meta data tags.
             //Currently only 1 is recgonized.  So unless there are unrecgonized tags, write 1.
             if (m_unrecgonizedMetaDataTags == null)
-                dataWriter.Write((ushort)1); //meta data page count
+                dataWriter.Write((short)1); //meta data page count
             else
-                dataWriter.Write((ushort)(1 + m_unrecgonizedMetaDataTags.Count)); //meta data page count
+                dataWriter.Write((short)(1 + m_unrecgonizedMetaDataTags.Count)); //meta data page count
 
             byte fileCount = (byte)FileCount;
 
-            dataWriter.Write((ushort)MetaDataCodes.ListOfFiles); //Meta Data Code
-            dataWriter.Write((ushort)(fileCount * FileMetaData.SizeInBytes + 9)); //Meta data length
+            dataWriter.Write((short)MetaDataCodes.ListOfFiles); //Meta Data Code
+            dataWriter.Write((short)(fileCount * FileMetaData.SizeInBytes + 9)); //Meta data length
             dataWriter.Write(NextUnallocatedBlock);
             dataWriter.Write(m_nextFileId);
             dataWriter.Write(fileCount);
@@ -439,22 +439,22 @@ namespace openHistorian.V2.FileSystem
             if (!dataReader.ReadBytes(26).SequenceEqual(s_fileAllocationTableHeaderBytes))
                 throw new Exception("This file is not an archive file system, or the file is corrupt, or this file system major version is not recgonized by this version of the historian");
 
-            m_minimumReadVersion = dataReader.ReadUInt32();
-            m_minimumWriteVersion = dataReader.ReadUInt32();
+            m_minimumReadVersion = dataReader.ReadInt32();
+            m_minimumWriteVersion = dataReader.ReadInt32();
 
             if (!CanRead)
                 throw new Exception("The version of this file system is not recgonized");
 
             m_archiveId = new Guid(dataReader.ReadBytes(16));
             m_isOpenedForExclusiveEditing = (dataReader.ReadByte() != 0);
-            m_snapshotSequenceNumber = dataReader.ReadUInt32();
+            m_snapshotSequenceNumber = dataReader.ReadInt32();
 
             //Process all of the meta data
-            metaDataCount = dataReader.ReadUInt16();
+            metaDataCount = dataReader.ReadInt16();
             for (; metaDataCount > 0; metaDataCount--)
             {
-                int metaDataCode = dataReader.ReadUInt16();
-                int metaDataLength = dataReader.ReadUInt16();
+                int metaDataCode = dataReader.ReadInt16();
+                int metaDataLength = dataReader.ReadInt16();
                 if (metaDataLength + stream.Position > ArchiveConstants.BlockSize)
                     throw new Exception("File Allocation Tables larger than a block size is not supported");
 
@@ -463,8 +463,8 @@ namespace openHistorian.V2.FileSystem
                     case 1:
                         if (metaDataLength < 9)
                             throw new Exception("The file format is corrupt");
-                        m_nextUnallocatedBlock = dataReader.ReadUInt32();
-                        m_nextFileId = dataReader.ReadUInt32();
+                        m_nextUnallocatedBlock = dataReader.ReadInt32();
+                        m_nextFileId = dataReader.ReadInt32();
                         int fileCount = dataReader.ReadByte();
                         if (fileCount > 64)
                             throw new Exception("Only 64 features are supported per archive");
@@ -674,10 +674,10 @@ namespace openHistorian.V2.FileSystem
         /// <param name="tempBuffer"></param>
         /// <param name="error">an output parameter for the error if one was encountered.</param>
         /// <returns>null if there was an error and puts the exception in the error parameter.</returns>
-        static FileAllocationTable TryOpenFileAllocationTable(uint blockIndex, DiskIoEnhanced diskIo, byte[] tempBuffer, out Exception error)
+        static FileAllocationTable TryOpenFileAllocationTable(int blockIndex, DiskIoEnhanced diskIo, byte[] tempBuffer, out Exception error)
         {
             error = null;
-            IoReadState readState = diskIo.ReadBlock(blockIndex, BlockType.FileAllocationTable, 0, 0, uint.MaxValue, tempBuffer);
+            IoReadState readState = diskIo.ReadBlock(blockIndex, BlockType.FileAllocationTable, 0, 0, int.MaxValue, tempBuffer);
             if (readState != IoReadState.Valid)
             {
                 error = new Exception("Error Reading File System " + readState.ToString());
