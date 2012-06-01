@@ -18,14 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  1/4/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
 //
 //******************************************************************************************************
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace openHistorian.V2.FileSystem
 {

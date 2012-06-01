@@ -208,17 +208,6 @@ namespace openHistorian.V2.FileSystem
             }
         }
 
-        /// <summary>
-        /// Returns the last addressable location.  This is not the amount of space requred by this file since blocks can remain unassigned.
-        /// </summary>
-        public long Length
-        {
-            get
-            {
-                return (long)m_file.LastAllocatedCluster * (long)ArchiveConstants.BlockSize;
-            }
-        }
-
         #endregion
 
         #region [ Methods ]
@@ -322,6 +311,7 @@ namespace openHistorian.V2.FileSystem
                 throw new Exception("File is read only");
 
             PrepareBlockForWrite(position);
+
             if (isWriting)
                 m_isBlockDirty = true;
             firstPosition = m_positionBlock.VirtualPosition;

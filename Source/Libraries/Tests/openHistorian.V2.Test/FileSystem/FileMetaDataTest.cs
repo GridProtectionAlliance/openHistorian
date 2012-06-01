@@ -39,7 +39,6 @@ namespace openHistorian.V2.FileSystem
             int fileIDNumber = rand.Next(int.MaxValue);
             Guid fileExtension = Guid.NewGuid();
             int fileFlags = rand.Next(int.MaxValue);
-            int allocatedBlocks = rand.Next(int.MaxValue);
             int dataBlock1 = rand.Next(int.MaxValue);
             int singleRedirect = rand.Next(int.MaxValue);
             int doubleRedirect = rand.Next(int.MaxValue);
@@ -48,7 +47,6 @@ namespace openHistorian.V2.FileSystem
             Guid gid = Guid.NewGuid();
             FileMetaData node = FileMetaData.CreateFileMetaData(fileIDNumber, fileExtension);
             node.FileFlags = fileFlags;
-            node.LastAllocatedCluster = allocatedBlocks;
             node.DirectCluster = dataBlock1;
             node.SingleIndirectCluster = singleRedirect;
             node.DoubleIndirectCluster = doubleRedirect;
@@ -58,7 +56,6 @@ namespace openHistorian.V2.FileSystem
             if (node2.FileIdNumber != fileIDNumber) throw new Exception();
             if (node2.FileExtension != fileExtension) throw new Exception();
             if (node2.FileFlags != fileFlags) throw new Exception();
-            if (node2.LastAllocatedCluster != allocatedBlocks) throw new Exception();
             if (node2.DirectCluster != dataBlock1) throw new Exception();
             if (node2.SingleIndirectCluster != singleRedirect) throw new Exception();
             if (node2.DoubleIndirectCluster != doubleRedirect) throw new Exception();

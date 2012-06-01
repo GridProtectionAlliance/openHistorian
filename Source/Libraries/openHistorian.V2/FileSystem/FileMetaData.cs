@@ -36,12 +36,12 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// The number of bytes that are required to save this class.
         /// </summary>
-        internal const int SizeInBytes = 48;
+        internal const int SizeInBytes = 40;
         bool m_isReadOnly;
+        
         int m_fileIdNumber;
         Guid m_fileExtension;
         int m_fileFlags;
-        int m_lastAllocatedCluster;
         int m_directCluster;
         int m_singleIndirectCluster;
         int m_doubleIndirectCluster;
@@ -71,7 +71,6 @@ namespace openHistorian.V2.FileSystem
             m_fileIdNumber = origionalFileMetaData.FileIdNumber;
             m_fileExtension = origionalFileMetaData.FileExtension;
             m_fileFlags = origionalFileMetaData.FileFlags;
-            m_lastAllocatedCluster = origionalFileMetaData.LastAllocatedCluster;
             m_directCluster = origionalFileMetaData.DirectCluster;
             m_singleIndirectCluster = origionalFileMetaData.SingleIndirectCluster;
             m_doubleIndirectCluster = origionalFileMetaData.DoubleIndirectCluster;
@@ -143,23 +142,6 @@ namespace openHistorian.V2.FileSystem
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
                 m_fileFlags = value;
-            }
-        }
-
-        /// <summary>
-        /// The last cluster index value that is assigned.
-        /// </summary>
-        internal int LastAllocatedCluster
-        {
-            get
-            {
-                return m_lastAllocatedCluster;
-            }
-            set
-            {
-                if (IsReadOnly)
-                    throw new Exception("Class is read only");
-                m_lastAllocatedCluster = value;
             }
         }
 
@@ -250,7 +232,6 @@ namespace openHistorian.V2.FileSystem
             dataWriter.Write(m_fileIdNumber);
             dataWriter.Write(m_fileExtension.ToByteArray());
             dataWriter.Write(m_fileFlags);
-            dataWriter.Write(m_lastAllocatedCluster);
             dataWriter.Write(m_directCluster);
             dataWriter.Write(m_singleIndirectCluster);
             dataWriter.Write(m_doubleIndirectCluster);
@@ -266,7 +247,6 @@ namespace openHistorian.V2.FileSystem
             m_fileIdNumber = dataReader.ReadInt32();
             m_fileExtension = new Guid(dataReader.ReadBytes(16));
             m_fileFlags = dataReader.ReadInt32();
-            m_lastAllocatedCluster = dataReader.ReadInt32();
             m_directCluster = dataReader.ReadInt32();
             m_singleIndirectCluster = dataReader.ReadInt32();
             m_doubleIndirectCluster = dataReader.ReadInt32();
@@ -285,7 +265,6 @@ namespace openHistorian.V2.FileSystem
             if (FileIdNumber != a.FileIdNumber) return false;
             if (FileExtension != a.FileExtension) return false;
             if (FileFlags != a.FileFlags) return false;
-            if (LastAllocatedCluster != a.LastAllocatedCluster) return false;
             if (DirectCluster != a.DirectCluster) return false;
             if (SingleIndirectCluster != a.SingleIndirectCluster) return false;
             if (DoubleIndirectCluster != a.DoubleIndirectCluster) return false;

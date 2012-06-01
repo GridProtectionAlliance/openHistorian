@@ -189,7 +189,7 @@
     <Compile Include="FileSystem\IndexParser.cs" />
     <Compile Include="FileSystem\FileAddressTranslation.cs" />
     <Compile Include="FileSystem\ArchiveFileStream.cs" />
-    <Compile Include="FileSystem\IOReadState.cs" />
+    <Compile Include="FileSystem\IoReadState.cs" />
     <Compile Include="FileSystem\BlockType.cs" />
     <Compile Include="FileSystem\PositionData.cs" />
     <Compile Include="FileSystem\TransactionalRead.cs" />
