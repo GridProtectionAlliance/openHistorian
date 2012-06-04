@@ -32,5 +32,6 @@ namespace openHistorian.V2.FileSystem
         int BlockIndex { get; }
         int Length { get; }
         byte* Pointer { get; }
+        IntPtr IntPtr { get; }
     }
 }
