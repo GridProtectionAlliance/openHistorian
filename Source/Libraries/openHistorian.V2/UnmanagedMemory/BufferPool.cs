@@ -124,11 +124,6 @@ namespace openHistorian.V2.UnmanagedMemory
         public static long SystemTotalPhysicalMemory { get; private set; }
 
         /// <summary>
-        /// Determines if large pages are in use for this buffer pool.
-        /// </summary>
-        public static bool IsUsingLargePageSizes { get; private set; }
-
-        /// <summary>
         /// The minimum amount of memory that must be allocated to the buffer pool.
         /// call SetMinimumMemoryUsage to set this value;
         /// </summary>
@@ -301,12 +296,6 @@ namespace openHistorian.V2.UnmanagedMemory
             long availableMemory = (long)info.AvailablePhysicalMemory;
             SystemTotalPhysicalMemory = totalMemory;
 
-            //only use large pages if 64 bit OS detected, 
-            //There is at least 4GB of physical memory, 
-            //and Windows supports
-            IsUsingLargePageSizes = (Environment.Is64BitProcess && totalMemory >= 4 * 1024 * 1024 * 1024L &&
-                                     WinApi.CanAllocateLargePage && HelperFunctions.IsPowerOfTwo(WinApi.GetLargePageMinimum()));
-
             //Maximum size is at least 128MB
             //At least 50% of the free space
             //At least 25% of the total system memory.
@@ -315,10 +304,7 @@ namespace openHistorian.V2.UnmanagedMemory
 
 
             //Allocation size at least the page size, but no more than ~1000 allocations over the total system memory;
-            if (IsUsingLargePageSizes)
-                s_memoryBlockSize = (int)WinApi.GetLargePageMinimum();
-            else
-                s_memoryBlockSize = PageSize;
+            s_memoryBlockSize = PageSize;
 
             long targetMemoryBlockSize = totalMemory / 1000;
             //if there is more than 1TB of ram, clip the allocation size to 1GB allocations
@@ -412,7 +398,7 @@ namespace openHistorian.V2.UnmanagedMemory
             {
                 if (s_memoryBlocks[x] == null)
                 {
-                    s_memoryBlocks[x] = Memory.Allocate((uint)s_memoryBlockSize, IsUsingLargePageSizes);
+                    s_memoryBlocks[x] = Memory.Allocate(s_memoryBlockSize);
                     s_memoryBlockCount++;
                     int start = x * s_pagesPerMemoryBlock;
                     int stop = start + s_pagesPerMemoryBlock;

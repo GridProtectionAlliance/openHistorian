@@ -184,12 +184,12 @@ namespace openHistorian.V2.IO.Unmanaged
             m_lastRead = null;
             m_lastWrite = null;
 
-           if (m_mainIoSession != null)
-               m_mainIoSession.Clear();
-           if (m_secondaryIoSession != null)
-               m_secondaryIoSession.Clear();
+            if (m_mainIoSession != null)
+                m_mainIoSession.Clear();
+            if (m_secondaryIoSession != null)
+                m_secondaryIoSession.Clear();
         }
-        
+
         /// <summary>
         /// Clones a binary stream if it is supported.  Check <see cref="SupportsAnotherClone"/> before calling this method.
         /// </summary>
@@ -281,7 +281,6 @@ namespace openHistorian.V2.IO.Unmanaged
             Position = source;
             UpdateLocalBuffer(false);
 
-            bool sourceAndDesinationOverlap = (source < destination && source + length >= destination);
             bool containsSource = (length <= RemainingReadLength);
             bool containsDestination = (m_firstPosition <= destination && destination + length < m_lastPosition);
 
@@ -292,11 +291,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 byte* src = m_current;
                 byte* dst = m_current + (destination - source);
 
-                if (sourceAndDesinationOverlap)
-                    Memory.CopyWinApi(src, dst, length);
-                else
-                    MemoryMethod.MemCpy.Invoke(dst,src,(uint)length);
-                return;
+                Memory.Copy(src, dst, length);
             }
 
             if (m_secondaryIoSession != null)
@@ -313,11 +308,8 @@ namespace openHistorian.V2.IO.Unmanaged
                     byte* src = m_current;
                     byte* dst = (byte*)prt + (destination - pos);
 
-                    if (sourceAndDesinationOverlap)
-                        Memory.CopyWinApi(src, dst, length);
-                    else
-                        MemoryMethod.MemCpy.Invoke(dst, src, (uint)length);
-                    
+                    Memory.Copy(src, dst, length);
+
                     return;
                 }
 

@@ -12,7 +12,7 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             Assert.AreEqual(BufferPool.AllocatedBytes, 0L);
 
-            Memory block = Memory.Allocate(1, false);
+            Memory block = Memory.Allocate(1);
             if (block.Address == IntPtr.Zero)
                 throw new Exception();
             if (block.Size != 1)
@@ -24,25 +24,6 @@ namespace openHistorian.V2.UnmanagedMemory
                 throw new Exception();
             block.Release();
 
-            if (WinApi.CanAllocateLargePage)
-            {
-                block = Memory.Allocate(1, true);
-                if (block.Address == IntPtr.Zero)
-                    throw new Exception();
-                if (block.Size != 2 * 1024 * 1024)
-                    throw new Exception();
-                block.Release();
-                if (block.Address != IntPtr.Zero)
-                    throw new Exception();
-                if (block.Size != 0)
-                    throw new Exception();
-                block.Release();
-            }
-            else
-            {
-                //Assert.Inconclusive("Could not test large pages");
-            }
-
             var info = new Microsoft.VisualBasic.Devices.ComputerInfo();
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -52,7 +33,7 @@ namespace openHistorian.V2.UnmanagedMemory
             //Allocate 100MB
             List<Memory> blocks = new List<Memory>();
             for (int x = 0; x < 10; x++)
-                blocks.Add(Memory.Allocate(10000000, true));
+                blocks.Add(Memory.Allocate(10000000));
             GC.Collect();
             GC.WaitForPendingFinalizers();
             long mem2 = (long)info.AvailablePhysicalMemory;

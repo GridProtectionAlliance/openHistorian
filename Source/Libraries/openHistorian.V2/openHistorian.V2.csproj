@@ -80,6 +80,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="Service\Instance\Database\CreateDatabase.cs" />
     <Compile Include="Service\Instance\Database\File.cs" />
     <Compile Include="Service\Instance\Database\IDatabase.cs" />
@@ -130,7 +132,7 @@
     <Compile Include="OldCode\Collections\BPlusTreeInternalNodeBase.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeLeafNodeBase.cs" />
     <Compile Include="OldCode\Collections\IBPlusTreeType.cs" />
-    <Compile Include="UnmanagedMemory\MemoryMethod.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\MemoryMethod.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="IO\Unmanaged\BinaryStream.cs" />
     <Compile Include="OldCode\Collections\Specialized\BPlusTreeLongLong.cs" />
@@ -173,7 +175,7 @@
     <Compile Include="OldCode\PooledMemoryStream.cs" />
     <Compile Include="OldCode\IO\BinaryStream.cs" />
     <Compile Include="UnmanagedMemory\Memory.cs" />
-    <Compile Include="UnmanagedMemory\WinApi.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\WinApi.cs" />
     <Compile Include="FileSystem\IndexBufferPool.cs" />
     <Compile Include="OldCode\FileSystem\Test\DiskIOUnbufferedTest.cs" />
     <Compile Include="OldCode\FileSystem\Test\DiskIOMemoryStreamTest.cs" />
@@ -204,6 +206,7 @@
     <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompressorTest.cs" />
     <Compile Include="OldCode\IO\ISupportsBinaryStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnmanagedMemory\WinApi.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -100,9 +100,9 @@ namespace openHistorian.V2.FileSystem
             stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
             byte[] tmp = new byte[1];
-            stream.m_stream.Read(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
+            //stream.m_stream.Read(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
             tmp[0] = (byte)(tmp[0] + 1);
-            stream.m_stream.Write(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
+            //stream.m_stream.Write(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
 
             readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
             if (readState != IoReadState.ChecksumInvalid)

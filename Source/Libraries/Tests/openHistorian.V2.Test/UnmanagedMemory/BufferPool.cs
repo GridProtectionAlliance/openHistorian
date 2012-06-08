@@ -46,35 +46,35 @@ namespace openHistorian.V2.UnmanagedMemory
             Assert.IsTrue(true);
 
         }
-        static void Test1()
-        {
-            Stopwatch sw = new Stopwatch();
-            long memory = BufferPool.SystemTotalPhysicalMemory;
-            if (!BufferPool.IsUsingLargePageSizes)
-                throw new Exception();
-            long minMem = BufferPool.MinimumMemoryUsage;
-            long maxMemory = BufferPool.MaximumMemoryUsage;
+        //static void Test1()
+        //{
+        //    Stopwatch sw = new Stopwatch();
+        //    long memory = BufferPool.SystemTotalPhysicalMemory;
+        //    if (!BufferPool.IsUsingLargePageSizes)
+        //        throw new Exception();
+        //    long minMem = BufferPool.MinimumMemoryUsage;
+        //    long maxMemory = BufferPool.MaximumMemoryUsage;
 
-            if (memory == 1 || minMem == 1 || maxMemory == 1)
-                memory = memory;
-            BufferPool.SetMinimumMemoryUsage(long.MaxValue);
-            BufferPool.SetMaximumMemoryUsage(long.MaxValue);
-            sw.Start();
-            lst = new List<int>(100000);
-            for (int x = 0; x < 10000000; x++)
-            {
-                IntPtr ptr;
-                lst.Add(BufferPool.AllocatePage(out ptr));
-            }
-            foreach (int x in lst)
-            {
-                BufferPool.ReleasePage(x);
-            }
-            sw.Stop();
-            MessageBox.Show((10000000 / sw.Elapsed.TotalSeconds / 1000000).ToString());
-            lst.Clear();
-            lst = null;
-        }
+        //    if (memory == 1 || minMem == 1 || maxMemory == 1)
+        //        memory = memory;
+        //    BufferPool.SetMinimumMemoryUsage(long.MaxValue);
+        //    BufferPool.SetMaximumMemoryUsage(long.MaxValue);
+        //    sw.Start();
+        //    lst = new List<int>(100000);
+        //    for (int x = 0; x < 10000000; x++)
+        //    {
+        //        IntPtr ptr;
+        //        lst.Add(BufferPool.AllocatePage(out ptr));
+        //    }
+        //    foreach (int x in lst)
+        //    {
+        //        BufferPool.ReleasePage(x);
+        //    }
+        //    sw.Stop();
+        //    MessageBox.Show((10000000 / sw.Elapsed.TotalSeconds / 1000000).ToString());
+        //    lst.Clear();
+        //    lst = null;
+        //}
 
         unsafe static void Test2()
         {
