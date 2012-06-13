@@ -91,9 +91,7 @@ namespace openHistorian.V2.Collections
                     ClearBit(index);
             }
         }
-
-
-
+        
         /// <summary>
         /// Gets the status of the corresponding bit.
         /// </summary>
@@ -121,7 +119,7 @@ namespace openHistorian.V2.Collections
                 m_array[index >> 5] |= bit;
             }
         }
-
+        
         /// <summary>
         /// Sets the corresponding bit to false
         /// </summary>
@@ -137,6 +135,47 @@ namespace openHistorian.V2.Collections
                 m_setCount--;
                 m_array[index >> 5] &= ~bit;
             }
+        }
+
+        /// <summary>
+        /// Sets the corresponding bit to false.
+        /// Returns true if the bit state was changed.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <remarks>True if the bit state was changed. False if the bit was already cleared.</remarks>
+        public bool TryClearBit(int index)
+        {
+            if (index < 0 || index >= m_count)
+                throw new ArgumentOutOfRangeException("index");
+            int bit = 1 << (index & 31);
+            if ((m_array[index >> 5] & bit) != 0) //if bit is set
+            {
+                m_lastFoundClearedIndex = 0;
+                m_setCount--;
+                m_array[index >> 5] &= ~bit;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Sets the corresponding bit to true. 
+        /// Returns true if the bit state was changed.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <remarks>True if the bit state was changed. False if the bit was already set.</remarks>
+        public bool TrySetBit(int index)
+        {
+            if (index < 0 || index >= m_count)
+                throw new ArgumentOutOfRangeException("index");
+            int bit = 1 << (index & 31);
+            if ((m_array[index >> 5] & bit) == 0) //if bit is cleared
+            {
+                m_setCount++;
+                m_array[index >> 5] |= bit;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -204,62 +243,22 @@ namespace openHistorian.V2.Collections
         /// <returns></returns>
         public int FindClearedBit()
         {
-            if (SetCount == 32)
-                m_setCount = SetCount;
             //parse each item, 32 bits at a time
             int count = m_array.Length;
             for (int x = m_lastFoundClearedIndex >> 5; x < count; x++)
             {
-
-                //Method based on a method found at: http://graphics.stanford.edu/~seander/bithacks.htm
-                //Subtitle: Count the consecutive zero bits (trailing) on the right by binary search 
                 //If the result is not -1, then use this element
                 if (m_array[x] != -1)
                 {
-                    int value = m_array[x];
-                    int position = 0;
-                    if ((value & 0xffff) == 0xffff)
-                    {
-                        value >>= 16;
-                        position += 16;
-                    }
-                    if ((value & 0xff) == 0xff)
-                    {
-                        value >>= 8;
-                        position += 8;
-                    }
-                    if ((value & 0xf) == 0xf)
-                    {
-                        value >>= 4;
-                        position += 4;
-                    }
-                    if ((value & 0x3) == 0x3)
-                    {
-                        value >>= 2;
-                        position += 2;
-                    }
-                    position = position + (value & 0x1) + (x << 5);
-
+                    int position = HelperFunctions.FindFirstClearedBit(m_array[x]) + (x << 5); ;
                     m_lastFoundClearedIndex = position;
                     if (m_lastFoundClearedIndex >= m_count)
                         return -1;
                     return position;
-
-                    ////parse each bit in that byte
-                    ////ToDo: There is room for optimizations here.
-                    //for (int y = x << 5; y < m_count; y++)
-                    //{
-                    //    if (!GetBit(y))
-                    //    {
-                    //        if (y != c)
-                    //            throw new Exception();
-                    //        m_lastFoundClearedIndex = y;
-                    //        return y;
-                    //    }
-                    //}
                 }
             }
             return -1;
         }
+
     }
 }
