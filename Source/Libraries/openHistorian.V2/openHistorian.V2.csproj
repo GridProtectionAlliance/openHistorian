@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Globals.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="Service\Instance\Database\CreateDatabase.cs" />
@@ -174,6 +175,8 @@
     <Compile Include="OldCode\PointTypes\DateTimeType.cs" />
     <Compile Include="OldCode\PooledMemoryStream.cs" />
     <Compile Include="OldCode\IO\BinaryStream.cs" />
+    <Compile Include="UnmanagedMemory\BufferPoolBlocks.cs" />
+    <Compile Include="UnmanagedMemory\BufferPoolSettings.cs" />
     <Compile Include="UnmanagedMemory\Memory.cs" />
     <Compile Include="OldCode\UnmanagedMemory\WinApi.cs" />
     <Compile Include="FileSystem\IndexBufferPool.cs" />

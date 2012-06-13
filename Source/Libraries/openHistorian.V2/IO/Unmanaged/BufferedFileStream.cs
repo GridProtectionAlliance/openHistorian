@@ -115,7 +115,7 @@ namespace openHistorian.V2.Unmanaged
         /// <remarks>Since all disk IO inside .NET must be with a managed type. 
         /// This buffer provides a means to do the disk IO</remarks>
         /// ToDo: Create multiple static blocks so concurrent IO can occur.
-        static byte[] s_tmpBuffer = new byte[BufferPool.PageSize];
+        static byte[] s_tmpBuffer = new byte[Globals.BufferPool.PageSize];
 
         /// <summary>
         /// An event raised when this class has been disposed.
@@ -135,7 +135,7 @@ namespace openHistorian.V2.Unmanaged
         {
             m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement();
             m_baseStream = stream;
-            BufferPool.RequestCollection += new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
+            Globals.BufferPool.RequestCollection += new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
         }
 
         public int RemainingSupportedIoSessions
@@ -229,7 +229,7 @@ namespace openHistorian.V2.Unmanaged
         {
             foreach (var block in m_pageReplacementAlgorithm.GetDirtyPages(skipPagesInUse))
             {
-                m_baseStream.Position = block.PositionIndex * (long)BufferPool.PageSize;
+                m_baseStream.Position = block.PositionIndex * (long)Globals.BufferPool.PageSize;
                 Marshal.Copy((IntPtr)block.LocationOfPage, s_tmpBuffer, 0, s_tmpBuffer.Length);
                 m_baseStream.Write(s_tmpBuffer, 0, s_tmpBuffer.Length);
                 m_pageReplacementAlgorithm.ClearDirtyBits(block);

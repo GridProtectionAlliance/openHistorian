@@ -183,8 +183,8 @@ namespace openHistorian.V2.IO.Unmanaged
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            int pageIndex = (int)(position >> BufferPool.PageShiftBits);
-            int subPageIndex = (int)((position & BufferPool.PageMask) >> SubPageShiftBits);
+            int pageIndex = (int)(position >> Globals.BufferPool.PageShiftBits);
+            int subPageIndex = (int)((position & Globals.BufferPool.PageMask) >> SubPageShiftBits);
             ushort subPageDirtyFlag = (ushort)(1 << subPageIndex);
             bool existsInLookupTable;
             int pageMetaDataIndex = GetPageMetaDataIndex(pageIndex, out existsInLookupTable);
@@ -195,7 +195,7 @@ namespace openHistorian.V2.IO.Unmanaged
             bool isSubPageDirty = ((pageMetaData.IsDirtyFlags & subPageDirtyFlag) != 0);
 
             if (!existsInLookupTable)
-                delLoadFromFile.Invoke((IntPtr)pageMetaData.LocationOfPage, (long)pageMetaData.PositionIndex * BufferPool.PageSize);
+                delLoadFromFile.Invoke((IntPtr)pageMetaData.LocationOfPage, (long)pageMetaData.PositionIndex * Globals.BufferPool.PageSize);
 
             return new SubPageMetaData
             {

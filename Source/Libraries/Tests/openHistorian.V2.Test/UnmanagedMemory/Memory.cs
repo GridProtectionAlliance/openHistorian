@@ -10,7 +10,7 @@ namespace openHistorian.V2.UnmanagedMemory
         [TestMethod()]
         public void Test()
         {
-            Assert.AreEqual(BufferPool.AllocatedBytes, 0L);
+            Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
 
             Memory block = Memory.Allocate(1);
             if (block.Address == IntPtr.Zero)
@@ -56,7 +56,7 @@ namespace openHistorian.V2.UnmanagedMemory
                 throw new Exception();
             }
 
-            Assert.AreEqual(BufferPool.AllocatedBytes, 0L);
+            Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
         }
     }
 }

@@ -101,15 +101,15 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <summary>
         /// The number of bits in the page size.
         /// </summary>
-        const int ShiftLength = BufferPool.PageShiftBits;
+        int ShiftLength = Globals.BufferPool.PageShiftBits;
         /// <summary>
         /// The mask that can be used to Logical AND the position to get the relative position within the page.
         /// </summary>
-        const int OffsetMask = BufferPool.PageMask;
+        int OffsetMask = Globals.BufferPool.PageMask;
         /// <summary>
         /// The size of each page.
         /// </summary>
-        const int Length = BufferPool.PageSize;
+        int Length = Globals.BufferPool.PageSize;
 
         /// <summary>
         /// The byte position in the stream
@@ -166,8 +166,8 @@ namespace openHistorian.V2.IO.Unmanaged
             {
                 int pageIndex;
                 IntPtr pagePointer;
-                pageIndex = BufferPool.AllocatePage(out pagePointer);
-                Memory.Clear((byte*)pagePointer, BufferPool.PageSize);
+                Globals.BufferPool.AllocatePage(out pageIndex, out pagePointer);
+                Memory.Clear((byte*)pagePointer, Globals.BufferPool.PageSize);
                 m_pageIndex.Add(pageIndex);
                 m_pagePointer.Add(pagePointer.ToInt64());
             }
@@ -213,7 +213,7 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             get
             {
-                return m_pageIndex.Count * BufferPool.PageSize;
+                return m_pageIndex.Count * Globals.BufferPool.PageSize;
             }
         }
 
@@ -336,7 +336,7 @@ namespace openHistorian.V2.IO.Unmanaged
                     // This will be done regardless of whether the object is finalized or disposed.
                     foreach (int index in m_pageIndex)
                     {
-                        BufferPool.ReleasePage(index);
+                        Globals.BufferPool.ReleasePage(index);
                     }
                     m_pageIndex = null;
                     m_pagePointer = null;

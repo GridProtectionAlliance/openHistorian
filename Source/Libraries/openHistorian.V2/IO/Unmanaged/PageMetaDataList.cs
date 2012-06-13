@@ -157,7 +157,7 @@ namespace openHistorian.V2.IO.Unmanaged
                     {
                         if (m_isPageUsed[x])
                         {
-                            BufferPool.ReleasePage(m_listOfPages[x].BufferPoolIndex);
+                            Globals.BufferPool.ReleasePage(m_listOfPages[x].BufferPoolIndex);
                         }
                     }
                     m_listOfPages = null;
@@ -196,7 +196,9 @@ namespace openHistorian.V2.IO.Unmanaged
 
             //Allocate a new one
             InternalPageMetaData cachePage;
-            cachePage.BufferPoolIndex = BufferPool.AllocatePage(out ptr);
+            int index;
+            Globals.BufferPool.AllocatePage(out index, out ptr);
+            cachePage.BufferPoolIndex = index;
             cachePage.LocationOfPage = (byte*)ptr;
             cachePage.IsDirtyFlags = 0;
             cachePage.ReferencedCount = 0;
@@ -276,7 +278,7 @@ namespace openHistorian.V2.IO.Unmanaged
                         if (shouldCollect(x, block.PositionIndex))
                         {
                             collectionCount++;
-                            BufferPool.ReleasePage(block.BufferPoolIndex);
+                            Globals.BufferPool.ReleasePage(block.BufferPoolIndex);
                             m_isPageUsed[x] = false;
                         }
                     }
