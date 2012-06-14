@@ -148,8 +148,15 @@ namespace openHistorian.V2.UnmanagedMemory
             m_pageSize = pageSize;
 
             var info = new Microsoft.VisualBasic.Devices.ComputerInfo();
+           
             long totalMemory = (long)info.TotalPhysicalMemory;
             long availableMemory = (long)info.AvailablePhysicalMemory;
+
+            if (!Environment.Is64BitProcess)
+            {
+                totalMemory = Math.Min(int.MaxValue, totalMemory); //Clip at 2GB
+                availableMemory = Math.Min(int.MaxValue - GC.GetTotalMemory(false), availableMemory); //Clip at 2GB
+            }
 
             m_memoryBlockSize = CalculateRecommendedMemoryBlockSize(pageSize, totalMemory);
             m_maximumBufferCeiling = CalculateBufferSizeCeiling(m_memoryBlockSize, totalMemory);

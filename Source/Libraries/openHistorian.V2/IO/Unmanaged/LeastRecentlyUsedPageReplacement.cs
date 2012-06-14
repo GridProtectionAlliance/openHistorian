@@ -82,7 +82,7 @@ namespace openHistorian.V2.IO.Unmanaged
             /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
             /// </summary>
             /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            protected virtual void Dispose(bool disposing)
+            void Dispose(bool disposing)
             {
                 if (!m_disposed)
                 {
@@ -265,23 +265,6 @@ namespace openHistorian.V2.IO.Unmanaged
             m_allocatedPagesLookupList.Remove(positionIndex);
             return true;
         }
-
-        //public bool PageInUse(long position)
-        //{
-        //    if (m_disposed)
-        //        throw new ObjectDisposedException(GetType().FullName);
-
-        //    int pageIndex = (int)(position >> BufferPool.PageShiftBits);
-        //    int pageMetaDataIndex;
-
-        //    if (m_allocatedPagesLookupList.TryGetValue(pageIndex, out pageMetaDataIndex))
-        //    {
-        //        var metaDataPage = m_pageList[pageMetaDataIndex];
-        //        metaDataPage.IsDirtyFlags = 0;
-        //        m_pageList[pageMetaDataIndex] = metaDataPage;
-        //    }
-        //    return false;
-        //}
 
         /// <summary>
         /// Marks the entire page as written to the disk.

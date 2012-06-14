@@ -69,8 +69,8 @@ namespace openHistorian.V2.UnmanagedMemory
             m_pageSize = settings.PageSize;
             m_memoryBlockSize = settings.MemoryBlockSize;
             m_pagesPerMemoryBlock = (int)(settings.MemoryBlockSize / settings.PageSize);
-            m_pagesPerMemoryBlockMask = m_memoryBlockSize - 1;
-            m_pagesPerMemoryBlockShiftBits = HelperFunctions.CountBits((uint)m_pagesPerMemoryBlock);
+            m_pagesPerMemoryBlockMask = m_pagesPerMemoryBlock - 1;
+            m_pagesPerMemoryBlockShiftBits = HelperFunctions.CountBits((uint)m_pagesPerMemoryBlockMask);
 
             //maximum number of allocations, plus 1 for rounding and good measure.
             int maxAllocationCount = (int)(settings.MaximumBufferCeiling / settings.MemoryBlockSize) + 1;
@@ -87,6 +87,17 @@ namespace openHistorian.V2.UnmanagedMemory
         ~BufferPoolBlocks()
         {
             Dispose(false);
+        }
+
+        /// <summary>
+        /// Determines if the class can allocate more blocks from Windows API.
+        /// </summary>
+        public bool CanAllocateMore
+        {
+            get
+            {
+                return m_allocatedBlocksCount < m_memoryBlocks.Length;
+            }
         }
 
         /// <summary>
@@ -120,7 +131,7 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             get
             {
-                return m_allocatedPagesCount * (long) m_pageSize;
+                return m_allocatedPagesCount * (long)m_pageSize;
             }
         }
 
@@ -147,7 +158,7 @@ namespace openHistorian.V2.UnmanagedMemory
             {
                 if (BufferPoolSize == 0)
                     return 0f;
-                return (float)AllocatedBytes / BufferPoolSize;
+                return 1f - (float)AllocatedBytes / BufferPoolSize;
             }
         }
 

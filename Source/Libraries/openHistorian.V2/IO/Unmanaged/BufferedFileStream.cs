@@ -43,7 +43,6 @@ namespace openHistorian.V2.Unmanaged
     /// </remarks>
     unsafe public class BufferedFileStream : ISupportsBinaryStream
     {
-
         // Nested Types
         class IoSession : IBinaryStreamIoSession
         {
@@ -78,7 +77,7 @@ namespace openHistorian.V2.Unmanaged
             /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
             /// </summary>
             /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            protected virtual void Dispose(bool disposing)
+            void Dispose(bool disposing)
             {
                 if (!m_disposed)
                 {
@@ -100,7 +99,7 @@ namespace openHistorian.V2.Unmanaged
 
             public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
             {
-                m_stream.GetBlock(m_ioSession,position,isWriting,out firstPointer, out firstPosition, out length, out supportsWriting);
+                m_stream.GetBlock(m_ioSession, position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
             }
 
             public void Clear()
@@ -146,85 +145,6 @@ namespace openHistorian.V2.Unmanaged
             }
         }
 
-        //public void Read(long position, byte[] data, int start, int length)
-        //{
-        //    int address = (int)(position >> BufferPool.PageShiftBits);
-        //    int offset = (int)(position & BufferPool.PageMask);
-        //    long streamPosition = position & ~BufferPool.PageMask;
-        //    int availableLength = BufferPool.PageSize - offset;
-
-        //    Block cachePage;
-        //    int cachePageIndex;
-
-        //    //if the page is not in the entry, read it from the underlying stream.
-        //    if (!m_list.TryGetValue(address, out cachePageIndex))
-        //    {
-        //        cachePage
-        //        IntPtr ptr;
-        //        cachePage.Index = BufferPool.AllocatePage(out ptr);
-        //        cachePage.Location = (byte*)ptr;
-
-        //        BaseStream.Position = streamPosition;
-        //        lock (s_tmpBuffer)
-        //        {
-        //            BaseStream.Read(s_tmpBuffer, 0, s_tmpBuffer.Length);
-        //            Marshal.Copy(s_tmpBuffer, 0, ptr, s_tmpBuffer.Length);
-        //        }
-        //        m_list.Add(address, cachePage);
-        //    }
-
-        //    if (availableLength < length)
-        //    {
-        //        Marshal.Copy((IntPtr)cachePage.Location + offset, data, start, availableLength);
-        //        Read(position + availableLength, data, start + availableLength, length - availableLength);
-        //    }
-        //    else
-        //    {
-        //        Marshal.Copy((IntPtr)cachePage.Location + offset, data, start, length);
-        //    }
-        //}
-
-        //public void Write(long position, byte[] data, int start, int length)
-        //{
-        //    int address = (int)(position >> BufferPool.PageShiftBits);
-        //    int offset = (int)(position & BufferPool.PageMask);
-        //    long streamPosition = position & ~BufferPool.PageMask;
-        //    int availableLength = BufferPool.PageSize - offset;
-
-        //    Block cachePage;
-
-        //    //if the page is not in the entry, read it from the underlying stream.
-        //    if (!m_list.TryGetValue(address, out cachePage))
-        //    {
-        //        IntPtr ptr;
-        //        cachePage.Index = BufferPool.AllocatePage(out ptr);
-        //        cachePage.Location = (byte*)ptr;
-
-        //        BaseStream.Position = streamPosition;
-        //        lock (s_tmpBuffer)
-        //        {
-        //            BaseStream.Read(s_tmpBuffer, 0, s_tmpBuffer.Length);
-        //            Marshal.Copy(s_tmpBuffer, 0, ptr, s_tmpBuffer.Length);
-        //            //Populate with junk
-        //            for (int x = 0; x < BufferPool.PageSize; x += 8)
-        //            {
-        //                *(long*)ptr = (long)ptr * x;
-        //            }
-        //        }
-        //        m_list.Add(address, cachePage);
-        //    }
-
-        //    if (availableLength < length)
-        //    {
-        //        Marshal.Copy(data, start, (IntPtr)cachePage.Location + offset, availableLength);
-        //        Write(position + availableLength, data, start + availableLength, length - availableLength);
-        //    }
-        //    else
-        //    {
-        //        Marshal.Copy(data, start, (IntPtr)cachePage.Location + offset, length);
-        //    }
-        //}
-
         public void Flush(bool waitForWriteToDisk = false, bool skipPagesInUse = true)
         {
             foreach (var block in m_pageReplacementAlgorithm.GetDirtyPages(skipPagesInUse))
@@ -238,8 +158,6 @@ namespace openHistorian.V2.Unmanaged
             if (waitForWriteToDisk)
                 WinApi.FlushFileBuffers(m_baseStream.SafeFileHandle);
         }
-
-
 
         void GetBlock(LeastRecentlyUsedPageReplacement.IoSession ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
         {

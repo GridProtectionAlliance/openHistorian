@@ -97,7 +97,7 @@ namespace openHistorian.V2.UnmanagedMemory
             m_syncRoot = new object();
             PageSize = pageSize;
             PageMask = pageSize - 1;
-            PageShiftBits = HelperFunctions.CountBits((uint)pageSize);
+            PageShiftBits = HelperFunctions.CountBits((uint)PageMask);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             lock (m_syncRoot)
             {
-                while (m_blocks.AllocatedBytes > m_settings.TargetBufferSize)
+                if (m_blocks.IsFull)
                 {
                     RequestMoreSpace();
                 }
@@ -239,9 +239,11 @@ namespace openHistorian.V2.UnmanagedMemory
             }
 
             if (m_blocks.IsFull)
-                RequestCollection(BufferPoolCollectionMode.Emergency);
+                if (RequestCollection != null)
+                    RequestCollection(BufferPoolCollectionMode.Emergency);
             if (m_blocks.IsFull)
-                RequestCollection(BufferPoolCollectionMode.Critical);
+                if (RequestCollection != null)
+                    RequestCollection(BufferPoolCollectionMode.Critical);
             if (m_blocks.IsFull)
             {
                 throw new OutOfMemoryException("Buffer pool is out of memory");
@@ -256,7 +258,7 @@ namespace openHistorian.V2.UnmanagedMemory
             while (m_blocks.FreeSpace < m_desiredFreeSpaceAfterCollection)
             {
                 //If this goes beyond the desired maximum, exit
-                if (m_blocks.IsCompletelyFull)
+                if (!m_blocks.CanAllocateMore)
                     return;
                 m_blocks.AllocateWinApiBlock();
             }

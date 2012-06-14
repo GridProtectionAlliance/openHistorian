@@ -146,7 +146,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// Releases the unmanaged resources used by the <see cref="PageMetaDataList"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
@@ -235,19 +235,6 @@ namespace openHistorian.V2.IO.Unmanaged
             metaData.IsDirtyFlags = 0;
             SetPage(index, metaData);
         }
-
-        ///// <summary>
-        /////
-        ///// </summary>
-        ///// <param name="index"></param>
-        //public void ReleasePage(int index)
-        //{
-        //    if (m_disposed)
-        //        throw new ObjectDisposedException(GetType().FullName);
-
-        //    BufferPool.ReleasePage(GetPage(index).BufferPoolIndex);
-        //    m_isPageUsed.ClearBit(index);
-        //}
 
         /// <summary>
         /// Executes a collection cycle on the pages in this list.
