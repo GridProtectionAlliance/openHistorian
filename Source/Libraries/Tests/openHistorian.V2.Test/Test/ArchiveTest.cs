@@ -40,7 +40,7 @@ namespace openHistorian.V2
             s_archive.Close();
             s_archive = null;
 
-            MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + FileSystem.DiskIoEnhanced.ChecksumCount);
+            MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + FileSystem.MemoryUnit.ChecksumCount);
             MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt);
         }
 

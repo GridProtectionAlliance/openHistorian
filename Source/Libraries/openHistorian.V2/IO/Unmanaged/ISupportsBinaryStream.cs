@@ -54,6 +54,8 @@ namespace openHistorian.V2.IO.Unmanaged
         /// </summary>
         /// <returns></returns>
         IBinaryStream CreateBinaryStream();
-    
+
+      
+
     }
 }

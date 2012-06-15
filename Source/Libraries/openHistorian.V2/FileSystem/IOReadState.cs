@@ -47,12 +47,9 @@ namespace openHistorian.V2.FileSystem
         /// Special case if the entire page is zeros. 
         /// This means the page was likely never written to.
         /// However, a disk error what wipes this area with zeros can also generate this case.
+        /// This can also occur when reading past the end of the file.
         /// </summary>
         ChecksumInvalidBecausePageIsNull,
-        /// <summary>
-        /// Indicates that the page being read went past the end of the file.
-        /// </summary>
-        ReadPastThenEndOfTheFile,
         /// <summary>
         /// The page that was requested came from a newer version of the file.
         /// </summary>

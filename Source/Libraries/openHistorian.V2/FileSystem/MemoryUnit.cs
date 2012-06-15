@@ -1,0 +1,472 @@
+﻿//******************************************************************************************************
+//  MemoryUnit.cs - Gbtc
+//
+//  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://www.opensource.org/licenses/eclipse-1.0.php
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  6/15/2012 - Steven E. Chisholm
+//       Generated original version of source code.
+//
+//******************************************************************************************************
+
+using System;
+using System.Data;
+using System.IO;
+using openHistorian.V2.IO.Unmanaged;
+
+namespace openHistorian.V2.FileSystem
+{
+    /// <summary>
+    /// Contains basic information about a page of memory
+    /// </summary>
+    unsafe internal class MemoryUnit : IDisposable
+    {
+        #region [ Members ]
+
+        DiskIoEnhanced m_diskIo;
+        IBinaryStreamIoSession m_ioSession;
+        bool m_disposed;
+        bool m_isValid;
+        bool m_pendingWriteComplete;
+        bool m_blockSupportsWriting;
+
+        int m_length;
+        int m_blockIndex;
+        byte* m_pointer;
+
+        #endregion
+
+        #region [ Constructors ]
+
+        public MemoryUnit(DiskIoEnhanced diskIo, IBinaryStreamIoSession ioSession)
+        {
+            m_diskIo = diskIo;
+            m_ioSession = ioSession;
+            m_isValid = false;
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources before the <see cref="MemoryUnit"/> object is reclaimed by <see cref="GC"/>.
+        /// </summary>
+        ~MemoryUnit()
+        {
+            Dispose(false);
+        }
+
+        #endregion
+
+        #region [ Properties ]
+
+        /// <summary>
+        /// Returns true if this class is disposed or its it's underlying DiskIo is disposed.
+        /// </summary>
+        public bool IsDisposed
+        {
+            get
+            {
+                return m_disposed || m_diskIo.IsDisposed;
+            }
+        }
+
+        public bool IsValid
+        {
+            get
+            {
+                return m_isValid && !IsDisposed;
+            }
+        }
+
+        /// <summary>
+        /// Determines if the current block can be written to.
+        /// </summary>
+        public bool IsReadOnly
+        {
+            get
+            {
+                CheckIsValid();
+                return !m_pendingWriteComplete;
+            }
+        }
+
+        public int Length
+        {
+            get
+            {
+                CheckIsValid();
+                return m_length;
+            }
+        }
+        public int BlockIndex
+        {
+            get
+            {
+                CheckIsValid();
+                return m_blockIndex;
+            }
+        }
+        public byte* Pointer
+        {
+            get
+            {
+                CheckIsValid();
+                return m_pointer;
+            }
+        }
+
+        public IntPtr IntPtr
+        {
+            get
+            {
+                CheckIsValid();
+                return (IntPtr)m_pointer;
+            }
+        }
+
+        #endregion
+
+        #region [ Methods ]
+
+        /// <summary>
+        /// Navigates to a block that will be written to. 
+        /// This block must be a null block in order for the write to be successful.
+        /// </summary>
+        /// <param name="blockIndex"></param>
+        public void BeginWriteToNewBlock(int blockIndex)
+        {
+            CheckIsDisposed();
+
+            if (m_diskIo.IsReadOnly)
+                throw new ReadOnlyException("File system is read only");
+            if (m_pendingWriteComplete)
+                throw new Exception("A pending write operation must first complete before starting another one");
+
+            m_isValid = false;
+
+            //If the file is not large enough to write to this block, autogrow the file.
+            if ((long)(BlockIndex + 1) * ArchiveConstants.BlockSize > m_diskIo.FileSize)
+            {
+                m_diskIo.SetFileLength(0, BlockIndex + 1);
+            }
+
+            m_isValid = false;
+            ReadBlock(blockIndex, true);
+
+            if (!IsBlockNull(m_pointer))
+                throw new ArgumentException("Block is not null", "blockIndex");
+
+            m_isValid = true;
+            m_pendingWriteComplete = true;
+        }
+
+        /// <summary>
+        /// Navigates to a block that will be written to.
+        /// This block must currently exist and have the correct parameters passed to this function
+        /// In order to allow this block to be modified.
+        /// </summary>
+        /// <param name="blockIndex"></param>
+        /// <param name="blockType">the type of this block.</param>
+        /// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
+        /// <param name="fileIdNumber">the file number this block is associated with</param>
+        /// <param name="snapshotSequenceNumber">the file system sequence number of this write</param>
+        /// <returns></returns>
+        public IoReadState BeginWriteToExistingBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
+        {
+            CheckIsDisposed();
+
+            if (m_diskIo.IsReadOnly)
+                throw new ReadOnlyException("File system is read only");
+            if (m_pendingWriteComplete)
+                throw new Exception("A pending write operation must first complete before starting another one");
+
+            m_isValid = false;
+            ReadBlock(blockIndex, true);
+
+            IoReadState readState = IsFooterValid(m_pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
+
+            if (readState != IoReadState.Valid)
+                return readState;
+
+            m_pendingWriteComplete = true;
+            m_isValid = true;
+            return readState;
+        }
+
+        /// <summary>
+        /// Completes the write operation by calculating the checksum for the block.
+        /// After this call, the block is still valid, but cannot be written to until BeginWrite is executed.
+        /// </summary>
+        /// <param name="blockType">the type of this block.</param>
+        /// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
+        /// <param name="fileIdNumber">the file number this block is associated with</param>
+        /// <param name="snapshotSequenceNumber">the file system sequence number of this write</param>
+        public void EndWrite(BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
+        {
+            CheckIsDisposed();
+
+            if (!m_pendingWriteComplete)
+                throw new Exception("A write operation has not started yet. Begin the write operation first.");
+
+            //ToDo: Consider reloading the origional data if a buffer was modified when it wasn't supposed to be
+            //This is actually a pretty serious bug.
+
+            WriteFooterData(m_pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
+            m_pendingWriteComplete = false;
+        }
+
+
+        /// <summary>
+        /// Navigates to a block that will be only read and not modified.
+        /// </summary>
+        /// <param name="blockIndex"></param>
+        /// <param name="blockType">the type of this block.</param>
+        /// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
+        /// <param name="fileIdNumber">the file number this block is associated with</param>
+        /// <param name="snapshotSequenceNumber">the file system sequence number of this write</param>
+        /// <returns></returns>
+        public IoReadState Read(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            if (m_diskIo.IsDisposed)
+                throw new ObjectDisposedException(typeof(DiskIoEnhanced).FullName);
+            if (m_pendingWriteComplete)
+                throw new Exception("A pending write operation must first complete before starting another one");
+
+            m_isValid = false;
+            ReadBlock(blockIndex, false);
+
+            IoReadState readState = IsFooterValid(m_pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
+            if (readState != IoReadState.Valid)
+                return readState;
+
+            m_isValid = true;
+            return readState;
+        }
+
+        /// <summary>
+        /// Releases all the resources used by the <see cref="MemoryUnit"/> object.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        #endregion
+
+        #region [ Helper Methods ]
+
+        /// <summary>
+        /// Checks 3 flags and throws the correct exceptions if this class is invalid or disposed.
+        /// </summary>
+        void CheckIsValid()
+        {
+            if (!m_isValid)
+                throw new InvalidDataException();
+            CheckIsDisposed();
+        }
+
+        /// <summary>
+        /// Checks 2 flags and throws the correct exceptions if this class is disposed.
+        /// </summary>
+        void CheckIsDisposed()
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            if (m_diskIo.IsDisposed)
+                throw new ObjectDisposedException(typeof(DiskIoEnhanced).FullName);
+        }
+
+        /// <summary>
+        /// Tries to read data from the following file
+        /// </summary>
+        /// <param name="blockIndex">the block where to write the data</param>
+        /// <param name="requestWriteAccess">true if reading data from this block for the purpose of writing to it later</param>
+        void ReadBlock(int blockIndex, bool requestWriteAccess)
+        {
+            IntPtr pointerToFirstByte;
+            int validLength;
+            long positionOfFirstByte;
+            bool supportsWriting;
+            long position = (long)blockIndex * ArchiveConstants.BlockSize;
+
+            m_ioSession.GetBlock(position, requestWriteAccess, out pointerToFirstByte, out positionOfFirstByte, out validLength, out supportsWriting);
+            int offsetOfPosition = (int)(position - positionOfFirstByte);
+
+            if (validLength - offsetOfPosition < ArchiveConstants.BlockSize)
+                throw new Exception("stream is not lining up on page boundries");
+
+            m_blockIndex = blockIndex;
+            m_pointer = (byte*)(pointerToFirstByte + offsetOfPosition);
+            m_length = ArchiveConstants.BlockSize;
+            m_blockSupportsWriting = supportsWriting;
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="MemoryUnit"/> object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        void Dispose(bool disposing)
+        {
+            if (!m_disposed)
+            {
+                try
+                {
+                    // This will be done regardless of whether the object is finalized or disposed.
+
+                    if (disposing)
+                    {
+                        if (m_ioSession != null)
+                            m_ioSession.Dispose();
+                        m_ioSession = null;
+                    }
+                }
+                finally
+                {
+                    m_isValid = false;
+                    m_disposed = true;  // Prevent duplicate dispose.
+                }
+            }
+        }
+
+        #endregion
+
+        //internal void WriteBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] buffer)
+        //{
+        //    AquireBlockForWrite(blockIndex);
+        //    Marshal.Copy(buffer, 0, IntPtr, buffer.Length);
+        //    WriteBlock(blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
+        //}
+
+        //internal IoReadState ReadBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] buffer)
+        //{
+        //    var rv = AquireBlockForRead(blockIndex, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
+        //    if (rv == IoReadState.Valid)
+        //        Marshal.Copy(IntPtr, buffer, 0, buffer.Length);
+        //    return rv;
+        //}
+
+        #region [ Static ]
+
+        /// <summary>
+        /// The calculated checksum for a page of all zeros.
+        /// </summary>
+        const long EmptyChecksum = 6845471437889732609;
+
+        /// <summary>
+        /// Checks how many times the checksum was computed.  This is used to see IO amplification.
+        /// It is currently a debug term that will soon disappear.
+        /// </summary>
+        static internal long ChecksumCount;
+
+        /// <summary>
+        /// Computes the custom checksum of the data.
+        /// </summary>
+        /// <param name="data">the data to compute the checksum for.</param>
+        /// <returns></returns>
+        static long ComputeChecksum(byte* data)
+        {
+            ChecksumCount += 1;
+            // return 0;
+
+            long a = 1; //Maximum size for A is 20 bits in length
+            long b = 0; //Maximum size for B is 31 bits in length
+            long c = 0; //Maximum size for C is 42 bits in length
+            for (int x = 0; x < ArchiveConstants.BlockSize - 8; x++)
+            {
+                a += data[x];
+                b += a;
+                c += b;
+            }
+            //Since only 13 bits of C will remain, xor all 42 bits of C into the first 13 bits.
+            c = c ^ (c >> 13) ^ (c >> 26) ^ (c >> 39);
+            return (c << 51) ^ (b << 20) ^ a;
+        }
+
+        /// <summary>
+        /// Determines if the footer data for the following page is valid.
+        /// </summary>
+        /// <param name="data">the block data to check</param>
+        /// <param name="blockType">the type of this block.</param>
+        /// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
+        /// <param name="fileIdNumber">the file number this block is associated with</param>
+        /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
+        /// <returns>State information about the state of the footer data</returns>
+        static IoReadState IsFooterValid(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
+        {
+            long checksum = ComputeChecksum(data);
+            long checksumInData = *(long*)(data + ArchiveConstants.BlockSize - 8);
+
+            if (checksum == checksumInData)
+            {
+                if (data[ArchiveConstants.BlockSize - 21] != (byte)blockType)
+                    return IoReadState.BlockTypeMismatch;
+                if (*(int*)(data + ArchiveConstants.BlockSize - 20) != indexValue)
+                    return IoReadState.IndexNumberMissmatch;
+                if ((uint)*(int*)(data + ArchiveConstants.BlockSize - 12) > snapshotSequenceNumber) //Note: Convert to uint so negative numbers also fall in this category
+                    return IoReadState.PageNewerThanSnapshotSequenceNumber;
+                if (*(int*)(data + ArchiveConstants.BlockSize - 16) != fileIdNumber)
+                    return IoReadState.FileIdNumberDidNotMatch;
+                return IoReadState.Valid;
+            }
+            if ((checksumInData == 0) && (checksum == EmptyChecksum))
+            {
+                return IoReadState.ChecksumInvalidBecausePageIsNull;
+            }
+            return IoReadState.ChecksumInvalid;
+        }
+
+        /// <summary>
+        /// Determines if the block is null. (i.e. all zeros)
+        /// </summary>
+        /// <param name="data">a pointer to the start of the block to check.</param>
+        /// <returns></returns>
+        static bool IsBlockNull(byte* data)
+        {
+            long* dataLong = (long*)data;
+
+            for (int x = 0; x < ArchiveConstants.BlockSize / 8; x++)
+            {
+                if (dataLong[x] != 0)
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Writes the following footer data to the block.
+        /// </summary>
+        /// <param name="data">the block data to write to</param>
+        /// <param name="blockType">the type of this block.</param>
+        /// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
+        /// <param name="fileIdNumber">the file number this block is associated with</param>
+        /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
+        /// <returns></returns>
+        static void WriteFooterData(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
+        {
+            data[ArchiveConstants.BlockSize - 21] = (byte)blockType;
+            *(int*)(data + ArchiveConstants.BlockSize - 20) = indexValue;
+            *(int*)(data + ArchiveConstants.BlockSize - 16) = fileIdNumber;
+            *(int*)(data + ArchiveConstants.BlockSize - 12) = snapshotSequenceNumber;
+
+            long checksum = ComputeChecksum(data);
+            *(long*)(data + ArchiveConstants.BlockSize - 8) = checksum;
+        }
+
+        #endregion
+
+    }
+}

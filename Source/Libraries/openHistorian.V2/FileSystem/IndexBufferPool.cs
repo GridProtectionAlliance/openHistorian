@@ -29,9 +29,9 @@ namespace openHistorian.V2.FileSystem
     /// </summary>
     internal class IndexBufferPool
     {
-        public IMemoryUnit FirstIndirect;
-        public IMemoryUnit SecondIndirect;
-        public IMemoryUnit ThirdIndirect;
+        public MemoryUnit FirstIndirect;
+        public MemoryUnit SecondIndirect;
+        public MemoryUnit ThirdIndirect;
         public IndexBufferPool(DiskIoEnhanced diskIo)
         {
             FirstIndirect = diskIo.GetMemoryUnit();

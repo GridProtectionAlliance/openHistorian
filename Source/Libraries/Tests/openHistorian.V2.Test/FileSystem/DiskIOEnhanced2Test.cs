@@ -29,16 +29,16 @@
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 //namespace openHistorian.V2.FileSystem
-//{ 
+//{
 //    [TestClass()]
 //    public class DiskIOEnhanced2Test2
 //    {
 //        [TestMethod()]
 //        public void Test()
 //        {
-//            Assert.AreEqual(openHistorian.V2.UnmanagedMemory.BufferPool.AllocatedBytes, 0L);
+//            Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
 //            DiskIOEnhanced2Test.Test();
-//            Assert.AreEqual(openHistorian.V2.UnmanagedMemory.BufferPool.AllocatedBytes, 0L);
+//            Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
 //            Assert.IsTrue(true);
 //        }
 //    }
@@ -54,7 +54,7 @@
 //        {
 //            DiskIoEnhanced disk = new DiskIoEnhanced();
 //            IMemoryUnit buffer = disk.GetMemoryUnit();
-//            if (disk.AquireBlockForRead(1, BlockType.DataBlock, 1, 2, 3, buffer) != IoReadState.ReadPastThenEndOfTheFile)
+//            if (disk.AquireBlockForRead(1, BlockType.DataBlock, 1, 2, 3, buffer) != IoReadState.ChecksumInvalidBecausePageIsNull)
 //                throw new Exception("Outside Bounds");
 //            disk.AquireBlockForWrite(1, buffer);
 
@@ -71,7 +71,7 @@
 //                throw new Exception();
 
 
-//            for (int x = 0; x<ArchiveConstants.BlockSize; x++)
+//            for (int x = 0; x < ArchiveConstants.BlockSize; x++)
 //            {
 //                if (data[x] != buffer.Pointer[x])
 //                    throw new Exception();
@@ -92,21 +92,21 @@
 //        }
 //        static void TestChecksumInvalid(DiskIOEnhanced2Test stream)
 //        {
-//            IoReadState readState;
-//            int seed = (int)DateTime.Now.Ticks;
-//            byte[] buffer = GenerateRandomDataBlock(seed);
-//            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
+//            //IoReadState readState;
+//            //int seed = (int)DateTime.Now.Ticks;
+//            //byte[] buffer = GenerateRandomDataBlock(seed);
+//            //int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
-//            stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
+//            //stream.WriteBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
-//            byte[] tmp = new byte[1];
-//            //stream.m_stream.Read(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
-//            tmp[0] = (byte)(tmp[0] + 1);
-//            //stream.m_stream.Write(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
+//            //byte[] tmp = new byte[1];
+//            ////stream.m_stream.Read(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
+//            //tmp[0] = (byte)(tmp[0] + 1);
+//            ////stream.m_stream.Write(currentBlock * ArchiveConstants.BlockSize, tmp, 0, 1);
 
-//            readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
-//            if (readState != IoReadState.ChecksumInvalid)
-//                throw new Exception();
+//            //readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
+//            //if (readState != IoReadState.ChecksumInvalid)
+//            //    throw new Exception();
 //        }
 
 //        public static byte[] GenerateRandomDataBlock(int seed)

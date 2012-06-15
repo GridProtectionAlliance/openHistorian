@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -366,11 +367,17 @@ namespace openHistorian.V2.FileSystem
             m_files = new List<FileMetaData>();
             byte[] data = GetBytes();
 
-            //write the file header to the first 10 pages of the file.
-            for (int x = 0; x < 10; x++)
+            using (var buffer = diskIo.GetMemoryUnit())
             {
-                diskIo.WriteBlock(x, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
+                //write the file header to the first 10 pages of the file.
+                for (int x = 0; x < 10; x++)
+                {
+                    buffer.BeginWriteToNewBlock(x);
+                    Marshal.Copy(data, 0, buffer.IntPtr, ArchiveConstants.BlockSize);
+                    buffer.EndWrite(BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
+                }
             }
+
         }
 
         /// <summary>
@@ -495,9 +502,22 @@ namespace openHistorian.V2.FileSystem
         public void WriteToFileSystem(DiskIoEnhanced diskIo)
         {
             byte[] data = GetBytes();
-            diskIo.WriteBlock(0, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
-            diskIo.WriteBlock(1, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
-            diskIo.WriteBlock(((m_snapshotSequenceNumber & 7) + 2), BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
+
+            using (var buffer = diskIo.GetMemoryUnit())
+            {
+                buffer.BeginWriteToExistingBlock(0, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
+                Marshal.Copy(data, 0, buffer.IntPtr, ArchiveConstants.BlockSize);
+                buffer.EndWrite(BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
+
+                buffer.BeginWriteToExistingBlock(1, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
+                Marshal.Copy(data, 0, buffer.IntPtr, ArchiveConstants.BlockSize);
+                buffer.EndWrite(BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
+
+                buffer.BeginWriteToExistingBlock(((m_snapshotSequenceNumber & 7) + 2), BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
+                Marshal.Copy(data, 0, buffer.IntPtr, ArchiveConstants.BlockSize);
+                buffer.EndWrite(BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
+            }
+
         }
         public bool AreEqual(FileAllocationTable other)
         {
@@ -677,23 +697,30 @@ namespace openHistorian.V2.FileSystem
         static FileAllocationTable TryOpenFileAllocationTable(int blockIndex, DiskIoEnhanced diskIo, byte[] tempBuffer, out Exception error)
         {
             error = null;
-            IoReadState readState = diskIo.ReadBlock(blockIndex, BlockType.FileAllocationTable, 0, 0, int.MaxValue, tempBuffer);
-            if (readState != IoReadState.Valid)
+            using (var buffer = diskIo.GetMemoryUnit())
             {
-                error = new Exception("Error Reading File System " + readState.ToString());
-            }
-            else
-            {
-                try
+                IoReadState readState = buffer.Read(blockIndex, BlockType.FileAllocationTable, 0, 0, int.MaxValue);
+
+                if (readState != IoReadState.Valid)
                 {
-                    return new FileAllocationTable(tempBuffer);
+                    error = new Exception("Error Reading File System " + readState.ToString());
                 }
-                catch (Exception ex)
+                else
                 {
-                    error = ex;
+                    Marshal.Copy(buffer.IntPtr, tempBuffer, 0, ArchiveConstants.BlockSize);
+
+                    try
+                    {
+                        return new FileAllocationTable(tempBuffer);
+                    }
+                    catch (Exception ex)
+                    {
+                        error = ex;
+                    }
                 }
+                return null;
             }
-            return null;
+
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IMemoryUnit.cs - Gbtc
+//  ISupportsBinaryStreamResizing.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,22 +16,33 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  3/24/2012 - Steven E. Chisholm
-//       Generated original version of source code.
+//  6/14/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
 //
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace openHistorian.V2.FileSystem
+namespace openHistorian.V2.IO.Unmanaged
 {
-    public unsafe interface IMemoryUnit : IDisposable
+    /// <summary>
+    /// A ISupportsBinaryStream that is a definate size and can thus be resized.
+    /// </summary>
+    interface ISupportsBinaryStreamSizing : ISupportsBinaryStream
     {
-        bool IsValid { get; }
-        bool IsReadOnly { get; }
-        int BlockIndex { get; }
-        int Length { get; }
-        byte* Pointer { get; }
-        IntPtr IntPtr { get; }
+        /// <summary>
+        /// Gets the length of the current stream.
+        /// </summary>
+        long Length { get; }
+
+        /// <summary>
+        /// Sets the size of the stream.
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        long SetLength(long length);
     }
 }

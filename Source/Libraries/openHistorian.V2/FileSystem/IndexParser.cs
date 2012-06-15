@@ -377,7 +377,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="indexIndirectNumber">the value 1-4 which tell what indirect block this is</param>
         /// <param name="blockBaseIndex">the lowest virtual address that can be referenced from this indirect block</param>
         /// <returns></returns>
-        private int GetBlockIndexValue(IMemoryUnit buffer, int blockIndex, int offset, byte indexIndirectNumber, int blockBaseIndex)
+        private int GetBlockIndexValue(MemoryUnit buffer, int blockIndex, int offset, byte indexIndirectNumber, int blockBaseIndex)
         {
             if (blockIndex == 0)
                 return 0;
@@ -393,11 +393,11 @@ namespace openHistorian.V2.FileSystem
         /// <param name="blockIndex">the index of the block to read</param>
         /// <param name="indexIndirectNumber">the indirect page number</param>
         /// <param name="indexBaseIndex">the base address of this block</param>
-        private void ReadBlockCheckForErrors(IMemoryUnit buffer, int blockIndex, byte indexIndirectNumber, int indexBaseIndex)
+        private void ReadBlockCheckForErrors(MemoryUnit buffer, int blockIndex, byte indexIndirectNumber, int indexBaseIndex)
         {
             if (!buffer.IsValid || buffer.BlockIndex != blockIndex)
             {
-                IoReadState readState = m_dataReader.AquireBlockForRead(blockIndex, BlockType.IndexIndirect, indexBaseIndex, m_file.FileIdNumber, m_snapshotSequenceNumber, buffer);
+                IoReadState readState = buffer.Read(blockIndex, BlockType.IndexIndirect, indexBaseIndex, m_file.FileIdNumber, m_snapshotSequenceNumber);
 
                 if (readState != IoReadState.Valid)
                     throw new Exception("Error Reading File " + readState.ToString());

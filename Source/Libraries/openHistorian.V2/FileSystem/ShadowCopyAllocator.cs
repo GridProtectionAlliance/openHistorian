@@ -204,7 +204,7 @@ namespace openHistorian.V2.FileSystem
             return ShadowCopyIndexIndirect(BufferPool.ThirdIndirect, m_parser.ThirdIndirectBlockAddress, m_parser.ThirdIndirectBaseIndex, 3, m_parser.ThirdIndirectOffset, remoteBlockAddress);
         }
 
-  /// <summary>
+        /// <summary>
         /// Makes a shadow copy of the indirect index passed to this function. If the block does not exists, it creates it.
         /// </summary>
         /// <param name="buffer"> </param>
@@ -214,7 +214,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="remoteAddressOffset">the offset of the remote address that needs to be updated.</param>
         /// <param name="remoteBlockAddress">the value of the remote address.</param>
         /// <returns>The address of the shadow copy.</returns>
-        int ShadowCopyIndexIndirect(IMemoryUnit buffer, int sourceBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
+        int ShadowCopyIndexIndirect(MemoryUnit buffer, int sourceBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
         {
             int indexIndirectBlock; //The address to the shadowed index block.
 
@@ -223,9 +223,8 @@ namespace openHistorian.V2.FileSystem
             {
                 //if the block does not exist, create it.
                 indexIndirectBlock = m_fileAllocationTable.AllocateFreeBlocks(1);
-                m_diskIo.AquireBlockForWrite(indexIndirectBlock, buffer);
-
-                Memory.Clear(buffer.Pointer,buffer.Length);
+                buffer.BeginWriteToNewBlock(indexIndirectBlock);
+                Memory.Clear(buffer.Pointer, buffer.Length);
 
                 WriteIndexIndirectBlock(buffer, indexIndirectBlock, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
             }
@@ -255,7 +254,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="remoteAddressOffset">the offset of the remote address that needs to be updated.</param>
         /// <param name="remoteBlockAddress">the value of the remote address.</param>
         /// <param name="isCurrentRevision">If this is an inplace edit, set to true. If it is a true shadow copy, set false.</param>
-        private void ReadThenWriteIndexIndirectBlock(IMemoryUnit buffer, int sourceBlockAddress, int destinationBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress, bool isCurrentRevision)
+        private void ReadThenWriteIndexIndirectBlock(MemoryUnit buffer, int sourceBlockAddress, int destinationBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress, bool isCurrentRevision)
         {
             int fileIdNumber = m_fileMetaData.FileIdNumber;
             int snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
@@ -264,9 +263,9 @@ namespace openHistorian.V2.FileSystem
             {
                 IoReadState readState;
                 if (isCurrentRevision)
-                    readState = m_diskIo.AquireBlockForRead(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber, buffer);
+                    readState = buffer.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
                 else
-                    readState = m_diskIo.AquireBlockForRead(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber - 1, buffer);
+                    readState = buffer.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
                 if (readState != IoReadState.Valid)
                     throw new Exception("Error Reading File " + readState.ToString());
             }
@@ -278,10 +277,10 @@ namespace openHistorian.V2.FileSystem
             //everything else is going to be the same.
             if (sourceBlockAddress != destinationBlockAddress || *(int*)(buffer.Pointer + remoteAddressOffset) != remoteBlockAddress)
             {
-                using (IMemoryUnit data = m_diskIo.GetMemoryUnit())
+                using (MemoryUnit data = m_diskIo.GetMemoryUnit())
                 {
-                    m_diskIo.AquireBlockForWrite(destinationBlockAddress, data);
-                    Memory.Copy(buffer.Pointer,data.Pointer,data.Length);
+                    data.BeginWriteToNewBlock(destinationBlockAddress);
+                    Memory.Copy(buffer.Pointer, data.Pointer, data.Length);
                     WriteIndexIndirectBlock(data, destinationBlockAddress, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
                 }
 
@@ -297,7 +296,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="indexIndirectNumber">the indirect number {1,2,3,4} that goes in the footer of the block</param>
         /// <param name="remoteAddressOffset">the offset of the remote address that needs to be updated</param>
         /// <param name="remoteBlockAddress">the value of the remote address</param>
-        private void WriteIndexIndirectBlock(IMemoryUnit buffer, int blockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
+        private void WriteIndexIndirectBlock(MemoryUnit buffer, int blockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
         {
             int fileIdNumber = m_fileMetaData.FileIdNumber;
             int snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
@@ -305,10 +304,10 @@ namespace openHistorian.V2.FileSystem
             buffer.Pointer[ArchiveConstants.BlockSize - 22] = indexIndirectNumber;
             *(int*)(buffer.Pointer + remoteAddressOffset) = remoteBlockAddress;
 
-            if (buffer.BlockIndex != blockAddress )
+            if (buffer.BlockIndex != blockAddress)
                 throw new Exception("Addresses do not match");
 
-            m_diskIo.WriteBlock(BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber, buffer);
+            buffer.EndWrite(BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
         }
 
         /// <summary>
@@ -320,8 +319,8 @@ namespace openHistorian.V2.FileSystem
         /// <param name="destinationClusterAddress">the first block of the destination cluster</param>
         private void ShadowCopyDataCluster(int sourceClusterAddress, int indexValue, int destinationClusterAddress)
         {
-            IMemoryUnit sourceData = m_diskIo.GetMemoryUnit();
-            IMemoryUnit destinationData = m_diskIo.GetMemoryUnit();
+            MemoryUnit sourceData = m_diskIo.GetMemoryUnit();
+            MemoryUnit destinationData = m_diskIo.GetMemoryUnit();
             int fileIdNumber = m_fileMetaData.FileIdNumber;
             int snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
 
@@ -329,16 +328,16 @@ namespace openHistorian.V2.FileSystem
             if (sourceClusterAddress != 0)
             {
                 IoReadState readState;
-                readState = m_diskIo.AquireBlockForRead(sourceClusterAddress, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber - 1, sourceData);
+                readState = sourceData.Read(sourceClusterAddress, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
                 if (readState != IoReadState.Valid)
                     throw new Exception("Error Reading File " + readState.ToString());
 
-                m_diskIo.AquireBlockForWrite(destinationClusterAddress, destinationData);
+                destinationData.BeginWriteToNewBlock(destinationClusterAddress);
                 Memory.Copy(sourceData.Pointer, destinationData.Pointer, sourceData.Length);
             }
             else //if source cluster does not exist.
             {
-                m_diskIo.AquireBlockForWrite(destinationClusterAddress, destinationData);
+                destinationData.BeginWriteToNewBlock(destinationClusterAddress);
                 Memory.Clear(destinationData.Pointer, destinationData.Length);
             }
             sourceData.Dispose();

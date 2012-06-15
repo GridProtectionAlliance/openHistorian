@@ -145,7 +145,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Contains the read/write buffer.
         /// </summary>
-        IMemoryUnit m_buffer;
+        MemoryUnit m_buffer;
 
         #endregion
 
@@ -227,7 +227,7 @@ namespace openHistorian.V2.FileSystem
                 int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
                 int fileIdNumber = m_file.FileIdNumber;
                 int snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
-                m_dataReader.WriteBlock(BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber, m_buffer);
+                m_buffer.EndWrite(BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber);
                 m_isBlockDirty = false;
             }
         }
@@ -248,7 +248,7 @@ namespace openHistorian.V2.FileSystem
                     int revisionSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
                     if (!m_buffer.IsValid || m_buffer.IsReadOnly || m_buffer.BlockIndex != m_positionBlock.PhysicalBlockIndex)
                     {
-                        m_dataReader.AquireBlockForWrite(m_positionBlock.PhysicalBlockIndex, m_buffer);
+                        m_buffer.BeginWriteToNewBlock(m_positionBlock.PhysicalBlockIndex);
                         //IoReadState readState = m_dataReader.AquireBlockForWrite(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber, m_buffer);
                         //if (readState != IoReadState.Valid)
                         //    throw new Exception("Error Reading File " + readState.ToString());

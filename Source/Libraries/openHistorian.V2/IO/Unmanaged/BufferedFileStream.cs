@@ -41,7 +41,7 @@ namespace openHistorian.V2.Unmanaged
     /// once that are rarely accessed. This is accomplised by incrementing a counter
     /// every time a page is accessed and dividing by 2 every time a collection occurs from the buffer pool.
     /// </remarks>
-    unsafe public class BufferedFileStream : ISupportsBinaryStream
+    unsafe public class BufferedFileStream : ISupportsBinaryStreamSizing
     {
         // Nested Types
         class IoSession : IBinaryStreamIoSession
@@ -203,6 +203,21 @@ namespace openHistorian.V2.Unmanaged
         public IBinaryStream CreateBinaryStream()
         {
             return new BinaryStream(this);
+        }
+
+        long ISupportsBinaryStreamSizing.Length
+        {
+            get
+            {
+                return m_baseStream.Length;
+            }
+        }
+
+        long ISupportsBinaryStreamSizing.SetLength(long length)
+        {
+            //if (m_baseStream.Length < length)
+                m_baseStream.SetLength(length);
+            return m_baseStream.Length;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace openHistorian.V2.IO.Unmanaged
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.
     /// </summary>
-    unsafe public class MemoryStream : ISupportsBinaryStream
+    unsafe public class MemoryStream : ISupportsBinaryStreamSizing
     {
         // Nested Types
         class IoSession : IBinaryStreamIoSession
@@ -93,7 +93,7 @@ namespace openHistorian.V2.IO.Unmanaged
 
             public void Clear()
             {
-                
+
             }
         }
 
@@ -213,7 +213,7 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             get
             {
-                return m_pageIndex.Count * Globals.BufferPool.PageSize;
+                return (long)m_pageIndex.Count * Globals.BufferPool.PageSize;
             }
         }
 
@@ -357,10 +357,39 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             return new IoSession(this);
         }
-        
+
         public IBinaryStream CreateBinaryStream()
         {
             return new BinaryStream(this);
+        }
+
+        long ISupportsBinaryStreamSizing.Length
+        {
+            get
+            {
+                return FileSize;
+            }
+        }
+
+        long ISupportsBinaryStreamSizing.SetLength(long length)
+        {
+            if (FileSize < length)
+            {
+                GetPage(length - 1);
+            }
+            else
+            {
+                int page = (int)(length >> ShiftLength);
+                //While there are too many pages
+                while (page < m_pageIndex.Count - 1)
+                {
+                    int index = m_pageIndex[m_pageIndex.Count - 1];
+                    m_pageIndex.RemoveAt(m_pageIndex.Count - 1);
+                    m_pagePointer.RemoveAt(m_pageIndex.Count - 1);
+                    Globals.BufferPool.ReleasePage(index);
+                }
+            }
+            return FileSize;
         }
     }
 }
