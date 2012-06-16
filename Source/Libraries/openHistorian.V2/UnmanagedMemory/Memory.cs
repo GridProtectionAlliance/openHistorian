@@ -141,10 +141,10 @@ namespace openHistorian.V2.UnmanagedMemory
         /// <param name="count"></param>
         public static unsafe void Copy(byte* src, byte* dest, int count)
         {
-            if (src < dest && src + count >= dest)
+            //if (src < dest && src + count >= dest)
                 WinApi.MoveMemory(dest, src, count);
-            else
-                WinApi.memcpy(dest, src, count);
+            //else
+            //    WinApi.memcpy(dest, src, count);
 
         }
 

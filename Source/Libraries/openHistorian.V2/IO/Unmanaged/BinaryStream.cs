@@ -292,6 +292,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 byte* dst = m_current + (destination - source);
 
                 Memory.Copy(src, dst, length);
+                return;
             }
 
             if (m_secondaryIoSession != null)
