@@ -33,6 +33,52 @@ namespace openHistorian.V2.FileSystem
     /// </summary>
     unsafe internal class MemoryUnit : IDisposable
     {
+
+        /// <summary>
+        /// Since exceptions are very expensive, this enum will be returned for basic
+        /// I/O operations to let the reader know what to do with the data.  
+        /// </summary>
+        /// <remarks>There two overarching conditions.  Valid or not Valid.  
+        /// If not valid, the reason why the page failed will be given.
+        /// If a page is returned as valid, this does not mean that the 
+        /// page being referenced is the correct page, it is up to the class
+        /// to check the footer of the page to verify that the page being read
+        /// is the correct page.</remarks>
+        enum IoReadState
+        {
+            /// <summary>
+            /// Indicates that the read completed sucessfully.
+            /// </summary>
+            Valid,
+            /// <summary>
+            /// The checksum failed to compute
+            /// </summary>
+            ChecksumInvalid,
+            /// <summary>
+            /// Special case if the entire page is zeros. 
+            /// This means the page was likely never written to.
+            /// However, a disk error what wipes this area with zeros can also generate this case.
+            /// This can also occur when reading past the end of the file.
+            /// </summary>
+            ChecksumInvalidBecausePageIsNull,
+            /// <summary>
+            /// The page that was requested came from a newer version of the file.
+            /// </summary>
+            PageNewerThanSnapshotSequenceNumber,
+            /// <summary>
+            /// The page came from a different file.
+            /// </summary>
+            FileIdNumberDidNotMatch,
+            /// <summary>
+            /// The index value did not match that of the file.
+            /// </summary>
+            IndexNumberMissmatch,
+            /// <summary>
+            /// The page type requested did not match what was received
+            /// </summary>
+            BlockTypeMismatch
+        }
+
         #region [ Members ]
 
         DiskIoEnhanced m_diskIo;
@@ -155,16 +201,16 @@ namespace openHistorian.V2.FileSystem
             m_isValid = false;
 
             //If the file is not large enough to write to this block, autogrow the file.
-            if ((long)(BlockIndex + 1) * ArchiveConstants.BlockSize > m_diskIo.FileSize)
+            if ((long)(blockIndex + 1) * ArchiveConstants.BlockSize > m_diskIo.FileSize)
             {
-                m_diskIo.SetFileLength(0, BlockIndex + 1);
+                m_diskIo.SetFileLength(0, blockIndex + 1);
             }
 
             m_isValid = false;
             ReadBlock(blockIndex, true);
 
-            if (!IsBlockNull(m_pointer))
-                throw new ArgumentException("Block is not null", "blockIndex");
+            //if (!IsBlockNull(m_pointer))
+            //    throw new ArgumentException("Block is not null", "blockIndex");
 
             m_isValid = true;
             m_pendingWriteComplete = true;
@@ -181,7 +227,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number of this write</param>
         /// <returns></returns>
-        public IoReadState BeginWriteToExistingBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
+        public void BeginWriteToExistingBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
             CheckIsDisposed();
 
@@ -196,11 +242,10 @@ namespace openHistorian.V2.FileSystem
             IoReadState readState = IsFooterValid(m_pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
 
             if (readState != IoReadState.Valid)
-                return readState;
+                throw new Exception("Read Error: " + readState.ToString());
 
             m_pendingWriteComplete = true;
             m_isValid = true;
-            return readState;
         }
 
         /// <summary>
@@ -235,7 +280,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number of this write</param>
         /// <returns></returns>
-        public IoReadState Read(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
+        public void Read(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -249,10 +294,9 @@ namespace openHistorian.V2.FileSystem
 
             IoReadState readState = IsFooterValid(m_pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
             if (readState != IoReadState.Valid)
-                return readState;
+                throw new Exception("Read Error: " + readState.ToString());
 
             m_isValid = true;
-            return readState;
         }
 
         /// <summary>
@@ -457,6 +501,9 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         static void WriteFooterData(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
+            if (indexValue<0 | fileIdNumber<0 | snapshotSequenceNumber<0)
+                throw new Exception();
+
             data[ArchiveConstants.BlockSize - 21] = (byte)blockType;
             *(int*)(data + ArchiveConstants.BlockSize - 20) = indexValue;
             *(int*)(data + ArchiveConstants.BlockSize - 16) = fileIdNumber;

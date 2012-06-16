@@ -40,22 +40,26 @@
 //            TestBlockTypeMismatch(stream);
 //            TestResize(stream);
 //        }
-        
+
 //        static void TestResize(DiskIoEnhanced stream)
 //        {
-//            IoReadState readState;
-//            long oldFileSize = stream.FileSize;
-//            int seed = (int)DateTime.Now.Ticks;
-//            byte[] buffer = GenerateRandomDataBlock(seed);
-//            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
+//            //IoReadState readState;
+//            //long oldFileSize = stream.FileSize;
+//            //int seed = (int)DateTime.Now.Ticks;
+//            //byte[] buffer = GenerateRandomDataBlock(seed);
+//            //int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
-//            stream.WriteBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
-//            stream.SetFileLength(0, currentBlock + 1);
-//            readState = stream.ReadBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
-//            if (readState != IoReadState.Valid)
-//                throw new Exception();
+//            //using (var buffer = stream.GetMemoryUnit())
+//            //{
 
 
+//            //    stream.WriteBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
+//            //    stream.SetFileLength(0, currentBlock + 1);
+//            //    readState = stream.ReadBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
+//            //    if (readState != IoReadState.Valid)
+//            //        throw new Exception();
+
+//            //}
 //            //stream.SetFileLength(0, currentBlock);
 
 //            //readState = stream.ReadBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
@@ -81,6 +85,7 @@
 //            byte[] buffer = GenerateRandomDataBlock(seed);
 //            int currentBlock = (int)(stream.FileSize / ArchiveConstants.BlockSize);
 
+
 //            stream.WriteBlock(currentBlock, BlockType.IndexIndirect, 1, 2, 3, buffer);
 //            readState = stream.ReadBlock(currentBlock, BlockType.FileAllocationTable, 1, 2, 3, buffer);
 
@@ -90,6 +95,8 @@
 //            readState = stream.ReadBlock(currentBlock, BlockType.DataBlock, 1, 2, 3, buffer);
 //            if (readState != IoReadState.BlockTypeMismatch)
 //                throw new Exception();
+
+
 //        }
 
 //        static void TestIndexNumberMissmatch(DiskIoEnhanced stream)

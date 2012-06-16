@@ -21,6 +21,7 @@
 //       
 //
 //******************************************************************************************************
+
 using System;
 
 namespace openHistorian.V2.FileSystem
@@ -35,32 +36,6 @@ namespace openHistorian.V2.FileSystem
         #region [ Members ]
 
         /// <summary>
-        /// Contains a set of temporary buffers that can be used by this index parser 
-        /// to minimize the amout of reads that must be issued.
-        /// </summary>
-        IndexBufferPool m_bufferPool;
-
-        /// <summary>
-        /// The address of the first indirect block. 
-        /// </summary>
-        int m_firstIndirectBlockAddress;
-
-        /// <summary>
-        /// The address of the second indirect block. 
-        /// </summary>
-        int m_secondIndirectBlockAddress;
-
-        /// <summary>
-        /// The address of the third indirect block. 
-        /// </summary>
-        int m_thirdIndirectBlockAddress;
-
-        /// <summary>
-        /// The address of the first data block of the data cluster.
-        /// </summary>
-        int m_dataClusterAddress;
-        
-        /// <summary>
         /// The sequence number that represents the version of the archive that is allowed to be read by this parser
         /// </summary>
         /// <remarks>Internal checks use the sequence number to verify the pages being read are not from a later snapshot.</remarks>
@@ -74,13 +49,15 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         FileMetaData m_file;
         /// <summary>
-        /// The disk to issue read requests to.
+        /// Maintains the most current list of each type of data that can be buffered.
+        /// This is to minimize the amount of duplicate lookups.
         /// </summary>
-        DiskIoEnhanced m_dataReader;
+        IndexBufferPool m_bufferPool;
 
         #endregion
 
         #region [ Constructors ]
+
         /// <summary>
         /// Creates a new instance of this class.
         /// </summary>
@@ -91,7 +68,6 @@ namespace openHistorian.V2.FileSystem
         public IndexParser(int snapshotSequenceNumber, DiskIoEnhanced dataReader, FileMetaData file)
         {
             m_snapshotSequenceNumber = snapshotSequenceNumber;
-            m_dataReader = dataReader;
             m_mapping = new IndexMapper();
             m_file = file;
             m_bufferPool = new IndexBufferPool(dataReader);
@@ -101,57 +77,25 @@ namespace openHistorian.V2.FileSystem
         #region [ Properties ]
 
         /// <summary>
-        /// Maintains the most current list of each type of data that can be buffered.
-        /// This is to minimize the amount of duplicate lookups.
-        /// </summary>
-        public IndexBufferPool BufferPool
-        {
-            get
-            {
-                return m_bufferPool;
-            }
-        }
-        /// <summary>
         /// The address of the first indirect block
         /// </summary>
-        public int FirstIndirectBlockAddress
-        {
-            get
-            {
-                return m_firstIndirectBlockAddress;
-            }
-        }
+        public int FirstIndirectBlockAddress { get; private set; }
+
         /// <summary>
         /// The address of the second indirect block
         /// </summary>
-        public int SecondIndirectBlockAddress
-        {
-            get
-            {
-                return m_secondIndirectBlockAddress;
-            }
-        }
+        public int SecondIndirectBlockAddress { get; private set; }
+
         /// <summary>
         /// The address of the third indirect block
         /// </summary>
-        public int ThirdIndirectBlockAddress
-        {
-            get
-            {
-                return m_thirdIndirectBlockAddress;
-            }
-        }
-  
+        public int ThirdIndirectBlockAddress { get; private set; }
+
         /// <summary>
         /// The address of the first block of the data cluster.
         /// </summary>
-        public int DataClusterAddress
-        {
-            get
-            {
-                return m_dataClusterAddress;
-            }
-        }
+        public int DataClusterAddress { get; private set; }
+
         /// <summary>
         /// Gets the number of indirects that must be parsed to get to the data cluster.
         /// </summary>
@@ -162,6 +106,7 @@ namespace openHistorian.V2.FileSystem
                 return m_mapping.IndirectNumber;
             }
         }
+
         /// <summary>
         /// Gets the offset position for the address that must be read within the indirect block
         /// at the first indirect block. This address is an absolute offset and has already been multiplied by
@@ -175,6 +120,7 @@ namespace openHistorian.V2.FileSystem
                 return m_mapping.FirstIndirectOffset;
             }
         }
+
         /// <summary>
         /// Gets the offset position for the address that must be read within the indirect block
         /// at the second indirect block. This address is an absolute offset and has already been multiplied by
@@ -201,7 +147,7 @@ namespace openHistorian.V2.FileSystem
                 return m_mapping.ThirdIndirectOffset;
             }
         }
-   
+
         /// <summary>
         /// Gets the index of the first cluster that can be accessed by this indirect block.  This value is useful because 
         /// the footer of the indirect page will have this address.
@@ -235,17 +181,7 @@ namespace openHistorian.V2.FileSystem
                 return m_mapping.ThirdIndirectBaseIndex;
             }
         }
-   
-        /// <summary>
-        /// Returns the length of the virtual base address for which this lookup map is valid.
-        /// </summary>
-        public long Length
-        {
-            get
-            {
-                return m_mapping.Length;
-            }
-        }
+
         /// <summary>
         /// Determines the block index value that will be stored in the footer of the data block.
         /// </summary>
@@ -298,7 +234,8 @@ namespace openHistorian.V2.FileSystem
         /// <param name="position">The position to navigate to.</param>
         public void SetPosition(long position)
         {
-            UpdateBlockInformation(m_mapping.SetPosition(position));
+            int lowestChange = m_mapping.SetPosition(position);
+            UpdateBlockInformation(lowestChange);
         }
 
         /// <summary>
@@ -306,15 +243,10 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         internal void UpdateAddressesFromShadowCopy(int dataClusterAddress, int firstIndirectBlockAddress, int secondIndirectBlockAddress, int thirdIndirectBlockAddress)
         {
-            m_dataClusterAddress = dataClusterAddress;
-            m_firstIndirectBlockAddress = firstIndirectBlockAddress;
-            m_secondIndirectBlockAddress = secondIndirectBlockAddress;
-            m_thirdIndirectBlockAddress = thirdIndirectBlockAddress;
-
-            //m_bufferPool.FirstIndirect.Address = 0;
-            //m_bufferPool.SecondIndirect.Address = 0;
-            //m_bufferPool.ThirdIndirect.Address = 0;
-            //m_bufferPool.Data.Address = 0;
+            DataClusterAddress = dataClusterAddress;
+            FirstIndirectBlockAddress = firstIndirectBlockAddress;
+            SecondIndirectBlockAddress = secondIndirectBlockAddress;
+            ThirdIndirectBlockAddress = thirdIndirectBlockAddress;
         }
 
         /// <summary>
@@ -324,42 +256,41 @@ namespace openHistorian.V2.FileSystem
         ///  0=Immediate, 1=Single, 2=Double, 3=Triple, 4=NoChange
         /// </param>
         /// <returns></returns>
-        private void UpdateBlockInformation(int lowestChangeRequest)
+        void UpdateBlockInformation(int lowestChangeRequest)
         {
-
             if (IndirectNumber == 0) //Immediate
             {
-                m_firstIndirectBlockAddress = 0;
-                m_secondIndirectBlockAddress = 0;
-                m_thirdIndirectBlockAddress = 0;
-                m_dataClusterAddress = m_file.DirectCluster;
+                FirstIndirectBlockAddress = 0;
+                SecondIndirectBlockAddress = 0;
+                ThirdIndirectBlockAddress = 0;
+                DataClusterAddress = m_file.DirectCluster;
             }
             else if (IndirectNumber == 1) //Single Indirect
             {
-                m_firstIndirectBlockAddress = m_file.SingleIndirectCluster;
-                m_secondIndirectBlockAddress = 0;
-                m_thirdIndirectBlockAddress = 0;
+                FirstIndirectBlockAddress = m_file.SingleIndirectCluster;
+                SecondIndirectBlockAddress = 0;
+                ThirdIndirectBlockAddress = 0;
                 if (lowestChangeRequest <= 1) //if the single indirect offset did not change, there is no need to relookup the address
-                    m_dataClusterAddress = GetBlockIndexValue(m_bufferPool.FirstIndirect, m_firstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
+                    DataClusterAddress = GetBlockIndexValue(m_bufferPool.FirstIndirect, FirstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
             }
             else if (IndirectNumber == 2) //Double Indirect
             {
-                m_firstIndirectBlockAddress = m_file.DoubleIndirectCluster;
+                FirstIndirectBlockAddress = m_file.DoubleIndirectCluster;
                 if (lowestChangeRequest <= 1)
-                    m_secondIndirectBlockAddress = GetBlockIndexValue(m_bufferPool.FirstIndirect, m_firstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
-                m_thirdIndirectBlockAddress = 0;
+                    SecondIndirectBlockAddress = GetBlockIndexValue(m_bufferPool.FirstIndirect, FirstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
+                ThirdIndirectBlockAddress = 0;
                 if (lowestChangeRequest <= 2)
-                    m_dataClusterAddress = GetBlockIndexValue(m_bufferPool.SecondIndirect, m_secondIndirectBlockAddress, m_mapping.SecondIndirectOffset, 2, m_mapping.SecondIndirectBaseIndex);
+                    DataClusterAddress = GetBlockIndexValue(m_bufferPool.SecondIndirect, SecondIndirectBlockAddress, m_mapping.SecondIndirectOffset, 2, m_mapping.SecondIndirectBaseIndex);
             }
             else if (IndirectNumber == 3) //Triple Indirect
             {
-                m_firstIndirectBlockAddress = m_file.TripleIndirectCluster;
+                FirstIndirectBlockAddress = m_file.TripleIndirectCluster;
                 if (lowestChangeRequest <= 1)
-                    m_secondIndirectBlockAddress = GetBlockIndexValue(m_bufferPool.FirstIndirect, m_firstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
+                    SecondIndirectBlockAddress = GetBlockIndexValue(m_bufferPool.FirstIndirect, FirstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
                 if (lowestChangeRequest <= 2)
-                    m_thirdIndirectBlockAddress = GetBlockIndexValue(m_bufferPool.SecondIndirect, m_secondIndirectBlockAddress, m_mapping.SecondIndirectOffset, 2, m_mapping.SecondIndirectBaseIndex);
+                    ThirdIndirectBlockAddress = GetBlockIndexValue(m_bufferPool.SecondIndirect, SecondIndirectBlockAddress, m_mapping.SecondIndirectOffset, 2, m_mapping.SecondIndirectBaseIndex);
                 if (lowestChangeRequest <= 3)
-                    m_dataClusterAddress = GetBlockIndexValue(m_bufferPool.ThirdIndirect, m_thirdIndirectBlockAddress, m_mapping.ThirdIndirectOffset, 3, m_mapping.ThirdIndirectBaseIndex);
+                    DataClusterAddress = GetBlockIndexValue(m_bufferPool.ThirdIndirect, ThirdIndirectBlockAddress, m_mapping.ThirdIndirectOffset, 3, m_mapping.ThirdIndirectBaseIndex);
             }
             else
             {
@@ -377,34 +308,23 @@ namespace openHistorian.V2.FileSystem
         /// <param name="indexIndirectNumber">the value 1-4 which tell what indirect block this is</param>
         /// <param name="blockBaseIndex">the lowest virtual address that can be referenced from this indirect block</param>
         /// <returns></returns>
-        private int GetBlockIndexValue(MemoryUnit buffer, int blockIndex, int offset, byte indexIndirectNumber, int blockBaseIndex)
+        int GetBlockIndexValue(MemoryUnit buffer, int blockIndex, int offset, byte indexIndirectNumber, int blockBaseIndex)
         {
             if (blockIndex == 0)
                 return 0;
-            ReadBlockCheckForErrors(buffer, blockIndex, indexIndirectNumber, blockBaseIndex);
+
+            //Skip the redundant read if this block is still cached.
+            if (!buffer.IsValid || buffer.BlockIndex != blockIndex)
+            {
+                buffer.Read(blockIndex, BlockType.IndexIndirect, blockBaseIndex, m_file.FileIdNumber, m_snapshotSequenceNumber);
+            }
+            
+            if (buffer.Pointer[ArchiveConstants.BlockSize - 22] != indexIndirectNumber)
+                throw new Exception("The redirect value of this page is incorrect");
+
             return *(int*)(buffer.Pointer + offset);
         }
 
-        /// <summary>
-        /// This function reads a block from the file and checks to make sure it is the block that was expected to be read.
-        /// Errors are thrown if any exceptions are encountered.
-        /// </summary>
-        /// <param name="buffer">the buffer to use to read data</param>
-        /// <param name="blockIndex">the index of the block to read</param>
-        /// <param name="indexIndirectNumber">the indirect page number</param>
-        /// <param name="indexBaseIndex">the base address of this block</param>
-        private void ReadBlockCheckForErrors(MemoryUnit buffer, int blockIndex, byte indexIndirectNumber, int indexBaseIndex)
-        {
-            if (!buffer.IsValid || buffer.BlockIndex != blockIndex)
-            {
-                IoReadState readState = buffer.Read(blockIndex, BlockType.IndexIndirect, indexBaseIndex, m_file.FileIdNumber, m_snapshotSequenceNumber);
-
-                if (readState != IoReadState.Valid)
-                    throw new Exception("Error Reading File " + readState.ToString());
-            }
-            if (buffer.Pointer[ArchiveConstants.BlockSize - 22] != indexIndirectNumber)
-                throw new Exception("The redirect value of this page is incorrect");
-        }
         #endregion
 
     }

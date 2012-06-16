@@ -80,7 +80,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystem\ArchiveFileStream_IoSession.cs" />
+    <Compile Include="FileSystem\DiskIoEnhancedExtensions.cs" />
     <Compile Include="FileSystem\MemoryUnit.cs" />
+    <Compile Include="FileSystem\MemoryUnitExtensions.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStreamSizing.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
@@ -195,7 +198,6 @@
     <Compile Include="FileSystem\IndexParser.cs" />
     <Compile Include="FileSystem\FileAddressTranslation.cs" />
     <Compile Include="FileSystem\ArchiveFileStream.cs" />
-    <Compile Include="FileSystem\IoReadState.cs" />
     <Compile Include="FileSystem\BlockType.cs" />
     <Compile Include="FileSystem\PositionData.cs" />
     <Compile Include="FileSystem\TransactionalRead.cs" />

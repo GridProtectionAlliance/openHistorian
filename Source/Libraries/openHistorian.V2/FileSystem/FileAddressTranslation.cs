@@ -109,8 +109,6 @@ namespace openHistorian.V2.FileSystem
             if (IsReadOnly)
                 throw new Exception("File is opened in readonly mode. Shadow blocks are not allowed.");
             m_pager.ShadowDataBlock(virtualPos);
-            //m_parser.SetPosition(virtualPos);
-            //m_parser.UpdateAddressesFromShadowCopy();
             return m_parser.GetPositionData(virtualPos);
         }
 

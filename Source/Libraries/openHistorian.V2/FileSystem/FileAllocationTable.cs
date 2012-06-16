@@ -367,15 +367,10 @@ namespace openHistorian.V2.FileSystem
             m_files = new List<FileMetaData>();
             byte[] data = GetBytes();
 
-            using (var buffer = diskIo.GetMemoryUnit())
+            //write the file header to the first 10 pages of the file.
+            for (int x = 0; x < 10; x++)
             {
-                //write the file header to the first 10 pages of the file.
-                for (int x = 0; x < 10; x++)
-                {
-                    buffer.BeginWriteToNewBlock(x);
-                    Marshal.Copy(data, 0, buffer.IntPtr, ArchiveConstants.BlockSize);
-                    buffer.EndWrite(BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
-                }
+                diskIo.WriteToNewBlock(x, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
             }
 
         }
@@ -502,23 +497,11 @@ namespace openHistorian.V2.FileSystem
         public void WriteToFileSystem(DiskIoEnhanced diskIo)
         {
             byte[] data = GetBytes();
-
-            using (var buffer = diskIo.GetMemoryUnit())
-            {
-                buffer.BeginWriteToExistingBlock(0, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
-                Marshal.Copy(data, 0, buffer.IntPtr, ArchiveConstants.BlockSize);
-                buffer.EndWrite(BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
-
-                buffer.BeginWriteToExistingBlock(1, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
-                Marshal.Copy(data, 0, buffer.IntPtr, ArchiveConstants.BlockSize);
-                buffer.EndWrite(BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
-
-                buffer.BeginWriteToExistingBlock(((m_snapshotSequenceNumber & 7) + 2), BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
-                Marshal.Copy(data, 0, buffer.IntPtr, ArchiveConstants.BlockSize);
-                buffer.EndWrite(BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber);
-            }
-
+            diskIo.WriteToExistingBlock(0, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
+            diskIo.WriteToExistingBlock(1, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
+            diskIo.WriteToExistingBlock(((m_snapshotSequenceNumber & 7) + 2), BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
         }
+
         public bool AreEqual(FileAllocationTable other)
         {
             if (other == null)
@@ -697,30 +680,17 @@ namespace openHistorian.V2.FileSystem
         static FileAllocationTable TryOpenFileAllocationTable(int blockIndex, DiskIoEnhanced diskIo, byte[] tempBuffer, out Exception error)
         {
             error = null;
-            using (var buffer = diskIo.GetMemoryUnit())
+
+            diskIo.Read(blockIndex, BlockType.FileAllocationTable, 0, 0, int.MaxValue, tempBuffer);
+            try
             {
-                IoReadState readState = buffer.Read(blockIndex, BlockType.FileAllocationTable, 0, 0, int.MaxValue);
-
-                if (readState != IoReadState.Valid)
-                {
-                    error = new Exception("Error Reading File System " + readState.ToString());
-                }
-                else
-                {
-                    Marshal.Copy(buffer.IntPtr, tempBuffer, 0, ArchiveConstants.BlockSize);
-
-                    try
-                    {
-                        return new FileAllocationTable(tempBuffer);
-                    }
-                    catch (Exception ex)
-                    {
-                        error = ex;
-                    }
-                }
-                return null;
+                return new FileAllocationTable(tempBuffer);
             }
-
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+            return null;
         }
 
         /// <summary>

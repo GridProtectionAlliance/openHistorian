@@ -34,71 +34,8 @@ namespace openHistorian.V2.FileSystem
     ///Provides a file stream that can be used to open a file and does all of the background work 
     ///required to translate virtual position data into physical ones.
     /// </summary>
-    unsafe public class ArchiveFileStream : ISupportsBinaryStream
+    unsafe public partial class ArchiveFileStream : ISupportsBinaryStream
     {
-        // Nested Types
-        class IoSession : IBinaryStreamIoSession
-        {
-            bool m_disposed;
-            ArchiveFileStream m_stream;
-
-            public IoSession(ArchiveFileStream stream)
-            {
-                m_stream = stream;
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
-            /// </summary>
-            ~IoSession()
-            {
-                Dispose(false);
-            }
-
-            /// <summary>
-            /// Releases all the resources used by the <see cref="IoSession"/> object.
-            /// </summary>
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
-            /// </summary>
-            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            void Dispose(bool disposing)
-            {
-                if (!m_disposed)
-                {
-                    try
-                    {
-                        // This will be done regardless of whether the object is finalized or disposed.
-                        m_stream.m_ioStream = null;
-                        if (disposing)
-                        {
-                            // This will be done only when the object is disposed by calling Dispose().
-                        }
-                    }
-                    finally
-                    {
-                        m_disposed = true;  // Prevent duplicate dispose.
-                    }
-                }
-            }
-
-            public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
-            {
-                m_stream.GetBlock(position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
-            }
-
-            public void Clear()
-            {
-
-            }
-        }
-
         #region [ Members ]
 
         IoSession m_ioStream;
@@ -173,9 +110,9 @@ namespace openHistorian.V2.FileSystem
         {
             Dispose(false);
         }
-        
+
         #endregion
-        
+
         #region [ Properties ]
 
         public bool IsReadOnly
@@ -248,10 +185,33 @@ namespace openHistorian.V2.FileSystem
                     int revisionSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
                     if (!m_buffer.IsValid || m_buffer.IsReadOnly || m_buffer.BlockIndex != m_positionBlock.PhysicalBlockIndex)
                     {
-                        m_buffer.BeginWriteToNewBlock(m_positionBlock.PhysicalBlockIndex);
-                        //IoReadState readState = m_dataReader.AquireBlockForWrite(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber, m_buffer);
-                        //if (readState != IoReadState.Valid)
-                        //    throw new Exception("Error Reading File " + readState.ToString());
+                        m_buffer.BeginWriteToExistingBlock(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Failure to shadow copy the page.");
+                    //Array.Clear(m_tempPageBuffer, 0, m_tempPageBuffer.Length);
+                }
+            }
+        }
+        /// <summary>
+        /// Looks up the position data and prepares the current block to be written to.
+        /// </summary>
+        private void PrepareBlockForRead(long position)
+        {
+            if (!m_positionBlock.Containts(position) || m_positionBlock.PhysicalBlockIndex < m_newBlocksStartAtThisAddress || !m_buffer.IsValid || m_buffer.IsReadOnly)
+            {
+                Flush();
+                m_positionBlock = m_addressTranslation.VirtualToPhysical(position);
+                if (m_positionBlock.PhysicalBlockIndex != 0)
+                {
+                    int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
+                    int featureSequenceNumber = m_file.FileIdNumber;
+                    int revisionSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
+                    if (!m_buffer.IsValid || m_buffer.IsReadOnly || m_buffer.BlockIndex != m_positionBlock.PhysicalBlockIndex)
+                    {
+                        m_buffer.Read(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber);
                     }
                 }
                 else
@@ -307,17 +267,28 @@ namespace openHistorian.V2.FileSystem
 
         void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
         {
-            if (isWriting && m_isReadOnly)
-                throw new Exception("File is read only");
-
-            PrepareBlockForWrite(position);
-
             if (isWriting)
+            {
+                if (m_isReadOnly)
+                    throw new Exception("File is read only");
+
+                PrepareBlockForWrite(position);
+
                 m_isBlockDirty = true;
-            firstPosition = m_positionBlock.VirtualPosition;
-            length = (int)m_positionBlock.Length;
-            firstPointer = (IntPtr)m_buffer.Pointer;
-            supportsWriting = m_isBlockDirty;
+
+                firstPosition = m_positionBlock.VirtualPosition;
+                length = (int)m_positionBlock.Length;
+                firstPointer = (IntPtr)m_buffer.Pointer;
+                supportsWriting = m_isBlockDirty;
+            }
+            else
+            {
+                PrepareBlockForRead(position);
+                firstPosition = m_positionBlock.VirtualPosition;
+                length = (int)m_positionBlock.Length;
+                firstPointer = (IntPtr)m_buffer.Pointer;
+                supportsWriting = m_isBlockDirty;
+            }
         }
 
         IBinaryStreamIoSession ISupportsBinaryStream.GetNextIoSession()

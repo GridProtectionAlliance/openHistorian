@@ -21,8 +21,6 @@
 //     
 //******************************************************************************************************
 
-using System;
-
 namespace openHistorian.V2.FileSystem
 {
     /// <summary>
@@ -45,7 +43,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// The number of addresses that can fit in a double indirect block
         /// </summary>
-        public const long AddressesPerBlockSquare = (long)AddressesPerBlock * (long)AddressesPerBlock;
+        public const int AddressesPerBlockSquare = AddressesPerBlock * AddressesPerBlock;
         /// <summary>
         /// The number of addresses that can fit in a triple indirect block
         /// </summary>
@@ -77,7 +75,7 @@ namespace openHistorian.V2.FileSystem
 
         const long TmpFirstDoubleIndirectBlockIndex = FirstSingleIndirectBlockIndex + (long)AddressesPerBlock;
         const long TmpFirstTripleIndirectIndex = FirstDoubleIndirectBlockIndex + (long)AddressesPerBlock * (long)AddressesPerBlock;
-        const long TmpFirstQuadrupleIndirectBlockIndex = FirstTripleIndirectIndex + (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock;
+        const long TmpLastAddressableBlockIndex = FirstTripleIndirectIndex + (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock - 1;
 
         /// <summary>
         /// The index of the first block in the single indirect blocks
@@ -94,6 +92,6 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// The index of the first block in the quadruple indirect blocks
         /// </summary>
-        public const int FirstQuadrupleIndirectBlockIndex = (int)(TmpFirstQuadrupleIndirectBlockIndex > int.MaxValue ? int.MaxValue : TmpFirstQuadrupleIndirectBlockIndex);
+        public const int LastAddressableBlockIndex = (int)(TmpLastAddressableBlockIndex > int.MaxValue ? int.MaxValue : TmpLastAddressableBlockIndex);
     }
 }
