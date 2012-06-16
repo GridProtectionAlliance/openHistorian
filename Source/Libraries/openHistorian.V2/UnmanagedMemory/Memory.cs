@@ -112,8 +112,8 @@ namespace openHistorian.V2.UnmanagedMemory
                 return new Memory(Marshal.AllocHGlobal(requestedSize), requestedSize);
             }
         }
-        
-        
+
+
         /// <summary>
         /// Releases the memory back to the OS
         /// </summary>
@@ -141,7 +141,11 @@ namespace openHistorian.V2.UnmanagedMemory
         /// <param name="count"></param>
         public static unsafe void Copy(byte* src, byte* dest, int count)
         {
-            WinApi.MoveMemory(dest, src, count);
+            if (src < dest && src + count >= dest)
+                WinApi.MoveMemory(dest, src, count);
+            else
+                WinApi.memcpy(dest, src, count);
+
         }
 
         public static unsafe void Clear(byte* pointer, int length)
@@ -411,7 +415,7 @@ namespace openHistorian.V2.UnmanagedMemory
         //    }
         //}
 
-     
+
 
 
         #endregion

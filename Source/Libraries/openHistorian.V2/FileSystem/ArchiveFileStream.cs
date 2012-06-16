@@ -200,7 +200,7 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         private void PrepareBlockForRead(long position)
         {
-            if (!m_positionBlock.Containts(position) || m_positionBlock.PhysicalBlockIndex < m_newBlocksStartAtThisAddress || !m_buffer.IsValid || m_buffer.IsReadOnly)
+            if (!m_positionBlock.Containts(position) || !m_buffer.IsValid)
             {
                 Flush();
                 m_positionBlock = m_addressTranslation.VirtualToPhysical(position);
@@ -209,7 +209,7 @@ namespace openHistorian.V2.FileSystem
                     int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
                     int featureSequenceNumber = m_file.FileIdNumber;
                     int revisionSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
-                    if (!m_buffer.IsValid || m_buffer.IsReadOnly || m_buffer.BlockIndex != m_positionBlock.PhysicalBlockIndex)
+                    if (!m_buffer.IsValid || m_buffer.BlockIndex != m_positionBlock.PhysicalBlockIndex)
                     {
                         m_buffer.Read(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber);
                     }

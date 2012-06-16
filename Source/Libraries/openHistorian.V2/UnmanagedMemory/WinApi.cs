@@ -47,5 +47,13 @@ namespace openHistorian.V2.UnmanagedMemory
 
         [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
         unsafe public static extern void MoveMemory(byte* dest, byte* src, int size);
+
+        [DllImport("msvcrt.dll", EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+        public static extern IntPtr memcpy(IntPtr dest, IntPtr src, int count);
+
+        [DllImport("msvcrt.dll", EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
+        unsafe public static extern IntPtr memcpy(byte* dest, byte* src, int count);
+
+
     }
 }
