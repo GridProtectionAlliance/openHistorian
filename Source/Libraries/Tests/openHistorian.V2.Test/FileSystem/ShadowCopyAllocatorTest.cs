@@ -65,7 +65,7 @@ namespace openHistorian.V2.FileSystem
             IndexParser parse = new IndexParser(header.SnapshotSequenceNumber, stream, node);
             ShadowCopyAllocator shadow = new ShadowCopyAllocator(stream, header, node, parse);
 
-            int nextPage = header.NextUnallocatedBlock;
+            int nextPage = header.LastAllocatedBlock+1;
             byte[] block = new byte[ArchiveConstants.BlockSize];
             
 

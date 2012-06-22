@@ -37,7 +37,7 @@ namespace openHistorian.V2.FileSystem
         /// This address is used to determine if the block being referenced is an old block or a new one. 
         /// Any addresses greater than or equal to this are new blocks for this transaction. Values before this are old.
         /// </summary>
-        int m_newBlocksStartAtThisAddress;
+        int m_lastReadOnlyBlock;
         /// <summary>
         /// The file being read.
         /// </summary>
@@ -85,7 +85,7 @@ namespace openHistorian.V2.FileSystem
                 throw new ArgumentException("FileMetaData is read only", "fileMetaData");
 
             m_parser = parser;
-            m_newBlocksStartAtThisAddress = fileAllocationTable.NextUnallocatedBlock;
+            m_lastReadOnlyBlock = fileAllocationTable.LastAllocatedBlock;
             m_fileAllocationTable = fileAllocationTable;
             m_fileMetaData = fileMetaData;
             m_diskIo = dataReader;
@@ -177,7 +177,7 @@ namespace openHistorian.V2.FileSystem
                 }
             }
             //if the data page is an old page, allocate space to create a new copy
-            else if (sourceBlockAddress < m_newBlocksStartAtThisAddress)
+            else if (sourceBlockAddress <= m_lastReadOnlyBlock)
             {
                 indexIndirectBlock = m_fileAllocationTable.AllocateFreeBlocks(1);
                 ReadThenWriteIndexIndirectBlock(sourceBlockAddress, indexIndirectBlock, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
@@ -260,7 +260,7 @@ namespace openHistorian.V2.FileSystem
             //if the page does not exist -or-
             //if the data page is an old page, allocate space to create a new copy
             if (m_parser.DataClusterAddress == 0 ||
-                m_parser.DataClusterAddress < m_newBlocksStartAtThisAddress)
+                m_parser.DataClusterAddress <= m_lastReadOnlyBlock)
             {
                 dataBlockAddress = m_fileAllocationTable.AllocateFreeBlocks(1);
                 ShadowCopyDataCluster(m_parser.DataClusterAddress, m_parser.BaseVirtualAddressIndexValue, dataBlockAddress);

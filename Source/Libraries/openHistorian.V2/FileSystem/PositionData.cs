@@ -38,18 +38,6 @@ namespace openHistorian.V2.FileSystem
         {
             return (virtualPos >= VirtualPosition) && (virtualPos < VirtualPosition + Length);
         }
-        /// <summary>
-        /// Determines how many bytes there are until this translation is no longer valid.
-        /// </summary>
-        /// <param name="virtualPos"></param>
-        /// <returns></returns>
-        public long ValidLength(long virtualPos)
-        {
-            return Length - (virtualPos - VirtualPosition);
-        }
-        public int Offset(long virtualPos)
-        {
-            return (int)(virtualPos - VirtualPosition);
-        }
+  
     }
 }

@@ -40,8 +40,6 @@ namespace openHistorian.V2.FileSystem
 
         IoSession m_ioStream;
 
-        public event EventHandler StreamDisposed;
-
         /// <summary>
         /// Determines if the file stream has been disposed.
         /// </summary>
@@ -99,7 +97,7 @@ namespace openHistorian.V2.FileSystem
         {
             m_isReadOnly = openReadOnly;
             m_isBlockDirty = false;
-            m_newBlocksStartAtThisAddress = fileAllocationTable.NextUnallocatedBlock;
+            m_newBlocksStartAtThisAddress = fileAllocationTable.LastAllocatedBlock+1;
             m_fileAllocationTable = fileAllocationTable;
             m_dataReader = dataReader;
             m_file = file;
@@ -235,8 +233,6 @@ namespace openHistorian.V2.FileSystem
         {
             if (!m_disposed)
             {
-                if (StreamDisposed != null)
-                    StreamDisposed.Invoke(this, EventArgs.Empty);
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.

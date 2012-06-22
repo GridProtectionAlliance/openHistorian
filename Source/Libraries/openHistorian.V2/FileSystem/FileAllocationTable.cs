@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -92,9 +91,9 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         int m_nextFileId;
         /// <summary>
-        /// Returns the next unallocated free block.
+        /// Returns the last allocated block.
         /// </summary>
-        int m_nextUnallocatedBlock;
+        int m_lastAllocatedBlock;
         /// <summary>
         /// Provides a list of all of the Features that are contained within the file.
         /// </summary>
@@ -157,7 +156,7 @@ namespace openHistorian.V2.FileSystem
             m_isOpenedForExclusiveEditing = fileAllocationTable.m_isOpenedForExclusiveEditing;
             m_minimumReadVersion = fileAllocationTable.m_minimumReadVersion;
             m_minimumWriteVersion = fileAllocationTable.m_minimumWriteVersion;
-            m_nextUnallocatedBlock = fileAllocationTable.m_nextUnallocatedBlock;
+            m_lastAllocatedBlock = fileAllocationTable.m_lastAllocatedBlock;
             m_nextFileId = fileAllocationTable.m_nextFileId;
             m_unrecgonizedMetaDataTags = fileAllocationTable.m_unrecgonizedMetaDataTags;
             m_isTableCompromised = fileAllocationTable.IsTableCompromised;
@@ -244,11 +243,11 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Represents the next block that has not been allocated.
         /// </summary>
-        internal int NextUnallocatedBlock
+        internal int LastAllocatedBlock
         {
             get
             {
-                return m_nextUnallocatedBlock;
+                return m_lastAllocatedBlock;
             }
         }
 
@@ -301,8 +300,8 @@ namespace openHistorian.V2.FileSystem
                 throw new ArgumentException("the value 0 is not valid", "count");
             if (IsReadOnly)
                 throw new Exception("class is read only");
-            int blockAddress = m_nextUnallocatedBlock;
-            m_nextUnallocatedBlock += count;
+            int blockAddress = m_lastAllocatedBlock + 1;
+            m_lastAllocatedBlock += count;
             return blockAddress;
         }
 
@@ -345,7 +344,7 @@ namespace openHistorian.V2.FileSystem
         bool IsFileAllocationTableValid()
         {
             if (ArchiveId == Guid.Empty) return false;
-            if (NextUnallocatedBlock < 10) return false;
+            if (LastAllocatedBlock < 9) return false;
             if (m_minimumReadVersion < 0) return false;
             if (m_minimumWriteVersion < 0) return false;
             return true;
@@ -363,7 +362,7 @@ namespace openHistorian.V2.FileSystem
             m_isOpenedForExclusiveEditing = false;
             m_snapshotSequenceNumber = 0;
             m_nextFileId = 0;
-            m_nextUnallocatedBlock = 10;
+            m_lastAllocatedBlock = 9;
             m_files = new List<FileMetaData>();
             byte[] data = GetBytes();
 
@@ -405,7 +404,7 @@ namespace openHistorian.V2.FileSystem
 
             dataWriter.Write((short)MetaDataCodes.ListOfFiles); //Meta Data Code
             dataWriter.Write((short)(fileCount * FileMetaData.SizeInBytes + 9)); //Meta data length
-            dataWriter.Write(NextUnallocatedBlock);
+            dataWriter.Write(LastAllocatedBlock);
             dataWriter.Write(m_nextFileId);
             dataWriter.Write(fileCount);
 
@@ -465,7 +464,7 @@ namespace openHistorian.V2.FileSystem
                     case 1:
                         if (metaDataLength < 9)
                             throw new Exception("The file format is corrupt");
-                        m_nextUnallocatedBlock = dataReader.ReadInt32();
+                        m_lastAllocatedBlock = dataReader.ReadInt32();
                         m_nextFileId = dataReader.ReadInt32();
                         int fileCount = dataReader.ReadByte();
                         if (fileCount > 64)
@@ -502,7 +501,13 @@ namespace openHistorian.V2.FileSystem
             diskIo.WriteToExistingBlock(((m_snapshotSequenceNumber & 7) + 2), BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
         }
 
-        public bool AreEqual(FileAllocationTable other)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        /// <remarks>A debug function</remarks>
+        internal bool AreEqual(FileAllocationTable other)
         {
             if (other == null)
                 return false;
@@ -513,7 +518,7 @@ namespace openHistorian.V2.FileSystem
             if (m_isOpenedForExclusiveEditing != other.m_isOpenedForExclusiveEditing) return false;
             if (m_snapshotSequenceNumber != other.m_snapshotSequenceNumber) return false;
             if (m_nextFileId != other.m_nextFileId) return false;
-            if (m_nextUnallocatedBlock != other.m_nextUnallocatedBlock) return false;
+            if (m_lastAllocatedBlock != other.m_lastAllocatedBlock) return false;
             //compare files.
             if (m_files == null)
             {

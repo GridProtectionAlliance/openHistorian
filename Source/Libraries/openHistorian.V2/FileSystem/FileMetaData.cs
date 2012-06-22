@@ -37,10 +37,10 @@ namespace openHistorian.V2.FileSystem
         /// The number of bytes that are required to save this class.
         /// </summary>
         internal const int SizeInBytes = 40;
-        bool m_isReadOnly;
-        
-        int m_fileIdNumber;
+       
         Guid m_fileExtension;
+        bool m_isReadOnly;
+        int m_fileIdNumber;
         int m_fileFlags;
         int m_directBlock;
         int m_singleIndirectBlock;
@@ -252,12 +252,14 @@ namespace openHistorian.V2.FileSystem
             m_doubleIndirectBlock = dataReader.ReadInt32();
             m_tripleIndirectBlock = dataReader.ReadInt32();
         }
+
         /// <summary>
         /// Determines if the two objects are equal in value.
         /// </summary>
         /// <param name="a">the object to compare this class to</param>
         /// <returns></returns>
-        public bool AreEqual(FileMetaData a)
+        /// <remarks>A debug function</remarks>
+        internal bool AreEqual(FileMetaData a)
         {
             if (a == null)
                 return false;

@@ -122,7 +122,7 @@ namespace openHistorian.V2.FileSystem
             m_transactionalRead = new TransactionalRead(dataReader, fileAllocationTable);
             m_fileAllocationTable = fileAllocationTable.CreateEditableCopy(true);
             m_dataReader = dataReader;
-            m_origionalFreePageIndex = m_fileAllocationTable.NextUnallocatedBlock;
+            m_origionalFreePageIndex = m_fileAllocationTable.LastAllocatedBlock + 1;
             m_openedFiles = new SortedList<int, ArchiveFileStream>();
         }
 
@@ -207,7 +207,7 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream OpenFile(Guid fileExtension, int fileFlags)
         {
-            for (int x = 0; x < Files.Count; x++ )
+            for (int x = 0; x < Files.Count; x++)
             {
                 var file = Files[x];
                 if (file.FileExtension == fileExtension && file.FileFlags == fileFlags)
@@ -307,7 +307,7 @@ namespace openHistorian.V2.FileSystem
         {
             if (m_disposed)
                 throw new Exception("Duplicate call to Commit/Rollback Transaction");
-            return m_dataReader.SetFileLength(size, m_fileAllocationTable.NextUnallocatedBlock);
+            return m_dataReader.SetFileLength(size, m_fileAllocationTable.LastAllocatedBlock + 1);
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
-                return m_dataReader.FileSize - m_fileAllocationTable.NextUnallocatedBlock * ArchiveConstants.BlockSize;
+                return m_dataReader.FileSize - (m_fileAllocationTable.LastAllocatedBlock + 1) * ArchiveConstants.BlockSize;
             }
         }
 

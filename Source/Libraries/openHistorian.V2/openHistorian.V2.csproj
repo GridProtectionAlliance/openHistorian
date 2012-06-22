@@ -86,6 +86,7 @@
     <Compile Include="FileSystem\DiskIoSessionExtension.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStreamSizing.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="Service\Instance\Database\CreateDatabase.cs" />
