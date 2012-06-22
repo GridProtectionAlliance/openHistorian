@@ -45,5 +45,10 @@ namespace openHistorian.V2.IO.Unmanaged
         /// Sets the current usage of the <see cref="IBinaryStreamIoSession"/> to null.
         /// </summary>
         void Clear();
+
+        /// <summary>
+        /// Gets if the object has been disposed
+        /// </summary>
+        bool IsDisposed { get; }
     }
 }

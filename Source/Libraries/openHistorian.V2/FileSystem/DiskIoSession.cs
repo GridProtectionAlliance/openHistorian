@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  MemoryUnit.cs - Gbtc
+//  DiskIoSession.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,11 +29,10 @@ using openHistorian.V2.IO.Unmanaged;
 namespace openHistorian.V2.FileSystem
 {
     /// <summary>
-    /// Contains basic information about a page of memory
+    /// Provides a data IO session with the disk subsystem to perform basic read and write operations.
     /// </summary>
-    unsafe internal class MemoryUnit : IDisposable
+    unsafe internal class DiskIoSession : IDisposable
     {
-
         /// <summary>
         /// Since exceptions are very expensive, this enum will be returned for basic
         /// I/O operations to let the reader know what to do with the data.  
@@ -55,13 +54,6 @@ namespace openHistorian.V2.FileSystem
             /// </summary>
             ChecksumInvalid,
             /// <summary>
-            /// Special case if the entire page is zeros. 
-            /// This means the page was likely never written to.
-            /// However, a disk error what wipes this area with zeros can also generate this case.
-            /// This can also occur when reading past the end of the file.
-            /// </summary>
-            ChecksumInvalidBecausePageIsNull,
-            /// <summary>
             /// The page that was requested came from a newer version of the file.
             /// </summary>
             PageNewerThanSnapshotSequenceNumber,
@@ -81,13 +73,12 @@ namespace openHistorian.V2.FileSystem
 
         #region [ Members ]
 
-        DiskIoEnhanced m_diskIo;
+        DiskIo m_diskIo;
         IBinaryStreamIoSession m_ioSession;
         bool m_disposed;
         bool m_isValid;
         bool m_pendingWriteComplete;
         bool m_blockSupportsWriting;
-
         int m_length;
         int m_blockIndex;
         byte* m_pointer;
@@ -96,17 +87,26 @@ namespace openHistorian.V2.FileSystem
 
         #region [ Constructors ]
 
-        public MemoryUnit(DiskIoEnhanced diskIo, IBinaryStreamIoSession ioSession)
+        public DiskIoSession(DiskIo diskIo, IBinaryStreamIoSession ioSession)
         {
+            if (diskIo == null)
+                throw new ArgumentNullException("diskIo");
+            if (ioSession == null)
+                throw new ArgumentNullException("ioSession");
+            if (diskIo.IsDisposed)
+                throw new ObjectDisposedException(diskIo.GetType().FullName);
+            if (ioSession.IsDisposed)
+                throw new ObjectDisposedException(ioSession.GetType().FullName);
+
             m_diskIo = diskIo;
             m_ioSession = ioSession;
             m_isValid = false;
         }
 
         /// <summary>
-        /// Releases the unmanaged resources before the <see cref="MemoryUnit"/> object is reclaimed by <see cref="GC"/>.
+        /// Releases the unmanaged resources before the <see cref="DiskIoSession"/> object is reclaimed by <see cref="GC"/>.
         /// </summary>
-        ~MemoryUnit()
+        ~DiskIoSession()
         {
             Dispose(false);
         }
@@ -116,7 +116,7 @@ namespace openHistorian.V2.FileSystem
         #region [ Properties ]
 
         /// <summary>
-        /// Returns true if this class is disposed or its it's underlying DiskIo is disposed.
+        /// Returns true if this class is disposed or its underlying DiskIo is disposed.
         /// </summary>
         public bool IsDisposed
         {
@@ -126,6 +126,9 @@ namespace openHistorian.V2.FileSystem
             }
         }
 
+        /// <summary>
+        /// Gets if the block in this IO Session is valid.
+        /// </summary>
         public bool IsValid
         {
             get
@@ -146,6 +149,9 @@ namespace openHistorian.V2.FileSystem
             }
         }
 
+        /// <summary>
+        /// Gets the number of bytes valid in this block.
+        /// </summary>
         public int Length
         {
             get
@@ -154,6 +160,9 @@ namespace openHistorian.V2.FileSystem
                 return m_length;
             }
         }
+        /// <summary>
+        /// Gets the indexed page of this block.
+        /// </summary>
         public int BlockIndex
         {
             get
@@ -162,6 +171,9 @@ namespace openHistorian.V2.FileSystem
                 return m_blockIndex;
             }
         }
+        /// <summary>
+        /// Gets a pointer to the block
+        /// </summary>
         public byte* Pointer
         {
             get
@@ -171,6 +183,9 @@ namespace openHistorian.V2.FileSystem
             }
         }
 
+        /// <summary>
+        /// Gets a managed pointer to the block
+        /// </summary>
         public IntPtr IntPtr
         {
             get
@@ -186,17 +201,19 @@ namespace openHistorian.V2.FileSystem
 
         /// <summary>
         /// Navigates to a block that will be written to. 
-        /// This block must be a null block in order for the write to be successful.
+        /// This class does not check if overwriting an existing block. So be careful not to corrupt the file.
         /// </summary>
-        /// <param name="blockIndex"></param>
+        /// <param name="blockIndex">the zero based index of the block to write to.</param>
+        /// <remarks>This function will increase the size of the file if the block excedes the current size of the file.</remarks>
         public void BeginWriteToNewBlock(int blockIndex)
         {
             CheckIsDisposed();
-
             if (m_diskIo.IsReadOnly)
                 throw new ReadOnlyException("File system is read only");
             if (m_pendingWriteComplete)
                 throw new Exception("A pending write operation must first complete before starting another one");
+            if ((blockIndex > 10 && blockIndex <= m_diskIo.LastReadonlyBlock))
+                throw new ArgumentOutOfRangeException("blockIndex","Cannot write to committed blocks");
 
             m_isValid = false;
 
@@ -221,7 +238,7 @@ namespace openHistorian.V2.FileSystem
         /// This block must currently exist and have the correct parameters passed to this function
         /// In order to allow this block to be modified.
         /// </summary>
-        /// <param name="blockIndex"></param>
+        /// <param name="blockIndex">the index value of this block</param>
         /// <param name="blockType">the type of this block.</param>
         /// <param name="indexValue">a value put in the footer of the block designating the index of this block</param>
         /// <param name="fileIdNumber">the file number this block is associated with</param>
@@ -235,6 +252,9 @@ namespace openHistorian.V2.FileSystem
                 throw new ReadOnlyException("File system is read only");
             if (m_pendingWriteComplete)
                 throw new Exception("A pending write operation must first complete before starting another one");
+
+            if ((blockIndex > 10 && blockIndex <= m_diskIo.LastReadonlyBlock))
+                throw new ArgumentOutOfRangeException("blockIndex", "Cannot write to committed blocks");
 
             m_isValid = false;
             ReadBlock(blockIndex, true);
@@ -263,8 +283,8 @@ namespace openHistorian.V2.FileSystem
             if (!m_pendingWriteComplete)
                 throw new Exception("A write operation has not started yet. Begin the write operation first.");
 
-            //ToDo: Consider reloading the origional data if a buffer was modified when it wasn't supposed to be
-            //This is actually a pretty serious bug.
+            if ((BlockIndex > 10 && BlockIndex <= m_diskIo.LastReadonlyBlock))
+                throw new Exception("Cannot write to committed blocks");
 
             WriteFooterData(m_pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
             m_pendingWriteComplete = false;
@@ -285,7 +305,7 @@ namespace openHistorian.V2.FileSystem
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             if (m_diskIo.IsDisposed)
-                throw new ObjectDisposedException(typeof(DiskIoEnhanced).FullName);
+                throw new ObjectDisposedException(typeof(DiskIo).FullName);
             if (m_pendingWriteComplete)
                 throw new Exception("A pending write operation must first complete before starting another one");
 
@@ -300,7 +320,7 @@ namespace openHistorian.V2.FileSystem
         }
 
         /// <summary>
-        /// Releases all the resources used by the <see cref="MemoryUnit"/> object.
+        /// Releases all the resources used by the <see cref="DiskIoSession"/> object.
         /// </summary>
         public void Dispose()
         {
@@ -308,6 +328,15 @@ namespace openHistorian.V2.FileSystem
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Releases any lock that has been aquired on the data so it can be collected if need be.
+        /// </summary>
+        public void Clear()
+        {
+            CheckIsDisposed();
+            m_isValid = false;
+            m_ioSession.Clear();
+        }
 
         #endregion
 
@@ -331,7 +360,7 @@ namespace openHistorian.V2.FileSystem
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             if (m_diskIo.IsDisposed)
-                throw new ObjectDisposedException(typeof(DiskIoEnhanced).FullName);
+                throw new ObjectDisposedException(typeof(DiskIo).FullName);
         }
 
         /// <summary>
@@ -360,7 +389,7 @@ namespace openHistorian.V2.FileSystem
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="MemoryUnit"/> object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="DiskIoSession"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         void Dispose(bool disposing)
@@ -370,7 +399,6 @@ namespace openHistorian.V2.FileSystem
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.
-
                     if (disposing)
                     {
                         if (m_ioSession != null)
@@ -388,27 +416,7 @@ namespace openHistorian.V2.FileSystem
 
         #endregion
 
-        //internal void WriteBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] buffer)
-        //{
-        //    AquireBlockForWrite(blockIndex);
-        //    Marshal.Copy(buffer, 0, IntPtr, buffer.Length);
-        //    WriteBlock(blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
-        //}
-
-        //internal IoReadState ReadBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] buffer)
-        //{
-        //    var rv = AquireBlockForRead(blockIndex, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
-        //    if (rv == IoReadState.Valid)
-        //        Marshal.Copy(IntPtr, buffer, 0, buffer.Length);
-        //    return rv;
-        //}
-
         #region [ Static ]
-
-        /// <summary>
-        /// The calculated checksum for a page of all zeros.
-        /// </summary>
-        const long EmptyChecksum = 6845471437889732609;
 
         /// <summary>
         /// Checks how many times the checksum was computed.  This is used to see IO amplification.
@@ -466,28 +474,7 @@ namespace openHistorian.V2.FileSystem
                     return IoReadState.FileIdNumberDidNotMatch;
                 return IoReadState.Valid;
             }
-            if ((checksumInData == 0) && (checksum == EmptyChecksum))
-            {
-                return IoReadState.ChecksumInvalidBecausePageIsNull;
-            }
             return IoReadState.ChecksumInvalid;
-        }
-
-        /// <summary>
-        /// Determines if the block is null. (i.e. all zeros)
-        /// </summary>
-        /// <param name="data">a pointer to the start of the block to check.</param>
-        /// <returns></returns>
-        static bool IsBlockNull(byte* data)
-        {
-            long* dataLong = (long*)data;
-
-            for (int x = 0; x < ArchiveConstants.BlockSize / 8; x++)
-            {
-                if (dataLong[x] != 0)
-                    return false;
-            }
-            return true;
         }
 
         /// <summary>

@@ -25,9 +25,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using openHistorian.V2.IO;
+using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -43,7 +43,7 @@ namespace openHistorian.V2.FileSystem
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
 
-            DiskIoEnhanced stream = new DiskIoEnhanced();
+            DiskIo stream = new DiskIo(new MemoryStream(),0);
             TestReadAndWrites(stream);
             TestReadAndWritesWithCommit(stream);
             TestReadAndWritesToDifferentFilesWithCommit(stream);
@@ -53,7 +53,7 @@ namespace openHistorian.V2.FileSystem
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
 
         }
-        static void TestBinaryStream(DiskIoEnhanced stream)
+        static void TestBinaryStream(DiskIo stream)
         {
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(stream);
             FileMetaData node = header.CreateNewFile(Guid.NewGuid());
@@ -64,7 +64,7 @@ namespace openHistorian.V2.FileSystem
             BinaryStreamTest.Test(ds);
         }
 
-        static void TestReadAndWrites(DiskIoEnhanced stream)
+        static void TestReadAndWrites(DiskIo stream)
         {
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(stream);
             FileMetaData node = header.CreateNewFile(Guid.NewGuid());
@@ -83,7 +83,7 @@ namespace openHistorian.V2.FileSystem
             header.WriteToFileSystem(stream);
         }
 
-        static void TestReadAndWritesWithCommit(DiskIoEnhanced stream)
+        static void TestReadAndWritesWithCommit(DiskIo stream)
         {
             FileAllocationTable header;
             FileMetaData node;
@@ -129,7 +129,7 @@ namespace openHistorian.V2.FileSystem
             TestCustomSizeRead(ds2, 5);
         }
 
-        static void TestReadAndWritesToDifferentFilesWithCommit(DiskIoEnhanced stream)
+        static void TestReadAndWritesToDifferentFilesWithCommit(DiskIo stream)
         {
             FileAllocationTable header;
 

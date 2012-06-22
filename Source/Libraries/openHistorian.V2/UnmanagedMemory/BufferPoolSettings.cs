@@ -31,6 +31,9 @@ namespace openHistorian.V2.UnmanagedMemory
     /// </summary>
     public class BufferPoolSettings
     {
+
+        #region [ Members ]
+
         /// <summary>
         /// Represents the ceiling for the amount of memory the buffer pool can use (124GB)
         /// </summary>
@@ -67,7 +70,19 @@ namespace openHistorian.V2.UnmanagedMemory
         /// </summary>
         int m_memoryBlockSize;
 
+        #endregion
 
+        #region [ Constructors ]
+
+
+        public BufferPoolSettings(int pageSize)
+        {
+            Initialize(pageSize);
+        }
+
+        #endregion
+
+        #region [ Properties ]
         /// <summary>
         /// The number of bytes per page.
         /// Must be a power of 2. Greater than 4KB and less than 256KB
@@ -91,7 +106,7 @@ namespace openHistorian.V2.UnmanagedMemory
             }
             set
             {
-
+                throw new NotImplementedException();
             }
         }
 
@@ -106,7 +121,7 @@ namespace openHistorian.V2.UnmanagedMemory
             }
             set
             {
-
+                throw new NotImplementedException();
             }
         }
 
@@ -132,12 +147,10 @@ namespace openHistorian.V2.UnmanagedMemory
                 return m_memoryBlockSize;
             }
         }
+        #endregion
 
-        public BufferPoolSettings(int pageSize)
-        {
-            Initialize(pageSize);
-        }
-
+        #region [ Methods ]
+        
         /// <summary>
         /// Assigns an appropriate maximum allocation size
         /// Calculates an allocation size.
@@ -148,7 +161,7 @@ namespace openHistorian.V2.UnmanagedMemory
             m_pageSize = pageSize;
 
             var info = new Microsoft.VisualBasic.Devices.ComputerInfo();
-           
+
             long totalMemory = (long)info.TotalPhysicalMemory;
             long availableMemory = (long)info.AvailablePhysicalMemory;
 
@@ -169,6 +182,9 @@ namespace openHistorian.V2.UnmanagedMemory
             m_targetBufferSize = 0;
         }
 
+        #endregion
+
+        #region [ Static ]
 
         /// <summary>
         /// Computes the ceiling of the buffer pool
@@ -210,5 +226,14 @@ namespace openHistorian.V2.UnmanagedMemory
             targetMemoryBlockSize = (int)HelperFunctions.RoundUpToNearestPowerOfTwo(targetMemoryBlockSize);
             return (int)targetMemoryBlockSize;
         }
+
+        #endregion
+        
+  
+
+     
+
+
+
     }
 }

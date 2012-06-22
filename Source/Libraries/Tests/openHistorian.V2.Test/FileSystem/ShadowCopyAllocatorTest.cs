@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -37,7 +38,7 @@ namespace openHistorian.V2.FileSystem
         public void Test()
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
-            DiskIoEnhanced stream = new DiskIoEnhanced();
+            DiskIo stream = new DiskIo(new MemoryStream(), 0);
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(stream);
             header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
@@ -55,7 +56,7 @@ namespace openHistorian.V2.FileSystem
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
         }
 
-        internal static void TestWrite(DiskIoEnhanced stream, int FileNumber)
+        internal static void TestWrite(DiskIo stream, int FileNumber)
         {
 
             FileAllocationTable header = FileAllocationTable.OpenHeader(stream);
@@ -70,7 +71,7 @@ namespace openHistorian.V2.FileSystem
 
             shadow.ShadowDataBlock(0);
             PositionData pd = parse.GetPositionData(0);
-            if (node.DirectCluster != nextPage)
+            if (node.DirectBlock != nextPage)
                 throw new Exception();
             if (parse.DataClusterAddress != nextPage)
                 throw new Exception();
@@ -80,7 +81,7 @@ namespace openHistorian.V2.FileSystem
             //should do nothing since the page has already been allocated
             shadow.ShadowDataBlock(1024);
             pd = parse.GetPositionData(1024);
-            if (node.DirectCluster != nextPage)
+            if (node.DirectBlock != nextPage)
                 throw new Exception();
             if (parse.DataClusterAddress != nextPage)
                 throw new Exception();
@@ -90,7 +91,7 @@ namespace openHistorian.V2.FileSystem
             //Allocate in the 3th indirect block
             shadow.ShadowDataBlock(ArchiveConstants.FirstTripleIndirectIndex * (long)ArchiveConstants.DataBlockDataLength);
             pd = parse.GetPositionData(ArchiveConstants.FirstTripleIndirectIndex * (long)ArchiveConstants.DataBlockDataLength);
-            if (node.DirectCluster != nextPage)
+            if (node.DirectBlock != nextPage)
                 throw new Exception();
             if (parse.DataClusterAddress != nextPage + 1)
                 throw new Exception();

@@ -95,6 +95,15 @@ namespace openHistorian.V2.IO.Unmanaged
             {
 
             }
+
+
+            public bool IsDisposed
+            {
+                get
+                {
+                    return m_disposed;
+                }
+            }
         }
 
         public event EventHandler StreamDisposed;
@@ -390,6 +399,41 @@ namespace openHistorian.V2.IO.Unmanaged
                 }
             }
             return FileSize;
+        }
+
+        public int BlockSize
+        {
+            get
+            {
+                return Globals.BufferPool.PageSize;
+            }
+        }
+
+        public void Flush()
+        {
+
+        }
+
+        public void TrimEditsAfterPosition(long position)
+        {
+
+        }
+
+
+        public bool IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public bool IsDisposed
+        {
+            get
+            {
+                return m_disposed;
+            }
         }
     }
 }

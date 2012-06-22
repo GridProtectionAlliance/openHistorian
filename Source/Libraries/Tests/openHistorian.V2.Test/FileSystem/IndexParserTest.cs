@@ -24,6 +24,7 @@
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -35,7 +36,7 @@ namespace openHistorian.V2.FileSystem
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
             IndexMapper map = new IndexMapper();
-            DiskIoEnhanced stream = new DiskIoEnhanced();
+            DiskIo stream = new DiskIo(new MemoryStream(), 0);
             FileMetaData node = FileMetaData.CreateFileMetaData(1, Guid.NewGuid());
             IndexParser parse = new IndexParser(1, stream, node);
             parse.SetPosition(14312);

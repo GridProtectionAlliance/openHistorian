@@ -34,6 +34,7 @@ namespace openHistorian.V2.UnmanagedMemory
     /// </summary>
     class BufferPoolBlocks : IDisposable
     {
+        #region [ Members ]
 
         bool m_disposed;
 
@@ -64,11 +65,15 @@ namespace openHistorian.V2.UnmanagedMemory
         int m_pagesPerMemoryBlockMask;
         int m_pagesPerMemoryBlock;
 
+        #endregion
+
+        #region [ Constructors ]
+
         public BufferPoolBlocks(BufferPoolSettings settings)
         {
             m_pageSize = settings.PageSize;
             m_memoryBlockSize = settings.MemoryBlockSize;
-            m_pagesPerMemoryBlock = (int)(settings.MemoryBlockSize / settings.PageSize);
+            m_pagesPerMemoryBlock = (settings.MemoryBlockSize / settings.PageSize);
             m_pagesPerMemoryBlockMask = m_pagesPerMemoryBlock - 1;
             m_pagesPerMemoryBlockShiftBits = HelperFunctions.CountBits((uint)m_pagesPerMemoryBlockMask);
 
@@ -89,6 +94,10 @@ namespace openHistorian.V2.UnmanagedMemory
             Dispose(false);
         }
 
+        #endregion
+
+        #region [ Properties ]
+
         /// <summary>
         /// Determines if the class can allocate more blocks from Windows API.
         /// </summary>
@@ -96,6 +105,8 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_allocatedBlocksCount < m_memoryBlocks.Length;
             }
         }
@@ -108,6 +119,8 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_pageAllocations.ClearCount == 0;
             }
         }
@@ -119,6 +132,8 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return (m_allocatedPagesCount == m_maxAddressablePages);
             }
         }
@@ -131,6 +146,8 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_allocatedPagesCount * (long)m_pageSize;
             }
         }
@@ -143,6 +160,8 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_allocatedBlocksCount * (long)m_memoryBlockSize;
             }
         }
@@ -156,12 +175,17 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 if (BufferPoolSize == 0)
                     return 0f;
                 return 1f - (float)AllocatedBytes / BufferPoolSize;
             }
         }
 
+        #endregion
+
+        #region [ Methods ]
 
         /// <summary>
         /// Requests a new block from the buffer pool, allocating it if need be.
@@ -170,6 +194,8 @@ namespace openHistorian.V2.UnmanagedMemory
         /// <param name="addressPointer">the address to the start of the block</param>
         public void AllocatePage(out int index, out IntPtr addressPointer)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             if (IsFull)
             {
                 if (IsCompletelyFull)
@@ -188,6 +214,8 @@ namespace openHistorian.V2.UnmanagedMemory
         /// <param name="index">the index identifier of the block</param>
         public void ReleasePage(int index)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             m_allocatedPagesCount--;
             m_pageAllocations.ClearBit(index);
         }
@@ -212,11 +240,13 @@ namespace openHistorian.V2.UnmanagedMemory
         /// </summary>
         public void AllocateWinApiBlock()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             for (int x = 0; x < m_memoryBlocks.Length; x++)
             {
                 if (m_memoryBlocks[x] == null)
                 {
-                    m_memoryBlocks[x] = Memory.Allocate(m_memoryBlockSize);
+                    m_memoryBlocks[x] = new Memory(m_memoryBlockSize);
                     m_allocatedBlocksCount++;
                     int start = x * m_pagesPerMemoryBlock;
                     int stop = start + m_pagesPerMemoryBlock;
@@ -269,5 +299,7 @@ namespace openHistorian.V2.UnmanagedMemory
                 }
             }
         }
+
+        #endregion
     }
 }

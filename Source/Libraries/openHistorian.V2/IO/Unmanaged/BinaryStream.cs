@@ -89,7 +89,6 @@ namespace openHistorian.V2.IO.Unmanaged
             m_mainIoSession = stream.GetNextIoSession();
             if (stream.RemainingSupportedIoSessions >= 1)
                 m_secondaryIoSession = stream.GetNextIoSession();
-            m_stream.StreamDisposed += OnStreamDisposed;
         }
 
         /// <summary>
@@ -1362,8 +1361,6 @@ namespace openHistorian.V2.IO.Unmanaged
 
                     m_mainIoSession = null;
                     m_secondaryIoSession = null;
-                    m_stream.StreamDisposed -= OnStreamDisposed;
-
                     m_stream = null;
 
                     if (disposing)
@@ -1378,10 +1375,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
-        void OnStreamDisposed(object sender, EventArgs e)
-        {
-            Dispose();
-        }
+        
 
         #endregion
 

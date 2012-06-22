@@ -57,7 +57,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="dataReader">Disk Reader</param>
         /// <param name="fileAllocationTable">FileAllocationTable</param>
         /// <param name="openReadOnly">Determines if the file will be opened allowing shadow copies or not.</param>
-        public FileAddressTranslation(FileMetaData file, DiskIoEnhanced dataReader, FileAllocationTable fileAllocationTable, bool openReadOnly)
+        public FileAddressTranslation(FileMetaData file, DiskIo dataReader, FileAllocationTable fileAllocationTable, bool openReadOnly)
         {
             m_isReadOnly = openReadOnly;
             m_parser = new IndexParser(fileAllocationTable.SnapshotSequenceNumber, dataReader, file);

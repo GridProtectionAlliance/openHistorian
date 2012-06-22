@@ -32,11 +32,26 @@ namespace openHistorian.V2.Collections
     /// </summary>
     public sealed class BitArray
     {
+        #region [ Members ]
+
         int[] m_array;
         int m_count;
         int m_setCount;
         int m_lastFoundClearedIndex;
         bool m_initialState;
+
+        #endregion
+
+        #region [ Constructors ]
+       
+        /// <summary>
+        /// Initializes <see cref="BitArray"/>.
+        /// </summary>
+        /// <param name="initialState">Set to true to initial will all elements set.  False to have all elements cleared.</param>
+        public BitArray(bool initialState) :
+            this(32, initialState)
+        {
+        }
 
         /// <summary>
         /// Initializes <see cref="BitArray"/>.
@@ -68,14 +83,9 @@ namespace openHistorian.V2.Collections
             m_initialState = initialState;
         }
 
-        /// <summary>
-        /// Initializes <see cref="BitArray"/>.
-        /// </summary>
-        /// <param name="initialState">Set to true to initial will all elements set.  False to have all elements cleared.</param>
-        public BitArray(bool initialState) :
-            this(32, initialState)
-        {
-        }
+        #endregion
+
+        #region [ Properties ]
 
         public bool this[int index]
         {
@@ -91,7 +101,44 @@ namespace openHistorian.V2.Collections
                     ClearBit(index);
             }
         }
+
+        /// <summary>
+        /// Gets the number of items in the array.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return m_count;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of bits that are set in this array.
+        /// </summary>
+        public int SetCount
+        {
+            get
+            {
+                return m_setCount;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of bits that are cleared in this array.
+        /// </summary>
+        public int ClearCount
+        {
+            get
+            {
+                return m_count - m_setCount;
+            }
+        }
         
+        #endregion
+
+        #region [ Methods ]
+
         /// <summary>
         /// Gets the status of the corresponding bit.
         /// </summary>
@@ -119,7 +166,27 @@ namespace openHistorian.V2.Collections
                 m_array[index >> 5] |= bit;
             }
         }
-        
+
+        /// <summary>
+        /// Sets the corresponding bit to true. 
+        /// Returns true if the bit state was changed.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <remarks>True if the bit state was changed. False if the bit was already set.</remarks>
+        public bool TrySetBit(int index)
+        {
+            if (index < 0 || index >= m_count)
+                throw new ArgumentOutOfRangeException("index");
+            int bit = 1 << (index & 31);
+            if ((m_array[index >> 5] & bit) == 0) //if bit is cleared
+            {
+                m_setCount++;
+                m_array[index >> 5] |= bit;
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Sets the corresponding bit to false
         /// </summary>
@@ -156,55 +223,6 @@ namespace openHistorian.V2.Collections
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Sets the corresponding bit to true. 
-        /// Returns true if the bit state was changed.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <remarks>True if the bit state was changed. False if the bit was already set.</remarks>
-        public bool TrySetBit(int index)
-        {
-            if (index < 0 || index >= m_count)
-                throw new ArgumentOutOfRangeException("index");
-            int bit = 1 << (index & 31);
-            if ((m_array[index >> 5] & bit) == 0) //if bit is cleared
-            {
-                m_setCount++;
-                m_array[index >> 5] |= bit;
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Gets the number of items in the array.
-        /// </summary>
-        public int Count
-        {
-            get
-            {
-                return m_count;
-            }
-        }
-        /// <summary>
-        /// Gets the number of bits that are set in this array.
-        /// </summary>
-        public int SetCount
-        {
-            get
-            {
-                return m_setCount;
-            }
-        }
-
-        public int ClearCount
-        {
-            get
-            {
-                return m_count - m_setCount;
-            }
         }
 
         /// <summary>
@@ -260,5 +278,7 @@ namespace openHistorian.V2.Collections
             return -1;
         }
 
+        #endregion
+        
     }
 }

@@ -45,7 +45,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// The disk to make the IO requests to.
         /// </summary>
-        DiskIoEnhanced m_diskIo;
+        DiskIo m_diskIo;
         /// <summary>
         /// The FileAllocationTable that can be used to allocate space.
         /// </summary>
@@ -67,7 +67,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileAllocationTable">The file allocation table that is editable</param>
         /// <param name="fileMetaData">The file that is used</param>
         /// <param name="parser">The indexparser used by the caller to designate what block needs to be copied.</param>
-        public ShadowCopyAllocator(DiskIoEnhanced dataReader, FileAllocationTable fileAllocationTable, FileMetaData fileMetaData, IndexParser parser)
+        public ShadowCopyAllocator(DiskIo dataReader, FileAllocationTable fileAllocationTable, FileMetaData fileMetaData, IndexParser parser)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -126,22 +126,22 @@ namespace openHistorian.V2.FileSystem
             switch (m_parser.IndirectNumber)
             {
                 case 0:
-                    m_fileMetaData.DirectCluster = dataBlockAddress;
+                    m_fileMetaData.DirectBlock = dataBlockAddress;
                     break;
                 case 1:
                     firstIndirectAddress = ShadowCopyIndexIndirect(m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, dataBlockAddress);
-                    m_fileMetaData.SingleIndirectCluster = firstIndirectAddress;
+                    m_fileMetaData.SingleIndirectBlock = firstIndirectAddress;
                     break;
                 case 2:
                     secondIndirectAddress = ShadowCopyIndexIndirect(m_parser.SecondIndirectBlockAddress, m_parser.SecondIndirectBaseIndex, 2, m_parser.SecondIndirectOffset, dataBlockAddress);
                     firstIndirectAddress = ShadowCopyIndexIndirect(m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, secondIndirectAddress);
-                    m_fileMetaData.DoubleIndirectCluster = firstIndirectAddress;
+                    m_fileMetaData.DoubleIndirectBlock = firstIndirectAddress;
                     break;
                 case 3:
                     thirdIndirectAddress = ShadowCopyIndexIndirect(m_parser.ThirdIndirectBlockAddress, m_parser.ThirdIndirectBaseIndex, 3, m_parser.ThirdIndirectOffset, dataBlockAddress);
                     secondIndirectAddress = ShadowCopyIndexIndirect(m_parser.SecondIndirectBlockAddress, m_parser.SecondIndirectBaseIndex, 2, m_parser.SecondIndirectOffset, thirdIndirectAddress);
                     firstIndirectAddress = ShadowCopyIndexIndirect(m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, secondIndirectAddress);
-                    m_fileMetaData.TripleIndirectCluster = firstIndirectAddress;
+                    m_fileMetaData.TripleIndirectBlock = firstIndirectAddress;
                     break;
                 default:
                     throw new Exception("invalid redirect number");
@@ -167,7 +167,7 @@ namespace openHistorian.V2.FileSystem
             //if the block does not exist, create it.
             if (sourceBlockAddress == 0)
             {
-                using (var buffer = m_diskIo.GetMemoryUnit())
+                using (var buffer = m_diskIo.CreateDiskIoSession())
                 {
                     indexIndirectBlock = m_fileAllocationTable.AllocateFreeBlocks(1);
                     buffer.BeginWriteToNewBlock(indexIndirectBlock);
@@ -202,7 +202,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="remoteBlockAddress">the value of the remote address.</param>
         void ReadThenWriteIndexIndirectBlock(int sourceBlockAddress, int destinationBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
         {
-            using (var bufferSource = m_diskIo.GetMemoryUnit())
+            using (var bufferSource = m_diskIo.CreateDiskIoSession())
             {
                 int fileIdNumber = m_fileMetaData.FileIdNumber;
                 int snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
@@ -221,7 +221,7 @@ namespace openHistorian.V2.FileSystem
                 //everything else is going to be the same.
                 if (sourceBlockAddress != destinationBlockAddress)
                 {
-                    using (MemoryUnit destination = m_diskIo.GetMemoryUnit())
+                    using (DiskIoSession destination = m_diskIo.CreateDiskIoSession())
                     {
                         destination.BeginWriteToNewBlock(destinationBlockAddress);
                         Memory.Copy(bufferSource.Pointer, destination.Pointer, destination.Length);

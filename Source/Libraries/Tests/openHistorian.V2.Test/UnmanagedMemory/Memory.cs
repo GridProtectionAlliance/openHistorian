@@ -10,7 +10,7 @@ namespace openHistorian.V2.UnmanagedMemory
         [TestMethod()]
         public void Test()
         {
-            Memory block = Memory.Allocate(1);
+            Memory block = new Memory(1);
             if (block.Address == IntPtr.Zero)
                 throw new Exception();
             if (block.Size != 1)
@@ -31,7 +31,7 @@ namespace openHistorian.V2.UnmanagedMemory
             //Allocate 100MB
             List<Memory> blocks = new List<Memory>();
             for (int x = 0; x < 10; x++)
-                blocks.Add(Memory.Allocate(10000000));
+                blocks.Add(new Memory(10000000));
             GC.Collect();
             GC.WaitForPendingFinalizers();
             long mem2 = (long)info.AvailablePhysicalMemory;

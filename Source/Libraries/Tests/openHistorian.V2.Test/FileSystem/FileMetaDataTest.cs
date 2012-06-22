@@ -47,19 +47,19 @@ namespace openHistorian.V2.FileSystem
             Guid gid = Guid.NewGuid();
             FileMetaData node = FileMetaData.CreateFileMetaData(fileIDNumber, fileExtension);
             node.FileFlags = fileFlags;
-            node.DirectCluster = dataBlock1;
-            node.SingleIndirectCluster = singleRedirect;
-            node.DoubleIndirectCluster = doubleRedirect;
-            node.TripleIndirectCluster = tripleRedirect;
+            node.DirectBlock = dataBlock1;
+            node.SingleIndirectBlock = singleRedirect;
+            node.DoubleIndirectBlock = doubleRedirect;
+            node.TripleIndirectBlock = tripleRedirect;
             FileMetaData node2 = saveItem(node);
 
             if (node2.FileIdNumber != fileIDNumber) throw new Exception();
             if (node2.FileExtension != fileExtension) throw new Exception();
             if (node2.FileFlags != fileFlags) throw new Exception();
-            if (node2.DirectCluster != dataBlock1) throw new Exception();
-            if (node2.SingleIndirectCluster != singleRedirect) throw new Exception();
-            if (node2.DoubleIndirectCluster != doubleRedirect) throw new Exception();
-            if (node2.TripleIndirectCluster != tripleRedirect) throw new Exception();
+            if (node2.DirectBlock != dataBlock1) throw new Exception();
+            if (node2.SingleIndirectBlock != singleRedirect) throw new Exception();
+            if (node2.DoubleIndirectBlock != doubleRedirect) throw new Exception();
+            if (node2.TripleIndirectBlock != tripleRedirect) throw new Exception();
             Assert.IsTrue(true);
 
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);

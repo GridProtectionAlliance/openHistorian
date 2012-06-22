@@ -128,7 +128,7 @@ namespace openHistorian.V2.FileSystem
         /// Creates a new FileAllocationTable and writes this data to the passed file system.
         /// </summary>
         /// <param name="diskIo"></param>
-        FileAllocationTable(DiskIoEnhanced diskIo)
+        FileAllocationTable(DiskIo diskIo)
         {
             m_isReadOnly = false;
             CreateNewFileAllocationTable(diskIo);
@@ -355,7 +355,7 @@ namespace openHistorian.V2.FileSystem
         /// Creates a new file system and writes the file allocation table to the provided disk.
         /// </summary>
         /// <param name="diskIo"></param>
-        void CreateNewFileAllocationTable(DiskIoEnhanced diskIo)
+        void CreateNewFileAllocationTable(DiskIo diskIo)
         {
             m_minimumReadVersion = FileAllocationTableVersion;
             m_minimumWriteVersion = FileAllocationTableVersion;
@@ -494,7 +494,7 @@ namespace openHistorian.V2.FileSystem
         /// Saves the file allocation table to the disk
         /// </summary>
         /// <param name="diskIo">The place to store the file allocation table.</param>
-        public void WriteToFileSystem(DiskIoEnhanced diskIo)
+        public void WriteToFileSystem(DiskIo diskIo)
         {
             byte[] data = GetBytes();
             diskIo.WriteToExistingBlock(0, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
@@ -582,7 +582,7 @@ namespace openHistorian.V2.FileSystem
         /// This will open an existing archive header that is read only.
         /// </summary>
         /// <returns></returns>
-        public static FileAllocationTable OpenHeader(DiskIoEnhanced diskIo)
+        public static FileAllocationTable OpenHeader(DiskIo diskIo)
         {
             Exception openException;
             byte[] blockBytes = new byte[ArchiveConstants.BlockSize];
@@ -677,7 +677,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="tempBuffer"></param>
         /// <param name="error">an output parameter for the error if one was encountered.</param>
         /// <returns>null if there was an error and puts the exception in the error parameter.</returns>
-        static FileAllocationTable TryOpenFileAllocationTable(int blockIndex, DiskIoEnhanced diskIo, byte[] tempBuffer, out Exception error)
+        static FileAllocationTable TryOpenFileAllocationTable(int blockIndex, DiskIo diskIo, byte[] tempBuffer, out Exception error)
         {
             error = null;
 
@@ -714,7 +714,7 @@ namespace openHistorian.V2.FileSystem
         /// This will create a new File Allocation Table that is editable and writes the data to the File System.
         /// </summary>
         /// <returns></returns>
-        public static FileAllocationTable CreateFileAllocationTable(DiskIoEnhanced file)
+        public static FileAllocationTable CreateFileAllocationTable(DiskIo file)
         {
             FileAllocationTable table = new FileAllocationTable(file);
             if (table.IsReadOnly)

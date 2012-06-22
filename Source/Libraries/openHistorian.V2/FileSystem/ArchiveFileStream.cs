@@ -66,7 +66,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// The Disk Subsystem.
         /// </summary>
-        DiskIoEnhanced m_dataReader;
+        DiskIo m_dataReader;
         /// <summary>
         /// The file used by the stream.
         /// </summary>
@@ -82,7 +82,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Contains the read/write buffer.
         /// </summary>
-        MemoryUnit m_buffer;
+        DiskIoSession m_buffer;
 
         #endregion
 
@@ -95,7 +95,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="file">The file to read.</param>
         /// <param name="fileAllocationTable">The FileAllocationTable</param>
         /// <param name="openReadOnly">Determines if the file stream allows writing.</param>
-        internal ArchiveFileStream(DiskIoEnhanced dataReader, FileMetaData file, FileAllocationTable fileAllocationTable, bool openReadOnly)
+        internal ArchiveFileStream(DiskIo dataReader, FileMetaData file, FileAllocationTable fileAllocationTable, bool openReadOnly)
         {
             m_isReadOnly = openReadOnly;
             m_isBlockDirty = false;
@@ -104,7 +104,7 @@ namespace openHistorian.V2.FileSystem
             m_dataReader = dataReader;
             m_file = file;
             m_addressTranslation = new FileAddressTranslation(file, dataReader, m_fileAllocationTable, openReadOnly);
-            m_buffer = dataReader.GetMemoryUnit();
+            m_buffer = dataReader.CreateDiskIoSession();
         }
         ~ArchiveFileStream()
         {

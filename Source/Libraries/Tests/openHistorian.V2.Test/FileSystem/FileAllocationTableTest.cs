@@ -21,8 +21,8 @@
 //     
 //******************************************************************************************************
 using System;
-using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -33,7 +33,7 @@ namespace openHistorian.V2.FileSystem
         public void Test()
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
-            DiskIoEnhanced data = new DiskIoEnhanced();
+            DiskIo data = new DiskIo(new MemoryStream(), 0);
             FileAllocationTable header = FileAllocationTable.CreateFileAllocationTable(data);
 
             header.CreateNewFile(Guid.NewGuid());

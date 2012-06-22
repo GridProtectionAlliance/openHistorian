@@ -21,11 +21,6 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace openHistorian.V2.IO.Unmanaged
 {
     /// <summary>
@@ -34,15 +29,32 @@ namespace openHistorian.V2.IO.Unmanaged
     interface ISupportsBinaryStreamSizing : ISupportsBinaryStream
     {
         /// <summary>
+        /// Gets the unit size of an individual block
+        /// </summary>
+        int BlockSize { get; }
+       
+        /// <summary>
         /// Gets the length of the current stream.
         /// </summary>
         long Length { get; }
-
+        
         /// <summary>
         /// Sets the size of the stream.
         /// </summary>
         /// <param name="length"></param>
         /// <returns></returns>
         long SetLength(long length);
+
+        /// <summary>
+        /// Writes all current data to the disk subsystem.
+        /// </summary>
+        void Flush();
+
+        /// <summary>
+        /// Equivalent to SetLength but my not change the size of the file.
+        /// </summary>
+        /// <param name="position">The start of the position that will be invalidated</param>
+        void TrimEditsAfterPosition(long position);
+
     }
 }

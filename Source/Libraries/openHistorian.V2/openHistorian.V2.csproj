@@ -81,9 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileSystem\ArchiveFileStream_IoSession.cs" />
-    <Compile Include="FileSystem\DiskIoEnhancedExtensions.cs" />
-    <Compile Include="FileSystem\MemoryUnit.cs" />
-    <Compile Include="FileSystem\MemoryUnitExtensions.cs" />
+    <Compile Include="FileSystem\DiskIoExtensions.cs" />
+    <Compile Include="FileSystem\DiskIoSession.cs" />
+    <Compile Include="FileSystem\DiskIoSessionExtension.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStreamSizing.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
@@ -106,7 +106,7 @@
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="Service\Instance\InboundPointQueue.cs" />
     <Compile Include="IO\IBinaryStream.cs" />
-    <Compile Include="FileSystem\DiskIoEnhanced.cs" />
+    <Compile Include="FileSystem\DiskIo.cs" />
     <Compile Include="OldCode\IO\IStreamingTransport.cs" />
     <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
@@ -183,7 +183,6 @@
     <Compile Include="UnmanagedMemory\BufferPoolSettings.cs" />
     <Compile Include="UnmanagedMemory\Memory.cs" />
     <Compile Include="OldCode\UnmanagedMemory\WinApi.cs" />
-    <Compile Include="FileSystem\IndexBufferPool.cs" />
     <Compile Include="OldCode\FileSystem\Test\DiskIOUnbufferedTest.cs" />
     <Compile Include="OldCode\FileSystem\Test\DiskIOMemoryStreamTest.cs" />
     <Compile Include="OldCode\FileSystem\DiskIOBase.cs" />
@@ -212,7 +211,7 @@
     <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompressorTest.cs" />
     <Compile Include="OldCode\IO\ISupportsBinaryStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnmanagedMemory\WinApi.cs" />
+    <Compile Include="WinApi.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

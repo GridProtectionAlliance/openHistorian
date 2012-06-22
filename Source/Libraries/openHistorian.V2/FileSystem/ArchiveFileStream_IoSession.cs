@@ -89,6 +89,14 @@ namespace openHistorian.V2.FileSystem
             {
 
             }
+
+            public bool IsDisposed
+            {
+                get
+                {
+                    return m_disposed;
+                }
+            }
         }
     }
 }

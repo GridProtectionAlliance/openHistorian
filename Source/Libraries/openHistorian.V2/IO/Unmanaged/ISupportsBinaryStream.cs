@@ -31,19 +31,22 @@ namespace openHistorian.V2.IO.Unmanaged
     public interface ISupportsBinaryStream : IDisposable
     {
         /// <summary>
-        /// This event is critical because it will notify a <see cref="BinaryStream"/> that the stream is closed. 
-        /// Failing to raise this event on a close may result subsequent calls to the <see cref="BinaryStream"/> to 
-        /// corrupt memory.
-        /// </summary>
-        event EventHandler StreamDisposed;
-
-        /// <summary>
         /// Gets the number of available simultaneous read/write sessions.
         /// </summary>
         /// <remarks>This value is used to determine if a binary stream can be cloned
         /// to improve read/write/copy performance.</remarks>
         int RemainingSupportedIoSessions { get; }
 
+        /// <summary>
+        /// Gets if the stream can be written to.
+        /// </summary>
+        bool IsReadOnly { get; }
+
+        /// <summary>
+        /// Gets if the stream has been disposed.
+        /// </summary>
+        bool IsDisposed { get; }
+        
         /// <summary>
         /// Aquire an IO Session.
         /// </summary>
@@ -54,8 +57,6 @@ namespace openHistorian.V2.IO.Unmanaged
         /// </summary>
         /// <returns></returns>
         IBinaryStream CreateBinaryStream();
-
-      
 
     }
 }

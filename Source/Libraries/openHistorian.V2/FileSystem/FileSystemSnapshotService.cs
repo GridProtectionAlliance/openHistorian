@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -45,7 +46,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Constains the disk IO subsystem for accessing the file.
         /// </summary>
-        DiskIoEnhanced m_diskIo;
+        DiskIo m_diskIo;
 
         /// <summary>
         /// Contains the current snapshot of the file system.
@@ -100,7 +101,7 @@ namespace openHistorian.V2.FileSystem
         ///  </summary>
         private FileSystemSnapshotService()
         {
-            m_diskIo = new DiskIoEnhanced();
+            m_diskIo = new DiskIo(new MemoryStream(),0);
             FileAllocationTable.CreateFileAllocationTable(m_diskIo);
             m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
             m_readTransactions = new List<TransactionalRead>();

@@ -42,10 +42,10 @@ namespace openHistorian.V2.FileSystem
         int m_fileIdNumber;
         Guid m_fileExtension;
         int m_fileFlags;
-        int m_directCluster;
-        int m_singleIndirectCluster;
-        int m_doubleIndirectCluster;
-        int m_tripleIndirectCluster;
+        int m_directBlock;
+        int m_singleIndirectBlock;
+        int m_doubleIndirectBlock;
+        int m_tripleIndirectBlock;
 
         #endregion
 
@@ -71,10 +71,10 @@ namespace openHistorian.V2.FileSystem
             m_fileIdNumber = origionalFileMetaData.FileIdNumber;
             m_fileExtension = origionalFileMetaData.FileExtension;
             m_fileFlags = origionalFileMetaData.FileFlags;
-            m_directCluster = origionalFileMetaData.DirectCluster;
-            m_singleIndirectCluster = origionalFileMetaData.SingleIndirectCluster;
-            m_doubleIndirectCluster = origionalFileMetaData.DoubleIndirectCluster;
-            m_tripleIndirectCluster = origionalFileMetaData.TripleIndirectCluster;
+            m_directBlock = origionalFileMetaData.DirectBlock;
+            m_singleIndirectBlock = origionalFileMetaData.SingleIndirectBlock;
+            m_doubleIndirectBlock = origionalFileMetaData.DoubleIndirectBlock;
+            m_tripleIndirectBlock = origionalFileMetaData.TripleIndirectBlock;
         }
 
         /// <summary>
@@ -148,65 +148,65 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Gets the block address for the first direct cluster of this file.
         /// </summary>
-        internal int DirectCluster
+        internal int DirectBlock
         {
             get
             {
-                return m_directCluster;
+                return m_directBlock;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_directCluster = value;
+                m_directBlock = value;
             }
         }
         /// <summary>
         /// Gets the block address for the single indirect cluster.
         /// </summary>
-        internal int SingleIndirectCluster
+        internal int SingleIndirectBlock
         {
             get
             {
-                return m_singleIndirectCluster;
+                return m_singleIndirectBlock;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_singleIndirectCluster = value;
+                m_singleIndirectBlock = value;
             }
         }
         /// <summary>
         /// Gets the block address for the double indirect cluster.
         /// </summary>
-        internal int DoubleIndirectCluster
+        internal int DoubleIndirectBlock
         {
             get
             {
-                return m_doubleIndirectCluster;
+                return m_doubleIndirectBlock;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_doubleIndirectCluster = value;
+                m_doubleIndirectBlock = value;
             }
         }
         /// <summary>
         /// Gets the block address for the tripple indirect cluster.
         /// </summary>
-        internal int TripleIndirectCluster
+        internal int TripleIndirectBlock
         {
             get
             {
-                return m_tripleIndirectCluster;
+                return m_tripleIndirectBlock;
             }
             set
             {
                 if (IsReadOnly)
                     throw new Exception("Class is read only");
-                m_tripleIndirectCluster = value;
+                m_tripleIndirectBlock = value;
             }
         }
      
@@ -232,10 +232,10 @@ namespace openHistorian.V2.FileSystem
             dataWriter.Write(m_fileIdNumber);
             dataWriter.Write(m_fileExtension.ToByteArray());
             dataWriter.Write(m_fileFlags);
-            dataWriter.Write(m_directCluster);
-            dataWriter.Write(m_singleIndirectCluster);
-            dataWriter.Write(m_doubleIndirectCluster);
-            dataWriter.Write(m_tripleIndirectCluster);
+            dataWriter.Write(m_directBlock);
+            dataWriter.Write(m_singleIndirectBlock);
+            dataWriter.Write(m_doubleIndirectBlock);
+            dataWriter.Write(m_tripleIndirectBlock);
         }
 
         /// <summary>
@@ -247,10 +247,10 @@ namespace openHistorian.V2.FileSystem
             m_fileIdNumber = dataReader.ReadInt32();
             m_fileExtension = new Guid(dataReader.ReadBytes(16));
             m_fileFlags = dataReader.ReadInt32();
-            m_directCluster = dataReader.ReadInt32();
-            m_singleIndirectCluster = dataReader.ReadInt32();
-            m_doubleIndirectCluster = dataReader.ReadInt32();
-            m_tripleIndirectCluster = dataReader.ReadInt32();
+            m_directBlock = dataReader.ReadInt32();
+            m_singleIndirectBlock = dataReader.ReadInt32();
+            m_doubleIndirectBlock = dataReader.ReadInt32();
+            m_tripleIndirectBlock = dataReader.ReadInt32();
         }
         /// <summary>
         /// Determines if the two objects are equal in value.
@@ -265,10 +265,10 @@ namespace openHistorian.V2.FileSystem
             if (FileIdNumber != a.FileIdNumber) return false;
             if (FileExtension != a.FileExtension) return false;
             if (FileFlags != a.FileFlags) return false;
-            if (DirectCluster != a.DirectCluster) return false;
-            if (SingleIndirectCluster != a.SingleIndirectCluster) return false;
-            if (DoubleIndirectCluster != a.DoubleIndirectCluster) return false;
-            if (TripleIndirectCluster != a.TripleIndirectCluster) return false;
+            if (DirectBlock != a.DirectBlock) return false;
+            if (SingleIndirectBlock != a.SingleIndirectBlock) return false;
+            if (DoubleIndirectBlock != a.DoubleIndirectBlock) return false;
+            if (TripleIndirectBlock != a.TripleIndirectBlock) return false;
             return true;
         }
 

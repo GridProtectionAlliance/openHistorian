@@ -106,6 +106,15 @@ namespace openHistorian.V2.Unmanaged
             {
                 m_ioSession.Clear();
             }
+
+
+            public bool IsDisposed
+            {
+                get
+                {
+                    return m_disposed;
+                }
+            }
         }
 
         /// <summary>
@@ -218,6 +227,35 @@ namespace openHistorian.V2.Unmanaged
             //if (m_baseStream.Length < length)
                 m_baseStream.SetLength(length);
             return m_baseStream.Length;
+        }
+
+        public int BlockSize
+        {
+            get
+            {
+                return Globals.BufferPool.PageSize;
+            }
+        }
+
+        public void Flush()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TrimEditsAfterPosition(long position)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public bool IsReadOnly
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool IsDisposed
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }

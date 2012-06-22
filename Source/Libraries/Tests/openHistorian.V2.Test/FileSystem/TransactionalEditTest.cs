@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -34,7 +35,7 @@ namespace openHistorian.V2.FileSystem
         public void Test()
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
-            DiskIoEnhanced stream = new DiskIoEnhanced();
+            DiskIo stream = new DiskIo(new MemoryStream(), 0);
             FileAllocationTable fat = FileAllocationTable.CreateFileAllocationTable(stream);
             //obtain a readonly copy of the file allocation table.
             fat = FileAllocationTable.OpenHeader(stream);
@@ -49,7 +50,7 @@ namespace openHistorian.V2.FileSystem
             stream.Dispose();
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
         }
-        static void TestCreateNewFile(DiskIoEnhanced stream, FileAllocationTable fat)
+        static void TestCreateNewFile(DiskIo stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
@@ -75,7 +76,7 @@ namespace openHistorian.V2.FileSystem
             trans.Commit();
         }
 
-        static void TestOpenExistingFile(DiskIoEnhanced stream, FileAllocationTable fat)
+        static void TestOpenExistingFile(DiskIo stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
@@ -106,7 +107,7 @@ namespace openHistorian.V2.FileSystem
             trans.Commit();
         }
 
-        static void TestRollback(DiskIoEnhanced stream, FileAllocationTable fat)
+        static void TestRollback(DiskIo stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
@@ -134,7 +135,7 @@ namespace openHistorian.V2.FileSystem
             trans.Rollback();
         }
 
-        static void TestVerifyRollback(DiskIoEnhanced stream, FileAllocationTable fat)
+        static void TestVerifyRollback(DiskIo stream, FileAllocationTable fat)
         {
             Guid id = Guid.NewGuid();
             TransactionalEdit trans = new TransactionalEdit(stream, fat);
