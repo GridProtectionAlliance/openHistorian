@@ -150,6 +150,18 @@ namespace openHistorian.V2.FileSystem
         }
 
         /// <summary>
+        /// Gets if the block has began a write cycle that is pending completion.
+        /// </summary>
+        public bool IsPendingWriteComplete
+        {
+            get
+            {
+                CheckIsValid();
+                return m_pendingWriteComplete;
+            }
+        }
+
+        /// <summary>
         /// Gets the number of bytes valid in this block.
         /// </summary>
         public int Length
@@ -282,9 +294,6 @@ namespace openHistorian.V2.FileSystem
 
             if (!m_pendingWriteComplete)
                 throw new Exception("A write operation has not started yet. Begin the write operation first.");
-
-            if ((BlockIndex > 10 && BlockIndex <= m_diskIo.LastReadonlyBlock))
-                throw new Exception("Cannot write to committed blocks");
 
             WriteFooterData(m_pointer, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
             m_pendingWriteComplete = false;

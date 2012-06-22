@@ -1,5 +1,4 @@
-﻿//******************************************************************************************************
-//  TransactionalEdit.cs - Gbtc
+﻿//  TransactionalEdit.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -258,7 +257,7 @@ namespace openHistorian.V2.FileSystem
                 foreach (ArchiveFileStream fileStream in m_openedFiles.Values)
                 {
                     if (!fileStream.IsDisposed)
-                        fileStream.Flush();
+                        fileStream.Dispose();
                 }
 
                 m_fileAllocationTable.WriteToFileSystem(m_dataReader);

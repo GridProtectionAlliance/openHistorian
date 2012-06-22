@@ -34,7 +34,7 @@ namespace openHistorian.V2.FileSystem
     ///Provides a file stream that can be used to open a file and does all of the background work 
     ///required to translate virtual position data into physical ones.
     /// </summary>
-    unsafe public partial class ArchiveFileStream : ISupportsBinaryStream
+    public partial class ArchiveFileStream : ISupportsBinaryStream
     {
         #region [ Members ]
 
@@ -49,14 +49,10 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         bool m_isReadOnly;
         /// <summary>
-        /// Determines if the current block has been written to and thus is dirty.
-        /// </summary>
-        bool m_isBlockDirty;
-        /// <summary>
         /// This address is used to determine if the block being referenced is an old block or a new one. 
         /// Any addresses greater than or equal to this are new blocks for this transaction. Values before this are old.
         /// </summary>
-        int m_newBlocksStartAtThisAddress;
+        int m_lastReadOnlyBlock;
         /// <summary>
         /// The FileAllocationTable
         /// </summary>
@@ -69,18 +65,6 @@ namespace openHistorian.V2.FileSystem
         /// The file used by the stream.
         /// </summary>
         FileMetaData m_file;
-        /// <summary>
-        /// The translation information for the most recent block looked up.
-        /// </summary>
-        PositionData m_positionBlock = default(PositionData);
-        /// <summary>
-        /// Used to convert physical addresses into virtual addresses.
-        /// </summary>
-        FileAddressTranslation m_addressTranslation;
-        /// <summary>
-        /// Contains the read/write buffer.
-        /// </summary>
-        DiskIoSession m_buffer;
 
         #endregion
 
@@ -96,13 +80,10 @@ namespace openHistorian.V2.FileSystem
         internal ArchiveFileStream(DiskIo dataReader, FileMetaData file, FileAllocationTable fileAllocationTable, bool openReadOnly)
         {
             m_isReadOnly = openReadOnly;
-            m_isBlockDirty = false;
-            m_newBlocksStartAtThisAddress = fileAllocationTable.LastAllocatedBlock+1;
+            m_lastReadOnlyBlock = fileAllocationTable.LastAllocatedBlock;
             m_fileAllocationTable = fileAllocationTable;
             m_dataReader = dataReader;
             m_file = file;
-            m_addressTranslation = new FileAddressTranslation(file, dataReader, m_fileAllocationTable, openReadOnly);
-            m_buffer = dataReader.CreateDiskIoSession();
         }
         ~ArchiveFileStream()
         {
@@ -147,79 +128,6 @@ namespace openHistorian.V2.FileSystem
 
         #region [ Methods ]
 
-        /// <summary>
-        /// Flushes any dirty blocks to the DiskIO system.
-        /// </summary>
-        public void Flush()
-        {
-            if (m_isBlockDirty)
-            {
-                if (m_isReadOnly)
-                    throw new Exception();
-                if (m_positionBlock.PhysicalBlockIndex < m_newBlocksStartAtThisAddress)
-                    throw new Exception("Programming Error: A write attempt has been made to the committed data blocks.");
-
-                int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
-                int fileIdNumber = m_file.FileIdNumber;
-                int snapshotSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
-                m_buffer.EndWrite(BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber);
-                m_isBlockDirty = false;
-            }
-        }
-
-        /// <summary>
-        /// Looks up the position data and prepares the current block to be written to.
-        /// </summary>
-        private void PrepareBlockForWrite(long position)
-        {
-            if (!m_positionBlock.Containts(position) || m_positionBlock.PhysicalBlockIndex < m_newBlocksStartAtThisAddress || !m_buffer.IsValid || m_buffer.IsReadOnly)
-            {
-                Flush();
-                m_positionBlock = m_addressTranslation.VirtualToShadowPagePhysical(position);
-                if (m_positionBlock.PhysicalBlockIndex != 0)
-                {
-                    int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
-                    int featureSequenceNumber = m_file.FileIdNumber;
-                    int revisionSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
-                    if (!m_buffer.IsValid || m_buffer.IsReadOnly || m_buffer.BlockIndex != m_positionBlock.PhysicalBlockIndex)
-                    {
-                        m_buffer.BeginWriteToExistingBlock(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber);
-                    }
-                }
-                else
-                {
-                    throw new Exception("Failure to shadow copy the page.");
-                    //Array.Clear(m_tempPageBuffer, 0, m_tempPageBuffer.Length);
-                }
-            }
-        }
-        /// <summary>
-        /// Looks up the position data and prepares the current block to be written to.
-        /// </summary>
-        private void PrepareBlockForRead(long position)
-        {
-            if (!m_positionBlock.Containts(position) || !m_buffer.IsValid)
-            {
-                Flush();
-                m_positionBlock = m_addressTranslation.VirtualToPhysical(position);
-                if (m_positionBlock.PhysicalBlockIndex != 0)
-                {
-                    int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
-                    int featureSequenceNumber = m_file.FileIdNumber;
-                    int revisionSequenceNumber = m_fileAllocationTable.SnapshotSequenceNumber;
-                    if (!m_buffer.IsValid || m_buffer.BlockIndex != m_positionBlock.PhysicalBlockIndex)
-                    {
-                        m_buffer.Read(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber);
-                    }
-                }
-                else
-                {
-                    throw new Exception("Failure to shadow copy the page.");
-                    //Array.Clear(m_tempPageBuffer, 0, m_tempPageBuffer.Length);
-                }
-            }
-        }
-
         public void Dispose()
         {
             Dispose(true);
@@ -236,7 +144,7 @@ namespace openHistorian.V2.FileSystem
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.
-                    Flush();
+                    m_ioStream.Dispose();
                     if (disposing)
                     {
                         // This will be done only when the object is disposed by calling Dispose().
@@ -258,32 +166,6 @@ namespace openHistorian.V2.FileSystem
                 if (m_ioStream == null)
                     return 1;
                 return 0;
-            }
-        }
-
-        void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
-        {
-            if (isWriting)
-            {
-                if (m_isReadOnly)
-                    throw new Exception("File is read only");
-
-                PrepareBlockForWrite(position);
-
-                m_isBlockDirty = true;
-
-                firstPosition = m_positionBlock.VirtualPosition;
-                length = (int)m_positionBlock.Length;
-                firstPointer = (IntPtr)m_buffer.Pointer;
-                supportsWriting = m_isBlockDirty;
-            }
-            else
-            {
-                PrepareBlockForRead(position);
-                firstPosition = m_positionBlock.VirtualPosition;
-                length = (int)m_positionBlock.Length;
-                firstPointer = (IntPtr)m_buffer.Pointer;
-                supportsWriting = m_isBlockDirty;
             }
         }
 

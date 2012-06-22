@@ -26,69 +26,45 @@ using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.FileSystem
 {
-    public partial class ArchiveFileStream 
+    unsafe public partial class ArchiveFileStream
     {
-        // Nested Types
         class IoSession : IBinaryStreamIoSession
         {
+            #region [ Members ]
+
             bool m_disposed;
+
+            /// <summary>
+            /// The translation information for the most recent block looked up.
+            /// </summary>
+            PositionData m_positionBlock = default(PositionData);
+
+            /// <summary>
+            /// Used to convert physical addresses into virtual addresses.
+            /// </summary>
+            FileAddressTranslation m_addressTranslation;
+
             ArchiveFileStream m_stream;
+
+            /// <summary>
+            /// Contains the read/write buffer.
+            /// </summary>
+            DiskIoSession m_buffer;
+
+            #endregion
+
+            #region [ Constructors ]
 
             public IoSession(ArchiveFileStream stream)
             {
                 m_stream = stream;
+                m_addressTranslation = new FileAddressTranslation(stream.m_file, stream.m_dataReader, stream.m_fileAllocationTable, stream.m_isReadOnly);
+                m_buffer = stream.m_dataReader.CreateDiskIoSession();
             }
 
-            /// <summary>
-            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
-            /// </summary>
-            ~IoSession()
-            {
-                Dispose(false);
-            }
+            #endregion
 
-            /// <summary>
-            /// Releases all the resources used by the <see cref="IoSession"/> object.
-            /// </summary>
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
-            /// </summary>
-            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            void Dispose(bool disposing)
-            {
-                if (!m_disposed)
-                {
-                    try
-                    {
-                        // This will be done regardless of whether the object is finalized or disposed.
-                        m_stream.m_ioStream = null;
-                        if (disposing)
-                        {
-                            // This will be done only when the object is disposed by calling Dispose().
-                        }
-                    }
-                    finally
-                    {
-                        m_disposed = true;  // Prevent duplicate dispose.
-                    }
-                }
-            }
-
-            public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
-            {
-                m_stream.GetBlock(position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
-            }
-
-            public void Clear()
-            {
-
-            }
+            #region [ Properties ]
 
             public bool IsDisposed
             {
@@ -97,6 +73,110 @@ namespace openHistorian.V2.FileSystem
                     return m_disposed;
                 }
             }
+
+            #endregion
+
+            #region [ Methods ]
+            /// <summary>
+            /// Releases all the resources used by the <see cref="IoSession"/> object.
+            /// </summary>
+            public void Dispose()
+            {
+                if (!m_disposed)
+                {
+                    try
+                    {
+                        EndPendingWrites();
+                        m_buffer.Dispose();
+                        m_stream.m_ioStream = null;
+                    }
+                    finally
+                    {
+                        m_disposed = true;  // Prevent duplicate dispose.
+                    }
+                }
+            }
+
+            public void Clear()
+            {
+                EndPendingWrites();
+                m_buffer.Clear();
+            }
+
+            /// <summary>
+            /// Completes any pending writes to the file system.
+            /// </summary>
+            void EndPendingWrites()
+            {
+                if (m_buffer.IsPendingWriteComplete)
+                {
+                    int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
+                    int fileIdNumber = m_stream.m_file.FileIdNumber;
+                    int snapshotSequenceNumber = m_stream.m_fileAllocationTable.SnapshotSequenceNumber;
+                    m_buffer.EndWrite(BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber);
+                }
+            }
+
+            /// <summary>
+            /// Looks up the position data and prepares the current block to be written to.
+            /// </summary>
+            void PrepareBlockForRead(long position)
+            {
+                if (!m_positionBlock.Containts(position) || !m_buffer.IsValid)
+                {
+                    EndPendingWrites();
+                    m_positionBlock = m_addressTranslation.VirtualToPhysical(position);
+                    if (m_positionBlock.PhysicalBlockIndex == 0)
+                        throw new Exception("Failure to shadow copy the page.");
+                    int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
+                    int featureSequenceNumber = m_stream.m_file.FileIdNumber;
+                    int revisionSequenceNumber = m_stream.m_fileAllocationTable.SnapshotSequenceNumber;
+                    m_buffer.Read(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber);
+                }
+            }
+
+            /// <summary>
+            /// Looks up the position data and prepares the current block to be written to.
+            /// </summary>
+            void PrepareBlockForWrite(long position)
+            {
+                if (!m_positionBlock.Containts(position) || m_positionBlock.PhysicalBlockIndex <= m_stream.m_lastReadOnlyBlock || !m_buffer.IsValid || m_buffer.IsReadOnly)
+                {
+                    EndPendingWrites();
+                    m_positionBlock = m_addressTranslation.VirtualToShadowPagePhysical(position);
+                    if (m_positionBlock.PhysicalBlockIndex == 0)
+                        throw new Exception("Failure to shadow copy the page.");
+                    int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
+                    int featureSequenceNumber = m_stream.m_file.FileIdNumber;
+                    int revisionSequenceNumber = m_stream.m_fileAllocationTable.SnapshotSequenceNumber;
+                    m_buffer.BeginWriteToExistingBlock(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber);
+                }
+            }
+
+            public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+            {
+                if (isWriting)
+                {
+                    if (m_stream.m_isReadOnly)
+                        throw new Exception("File is read only");
+
+                    PrepareBlockForWrite(position);
+                    firstPosition = m_positionBlock.VirtualPosition;
+                    length = (int)m_positionBlock.Length;
+                    firstPointer = (IntPtr)m_buffer.Pointer;
+                    supportsWriting = m_buffer.IsPendingWriteComplete;
+                }
+                else
+                {
+                    PrepareBlockForRead(position);
+                    firstPosition = m_positionBlock.VirtualPosition;
+                    length = (int)m_positionBlock.Length;
+                    firstPointer = (IntPtr)m_buffer.Pointer;
+                    supportsWriting = m_buffer.IsPendingWriteComplete;
+                }
+            }
+            #endregion
+         
         }
     }
 }
