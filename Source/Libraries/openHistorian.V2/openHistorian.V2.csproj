@@ -80,6 +80,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase_DataScanner.cs" />
+    <Compile Include="Collections\KeyValue\IDataScanner.cs" />
     <Compile Include="FileSystem\ArchiveFileStream_IoSession.cs" />
     <Compile Include="FileSystem\DiskIoExtensions.cs" />
     <Compile Include="FileSystem\DiskIoSession.cs" />

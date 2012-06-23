@@ -42,36 +42,36 @@ namespace openHistorian.V2.FileSystem
             m_file = FileSystemSnapshotService.CreateInMemory();
         }
 
-        ///// <summary>
-        ///// Creates a new archive file
-        ///// </summary>
-        ///// <param name="archiveFile"></param>
-        //private VirtualFileSystem(string archiveFile)
-        //{
-        //    if (archiveFile == null)
-        //        throw new ArgumentNullException("archiveFile");
+        /// <summary>
+        /// Creates a new archive file
+        /// </summary>
+        /// <param name="archiveFile"></param>
+        private VirtualFileSystem(string archiveFile)
+        {
+            if (archiveFile == null)
+                throw new ArgumentNullException("archiveFile");
 
-        //    if (System.IO.File.Exists(archiveFile))
-        //        throw new Exception("ArchiveFile Already Exists");
+            if (System.IO.File.Exists(archiveFile))
+                throw new Exception("ArchiveFile Already Exists");
 
-        //    m_file = FileSystemSnapshotService.CreateFile(archiveFile);
-        //}
+            m_file = FileSystemSnapshotService.CreateFile(archiveFile);
+        }
 
-        ///// <summary>
-        ///// Opens an existing archvie file.
-        ///// </summary>
-        ///// <param name="archiveFile">The path to the archvie file</param>
-        ///// <param name="isReadOnly"></param>
-        //private VirtualFileSystem(string archiveFile, bool isReadOnly)
-        //{
-        //    if (archiveFile == null)
-        //        throw new ArgumentNullException("archiveFile");
+        /// <summary>
+        /// Opens an existing archvie file.
+        /// </summary>
+        /// <param name="archiveFile">The path to the archvie file</param>
+        /// <param name="isReadOnly"></param>
+        private VirtualFileSystem(string archiveFile, bool isReadOnly)
+        {
+            if (archiveFile == null)
+                throw new ArgumentNullException("archiveFile");
 
-        //    if (!System.IO.File.Exists(archiveFile))
-        //        throw new Exception("ArchiveFile Does Not Exist");
+            if (!System.IO.File.Exists(archiveFile))
+                throw new Exception("ArchiveFile Does Not Exist");
 
-        //    m_file = FileSystemSnapshotService.OpenFile(archiveFile, isReadOnly);
-        //}
+            m_file = FileSystemSnapshotService.OpenFile(archiveFile, isReadOnly);
+        }
 
         ~VirtualFileSystem()
         {
@@ -153,15 +153,15 @@ namespace openHistorian.V2.FileSystem
         #endregion
         #region [ Static ]
 
-        //public static VirtualFileSystem CreateArchive(string archiveFile)
-        //{
-        //    return new VirtualFileSystem(archiveFile);
-        //}
+        public static VirtualFileSystem CreateArchive(string archiveFile)
+        {
+            return new VirtualFileSystem(archiveFile);
+        }
 
-        //public static VirtualFileSystem OpenArchive(string archiveFile, bool isReadOnly)
-        //{
-        //    return new VirtualFileSystem(archiveFile, isReadOnly);
-        //}
+        public static VirtualFileSystem OpenArchive(string archiveFile, bool isReadOnly)
+        {
+            return new VirtualFileSystem(archiveFile, isReadOnly);
+        }
 
         public static VirtualFileSystem CreateInMemoryArchive()
         {

@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
 using openHistorian.V2.IO.Unmanaged;
@@ -31,6 +30,7 @@ namespace openHistorian.V2.Service.Instance.File
 {
     /// <summary>
     /// Provides a user with a read-only instance of an archive.
+    /// This class is not thread safe.
     /// </summary>
     public class ArchiveSnapshotInstance
     {
@@ -68,17 +68,9 @@ namespace openHistorian.V2.Service.Instance.File
             m_pointMappingLocalToGuid = new BasicTree(m_binaryStreamPointMappingLocalToGuid);
         }
         
-        public IEnumerable<Tuple<long, long, long, long>> GetData(long pointId, DateTime startDate, DateTime stopDate)
-        {
-            return null;
-        }
-        public IEnumerable<Tuple<long, long, long, long>> GetData(DateTime startDate, DateTime stopDate)
-        {
-            return null;
-        }
         public void GetData(Func<long, long, long, long, bool> callback)
         {
-            m_pointData.GetRange(callback);
+
         }
 
         public void Close()

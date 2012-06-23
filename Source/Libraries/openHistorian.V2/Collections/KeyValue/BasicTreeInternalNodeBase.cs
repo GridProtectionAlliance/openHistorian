@@ -173,18 +173,6 @@ namespace openHistorian.V2.Collections.KeyValue
             ClearCache(nodeLevel);
         }
 
-        //protected override void InternalNodeUpdate(int nodeLevel, uint nodeIndex, TKey oldFirstKey, TKey newFirstKey)
-        //{
-        //    throw new NotImplementedException();
-        //    ClearCache(nodeLevel);
-        //}
-
-        //protected override void InternalNodeRemove(int nodeLevel, uint nodeIndex, TKey key)
-        //{
-        //    throw new NotImplementedException();
-        //    ClearCache(nodeLevel);
-        //}
-
         protected override void InternalNodeInsert(int nodeLevel, uint nodeIndex, long key1, long key2, uint childNodeIndex)
         {
             ClearCache(nodeLevel);
@@ -248,40 +236,6 @@ namespace openHistorian.V2.Collections.KeyValue
             }
         }
 
-        protected override uint InternalNodeGetFirstIndex(int nodeLevel, uint nodeIndex)
-        {
-            short childCount;
-            uint previousNode;
-            uint nextNode;
-
-            LoadNodeHeader(nodeLevel, nodeIndex, false, out childCount, out previousNode, out nextNode);
-
-            if (childCount > 0)
-            {
-                Stream.Position = nodeIndex * BlockSize + NodeHeader.Size;
-                return Stream.ReadUInt32();
-            }
-            throw new Exception("Internal Nodes should never have zero children");
-        }
-
-        //protected override uint InternalNodeGetLastIndex(int nodeLevel, uint nodeIndex)
-        //{
-        //    throw new NotImplementedException();
-        //    //short childCount;
-        //    //uint previousNode;
-        //    //uint nextNode;
-
-        //    //LoadCurrentNode(nodeLevel, nodeIndex, false, out childCount, out previousNode, out nextNode);
-
-        //    //if (childCount > 0)
-        //    //{
-        //    //    Stream.Position = nodeIndex * BlockSize + NodeHeader.Size;
-        //    //    return Stream.ReadUInt32();
-        //    //}
-        //    //throw new Exception("Internal Nodes should never have zero children");
-        //}
-
-
         #endregion
 
         #region [Helper Methods ]
@@ -342,7 +296,7 @@ namespace openHistorian.V2.Collections.KeyValue
                 long compareKey1 = Stream.ReadInt64();
                 long compareKey2 = Stream.ReadInt64();
 
-                int compareKeysResults = CompareKeys(key1, key2, compareKey1, compareKey2); ;
+                int compareKeysResults = CompareKeys(key1, key2, compareKey1, compareKey2);
                 if (compareKeysResults == 0)
                 {
                     offset = NodeHeader.Size + sizeof(uint) + StructureSize * currentTestIndex;
@@ -418,7 +372,7 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #endregion
 
-        #endregion
+        #region [ Cache Methods ]
 
         /// <summary>
         /// If an internal node is modified. The local cache for that node may no longer be valid.
@@ -534,6 +488,9 @@ namespace openHistorian.V2.Collections.KeyValue
                 return cache.Bucket;
             }
         }
+        
+        #endregion
 
+        #endregion
     }
 }

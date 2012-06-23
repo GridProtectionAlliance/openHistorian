@@ -26,7 +26,7 @@ using openHistorian.V2.IO;
 
 namespace openHistorian.V2.Collections.KeyValue
 {
-    public abstract class BasicTreeLeafNodeBase : BasicTreeInternalNodeBase
+    public abstract partial class BasicTreeLeafNodeBase : BasicTreeInternalNodeBase
     {
         #region [ Nexted Types ]
 
@@ -107,16 +107,6 @@ namespace openHistorian.V2.Collections.KeyValue
             Stream.Write(0);
         }
 
-        //protected override bool LeafNodeUpdate(uint nodeIndex, TKey key, TValue value)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //protected override bool LeafNodeRemove(uint nodeIndex, TKey key)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         protected override bool LeafNodeInsert(uint nodeIndex, long key1, long key2, long value1, long value2)
         {
             short nodeRecordCount;
@@ -190,89 +180,11 @@ namespace openHistorian.V2.Collections.KeyValue
             return false;
         }
 
-        protected override bool LeafNodeGetFirstKeyValue(uint nodeIndex, out long key1, out long key2, out long value1, out long value2)
+        protected override IDataScanner LeafNodeGetScanner()
         {
-            short nodeRecordCount;
-            uint leftSiblingNodeIndex;
-            uint rightSiblingNodeIndex;
-
-            LoadNodeHeader(nodeIndex, false, out nodeRecordCount, out leftSiblingNodeIndex, out rightSiblingNodeIndex);
-            if (nodeRecordCount > 0)
-            {
-                Stream.Position = nodeIndex * BlockSize + NodeHeader.Size;
-                key1 = Stream.ReadInt64();
-                key2 = Stream.ReadInt64();
-                value1 = Stream.ReadInt64();
-                value2 = Stream.ReadInt64();
-                return true;
-            }
-            key1 = 0;
-            key2 = 0;
-            value1 = 0;
-            value2 = 0;
-            return false;
-        }
-
-        //protected override bool LeafNodeGetLastKeyValue(uint nodeIndex, out TKey key, out TValue value)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-
-        protected override void LeafNodeScan(uint nodeIndex, long beginKey1, long beginKey2, Func<long, long, long, long, bool> callback)
-        {
-
-        }
-
-        protected override void LeafNodeScan(uint nodeIndex, long beginKey1, long beginKey2, long endKey1, long endKey2, Func<long, long, long, long, bool> callback)
-        {
-            short nodeRecordCount;
-            uint leftSiblingNodeIndex, rightSiblingNodeIndex;
-            int keyIndexOfCurrentKey;
-
-            LoadNodeHeader(nodeIndex, false, out nodeRecordCount, out leftSiblingNodeIndex, out rightSiblingNodeIndex);
-
-            FindOffsetOfKey(nodeIndex, nodeRecordCount, beginKey1, beginKey2, out keyIndexOfCurrentKey);
-            keyIndexOfCurrentKey = (keyIndexOfCurrentKey - NodeHeader.Size) / StructureSize;
-
-            while (true)
-            {
-                //If there are no more records in the current node.
-                if (keyIndexOfCurrentKey >= nodeRecordCount)
-                {
-                    //If the last leaf node, return false
-                    if (rightSiblingNodeIndex == 0)
-                        return;
-
-                    //Move to the next node in the linked list.
-                    uint previousNode;
-                    nodeIndex = rightSiblingNodeIndex;
-                    LoadNodeHeader(nodeIndex, false, out nodeRecordCount, out previousNode, out rightSiblingNodeIndex);
-                    keyIndexOfCurrentKey = 0;
-                }
-
-                Stream.Position = nodeIndex * BlockSize + keyIndexOfCurrentKey * StructureSize + NodeHeader.Size;
-
-                long key1 = Stream.ReadInt64();
-                long key2 = Stream.ReadInt64();
-                long value1 = Stream.ReadInt64();
-                long value2 = Stream.ReadInt64();
-
-                //Check and see if the end of the query has occured
-                if (CompareKeys(endKey1, endKey2, key1, key2) <= 0)
-                    return;
-
-                //move to the next key
-                keyIndexOfCurrentKey++;
-
-                if (callback(key1,key2,value1,value2))
-                {
-                    return;
-                }
-            }
-
-        }
-
+            return new DataScanner(this);
+        } 
+   
         #endregion
 
         #region [ Helper Methods ]

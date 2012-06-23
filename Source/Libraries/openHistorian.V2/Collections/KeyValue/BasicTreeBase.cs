@@ -106,84 +106,60 @@ namespace openHistorian.V2.Collections.KeyValue
             }
         }
 
+        protected uint RootNodeIndex
+        {
+            get
+            {
+                return m_rootNodeIndex;
+            }
+        }
+
+        protected byte RootNodeLevel
+        {
+            get
+            {
+                return m_rootNodeLevel;
+            }
+        }
+
         #endregion
 
         #region [ Public Methods ]
 
-        /// <summary>
-        /// Requests a range of data from the BPlusTree.
-        /// </summary>
-        /// <param name="filter">An optional filter that returns true if the provided key should be included in the scan.</param>
-        /// <returns>
-        /// An Enumerable class for getting the results of the query.
-        /// </returns>
-        public void GetRange(Func<long, long, long, long, bool> callback)
+        public IDataScanner GetRange()
         {
-            uint nodeIndex = m_rootNodeIndex;
-            for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-            {
-                nodeIndex = InternalNodeGetFirstIndex(nodeLevel, nodeIndex);
-            }
-            long key1;
-            long key2;
-            long value1;
-            long value2;
-            LeafNodeGetFirstKeyValue(nodeIndex, out key1, out key2, out value1, out value2);
-            LeafNodeScan(nodeIndex, key1, key2, callback);
-        }
-        /// <summary>
-        /// Requests a range of data from the BPlusTree.
-        /// </summary>
-        /// <param name="filter">An optional filter that returns true if the provided key should be included in the scan.</param>
-        /// <returns>
-        /// An Enumerable class for getting the results of the query.
-        /// </returns>
-        public void GetRange(long beginKey1, long beginKey2, Func<long, long, long, long, bool> callback)
-        {
-            uint nodeIndex = m_rootNodeIndex;
-            for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-            {
-                nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, beginKey1, beginKey2);
-            }
-            LeafNodeScan(nodeIndex, beginKey1, beginKey2, callback);
+            return LeafNodeGetScanner();
+            //uint nodeIndex = m_rootNodeIndex;
+            //for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
+            //{
+            //    nodeIndex = InternalNodeGetFirstIndex(nodeLevel, nodeIndex);
+            //}
+            //long key1;
+            //long key2;
+            //long value1;
+            //long value2;
+            //LeafNodeGetFirstKeyValue(nodeIndex, out key1, out key2, out value1, out value2);
+            //LeafNodeScan(nodeIndex, key1, key2, callback);
         }
 
-        public void GetRange(long beginKey1, long beginKey2, long endKey1, long endKey2, Func<long, long, long, long, bool> callback)
-        {
-            uint nodeIndex = m_rootNodeIndex;
-            for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-            {
-                nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, beginKey1, beginKey2);
-            }
-            LeafNodeScan(nodeIndex, beginKey1, beginKey2, endKey1, endKey2, callback);
-        }
-
-        ////ToDo: Fix this feature
-        //public void Remove(TKey key)
+        //public void GetRange(long beginKey1, long beginKey2, Func<long, long, long, long, bool> callback)
         //{
         //    uint nodeIndex = m_rootNodeIndex;
         //    for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
         //    {
-        //        nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, key);
+        //        nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, beginKey1, beginKey2);
         //    }
-
-        //    if (LeafNodeRemove(nodeIndex, key))
-        //        return;
-        //    throw new Exception("Key Not Found");
+        //    LeafNodeScan(nodeIndex, beginKey1, beginKey2, callback);
         //}
 
-        ////ToDo: Fix this feature.
-        //public void Update(TKey key, TValue value)
+        //public void GetRange(long beginKey1, long beginKey2, long endKey1, long endKey2, Func<long, long, long, long, bool> callback)
         //{
         //    uint nodeIndex = m_rootNodeIndex;
         //    for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
         //    {
-        //        nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, key);
+        //        nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, beginKey1, beginKey2);
         //    }
-
-        //    if (LeafNodeUpdate(nodeIndex, key, value))
-        //        return;
-        //    throw new Exception("Key Not Found");
+        //    LeafNodeScan(nodeIndex, beginKey1, beginKey2, endKey1, endKey2, callback);
         //}
 
         /// <summary>
@@ -234,32 +210,21 @@ namespace openHistorian.V2.Collections.KeyValue
         protected abstract Guid FileType { get; }
 
         #region [ Internal Node Methods ]
-        //protected abstract void InternalNodeUpdate(int nodeLevel, uint nodeIndex, TKey oldFirstKey, TKey newFirstKey);
 
-        protected abstract uint InternalNodeGetFirstIndex(int nodeLevel, uint nodeIndex);
-        //protected abstract uint InternalNodeGetLastIndex(int nodeLevel, uint nodeIndex);
         protected abstract uint InternalNodeGetIndex(int nodeLevel, uint nodeIndex, long key1, long key2);
-
         protected abstract void InternalNodeInsert(int nodeLevel, uint nodeIndex, long key1, long key2, uint childNodeIndex);
         protected abstract void InternalNodeCreateNode(uint newNodeIndex, int nodeLevel, uint firstNodeIndex, long dividingKey1, long dividingKey2, uint secondNodeIndex);
-
-        //protected abstract void InternalNodeRemove(int nodeLevel, uint nodeIndex, TKey key);
 
         #endregion
 
         #region [ Leaf Node Methods ]
 
-        //protected abstract bool LeafNodeUpdate(uint nodeIndex, TKey key, TValue value);
         protected abstract bool LeafNodeInsert(uint nodeIndex, long key1, long key2, long value1, long value2);
-        //protected abstract bool LeafNodeRemove(uint nodeIndex, TKey key);
 
         protected abstract bool LeafNodeGetValue(uint nodeIndex, long key1, long key2, out long value1, out long value2);
-        protected abstract bool LeafNodeGetFirstKeyValue(uint nodeIndex, out long key1, out long key2, out long value1, out long value2);
-        //protected abstract bool LeafNodeGetLastKeyValue(uint nodeIndex, out TKey key, out TValue value);
         protected abstract void LeafNodeCreateEmptyNode(uint newNodeIndex);
 
-        protected abstract void LeafNodeScan(uint nodeIndex, long beginKey1, long beingKey2, long endKey1, long endKey2, Func<long, long, long, long, bool> callback);
-        protected abstract void LeafNodeScan(uint nodeIndex, long beginKey1, long beingKey2, Func<long, long, long, long, bool> callback);
+        protected abstract IDataScanner LeafNodeGetScanner();
 
         #endregion
 
@@ -307,59 +272,6 @@ namespace openHistorian.V2.Collections.KeyValue
                 InternalNodeCreateNode(m_rootNodeIndex, m_rootNodeLevel, nodeIndexOfSplitNode, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
             }
         }
-
-        //ToDo: Fix this feature
-        ///// <summary>
-        ///// Notifies the base class that two nodes were rebalanced. On a rebalance, the parent key needs to be updated.
-        ///// </summary>
-        ///// <param name="nodeLevel">the level of the node being rebalanced</param>
-        ///// <param name="oldKeyInLaterBlock">any key that used to be contained in the greater of the two nodes being rebalanced</param>
-        ///// <param name="newFirstKeyInLaterBlock">the first key in the greater of the two nodes after being rebalanced</param>
-        ///// <remarks>When a child node is rebalanced, it is important to update the parent node to reflect this new change.</remarks>
-        //protected void NodeWasRebalanced(byte nodeLevel, TKey oldKeyInLaterBlock, TKey newFirstKeyInLaterBlock)
-        //{
-        //    if (m_rootNodeLevel > nodeLevel)
-        //    {
-        //        uint nodeIndex = m_rootNodeIndex;
-        //        for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
-        //        {
-        //            nodeIndex = InternalNodeGetIndex(level, nodeIndex, oldKeyInLaterBlock);
-        //        }
-
-        //        InternalNodeUpdate(nodeLevel + 1, nodeIndex, oldKeyInLaterBlock, newFirstKeyInLaterBlock);
-        //    }
-        //    else
-        //    {
-        //        throw new Exception("Logic Error: The code should have never entered here");
-        //    }
-        //}
-
-        //ToDo: Fix this
-        ///// <summary>
-        ///// When two nodes are combined, the second node needs to be removed from the parent collection.
-        ///// </summary>
-        ///// <param name="nodeLevel">the level of the node being combined</param>
-        ///// <param name="oldKeyInRemovedBlock">A key that used to be contained in the old block that is being removed.</param>
-        ///// <param name="nodeToKeep">the node that is being kept</param>
-        ///// <param name="nodeToDelete">the node that is being deleted</param>
-        //protected void NodeWasCombined(byte nodeLevel, TKey oldKeyInRemovedBlock, uint nodeToKeep, uint nodeToDelete)
-        //{
-        //    //ToDo: There needs to be some kind of free page allocation routine so when nodes are removed, there location isn't lost.
-        //    if (m_rootNodeLevel > nodeLevel)
-        //    {
-        //        uint nodeIndex = m_rootNodeIndex;
-        //        for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
-        //        {
-        //            nodeIndex = InternalNodeGetIndex(level, nodeIndex, oldKeyInRemovedBlock);
-        //        }
-        //        InternalNodeRemove(nodeLevel + 1, nodeIndex, oldKeyInRemovedBlock);
-        //    }
-        //    else
-        //    {
-        //        m_rootNodeLevel = 0;
-        //        m_rootNodeIndex = nodeToKeep;
-        //    }
-        //}
 
         #endregion
 
