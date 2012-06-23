@@ -97,7 +97,9 @@
     <Compile Include="Service\Instance\File\Archive.cs" />
     <Compile Include="Service\Instance\Engine.cs" />
     <Compile Include="Service\Instance\File\ArchiveSnapshot.cs" />
-    <Compile Include="Service\Instance\File\ArchiveSnapshotInstance.cs" />
+    <Compile Include="Service\Instance\File\ArchiveReadOnlySnapshotInstance.cs" />
+    <Compile Include="Service\Instance\File\BasicTreeContainer.cs" />
+    <Compile Include="Service\Instance\File\BasicTreeContainerEdit.cs" />
     <Compile Include="Service\Instance\LookupTable.cs" />
     <Compile Include="Collections\KeyValue\BasicTree.cs" />
     <Compile Include="Collections\KeyValue\BasicTreeBase.cs" />

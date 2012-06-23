@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveSnapshot.cs - Gbtc
+//  ArchiveReadOnlySnapshotInstance.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,24 +22,25 @@
 //******************************************************************************************************
 
 using System;
+using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
 
 namespace openHistorian.V2.Service.Instance.File
 {
     /// <summary>
-    /// Aquires a read transaction on the current archive file. This will allow all user created
-    /// transactions to have snapshot isolation of the entire data set.
+    /// Provides a user with a read-only instance of an archive.
+    /// This class is not thread safe.
     /// </summary>
-    public class ArchiveSnapshot : IDisposable
+    public class ArchiveReadOnlySnapshotInstance : IDisposable
     {
-        bool m_disposed;
-        VirtualFileSystem m_fileSystem;
-        TransactionalRead m_currentTransaction;
+        static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
         
-        public ArchiveSnapshot(VirtualFileSystem fileSystem)
+        bool m_disposed;
+        BasicTreeContainer m_dataTree;
+
+        public ArchiveReadOnlySnapshotInstance(TransactionalRead currentTransaction)
         {
-            m_fileSystem = fileSystem;
-            m_currentTransaction = m_fileSystem.BeginRead();
+            m_dataTree = new BasicTreeContainer(currentTransaction, s_pointDataFile, 1);
         }
 
         public bool IsDisposed
@@ -50,25 +51,21 @@ namespace openHistorian.V2.Service.Instance.File
             }
         }
 
-        /// <summary>
-        /// Opens an instance of the archive file to allow for concurrent reading of a snapshot.
-        /// </summary>
-        /// <returns></returns>
-        public ArchiveReadOnlySnapshotInstance OpenInstance()
+        public IDataScanner GetDataRange()
         {
-            return new ArchiveReadOnlySnapshotInstance(m_currentTransaction);
+            return m_dataTree.GetDataRange();
         }
-        
+
         public void Dispose()
         {
             if (!m_disposed)
             {
                 try
                 {
-                    if (m_currentTransaction != null)
+                    if (m_dataTree != null)
                     {
-                        m_currentTransaction.Dispose();
-                        m_currentTransaction = null;
+                        m_dataTree.Dispose();
+                        m_dataTree = null;
                     }
                 }
                 finally

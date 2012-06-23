@@ -126,41 +126,10 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Public Methods ]
 
-        public IDataScanner GetRange()
+        public IDataScanner GetDataRange()
         {
             return LeafNodeGetScanner();
-            //uint nodeIndex = m_rootNodeIndex;
-            //for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-            //{
-            //    nodeIndex = InternalNodeGetFirstIndex(nodeLevel, nodeIndex);
-            //}
-            //long key1;
-            //long key2;
-            //long value1;
-            //long value2;
-            //LeafNodeGetFirstKeyValue(nodeIndex, out key1, out key2, out value1, out value2);
-            //LeafNodeScan(nodeIndex, key1, key2, callback);
         }
-
-        //public void GetRange(long beginKey1, long beginKey2, Func<long, long, long, long, bool> callback)
-        //{
-        //    uint nodeIndex = m_rootNodeIndex;
-        //    for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-        //    {
-        //        nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, beginKey1, beginKey2);
-        //    }
-        //    LeafNodeScan(nodeIndex, beginKey1, beginKey2, callback);
-        //}
-
-        //public void GetRange(long beginKey1, long beginKey2, long endKey1, long endKey2, Func<long, long, long, long, bool> callback)
-        //{
-        //    uint nodeIndex = m_rootNodeIndex;
-        //    for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-        //    {
-        //        nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, beginKey1, beginKey2);
-        //    }
-        //    LeafNodeScan(nodeIndex, beginKey1, beginKey2, endKey1, endKey2, callback);
-        //}
 
         /// <summary>
         /// Inserts the following data into the tree.
@@ -201,6 +170,11 @@ namespace openHistorian.V2.Collections.KeyValue
             if (LeafNodeGetValue(nodeIndex, key1, key2, out value1, out value2))
                 return;
             throw new Exception("Key Not Found");
+        }
+
+        public void Save()
+        {
+            SaveHeader();
         }
 
         #endregion

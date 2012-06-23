@@ -36,24 +36,12 @@ namespace openHistorian.V2.Service.Instance.File
     public class Archive
     {
         static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
-        static Guid s_pointMappingGuidToLocalFile = new Guid("{19352E28-A474-11E1-9A11-992D6288709B}");
-        static Guid s_pointMappingLocalToGuidFile = new Guid("{1E458732-A474-11E1-9B1B-A82D6288709B}");
 
         VirtualFileSystem m_fileSystem;
 
         TransactionalEdit m_currentTransaction;
 
-        ArchiveFileStream m_streamPointData;
-        BinaryStream m_binaryStreamPointData;
-        BasicTree m_pointData;
-
-        ArchiveFileStream m_streamPointMappingGuidToLocal;
-        BinaryStream m_binaryStreamPointMappingGuidToLocal;
-        BasicTree m_pointMappingGuidToLocal;
-
-        ArchiveFileStream m_streamPointMappingLocalToGuid;
-        BinaryStream m_binaryStreamPointMappingLocalToGuid;
-        BasicTree m_pointMappingLocalToGuid;
+        BasicTreeContainerEdit m_dataTree;
 
         //public Archive(string file)
         //{
@@ -83,6 +71,7 @@ namespace openHistorian.V2.Service.Instance.File
         //    m_binaryStream = new BinaryStream(m_stream);
         //    m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream, ArchiveConstants.DataBlockDataLength);
         //}
+
         void CreateFileInMemory()
         {
             m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();
@@ -104,35 +93,15 @@ namespace openHistorian.V2.Service.Instance.File
         {
             m_currentTransaction = m_fileSystem.BeginEdit();
 
-            m_streamPointData = m_currentTransaction.OpenFile(s_pointDataFile, 1);
-            m_binaryStreamPointData = new BinaryStream(m_streamPointData);
-            m_pointData = new BasicTree(m_binaryStreamPointData);
+            m_dataTree = new BasicTreeContainerEdit(m_currentTransaction, s_pointDataFile, 1);
 
-            m_streamPointMappingGuidToLocal = m_currentTransaction.OpenFile(s_pointMappingGuidToLocalFile, 1);
-            m_binaryStreamPointMappingGuidToLocal = new BinaryStream(m_streamPointMappingGuidToLocal);
-            m_pointMappingGuidToLocal = new BasicTree(m_binaryStreamPointMappingGuidToLocal);
-
-            m_streamPointMappingLocalToGuid = m_currentTransaction.OpenFile(s_pointMappingLocalToGuidFile, 1);
-            m_binaryStreamPointMappingLocalToGuid = new BinaryStream(m_streamPointMappingLocalToGuid);
-            m_pointMappingLocalToGuid = new BasicTree(m_binaryStreamPointMappingLocalToGuid);
         }
         /// <summary>
         /// Commits the edits to the current archive file.
         /// </summary>
         public void CommitEdit()
         {
-            //m_pointMappingLocalToGuid.Dispose();
-            m_binaryStreamPointMappingLocalToGuid.Dispose();
-            m_streamPointMappingLocalToGuid.Dispose();
-
-            //m_pointMappingGuidToLocal.Dispose();
-            m_binaryStreamPointMappingGuidToLocal.Dispose();
-            m_streamPointMappingGuidToLocal.Dispose();
-
-            //m_pointData.Dispose();
-            m_binaryStreamPointData.Dispose();
-            m_streamPointData.Dispose();
-
+            m_dataTree.Dispose();
             m_currentTransaction.CommitAndDispose();
         }
 
@@ -141,18 +110,7 @@ namespace openHistorian.V2.Service.Instance.File
         /// </summary>
         public void RollbackEdit()
         {
-            //m_pointMappingLocalToGuid.Dispose();
-            m_binaryStreamPointMappingLocalToGuid.Dispose();
-            m_streamPointMappingLocalToGuid.Dispose();
-
-            //m_pointMappingGuidToLocal.Dispose();
-            m_binaryStreamPointMappingGuidToLocal.Dispose();
-            m_streamPointMappingGuidToLocal.Dispose();
-
-            //m_pointData.Dispose();
-            m_binaryStreamPointData.Dispose();
-            m_streamPointData.Dispose();
-
+            m_dataTree.Dispose();
             m_currentTransaction.RollbackAndDispose();
         }
 
@@ -168,21 +126,12 @@ namespace openHistorian.V2.Service.Instance.File
             get
             {
                 return DateTime.Now;
-            } 
+            }
         }
 
         public void AddPoint(long date, long pointId, long value1, long value2)
         {
-            m_pointData.Add(date, pointId, value1, value2);
-        }
-
-        public IEnumerable<Tuple<DateTime, long, int, float>> GetData(long pointId, DateTime startDate, DateTime stopDate)
-        {
-            return null;
-        }
-        public IEnumerable<Tuple<DateTime, long, int, float>> GetData(DateTime startDate, DateTime stopDate)
-        {
-            return null;
+            m_dataTree.AddPoint(date, pointId, value1, value2);
         }
 
         public void Close()

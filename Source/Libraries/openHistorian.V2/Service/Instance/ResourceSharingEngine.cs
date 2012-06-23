@@ -223,13 +223,14 @@ namespace openHistorian.V2.Service.Instance
 
             dest.BeginEdit();
 
-            Func<long, long, long, long, bool> callback = (x1, x2, x3, x4) =>
-                {
-                    dest.AddPoint(x1, x2, x3, x4);
-                    return true;
-                };
+            var reader = source.GetDataRange();
+            reader.SeekToKey(long.MinValue,long.MinValue);
 
-            source.GetData(callback);
+            long value1, value2, key1, key2;
+            while (reader.GetNextKey(out key1, out key2, out value1, out value2))
+            {
+                dest.AddPoint(key1,key2,value1,value2);
+            }
 
             dest.CommitEdit();
             return true;

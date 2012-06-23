@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveSnapshot.cs - Gbtc
+//  BasicTreeContainerEdit.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,24 +22,30 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
+using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.Service.Instance.File
 {
     /// <summary>
-    /// Aquires a read transaction on the current archive file. This will allow all user created
-    /// transactions to have snapshot isolation of the entire data set.
+    /// Encapsolates the ArchiveFileStream, BinaryStream, and BasicTree for a certain tree.
     /// </summary>
-    public class ArchiveSnapshot : IDisposable
+    internal class BasicTreeContainerEdit : IDisposable
     {
+        ArchiveFileStream m_archiveStream;
+        BinaryStream m_binaryStream;
+        BasicTree m_tree;
         bool m_disposed;
-        VirtualFileSystem m_fileSystem;
-        TransactionalRead m_currentTransaction;
-        
-        public ArchiveSnapshot(VirtualFileSystem fileSystem)
+
+        public BasicTreeContainerEdit(TransactionalEdit currentTransaction, Guid fileNumber, int flags)
         {
-            m_fileSystem = fileSystem;
-            m_currentTransaction = m_fileSystem.BeginRead();
+            m_archiveStream = currentTransaction.OpenFile(fileNumber, flags);
+            m_binaryStream = new BinaryStream(m_archiveStream);
+            m_tree = new BasicTree(m_binaryStream);
         }
 
         public bool IsDisposed
@@ -50,25 +56,41 @@ namespace openHistorian.V2.Service.Instance.File
             }
         }
 
-        /// <summary>
-        /// Opens an instance of the archive file to allow for concurrent reading of a snapshot.
-        /// </summary>
-        /// <returns></returns>
-        public ArchiveReadOnlySnapshotInstance OpenInstance()
+        public void AddPoint(long date, long pointId, long value1, long value2)
         {
-            return new ArchiveReadOnlySnapshotInstance(m_currentTransaction);
+            m_tree.Add(date, pointId, value1, value2);
         }
-        
+
+        public IDataScanner GetDataRange()
+        {
+            return m_tree.GetDataRange();
+        }
+
+        public void Save()
+        {
+            m_tree.Save();
+        }
+
         public void Dispose()
         {
             if (!m_disposed)
             {
                 try
                 {
-                    if (m_currentTransaction != null)
+                    if (m_tree != null)
                     {
-                        m_currentTransaction.Dispose();
-                        m_currentTransaction = null;
+                        //m_tree.Dispose();
+                        m_tree = null;
+                    }
+                    if (m_binaryStream != null)
+                    {
+                        m_binaryStream.Dispose();
+                        m_binaryStream = null;
+                    }
+                    if (m_archiveStream != null)
+                    {
+                        m_archiveStream.Dispose();
+                        m_archiveStream = null;
                     }
                 }
                 finally
