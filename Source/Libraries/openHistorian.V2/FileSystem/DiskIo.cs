@@ -27,7 +27,7 @@ using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.FileSystem
 {
-    internal class DiskIo : IDisposable
+    internal sealed class DiskIo : IDisposable
     {
         #region [ Members ]
 
@@ -50,14 +50,6 @@ namespace openHistorian.V2.FileSystem
                 throw new ArgumentException("The block size of the stream must be a multiple of " + ArchiveConstants.BlockSize.ToString() + ".", "stream");
             m_stream = stream;
             m_lastReadOnlyBlock = lastReadOnlyBlock;
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="DiskIo"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~DiskIo()
-        {
-            Dispose(false);
         }
 
         #endregion
@@ -134,8 +126,8 @@ namespace openHistorian.V2.FileSystem
         void RollbackAllWrites(int lastValidBlock)
         {
             if (lastValidBlock < m_lastReadOnlyBlock)
-                throw new ArgumentOutOfRangeException("lastValidBlock","Cannot roll back beyond the committed writes");
-            m_stream.TrimEditsAfterPosition((lastValidBlock+1L)*ArchiveConstants.BlockSize);
+                throw new ArgumentOutOfRangeException("lastValidBlock", "Cannot roll back beyond the committed writes");
+            m_stream.TrimEditsAfterPosition((lastValidBlock + 1L) * ArchiveConstants.BlockSize);
         }
 
         /// <summary>
@@ -145,7 +137,7 @@ namespace openHistorian.V2.FileSystem
         public DiskIoSession CreateDiskIoSession()
         {
             CheckIsDisposed();
-            return new DiskIoSession(this, m_stream.GetNextIoSession());
+            return new DiskIoSession(this, m_stream);
         }
 
         /// <summary>
@@ -186,29 +178,18 @@ namespace openHistorian.V2.FileSystem
         }
 
         /// <summary>
-        /// Releases all the resources used by the <see cref="DiskIo"/> object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
         /// Releases the unmanaged resources used by the <see cref="DiskIo"/> object and optionally releases the managed resources.
         /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
+        public void Dispose()
         {
             if (!m_disposed)
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (disposing)
+                    if (m_stream != null)
                     {
-                        // This will be done only when the object is disposed by calling Dispose().
                         m_stream.Dispose();
+                        m_stream = null;
                     }
                 }
                 finally

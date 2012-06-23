@@ -47,7 +47,7 @@ namespace openHistorian.V2.FileSystem
                         var bs = fs.CreateBinaryStream();
                         bs.Write((byte)1);
                         bs.Dispose();
-                        edit.Commit();
+                        edit.CommitAndDispose();
                     }
                     using (TransactionalRead read = service.BeginReadTransaction())
                     {
@@ -95,7 +95,7 @@ namespace openHistorian.V2.FileSystem
                             throw new Exception();
                         if (bs3.ReadByte() != 0)
                             throw new Exception();
-                        edit.Rollback();
+                        edit.RollbackAndDispose();
                     } //rollback should be issued;
                 }
             }

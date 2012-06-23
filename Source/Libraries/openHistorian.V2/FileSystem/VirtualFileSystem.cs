@@ -25,7 +25,7 @@ using System;
 
 namespace openHistorian.V2.FileSystem
 {
-    public class VirtualFileSystem : IDisposable
+    public sealed class VirtualFileSystem : IDisposable
     {
         #region [ Members ]
 

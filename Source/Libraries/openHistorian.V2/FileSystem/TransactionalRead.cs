@@ -22,7 +22,6 @@
 //******************************************************************************************************
 using System;
 using System.Collections.ObjectModel;
-using System.Collections.Generic;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -31,26 +30,21 @@ namespace openHistorian.V2.FileSystem
     /// This is read only and will also block the main file from being deleted. 
     /// Therefore it is important to release this lock so the file can be deleted after a rollover.
     /// </summary>
-    public class TransactionalRead : IDisposable
+    public sealed class TransactionalRead : IDisposable
     {
         #region [ Members ]
 
         /// <summary>
-        /// This event is raised when the read transaction has been disposed. 
+        /// This delegate is called when the read transaction has been disposed. 
         /// The purpose of this event is to notify the <see cref="FileSystemSnapshotService"/>
         /// that this transaction is no longer executing.
         /// </summary>
-        internal event EventHandler HasBeenDisposed;
+        Action<TransactionalRead> m_delHasBeenDisposed;
 
         /// <summary>
         /// Prevents duplicate calls to Dispose;
         /// </summary>
         bool m_disposed;
-        /// <summary>
-        /// Maintains a list of all of the files that have been opened 
-        /// so they can be properly disposed of when the transaction ends.
-        /// </summary>
-        List<ArchiveFileStream> m_openedFiles;
 
         /// <summary>
         /// The readonly snapshot of the archive file.
@@ -71,8 +65,9 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         /// <param name="dataReader"> </param>
         /// <param name="fileAllocationTable">This parameter must be in a read only mode.
-        /// This is to ensure that the value is not modified after it has been passed to this class.</param>
-        internal TransactionalRead(DiskIo dataReader, FileAllocationTable fileAllocationTable)
+        ///  This is to ensure that the value is not modified after it has been passed to this class.</param>
+        /// <param name="delHasBeenDisposed">A delegate to call when this transaction is transaction has been disposed</param>
+        internal TransactionalRead(DiskIo dataReader, FileAllocationTable fileAllocationTable, Action<TransactionalRead> delHasBeenDisposed = null)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -80,17 +75,9 @@ namespace openHistorian.V2.FileSystem
                 throw new ArgumentNullException("fileAllocationTable");
             if (!fileAllocationTable.IsReadOnly)
                 throw new ArgumentException("The file passed to this procedure must be read only.", "fileAllocationTable");
-            m_openedFiles = new List<ArchiveFileStream>();
             m_fileAllocationTable = fileAllocationTable;
             m_dataReader = dataReader;
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="TransactionalRead"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~TransactionalRead()
-        {
-            Dispose(false);
+            m_delHasBeenDisposed = delHasBeenDisposed;
         }
 
         #endregion
@@ -104,6 +91,8 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_fileAllocationTable.Files;
             }
         }
@@ -130,14 +119,12 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream OpenFile(int fileIndex)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             if (fileIndex < 0 || fileIndex >= m_fileAllocationTable.Files.Count)
                 throw new ArgumentOutOfRangeException("fileIndex", "The file index provided could not be found in the header.");
 
-            ArchiveFileStream archiveFileStream = new ArchiveFileStream(m_dataReader, m_fileAllocationTable.Files[fileIndex], m_fileAllocationTable, true);
-            if (!archiveFileStream.IsReadOnly)
-                throw new Exception("Stream is supposed to be readonly.");
-            m_openedFiles.Add(archiveFileStream);
-            return archiveFileStream;
+            return new ArchiveFileStream(m_dataReader, m_fileAllocationTable.Files[fileIndex], m_fileAllocationTable, true);
         }
 
         /// <summary>
@@ -146,6 +133,8 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream OpenFile(Guid fileExtension, int fileFlags)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             for (int x = 0; x < Files.Count; x++)
             {
                 var file = Files[x];
@@ -163,41 +152,13 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="TransactionalRead"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
             if (!m_disposed)
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (m_openedFiles != null)
+                    if (m_delHasBeenDisposed != null)
                     {
-                        for (int x = 0; x < m_openedFiles.Count; x++)
-                        {
-                            ArchiveFileStream file = m_openedFiles[x];
-                            if (file != null)
-                            {
-                                file.Dispose();
-                                m_openedFiles[x] = null;
-                            }
-                        }
-                        m_openedFiles = null;
-                    }
-
-                    if (HasBeenDisposed != null)
-                        HasBeenDisposed(this, EventArgs.Empty);
-
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
+                        m_delHasBeenDisposed.Invoke(this);
                     }
                 }
                 finally

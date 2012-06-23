@@ -29,30 +29,30 @@ namespace openHistorian.V2.FileSystem
     /// Provides the state information for a transaction on the file system.
     /// </summary>
     /// <remarks>Failing to call Commit or Rollback will inhibit additional transactions to be aquired</remarks>
-    public class TransactionalEdit : IDisposable
+    public sealed class TransactionalEdit : IDisposable
     {
         #region [ Members ]
 
         /// <summary>
-        /// This event is raised when the edit transaction has been disposed. 
-        /// The purpose of this event is to notify the <see cref="FileSystemSnapshotService"/>
+        /// This delegate is called when the edit transaction has been disposed. 
+        /// The purpose of this delegate is to notify the <see cref="FileSystemSnapshotService"/>
         /// that this transaction is no longer executing and everything has been properly disposed of.
         /// </summary>
-        internal event EventHandler HasBeenDisposed;
+        Action<TransactionalEdit> m_delHasBeenDisposed;
 
         /// <summary>
-        ///This event is raised when the Commit function is called and all the data has been written to the underlying file system.
-        /// the purpose of this event is to notify the calling class that this transaction is concluded since
+        /// This delegate is called when the Commit function is called and all the data has been written to the underlying file system.
+        /// the purpose of this delegate is to notify the calling class that this transaction is concluded since
         /// only one write transaction can be aquired at a time.
         /// </summary>
-        internal event EventHandler HasBeenCommitted;
+        Action<TransactionalEdit> m_delHasBeenCommitted;
 
         /// <summary>
-        ///This event is raised when the RollBack function is called. This also occurs when the object is disposed.
-        /// the purpose of this event is to notify the calling class that this transaction is concluded since
+        /// This delegate is called when the RollBack function is called. This also occurs when the object is disposed.
+        /// the purpose of this delegate is to notify the calling class that this transaction is concluded since
         /// only one write transaction can be aquired at a time.
         /// </summary>
-        internal event EventHandler HasBeenRolledBack;
+        Action<TransactionalEdit> m_delHasBeenRolledBack;
 
         /// <summary>
         /// Prevents duplicate calls to Dispose;
@@ -64,14 +64,6 @@ namespace openHistorian.V2.FileSystem
         /// prevent duplicate calls to Rollback or Commit.
         /// </summary>
         bool m_transactionComplete;
-
-        /// <summary>
-        /// Maintains a list of all of the files that have been opened 
-        /// so they can be properly disposed of when the transaction ends.
-        /// This only maintains files that are actively being written to since only one active file
-        /// can be opened at a time.
-        /// </summary>
-        SortedList<int, ArchiveFileStream> m_openedFiles;
 
         /// <summary>
         /// This provides a snapshot of the origional file system incase the owner 
@@ -90,11 +82,9 @@ namespace openHistorian.V2.FileSystem
         FileAllocationTable m_fileAllocationTable;
 
         /// <summary>
-        /// This value is used to determine if the page needs to be copied on write. 
-        /// If the page being written to is less than this marker, it needs
-        /// to be copied instead of written to.
+        /// All files that have ever been opened.
         /// </summary>
-        int m_origionalFreePageIndex;
+        List<ArchiveFileStream> m_openedFiles;
 
         #endregion
 
@@ -107,7 +97,10 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileAllocationTable">This parameter must be in a read only mode.
         /// This is to ensure that the value is not modified after it has been passed to this class.
         /// This will be converted into an editable version within the constructor of this class</param>
-        internal TransactionalEdit(DiskIo dataReader, FileAllocationTable fileAllocationTable)
+        /// <param name="delHasBeenDisposed">the delegate to call when this transaction has been disposed</param>
+        /// <param name="delHasBeenRolledBack">the delegate to call when this transaction has been rolled back</param>
+        /// <param name="delHasBeenCommitted">the delegate to call when this transaction has been committed</param>
+        internal TransactionalEdit(DiskIo dataReader, FileAllocationTable fileAllocationTable, Action<TransactionalEdit> delHasBeenDisposed = null, Action<TransactionalEdit> delHasBeenRolledBack= null, Action<TransactionalEdit> delHasBeenCommitted = null)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -116,13 +109,15 @@ namespace openHistorian.V2.FileSystem
             if (!fileAllocationTable.IsReadOnly)
                 throw new ArgumentException("The file passed to this procedure must be read only.", "fileAllocationTable");
 
+            m_openedFiles = new List<ArchiveFileStream>();
             m_disposed = false;
             m_transactionComplete = false;
             m_transactionalRead = new TransactionalRead(dataReader, fileAllocationTable);
             m_fileAllocationTable = fileAllocationTable.CreateEditableCopy(true);
             m_dataReader = dataReader;
-            m_origionalFreePageIndex = m_fileAllocationTable.LastAllocatedBlock + 1;
-            m_openedFiles = new SortedList<int, ArchiveFileStream>();
+            m_delHasBeenDisposed = delHasBeenDisposed;
+            m_delHasBeenCommitted = delHasBeenCommitted;
+            m_delHasBeenRolledBack = delHasBeenRolledBack;
         }
 
         #endregion
@@ -136,6 +131,8 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_fileAllocationTable.Files;
             }
         }
@@ -146,19 +143,9 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_transactionalRead.Files;
-            }
-        }
-        /// <summary>
-        /// This value is used to determine if the page needs to be copied on write. 
-        /// If the page being written to is less than this marker, it needs
-        /// to be copied instead of written to.
-        /// </summary>
-        public int OrigionalFreePageIndex
-        {
-            get
-            {
-                return m_origionalFreePageIndex;
             }
         }
 
@@ -174,6 +161,8 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream CreateFile(Guid fileExtension, int fileFlags)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             FileMetaData file = m_fileAllocationTable.CreateNewFile(fileExtension);
             file.FileFlags = fileFlags;
             return OpenFile(file);
@@ -186,18 +175,14 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream OpenFile(int fileIndex)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             if (fileIndex < 0 || fileIndex >= m_fileAllocationTable.Files.Count)
                 throw new ArgumentOutOfRangeException("fileIndex", "The file index provided could not be found in the header.");
             FileMetaData file = m_fileAllocationTable.Files[fileIndex];
-            if (m_openedFiles.ContainsKey(file.FileIdNumber))
-                throw new Exception("Only one file may be opened at a time");
-
-            ArchiveFileStream archiveFileStream = new ArchiveFileStream(m_dataReader, file, m_fileAllocationTable, false);
-            if (archiveFileStream.IsReadOnly)
-                throw new Exception("Stream is supposed to be editable.");
-
-            m_openedFiles.Add(file.FileIdNumber, archiveFileStream);
-            return archiveFileStream;
+            var fileStream = new ArchiveFileStream(m_dataReader, file, m_fileAllocationTable, false);
+            m_openedFiles.Add(fileStream);
+            return fileStream;
         }
 
         /// <summary>
@@ -206,6 +191,8 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream OpenFile(Guid fileExtension, int fileFlags)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             for (int x = 0; x < Files.Count; x++)
             {
                 var file = Files[x];
@@ -224,6 +211,8 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream OpenFile(FileMetaData file)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             if (file == null)
                 throw new ArgumentNullException("file");
             for (int x = 0; x < m_fileAllocationTable.Files.Count; x++)
@@ -241,31 +230,32 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream OpenOrigionalFile(int fileIndex)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             return m_transactionalRead.OpenFile(fileIndex);
         }
 
         /// <summary>
         /// This will cause the transaction to be written to the database.
+        /// Also Calls Dispose()
         /// </summary>
         /// <remarks>Duplicate calls to this function, or subsequent calls to RollbackTransaction will throw an exception</remarks>
-        public void Commit()
+        public void CommitAndDispose()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             if (m_transactionComplete)
                 throw new Exception("Duplicate call to Commit/Rollback Transaction");
+            foreach (var file in m_openedFiles)
+            {
+                if (file != null && !file.IsDisposed)
+                    throw new Exception("Not all files have been properly disposed of.");
+            }
             try
             {
-                foreach (ArchiveFileStream fileStream in m_openedFiles.Values)
-                {
-                    if (!fileStream.IsDisposed)
-                        fileStream.Dispose();
-                }
-
                 m_fileAllocationTable.WriteToFileSystem(m_dataReader);
-
-                if (HasBeenCommitted != null)
-                {
-                    HasBeenCommitted(this, EventArgs.Empty);
-                }
+                if (m_delHasBeenCommitted != null)
+                    m_delHasBeenCommitted.Invoke(this);
             }
             finally
             {
@@ -278,16 +268,24 @@ namespace openHistorian.V2.FileSystem
         /// This will rollback the transaction by not writing the table of contents to the file.
         /// </summary>
         /// <remarks>Duplicate calls to this function, or subsequent calls to CommitTransaction will throw an exception</remarks>
-        public void Rollback()
+        public void RollbackAndDispose()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             if (m_transactionComplete)
                 throw new Exception("Duplicate call to Commit/Rollback Transaction");
+
+            foreach (var file in m_openedFiles)
+            {
+                if (file != null && !file.IsDisposed)
+                {
+                    file.Dispose();
+                }
+            }
             try
             {
-                if (HasBeenRolledBack != null)
-                {
-                    HasBeenRolledBack(this, EventArgs.Empty);
-                }
+                if (m_delHasBeenRolledBack != null)
+                    m_delHasBeenRolledBack.Invoke(this);
             }
             finally
             {
@@ -305,6 +303,8 @@ namespace openHistorian.V2.FileSystem
         public long SetFileLength(long size)
         {
             if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            if (m_disposed)
                 throw new Exception("Duplicate call to Commit/Rollback Transaction");
             return m_dataReader.SetFileLength(size, m_fileAllocationTable.LastAllocatedBlock + 1);
         }
@@ -317,63 +317,42 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_dataReader.FileSize - (m_fileAllocationTable.LastAllocatedBlock + 1) * ArchiveConstants.BlockSize;
             }
         }
 
         /// <summary>
         /// Releases all the resources used by the <see cref="TransactionalRead"/> object.
-        /// This also closes all ArchiveFileStream objects that were opened in this transaction.
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="TransactionalRead"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
             if (!m_disposed)
             {
-                m_disposed = true;
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.
                     if (!m_transactionComplete)
-                        Rollback();
+                        RollbackAndDispose();
 
                     if (m_transactionalRead != null)
+                    {
                         m_transactionalRead.Dispose();
-                    m_transactionalRead = null;
-
-                    if (m_openedFiles != null)
-                    {
-                        for (int x = 0; x < m_openedFiles.Count; x++)
-                        {
-                            ArchiveFileStream file = m_openedFiles.Values[x];
-                            if (file != null)
-                            {
-                                if (!file.IsDisposed)
-                                    file.Dispose();
-                            }
-                        }
-                        m_openedFiles.Clear();
-                        m_openedFiles = null;
+                        m_transactionalRead = null;
                     }
-                    if (HasBeenDisposed != null)
-                        HasBeenDisposed(this, EventArgs.Empty);
 
-                    if (disposing)
+                    if (m_delHasBeenDisposed != null)
                     {
-                        // This will be done only when the object is disposed by calling Dispose().
+                        m_delHasBeenDisposed(this);
+                        m_delHasBeenDisposed = null;
                     }
+
                 }
                 finally
                 {
+                    m_delHasBeenCommitted = null;
+                    m_delHasBeenRolledBack = null;
                     m_disposed = true;  // Prevent duplicate dispose.
                 }
             }

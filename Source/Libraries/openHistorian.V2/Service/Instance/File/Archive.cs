@@ -133,7 +133,7 @@ namespace openHistorian.V2.Service.Instance.File
             m_binaryStreamPointData.Dispose();
             m_streamPointData.Dispose();
 
-            m_currentTransaction.Commit();
+            m_currentTransaction.CommitAndDispose();
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace openHistorian.V2.Service.Instance.File
             m_binaryStreamPointData.Dispose();
             m_streamPointData.Dispose();
 
-            m_currentTransaction.Rollback();
+            m_currentTransaction.RollbackAndDispose();
         }
 
         public DateTime GetFirstTimeStamp

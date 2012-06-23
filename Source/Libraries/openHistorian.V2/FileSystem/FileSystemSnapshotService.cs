@@ -23,8 +23,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.V2.Unmanaged;
+using MemoryStream = openHistorian.V2.IO.Unmanaged.MemoryStream;
 
 namespace openHistorian.V2.FileSystem
 {
@@ -34,17 +36,21 @@ namespace openHistorian.V2.FileSystem
     /// permits only a single concurrent edit of the archive system, and determines when a file
     /// can be deleted when there are no read or write transactions. It also containst the IO system.
     /// </summary>
-    internal class FileSystemSnapshotService : IDisposable
+    internal sealed class FileSystemSnapshotService : IDisposable
     {
         #region [ Members ]
 
+        /// <summary>
+        /// Determines if this object is currently being disposed so all read/write transactions will be properly aborted.
+        /// </summary>
+        bool m_disposing;
         /// <summary>
         /// Determines if this object has been disposed.
         /// </summary>
         bool m_disposed;
 
         /// <summary>
-        /// Constains the disk IO subsystem for accessing the file.
+        /// Contains the disk IO subsystem for accessing the file.
         /// </summary>
         DiskIo m_diskIo;
 
@@ -71,49 +77,46 @@ namespace openHistorian.V2.FileSystem
         #endregion
 
         #region [ Constructors ]
-        
-        ///// <summary>
-        ///// Opens an existing archive file system
-        ///// </summary>
-        ///// <param name="fileName">The name of the file.</param>
-        ///// <param name="isReadOnly">Determines if the file will be opened in read only mode.</param>
-        //private FileSystemSnapshotService(string fileName, bool isReadOnly)
-        //{
-        //    m_diskIo = DiskIoUnbuffered.OpenFile(fileName, isReadOnly);
-        //    m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
-        //    m_readTransactions = new List<TransactionalRead>();
-        //}
-
-        ///// <summary>
-        ///// Creates a new archive file for editing
-        ///// </summary>
-        ///// <param name="fileName">the file name</param>
-        //private FileSystemSnapshotService(string fileName)
-        //{
-        //    m_diskIo = DiskIoUnbuffered.CreateFile(fileName);
-        //    FileAllocationTable.CreateFileAllocationTable(m_diskIo);
-        //    m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
-        //    m_readTransactions = new List<TransactionalRead>();
-        //}
 
         /// <summary>
-        /// Creates a new archive file that is completely in memory
-        ///  </summary>
-        private FileSystemSnapshotService()
+        /// Opens an existing archive file system
+        /// </summary>
+        /// <param name="fileName">The name of the file.</param>
+        /// <param name="isReadOnly">Determines if the file will be opened in read only mode.</param>
+        private FileSystemSnapshotService(string fileName, bool isReadOnly)
         {
-            m_diskIo = new DiskIo(new MemoryStream(),0);
+            FileStream fileStream = new FileStream(fileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite);
+            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
+            m_diskIo = new DiskIo(bufferedFileStream, 0);
+            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
+            m_readTransactions = new List<TransactionalRead>();
+        }
+
+        /// <summary>
+        /// Creates a new archive file for editing
+        /// </summary>
+        /// <param name="fileName">the file name</param>
+        private FileSystemSnapshotService(string fileName)
+        {
+            FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
+            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
+            m_diskIo = new DiskIo(bufferedFileStream, 0);
             FileAllocationTable.CreateFileAllocationTable(m_diskIo);
             m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
             m_readTransactions = new List<TransactionalRead>();
         }
 
         /// <summary>
-        /// Releases the unmanaged resources before the <see cref="FileSystemSnapshotService"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~FileSystemSnapshotService()
+        /// Creates a new archive file that is completely in memory
+        ///  </summary>
+        private FileSystemSnapshotService()
         {
-            Dispose(false);
+            m_diskIo = new DiskIo(new MemoryStream(), 0);
+            FileAllocationTable.CreateFileAllocationTable(m_diskIo);
+            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
+            m_readTransactions = new List<TransactionalRead>();
         }
+
         #endregion
 
         #region [ Methods ]
@@ -131,10 +134,7 @@ namespace openHistorian.V2.FileSystem
             {
                 if (m_currentTransaction != null)
                     throw new Exception("A transaction has already been started");
-                m_currentTransaction = new TransactionalEdit(m_diskIo, m_fileAllocationTable);
-                m_currentTransaction.HasBeenCommitted += OnTransactionCommitted;
-                m_currentTransaction.HasBeenRolledBack += OnTransactionRolledBack;
-                m_currentTransaction.HasBeenDisposed += OnEditTransactionDisposed;
+                m_currentTransaction = new TransactionalEdit(m_diskIo, m_fileAllocationTable, OnEditTransactionDisposed, OnTransactionRolledBack, OnTransactionCommitted);
                 return m_currentTransaction;
             }
             return null;
@@ -146,35 +146,36 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public TransactionalRead BeginReadTransaction()
         {
-            TransactionalRead readTransaction = new TransactionalRead(m_diskIo, m_fileAllocationTable);
-            readTransaction.HasBeenDisposed += OnReadTransactionDisposed;
+            TransactionalRead readTransaction = new TransactionalRead(m_diskIo, m_fileAllocationTable, OnReadTransactionDisposed);
             m_readTransactions.Add(readTransaction);
             return readTransaction;
         }
 
-        void OnReadTransactionDisposed(object sender, EventArgs e)
+        void OnReadTransactionDisposed(TransactionalRead sender)
         {
-            m_readTransactions.Remove((TransactionalRead)sender);
+            if (m_disposing)
+                return;
+            m_readTransactions.Remove(sender);
         }
 
-        void OnEditTransactionDisposed(object sender, EventArgs e)
+        void OnEditTransactionDisposed(TransactionalEdit sender)
         {
-            if (m_currentTransaction != sender)
+            if (!m_disposing && m_currentTransaction != sender)
                 throw new Exception("Only the current transaction can raise this.");
             m_currentTransaction = null;
             Monitor.Exit(m_editTransactionSynchronizationObject);
         }
 
-        void OnTransactionCommitted(object sender, EventArgs e)
+        void OnTransactionCommitted(TransactionalEdit sender)
         {
-            if (m_currentTransaction != sender)
+            if (!m_disposing && m_currentTransaction != sender)
                 throw new Exception("Only the current transaction can raise this.");
             m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
         }
 
-        void OnTransactionRolledBack(object sender, EventArgs e)
+        void OnTransactionRolledBack(TransactionalEdit sender)
         {
-            if (m_currentTransaction != sender)
+            if (!m_disposing && m_currentTransaction != sender)
                 throw new Exception("Only the current transaction can raise this.");
         }
 
@@ -183,27 +184,29 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="FileSystemSnapshotService"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
             if (!m_disposed)
             {
+                m_disposing = true;
                 try
                 {
                     // This will be done regardless of whether the object is finalized or disposed.
                     if (m_diskIo != null)
-                        m_diskIo.Dispose();
-                    m_diskIo = null;
-                    if (disposing)
                     {
-                        // This will be done only when the object is disposed by calling Dispose().
+                        m_diskIo.Dispose();
+                        m_diskIo = null;
+                    }
+                    if (m_currentTransaction != null)
+                    {
+                        m_currentTransaction.Dispose();
+                        m_currentTransaction = null;
+                    }
+                    if (m_readTransactions != null)
+                    {
+                        foreach (var transaction in m_readTransactions)
+                        {
+                            transaction.Dispose();
+                        }
+                        m_readTransactions = null;
                     }
                 }
                 finally
@@ -213,35 +216,34 @@ namespace openHistorian.V2.FileSystem
             }
         }
 
-
         #endregion
         #region [ Static ]
         #region [ Methods ]
 
-        ///// <summary>
-        ///// Opens an existing file archive for unbuffered read/write operations.
-        ///// </summary>
-        ///// <param name="fileName">The path to the archive file.</param>
-        ///// <param name="isReadOnly">Determines if the file is going to be opened in readonly mode.</param>
-        ///// <remarks>
-        ///// Since buffering the data will be the responsibility of another layer, 
-        ///// allowing the OS to buffer the data decreases performance (slightly) and
-        ///// wastes system memory that can be better used by the historian's buffer.
-        ///// </remarks>
-        //public static FileSystemSnapshotService OpenFile(string fileName, bool isReadOnly)
-        //{
-        //    return new FileSystemSnapshotService(fileName, isReadOnly);
-        //}
+        /// <summary>
+        /// Opens an existing file archive for unbuffered read/write operations.
+        /// </summary>
+        /// <param name="fileName">The path to the archive file.</param>
+        /// <param name="isReadOnly">Determines if the file is going to be opened in readonly mode.</param>
+        /// <remarks>
+        /// Since buffering the data will be the responsibility of another layer, 
+        /// allowing the OS to buffer the data decreases performance (slightly) and
+        /// wastes system memory that can be better used by the historian's buffer.
+        /// </remarks>
+        public static FileSystemSnapshotService OpenFile(string fileName, bool isReadOnly)
+        {
+            return new FileSystemSnapshotService(fileName, isReadOnly);
+        }
 
-        ///// <summary>
-        ///// Creates a new archive file at the given path
-        ///// </summary>
-        ///// <param name="fileName">The file name of the archive to write.  This file must not already exist.</param>
-        ///// <returns></returns>
-        //public static FileSystemSnapshotService CreateFile(string fileName)
-        //{
-        //    return new FileSystemSnapshotService(fileName);
-        //}
+        /// <summary>
+        /// Creates a new archive file at the given path
+        /// </summary>
+        /// <param name="fileName">The file name of the archive to write.  This file must not already exist.</param>
+        /// <returns></returns>
+        public static FileSystemSnapshotService CreateFile(string fileName)
+        {
+            return new FileSystemSnapshotService(fileName);
+        }
 
         /// <summary>
         /// Creates a new archive file that resides completely in memory.

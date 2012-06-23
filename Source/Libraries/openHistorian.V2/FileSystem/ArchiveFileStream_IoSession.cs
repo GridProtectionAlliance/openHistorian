@@ -77,6 +77,7 @@ namespace openHistorian.V2.FileSystem
             #endregion
 
             #region [ Methods ]
+            
             /// <summary>
             /// Releases all the resources used by the <see cref="IoSession"/> object.
             /// </summary>
@@ -87,11 +88,15 @@ namespace openHistorian.V2.FileSystem
                     try
                     {
                         EndPendingWrites();
-                        m_buffer.Dispose();
-                        m_stream.m_ioStream = null;
+                        if (m_buffer != null)
+                        {
+                            m_buffer.Dispose();
+                            m_buffer = null;
+                        }
                     }
                     finally
                     {
+                        m_addressTranslation = null;
                         m_disposed = true;  // Prevent duplicate dispose.
                     }
                 }
@@ -99,6 +104,8 @@ namespace openHistorian.V2.FileSystem
 
             public void Clear()
             {
+                if (m_disposed || m_stream.IsDisposed || m_buffer.IsDisposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 EndPendingWrites();
                 m_buffer.Clear();
             }
@@ -155,6 +162,8 @@ namespace openHistorian.V2.FileSystem
 
             public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
             {
+                if (m_disposed || m_stream.IsDisposed || m_buffer.IsDisposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 if (isWriting)
                 {
                     if (m_stream.m_isReadOnly)
@@ -176,7 +185,7 @@ namespace openHistorian.V2.FileSystem
                 }
             }
             #endregion
-         
+
         }
     }
 }

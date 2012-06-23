@@ -34,7 +34,7 @@ namespace openHistorian.V2.FileSystem
     ///Provides a file stream that can be used to open a file and does all of the background work 
     ///required to translate virtual position data into physical ones.
     /// </summary>
-    public partial class ArchiveFileStream : ISupportsBinaryStream
+    public sealed partial class ArchiveFileStream : ISupportsBinaryStream
     {
         #region [ Members ]
 
@@ -85,10 +85,6 @@ namespace openHistorian.V2.FileSystem
             m_dataReader = dataReader;
             m_file = file;
         }
-        ~ArchiveFileStream()
-        {
-            Dispose(false);
-        }
 
         #endregion
 
@@ -98,6 +94,8 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_isReadOnly;
             }
         }
@@ -109,6 +107,8 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
                 return m_file;
             }
         }
@@ -130,24 +130,14 @@ namespace openHistorian.V2.FileSystem
 
         public void Dispose()
         {
-            Dispose(true);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="ArchiveFileStream"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
             if (!m_disposed)
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    m_ioStream.Dispose();
-                    if (disposing)
+                    if (m_ioStream != null)
                     {
-                        // This will be done only when the object is disposed by calling Dispose().
+                        m_ioStream.Dispose();
+                        m_ioStream = null;
                     }
                 }
                 finally
@@ -163,7 +153,9 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
-                if (m_ioStream == null)
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                if (m_ioStream == null || m_ioStream.IsDisposed)
                     return 1;
                 return 0;
             }
@@ -171,6 +163,8 @@ namespace openHistorian.V2.FileSystem
 
         IBinaryStreamIoSession ISupportsBinaryStream.GetNextIoSession()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             if (RemainingSupportedIoSessions == 0)
                 throw new Exception("There are not any remaining IO Sessions");
             m_ioStream = new IoSession(this);
@@ -179,6 +173,8 @@ namespace openHistorian.V2.FileSystem
 
         public IBinaryStream CreateBinaryStream()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             return new BinaryStream(this);
         }
     }

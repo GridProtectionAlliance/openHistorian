@@ -31,7 +31,7 @@ namespace openHistorian.V2.FileSystem
     /// <summary>
     /// Provides a data IO session with the disk subsystem to perform basic read and write operations.
     /// </summary>
-    unsafe internal class DiskIoSession : IDisposable
+    unsafe sealed internal class DiskIoSession : IDisposable
     {
         /// <summary>
         /// Since exceptions are very expensive, this enum will be returned for basic
@@ -87,28 +87,25 @@ namespace openHistorian.V2.FileSystem
 
         #region [ Constructors ]
 
-        public DiskIoSession(DiskIo diskIo, IBinaryStreamIoSession ioSession)
+        /// <summary>
+        /// Creates a new DiskIoSession that can be used to read from the disk subsystem.
+        /// </summary>
+        /// <param name="diskIo">owner of the disk</param>
+        /// <param name="stream">the stream that the IoSession can be created from</param>
+        public DiskIoSession(DiskIo diskIo, ISupportsBinaryStream stream)
         {
             if (diskIo == null)
                 throw new ArgumentNullException("diskIo");
-            if (ioSession == null)
-                throw new ArgumentNullException("ioSession");
+            if (stream == null)
+                throw new ArgumentNullException("stream");
             if (diskIo.IsDisposed)
                 throw new ObjectDisposedException(diskIo.GetType().FullName);
-            if (ioSession.IsDisposed)
-                throw new ObjectDisposedException(ioSession.GetType().FullName);
+            if (stream.IsDisposed)
+                throw new ObjectDisposedException(stream.GetType().FullName);
 
             m_diskIo = diskIo;
-            m_ioSession = ioSession;
+            m_ioSession = stream.GetNextIoSession();
             m_isValid = false;
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="DiskIoSession"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~DiskIoSession()
-        {
-            Dispose(false);
         }
 
         #endregion
@@ -116,13 +113,13 @@ namespace openHistorian.V2.FileSystem
         #region [ Properties ]
 
         /// <summary>
-        /// Returns true if this class is disposed or its underlying DiskIo is disposed.
+        /// Returns true if this class is disposed
         /// </summary>
         public bool IsDisposed
         {
             get
             {
-                return m_disposed || m_diskIo.IsDisposed;
+                return m_disposed;
             }
         }
 
@@ -225,7 +222,7 @@ namespace openHistorian.V2.FileSystem
             if (m_pendingWriteComplete)
                 throw new Exception("A pending write operation must first complete before starting another one");
             if ((blockIndex > 10 && blockIndex <= m_diskIo.LastReadonlyBlock))
-                throw new ArgumentOutOfRangeException("blockIndex","Cannot write to committed blocks");
+                throw new ArgumentOutOfRangeException("blockIndex", "Cannot write to committed blocks");
 
             m_isValid = false;
 
@@ -333,8 +330,23 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (!m_disposed)
+            {
+                try
+                {
+                    if (m_ioSession != null)
+                    {
+                        m_ioSession.Dispose();
+                        m_ioSession = null;
+                    }
+                    m_diskIo = null;
+                }
+                finally
+                {
+                    m_isValid = false;
+                    m_disposed = true;  // Prevent duplicate dispose.
+                }
+            }
         }
 
         /// <summary>
@@ -370,6 +382,8 @@ namespace openHistorian.V2.FileSystem
                 throw new ObjectDisposedException(GetType().FullName);
             if (m_diskIo.IsDisposed)
                 throw new ObjectDisposedException(typeof(DiskIo).FullName);
+            if (m_ioSession.IsDisposed)
+                throw new ObjectDisposedException(m_ioSession.GetType().FullName);
         }
 
         /// <summary>
@@ -395,32 +409,6 @@ namespace openHistorian.V2.FileSystem
             m_pointer = (byte*)(pointerToFirstByte + offsetOfPosition);
             m_length = ArchiveConstants.BlockSize;
             m_blockSupportsWriting = supportsWriting;
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="DiskIoSession"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
-            if (!m_disposed)
-            {
-                try
-                {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (disposing)
-                    {
-                        if (m_ioSession != null)
-                            m_ioSession.Dispose();
-                        m_ioSession = null;
-                    }
-                }
-                finally
-                {
-                    m_isValid = false;
-                    m_disposed = true;  // Prevent duplicate dispose.
-                }
-            }
         }
 
         #endregion
@@ -497,7 +485,7 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         static void WriteFooterData(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
-            if (indexValue<0 | fileIdNumber<0 | snapshotSequenceNumber<0)
+            if (indexValue < 0 | fileIdNumber < 0 | snapshotSequenceNumber < 0)
                 throw new Exception();
 
             data[ArchiveConstants.BlockSize - 21] = (byte)blockType;

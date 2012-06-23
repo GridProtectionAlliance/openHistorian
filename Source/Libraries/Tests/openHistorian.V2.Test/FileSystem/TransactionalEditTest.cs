@@ -73,7 +73,7 @@ namespace openHistorian.V2.FileSystem
             ArchiveFileStreamTest.TestCustomSizeRead(fs2, 5);
             ArchiveFileStreamTest.TestSingleByteRead(fs1);
 
-            trans.Commit();
+            trans.CommitAndDispose();
         }
 
         static void TestOpenExistingFile(DiskIo stream, FileAllocationTable fat)
@@ -104,7 +104,7 @@ namespace openHistorian.V2.FileSystem
             ArchiveFileStreamTest.TestSingleByteRead(fs11);
             ArchiveFileStreamTest.TestCustomSizeRead(fs12, 5);
             ArchiveFileStreamTest.TestCustomSizeRead(fs13, ArchiveConstants.DataBlockDataLength + 20);
-            trans.Commit();
+            trans.CommitAndDispose();
         }
 
         static void TestRollback(DiskIo stream, FileAllocationTable fat)
@@ -132,7 +132,7 @@ namespace openHistorian.V2.FileSystem
             ArchiveFileStreamTest.TestCustomSizeWrite(fs1, 5);
             ArchiveFileStreamTest.TestCustomSizeWrite(fs2, ArchiveConstants.DataBlockDataLength + 20);
 
-            trans.Rollback();
+            trans.RollbackAndDispose();
         }
 
         static void TestVerifyRollback(DiskIo stream, FileAllocationTable fat)
