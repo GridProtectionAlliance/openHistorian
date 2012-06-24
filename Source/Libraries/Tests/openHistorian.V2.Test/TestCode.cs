@@ -15,6 +15,9 @@ namespace openHistorian.V2.Test
         [STAThread]
         private static void Main()
         {
+            ArchiveTest.Test();
+            return;
+            
             int cnt = 300000;
             var T = new SocketAsyncEventArgs();
             var array = new SocketAsyncEventArgs[cnt];

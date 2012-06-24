@@ -47,6 +47,7 @@ namespace openHistorian.V2.FileSystem
                         var bs = fs.CreateBinaryStream();
                         bs.Write((byte)1);
                         bs.Dispose();
+                        fs.Dispose();
                         edit.CommitAndDispose();
                     }
                     using (TransactionalRead read = service.BeginReadTransaction())

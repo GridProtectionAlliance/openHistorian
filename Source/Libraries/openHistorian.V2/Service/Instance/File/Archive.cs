@@ -75,6 +75,14 @@ namespace openHistorian.V2.Service.Instance.File
         void CreateFileInMemory()
         {
             m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();
+            var trans = m_fileSystem.BeginEdit();
+            var fs = trans.CreateFile(s_pointDataFile, 1);
+            var bs = new BinaryStream(fs);
+            var tree = new BasicTree(bs, ArchiveConstants.DataBlockDataLength);
+            tree.Save();
+            bs.Dispose();
+            fs.Dispose();
+            trans.CommitAndDispose();
         }
 
         /// <summary>
@@ -139,5 +147,9 @@ namespace openHistorian.V2.Service.Instance.File
             m_fileSystem.Dispose();
         }
 
+        public IDataScanner GetDataRange()
+        {
+            return m_dataTree.GetDataRange();
+        }
     }
 }

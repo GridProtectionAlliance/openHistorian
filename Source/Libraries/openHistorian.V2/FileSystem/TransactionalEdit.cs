@@ -180,7 +180,7 @@ namespace openHistorian.V2.FileSystem
             if (fileIndex < 0 || fileIndex >= m_fileAllocationTable.Files.Count)
                 throw new ArgumentOutOfRangeException("fileIndex", "The file index provided could not be found in the header.");
             FileMetaData file = m_fileAllocationTable.Files[fileIndex];
-            var fileStream = new ArchiveFileStream(m_dataReader, file, m_fileAllocationTable, false);
+            var fileStream = new ArchiveFileStream(m_dataReader, file, m_fileAllocationTable, AccessMode.ReadWrite);
             m_openedFiles.Add(fileStream);
             return fileStream;
         }

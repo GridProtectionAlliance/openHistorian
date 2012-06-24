@@ -58,7 +58,7 @@ namespace openHistorian.V2.FileSystem
             public IoSession(ArchiveFileStream stream)
             {
                 m_stream = stream;
-                m_addressTranslation = new FileAddressTranslation(stream.m_file, stream.m_dataReader, stream.m_fileAllocationTable, stream.m_isReadOnly);
+                m_addressTranslation = new FileAddressTranslation(stream.m_file, stream.m_dataReader, stream.m_fileAllocationTable, stream.m_isReadOnly ? AccessMode.ReadOnly : AccessMode.ReadWrite);
                 m_buffer = stream.m_dataReader.CreateDiskIoSession();
             }
 
@@ -115,7 +115,7 @@ namespace openHistorian.V2.FileSystem
             /// </summary>
             void EndPendingWrites()
             {
-                if (m_buffer.IsPendingWriteComplete)
+                if (m_buffer.IsValid && m_buffer.IsPendingWriteComplete)
                 {
                     int indexValue = (int)(m_positionBlock.VirtualPosition / ArchiveConstants.DataBlockDataLength);
                     int fileIdNumber = m_stream.m_file.FileIdNumber;

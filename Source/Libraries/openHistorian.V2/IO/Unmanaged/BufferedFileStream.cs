@@ -189,6 +189,8 @@ namespace openHistorian.V2.Unmanaged
 
         void IDisposable.Dispose()
         {
+            Globals.BufferPool.RequestCollection -= new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
+
             if (StreamDisposed != null)
                 StreamDisposed.Invoke(this, EventArgs.Empty);
             m_pageReplacementAlgorithm.Dispose();

@@ -76,10 +76,10 @@ namespace openHistorian.V2.FileSystem
         /// <param name="dataReader">The location to read from.</param>
         /// <param name="file">The file to read.</param>
         /// <param name="fileAllocationTable">The FileAllocationTable</param>
-        /// <param name="openReadOnly">Determines if the file stream allows writing.</param>
-        internal ArchiveFileStream(DiskIo dataReader, FileMetaData file, FileAllocationTable fileAllocationTable, bool openReadOnly)
+        /// <param name="accessMode">Determines if the file stream allows writing.</param>
+        internal ArchiveFileStream(DiskIo dataReader, FileMetaData file, FileAllocationTable fileAllocationTable, AccessMode accessMode)
         {
-            m_isReadOnly = openReadOnly;
+            m_isReadOnly = (accessMode == AccessMode.ReadOnly);
             m_lastReadOnlyBlock = fileAllocationTable.LastAllocatedBlock;
             m_fileAllocationTable = fileAllocationTable;
             m_dataReader = dataReader;
@@ -97,19 +97,6 @@ namespace openHistorian.V2.FileSystem
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 return m_isReadOnly;
-            }
-        }
-
-        /// <summary>
-        /// Returns the file that was used to make this stream.
-        /// </summary>
-        public FileMetaData File
-        {
-            get
-            {
-                if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-                return m_file;
             }
         }
 
@@ -158,6 +145,14 @@ namespace openHistorian.V2.FileSystem
                 if (m_ioStream == null || m_ioStream.IsDisposed)
                     return 1;
                 return 0;
+            }
+        }
+
+        public FileMetaData File
+        {
+            get
+            {
+                return m_file;
             }
         }
 

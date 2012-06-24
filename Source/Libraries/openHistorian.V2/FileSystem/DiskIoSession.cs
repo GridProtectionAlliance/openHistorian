@@ -130,7 +130,7 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
-                return m_isValid && !IsDisposed;
+                return m_isValid && !IsDisposed && !m_ioSession.IsDisposed;
             }
         }
 
@@ -429,7 +429,7 @@ namespace openHistorian.V2.FileSystem
         static long ComputeChecksum(byte* data)
         {
             ChecksumCount += 1;
-            // return 0;
+            return 0;
 
             long a = 1; //Maximum size for A is 20 bits in length
             long b = 0; //Maximum size for B is 31 bits in length

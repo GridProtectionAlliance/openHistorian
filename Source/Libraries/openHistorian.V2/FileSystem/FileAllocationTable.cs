@@ -347,6 +347,7 @@ namespace openHistorian.V2.FileSystem
             m_files = new List<FileMetaData>();
             m_isReadOnly = (mode == AccessMode.ReadOnly);
 
+
             byte[] data = GetBytes();
 
             //write the file header to the first 10 pages of the file.
@@ -479,6 +480,9 @@ namespace openHistorian.V2.FileSystem
             }
             if (!IsFileAllocationTableValid())
                 throw new Exception("File System is invalid");
+            m_isReadOnly = (mode == AccessMode.ReadOnly);
+            if (mode != AccessMode.ReadOnly)
+                m_snapshotSequenceNumber++;
         }
 
         #endregion

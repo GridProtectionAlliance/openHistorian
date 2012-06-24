@@ -106,7 +106,8 @@ namespace openHistorian.V2.UnmanagedMemory
             }
             set
             {
-                throw new NotImplementedException();
+                m_maximumBufferSize = Math.Max(Math.Min(MaximumTestedSupportedMemoryCeiling, value),
+                                               MinimumTestedSupportedMemoryFloor);
             }
         }
 
@@ -121,7 +122,7 @@ namespace openHistorian.V2.UnmanagedMemory
             }
             set
             {
-                throw new NotImplementedException();
+                m_maximumBufferSize = Math.Min(value, MaximumTestedSupportedMemoryCeiling);
             }
         }
 
@@ -150,7 +151,7 @@ namespace openHistorian.V2.UnmanagedMemory
         #endregion
 
         #region [ Methods ]
-        
+
         /// <summary>
         /// Assigns an appropriate maximum allocation size
         /// Calculates an allocation size.
@@ -228,10 +229,10 @@ namespace openHistorian.V2.UnmanagedMemory
         }
 
         #endregion
-        
-  
 
-     
+
+
+
 
 
 

@@ -92,7 +92,7 @@
     <Compile Include="OldCode\Collections\UnmanagedArray.cs" />
     <Compile Include="IO\BinaryStreamBenchmark.cs" />
     <Compile Include="IO\BinaryStreamTest.cs" />
-    <Compile Include="IO\BufferedStreamTest.cs" />
+    <Compile Include="OldCode\BufferedStreamTest.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataListTest.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
