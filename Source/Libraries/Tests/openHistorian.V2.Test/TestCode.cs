@@ -44,8 +44,19 @@ namespace openHistorian.V2.Test
                 MessageBox.Show(ex.ToString());
             }
             return;
+        }
 
-           
+        internal static void ExpectException(Action del)
+        {
+            try
+            {
+                del.Invoke();
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            throw new Exception("Exception Expected");
 
         }
     }

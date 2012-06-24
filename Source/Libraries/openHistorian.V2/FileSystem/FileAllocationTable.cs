@@ -290,7 +290,7 @@ namespace openHistorian.V2.FileSystem
         /// <remarks>A file system only supports 64 files. This is a fundamental limitation and cannot be changed easily.</remarks>
         public FileMetaData CreateNewFile(Guid fileExtention)
         {
-            if (CanWrite)
+            if (!CanWrite)
                 throw new Exception("Writing to this file type is not supported");
             if (IsReadOnly)
                 throw new Exception("File is read only");
