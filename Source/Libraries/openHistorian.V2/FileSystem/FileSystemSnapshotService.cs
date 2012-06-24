@@ -88,7 +88,7 @@ namespace openHistorian.V2.FileSystem
             FileStream fileStream = new FileStream(fileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite);
             BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
             m_diskIo = new DiskIo(bufferedFileStream, 0);
-            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
+            m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Open, AccessMode.ReadWrite);
             m_readTransactions = new List<TransactionalRead>();
         }
 
@@ -101,8 +101,7 @@ namespace openHistorian.V2.FileSystem
             FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
             BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
             m_diskIo = new DiskIo(bufferedFileStream, 0);
-            FileAllocationTable.CreateFileAllocationTable(m_diskIo);
-            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
+            m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
             m_readTransactions = new List<TransactionalRead>();
         }
 
@@ -112,8 +111,7 @@ namespace openHistorian.V2.FileSystem
         private FileSystemSnapshotService()
         {
             m_diskIo = new DiskIo(new MemoryStream(), 0);
-            FileAllocationTable.CreateFileAllocationTable(m_diskIo);
-            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
+            m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
             m_readTransactions = new List<TransactionalRead>();
         }
 
@@ -170,7 +168,7 @@ namespace openHistorian.V2.FileSystem
         {
             if (!m_disposing && m_currentTransaction != sender)
                 throw new Exception("Only the current transaction can raise this.");
-            m_fileAllocationTable = FileAllocationTable.OpenHeader(m_diskIo);
+            m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Open, AccessMode.ReadOnly);
         }
 
         void OnTransactionRolledBack(TransactionalEdit sender)

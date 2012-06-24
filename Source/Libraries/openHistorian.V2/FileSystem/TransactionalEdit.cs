@@ -113,7 +113,7 @@ namespace openHistorian.V2.FileSystem
             m_disposed = false;
             m_transactionComplete = false;
             m_transactionalRead = new TransactionalRead(dataReader, fileAllocationTable);
-            m_fileAllocationTable = fileAllocationTable.CreateEditableCopy(true);
+            m_fileAllocationTable = fileAllocationTable.CloneEditableCopy();
             m_dataReader = dataReader;
             m_delHasBeenDisposed = delHasBeenDisposed;
             m_delHasBeenCommitted = delHasBeenCommitted;

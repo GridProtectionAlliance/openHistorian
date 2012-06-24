@@ -33,11 +33,12 @@ namespace openHistorian.V2.FileSystem
     public class FileMetaData
     {
         #region [ Members ]
+
         /// <summary>
         /// The number of bytes that are required to save this class.
         /// </summary>
         internal const int SizeInBytes = 40;
-       
+
         Guid m_fileExtension;
         bool m_isReadOnly;
         int m_fileIdNumber;
@@ -52,22 +53,30 @@ namespace openHistorian.V2.FileSystem
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates an immutable class from the data stream.
+        /// Creates a <see cref="FileMetaData"/> from the data stream.
         /// </summary>
         /// <param name="dataReader"></param>
-        FileMetaData(BinaryReader dataReader)
+        /// <param name="mode"></param>
+        public FileMetaData(BinaryReader dataReader, AccessMode mode)
         {
-            m_isReadOnly = true;
-            Load(dataReader);
+            m_isReadOnly = (mode == AccessMode.ReadOnly);
+            m_fileIdNumber = dataReader.ReadInt32();
+            m_fileExtension = new Guid(dataReader.ReadBytes(16));
+            m_fileFlags = dataReader.ReadInt32();
+            m_directBlock = dataReader.ReadInt32();
+            m_singleIndirectBlock = dataReader.ReadInt32();
+            m_doubleIndirectBlock = dataReader.ReadInt32();
+            m_tripleIndirectBlock = dataReader.ReadInt32();
         }
 
         /// <summary>
-        /// Creates an editable version of the archive header.
+        /// Clones a <see cref="FileMetaData"/> allowing the caller to change the readonly flag.
         /// </summary>
         /// <param name="origionalFileMetaData"></param>
-        FileMetaData(FileMetaData origionalFileMetaData)
+        /// <param name="mode"></param>
+        public FileMetaData(FileMetaData origionalFileMetaData, AccessMode mode)
         {
-            m_isReadOnly = false;
+            m_isReadOnly = (mode == AccessMode.ReadOnly);
             m_fileIdNumber = origionalFileMetaData.FileIdNumber;
             m_fileExtension = origionalFileMetaData.FileExtension;
             m_fileFlags = origionalFileMetaData.FileFlags;
@@ -78,15 +87,16 @@ namespace openHistorian.V2.FileSystem
         }
 
         /// <summary>
-        /// Creates a new inode that can be edited
+        /// Creates a new <see cref="FileMetaData"/>.
         /// </summary>
         /// <param name="fileId"></param>
         /// <param name="featureType"></param>
-        FileMetaData(int fileId, Guid featureType)
+        /// <param name="mode"></param>
+        public FileMetaData(int fileId, Guid featureType, AccessMode mode)
         {
-            m_isReadOnly = false;
             if (featureType == Guid.Empty)
                 throw new ArgumentException("The feature type cannot be an empty GUID value", "featureType");
+            m_isReadOnly = (mode == AccessMode.ReadOnly);
             m_fileIdNumber = fileId;
             m_fileExtension = featureType;
         }
@@ -96,13 +106,19 @@ namespace openHistorian.V2.FileSystem
         #region [ Properties ]
 
         /// <summary>
-        /// Gets if the class is immutable
+        /// Gets/Sets if the class is immutable
         /// </summary>
         public bool IsReadOnly
         {
             get
             {
                 return m_isReadOnly;
+            }
+            set
+            {
+                if (m_isReadOnly && !value)
+                    throw new Exception("Class is read only");
+                m_isReadOnly = value;
             }
         }
 
@@ -146,9 +162,9 @@ namespace openHistorian.V2.FileSystem
         }
 
         /// <summary>
-        /// Gets the block address for the first direct cluster of this file.
+        /// Gets the block address for the first direct block of this file.
         /// </summary>
-        internal int DirectBlock
+        public int DirectBlock
         {
             get
             {
@@ -161,10 +177,11 @@ namespace openHistorian.V2.FileSystem
                 m_directBlock = value;
             }
         }
+
         /// <summary>
-        /// Gets the block address for the single indirect cluster.
+        /// Gets the block address for the single indirect block.
         /// </summary>
-        internal int SingleIndirectBlock
+        public int SingleIndirectBlock
         {
             get
             {
@@ -177,10 +194,11 @@ namespace openHistorian.V2.FileSystem
                 m_singleIndirectBlock = value;
             }
         }
+
         /// <summary>
-        /// Gets the block address for the double indirect cluster.
+        /// Gets the block address for the double indirect block.
         /// </summary>
-        internal int DoubleIndirectBlock
+        public int DoubleIndirectBlock
         {
             get
             {
@@ -194,9 +212,9 @@ namespace openHistorian.V2.FileSystem
             }
         }
         /// <summary>
-        /// Gets the block address for the tripple indirect cluster.
+        /// Gets the block address for the tripple indirect block.
         /// </summary>
-        internal int TripleIndirectBlock
+        public int TripleIndirectBlock
         {
             get
             {
@@ -209,7 +227,7 @@ namespace openHistorian.V2.FileSystem
                 m_tripleIndirectBlock = value;
             }
         }
-     
+
         #endregion
 
         #region [ Methods ]
@@ -218,16 +236,16 @@ namespace openHistorian.V2.FileSystem
         /// Creates an editable copy of this class.
         /// </summary>
         /// <returns></returns>
-        internal FileMetaData CreateEditableCopy()
+        public FileMetaData CloneEditableCopy()
         {
-            return new FileMetaData(this);
+            return new FileMetaData(this, AccessMode.ReadWrite);
         }
 
         /// <summary>
-        /// Writes the FileMetaData to the data stream.
+        /// Writes the data contained in <see cref="FileMetaData"/> to the data stream.
         /// </summary>
-        /// <param name="dataWriter"></param>
-        internal void Save(BinaryWriter dataWriter)
+        /// <param name="dataWriter">The stream to write to.</param>
+        public void Save(BinaryWriter dataWriter)
         {
             dataWriter.Write(m_fileIdNumber);
             dataWriter.Write(m_fileExtension.ToByteArray());
@@ -236,71 +254,6 @@ namespace openHistorian.V2.FileSystem
             dataWriter.Write(m_singleIndirectBlock);
             dataWriter.Write(m_doubleIndirectBlock);
             dataWriter.Write(m_tripleIndirectBlock);
-        }
-
-        /// <summary>
-        /// Loads this class with data form the binary stream.
-        /// </summary>
-        /// <param name="dataReader"></param>
-        void Load(BinaryReader dataReader)
-        {
-            m_fileIdNumber = dataReader.ReadInt32();
-            m_fileExtension = new Guid(dataReader.ReadBytes(16));
-            m_fileFlags = dataReader.ReadInt32();
-            m_directBlock = dataReader.ReadInt32();
-            m_singleIndirectBlock = dataReader.ReadInt32();
-            m_doubleIndirectBlock = dataReader.ReadInt32();
-            m_tripleIndirectBlock = dataReader.ReadInt32();
-        }
-
-        /// <summary>
-        /// Determines if the two objects are equal in value.
-        /// </summary>
-        /// <param name="a">the object to compare this class to</param>
-        /// <returns></returns>
-        /// <remarks>A debug function</remarks>
-        internal bool AreEqual(FileMetaData a)
-        {
-            if (a == null)
-                return false;
-
-            if (FileIdNumber != a.FileIdNumber) return false;
-            if (FileExtension != a.FileExtension) return false;
-            if (FileFlags != a.FileFlags) return false;
-            if (DirectBlock != a.DirectBlock) return false;
-            if (SingleIndirectBlock != a.SingleIndirectBlock) return false;
-            if (DoubleIndirectBlock != a.DoubleIndirectBlock) return false;
-            if (TripleIndirectBlock != a.TripleIndirectBlock) return false;
-            return true;
-        }
-
-        #endregion
-
-        #region [ Static ]
-
-        /// <summary>
-        /// Creates an immutable class from the data stream.
-        /// </summary>
-        /// <param name="dataReader"></param>
-        public static FileMetaData OpenFileMetaData(BinaryReader dataReader)
-        {
-            FileMetaData file = new FileMetaData(dataReader);
-            if (!file.IsReadOnly)
-                throw new Exception();
-            return file;
-        }
-
-        /// <summary>
-        /// Creates a new file that can be edited
-        /// </summary>
-        /// <param name="fileIdNumber">A unique file ID number in the file system</param>
-        /// <param name="fileExtension">A <see cref="Guid"/> that represents what type of data is contained in this file.</param>
-        public static FileMetaData CreateFileMetaData(int fileIdNumber, Guid fileExtension)
-        {
-            FileMetaData file = new FileMetaData(fileIdNumber, fileExtension);
-            if (file.IsReadOnly)
-                throw new Exception();
-            return file;
         }
 
         #endregion

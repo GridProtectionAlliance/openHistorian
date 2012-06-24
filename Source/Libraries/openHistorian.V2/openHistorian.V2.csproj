@@ -82,15 +82,18 @@
   <ItemGroup>
     <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase_DataScanner.cs" />
     <Compile Include="Collections\KeyValue\IDataScanner.cs" />
+    <Compile Include="AccessMode.cs" />
     <Compile Include="FileSystem\ArchiveFileStream_IoSession.cs" />
     <Compile Include="FileSystem\DiskIoExtensions.cs" />
     <Compile Include="FileSystem\DiskIoSession.cs" />
     <Compile Include="FileSystem\DiskIoSessionExtension.cs" />
+    <Compile Include="FileSystem\FileAllocationTableRecovery.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStreamSizing.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
+    <Compile Include="OpenMode.cs" />
     <Compile Include="Service\Instance\Database\CreateDatabase.cs" />
     <Compile Include="Service\Instance\Database\File.cs" />
     <Compile Include="Service\Instance\Database\IDatabase.cs" />

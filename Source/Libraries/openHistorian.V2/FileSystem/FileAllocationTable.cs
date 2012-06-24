@@ -59,10 +59,6 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         bool m_isReadOnly;
         /// <summary>
-        /// This flag is marked as true if while opening the file, the primary file allocation table was corrupt and a backup had to be used.
-        /// </summary>
-        bool m_isTableCompromised;
-        /// <summary>
         /// The version number required to read the file system.
         /// </summary>
         int m_minimumReadVersion;
@@ -75,15 +71,7 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         Guid m_archiveId;
         /// <summary>
-        /// Determines if the file is currently opened for exclusive editing.
-        /// If this file was able to be opened for write access, 
-        /// this parameter will suggest that the file was not closed correctly.
-        /// </summary>
-        /// <remarks>This flag will usually be set by a utility that is doing some kind of defragment on the file.
-        /// The file will be locked exclusively by the process.</remarks>
-        bool m_isOpenedForExclusiveEditing;
-        /// <summary>
-        ///This will be updated every time the file system has been modified. Initially, it will be zero.
+        /// This will be updated every time the file system has been modified. Initially, it will be one.
         /// </summary>
         int m_snapshotSequenceNumber;
         /// <summary>
@@ -113,33 +101,32 @@ namespace openHistorian.V2.FileSystem
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a readonly FileAllocationTable from the byte array passed to the class.
-        /// </summary>
-        /// <param name="dataToLoad"></param>
-        FileAllocationTable(byte[] dataToLoad)
-        {
-            m_isReadOnly = true;
-            LoadFromBuffer(dataToLoad);
-            m_readOnlyFiles = new ReadOnlyCollection<FileMetaData>(m_files);
-        }
-
-        /// <summary>
-        /// Creates a new FileAllocationTable and writes this data to the passed file system.
+        /// Creates a new FileAllocationTable
         /// </summary>
         /// <param name="diskIo"></param>
-        FileAllocationTable(DiskIo diskIo)
+        /// <param name="openMode"> </param>
+        /// <param name="accessMode"> </param>
+        public FileAllocationTable(DiskIo diskIo, OpenMode openMode, AccessMode accessMode)
         {
-            m_isReadOnly = false;
-            CreateNewFileAllocationTable(diskIo);
+            if (openMode == OpenMode.Create)
+            {
+                CreateNewFileAllocationTable(diskIo, accessMode);
+            }
+            else
+            {
+                LoadFromBuffer(diskIo, accessMode);
+            }
+
             m_readOnlyFiles = new ReadOnlyCollection<FileMetaData>(m_files);
+            m_isReadOnly = (accessMode == AccessMode.ReadOnly);
         }
 
         /// <summary>
         /// Clones an existing FileAllocationTable for editable access
+        /// Automatically increments the sequence number.
         /// </summary>
         /// <param name="fileAllocationTable"></param>
-        /// <param name="incrementSnapshotSequenceNumber"></param>
-        FileAllocationTable(FileAllocationTable fileAllocationTable, bool incrementSnapshotSequenceNumber)
+        FileAllocationTable(FileAllocationTable fileAllocationTable)
         {
             if (!fileAllocationTable.CanWrite)
                 throw new Exception("This file cannot be modified because the file system version is not recgonized");
@@ -148,18 +135,14 @@ namespace openHistorian.V2.FileSystem
             m_files = new List<FileMetaData>(fileAllocationTable.Files.Count);
             foreach (FileMetaData t in fileAllocationTable.Files)
             {
-                m_files.Add(t.CreateEditableCopy());
+                m_files.Add(t.CloneEditableCopy());
             }
-            m_snapshotSequenceNumber = fileAllocationTable.m_snapshotSequenceNumber;
-            if (incrementSnapshotSequenceNumber)
-                m_snapshotSequenceNumber++;
-            m_isOpenedForExclusiveEditing = fileAllocationTable.m_isOpenedForExclusiveEditing;
+            m_snapshotSequenceNumber = fileAllocationTable.m_snapshotSequenceNumber + 1;
             m_minimumReadVersion = fileAllocationTable.m_minimumReadVersion;
             m_minimumWriteVersion = fileAllocationTable.m_minimumWriteVersion;
             m_lastAllocatedBlock = fileAllocationTable.m_lastAllocatedBlock;
             m_nextFileId = fileAllocationTable.m_nextFileId;
             m_unrecgonizedMetaDataTags = fileAllocationTable.m_unrecgonizedMetaDataTags;
-            m_isTableCompromised = fileAllocationTable.IsTableCompromised;
             m_readOnlyFiles = new ReadOnlyCollection<FileMetaData>(m_files);
         }
 
@@ -170,18 +153,31 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Determines if the class is immutable
         /// </summary>
-        internal bool IsReadOnly
+        public bool IsReadOnly
         {
             get
             {
                 return m_isReadOnly;
+            }
+            set
+            {
+                if (m_isReadOnly && !value)
+                    throw new Exception("Writing to this file type is not supported");
+                if (m_isReadOnly != value)
+                {
+                    m_isReadOnly = value;
+                    foreach (var file in m_files)
+                    {
+                        file.IsReadOnly = value;
+                    }
+                }
             }
         }
 
         /// <summary>
         /// Determines if the file can be written to because enough features are recgonized by this current version to do it without corrupting the file system.
         /// </summary>
-        internal bool CanWrite
+        public bool CanWrite
         {
             get
             {
@@ -192,7 +188,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Determines if the archive file can be read
         /// </summary>
-        bool CanRead
+        public bool CanRead
         {
             get
             {
@@ -203,7 +199,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// The GUID number for this archive.
         /// </summary>
-        internal Guid ArchiveId
+        public Guid ArchiveId
         {
             get
             {
@@ -212,27 +208,9 @@ namespace openHistorian.V2.FileSystem
         }
 
         /// <summary>
-        /// Set this flag if an action is going to performed on the file that causes multiple user access to no longer remain isolated.
-        /// </summary>
-        /// <remarks>This is here for future support and is currently not being used.</remarks>
-        bool IsOpenedForExclusiveEditing
-        {
-            get
-            {
-                return m_isOpenedForExclusiveEditing;
-            }
-            set
-            {
-                if (IsReadOnly)
-                    throw new Exception("class is read only");
-                m_isOpenedForExclusiveEditing = value;
-            }
-        }
-
-        /// <summary>
         /// Maintains a sequential number that represents the version of the file.
         /// </summary>
-        internal int SnapshotSequenceNumber
+        public int SnapshotSequenceNumber
         {
             get
             {
@@ -243,7 +221,7 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Represents the next block that has not been allocated.
         /// </summary>
-        internal int LastAllocatedBlock
+        public int LastAllocatedBlock
         {
             get
             {
@@ -255,7 +233,7 @@ namespace openHistorian.V2.FileSystem
         /// Returns the number of files that are in this file system. 
         /// </summary>
         /// <returns></returns>
-        internal int FileCount
+        public int FileCount
         {
             get
             {
@@ -266,22 +244,11 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// Returns the <see cref="FileMetaData"/> for all of the files of the file system.
         /// </summary>
-        internal ReadOnlyCollection<FileMetaData> Files
+        public ReadOnlyCollection<FileMetaData> Files
         {
             get
             {
                 return m_readOnlyFiles;
-            }
-        }
-
-        /// <summary>
-        /// This flag is marked as true if while opening the file system, the primary file allocation table was corrupt and a backup had to be used.
-        /// </summary>
-        internal bool IsTableCompromised
-        {
-            get
-            {
-                return m_isTableCompromised;
             }
         }
 
@@ -296,7 +263,7 @@ namespace openHistorian.V2.FileSystem
         /// <returns>the address of the first block of the allocation </returns>
         public int AllocateFreeBlocks(int count)
         {
-            if (count == 0)
+            if (count <= 0)
                 throw new ArgumentException("the value 0 is not valid", "count");
             if (IsReadOnly)
                 throw new Exception("class is read only");
@@ -307,15 +274,12 @@ namespace openHistorian.V2.FileSystem
 
         /// <summary>
         /// Creates an editable copy of this class.
+        /// The also increments the sequence number.
         /// </summary>
-        /// <param name="incrementSnapshotSequenceNumber"></param>
         /// <returns></returns>
-        internal FileAllocationTable CreateEditableCopy(bool incrementSnapshotSequenceNumber)
+        public FileAllocationTable CloneEditableCopy()
         {
-            FileAllocationTable table = new FileAllocationTable(this, incrementSnapshotSequenceNumber);
-            if (table.IsReadOnly)
-                throw new Exception();
-            return table;
+            return new FileAllocationTable(this);
         }
 
         /// <summary>
@@ -324,17 +288,34 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileExtention">Represents the nature of the data that will be stored in this file.</param>
         /// <returns></returns>
         /// <remarks>A file system only supports 64 files. This is a fundamental limitation and cannot be changed easily.</remarks>
-        internal FileMetaData CreateNewFile(Guid fileExtention)
+        public FileMetaData CreateNewFile(Guid fileExtention)
         {
+            if (CanWrite)
+                throw new Exception("Writing to this file type is not supported");
             if (IsReadOnly)
                 throw new Exception("File is read only");
             if (m_files.Count >= 64)
                 throw new OverflowException("Only 64 files per file system is supported");
 
-            FileMetaData node = FileMetaData.CreateFileMetaData(m_nextFileId, fileExtention);
+            FileMetaData node = new FileMetaData(m_nextFileId, fileExtention, AccessMode.ReadWrite);
             m_nextFileId++;
             m_files.Add(node);
             return node;
+        }
+
+        /// <summary>
+        /// Saves the file allocation table to the disk
+        /// </summary>
+        /// <param name="diskIo">The place to store the file allocation table.</param>
+        public void WriteToFileSystem(DiskIo diskIo)
+        {
+            if (!CanWrite)
+                throw new Exception("Writing is not supported to this file system type.");
+
+            byte[] data = GetBytes();
+            diskIo.WriteToExistingBlock(0, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
+            diskIo.WriteToExistingBlock(1, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
+            diskIo.WriteToExistingBlock(((m_snapshotSequenceNumber & 7) + 2), BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
         }
 
         /// <summary>
@@ -354,16 +335,18 @@ namespace openHistorian.V2.FileSystem
         /// Creates a new file system and writes the file allocation table to the provided disk.
         /// </summary>
         /// <param name="diskIo"></param>
-        void CreateNewFileAllocationTable(DiskIo diskIo)
+        /// <param name="mode"></param>
+        void CreateNewFileAllocationTable(DiskIo diskIo, AccessMode mode)
         {
             m_minimumReadVersion = FileAllocationTableVersion;
             m_minimumWriteVersion = FileAllocationTableVersion;
             m_archiveId = Guid.NewGuid();
-            m_isOpenedForExclusiveEditing = false;
-            m_snapshotSequenceNumber = 0;
+            m_snapshotSequenceNumber = 1;
             m_nextFileId = 0;
             m_lastAllocatedBlock = 9;
             m_files = new List<FileMetaData>();
+            m_isReadOnly = (mode == AccessMode.ReadOnly);
+
             byte[] data = GetBytes();
 
             //write the file header to the first 10 pages of the file.
@@ -390,7 +373,7 @@ namespace openHistorian.V2.FileSystem
             dataWriter.Write(m_minimumReadVersion);
             dataWriter.Write(m_minimumWriteVersion);
             dataWriter.Write(ArchiveId.ToByteArray());
-            dataWriter.Write((byte)(IsOpenedForExclusiveEditing ? 1 : 0));
+            dataWriter.Write((byte)(0)); //IsOpenedForExclusiveEditing
             dataWriter.Write(SnapshotSequenceNumber);
 
             //Write meta data tags.
@@ -429,9 +412,13 @@ namespace openHistorian.V2.FileSystem
         /// This procedure will attempt to read all of the data out of the file allocation table
         /// If the file allocation table is corrupt, an error will be generated.
         /// </summary>
-        /// <param name="buffer">the block that contains the buffer data.</param>
-        void LoadFromBuffer(byte[] buffer)
+        /// <param name="diskIo">the block that contains the buffer data.</param>
+        /// <param name="mode"></param>
+        void LoadFromBuffer(DiskIo diskIo, AccessMode mode)
         {
+            byte[] buffer = new byte[ArchiveConstants.BlockSize];
+            diskIo.Read(0, BlockType.FileAllocationTable, 0, 0, int.MaxValue, buffer);
+
             int metaDataCount;
 
             MemoryStream stream = new MemoryStream(buffer);
@@ -447,7 +434,11 @@ namespace openHistorian.V2.FileSystem
                 throw new Exception("The version of this file system is not recgonized");
 
             m_archiveId = new Guid(dataReader.ReadBytes(16));
-            m_isOpenedForExclusiveEditing = (dataReader.ReadByte() != 0);
+
+            bool isOpenedForExclusiveEditing = (dataReader.ReadByte() != 0);
+            if (isOpenedForExclusiveEditing)
+                throw new Exception("The file was opened for exclusive editing.");
+
             m_snapshotSequenceNumber = dataReader.ReadInt32();
 
             //Process all of the meta data
@@ -475,7 +466,7 @@ namespace openHistorian.V2.FileSystem
                         m_files = new List<FileMetaData>(fileCount);
                         for (int x = 0; x < fileCount; x++)
                         {
-                            m_files.Add(FileMetaData.OpenFileMetaData(dataReader));
+                            m_files.Add(new FileMetaData(dataReader, mode));
                         }
                         break;
                     default:
@@ -489,245 +480,8 @@ namespace openHistorian.V2.FileSystem
             if (!IsFileAllocationTableValid())
                 throw new Exception("File System is invalid");
         }
-        /// <summary>
-        /// Saves the file allocation table to the disk
-        /// </summary>
-        /// <param name="diskIo">The place to store the file allocation table.</param>
-        public void WriteToFileSystem(DiskIo diskIo)
-        {
-            byte[] data = GetBytes();
-            diskIo.WriteToExistingBlock(0, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
-            diskIo.WriteToExistingBlock(1, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
-            diskIo.WriteToExistingBlock(((m_snapshotSequenceNumber & 7) + 2), BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        /// <remarks>A debug function</remarks>
-        internal bool AreEqual(FileAllocationTable other)
-        {
-            if (other == null)
-                return false;
-            if (m_isTableCompromised != other.m_isTableCompromised) return false;
-            if (m_minimumReadVersion != other.m_minimumReadVersion) return false;
-            if (m_minimumWriteVersion != other.m_minimumWriteVersion) return false;
-            if (m_archiveId != other.m_archiveId) return false;
-            if (m_isOpenedForExclusiveEditing != other.m_isOpenedForExclusiveEditing) return false;
-            if (m_snapshotSequenceNumber != other.m_snapshotSequenceNumber) return false;
-            if (m_nextFileId != other.m_nextFileId) return false;
-            if (m_lastAllocatedBlock != other.m_lastAllocatedBlock) return false;
-            //compare files.
-            if (m_files == null)
-            {
-                if (other.m_files != null) return false;
-            }
-            else
-            {
-                if (other.m_files == null) return false;
-                if (m_files.Count != other.m_files.Count) return false;
-                for (int x = 0; x < m_files.Count; x++)
-                {
-                    FileMetaData file = m_files[x];
-                    FileMetaData fileOther = other.m_files[x];
-
-                    if (file == null)
-                    {
-                        if (fileOther != null) return false;
-                    }
-                    else
-                    {
-                        if (fileOther == null) return false;
-                        if (!file.AreEqual(fileOther)) return false;
-                    }
-                }
-            }
-            //compare unrecgonized meta data
-            if (m_unrecgonizedMetaDataTags == null)
-            {
-                if (other.m_unrecgonizedMetaDataTags != null) return false;
-            }
-            else
-            {
-                if (other.m_unrecgonizedMetaDataTags == null) return false;
-                if (m_unrecgonizedMetaDataTags.Count != other.m_unrecgonizedMetaDataTags.Count) return false;
-                for (int x = 0; x < m_unrecgonizedMetaDataTags.Count; x++)
-                {
-                    byte[] file = m_unrecgonizedMetaDataTags[x];
-                    byte[] fileOther = other.m_unrecgonizedMetaDataTags[x];
-
-                    if (file == null)
-                    {
-                        if (fileOther != null) return false;
-                    }
-                    else
-                    {
-                        if (fileOther == null) return false;
-
-                        if (file.Length != fileOther.Length) return false;
-
-                        if (!file.SequenceEqual(fileOther))
-                            return false;
-                    }
-                }
-            }
-
-            return true;
-        }
 
         #endregion
 
-        #region [ Static ]
-
-        #region [ Methods ]
-
-        /// <summary>
-        /// This will open an existing archive header that is read only.
-        /// </summary>
-        /// <returns></returns>
-        public static FileAllocationTable OpenHeader(DiskIo diskIo)
-        {
-            Exception openException;
-            byte[] blockBytes = new byte[ArchiveConstants.BlockSize];
-
-            FileAllocationTable fat0;
-            FileAllocationTable fat1;
-            FileAllocationTable fat2;
-            FileAllocationTable fat3;
-            FileAllocationTable fat4;
-            FileAllocationTable fat5;
-            FileAllocationTable fat6;
-            FileAllocationTable fat7;
-            FileAllocationTable fat8;
-            FileAllocationTable fat9;
-            FileAllocationTable latestHeader;
-
-            //Attempt to open and return the first header of the file.
-            fat0 = TryOpenFileAllocationTable(0, diskIo, blockBytes, out openException);
-            if (fat0 != null)
-            {
-                if (!fat0.IsReadOnly)
-                    throw new Exception();
-                fat0.m_isTableCompromised = false;
-                return fat0;
-            }
-            //Attempt to open and return the second header of the file if the first is corrupt.
-            fat1 = TryOpenFileAllocationTable(1, diskIo, blockBytes, out openException);
-            if (fat1 != null)
-            {
-                if (!fat1.IsReadOnly)
-                    throw new Exception();
-                fat1.m_isTableCompromised = true;
-                return fat1;
-            }
-            //Read the next 8 headers of the file. All must not be corrupt. Return the header with the largest FileChangeSequenceNumber.
-            //If any of the pages are corrupt, a seperate action must be taken because there is a chance that the user must revert to
-            //an older version of the file, which will result in losing data.  
-            //If all pages are corrupt, the file is basically unrecoverable unless the user can guess the missing inode table data.
-
-            fat2 = TryOpenFileAllocationTable(2, diskIo, blockBytes, out openException);
-            if (fat2 == null)
-                throw new Exception("File header is corrupt", openException);
-
-            fat3 = TryOpenFileAllocationTable(3, diskIo, blockBytes, out openException);
-            if (fat3 == null)
-                throw new Exception("File header is corrupt", openException);
-
-            fat4 = TryOpenFileAllocationTable(4, diskIo, blockBytes, out openException);
-            if (fat4 == null)
-                throw new Exception("File header is corrupt", openException);
-
-            fat5 = TryOpenFileAllocationTable(5, diskIo, blockBytes, out openException);
-            if (fat5 == null)
-                throw new Exception("File header is corrupt", openException);
-
-            fat6 = TryOpenFileAllocationTable(6, diskIo, blockBytes, out openException);
-            if (fat6 == null)
-                throw new Exception("File header is corrupt", openException);
-
-            fat7 = TryOpenFileAllocationTable(7, diskIo, blockBytes, out openException);
-            if (fat7 == null)
-                throw new Exception("File header is corrupt", openException);
-
-            fat8 = TryOpenFileAllocationTable(8, diskIo, blockBytes, out openException);
-            if (fat8 == null)
-                throw new Exception("File header is corrupt", openException);
-
-            fat9 = TryOpenFileAllocationTable(9, diskIo, blockBytes, out openException);
-            if (fat9 == null)
-                throw new Exception("File header is corrupt", openException);
-
-            latestHeader = GetLatestFileAllocationTable(fat2, fat3);
-            latestHeader = GetLatestFileAllocationTable(latestHeader, fat4);
-            latestHeader = GetLatestFileAllocationTable(latestHeader, fat5);
-            latestHeader = GetLatestFileAllocationTable(latestHeader, fat6);
-            latestHeader = GetLatestFileAllocationTable(latestHeader, fat7);
-            latestHeader = GetLatestFileAllocationTable(latestHeader, fat8);
-            latestHeader = GetLatestFileAllocationTable(latestHeader, fat9);
-
-            latestHeader.m_isTableCompromised = true;
-
-            if (!latestHeader.IsReadOnly)
-                throw new Exception();
-            return latestHeader;
-        }
-
-        /// <summary>
-        /// Makes an attempt to open a file allocation table from the data buffer. 
-        /// </summary>
-        /// <param name="blockIndex"></param>
-        /// <param name="diskIo"></param>
-        /// <param name="tempBuffer"></param>
-        /// <param name="error">an output parameter for the error if one was encountered.</param>
-        /// <returns>null if there was an error and puts the exception in the error parameter.</returns>
-        static FileAllocationTable TryOpenFileAllocationTable(int blockIndex, DiskIo diskIo, byte[] tempBuffer, out Exception error)
-        {
-            error = null;
-
-            diskIo.Read(blockIndex, BlockType.FileAllocationTable, 0, 0, int.MaxValue, tempBuffer);
-            try
-            {
-                return new FileAllocationTable(tempBuffer);
-            }
-            catch (Exception ex)
-            {
-                error = ex;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Returns the file allocation table that has the most recent snapshot sequence number
-        /// </summary>
-        /// <param name="fat1"></param>
-        /// <param name="fat2"></param>
-        /// <returns></returns>
-        static FileAllocationTable GetLatestFileAllocationTable(FileAllocationTable fat1, FileAllocationTable fat2)
-        {
-            if (fat1 == null)
-                return fat2;
-            if (fat2 == null)
-                return fat1;
-            if (fat1.SnapshotSequenceNumber > fat2.SnapshotSequenceNumber)
-                return fat1;
-            return fat2;
-        }
-
-        /// <summary>
-        /// This will create a new File Allocation Table that is editable and writes the data to the File System.
-        /// </summary>
-        /// <returns></returns>
-        public static FileAllocationTable CreateFileAllocationTable(DiskIo file)
-        {
-            FileAllocationTable table = new FileAllocationTable(file);
-            if (table.IsReadOnly)
-                throw new Exception();
-            return table;
-        }
-
-        #endregion
-        #endregion
     }
 }
