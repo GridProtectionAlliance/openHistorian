@@ -123,10 +123,10 @@ namespace openHistorian.V2.Service.Instance
                         {
                             pointCount--;
 
-                            long time = stream.ReadInt64();
-                            long id = stream.ReadInt64();
-                            long flags = stream.ReadInt64();
-                            long value = stream.ReadInt64();
+                            ulong time = stream.ReadUInt64();
+                            ulong id = stream.ReadUInt64();
+                            ulong flags = stream.ReadUInt64();
+                            ulong value = stream.ReadUInt64();
 
                             currentArchive.AddPoint(time, id, flags, value);
                         }

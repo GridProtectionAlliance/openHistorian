@@ -32,7 +32,7 @@ namespace openHistorian.V2
     /// <summary>
     /// Specifies during the open process whether something will be created or opened.
     /// </summary>
-    enum OpenMode
+    public enum OpenMode
     {
         Create,
         Open

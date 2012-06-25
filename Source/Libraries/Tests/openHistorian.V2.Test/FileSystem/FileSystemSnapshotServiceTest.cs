@@ -39,7 +39,7 @@ namespace openHistorian.V2.FileSystem
             try
             {
                 //using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateFile(file))
-                using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateInMemory())
+                using (FileSystemSnapshotService service = new FileSystemSnapshotService())
                 {
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {

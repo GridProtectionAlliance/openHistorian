@@ -421,6 +421,7 @@ namespace openHistorian.V2.FileSystem
         /// </summary>
         static internal long ChecksumCount;
 
+
         /// <summary>
         /// Computes the custom checksum of the data.
         /// </summary>
@@ -429,21 +430,42 @@ namespace openHistorian.V2.FileSystem
         static long ComputeChecksum(byte* data)
         {
             ChecksumCount += 1;
-            return 0;
+            ulong* ptr = (ulong*)data;
 
-            long a = 1; //Maximum size for A is 20 bits in length
-            long b = 0; //Maximum size for B is 31 bits in length
-            long c = 0; //Maximum size for C is 42 bits in length
-            for (int x = 0; x < ArchiveConstants.BlockSize - 8; x++)
+            ulong a = 1;
+            ulong b = 0;
+
+            for (int x = 0; x < ArchiveConstants.BlockSize / 8 - 1; x++)
             {
-                a += data[x];
+                a += ptr[x];
                 b += a;
-                c += b;
             }
-            //Since only 13 bits of C will remain, xor all 42 bits of C into the first 13 bits.
-            c = c ^ (c >> 13) ^ (c >> 26) ^ (c >> 39);
-            return (c << 51) ^ (b << 20) ^ a;
+            return (long)(a ^ b);
         }
+
+        ///// <summary>
+        ///// Computes the custom checksum of the data.
+        ///// </summary>
+        ///// <param name="data">the data to compute the checksum for.</param>
+        ///// <returns></returns>
+        //static long ComputeChecksum(byte* data)
+        //{
+        //    ChecksumCount += 1;
+        //    return 0;
+
+        //    long a = 1; //Maximum size for A is 20 bits in length
+        //    long b = 0; //Maximum size for B is 31 bits in length
+        //    long c = 0; //Maximum size for C is 42 bits in length
+        //    for (int x = 0; x < ArchiveConstants.BlockSize - 8; x++)
+        //    {
+        //        a += data[x];
+        //        b += a;
+        //        c += b;
+        //    }
+        //    //Since only 13 bits of C will remain, xor all 42 bits of C into the first 13 bits.
+        //    c = c ^ (c >> 13) ^ (c >> 26) ^ (c >> 39);
+        //    return (c << 51) ^ (b << 20) ^ a;
+        //}
 
         /// <summary>
         /// Determines if the footer data for the following page is valid.

@@ -26,107 +26,13 @@ using openHistorian.V2.IO;
 
 namespace openHistorian.V2.Collections.KeyValue
 {
-    public abstract class BasicTreeInternalNodeBase : BasicTreeBase
+    public abstract partial class BasicTreeInternalNodeBase : BasicTreeBase
     {
-
-        #region [ Nexted Types ]
-
-        [FlagsAttribute]
-        enum CacheMode : byte
-        {
-            /// <summary>
-            /// Set if the cache is empty.
-            /// Matches No Case
-            /// </summary>
-            EmptyEntry = 0,
-            /// <summary>
-            /// Set if there are both upper and lower bounds present.
-            /// Matches [LowerBound,UpperBound)
-            /// </summary>
-            Bounded = 3,
-            /// <summary>
-            /// Set if there is only a lower bound.
-            /// Matches [LowerBound, infinity)
-            /// </summary>
-            UpperIsMissing = 1,
-            /// <summary>
-            /// Set if there is only an upper bound.
-            /// Matches (-infinity, UpperBound)
-            /// </summary>
-            LowerIsMissing = 2,
-            LowerIsValidMask = 1,
-            UpperIsValidMask = 2,
-        }
-        /// <summary>
-        /// Most recent node search results are stored in this class
-        /// to speed up the lookup process of tree entries.
-        /// </summary>
-        class BucketCache
-        {
-            /// <summary>
-            /// The key that bounds the upper range of the bucket.
-            /// </summary>
-            public long UpperBound1;
-            public long UpperBound2;
-            /// <summary>
-            /// The key that bounds the lower range of the bucket.
-            /// </summary>
-            public long LowerBound1;
-            public long LowerBound2;
-            /// <summary>
-            /// The index value of the bucket that falls in this range.
-            /// </summary>
-            public uint Bucket;
-            /// <summary>
-            /// The cache for the cache.
-            /// </summary>
-            public CacheMode Mode;
-            /// <summary>
-            /// Sets the current bucket as an Empty Entry so it never matches.
-            /// </summary>
-            public void Clear()
-            {
-                Mode = CacheMode.EmptyEntry;
-            }
-        }
-
-        /// <summary>
-        /// Assists in the read/write operations of the header of a node.
-        /// </summary>
-        struct NodeHeader
-        {
-            public const int Size = 11;
-            public byte NodeLevel;
-            public short NodeRecordCount;
-            public uint LeftSiblingNodeIndex;
-            public uint RightSiblingNodeIndex;
-
-            public NodeHeader(IBinaryStream stream, int blockSize, uint nodeIndex)
-            {
-                stream.Position = blockSize * nodeIndex;
-                NodeLevel = stream.ReadByte();
-                NodeRecordCount = stream.ReadInt16();
-                LeftSiblingNodeIndex = stream.ReadUInt32();
-                RightSiblingNodeIndex = stream.ReadUInt32();
-            }
-            public void Save(IBinaryStream stream, int blockSize, uint nodeIndex)
-            {
-                stream.Position = blockSize * nodeIndex;
-                stream.Write(NodeLevel);
-                stream.Write(NodeRecordCount);
-                stream.Write(LeftSiblingNodeIndex);
-                stream.Write(RightSiblingNodeIndex);
-            }
-        }
-
-        #endregion
-
         #region [ Members ]
 
-        const int KeySize = 16;
-        BucketCache[] m_cache;
+        const int KeySize = sizeof(ulong) + sizeof(ulong);
+        const int StructureSize = KeySize + sizeof(long);
         int m_maximumRecordsPerNode;
-        const int StructureSize = KeySize + sizeof(uint);
 
         #endregion
 
@@ -146,62 +52,42 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #endregion
 
-        #region [ Properties ]
-
-        #endregion
-
         #region [ Methods ]
 
         #region [ Override Methods ]
 
-        protected override void InternalNodeCreateNode(uint newNodeIndex, int nodeLevel, uint firstNodeIndex, long dividingKey1, long dividingKey2, uint secondNodeIndex)
+        protected override void InternalNodeCreateNode(long newNodeIndex, byte nodeLevel, long firstNodeIndex, ulong dividingKey1, ulong dividingKey2, long secondNodeIndex)
         {
             Stream.Position = newNodeIndex * BlockSize;
-
-            //Clearing the Node
-            //Level = level;
-            //ChildCount = 1;
-            //NextNode = 0;
-            //PreviousNode = 0;
-            Stream.Write((byte)nodeLevel);
-            Stream.Write((short)1);
-            Stream.Write(0L);
+            NodeHeader.Save(Stream, nodeLevel, 1, 0, 0);
             Stream.Write(firstNodeIndex);
             Stream.Write(dividingKey1);
             Stream.Write(dividingKey2);
             Stream.Write(secondNodeIndex);
-            ClearCache(nodeLevel);
         }
 
-        protected override void InternalNodeInsert(int nodeLevel, uint nodeIndex, long key1, long key2, uint childNodeIndex)
+        protected override void InternalNodeInsert(byte nodeLevel, long nodeIndex, ulong key1, ulong key2, long childNodeIndex)
         {
-            ClearCache(nodeLevel);
-
-            short nodeRecordCount;
-            uint leftSiblingNodeIndex;
-            uint rightSiblingNodeIndex;
             int offset;
-
-            LoadNodeHeader(nodeLevel, nodeIndex, true, out nodeRecordCount, out leftSiblingNodeIndex, out rightSiblingNodeIndex);
+            var header = new NodeHeader(Stream, BlockSize, nodeIndex, nodeLevel);
 
             //Find the best location to insert
             //This is done before checking if a split is required to prevent splitting 
             //if a duplicate key is found
-            if (FindOffsetOfKey(nodeIndex, nodeRecordCount, key1, key2, out offset))
+            if (FindOffsetOfKey(nodeIndex, header.NodeRecordCount, key1, key2, out offset))
                 throw new Exception("Duplicate Key");
 
             //Check if the node needs to be split
-            if (nodeRecordCount >= m_maximumRecordsPerNode)
+            if (header.NodeRecordCount >= m_maximumRecordsPerNode)
             {
-                SplitNodeThenInsert(key1, key2, childNodeIndex, nodeIndex);
-                ClearCache(nodeLevel);
+                SplitNodeThenInsert(key1, key2, childNodeIndex, nodeIndex, nodeLevel);
                 return;
             }
 
             //set the stream's position to the best insert location.
             Stream.Position = nodeIndex * BlockSize + offset;
 
-            int bytesAfterInsertPositionToShift = NodeHeader.Size + sizeof(uint) + StructureSize * nodeRecordCount - offset;
+            int bytesAfterInsertPositionToShift = NodeHeader.Size + sizeof(long) + StructureSize * header.NodeRecordCount - offset;
             if (bytesAfterInsertPositionToShift > 0)
             {
                 Stream.InsertBytes(StructureSize, bytesAfterInsertPositionToShift);
@@ -213,26 +99,38 @@ namespace openHistorian.V2.Collections.KeyValue
             Stream.Write(childNodeIndex);
 
             //save the header
-            SaveNodeHeader(nodeIndex, (short)(nodeRecordCount + 1));
-            ClearCache(nodeLevel);
+            header.NodeRecordCount++;
+            header.Save(Stream, BlockSize, nodeIndex);
         }
 
-        protected override uint InternalNodeGetIndex(int nodeLevel, uint nodeIndex, long key1, long key2)
+        protected override long InternalNodeGetNodeIndexAddress(byte nodeLevel, long nodeIndex, ulong key1, ulong key2)
         {
-            short nodeRecordCount;
-            uint leftSiblingNodeIndex;
-            uint rightSiblingNodeIndex;
+            int offset;
+            var header = new NodeHeader(Stream, BlockSize, nodeIndex, nodeLevel);
 
-            LoadNodeHeader(nodeLevel, nodeIndex, false, out nodeRecordCount, out leftSiblingNodeIndex, out rightSiblingNodeIndex);
-
-            BucketCache cache = m_cache[nodeLevel - 1];
-            if (IsCacheHit(key1, key2, cache))
+            if (FindOffsetOfKey(nodeIndex, header.NodeRecordCount, key1, key2, out offset))
             {
-                return cache.Bucket;
+                //An exact match was found, return the value that is currently being pointed to.
+                Stream.Position = nodeIndex * BlockSize + offset + KeySize;
+                return Stream.ReadInt64();
             }
             else
             {
-                return GetIndexAndCacheResult(key1, key2, cache, nodeRecordCount, nodeIndex);
+                Stream.Position = nodeIndex * BlockSize + (offset - sizeof(long));
+                return Stream.ReadInt64();
+                //An exact match was not found. Determine if before or after.
+
+                //Check if offset is the first entry.
+                if (offset == NodeHeader.Size + sizeof(long))
+                {
+                    Stream.Position = nodeIndex * BlockSize + (offset - sizeof(long));
+                    return Stream.ReadInt64();
+                }
+                else
+                {
+                    Stream.Position = nodeIndex * BlockSize + offset - sizeof(long);
+                    return Stream.ReadInt64();
+                }
             }
         }
 
@@ -242,34 +140,7 @@ namespace openHistorian.V2.Collections.KeyValue
 
         void Initialize()
         {
-            m_maximumRecordsPerNode = (BlockSize - NodeHeader.Size) / StructureSize;
-            m_cache = new BucketCache[5];
-            for (int x = 0; x < 5; x++)
-            {
-                m_cache[x] = new BucketCache();
-            }
-        }
-
-        NodeHeader LoadNodeHeader(uint nodeIndex)
-        {
-            return new NodeHeader(Stream, BlockSize, nodeIndex);
-        }
-
-        void LoadNodeHeader(int nodeLevel, uint nodeIndex, bool isForWriting, out short nodeRecordCount, out uint leftSiblingNodeIndex, out uint rightSiblingNodeIndex)
-        {
-            Stream.Position = nodeIndex * BlockSize;
-            Stream.UpdateLocalBuffer(isForWriting);
-
-            if (Stream.ReadByte() != nodeLevel)
-                throw new Exception("The current node is not an internal node.");
-            nodeRecordCount = Stream.ReadInt16();
-            leftSiblingNodeIndex = Stream.ReadUInt32();
-            rightSiblingNodeIndex = Stream.ReadUInt32();
-        }
-        void SaveNodeHeader(uint nodeIndex, short nodeRecordCount)
-        {
-            Stream.Position = nodeIndex * BlockSize + 1;
-            Stream.Write(nodeRecordCount);
+            m_maximumRecordsPerNode = (BlockSize - NodeHeader.Size - sizeof(long)) / StructureSize;
         }
 
         /// <summary>
@@ -281,10 +152,14 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <param name="key1">the key to search for</param>
         /// <param name="key2">the key to search for</param>
         /// <param name="offset">the offset from the start of the node where the index was found</param>
-        /// <returns>true the key was found in the node, false if was not found.</returns>
-        bool FindOffsetOfKey(uint nodeIndex, int nodeRecordCount, long key1, long key2, out int offset)
+        /// <returns>true the key was found in the node, false if was not found. 
+        /// If false, the offset is where the key could be inserted</returns>
+        /// <remarks>
+        /// Search method is a binary search algorithm
+        /// </remarks>
+        bool FindOffsetOfKey(long nodeIndex, int nodeRecordCount, ulong key1, ulong key2, out int offset)
         {
-            long addressOfFirstKey = nodeIndex * BlockSize + NodeHeader.Size + sizeof(uint);
+            long addressOfFirstKey = nodeIndex * BlockSize + NodeHeader.Size + sizeof(long);
             int searchLowerBoundsIndex = 0;
             int searchHigherBoundsIndex = nodeRecordCount - 1;
 
@@ -292,14 +167,14 @@ namespace openHistorian.V2.Collections.KeyValue
             {
                 int currentTestIndex = searchLowerBoundsIndex + (searchHigherBoundsIndex - searchLowerBoundsIndex >> 1);
                 Stream.Position = addressOfFirstKey + StructureSize * currentTestIndex;
-           
-                long compareKey1 = Stream.ReadInt64();
-                long compareKey2 = Stream.ReadInt64();
+
+                ulong compareKey1 = Stream.ReadUInt64();
+                ulong compareKey2 = Stream.ReadUInt64();
 
                 int compareKeysResults = CompareKeys(key1, key2, compareKey1, compareKey2);
                 if (compareKeysResults == 0)
                 {
-                    offset = NodeHeader.Size + sizeof(uint) + StructureSize * currentTestIndex;
+                    offset = NodeHeader.Size + sizeof(long) + StructureSize * currentTestIndex;
                     return true;
                 }
                 if (compareKeysResults > 0)
@@ -307,188 +182,65 @@ namespace openHistorian.V2.Collections.KeyValue
                 else
                     searchHigherBoundsIndex = currentTestIndex - 1;
             }
-            offset = NodeHeader.Size + sizeof(uint) + StructureSize * searchLowerBoundsIndex;
+            offset = NodeHeader.Size + sizeof(long) + StructureSize * searchLowerBoundsIndex;
             return false;
         }
 
         /// <summary>
         /// Splits an existing node into two halfs
         /// </summary>
-        void SplitNodeThenInsert(long key1, long key2, uint value, uint nodeIndex)
+        void SplitNodeThenInsert(ulong key1, ulong key2, long value, long firstNodeIndex, byte nodeLevel)
         {
-            NodeHeader firstNodeHeader = LoadNodeHeader(nodeIndex);
+            NodeHeader firstNodeHeader = new NodeHeader(Stream, BlockSize, firstNodeIndex, nodeLevel);
             NodeHeader secondNodeHeader = default(NodeHeader);
 
-            //This should never be the case, but it's here none the less.
-            if (firstNodeHeader.NodeRecordCount < 3)
-                throw new Exception("cannot split a node with fewer than 2 children");
-
             //Determine how many entries to shift on the split.
-            short recordsInTheFirstNode = (short)(firstNodeHeader.NodeRecordCount >> 1); // divide by 2.
-            short recordsInTheSecondNode = (short)(firstNodeHeader.NodeRecordCount - recordsInTheFirstNode - 1);
+            int recordsInTheFirstNode = (firstNodeHeader.NodeRecordCount >> 1); // divide by 2.
+            int recordsInTheSecondNode = (firstNodeHeader.NodeRecordCount - recordsInTheFirstNode - 1); //The first entry of the second node is moved to a parent.
 
-            uint secondNodeIndex = GetNextNewNodeIndex();
-            long sourceStartingAddress = nodeIndex * BlockSize + NodeHeader.Size + sizeof(uint) + StructureSize * recordsInTheFirstNode + KeySize;
+            long secondNodeIndex = GetNextNewNodeIndex();
+            long sourceStartingAddress = firstNodeIndex * BlockSize + NodeHeader.Size + sizeof(long) + StructureSize * recordsInTheFirstNode + KeySize;
             long targetStartingAddress = secondNodeIndex * BlockSize + NodeHeader.Size;
 
-            //lookup the first key that will be copied
+            //lookup the dividing key
             Stream.Position = sourceStartingAddress - KeySize;
-            long dividingKey1 = Stream.ReadInt64();
-            long dividingKey2 = Stream.ReadInt64();
+            ulong dividingKey1 = Stream.ReadUInt64();
+            ulong dividingKey2 = Stream.ReadUInt64();
 
             //do the copy
-            Stream.Copy(sourceStartingAddress, targetStartingAddress, recordsInTheSecondNode * StructureSize + sizeof(uint));
+            Stream.Copy(sourceStartingAddress, targetStartingAddress, recordsInTheSecondNode * StructureSize + sizeof(long));
 
             //update the node that was the old right sibling
             if (firstNodeHeader.RightSiblingNodeIndex != 0)
             {
-                NodeHeader oldRightSibling = LoadNodeHeader(firstNodeHeader.RightSiblingNodeIndex);
+                NodeHeader oldRightSibling = new NodeHeader(Stream, BlockSize, firstNodeHeader.RightSiblingNodeIndex, nodeLevel);
                 oldRightSibling.LeftSiblingNodeIndex = secondNodeIndex;
                 oldRightSibling.Save(Stream, BlockSize, firstNodeHeader.RightSiblingNodeIndex);
             }
 
             //update the second header
-            secondNodeHeader.NodeLevel = firstNodeHeader.NodeLevel;
+            secondNodeHeader.NodeLevel = nodeLevel;
             secondNodeHeader.NodeRecordCount = recordsInTheSecondNode;
-            secondNodeHeader.LeftSiblingNodeIndex = nodeIndex;
+            secondNodeHeader.LeftSiblingNodeIndex = firstNodeIndex;
             secondNodeHeader.RightSiblingNodeIndex = firstNodeHeader.RightSiblingNodeIndex;
             secondNodeHeader.Save(Stream, BlockSize, secondNodeIndex);
 
             //update the first header
             firstNodeHeader.NodeRecordCount = recordsInTheFirstNode;
             firstNodeHeader.RightSiblingNodeIndex = secondNodeIndex;
-            firstNodeHeader.Save(Stream, BlockSize, nodeIndex);
+            firstNodeHeader.Save(Stream, BlockSize, firstNodeIndex);
 
-            NodeWasSplit(firstNodeHeader.NodeLevel, nodeIndex, dividingKey1, dividingKey2, secondNodeIndex);
+            NodeWasSplit(nodeLevel, firstNodeIndex, dividingKey1, dividingKey2, secondNodeIndex);
             if (CompareKeys(key1, key2, dividingKey1, dividingKey2) > 0)
             {
-                InternalNodeInsert(firstNodeHeader.NodeLevel, secondNodeIndex, key1, key2, value);
+                InternalNodeInsert(nodeLevel, secondNodeIndex, key1, key2, value);
             }
             else
             {
-                InternalNodeInsert(firstNodeHeader.NodeLevel, nodeIndex, key1, key2, value);
+                InternalNodeInsert(nodeLevel, firstNodeIndex, key1, key2, value);
             }
         }
 
-        #endregion
-
-        #region [ Cache Methods ]
-
-        /// <summary>
-        /// If an internal node is modified. The local cache for that node may no longer be valid.
-        /// </summary>
-        /// <param name="level">the level value of the modified node</param>
-        /// <remarks>There is a bug in the cacheing algorithm. This bug will be fixed in the beta release.  
-        /// for now, i've effectively disabled caching.</remarks>
-        void ClearCache(int level)
-        {
-            //foreach (BucketCache c in m_cache)
-            //    c.Clear();
-        }
-
-        /// <summary>
-        /// Determines if the key matches the criteria of a previous search result.
-        /// </summary>
-        /// <param name="currentKey">The key to use to compare results.</param>
-        /// <returns></returns>
-        /// <remarks>There is a bug in the cacheing algorithm. This bug will be fixed in the beta release.  
-        /// for now, i've effectively disabled caching.</remarks>
-        bool IsCacheHit(long currentKey1, long currentKey2, BucketCache cache)
-        {
-            return false;
-            //if (cache.Mode == CacheMode.Bounded)
-            //{
-            //    if (CompareKeys(currentKey, cache.LowerBound) >= 0)
-            //        if (CompareKeys(currentKey, cache.UpperBound) < 0)
-            //            return true;
-            //}
-            //else if (cache.Mode == CacheMode.LowerIsMissing)
-            //{
-            //    if (CompareKeys(currentKey, cache.UpperBound) < 0)
-            //        return true;
-            //}
-            //else if (cache.Mode == CacheMode.UpperIsMissing)
-            //{
-            //    if (CompareKeys(currentKey, cache.LowerBound) >= 0)
-            //        return true;
-            //}
-            //return false;
-        }
-
-        /// <summary>
-        /// Starting from the end of the internal node header, 
-        /// this method will return the node index value that contains the provided key
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>There is a bug in the cacheing algorithm. This bug will be fixed in the beta release.  
-        /// for now, i've effectively disabled caching.</remarks>
-        uint GetIndexAndCacheResult(long key1, long key2, BucketCache cache, int nodeRecordCount, uint nodeIndex)
-        {
-            int offset;
-
-            //Look forward only if an exact match, otherwise the position is behind me.
-            if (FindOffsetOfKey(nodeIndex, nodeRecordCount, key1, key2, out offset))
-            {
-                //Check if offset is the last valid position.
-                if (offset == NodeHeader.Size + sizeof(uint) + nodeRecordCount * StructureSize)
-                {
-                    Stream.Position = nodeIndex * BlockSize + offset;
-                    cache.LowerBound1 = Stream.ReadInt64();
-                    cache.LowerBound2 = Stream.ReadInt64();
-                    cache.Bucket = Stream.ReadUInt32();
-                    cache.Mode = CacheMode.UpperIsMissing;
-                    return cache.Bucket;
-                }
-                else
-                {
-                    Stream.Position = nodeIndex * BlockSize + offset;
-                    cache.LowerBound1 = Stream.ReadInt64();
-                    cache.LowerBound2 = Stream.ReadInt64();
-                    cache.Bucket = Stream.ReadUInt32();
-                    cache.UpperBound1 = Stream.ReadInt64();
-                    cache.UpperBound2 = Stream.ReadInt64();
-                    cache.Mode = CacheMode.Bounded;
-                    return cache.Bucket;
-                }
-            }
-
-            //Check if offset is the first entry.
-            if (offset == NodeHeader.Size + sizeof(uint))
-            {
-                Stream.Position = nodeIndex * BlockSize + (offset - 4);
-                cache.Bucket = Stream.ReadUInt32();
-                cache.UpperBound1 = Stream.ReadInt64();
-                cache.UpperBound2 = Stream.ReadInt64();
-                cache.Mode = CacheMode.LowerIsMissing;
-                cache.Mode = CacheMode.EmptyEntry;
-                return cache.Bucket;
-            }
-            else if (offset == NodeHeader.Size + sizeof(uint) + nodeRecordCount * StructureSize)
-            {
-                //if offset is last entry
-                Stream.Position = nodeIndex * BlockSize + (offset - 4 - KeySize);
-                cache.LowerBound1 = Stream.ReadInt64();
-                cache.LowerBound2 = Stream.ReadInt64();
-                cache.Bucket = Stream.ReadUInt32();
-                cache.Mode = CacheMode.UpperIsMissing;
-                cache.Mode = CacheMode.EmptyEntry;
-                return cache.Bucket;
-            }
-            else
-            {
-                //if offset is bounded
-                Stream.Position = nodeIndex * BlockSize + (offset - 4 - KeySize);
-                cache.LowerBound1 = Stream.ReadInt64();
-                cache.LowerBound2 = Stream.ReadInt64();
-                cache.Bucket = Stream.ReadUInt32();
-                cache.UpperBound1 = Stream.ReadInt64();
-                cache.UpperBound2 = Stream.ReadInt64();
-                cache.Mode = CacheMode.Bounded;
-                cache.Mode = CacheMode.EmptyEntry;
-                return cache.Bucket;
-            }
-        }
-        
         #endregion
 
         #endregion

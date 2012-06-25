@@ -32,19 +32,20 @@ namespace openHistorian.V2.Collections.KeyValue
     /// This base class translates all of the core methods into simple methods
     /// that must be implemented by classes derived from this base class.
     /// </summary>
-    /// <remarks>This class does not support concurrent read operations.  This is due to the caching method of each tree.
+    /// <remarks>
+    /// This class does not support concurrent read operations.  This is due to the caching method of each tree.
     /// If concurrent read operations are desired, clone the tree.  
-    /// Trees cannot be cloned if the user plans to write to the tree.</remarks>
+    /// Trees cannot be cloned if the user plans to write to the tree.
+    /// </remarks>
     public abstract class BasicTreeBase
     {
-
         #region [ Members ]
 
-        //static Guid s_fileType = new Guid("{7bfa9083-701e-4596-8273-8680a739271d}");
-        int m_blockSize;
-        uint m_rootNodeIndex;
         byte m_rootNodeLevel;
-        uint m_nextUnallocatedBlock;
+        int m_blockSize;
+        long m_rootNodeIndexAddress;
+        long m_lastAllocatedBlock;
+
         IBinaryStream m_stream;
 
         #endregion
@@ -74,9 +75,9 @@ namespace openHistorian.V2.Collections.KeyValue
             m_stream = stream;
             m_blockSize = blockSize;
             m_rootNodeLevel = 0;
-            m_rootNodeIndex = 1;
-            LeafNodeCreateEmptyNode(m_rootNodeIndex);
-            m_nextUnallocatedBlock = 2;
+            m_rootNodeIndexAddress = 1;
+            m_lastAllocatedBlock = 1;
+            LeafNodeCreateEmptyNode(m_rootNodeIndexAddress);
             SaveHeader();
             LoadHeader();
         }
@@ -106,11 +107,11 @@ namespace openHistorian.V2.Collections.KeyValue
             }
         }
 
-        protected uint RootNodeIndex
+        protected long RootNodeIndexAddress
         {
             get
             {
-                return m_rootNodeIndex;
+                return m_rootNodeIndexAddress;
             }
         }
 
@@ -126,10 +127,6 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Public Methods ]
 
-        public IDataScanner GetDataRange()
-        {
-            return LeafNodeGetScanner();
-        }
 
         /// <summary>
         /// Inserts the following data into the tree.
@@ -138,15 +135,14 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <param name="key2">The unique key value.</param>
         /// <param name="value1">The value to insert.</param>
         /// <param name="value2">The value to insert.</param>
-        public void Add(long key1, long key2, long value1, long value2)
+        public void Add(ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            uint nodeIndex = m_rootNodeIndex;
+            long nodeIndexAddress = m_rootNodeIndexAddress;
             for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
-                nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, key1, key2);
+                nodeIndexAddress = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndexAddress, key1, key2);
             }
-
-            if (LeafNodeInsert(nodeIndex, key1, key2, value1, value2))
+            if (LeafNodeInsert(nodeIndexAddress, key1, key2, value1, value2))
                 return;
             throw new Exception("Key already exists");
         }
@@ -159,12 +155,12 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <param name="value1">the value output</param>
         /// <param name="value2">the value output</param>
         /// <returns>Null or the Default structure value if the key does not exist.</returns>
-        public void Get(long key1, long key2, out long value1, out long value2)
+        public void Get(ulong key1, ulong key2, out ulong value1, out ulong value2)
         {
-            uint nodeIndex = m_rootNodeIndex;
+            long nodeIndex = m_rootNodeIndexAddress;
             for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
-                nodeIndex = InternalNodeGetIndex(nodeLevel, nodeIndex, key1, key2);
+                nodeIndex = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndex, key1, key2);
             }
 
             if (LeafNodeGetValue(nodeIndex, key1, key2, out value1, out value2))
@@ -172,9 +168,13 @@ namespace openHistorian.V2.Collections.KeyValue
             throw new Exception("Key Not Found");
         }
 
-        public void Save()
+        /// <summary>
+        /// Returns a <see cref="IDataScanner"/> that can be used to parse throught the tree.
+        /// </summary>
+        /// <returns></returns>
+        public IDataScanner GetDataRange()
         {
-            SaveHeader();
+            return LeafNodeGetScanner();
         }
 
         #endregion
@@ -185,19 +185,17 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Internal Node Methods ]
 
-        protected abstract uint InternalNodeGetIndex(int nodeLevel, uint nodeIndex, long key1, long key2);
-        protected abstract void InternalNodeInsert(int nodeLevel, uint nodeIndex, long key1, long key2, uint childNodeIndex);
-        protected abstract void InternalNodeCreateNode(uint newNodeIndex, int nodeLevel, uint firstNodeIndex, long dividingKey1, long dividingKey2, uint secondNodeIndex);
+        protected abstract long InternalNodeGetNodeIndexAddress(byte nodeLevel, long nodeIndex, ulong key1, ulong key2);
+        protected abstract void InternalNodeInsert(byte nodeLevel, long nodeIndex, ulong key1, ulong key2, long childNodeIndex);
+        protected abstract void InternalNodeCreateNode(long newNodeIndex, byte nodeLevel, long firstNodeIndex, ulong dividingKey1, ulong dividingKey2, long secondNodeIndex);
 
         #endregion
 
         #region [ Leaf Node Methods ]
 
-        protected abstract bool LeafNodeInsert(uint nodeIndex, long key1, long key2, long value1, long value2);
-
-        protected abstract bool LeafNodeGetValue(uint nodeIndex, long key1, long key2, out long value1, out long value2);
-        protected abstract void LeafNodeCreateEmptyNode(uint newNodeIndex);
-
+        protected abstract bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2);
+        protected abstract bool LeafNodeGetValue(long nodeIndex, ulong key1, ulong key2, out ulong value1, out ulong value2);
+        protected abstract void LeafNodeCreateEmptyNode(long newNodeIndex);
         protected abstract IDataScanner LeafNodeGetScanner();
 
         #endregion
@@ -208,14 +206,14 @@ namespace openHistorian.V2.Collections.KeyValue
 
         /// <summary>
         /// Returns the node index address for a freshly allocated block.
-        /// The node address is block alligned.
         /// </summary>
         /// <returns></returns>
-        protected uint GetNextNewNodeIndex()
+        /// <remarks>Also saves the header data</remarks>
+        protected long GetNextNewNodeIndex()
         {
-            uint newBlock = m_nextUnallocatedBlock;
-            m_nextUnallocatedBlock++;
-            return newBlock;
+            m_lastAllocatedBlock++;
+            SaveHeader();
+            return m_lastAllocatedBlock;
         }
 
         /// <summary>
@@ -228,22 +226,23 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <param name="nodeIndexOfRightSibling">the index of the later node</param>
         /// <remarks>This class will add the new node data to the parent node, 
         /// or create a new root if the current root is split.</remarks>
-        protected void NodeWasSplit(int nodeLevel, uint nodeIndexOfSplitNode, long dividingKey1, long dividingKey2, uint nodeIndexOfRightSibling)
+        protected void NodeWasSplit(byte nodeLevel, long nodeIndexOfSplitNode, ulong dividingKey1, ulong dividingKey2, long nodeIndexOfRightSibling)
         {
             if (m_rootNodeLevel > nodeLevel)
             {
-                uint nodeIndex = m_rootNodeIndex;
+                long nodeIndex = m_rootNodeIndexAddress;
                 for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
                 {
-                    nodeIndex = InternalNodeGetIndex(level, nodeIndex, dividingKey1, dividingKey2);
+                    nodeIndex = InternalNodeGetNodeIndexAddress(level, nodeIndex, dividingKey1, dividingKey2);
                 }
-                InternalNodeInsert(nodeLevel + 1, nodeIndex, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
+                InternalNodeInsert((byte)(nodeLevel + 1), nodeIndex, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
             }
             else
             {
                 m_rootNodeLevel += 1;
-                m_rootNodeIndex = GetNextNewNodeIndex();
-                InternalNodeCreateNode(m_rootNodeIndex, m_rootNodeLevel, nodeIndexOfSplitNode, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
+                m_rootNodeIndexAddress = GetNextNewNodeIndex();
+                InternalNodeCreateNode(m_rootNodeIndexAddress, m_rootNodeLevel, nodeIndexOfSplitNode, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
+                SaveHeader();
             }
         }
 
@@ -251,6 +250,9 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Private Methods ]
 
+        /// <summary>
+        /// Loads the header.
+        /// </summary>
         void LoadHeader()
         {
             Stream.Position = 0;
@@ -258,23 +260,37 @@ namespace openHistorian.V2.Collections.KeyValue
                 throw new Exception("Header Corrupt");
             if (Stream.ReadByte() != 0)
                 throw new Exception("Header Corrupt");
-            m_nextUnallocatedBlock = Stream.ReadUInt32();
+            m_lastAllocatedBlock = Stream.ReadInt64();
             m_blockSize = Stream.ReadInt32();
-            m_rootNodeIndex = Stream.ReadUInt32();
+            m_rootNodeIndexAddress = Stream.ReadInt64();
             m_rootNodeLevel = Stream.ReadByte();
         }
+
+        /// <summary>
+        /// Writes the first page of the bplus tree.
+        /// </summary>
         void SaveHeader()
         {
+            long oldPosotion = Stream.Position;
             Stream.Position = 0;
             Stream.Write(FileType);
-            Stream.Write((byte)0); //Version
-            Stream.Write(m_nextUnallocatedBlock);
-            Stream.Write(BlockSize);
-            Stream.Write(m_rootNodeIndex); //Root Index
+            Stream.Write((byte)0); //version
+            Stream.Write(m_lastAllocatedBlock);
+            Stream.Write(m_blockSize);
+            Stream.Write(m_rootNodeIndexAddress); //Root Index
             Stream.Write(m_rootNodeLevel); //Root Index
+            Stream.Position = oldPosotion;
         }
 
-        protected static int CompareKeys(long firstKey1, long firstKey2, long secondKey1, long secondKey2)
+        /// <summary>
+        /// Compares one key to another key to determine which is greater
+        /// </summary>
+        /// <param name="firstKey1"></param>
+        /// <param name="firstKey2"></param>
+        /// <param name="secondKey1"></param>
+        /// <param name="secondKey2"></param>
+        /// <returns>1 if the first key is greater. -1 if the second key is greater. 0 if the keys are equal.</returns>
+        protected static int CompareKeys(ulong firstKey1, ulong firstKey2, ulong secondKey1, ulong secondKey2)
         {
             if (firstKey1 > secondKey1) return 1;
             if (firstKey1 < secondKey1) return -1;

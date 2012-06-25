@@ -136,9 +136,9 @@ namespace openHistorian.V2.Service.Instance
             dest.BeginEdit();
 
             var reader = source.GetDataRange();
-            reader.SeekToKey(long.MinValue, long.MinValue);
+            reader.SeekToKey(0,0);
 
-            long value1, value2, key1, key2;
+            ulong value1, value2, key1, key2;
             while (reader.GetNextKey(out key1, out key2, out value1, out value2))
             {
                 dest.AddPoint(key1, key2, value1, value2);

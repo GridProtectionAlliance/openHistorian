@@ -64,6 +64,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.1, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -81,6 +82,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicTreeTest.cs" />
     <Compile Include="IO\BufferedFileStreamTest.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBaseTest.cs" />
     <Compile Include="Collections\BitArray.cs" />
@@ -125,6 +127,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Collections\KeyValue\" />
     <Folder Include="OldCode\Specialized\" />
   </ItemGroup>
   <ItemGroup>

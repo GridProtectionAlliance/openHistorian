@@ -79,40 +79,39 @@ namespace openHistorian.V2.FileSystem
         #region [ Constructors ]
 
         /// <summary>
-        /// Opens an existing archive file system
-        /// </summary>
-        /// <param name="fileName">The name of the file.</param>
-        /// <param name="isReadOnly">Determines if the file will be opened in read only mode.</param>
-        private FileSystemSnapshotService(string fileName, bool isReadOnly)
-        {
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite);
-            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
-            m_diskIo = new DiskIo(bufferedFileStream, 0);
-            m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Open, AccessMode.ReadWrite);
-            m_readTransactions = new List<TransactionalRead>();
-        }
-
-        /// <summary>
-        /// Creates a new archive file for editing
-        /// </summary>
-        /// <param name="fileName">the file name</param>
-        private FileSystemSnapshotService(string fileName)
-        {
-            FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
-            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
-            m_diskIo = new DiskIo(bufferedFileStream, 0);
-            m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
-            m_readTransactions = new List<TransactionalRead>();
-        }
-
-        /// <summary>
         /// Creates a new archive file that is completely in memory
         ///  </summary>
-        private FileSystemSnapshotService()
+        public FileSystemSnapshotService()
         {
             m_diskIo = new DiskIo(new MemoryStream(), 0);
             m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
             m_readTransactions = new List<TransactionalRead>();
+        }
+
+        /// <summary>
+        /// Opens/Creates and archive file.
+        /// </summary>
+        /// <param name="fileName">The name of the file.</param>
+        /// <param name="openMode"></param>
+        /// <param name="accessMode"></param>
+        public FileSystemSnapshotService(string fileName, OpenMode openMode, AccessMode accessMode)
+        {
+            if (openMode == OpenMode.Create)
+            {
+                FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
+                BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
+                m_diskIo = new DiskIo(bufferedFileStream, 0);
+                m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Create, accessMode);
+                m_readTransactions = new List<TransactionalRead>();
+            }
+            else
+            {
+                FileStream fileStream = new FileStream(fileName, FileMode.Open, (accessMode == AccessMode.ReadOnly) ? FileAccess.Read : FileAccess.ReadWrite);
+                BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
+                m_diskIo = new DiskIo(bufferedFileStream, 0);
+                m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Open, accessMode);
+                m_readTransactions = new List<TransactionalRead>();
+            }
         }
 
         #endregion
@@ -215,44 +214,6 @@ namespace openHistorian.V2.FileSystem
         }
 
         #endregion
-        #region [ Static ]
-        #region [ Methods ]
 
-        /// <summary>
-        /// Opens an existing file archive for unbuffered read/write operations.
-        /// </summary>
-        /// <param name="fileName">The path to the archive file.</param>
-        /// <param name="isReadOnly">Determines if the file is going to be opened in readonly mode.</param>
-        /// <remarks>
-        /// Since buffering the data will be the responsibility of another layer, 
-        /// allowing the OS to buffer the data decreases performance (slightly) and
-        /// wastes system memory that can be better used by the historian's buffer.
-        /// </remarks>
-        public static FileSystemSnapshotService OpenFile(string fileName, bool isReadOnly)
-        {
-            return new FileSystemSnapshotService(fileName, isReadOnly);
-        }
-
-        /// <summary>
-        /// Creates a new archive file at the given path
-        /// </summary>
-        /// <param name="fileName">The file name of the archive to write.  This file must not already exist.</param>
-        /// <returns></returns>
-        public static FileSystemSnapshotService CreateFile(string fileName)
-        {
-            return new FileSystemSnapshotService(fileName);
-        }
-
-        /// <summary>
-        /// Creates a new archive file that resides completely in memory.
-        /// </summary>
-        /// <returns></returns>
-        public static FileSystemSnapshotService CreateInMemory()
-        {
-            return new FileSystemSnapshotService();
-        }
-
-        #endregion
-        #endregion
     }
 }

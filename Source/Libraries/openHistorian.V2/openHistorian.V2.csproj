@@ -81,6 +81,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase_DataScanner.cs" />
+    <Compile Include="Collections\KeyValue\BasicTreeInternalNodeBase_NodeHeader.cs" />
+    <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase_NodeHeader.cs" />
     <Compile Include="Collections\KeyValue\IDataScanner.cs" />
     <Compile Include="AccessMode.cs" />
     <Compile Include="FileSystem\ArchiveFileStream_IoSession.cs" />

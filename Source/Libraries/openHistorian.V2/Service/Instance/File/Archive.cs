@@ -43,43 +43,26 @@ namespace openHistorian.V2.Service.Instance.File
 
         BasicTreeContainerEdit m_dataTree;
 
-        //public Archive(string file)
-        //{
-        //    if (File.Exists(file))
-        //        OpenFile(file);
-        //    else
-        //        CreateFile(file);
-        //}
+        public Archive(string file, OpenMode openMode, AccessMode accessMode)
+        {
+            m_fileSystem = new VirtualFileSystem(file, openMode, accessMode);
+            if (openMode==OpenMode.Create)
+            {
+                InitializeNewFile();
+            }
+        }
         public Archive()
         {
-            CreateFileInMemory();
+            m_fileSystem = new VirtualFileSystem();
+            InitializeNewFile();
         }
-
-        //void OpenFile(string file)
-        //{
-        //    m_fileSystem = VirtualFileSystem.OpenArchive(file, false);
-        //    m_currentTransaction = m_fileSystem.BeginEdit();
-        //    m_stream = m_currentTransaction.OpenFile(0);
-        //    m_binaryStream = new BinaryStream(m_stream);
-        //    m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream);
-        //}
-        //void CreateFile(string file)
-        //{
-        //    m_fileSystem = VirtualFileSystem.CreateArchive(file);
-        //    m_currentTransaction = m_fileSystem.BeginEdit();
-        //    m_stream = m_currentTransaction.CreateFile(new Guid("{7bfa9083-701e-4596-8273-8680a739271d}"), 1);
-        //    m_binaryStream = new BinaryStream(m_stream);
-        //    m_tree = new BPlusTree<KeyType, TreeTypeIntFloat>(m_binaryStream, ArchiveConstants.DataBlockDataLength);
-        //}
-
-        void CreateFileInMemory()
+      
+        void InitializeNewFile()
         {
-            m_fileSystem = VirtualFileSystem.CreateInMemoryArchive();
             var trans = m_fileSystem.BeginEdit();
             var fs = trans.CreateFile(s_pointDataFile, 1);
             var bs = new BinaryStream(fs);
             var tree = new BasicTree(bs, ArchiveConstants.DataBlockDataLength);
-            tree.Save();
             bs.Dispose();
             fs.Dispose();
             trans.CommitAndDispose();
@@ -137,7 +120,7 @@ namespace openHistorian.V2.Service.Instance.File
             }
         }
 
-        public void AddPoint(long date, long pointId, long value1, long value2)
+        public void AddPoint(ulong date, ulong pointId, ulong value1, ulong value2)
         {
             m_dataTree.AddPoint(date, pointId, value1, value2);
         }

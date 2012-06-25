@@ -45,9 +45,9 @@ namespace openHistorian.V2
             long oldCount = FileSystem.DiskIoSession.ChecksumCount;
 
             var reader1 = s_archive.CreateSnapshot().OpenInstance().GetDataRange();
-            reader1.SeekToKey(long.MinValue, long.MinValue);
+            reader1.SeekToKey(0,0);
 
-            long value1, value2, key1, key2;
+            ulong value1, value2, key1, key2;
             while (reader1.GetNextKey(out key1, out key2, out value1, out value2))
             {
                 cnt++;
@@ -78,7 +78,7 @@ namespace openHistorian.V2
             //    Clipboard.SetText(s_points.ToString());
             s_points++;
             //if (s_points % 10000 == 0)
-                s_archive.AddPoint(pt.Time.Ticks, pt.PointID, pt.flags, *(int*)&pt.Value);
+            s_archive.AddPoint((ulong)pt.Time.Ticks, (ulong)pt.PointID, (ulong)pt.flags, (ulong)*(int*)&pt.Value);
         }
     }
 }

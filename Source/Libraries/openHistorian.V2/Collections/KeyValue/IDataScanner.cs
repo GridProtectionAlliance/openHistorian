@@ -30,8 +30,8 @@ namespace openHistorian.V2.Collections.KeyValue
     /// </summary>
     public interface IDataScanner
     {
-        bool GetNextKey(out long key1, out long key2, out long value1, out long value2);
+        bool GetNextKey(out ulong key1, out ulong key2, out ulong value1, out ulong value2);
         
-        void SeekToKey(long key1, long key2);
+        void SeekToKey(ulong key1, ulong key2);
     }
 }

@@ -56,7 +56,7 @@ namespace openHistorian.V2.Service.Instance.File
             }
         }
 
-        public void AddPoint(long date, long pointId, long value1, long value2)
+        public void AddPoint(ulong date, ulong pointId, ulong value1, ulong value2)
         {
             m_tree.Add(date, pointId, value1, value2);
         }
@@ -64,11 +64,6 @@ namespace openHistorian.V2.Service.Instance.File
         public IDataScanner GetDataRange()
         {
             return m_tree.GetDataRange();
-        }
-
-        public void Save()
-        {
-            m_tree.Save();
         }
 
         public void Dispose()

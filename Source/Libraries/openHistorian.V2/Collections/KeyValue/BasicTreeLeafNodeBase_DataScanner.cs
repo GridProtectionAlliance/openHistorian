@@ -33,16 +33,16 @@ namespace openHistorian.V2.Collections.KeyValue
         private class DataScanner : IDataScanner
         {
             BasicTreeLeafNodeBase m_tree;
-            short m_nodeRecordCount;
+            int m_nodeRecordCount;
             int m_keyIndexOfCurrentKey;
-            uint m_leftSiblingNodeIndex, m_rightSiblingNodeIndex;
-            uint m_nodeIndex;
+            long m_rightSiblingNodeIndex;
+            long m_nodeIndex;
             public DataScanner(BasicTreeLeafNodeBase tree)
             {
                 m_tree = tree;
             }
 
-            public bool GetNextKey(out long key1, out long key2, out long value1, out long value2)
+            public bool GetNextKey(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
             {
                 //If there are no more records in the current node.
                 if (m_keyIndexOfCurrentKey >= m_nodeRecordCount)
@@ -58,33 +58,35 @@ namespace openHistorian.V2.Collections.KeyValue
                     }
 
                     //Move to the next node in the linked list.
-                    uint previousNode;
                     m_nodeIndex = m_rightSiblingNodeIndex;
-                    m_tree.LoadNodeHeader(m_nodeIndex, false, out m_nodeRecordCount, out previousNode, out m_rightSiblingNodeIndex);
+                    var header = new NodeHeader(m_tree.Stream, m_tree.BlockSize, m_nodeIndex);
+                    m_nodeRecordCount = header.NodeRecordCount;
+                    m_rightSiblingNodeIndex = header.RightSiblingNodeIndex;
                     m_keyIndexOfCurrentKey = 0;
                 }
 
                 m_tree.Stream.Position = m_nodeIndex * m_tree.BlockSize + m_keyIndexOfCurrentKey * StructureSize + NodeHeader.Size;
 
-                key1 = m_tree.Stream.ReadInt64();
-                key2 = m_tree.Stream.ReadInt64();
-                value1 = m_tree.Stream.ReadInt64();
-                value2 = m_tree.Stream.ReadInt64();
+                key1 = m_tree.Stream.ReadUInt64();
+                key2 = m_tree.Stream.ReadUInt64();
+                value1 = m_tree.Stream.ReadUInt64();
+                value2 = m_tree.Stream.ReadUInt64();
 
                 //move to the next key
                 m_keyIndexOfCurrentKey++;
                 return true;
             }
 
-            public void SeekToKey(long key1, long key2)
+            public void SeekToKey(ulong key1, ulong key2)
             {
-                m_nodeIndex = m_tree.RootNodeIndex;
+                m_nodeIndex = m_tree.RootNodeIndexAddress;
                 for (byte nodeLevel = m_tree.RootNodeLevel; nodeLevel > 0; nodeLevel--)
                 {
-                    m_nodeIndex = m_tree.InternalNodeGetIndex(nodeLevel, m_nodeIndex, key1, key2);
+                    m_nodeIndex = m_tree.InternalNodeGetNodeIndexAddress(nodeLevel, m_nodeIndex, key1, key2);
                 }
-
-                m_tree.LoadNodeHeader(m_nodeIndex, false, out m_nodeRecordCount, out m_leftSiblingNodeIndex, out m_rightSiblingNodeIndex);
+                var header = new NodeHeader(m_tree.Stream, m_tree.BlockSize, m_nodeIndex);
+                m_nodeRecordCount = header.NodeRecordCount;
+                m_rightSiblingNodeIndex = header.RightSiblingNodeIndex;
                 m_tree.FindOffsetOfKey(m_nodeIndex, m_nodeRecordCount, key1, key2, out m_keyIndexOfCurrentKey);
                 m_keyIndexOfCurrentKey = (m_keyIndexOfCurrentKey - NodeHeader.Size) / StructureSize;
             }
