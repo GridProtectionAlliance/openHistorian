@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using openHistorian.V2.Service.Instance.File;
+using openHistorian.V2.Server.Database.Partitions;
 
 namespace openHistorian.V2
 {
@@ -16,7 +16,7 @@ namespace openHistorian.V2
             Test();
         }
 
-        static Archive s_archive;
+        static PartitionFile s_partitionFile;
         static int s_points;
 
         public static void Test()
@@ -26,9 +26,9 @@ namespace openHistorian.V2
             //if (File.Exists(file))
             //    File.Delete(file);
             //s_archive = new Archive(file);
-            s_archive = new Archive();
+            s_partitionFile = new PartitionFile();
 
-            s_archive.BeginEdit();
+            s_partitionFile.BeginEdit();
 
             HistorianReader reader = new HistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
             reader.NewPoint += ReaderNewPoint;
@@ -40,11 +40,11 @@ namespace openHistorian.V2
             int cnt = 0;
             sw2.Start();
 
-            s_archive.CommitEdit();
+            s_partitionFile.CommitEdit();
 
             long oldCount = FileSystem.DiskIoSession.ChecksumCount;
 
-            var reader1 = s_archive.CreateSnapshot().OpenInstance().GetDataRange();
+            var reader1 = s_partitionFile.CreateSnapshot().OpenInstance().GetDataRange();
             reader1.SeekToKey(0,0);
 
             ulong value1, value2, key1, key2;
@@ -64,8 +64,8 @@ namespace openHistorian.V2
             //}
             sw2.Stop();
 
-            s_archive.Close();
-            s_archive = null;
+            s_partitionFile.Close();
+            s_partitionFile = null;
 
 
             MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + oldCount);
@@ -78,7 +78,7 @@ namespace openHistorian.V2
             //    Clipboard.SetText(s_points.ToString());
             s_points++;
             //if (s_points % 10000 == 0)
-            s_archive.AddPoint((ulong)pt.Time.Ticks, (ulong)pt.PointID, (ulong)pt.flags, (ulong)*(int*)&pt.Value);
+            s_partitionFile.AddPoint((ulong)pt.Time.Ticks, (ulong)pt.PointID, (ulong)pt.flags, (ulong)*(int*)&pt.Value);
         }
     }
 }

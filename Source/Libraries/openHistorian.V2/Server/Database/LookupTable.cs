@@ -26,7 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace openHistorian.V2.Service.Instance
+namespace openHistorian.V2.Server.Database
 {
     /// <summary>
     /// Provides an imutable object that acts as a snapshot isolation layer.

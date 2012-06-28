@@ -24,7 +24,7 @@
 
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Service.Instance
+namespace openHistorian.V2.Server.Database
 {
     /// <summary>
     /// The first layer of data insertion. This is a holding location for point data

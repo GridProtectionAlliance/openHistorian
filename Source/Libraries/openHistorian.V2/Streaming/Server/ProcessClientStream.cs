@@ -24,7 +24,7 @@
 
 using System;
 using System.Threading;
-using openHistorian.V2.Service;
+using openHistorian.V2.Server;
 
 namespace openHistorian.V2.Streaming.Server
 {
@@ -37,9 +37,9 @@ namespace openHistorian.V2.Streaming.Server
         bool m_connected;
         Thread m_processClientThread;
         ITransportCommand[] m_routingTable;
-        HistorianEngine m_engine;
+        ServerInstance m_engine;
 
-        public ProcessClientStream(ITransportStreaming clientStream, HistorianEngine engine)
+        public ProcessClientStream(ITransportStreaming clientStream, ServerInstance engine)
         {
             m_engine = engine;
             m_connected = true;
@@ -72,7 +72,7 @@ namespace openHistorian.V2.Streaming.Server
                 return m_receive;
             }
         }
-        public HistorianEngine Engine
+        public ServerInstance Engine
         {
             get
             {

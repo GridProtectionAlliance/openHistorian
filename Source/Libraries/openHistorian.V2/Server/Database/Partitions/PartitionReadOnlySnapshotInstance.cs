@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianEngine.cs - Gbtc
+//  PartitionReadOnlySnapshotInstance.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,57 +16,63 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/19/2012 - Steven E. Chisholm
+//  5/22/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
 //
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using openHistorian.V2.Service.Instance;
+using openHistorian.V2.Collections.KeyValue;
+using openHistorian.V2.FileSystem;
 
-namespace openHistorian.V2.Service
+namespace openHistorian.V2.Server.Database.Partitions
 {
     /// <summary>
-    /// The main engine of the openHistorian. Instance this class to host a historian.
+    /// Provides a user with a read-only instance of an archive.
+    /// This class is not thread safe.
     /// </summary>
-    public class HistorianEngine
+    public class PartitionReadOnlySnapshotInstance : IDisposable
     {
-        SortedList<string, Engine> m_instances;
-
-        SortedList<Guid, Engine> m_homeInstances;
-
-        public HistorianEngine()
-        {
-            m_instances = new SortedList<string, Engine>();
-            m_homeInstances = new SortedList<Guid, Engine>();
-        }
+        static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
         
-        public Engine LookupHomeInstance(Guid pointId)
-        {
-            return null;
-        }
-        
-        public void CreateInstance(string name)
-        {
+        bool m_disposed;
+        BasicTreeContainer m_dataTree;
 
-        }
-        
-        public Engine LoadInstance(string name)
+        public PartitionReadOnlySnapshotInstance(TransactionalRead currentTransaction)
         {
-            return null;
+            m_dataTree = new BasicTreeContainer(currentTransaction, s_pointDataFile, 1);
         }
 
-        public bool InstanceExists(string name)
+        public bool IsDisposed
         {
-            return true;
+            get
+            {
+                return m_disposed;
+            }
         }
 
-        public List<string> GetInstanceNames()
+        public IDataScanner GetDataRange()
         {
-            return new List<string>(m_instances.Keys);
+            return m_dataTree.GetDataRange();
         }
 
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                try
+                {
+                    if (m_dataTree != null)
+                    {
+                        m_dataTree.Dispose();
+                        m_dataTree = null;
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;
+                }
+            }
+        }
     }
 }

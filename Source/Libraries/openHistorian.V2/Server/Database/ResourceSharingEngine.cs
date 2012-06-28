@@ -25,9 +25,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using openHistorian.V2.Service.Instance.File;
+using openHistorian.V2.Server.Database.Partitions;
 
-namespace openHistorian.V2.Service.Instance
+namespace openHistorian.V2.Server.Database
 {
     /// <summary>
     /// Manages the complete list of archive resources and the 
@@ -108,7 +108,7 @@ namespace openHistorian.V2.Service.Instance
                 m_activeSnapshots.Remove(snapshot);
             }
         }
-        public void RequestInsertIntoGeneration0(Action<Archive> callback)
+        public void RequestInsertIntoGeneration0(Action<PartitionFile> callback)
         {
             while (true)
             {
@@ -123,15 +123,15 @@ namespace openHistorian.V2.Service.Instance
                 Thread.Sleep(100);
             }
 
-            callback.Invoke(m_archiveGeneration0Active.ArchiveFile);
+            callback.Invoke(m_archiveGeneration0Active.PartitionFileFile);
 
             lock (this)
             {
                 m_writeLockGeneration0Active = false;
                 TableSummaryInfo newTableInfo = m_archiveGeneration0Active.CloneEditableCopy();
-                newTableInfo.ActiveSnapshot = newTableInfo.ArchiveFile.CreateSnapshot();
-                newTableInfo.FirstTime = newTableInfo.ArchiveFile.GetFirstTimeStamp;
-                newTableInfo.LastTime = newTableInfo.ArchiveFile.GetLastTimeStamp;
+                newTableInfo.ActiveSnapshot = newTableInfo.PartitionFileFile.CreateSnapshot();
+                newTableInfo.FirstTime = newTableInfo.PartitionFileFile.GetFirstKey1;
+                newTableInfo.LastTime = newTableInfo.PartitionFileFile.GetLastKey2;
                 newTableInfo.TimeMatchMode = TableSummaryInfo.MatchMode.Bounded;
                 m_archiveGeneration0Active = newTableInfo;
             }
@@ -148,10 +148,10 @@ namespace openHistorian.V2.Service.Instance
                     if (m_archiveGeneration0Processing == null)
                     {
                         m_archiveGeneration0Processing = m_archiveGeneration0Active;
-                        Archive newArchive = new Archive();
+                        PartitionFile newPartitionFile = new PartitionFile();
                         TableSummaryInfo newTableInfo = new TableSummaryInfo();
-                        newTableInfo.ArchiveFile = newArchive;
-                        newTableInfo.ActiveSnapshot = newArchive.CreateSnapshot();
+                        newTableInfo.PartitionFileFile = newPartitionFile;
+                        newTableInfo.ActiveSnapshot = newPartitionFile.CreateSnapshot();
                         newTableInfo.TimeMatchMode = TableSummaryInfo.MatchMode.EmptyEntry;
                         newTableInfo.IsReadOnly = true;
                         m_archiveGeneration0Active = newTableInfo;
@@ -219,7 +219,7 @@ namespace openHistorian.V2.Service.Instance
         bool ProcessRollover(TableSummaryInfo sourceArchive, TableSummaryInfo destinationArchive)
         {
             var source = sourceArchive.ActiveSnapshot.OpenInstance();
-            var dest = destinationArchive.ArchiveFile;
+            var dest = destinationArchive.PartitionFileFile;
 
             dest.BeginEdit();
 

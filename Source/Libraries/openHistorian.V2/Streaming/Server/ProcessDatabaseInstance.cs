@@ -23,7 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.Service.Instance;
+using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Streaming.Server
 {
@@ -38,7 +38,7 @@ namespace openHistorian.V2.Streaming.Server
         bool m_connected;
         bool m_authenticated;
         string m_instanceName;
-        Engine m_engine;
+        DatabaseEngine m_databaseEngine;
 
         public ProcessDatabaseInstance(ITransportHost host)
         {
@@ -55,11 +55,11 @@ namespace openHistorian.V2.Streaming.Server
             }
         }
 
-        public Engine Engine
+        public DatabaseEngine DatabaseEngine
         {
             get
             {
-                return m_engine;
+                return m_databaseEngine;
             }
         }
 
@@ -88,30 +88,30 @@ namespace openHistorian.V2.Streaming.Server
 
         void GetAllInstances()
         {
-            var names = m_host.Engine.GetInstanceNames();
-            m_host.Send.Write(names.Count);
-            foreach (string name in names)
-            {
-                m_host.Send.Write(name);
-                m_host.Send.Flush(false);
-            }
-            m_host.Send.Flush();
+            //var names = m_host.Engine.InstanceGetNames();
+            //m_host.Send.Write(names.Count);
+            //foreach (string name in names)
+            //{
+            //    m_host.Send.Write(name);
+            //    m_host.Send.Flush(false);
+            //}
+            //m_host.Send.Flush();
         }
 
         void SetInstance()
         {
-            string name = m_host.Receive.ReadString();
-            if (!m_host.Engine.InstanceExists(name))
-            {
-                m_host.Send.Write((byte)1);
-                m_host.Send.Flush();
-                return;
-            }
-            m_engine = m_host.Engine.LoadInstance(name);
-            m_instanceName = name;
-            InstanceChanged();
-            m_host.Send.Write((byte)0);
-            m_host.Send.Flush();
+            //string name = m_host.Receive.ReadString();
+            //if (!m_host.Engine.InstanceExists(name))
+            //{
+            //    m_host.Send.Write((byte)1);
+            //    m_host.Send.Flush();
+            //    return;
+            //}
+            //m_databaseEngine = m_host.Engine.InstanceGet(name);
+            //m_instanceName = name;
+            //InstanceChanged();
+            //m_host.Send.Write((byte)0);
+            //m_host.Send.Flush();
         }
     }
 }

@@ -1,11 +1,11 @@
-using openHistorian.V2.Service;
+using openHistorian.V2.Server;
 
 namespace openHistorian.V2.Streaming.Server
 {
     interface ITransportHost
     {
         //ITransportStreaming TransportStream { get; }
-        HistorianEngine Engine { get; }
+        ServerInstance Engine { get; }
         IOutboundBuffer Send { get; }
         IInboundBuffer Receive { get; }
         void CommandAdd(ITransportCommand command);

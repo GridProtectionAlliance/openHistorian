@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  Engine.cs - Gbtc
+//  DatabaseEngine.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -25,25 +25,23 @@
 using System;
 using System.Threading;
 using openHistorian.V2.IO.Unmanaged;
-using openHistorian.V2.Service.Instance.Database;
-using openHistorian.V2.Service.Instance.File;
+using openHistorian.V2.Server.Database.Partitions;
 
-namespace openHistorian.V2.Service.Instance
+namespace openHistorian.V2.Server.Database
 {
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
-    public class Engine
+    public class DatabaseEngine
     {
         Thread m_insertThread;
         RolloverEngine m_rolloverEngine;
         ResourceSharingEngine m_resourceSharingEngine;
 
         InboundPointQueue m_newPointQueue;
-        IDatabase m_database;
         object m_snapshotLock;
 
-        public Engine()
+        public DatabaseEngine()
         {
 
         }
@@ -76,12 +74,12 @@ namespace openHistorian.V2.Service.Instance
 
                 lock (m_snapshotLock)
                 {
-                    Archive newArchive = new Archive();
+                    PartitionFile newPartitionFile = new PartitionFile();
                     TableSummaryInfo newTableInfo = new TableSummaryInfo();
-                    newTableInfo.ArchiveFile = newArchive;
-                    newTableInfo.ActiveSnapshot = newArchive.CreateSnapshot();
-                    newTableInfo.FirstTime = DateTime.MinValue;
-                    newTableInfo.LastTime = DateTime.MaxValue;
+                    newTableInfo.PartitionFileFile = newPartitionFile;
+                    newTableInfo.ActiveSnapshot = newPartitionFile.CreateSnapshot();
+                    newTableInfo.FirstTime = ulong.MinValue;
+                    newTableInfo.LastTime = ulong.MaxValue;
                     newTableInfo.TimeMatchMode = TableSummaryInfo.MatchMode.UniverseEntry;
                     newTableInfo.IsReadOnly = true;
 
@@ -116,7 +114,7 @@ namespace openHistorian.V2.Service.Instance
                 m_newPointQueue.GetPointBlock(out stream, out pointCount);
                 if (pointCount > 0)
                 {
-                    Action<Archive> callback = (currentArchive) =>
+                    Action<PartitionFile> callback = (currentArchive) =>
                     {
                         currentArchive.BeginEdit();
                         while (pointCount > 0)

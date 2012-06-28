@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian.V2.Service.Instance
+namespace openHistorian.V2.Server.Database
 {
     class TableSnapshot : IDisposable
     {

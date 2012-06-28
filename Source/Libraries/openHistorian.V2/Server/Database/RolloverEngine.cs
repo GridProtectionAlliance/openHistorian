@@ -26,7 +26,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace openHistorian.V2.Service.Instance
+namespace openHistorian.V2.Server.Database
 {
     /// <summary>
     /// Manages the conditions required to rollover and combine an archive file.
@@ -131,7 +131,7 @@ namespace openHistorian.V2.Service.Instance
         void ProcessRollover(TableSummaryInfo sourceArchive, TableSummaryInfo destinationArchive)
         {
             var source = sourceArchive.ActiveSnapshot.OpenInstance();
-            var dest = destinationArchive.ArchiveFile;
+            var dest = destinationArchive.PartitionFileFile;
 
             dest.BeginEdit();
 

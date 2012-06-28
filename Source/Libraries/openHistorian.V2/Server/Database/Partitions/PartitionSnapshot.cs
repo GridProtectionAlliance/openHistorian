@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BasicTreeContainerEdit.cs - Gbtc
+//  PartitionSnapshot.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,30 +22,24 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
-using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Service.Instance.File
+namespace openHistorian.V2.Server.Database.Partitions
 {
     /// <summary>
-    /// Encapsolates the ArchiveFileStream, BinaryStream, and BasicTree for a certain tree.
+    /// Aquires a read transaction on the current archive file. This will allow all user created
+    /// transactions to have snapshot isolation of the entire data set.
     /// </summary>
-    internal class BasicTreeContainerEdit : IDisposable
+    public class PartitionSnapshot : IDisposable
     {
-        ArchiveFileStream m_archiveStream;
-        BinaryStream m_binaryStream;
-        BasicTree m_tree;
         bool m_disposed;
-
-        public BasicTreeContainerEdit(TransactionalEdit currentTransaction, Guid fileNumber, int flags)
+        VirtualFileSystem m_fileSystem;
+        TransactionalRead m_currentTransaction;
+        
+        public PartitionSnapshot(VirtualFileSystem fileSystem)
         {
-            m_archiveStream = currentTransaction.OpenFile(fileNumber, flags);
-            m_binaryStream = new BinaryStream(m_archiveStream);
-            m_tree = new BasicTree(m_binaryStream);
+            m_fileSystem = fileSystem;
+            m_currentTransaction = m_fileSystem.BeginRead();
         }
 
         public bool IsDisposed
@@ -56,36 +50,25 @@ namespace openHistorian.V2.Service.Instance.File
             }
         }
 
-        public void AddPoint(ulong date, ulong pointId, ulong value1, ulong value2)
+        /// <summary>
+        /// Opens an instance of the archive file to allow for concurrent reading of a snapshot.
+        /// </summary>
+        /// <returns></returns>
+        public PartitionReadOnlySnapshotInstance OpenInstance()
         {
-            m_tree.Add(date, pointId, value1, value2);
+            return new PartitionReadOnlySnapshotInstance(m_currentTransaction);
         }
-
-        public IDataScanner GetDataRange()
-        {
-            return m_tree.GetDataRange();
-        }
-
+        
         public void Dispose()
         {
             if (!m_disposed)
             {
                 try
                 {
-                    if (m_tree != null)
+                    if (m_currentTransaction != null)
                     {
-                        //m_tree.Dispose();
-                        m_tree = null;
-                    }
-                    if (m_binaryStream != null)
-                    {
-                        m_binaryStream.Dispose();
-                        m_binaryStream = null;
-                    }
-                    if (m_archiveStream != null)
-                    {
-                        m_archiveStream.Dispose();
-                        m_archiveStream = null;
+                        m_currentTransaction.Dispose();
+                        m_currentTransaction = null;
                     }
                 }
                 finally

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveReadOnlySnapshotInstance.cs - Gbtc
+//  BasicTreeContainer.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,25 +22,30 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
+using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Service.Instance.File
+namespace openHistorian.V2.Server.Database.Partitions
 {
     /// <summary>
-    /// Provides a user with a read-only instance of an archive.
-    /// This class is not thread safe.
+    /// Encapsolates the ArchiveFileStream, BinaryStream, and BasicTree for a certain tree.
     /// </summary>
-    public class ArchiveReadOnlySnapshotInstance : IDisposable
+    internal class BasicTreeContainer : IDisposable
     {
-        static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
-        
+        ArchiveFileStream m_archiveStream;
+        BinaryStream m_binaryStream;
+        BasicTree m_tree;
         bool m_disposed;
-        BasicTreeContainer m_dataTree;
 
-        public ArchiveReadOnlySnapshotInstance(TransactionalRead currentTransaction)
+        public BasicTreeContainer(TransactionalRead currentTransaction, Guid fileNumber, int flags)
         {
-            m_dataTree = new BasicTreeContainer(currentTransaction, s_pointDataFile, 1);
+            m_archiveStream = currentTransaction.OpenFile(fileNumber, flags);
+            m_binaryStream = new BinaryStream(m_archiveStream);
+            m_tree = new BasicTree(m_binaryStream);
         }
 
         public bool IsDisposed
@@ -53,8 +58,9 @@ namespace openHistorian.V2.Service.Instance.File
 
         public IDataScanner GetDataRange()
         {
-            return m_dataTree.GetDataRange();
+            return m_tree.GetDataRange();
         }
+
 
         public void Dispose()
         {
@@ -62,10 +68,20 @@ namespace openHistorian.V2.Service.Instance.File
             {
                 try
                 {
-                    if (m_dataTree != null)
+                    if (m_tree != null)
                     {
-                        m_dataTree.Dispose();
-                        m_dataTree = null;
+                        //m_tree.Dispose();
+                        m_tree = null;
+                    }
+                    if (m_binaryStream != null)
+                    {
+                        m_binaryStream.Dispose();
+                        m_binaryStream = null;
+                    }
+                    if (m_archiveStream != null)
+                    {
+                        m_archiveStream.Dispose();
+                        m_archiveStream = null;
                     }
                 }
                 finally

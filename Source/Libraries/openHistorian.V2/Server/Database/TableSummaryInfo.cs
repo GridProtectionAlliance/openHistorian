@@ -24,9 +24,9 @@
 
 using System;
 using System.Data;
-using openHistorian.V2.Service.Instance.File;
+using openHistorian.V2.Server.Database.Partitions;
 
-namespace openHistorian.V2.Service.Instance
+namespace openHistorian.V2.Server.Database
 {
    
     class TableSummaryInfo
@@ -63,12 +63,12 @@ namespace openHistorian.V2.Service.Instance
         }
         
         bool m_isReadOnly;
-        DateTime m_firstTime;
-        DateTime m_lastTime;
+        ulong m_firstTime;
+        ulong m_lastTime;
         MatchMode m_timeMatchMode;
         int m_rolloverGeneration;
-        Archive m_archiveFile;
-        ArchiveSnapshot m_activeSnapshot;
+        PartitionFile m_partitionFileFile;
+        PartitionSnapshot m_activeSnapshot;
 
         public TableSummaryInfo()
         {
@@ -81,7 +81,7 @@ namespace openHistorian.V2.Service.Instance
             m_lastTime = table.m_lastTime;
             m_timeMatchMode = table.m_timeMatchMode;
             m_rolloverGeneration = table.m_rolloverGeneration;
-            m_archiveFile = table.m_archiveFile;
+            m_partitionFileFile = table.m_partitionFileFile;
             m_activeSnapshot = table.m_activeSnapshot;
             m_isReadOnly = false;
         }
@@ -105,21 +105,21 @@ namespace openHistorian.V2.Service.Instance
             }
         }
 
-        public Archive ArchiveFile
+        public PartitionFile PartitionFileFile
         {
             get
             {
-                return m_archiveFile;
+                return m_partitionFileFile;
             }
             set
             {
                 if (m_isReadOnly)
                     throw new ReadOnlyException("Object is read only");
-                m_archiveFile = value;
+                m_partitionFileFile = value;
             }
         }
 
-        public DateTime FirstTime
+        public ulong FirstTime
         {
             get
             {
@@ -133,7 +133,7 @@ namespace openHistorian.V2.Service.Instance
             }
         }
 
-        public DateTime LastTime
+        public ulong LastTime
         {
             get
             {
@@ -180,7 +180,7 @@ namespace openHistorian.V2.Service.Instance
             }
         }
 
-        public ArchiveSnapshot ActiveSnapshot
+        public PartitionSnapshot ActiveSnapshot
         {
             get
             {

@@ -68,7 +68,7 @@ namespace openHistorian.V2.Streaming.Server
         bool m_connected;
         public void Execute()
         {
-            if (m_databaseInstance.Engine == null)
+            if (m_databaseInstance.DatabaseEngine == null)
             {
                 m_host.Terminate();
                 return;
@@ -122,12 +122,12 @@ namespace openHistorian.V2.Streaming.Server
                         if (m_localPoints.ContainsKey(referenceNumber))
                         {
                             m_localPoints[referenceNumber] = pointId;
-                            m_pointMapping[referenceNumber] = m_databaseInstance.Engine.LookupPointId(pointId);
+                            //m_pointMapping[referenceNumber] = m_databaseInstance.DatabaseEngine.LookupPointId(pointId);
                         }
                         else
                         {
                             m_localPoints.Add(referenceNumber, pointId);
-                            m_pointMapping.Add(referenceNumber, m_databaseInstance.Engine.LookupPointId(pointId));
+                            //m_pointMapping.Add(referenceNumber, m_databaseInstance.DatabaseEngine.LookupPointId(pointId));
                         }
                         break;
                     default:
@@ -152,7 +152,7 @@ namespace openHistorian.V2.Streaming.Server
                         long value1 = m_host.Receive.ReadInt64();
                         long value2 = m_host.Receive.ReadInt64();
                         if (pointId>=0)
-                            m_databaseInstance.Engine.WriteData(time, pointId, value1, value2);
+                            ;//m_databaseInstance.DatabaseEngine.WriteData(time, pointId, value1, value2);
                         break;
                     default:
                         m_connected = false;
@@ -166,7 +166,7 @@ namespace openHistorian.V2.Streaming.Server
         {
             for (int x = 0; x < m_localPoints.Count; x++)
             {
-                m_pointMapping.Values[x] = m_databaseInstance.Engine.LookupPointId(m_localPoints.Values[x]);
+                //m_pointMapping.Values[x] = m_databaseInstance.DatabaseEngine.LookupPointId(m_localPoints.Values[x]);
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  Archive.cs - Gbtc
+//  PartitionFile.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,23 +27,21 @@ using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Service.Instance.File
+namespace openHistorian.V2.Server.Database.Partitions
 {
     /// <summary>
     /// Represents a individual self-contained archive file. 
-    /// This is one of many files that are part of a given <see cref="Engine"/>.
+    /// This is one of many files that are part of a given <see cref="DatabaseEngine"/>.
     /// </summary>
-    public class Archive
+    public class PartitionFile
     {
         static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
 
         VirtualFileSystem m_fileSystem;
-
         TransactionalEdit m_currentTransaction;
-
         BasicTreeContainerEdit m_dataTree;
 
-        public Archive(string file, OpenMode openMode, AccessMode accessMode)
+        public PartitionFile(string file, OpenMode openMode, AccessMode accessMode)
         {
             m_fileSystem = new VirtualFileSystem(file, openMode, accessMode);
             if (openMode==OpenMode.Create)
@@ -51,7 +49,7 @@ namespace openHistorian.V2.Service.Instance.File
                 InitializeNewFile();
             }
         }
-        public Archive()
+        public PartitionFile()
         {
             m_fileSystem = new VirtualFileSystem();
             InitializeNewFile();
@@ -72,9 +70,9 @@ namespace openHistorian.V2.Service.Instance.File
         /// Aquires a snapshot of the current file system.
         /// </summary>
         /// <returns></returns>
-        public ArchiveSnapshot CreateSnapshot()
+        public PartitionSnapshot CreateSnapshot()
         {
-            return new ArchiveSnapshot(m_fileSystem);
+            return new PartitionSnapshot(m_fileSystem);
         }
 
         /// <summary>
@@ -105,24 +103,24 @@ namespace openHistorian.V2.Service.Instance.File
             m_currentTransaction.RollbackAndDispose();
         }
 
-        public DateTime GetFirstTimeStamp
-        {
-            get
-            {
-                return DateTime.Now;
-            }
-        }
-        public DateTime GetLastTimeStamp
-        {
-            get
-            {
-                return DateTime.Now;
-            }
-        }
-
         public void AddPoint(ulong date, ulong pointId, ulong value1, ulong value2)
         {
             m_dataTree.AddPoint(date, pointId, value1, value2);
+        }
+
+        public ulong GetFirstKey1
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public ulong GetLastKey2
+        {
+            get
+            {
+                return ulong.MaxValue;
+            }
         }
 
         public void Close()
@@ -130,9 +128,5 @@ namespace openHistorian.V2.Service.Instance.File
             m_fileSystem.Dispose();
         }
 
-        public IDataScanner GetDataRange()
-        {
-            return m_dataTree.GetDataRange();
-        }
     }
 }
