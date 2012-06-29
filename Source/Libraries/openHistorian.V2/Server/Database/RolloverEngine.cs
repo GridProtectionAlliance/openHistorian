@@ -128,7 +128,7 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
-        void ProcessRollover(TableSummaryInfo sourceArchive, TableSummaryInfo destinationArchive)
+        void ProcessRollover(PartitionSummary sourceArchive, PartitionSummary destinationArchive)
         {
             var source = sourceArchive.ActiveSnapshot.OpenInstance();
             var dest = destinationArchive.PartitionFileFile;

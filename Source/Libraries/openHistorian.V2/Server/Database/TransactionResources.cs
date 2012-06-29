@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TableSnapshot.cs - Gbtc
+//  TransactionResources.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,20 +27,16 @@ using System.Collections.Generic;
 
 namespace openHistorian.V2.Server.Database
 {
-    class TableSnapshot : IDisposable
+    /// <summary>
+    /// Provides a list of resources that each system transaction could be using.
+    /// </summary>
+    class TransactionResources
     {
-        Action<TableSnapshot> m_disposeDelegate;
-        public List<TableSummaryInfo> Tables;
-        
-        public TableSnapshot(Action<TableSnapshot> disposeDelegate)
-        {
-            m_disposeDelegate = disposeDelegate;
-            Tables = new List<TableSummaryInfo>();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        public object ClientConnection;
+        /// <summary>
+        /// Contains an array of all of the resources currently used by this transaction.
+        /// This field can be null or any element of this array can also be null.
+        /// </summary>
+        public PartitionSummary[] Tables;
     }
 }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TableSummaryInfo.cs - Gbtc
+//  PartitionSummary.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,8 +28,11 @@ using openHistorian.V2.Server.Database.Partitions;
 
 namespace openHistorian.V2.Server.Database
 {
-   
-    class TableSummaryInfo
+   /// <summary>
+   /// Contains an immutable class of the current partition
+   /// along with its most recent snapshot.
+   /// </summary>
+    class PartitionSummary
     {
         public enum MatchMode : byte
         {
@@ -63,34 +66,51 @@ namespace openHistorian.V2.Server.Database
         }
         
         bool m_isReadOnly;
-        ulong m_firstTime;
-        ulong m_lastTime;
-        MatchMode m_timeMatchMode;
+        ulong m_firstKeyValue;
+        ulong m_lastKeyValue;
+        MatchMode m_keyMatchMode;
         int m_rolloverGeneration;
         PartitionFile m_partitionFileFile;
         PartitionSnapshot m_activeSnapshot;
 
-        public TableSummaryInfo()
+        /// <summary>
+        /// Creates an editable <see cref="PartitionSummary"/> 
+        /// until it <see cref="IsReadOnly"/> has been set to true.
+        /// </summary>
+        public PartitionSummary()
         {
             m_isReadOnly = false;
         }
 
-        public TableSummaryInfo(TableSummaryInfo table)
+        /// <summary>
+        /// Clones an existing <see cref="PartitionSummary"/> class and makes it editable
+        /// until <see cref="IsReadOnly"/> is set to true.
+        /// </summary>
+        /// <param name="partition">the <see cref="PartitionSummary"/> to clone and make editable.</param>
+        public PartitionSummary(PartitionSummary partition)
         {
-            m_firstTime = table.m_firstTime;
-            m_lastTime = table.m_lastTime;
-            m_timeMatchMode = table.m_timeMatchMode;
-            m_rolloverGeneration = table.m_rolloverGeneration;
-            m_partitionFileFile = table.m_partitionFileFile;
-            m_activeSnapshot = table.m_activeSnapshot;
+            m_firstKeyValue = partition.m_firstKeyValue;
+            m_lastKeyValue = partition.m_lastKeyValue;
+            m_keyMatchMode = partition.m_keyMatchMode;
+            m_rolloverGeneration = partition.m_rolloverGeneration;
+            m_partitionFileFile = partition.m_partitionFileFile;
+            m_activeSnapshot = partition.m_activeSnapshot;
             m_isReadOnly = false;
         }
 
-        public TableSummaryInfo CloneEditableCopy()
+        /// <summary>
+        /// Clones this class and creates on that can be edited.
+        /// </summary>
+        /// <returns></returns>
+        public PartitionSummary CloneEditableCopy()
         {
-           return new TableSummaryInfo(this);
+           return new PartitionSummary(this);
         }
 
+        /// <summary>
+        /// Gets/Sets if this class is in an immutable state.
+        /// The state of the variable can only be changed from False to True.
+        /// </summary>
         public bool IsReadOnly
         {
             get
@@ -99,12 +119,16 @@ namespace openHistorian.V2.Server.Database
             }
             set
             {
-                if (m_isReadOnly)
+                if (m_isReadOnly && !value)
                     throw new ReadOnlyException("Object is read only");
                 m_isReadOnly = value;
             }
         }
 
+        /// <summary>
+        /// Gets/Sets the <see cref="PartitionFile"/> that this class represents.
+        /// Can only set if <see cref="IsReadOnly"/> is false.
+        /// </summary>
         public PartitionFile PartitionFileFile
         {
             get
@@ -119,45 +143,54 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
-        public ulong FirstTime
+        /// <summary>
+        /// Gets/Sets the first key contained in this partition.
+        /// </summary>
+        public ulong FirstKeyValue
         {
             get
             {
-                return m_firstTime;
+                return m_firstKeyValue;
             }
             set
             {
                 if (m_isReadOnly)
                     throw new ReadOnlyException("Object is read only");
-                m_firstTime = value;
+                m_firstKeyValue = value;
             }
         }
 
-        public ulong LastTime
+        /// <summary>
+        /// Gets/Sets the last key contained in this partition.
+        /// </summary>
+        public ulong LastKeyValue
         {
             get
             {
-                return m_lastTime;
+                return m_lastKeyValue;
             }
             set
             {
                 if (m_isReadOnly)
                     throw new ReadOnlyException("Object is read only");
-                m_lastTime = value;
+                m_lastKeyValue = value;
             }
         }
 
-        public MatchMode TimeMatchMode
+        /// <summary>
+        /// Gets/Sets a <see cref="MatchMode"/> for matching the key.
+        /// </summary>
+        public MatchMode KeyMatchMode
         {
             get
             {
-                return m_timeMatchMode;
+                return m_keyMatchMode;
             }
             set
             {
                 if (m_isReadOnly)
                     throw new ReadOnlyException("Object is read only");
-                m_timeMatchMode = value;
+                m_keyMatchMode = value;
             }
         }
 
@@ -180,6 +213,9 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
+        /// <summary>
+        /// Gets/Sets the most recent <see cref="PartitionSnapshot"/> of this class when it was instanced.
+        /// </summary>
         public PartitionSnapshot ActiveSnapshot
         {
             get
@@ -194,9 +230,15 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
-        public bool Contains(DateTime startTime, DateTime stopTime)
+        /// <summary>
+        /// Determines if this partition might contain data for the keys provided.
+        /// </summary>
+        /// <param name="startKey">the first key searching for</param>
+        /// <param name="stopKey">the last key searching for</param>
+        /// <returns></returns>
+        public bool Contains(ulong startKey, ulong stopKey)
         {
-            //ToDo: Don't be lazy and always return true
+            //ToDo: Don't be lazy by always returning true
             return true;
         }
     }

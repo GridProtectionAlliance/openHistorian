@@ -42,72 +42,50 @@ namespace openHistorian.V2.Server.Database
         bool m_writeLockGeneration2Active;
         bool m_writeLockGeneration2Processing;
 
-        TableSummaryInfo m_archiveGeneration0Active;
-        TableSummaryInfo m_archiveGeneration0Processing;
+        PartitionSummary m_archiveGeneration0Active;
+        PartitionSummary m_archiveGeneration0Processing;
 
-        TableSummaryInfo m_archiveGeneration1Active;
-        TableSummaryInfo m_archiveGeneration1Processing;
+        PartitionSummary m_archiveGeneration1Active;
+        PartitionSummary m_archiveGeneration1Processing;
 
-        TableSummaryInfo m_archiveGeneration2Active;
-        TableSummaryInfo m_archiveGeneration2Processing;
+        PartitionSummary m_archiveGeneration2Active;
+        PartitionSummary m_archiveGeneration2Processing;
 
         /// <summary>
         /// Contais the archives that have successfully been rolled over and are pending
         /// deletion from the system.
         /// </summary>
-        List<TableSummaryInfo> m_pendingDeletes;
+        List<PartitionSummary> m_pendingDeletes;
+
         /// <summary>
         /// Contains the list of archives that are perminent to the system and 
         /// cannot be written to.
         /// </summary>
-        List<TableSummaryInfo> m_perminentArchives;
-
-        /// <summary>
-        /// Contains the complete list of system snapshots.
-        /// </summary>
-        List<TableSnapshot> m_activeSnapshots;
+        List<PartitionSummary> m_perminentArchives;
 
 
-        public TableSnapshot AquireSnapshot()
+        public void AquireSnapshot(TransactionResources transaction)
         {
             lock (this)
             {
-                TableSnapshot snapshot = new TableSnapshot(RemoveSnapshot);
+                int count = m_perminentArchives.Count + 6;
+                PartitionSummary[] partitions = new PartitionSummary[count];
 
-                if (m_archiveGeneration0Active != null)
-                    snapshot.Tables.Add(m_archiveGeneration0Active);
+                partitions[0] = m_archiveGeneration0Active;
+                partitions[1] = m_archiveGeneration0Processing;
+                partitions[2] = m_archiveGeneration1Active;
+                partitions[3] = m_archiveGeneration1Processing;
+                partitions[4] = m_archiveGeneration2Active;
+                partitions[5] = m_archiveGeneration2Processing;
 
-                if (m_archiveGeneration0Processing != null)
-                    snapshot.Tables.Add(m_archiveGeneration0Processing);
-
-                if (m_archiveGeneration1Active != null)
-                    snapshot.Tables.Add(m_archiveGeneration1Active);
-
-                if (m_archiveGeneration1Processing != null)
-                    snapshot.Tables.Add(m_archiveGeneration1Processing);
-
-                if (m_archiveGeneration2Active != null)
-                    snapshot.Tables.Add(m_archiveGeneration2Active);
-
-                if (m_archiveGeneration2Processing != null)
-                    snapshot.Tables.Add(m_archiveGeneration2Processing);
-
-                foreach (var table in m_perminentArchives)
+                for (int x = 0; x < m_perminentArchives.Count; x++)
                 {
-                    snapshot.Tables.Add(table);
+                    partitions[x + 6] = m_perminentArchives[x];
                 }
-                m_activeSnapshots.Add(snapshot);
-                return snapshot;
+                transaction.Tables = partitions;
             }
         }
 
-        void RemoveSnapshot(TableSnapshot snapshot)
-        {
-            lock (this)
-            {
-                m_activeSnapshots.Remove(snapshot);
-            }
-        }
         public void RequestInsertIntoGeneration0(Action<PartitionFile> callback)
         {
             while (true)
@@ -128,18 +106,19 @@ namespace openHistorian.V2.Server.Database
             lock (this)
             {
                 m_writeLockGeneration0Active = false;
-                TableSummaryInfo newTableInfo = m_archiveGeneration0Active.CloneEditableCopy();
-                newTableInfo.ActiveSnapshot = newTableInfo.PartitionFileFile.CreateSnapshot();
-                newTableInfo.FirstTime = newTableInfo.PartitionFileFile.GetFirstKey1;
-                newTableInfo.LastTime = newTableInfo.PartitionFileFile.GetLastKey2;
-                newTableInfo.TimeMatchMode = TableSummaryInfo.MatchMode.Bounded;
-                m_archiveGeneration0Active = newTableInfo;
+                PartitionSummary newPartition = m_archiveGeneration0Active.CloneEditableCopy();
+                newPartition.ActiveSnapshot = newPartition.PartitionFileFile.CreateSnapshot();
+                newPartition.FirstKeyValue = newPartition.PartitionFileFile.GetFirstKey1;
+                newPartition.LastKeyValue = newPartition.PartitionFileFile.GetLastKey2;
+                newPartition.KeyMatchMode = PartitionSummary.MatchMode.Bounded;
+                m_archiveGeneration0Active = newPartition;
             }
         }
 
-        public void RequestRolloverGeneration1(Action<TableSummaryInfo, TableSummaryInfo> callback) { }
-        public void RequestRolloverGeneration2(Action<TableSummaryInfo, TableSummaryInfo> callback) { }
-        public void RequestRolloverGeneration0(Action<TableSummaryInfo, TableSummaryInfo> callback)
+        public void RequestRolloverGeneration1(Action<PartitionSummary, PartitionSummary> callback) { }
+        public void RequestRolloverGeneration2(Action<PartitionSummary, PartitionSummary> callback) { }
+
+        public void RequestRolloverGeneration0(Action<PartitionSummary, PartitionSummary> callback)
         {
             while (true)
             {
@@ -149,12 +128,12 @@ namespace openHistorian.V2.Server.Database
                     {
                         m_archiveGeneration0Processing = m_archiveGeneration0Active;
                         PartitionFile newPartitionFile = new PartitionFile();
-                        TableSummaryInfo newTableInfo = new TableSummaryInfo();
-                        newTableInfo.PartitionFileFile = newPartitionFile;
-                        newTableInfo.ActiveSnapshot = newPartitionFile.CreateSnapshot();
-                        newTableInfo.TimeMatchMode = TableSummaryInfo.MatchMode.EmptyEntry;
-                        newTableInfo.IsReadOnly = true;
-                        m_archiveGeneration0Active = newTableInfo;
+                        PartitionSummary newPartition = new PartitionSummary();
+                        newPartition.PartitionFileFile = newPartitionFile;
+                        newPartition.ActiveSnapshot = newPartitionFile.CreateSnapshot();
+                        newPartition.KeyMatchMode = PartitionSummary.MatchMode.EmptyEntry;
+                        newPartition.IsReadOnly = true;
+                        m_archiveGeneration0Active = newPartition;
                         break;
                     }
                 }
@@ -165,12 +144,12 @@ namespace openHistorian.V2.Server.Database
 
             lock (this)
             {
-                TableSummaryInfo newTableInfo = m_archiveGeneration0Processing.CloneEditableCopy();
+                PartitionSummary newPartition = m_archiveGeneration0Processing.CloneEditableCopy();
 
             }
         }
 
-        public void RequestRolloverGeneration0(TableSummaryInfo sourceArchive, TableSummaryInfo destinationArchive)
+        public void RequestRolloverGeneration0(PartitionSummary sourceArchive, PartitionSummary destinationArchive)
         {
             //bool readyToRollOver = false;
             //lock (this)
@@ -216,7 +195,7 @@ namespace openHistorian.V2.Server.Database
 
         }
 
-        bool ProcessRollover(TableSummaryInfo sourceArchive, TableSummaryInfo destinationArchive)
+        bool ProcessRollover(PartitionSummary sourceArchive, PartitionSummary destinationArchive)
         {
             var source = sourceArchive.ActiveSnapshot.OpenInstance();
             var dest = destinationArchive.PartitionFileFile;
@@ -224,12 +203,12 @@ namespace openHistorian.V2.Server.Database
             dest.BeginEdit();
 
             var reader = source.GetDataRange();
-            reader.SeekToKey(0,0);
+            reader.SeekToKey(0, 0);
 
             ulong value1, value2, key1, key2;
             while (reader.GetNextKey(out key1, out key2, out value1, out value2))
             {
-                dest.AddPoint(key1,key2,value1,value2);
+                dest.AddPoint(key1, key2, value1, value2);
             }
 
             dest.CommitEdit();

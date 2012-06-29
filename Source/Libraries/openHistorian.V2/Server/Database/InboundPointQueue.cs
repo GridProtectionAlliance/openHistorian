@@ -22,6 +22,7 @@
 //
 //******************************************************************************************************
 
+using System;
 using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.Server.Database
@@ -30,55 +31,21 @@ namespace openHistorian.V2.Server.Database
     /// The first layer of data insertion. This is a holding location for point data
     /// so committing points occurs at a slower interval.
     /// </summary>
-    class InboundPointQueue
+    class InboundPointQueue : IDisposable
     {
-        //ToDO: make the queue be an in memory b+ tree.  This may speed up the inserting 
-        //to the main database.
+        //ToDo: Keep statistics on the size of the queue.  It's possible that the underlying memory stream may get very large and will never reduce in size.
 
-        MemoryStream m_actriveMemoryStream;
-        MemoryStream m_processingMemoryStream;
-
+        bool m_disposed;
         BinaryStream m_processingQueue;
         BinaryStream m_activeQueue;
+        object m_syncRoot;
         const int SizeOfData = 32;
 
         public InboundPointQueue()
         {
-            m_actriveMemoryStream = new MemoryStream();
-            m_activeQueue = new BinaryStream(m_actriveMemoryStream);
-            m_processingMemoryStream = new MemoryStream();
-            m_activeQueue = new BinaryStream(m_processingMemoryStream);
-
-        }
-
-        /// <summary>
-        /// Provides the synchronization object for lock free method calls.
-        /// </summary>
-        /// <remarks>Since this class does its own internal synchronization on this object,
-        /// the user must still synchronize on this object for lock free methods of this class.</remarks>
-        public object SyncRoot
-        {
-            get
-            {
-                return this;
-            }
-        }
-
-        /// <summary>
-        /// Writes the following data to the queue without locks. 
-        /// User must lock on <see cref="SyncRoot"/> 
-        /// in order to use this function.
-        /// </summary>
-        /// <param name="key1"></param>
-        /// <param name="key2"></param>
-        /// <param name="value1"></param>
-        /// <param name="value2"></param>
-        public void WriteDataWithoutLocks(long key1, long key2, long value1, long value2)
-        {
-            m_activeQueue.Write(key1);
-            m_activeQueue.Write(key2);
-            m_activeQueue.Write(value1);
-            m_activeQueue.Write(value2);
+            m_syncRoot = new object();
+            m_activeQueue = new BinaryStream();
+            m_activeQueue = new BinaryStream();
         }
 
         /// <summary>
@@ -88,12 +55,11 @@ namespace openHistorian.V2.Server.Database
         /// <param name="key2"></param>
         /// <param name="value1"></param>
         /// <param name="value2"></param>
-        /// <remarks>This call locks on <see cref="SyncRoot"/>.  
-        /// To prevent repeated locks, lock <see cref="SyncRoot"/> 
-        /// and call <see cref="WriteDataWithoutLocks"/>.</remarks>
-        public void WriteData(long key1, long key2, long value1, long value2)
+        public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            lock (this)
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            lock (m_syncRoot)
             {
                 m_activeQueue.Write(key1);
                 m_activeQueue.Write(key2);
@@ -112,7 +78,9 @@ namespace openHistorian.V2.Server.Database
         /// synchronized with active inputs.</remarks>
         public void GetPointBlock(out BinaryStream stream, out int pointCount)
         {
-            lock (this)
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            lock (m_syncRoot)
             {
                 stream = m_activeQueue;
                 pointCount = (int)(m_activeQueue.Position / SizeOfData);
@@ -122,6 +90,31 @@ namespace openHistorian.V2.Server.Database
                 m_activeQueue.Position = 0;
                 m_processingQueue = m_activeQueue;
             }
+        }
+
+        /// <summary>
+        /// Disposes the underlying queues contained in this class. 
+        /// This method is not thread safe.
+        /// </summary>
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                try
+                {
+                    if (m_processingQueue!=null)
+                        m_processingQueue.Dispose();
+                    if (m_activeQueue != null)
+                        m_activeQueue.Dispose();
+                }
+                finally
+                {
+                    m_disposed = true;
+                    m_activeQueue = null;
+                    m_processingQueue = null;
+                }
+            }
+      
         }
     }
 }

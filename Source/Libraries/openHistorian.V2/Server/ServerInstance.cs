@@ -34,11 +34,11 @@ namespace openHistorian.V2.Server
     public class ServerInstance
     {
         object m_syncRoot = new object();
-        SortedList<string, DatabaseEngine> m_instances;
+        SortedList<string, DatabaseEngine> m_databases;
 
         public ServerInstance()
         {
-            m_instances = new SortedList<string, DatabaseEngine>();
+            m_databases = new SortedList<string, DatabaseEngine>();
         }
 
         public void Create(string name)
@@ -46,7 +46,7 @@ namespace openHistorian.V2.Server
             lock (m_syncRoot)
             {
                 DatabaseEngine engine = new DatabaseEngine();
-                m_instances.Add(name.ToUpper(), engine);
+                m_databases.Add(name.ToUpper(), engine);
             }
         }
 
@@ -55,35 +55,35 @@ namespace openHistorian.V2.Server
             lock (m_syncRoot)
             {
                 var engine = Get(name);
-                m_instances.Remove(name.ToUpper());
+                m_databases.Remove(name.ToUpper());
             }
         }
 
-        public void Attach(string name)
-        {
+        //public void Attach(string name)
+        //{
             
-        }
+        //}
 
-        public void Detach(string name)
-        {
+        //public void Detach(string name)
+        //{
             
-        }
+        //}
 
-        public void TakeOffline(string instanceName)
-        {
+        //public void TakeOffline(string instanceName)
+        //{
             
-        }
+        //}
 
-        public void BringOnline(string instanceName)
-        {
+        //public void BringOnline(string instanceName)
+        //{
             
-        }
+        //}
 
         public DatabaseEngine Get(string name)
         {
             lock (m_syncRoot)
             {
-                return m_instances[name.ToUpper()];
+                return m_databases[name.ToUpper()];
             }
         }
 
@@ -91,15 +91,15 @@ namespace openHistorian.V2.Server
         {
             lock (m_syncRoot)
             {
-                return m_instances.ContainsKey(name.ToUpper());
+                return m_databases.ContainsKey(name.ToUpper());
             }
         }
 
-        public List<string> GetNames()
+        public List<string> GetDatabaseNames()
         {
             lock (m_syncRoot)
             {
-                return new List<string>(m_instances.Keys);
+                return new List<string>(m_databases.Keys);
             }
         }
 

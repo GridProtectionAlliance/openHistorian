@@ -33,6 +33,12 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #region [ Members ]
 
+        /// <summary>
+        /// Determines if this class owns the underlying stream, thus when Dispose() is called
+        /// the dispose of the underlying stream will also be called.
+        /// </summary>
+        bool m_leaveOpen;
+
         bool m_disposed;
         /// <summary>
         /// The position that corresponds to the first byte in the buffer.
@@ -72,10 +78,21 @@ namespace openHistorian.V2.IO.Unmanaged
         #region [ Constructors ]
 
         /// <summary>
+        /// Creates a <see cref="BinaryStream"/> that is in memory only.
+        /// </summary>
+        public BinaryStream()
+            : this(new MemoryStream(), false)
+        {
+
+        }
+
+        /// <summary>
         /// Creates a <see cref="BinaryStream"/> that is at position 0 of the provided stream.
         /// </summary>
         /// <param name="stream">The base stream to use.</param>
-        public BinaryStream(ISupportsBinaryStream stream)
+        /// <param name="leaveOpen">Determines if the underlying stream will automatically be 
+        /// disposed of when this class has it's dispose method called.</param>
+        public BinaryStream(ISupportsBinaryStream stream, bool leaveOpen = true)
         {
             m_temp = new byte[16];
             m_stream = stream;
@@ -89,14 +106,6 @@ namespace openHistorian.V2.IO.Unmanaged
             m_mainIoSession = stream.GetNextIoSession();
             if (stream.RemainingSupportedIoSessions >= 1)
                 m_secondaryIoSession = stream.GetNextIoSession();
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="BinaryStream"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~BinaryStream()
-        {
-            Dispose(false);
         }
 
         #endregion
@@ -197,7 +206,7 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             if (!SupportsAnotherClone)
                 throw new Exception("Base stream does not support additional clones");
-            return new BinaryStream(m_stream);
+            return new BinaryStream(m_stream, false);
         }
 
 
@@ -358,24 +367,6 @@ namespace openHistorian.V2.IO.Unmanaged
             Copy(Position + numberOfBytes, Position, lengthOfValidDataToShift);
             Position = pos;
         }
-
-        //#region Helper Types
-
-        //public void Write(long value1, long value2)
-        //{
-        //    const int size = 16;
-        //    if (m_lastIndexWrite - m_currentIndex >= size - 1)
-        //    {
-        //        *(long*)(m_buffer + m_currentIndex) = value1;
-        //        *(long*)(m_buffer + m_currentIndex + 8) = value2;
-        //        m_currentIndex += size;
-        //        return;
-        //    }
-        //    Write2(value1);
-        //    Write2(value2);
-        //}
-
-        //#endregion
 
         #region Derived Types
         public void Write(sbyte value)
@@ -832,22 +823,6 @@ namespace openHistorian.V2.IO.Unmanaged
         #endregion
 
         #region Reading
-
-        //#region Helper Types
-        //public void ReadInt128(out long value1, out long value2)
-        //{
-        //    const int size = 16;
-        //    if (m_lastIndex - m_currentIndex >= size - 1)
-        //    {
-        //        value1 = *(long*)(m_buffer + m_currentIndex);
-        //        value2 = *(long*)(m_buffer + m_currentIndex + 8);
-        //        m_currentIndex += size;
-        //        return;
-        //    }
-        //    value1 = ReadInt642();
-        //    value2 = ReadInt642();
-        //}
-        //#endregion
 
         #region Derived Types
 
@@ -1326,25 +1301,24 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #endregion
 
-
         /// <summary>
         /// Releases all the resources used by the <see cref="BinaryStream"/> object.
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="BinaryStream"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
             if (!m_disposed)
             {
                 try
+                {
+                    // This will be done regardless of whether the object is finalized or disposed.
+                    if (m_mainIoSession != null)
+                        m_mainIoSession.Dispose();
+                    if (m_secondaryIoSession != null)
+                        m_secondaryIoSession.Dispose();
+                    if (!m_leaveOpen && m_stream != null)
+                        m_stream.Dispose();
+                }
+                finally
                 {
                     m_firstPosition = 0;
                     m_lastPosition = 0;
@@ -1352,30 +1326,13 @@ namespace openHistorian.V2.IO.Unmanaged
                     m_first = null;
                     m_lastRead = null;
                     m_lastWrite = null;
-
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (m_mainIoSession != null)
-                        m_mainIoSession.Dispose();
-                    if (m_secondaryIoSession != null)
-                        m_secondaryIoSession.Dispose();
-
                     m_mainIoSession = null;
                     m_secondaryIoSession = null;
                     m_stream = null;
-
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
-                    }
-                }
-                finally
-                {
-                    m_disposed = true;  // Prevent duplicate dispose.
+                    m_disposed = true;
                 }
             }
         }
-
-        
 
         #endregion
 

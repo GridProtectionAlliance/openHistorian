@@ -124,9 +124,8 @@
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
     <Compile Include="Server\ServerInstance.cs" />
     <Compile Include="Server\Database\RolloverEngine.cs" />
-    <Compile Include="Server\Database\TableSnapshot.cs" />
+    <Compile Include="Server\Database\TransactionResources.cs" />
     <Compile Include="Server\Database\ResourceSharingEngine.cs" />
-    <Compile Include="Server\Database\TableLockInformation.cs" />
     <Compile Include="Streaming\Client\ClientSocket.cs" />
     <Compile Include="Streaming\IInboundBuffer.cs" />
     <Compile Include="Streaming\ITransportStreaming.cs" />
@@ -140,7 +139,7 @@
     <Compile Include="Streaming\Server\ProcessClientStream.cs" />
     <Compile Include="Streaming\Server\ProcessKeepAlive.cs" />
     <Compile Include="Streaming\Server\ServerSocket.cs" />
-    <Compile Include="Server\Database\TableSummaryInfo.cs" />
+    <Compile Include="Server\Database\PartitionSummary.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
     <Compile Include="OldCode\Collections\BPlusTree.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBase.cs" />

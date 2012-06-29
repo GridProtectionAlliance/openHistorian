@@ -34,21 +34,21 @@ namespace openHistorian.V2.Server.Database
     /// </summary>
     class LookupTable
     {
-        List<TableSummaryInfo> m_generations;
-        List<TableSummaryInfo> m_tables;
+        List<PartitionSummary> m_generations;
+        List<PartitionSummary> m_tables;
         bool m_isReadOnly;
 
         public LookupTable()
         {
-            m_generations = new List<TableSummaryInfo>();
-            m_tables = new List<TableSummaryInfo>();
+            m_generations = new List<PartitionSummary>();
+            m_tables = new List<PartitionSummary>();
             m_isReadOnly = false;
         }
         public LookupTable(LookupTable clone)
         {
             m_isReadOnly = false;
-            m_generations = new List<TableSummaryInfo>(clone.m_generations);
-            m_tables = new List<TableSummaryInfo>(clone.m_tables);
+            m_generations = new List<PartitionSummary>(clone.m_generations);
+            m_tables = new List<PartitionSummary>(clone.m_tables);
         }
 
         /// <summary>
@@ -62,32 +62,32 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
-        public TableSummaryInfo GetGeneration(int index)
+        public PartitionSummary GetGeneration(int index)
         {
             return m_generations[index];
         }
 
-        public TableSummaryInfo GetTables(int index)
+        public PartitionSummary GetTables(int index)
         {
             return m_tables[index];
         }
 
-        public void SetGeneration(int index, TableSummaryInfo table)
+        public void SetGeneration(int index, PartitionSummary partition)
         {
             if (m_isReadOnly) throw new ReadOnlyException();
-            m_generations[index] = table;
+            m_generations[index] = partition;
         }
 
-        public void SetTable(int index, TableSummaryInfo table)
+        public void SetTable(int index, PartitionSummary partition)
         {
             if (m_isReadOnly) throw new ReadOnlyException();
-            m_tables[index] = table;
+            m_tables[index] = partition;
         }
 
-        public void AddTable(TableSummaryInfo table)
+        public void AddTable(PartitionSummary partition)
         {
             if (m_isReadOnly) throw new ReadOnlyException();
-            m_tables.Add(table);
+            m_tables.Add(partition);
         }
 
         public void SetReadOnly()

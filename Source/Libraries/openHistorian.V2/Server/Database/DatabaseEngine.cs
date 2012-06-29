@@ -37,21 +37,10 @@ namespace openHistorian.V2.Server.Database
         Thread m_insertThread;
         RolloverEngine m_rolloverEngine;
         ResourceSharingEngine m_resourceSharingEngine;
-
         InboundPointQueue m_newPointQueue;
         object m_snapshotLock;
 
         public DatabaseEngine()
-        {
-
-        }
-
-        public long LookupPointId(Guid pointId)
-        {
-            return -1;
-        }
-
-        public void Open()
         {
             m_snapshotLock = new object();
             m_newPointQueue = new InboundPointQueue();
@@ -61,9 +50,9 @@ namespace openHistorian.V2.Server.Database
             m_rolloverEngine = new RolloverEngine(m_resourceSharingEngine);
         }
 
-        public void Close()
+        public long LookupPointId(Guid pointId)
         {
-
+            return -1;
         }
 
         void ProcessRolloverData()
@@ -75,13 +64,13 @@ namespace openHistorian.V2.Server.Database
                 lock (m_snapshotLock)
                 {
                     PartitionFile newPartitionFile = new PartitionFile();
-                    TableSummaryInfo newTableInfo = new TableSummaryInfo();
-                    newTableInfo.PartitionFileFile = newPartitionFile;
-                    newTableInfo.ActiveSnapshot = newPartitionFile.CreateSnapshot();
-                    newTableInfo.FirstTime = ulong.MinValue;
-                    newTableInfo.LastTime = ulong.MaxValue;
-                    newTableInfo.TimeMatchMode = TableSummaryInfo.MatchMode.UniverseEntry;
-                    newTableInfo.IsReadOnly = true;
+                    PartitionSummary newPartition = new PartitionSummary();
+                    newPartition.PartitionFileFile = newPartitionFile;
+                    newPartition.ActiveSnapshot = newPartitionFile.CreateSnapshot();
+                    newPartition.FirstKeyValue = ulong.MinValue;
+                    newPartition.LastKeyValue = ulong.MaxValue;
+                    newPartition.KeyMatchMode = PartitionSummary.MatchMode.UniverseEntry;
+                    newPartition.IsReadOnly = true;
 
                     //LookupTable currentLookupTable = m_lookupTable.CloneEditableCopy();
 
@@ -136,7 +125,7 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
-        public void WriteData(long key1, long key2, long value1, long value2)
+        public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
             m_newPointQueue.WriteData(key1, key2, value1, value2);
         }
