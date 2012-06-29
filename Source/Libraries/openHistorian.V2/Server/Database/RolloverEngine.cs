@@ -23,8 +23,10 @@
 //******************************************************************************************************
 
 using System;
+using openHistorian.V2.IO.Unmanaged;
 using System.Diagnostics;
 using System.Threading;
+using openHistorian.V2.Server.Database.Partitions;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -33,7 +35,8 @@ namespace openHistorian.V2.Server.Database
     /// </summary>
     class RolloverEngine
     {
-        ResourceSharingEngine m_resources;
+        ResourceEngine m_resources;
+        InboundPointQueue m_newPointQueue;
 
         int m_generation0Count = 0;
         int m_generation1Count = 0;
@@ -62,15 +65,17 @@ namespace openHistorian.V2.Server.Database
         Thread m_processRolloverThread0;
         Thread m_processRolloverThread1;
         Thread m_processRolloverThread2;
+        Thread m_insertThread;
 
-        public RolloverEngine(ResourceSharingEngine resources)
+        public RolloverEngine(ResourceEngine resources, InboundPointQueue pointQueue)
         {
             m_generation0Interval.Start();
             m_generation1Interval.Start();
             m_generation2Interval.Start();
 
             m_resources = resources;
-           
+            m_newPointQueue = pointQueue;
+
             m_processRolloverThread0 = new Thread(ProcessRolloverGen0);
             m_processRolloverThread0.Start();
 
@@ -79,6 +84,46 @@ namespace openHistorian.V2.Server.Database
 
             m_processRolloverThread2 = new Thread(ProcessRolloverGen2);
             m_processRolloverThread2.Start();
+
+            m_insertThread = new Thread(ProcessInsertingData);
+            m_insertThread.Start();
+        }
+
+        /// <summary>
+        /// This process fires 10 times per second and populates the must current archive file.
+        /// </summary>
+        void ProcessInsertingData()
+        {
+            while (true)
+            {
+                Thread.Sleep(100);
+                BinaryStream stream;
+                int pointCount;
+
+                m_newPointQueue.GetPointBlock(out stream, out pointCount);
+                if (pointCount > 0)
+                {
+                    m_resources.AcquireEditLock(0);
+                    var currentArchive = m_resources.GetActivePartition(0);
+
+                    currentArchive.PartitionFileFile.BeginEdit();
+                    while (pointCount > 0)
+                    {
+                        pointCount--;
+
+                        ulong time = stream.ReadUInt64();
+                        ulong id = stream.ReadUInt64();
+                        ulong flags = stream.ReadUInt64();
+                        ulong value = stream.ReadUInt64();
+
+                        currentArchive.PartitionFileFile.AddPoint(time, id, flags, value);
+                    }
+                    currentArchive.PartitionFileFile.CommitEdit();
+
+                    m_resources.SetActivePartition(0, currentArchive);
+                    m_resources.ReleaseEditLock(0);
+                }
+            }
         }
 
         void ProcessRolloverGen0()
@@ -87,10 +132,35 @@ namespace openHistorian.V2.Server.Database
             {
                 Thread.Sleep(100);
                 if ((m_generation0Interval.Elapsed > m_generation0IntervalLimit) ||
-                    (m_generation0Count>m_generation0CountLimit) ||
-                    (m_generation0Size>m_generation0SizeLimit))
+                    (m_generation0Count > m_generation0CountLimit) ||
+                    (m_generation0Size > m_generation0SizeLimit))
                 {
-                    m_resources.RequestRolloverGeneration0(ProcessRollover);
+
+                    m_resources.ReplaceActivePartition(0, new PartitionSummary());
+
+                    m_resources.AcquireEditLock(1);
+                    var destinationArchive = m_resources.GetActivePartition(1);
+                    var sourceArchive = m_resources.GetProcessingPartition(0);
+
+                    var source = sourceArchive.ActiveSnapshot.OpenInstance();
+                    var dest = destinationArchive.PartitionFileFile;
+
+                    dest.BeginEdit();
+
+                    var reader = source.GetDataRange();
+                    reader.SeekToKey(0, 0);
+
+                    ulong value1, value2, key1, key2;
+                    while (reader.GetNextKey(out key1, out key2, out value1, out value2))
+                    {
+                        dest.AddPoint(key1, key2, value1, value2);
+                    }
+
+                    dest.CommitEdit();
+
+                    m_resources.CommittActivePartitionAndRemoveProcessing(1, 0);
+                    m_resources.ReleaseEditLock(1);
+
                     m_generation0Count = 0;
                     m_generation0Interval.Restart();
                 }
@@ -106,12 +176,13 @@ namespace openHistorian.V2.Server.Database
                     (m_generation1Count > m_generation1CountLimit) ||
                     (m_generation1Size > m_generation1SizeLimit))
                 {
-                    m_resources.RequestRolloverGeneration1(ProcessRollover);
+                  
                     m_generation1Count = 0;
                     m_generation1Interval.Restart();
                 }
             }
         }
+
         void ProcessRolloverGen2()
         {
             while (true)
@@ -121,34 +192,11 @@ namespace openHistorian.V2.Server.Database
                     (m_generation2Count > m_generation2CountLimit) ||
                     (m_generation2Size > m_generation2SizeLimit))
                 {
-                    m_resources.RequestRolloverGeneration2(ProcessRollover);
+
                     m_generation2Count = 0;
                     m_generation2Interval.Restart();
                 }
             }
         }
-
-        void ProcessRollover(PartitionSummary sourceArchive, PartitionSummary destinationArchive)
-        {
-            var source = sourceArchive.ActiveSnapshot.OpenInstance();
-            var dest = destinationArchive.PartitionFileFile;
-
-            dest.BeginEdit();
-
-            var reader = source.GetDataRange();
-            reader.SeekToKey(0,0);
-
-            ulong value1, value2, key1, key2;
-            while (reader.GetNextKey(out key1, out key2, out value1, out value2))
-            {
-                dest.AddPoint(key1, key2, value1, value2);
-            }
-
-            dest.CommitEdit();
-        }
-        
-      
-
-
     }
 }

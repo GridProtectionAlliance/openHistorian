@@ -34,9 +34,8 @@ namespace openHistorian.V2.Server.Database
     /// </summary>
     public class DatabaseEngine
     {
-        Thread m_insertThread;
         RolloverEngine m_rolloverEngine;
-        ResourceSharingEngine m_resourceSharingEngine;
+        ResourceEngine m_resourceEngine;
         InboundPointQueue m_newPointQueue;
         object m_snapshotLock;
 
@@ -44,10 +43,9 @@ namespace openHistorian.V2.Server.Database
         {
             m_snapshotLock = new object();
             m_newPointQueue = new InboundPointQueue();
-            m_insertThread = new Thread(ProcessInsertingData);
-            m_insertThread.Start();
-            m_resourceSharingEngine = new ResourceSharingEngine();
-            m_rolloverEngine = new RolloverEngine(m_resourceSharingEngine);
+
+            m_resourceEngine = new ResourceEngine();
+            m_rolloverEngine = new RolloverEngine(m_resourceEngine, m_newPointQueue);
         }
 
         public long LookupPointId(Guid pointId)
@@ -89,41 +87,7 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
-        /// <summary>
-        /// This process fires 10 times per second and populates the must current archive file.
-        /// </summary>
-        void ProcessInsertingData()
-        {
-            while (true)
-            {
-                Thread.Sleep(100);
-                BinaryStream stream;
-                int pointCount;
 
-                m_newPointQueue.GetPointBlock(out stream, out pointCount);
-                if (pointCount > 0)
-                {
-                    Action<PartitionFile> callback = (currentArchive) =>
-                    {
-                        currentArchive.BeginEdit();
-                        while (pointCount > 0)
-                        {
-                            pointCount--;
-
-                            ulong time = stream.ReadUInt64();
-                            ulong id = stream.ReadUInt64();
-                            ulong flags = stream.ReadUInt64();
-                            ulong value = stream.ReadUInt64();
-
-                            currentArchive.AddPoint(time, id, flags, value);
-                        }
-                        currentArchive.CommitEdit();
-                    };
-
-                    m_resourceSharingEngine.RequestInsertIntoGeneration0(callback);
-                }
-            }
-        }
 
         public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {

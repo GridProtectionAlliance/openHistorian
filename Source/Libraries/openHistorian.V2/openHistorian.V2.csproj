@@ -125,7 +125,7 @@
     <Compile Include="Server\ServerInstance.cs" />
     <Compile Include="Server\Database\RolloverEngine.cs" />
     <Compile Include="Server\Database\TransactionResources.cs" />
-    <Compile Include="Server\Database\ResourceSharingEngine.cs" />
+    <Compile Include="Server\Database\ResourceEngine.cs" />
     <Compile Include="Streaming\Client\ClientSocket.cs" />
     <Compile Include="Streaming\IInboundBuffer.cs" />
     <Compile Include="Streaming\ITransportStreaming.cs" />
