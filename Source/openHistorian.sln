@@ -38,9 +38,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.V2.Test", "Libraries\Tests\openHistorian.V2.Test\openHistorian.V2.Test.csproj", "{4CF92B76-BD91-41C7-BB5B-D290B1730DEF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Historian2Demo", "Tools\Historian2Demo\Historian2Demo.csproj", "{C714C435-C963-4662-8AF2-2B32A54B1B8D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{040E2AE7-021B-435A-ADBF-06D07EE0A67D} = {040E2AE7-021B-435A-ADBF-06D07EE0A67D}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 7
+		SccNumberOfProjects = 8
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -68,6 +73,10 @@ Global
 		SccProjectTopLevelParentUniqueName6 = openHistorian.sln
 		SccProjectName6 = Libraries/Tests/openHistorian.V2.Test
 		SccLocalPath6 = Libraries\\Tests\\openHistorian.V2.Test
+		SccProjectUniqueName7 = Tools\\Historian2Demo\\Historian2Demo.csproj
+		SccProjectTopLevelParentUniqueName7 = openHistorian.sln
+		SccProjectName7 = Tools/Historian2Demo
+		SccLocalPath7 = Tools\\Historian2Demo
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -143,6 +152,16 @@ Global
 		{4CF92B76-BD91-41C7-BB5B-D290B1730DEF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{4CF92B76-BD91-41C7-BB5B-D290B1730DEF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{4CF92B76-BD91-41C7-BB5B-D290B1730DEF}.Release|x86.ActiveCfg = Release|Any CPU
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Debug|x86.ActiveCfg = Debug|x86
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Debug|x86.Build.0 = Debug|x86
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Release|Any CPU.ActiveCfg = Release|x86
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Release|Mixed Platforms.Build.0 = Release|x86
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Release|x86.ActiveCfg = Release|x86
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -156,6 +175,7 @@ Global
 		{DA2EF5C4-6C06-49F7-AFA7-FD5720E8DEBD} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{07016E6A-01B1-4B3D-B1D6-F9131A1BEB6E} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{2E9DA7CC-960A-40A6-BC90-1FBD7B7994F0} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
+		{C714C435-C963-4662-8AF2-2B32A54B1B8D} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{4CF92B76-BD91-41C7-BB5B-D290B1730DEF} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 	EndGlobalSection
 EndGlobal

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ResourceSharingEngine.cs - Gbtc
+//  ResourceEngine.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -33,12 +33,14 @@ namespace openHistorian.V2.Server.Database
     /// Manages the complete list of archive resources and the 
     /// associated reading and writing that goes along with it.
     /// </summary>
-    class ResourceEngine
+    partial class ResourceEngine
     {
+        public event Action<int, long> CommitComplete;
         public const int GenerationCount = 3;
-        object[] m_editLocks;
+        object m_syncRoot = new object();
         PartitionSummary[] m_activePartitions;
         PartitionSummary[] m_processingPartitions;
+        PartitionInitializer m_partitionInitializer;
 
         /// <summary>
         /// Contais the archives that have successfully been rolled over and are pending
@@ -52,20 +54,39 @@ namespace openHistorian.V2.Server.Database
         /// </summary>
         List<PartitionSummary> m_finalPartitions;
 
+        List<TransactionResources> m_readLockedResourceses;
+
         public ResourceEngine()
         {
-            m_editLocks = new object[GenerationCount];
+            m_partitionInitializer = new PartitionInitializer();
             m_activePartitions = new PartitionSummary[GenerationCount];
             m_processingPartitions = new PartitionSummary[GenerationCount];
-            for (int x = 0; x < GenerationCount; x++)
+            m_partitionsPendingDeletions = new List<PartitionSummary>();
+            m_finalPartitions = new List<PartitionSummary>();
+            m_readLockedResourceses = new List<TransactionResources>();
+        }
+
+        public TransactionResources CreateNewClientResources()
+        {
+            lock (m_syncRoot)
             {
-                m_editLocks[x] = new object();
+                var resources = new TransactionResources();
+                m_readLockedResourceses.Add(resources);
+                return resources;
+            }
+        }
+
+        public void ReleaseClientResources(TransactionResources resources)
+        {
+            lock (m_syncRoot)
+            {
+                m_readLockedResourceses.Remove(resources);
             }
         }
 
         public void AquireSnapshot(TransactionResources transaction)
         {
-            lock (this)
+            lock (m_syncRoot)
             {
                 int count = m_finalPartitions.Count + 6;
                 PartitionSummary[] partitions = new PartitionSummary[count];
@@ -76,97 +97,151 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
+        #region [ Partition Insert Mode ]
+
         /// <summary>
-        /// Acquires a edit lock on a generation's active partition.
-        /// Must call corresponding release lock or a deadlock can occur.
+        /// Returns the current active partition for the provided <see cref="generation"/>.
         /// </summary>
+        /// <param name="generation">the generation number</param>
+        /// <returns></returns>
         /// <remarks>
-        /// A generation 0 lock is aquired to synchronize edits to this class.
+        /// Since only one thread will be locking the active partition, this function should return very quickly.
+        /// A partition will always be returned from this class.  If it is not available, it will be created.
         /// </remarks>
-        public void AcquireEditLock(int generation)
+        public PartitionInsertMode StartPartitionInsertMode(int generation)
         {
-            if (generation < 0 || (generation >= m_editLocks.Length))
+            if (generation < 0 || (generation >= GenerationCount))
                 throw new ArgumentOutOfRangeException("generation");
-            Monitor.Enter(m_editLocks[generation]);
-        }
-
-        public void ReleaseEditLock(int generation)
-        {
-            if (generation < 0 || (generation >= m_editLocks.Length))
-                throw new ArgumentOutOfRangeException("generation");
-            Monitor.Exit(m_editLocks[generation]);
-        }
-
-        public PartitionSummary GetActivePartition(int generation)
-        {
-            if (generation < 0 || (generation >= m_editLocks.Length))
-                throw new ArgumentOutOfRangeException("generation");
-            lock (this)
+            lock (m_syncRoot)
             {
-                return m_activePartitions[generation];
+                //Since only 1 thread is responsible for inserts, this lock will always be uncontested.
+                PartitionSummary activePartition = GetAndLockActivePartition(generation);
+                return new PartitionInsertMode(activePartition, this, generation);
             }
         }
 
-        public PartitionSummary GetProcessingPartition(int generation)
+        void CommitPartitionInsertMode(PartitionInsertMode insertMode)
         {
-            if (generation < 0 || (generation >= m_editLocks.Length))
-                throw new ArgumentOutOfRangeException("generation");
-            lock (this)
-            {
-                return m_processingPartitions[generation];
-            }
-        }
-
-        public void SetActivePartition(int generation, PartitionSummary partition)
-        {
-            if (generation < 0 || (generation >= m_editLocks.Length))
-                throw new ArgumentOutOfRangeException("generation");
-            PartitionSummary newPartition = partition.CloneEditableCopy();
+            PartitionSummary newPartition = insertMode.Partition.CloneEditableCopy();
             newPartition.ActiveSnapshot = newPartition.PartitionFileFile.CreateSnapshot();
             newPartition.FirstKeyValue = newPartition.PartitionFileFile.GetFirstKey1;
             newPartition.LastKeyValue = newPartition.PartitionFileFile.GetLastKey2;
             newPartition.KeyMatchMode = PartitionSummary.MatchMode.Bounded;
-            lock (this)
+            newPartition.IsReadOnly = true;
+            lock (m_syncRoot)
             {
-                m_activePartitions[generation] = newPartition;
+                //Since the commit can happen after a rollover is pending, determine where the initial 
+                //partition is to assign the new one.
+                if (m_activePartitions[insertMode.Generation] == insertMode.Partition)
+                {
+                    m_activePartitions[insertMode.Generation] = newPartition;
+                }
+                else if (m_processingPartitions[insertMode.Generation] == insertMode.Partition)
+                {
+                    m_processingPartitions[insertMode.Generation] = newPartition;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+                Monitor.Exit(insertMode.Partition.EditLockObject);
             }
+            CommitComplete(insertMode.Generation, 1);
         }
 
-        public void ReplaceActivePartition(int generation, PartitionSummary newActivePartition)
+        void RollbackPartitionInsertMode(PartitionInsertMode insertMode)
         {
-            if (generation < 0 || (generation >= m_editLocks.Length))
+            Monitor.Exit(insertMode.Partition.EditLockObject);
+        }
+
+        #endregion
+
+        #region [ Partition Rollover Mode ]
+
+        public PartitionRolloverMode StartPartitionRolloverMode(int generation)
+        {
+            if (generation < 0 || (generation > GenerationCount))
                 throw new ArgumentOutOfRangeException("generation");
-            AcquireEditLock(generation);
-            lock (this)
+            PartitionSummary processingPartition;
+            lock (m_syncRoot)
             {
-                m_processingPartitions[generation] = m_activePartitions[generation];
-                m_activePartitions[generation] = newActivePartition;
+                processingPartition = m_activePartitions[generation];
+                m_processingPartitions[generation] = processingPartition;
+                m_activePartitions[generation] = null;
             }
-            ReleaseEditLock(generation);
+            processingPartition.WaitForEditLockRelease();
+            PartitionSummary activePartition = GetAndLockActivePartition(generation + 1);
+
+            return new PartitionRolloverMode(processingPartition, activePartition, this, generation);
         }
 
-        public void CommittActivePartitionAndRemoveProcessing(int generationCommit, int generationRemove)
+        void CommitPartitionRolloverMode(PartitionRolloverMode rolloverMode)
         {
-            if (generationCommit < 0 || (generationCommit >= m_editLocks.Length))
-                throw new ArgumentOutOfRangeException("generationCommit");
-                     if (generationRemove < 0 || (generationRemove >= m_editLocks.Length))
-                throw new ArgumentOutOfRangeException("generationRemove");
-
-            PartitionSummary newPartition = m_activePartitions[generationCommit];
+            PartitionSummary newPartition = rolloverMode.DestinationPartition.CloneEditableCopy();
             newPartition.ActiveSnapshot = newPartition.PartitionFileFile.CreateSnapshot();
             newPartition.FirstKeyValue = newPartition.PartitionFileFile.GetFirstKey1;
             newPartition.LastKeyValue = newPartition.PartitionFileFile.GetLastKey2;
             newPartition.KeyMatchMode = PartitionSummary.MatchMode.Bounded;
-            lock (this)
+            newPartition.IsReadOnly = true;
+
+            lock (m_syncRoot)
             {
-                m_activePartitions[generationCommit] = newPartition;
-                var generation = m_processingPartitions[generationRemove];
-                m_processingPartitions[generationRemove] = null;
-                m_partitionsPendingDeletions.Add(generation);
+                //Since the commit can happen after a rollover is pending, determine where the initial 
+                //partition is to assign the new one.
+                if (m_activePartitions[rolloverMode.DestinationGeneration] == rolloverMode.DestinationPartition)
+                {
+                    m_activePartitions[rolloverMode.DestinationGeneration] = newPartition;
+                }
+                else if (m_processingPartitions[rolloverMode.DestinationGeneration] == rolloverMode.DestinationPartition)
+                {
+                    m_processingPartitions[rolloverMode.DestinationGeneration] = newPartition;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+                Monitor.Exit(rolloverMode.DestinationPartition.EditLockObject);
+
+                m_partitionsPendingDeletions.Add(rolloverMode.SourcePartition);
+                m_processingPartitions[rolloverMode.SourceGeneration] = null;
             }
 
+            CommitComplete(rolloverMode.DestinationGeneration, 1);
         }
 
-      
+        void RollbackPartitionRolloverMode(PartitionRolloverMode rolloverMode)
+        {
+            Monitor.Exit(rolloverMode.DestinationPartition.EditLockObject);
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// Returns the active partition for the given generation. This object will also be edit locked.
+        /// </summary>
+        /// <param name="generation"></param>
+        /// <returns></returns>
+        /// <remarks>If the current active partition does not exist, one will be created.</remarks>
+        PartitionSummary GetAndLockActivePartition(int generation)
+        {
+            PartitionSummary activePartition;
+            lock (m_syncRoot)
+            {
+                activePartition = m_activePartitions[generation];
+                if (activePartition != null)
+                {
+                    Monitor.Enter(activePartition.EditLockObject);
+                    return activePartition;
+                }
+            }
+            activePartition = m_partitionInitializer.CreatePartition(generation);
+            Monitor.Enter(activePartition.EditLockObject);
+            lock (m_syncRoot)
+            {
+                m_activePartitions[generation] = activePartition;
+            }
+            return activePartition;
+        }
     }
 }

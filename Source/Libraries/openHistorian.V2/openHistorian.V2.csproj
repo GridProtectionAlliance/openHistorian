@@ -96,16 +96,18 @@
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="OpenMode.cs" />
+    <Compile Include="Server\Database\PartitionRolloverMode.cs" />
     <Compile Include="Server\Database\Database\CreateDatabase.cs" />
     <Compile Include="Server\Database\Database\File.cs" />
     <Compile Include="Server\Database\Database\IDatabase.cs" />
+    <Compile Include="Server\Database\PartitionInsertMode.cs" />
+    <Compile Include="Server\Database\PartitionInitializer.cs" />
     <Compile Include="Server\Database\Partitions\PartitionFile.cs" />
     <Compile Include="Server\Database\DatabaseEngine.cs" />
     <Compile Include="Server\Database\Partitions\PartitionSnapshot.cs" />
     <Compile Include="Server\Database\Partitions\PartitionReadOnlySnapshotInstance.cs" />
     <Compile Include="Server\Database\Partitions\BasicTreeContainer.cs" />
     <Compile Include="Server\Database\Partitions\BasicTreeContainerEdit.cs" />
-    <Compile Include="Server\Database\LookupTable.cs" />
     <Compile Include="Collections\KeyValue\BasicTree.cs" />
     <Compile Include="Collections\KeyValue\BasicTreeBase.cs" />
     <Compile Include="Collections\KeyValue\BasicTreeInternalNodeBase.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
+    <Compile Include="Server\Database\RolloverGenerationPromotion.cs" />
     <Compile Include="Server\ServerInstance.cs" />
     <Compile Include="Server\Database\RolloverEngine.cs" />
     <Compile Include="Server\Database\TransactionResources.cs" />

@@ -42,7 +42,7 @@ namespace openHistorian.V2.Server.Database
         public DatabaseEngine()
         {
             m_snapshotLock = new object();
-            m_newPointQueue = new InboundPointQueue();
+            m_newPointQueue = new InboundPointQueue(10000);
 
             m_resourceEngine = new ResourceEngine();
             m_rolloverEngine = new RolloverEngine(m_resourceEngine, m_newPointQueue);
@@ -53,41 +53,39 @@ namespace openHistorian.V2.Server.Database
             return -1;
         }
 
-        void ProcessRolloverData()
-        {
-            while (true)
-            {
-                Thread.Sleep(10000);
+        //void ProcessRolloverData()
+        //{
+        //    while (true)
+        //    {
+        //        Thread.Sleep(10000);
 
-                lock (m_snapshotLock)
-                {
-                    PartitionFile newPartitionFile = new PartitionFile();
-                    PartitionSummary newPartition = new PartitionSummary();
-                    newPartition.PartitionFileFile = newPartitionFile;
-                    newPartition.ActiveSnapshot = newPartitionFile.CreateSnapshot();
-                    newPartition.FirstKeyValue = ulong.MinValue;
-                    newPartition.LastKeyValue = ulong.MaxValue;
-                    newPartition.KeyMatchMode = PartitionSummary.MatchMode.UniverseEntry;
-                    newPartition.IsReadOnly = true;
+        //        lock (m_snapshotLock)
+        //        {
+        //            PartitionFile newPartitionFile = new PartitionFile();
+        //            PartitionSummary newPartition = new PartitionSummary();
+        //            newPartition.PartitionFileFile = newPartitionFile;
+        //            newPartition.ActiveSnapshot = newPartitionFile.CreateSnapshot();
+        //            newPartition.FirstKeyValue = ulong.MinValue;
+        //            newPartition.LastKeyValue = ulong.MaxValue;
+        //            newPartition.KeyMatchMode = PartitionSummary.MatchMode.UniverseEntry;
+        //            newPartition.IsReadOnly = true;
 
-                    //LookupTable currentLookupTable = m_lookupTable.CloneEditableCopy();
+        //            //LookupTable currentLookupTable = m_lookupTable.CloneEditableCopy();
 
-                    //TableSummaryInfo existingTableInfo = currentLookupTable.GetGeneration(0);
-                    //currentLookupTable.SetGeneration(0, newTableInfo);
-                    //currentLookupTable.SetGeneration(1, existingTableInfo);
-
-
-                    //var oldFiles = m_lookupTable.GetLatestSnapshot().Clone();
-                }
-
-                //determine what files need to be recombined.
-                //recombine them
-                //update the snapshot library
-                //post update.
-            }
-        }
+        //            //TableSummaryInfo existingTableInfo = currentLookupTable.GetGeneration(0);
+        //            //currentLookupTable.SetGeneration(0, newTableInfo);
+        //            //currentLookupTable.SetGeneration(1, existingTableInfo);
 
 
+        //            //var oldFiles = m_lookupTable.GetLatestSnapshot().Clone();
+        //        }
+
+        //        //determine what files need to be recombined.
+        //        //recombine them
+        //        //update the snapshot library
+        //        //post update.
+        //    }
+        //}
 
         public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {

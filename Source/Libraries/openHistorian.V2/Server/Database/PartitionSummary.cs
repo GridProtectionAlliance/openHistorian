@@ -24,14 +24,15 @@
 
 using System;
 using System.Data;
+using System.Threading;
 using openHistorian.V2.Server.Database.Partitions;
 
 namespace openHistorian.V2.Server.Database
 {
-   /// <summary>
-   /// Contains an immutable class of the current partition
-   /// along with its most recent snapshot.
-   /// </summary>
+    /// <summary>
+    /// Contains an immutable class of the current partition
+    /// along with its most recent snapshot.
+    /// </summary>
     class PartitionSummary
     {
         public enum MatchMode : byte
@@ -64,7 +65,7 @@ namespace openHistorian.V2.Server.Database
             LowerIsValidMask = 1,
             UpperIsValidMask = 2,
         }
-        
+        object m_editLock = new object();
         bool m_isReadOnly;
         ulong m_firstKeyValue;
         ulong m_lastKeyValue;
@@ -104,7 +105,7 @@ namespace openHistorian.V2.Server.Database
         /// <returns></returns>
         public PartitionSummary CloneEditableCopy()
         {
-           return new PartitionSummary(this);
+            return new PartitionSummary(this);
         }
 
         /// <summary>
@@ -122,6 +123,17 @@ namespace openHistorian.V2.Server.Database
                 if (m_isReadOnly && !value)
                     throw new ReadOnlyException("Object is read only");
                 m_isReadOnly = value;
+            }
+        }
+
+        /// <summary>
+        /// When synchronizing edits with this partition, lock on this object.
+        /// </summary>
+        public object EditLockObject
+        {
+            get
+            {
+                return m_editLock;
             }
         }
 
@@ -241,5 +253,15 @@ namespace openHistorian.V2.Server.Database
             //ToDo: Don't be lazy by always returning true
             return true;
         }
+
+        public void WaitForEditLockRelease()
+        {
+            lock(EditLockObject)
+            {
+            }
+        }
+
+    
+
     }
 }

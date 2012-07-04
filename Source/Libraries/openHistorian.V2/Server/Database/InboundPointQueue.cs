@@ -33,19 +33,38 @@ namespace openHistorian.V2.Server.Database
     /// </summary>
     class InboundPointQueue : IDisposable
     {
+        const int SizeOfData = 32;
+
         //ToDo: Keep statistics on the size of the queue.  It's possible that the underlying memory stream may get very large and will never reduce in size.
+        Action m_queueFullCallback;
 
         bool m_disposed;
         BinaryStream m_processingQueue;
         BinaryStream m_activeQueue;
         object m_syncRoot;
-        const int SizeOfData = 32;
+        int m_autoCommitQueueSize;
+        int m_activePointCount;
 
-        public InboundPointQueue()
+        /// <summary>
+        /// Creates a new inbound queue to buffer points.
+        /// </summary>
+        /// <param name="autoCommitQueueSize">After the queue becomes this size, a <see cref="Action"/> 
+        /// delegate will be called once. This delegate is set by calling <see cref="SetQueueCallback"/>.</param>
+        public InboundPointQueue(int autoCommitQueueSize)
         {
+            m_autoCommitQueueSize = autoCommitQueueSize;
             m_syncRoot = new object();
             m_activeQueue = new BinaryStream();
-            m_activeQueue = new BinaryStream();
+            m_processingQueue = new BinaryStream();
+        }
+
+        /// <summary>
+        /// Sets the delegate that will be invoked when the queue passes a AutoCommitQueueSize limit.
+        /// </summary>
+        /// <param name="queueFullCallback"></param>
+        public void SetQueueCallback(Action queueFullCallback)
+        {
+            m_queueFullCallback = queueFullCallback;
         }
 
         /// <summary>
@@ -59,13 +78,18 @@ namespace openHistorian.V2.Server.Database
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
+            bool isQueueFull;
             lock (m_syncRoot)
             {
+                m_activePointCount++;
+                isQueueFull = (m_autoCommitQueueSize == m_activePointCount);
                 m_activeQueue.Write(key1);
                 m_activeQueue.Write(key2);
                 m_activeQueue.Write(value1);
                 m_activeQueue.Write(value2);
             }
+            if (isQueueFull && m_queueFullCallback != null)
+                m_queueFullCallback.Invoke();
         }
 
         /// <summary>
@@ -83,12 +107,14 @@ namespace openHistorian.V2.Server.Database
             lock (m_syncRoot)
             {
                 stream = m_activeQueue;
-                pointCount = (int)(m_activeQueue.Position / SizeOfData);
-                m_activeQueue.Position = 0;
+                pointCount = (int)(stream.Position / SizeOfData);
+                stream.Position = 0;
 
                 m_activeQueue = m_processingQueue;
                 m_activeQueue.Position = 0;
-                m_processingQueue = m_activeQueue;
+                m_activePointCount = 0;
+
+                m_processingQueue = stream;
             }
         }
 
@@ -102,19 +128,20 @@ namespace openHistorian.V2.Server.Database
             {
                 try
                 {
-                    if (m_processingQueue!=null)
+                    if (m_processingQueue != null)
                         m_processingQueue.Dispose();
                     if (m_activeQueue != null)
                         m_activeQueue.Dispose();
                 }
                 finally
                 {
+                    m_queueFullCallback = null;
                     m_disposed = true;
                     m_activeQueue = null;
                     m_processingQueue = null;
                 }
             }
-      
+
         }
     }
 }
