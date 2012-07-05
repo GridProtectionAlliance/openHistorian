@@ -37,15 +37,12 @@ namespace openHistorian.V2.Server.Database
         RolloverEngine m_rolloverEngine;
         ResourceEngine m_resourceEngine;
         InboundPointQueue m_newPointQueue;
-        object m_snapshotLock;
 
         public DatabaseEngine()
         {
-            m_snapshotLock = new object();
-            m_newPointQueue = new InboundPointQueue(10000);
-
             m_resourceEngine = new ResourceEngine();
-            m_rolloverEngine = new RolloverEngine(m_resourceEngine, m_newPointQueue);
+            m_rolloverEngine = new RolloverEngine();
+            m_newPointQueue = m_rolloverEngine.ProcessInserts.NewPointQueue;
         }
 
         public long LookupPointId(Guid pointId)

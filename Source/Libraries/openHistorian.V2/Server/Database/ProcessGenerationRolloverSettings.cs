@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RolloverEngine.cs - Gbtc
+//  ProcessGenerationRolloverSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,24 +16,53 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/30/2012 - Steven E. Chisholm
+//  7/4/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.IO.Unmanaged;
-using System.Threading;
+using System.Data;
+using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    /// <summary>
-    /// Manages the conditions required to rollover and combine an archive file.
-    /// </summary>
-    class RolloverEngine
+    class ProcessGenerationRolloverSettings
     {
-        public ProcessInitialInserts ProcessInserts;
-        public ProcessGenerationRollover[] ProcessGenerations;
+        public int AutoRolloverCount;
+        public TimeSpan AutoRolloverInterval;
+        public long AutoRolloverSize;
+
+        public ProcessGenerationRolloverSettings()
+        {
+        }
+
+        public ProcessGenerationRolloverSettings(BinaryReader reader)
+        {
+            Load(reader);
+        }
+
+        public void Load(BinaryReader reader)
+        {
+            switch (reader.ReadByte())
+            {
+                case 0:
+                    AutoRolloverCount = reader.ReadInt32();
+                    AutoRolloverInterval = new TimeSpan(reader.ReadInt64());
+                    AutoRolloverSize = reader.ReadInt64();
+                    break;
+                default:
+                    throw new VersionNotFoundException();
+            }
+        }
+
+        public void Save(BinaryWriter writer)
+        {
+            writer.Write((byte)0);
+            writer.Write(AutoRolloverCount);
+            writer.Write(AutoRolloverInterval.Ticks);
+            writer.Write(AutoRolloverSize);
+        }
     }
 }

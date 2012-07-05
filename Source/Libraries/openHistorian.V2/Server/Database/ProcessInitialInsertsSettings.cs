@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RolloverEngine.cs - Gbtc
+//  ProcessInitialInsertsSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,24 +16,49 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/30/2012 - Steven E. Chisholm
+//  7/4/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.IO.Unmanaged;
-using System.Threading;
+using System.Data;
+using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    /// <summary>
-    /// Manages the conditions required to rollover and combine an archive file.
-    /// </summary>
-    class RolloverEngine
+    class ProcessInitialInsertsSettings
     {
-        public ProcessInitialInserts ProcessInserts;
-        public ProcessGenerationRollover[] ProcessGenerations;
+        public int AutoCommitCount;
+        public TimeSpan AutoCommitInterval;
+
+        public ProcessInitialInsertsSettings()
+        {
+        }
+        public ProcessInitialInsertsSettings(BinaryReader reader)
+        {
+            Load(reader);
+        }
+
+        public void Load(BinaryReader reader)
+        {
+            switch (reader.ReadByte())
+            {
+                case 0:
+                    AutoCommitCount = reader.ReadInt32();
+                    AutoCommitInterval = new TimeSpan(reader.ReadInt64());
+                    break;
+                default:
+                    throw new VersionNotFoundException();
+            }
+        }
+
+        public void Save(BinaryWriter writer)
+        {
+            writer.Write((byte)0);
+            writer.Write(AutoCommitCount);
+            writer.Write(AutoCommitInterval.Ticks);
+        }
     }
 }

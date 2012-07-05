@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RolloverGenerationPromotion.cs - Gbtc
+//  ProcessGenerationRollover.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,7 +29,7 @@ using System.Threading;
 
 namespace openHistorian.V2.Server.Database
 {
-    class RolloverGenerationPromotion : IDisposable
+    class ProcessGenerationRollover : IDisposable
     {
         int m_generation;
         ResourceEngine m_resources;
@@ -44,7 +44,7 @@ namespace openHistorian.V2.Server.Database
         Thread m_processRolloverThread;
         ManualResetEvent m_manualResetEventThreadGeneration;
 
-        public RolloverGenerationPromotion(int generation, int onCommitCount, long onSize, TimeSpan onInterval)
+        public ProcessGenerationRollover(int generation, int onCommitCount, long onSize, TimeSpan onInterval)
         {
             m_generationCountLimit = onCommitCount;
             m_generationSizeLimit = onSize;
