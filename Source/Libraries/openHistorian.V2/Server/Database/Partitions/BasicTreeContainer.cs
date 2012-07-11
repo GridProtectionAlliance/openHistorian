@@ -22,9 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
 using openHistorian.V2.IO.Unmanaged;
@@ -36,10 +33,16 @@ namespace openHistorian.V2.Server.Database.Partitions
     /// </summary>
     internal class BasicTreeContainer : IDisposable
     {
+        #region [ Members ]
+
         ArchiveFileStream m_archiveStream;
         BinaryStream m_binaryStream;
         BasicTree m_tree;
         bool m_disposed;
+
+        #endregion
+
+        #region [ Constructors ]
 
         public BasicTreeContainer(TransactionalRead currentTransaction, Guid fileNumber, int flags)
         {
@@ -48,6 +51,10 @@ namespace openHistorian.V2.Server.Database.Partitions
             m_tree = new BasicTree(m_binaryStream);
         }
 
+        #endregion
+
+        #region [ Properties ]
+
         public bool IsDisposed
         {
             get
@@ -55,12 +62,31 @@ namespace openHistorian.V2.Server.Database.Partitions
                 return m_disposed;
             }
         }
+        
+        public ulong FirstKey
+        {
+            get
+            {
+                return m_tree.FirstKey;
+            }
+        }
+
+        public ulong LastKey
+        {
+            get
+            {
+                return m_tree.LastKey;
+            }
+        }
+
+        #endregion
+
+        #region [ Methods ]
 
         public IDataScanner GetDataRange()
         {
             return m_tree.GetDataRange();
         }
-
 
         public void Dispose()
         {
@@ -68,27 +94,26 @@ namespace openHistorian.V2.Server.Database.Partitions
             {
                 try
                 {
-                    if (m_tree != null)
-                    {
-                        //m_tree.Dispose();
-                        m_tree = null;
-                    }
                     if (m_binaryStream != null)
                     {
                         m_binaryStream.Dispose();
-                        m_binaryStream = null;
                     }
                     if (m_archiveStream != null)
                     {
                         m_archiveStream.Dispose();
-                        m_archiveStream = null;
                     }
                 }
                 finally
                 {
+                    m_archiveStream = null;
+                    m_binaryStream = null;
+                    m_tree = null;
                     m_disposed = true;
                 }
             }
         }
+
+        #endregion
+
     }
 }

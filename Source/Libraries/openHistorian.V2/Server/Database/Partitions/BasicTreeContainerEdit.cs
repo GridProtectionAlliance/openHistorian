@@ -22,9 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
 using openHistorian.V2.IO.Unmanaged;
@@ -36,10 +33,17 @@ namespace openHistorian.V2.Server.Database.Partitions
     /// </summary>
     internal class BasicTreeContainerEdit : IDisposable
     {
+
+        #region [ Members ]
+
         ArchiveFileStream m_archiveStream;
         BinaryStream m_binaryStream;
         BasicTree m_tree;
         bool m_disposed;
+
+        #endregion
+
+        #region [ Constructors ]
 
         public BasicTreeContainerEdit(TransactionalEdit currentTransaction, Guid fileNumber, int flags)
         {
@@ -47,6 +51,10 @@ namespace openHistorian.V2.Server.Database.Partitions
             m_binaryStream = new BinaryStream(m_archiveStream);
             m_tree = new BasicTree(m_binaryStream);
         }
+
+        #endregion
+
+        #region [ Properties ]
 
         public bool IsDisposed
         {
@@ -56,13 +64,37 @@ namespace openHistorian.V2.Server.Database.Partitions
             }
         }
 
+        public ulong FirstKey
+        {
+            get
+            {
+                return m_tree.FirstKey;
+            }
+        }
+
+        public ulong LastKey
+        {
+            get
+            {
+                return m_tree.LastKey;
+            }
+        }
+
+        #endregion
+
+        #region [ Methods ]
+
         public void AddPoint(ulong date, ulong pointId, ulong value1, ulong value2)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             m_tree.Add(date, pointId, value1, value2);
         }
 
         public IDataScanner GetDataRange()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             return m_tree.GetDataRange();
         }
 
@@ -72,11 +104,6 @@ namespace openHistorian.V2.Server.Database.Partitions
             {
                 try
                 {
-                    if (m_tree != null)
-                    {
-                        //m_tree.Dispose();
-                        m_tree = null;
-                    }
                     if (m_binaryStream != null)
                     {
                         m_binaryStream.Dispose();
@@ -90,9 +117,13 @@ namespace openHistorian.V2.Server.Database.Partitions
                 }
                 finally
                 {
+                    m_tree = null;
                     m_disposed = true;
                 }
             }
         }
+
+        #endregion
+
     }
 }

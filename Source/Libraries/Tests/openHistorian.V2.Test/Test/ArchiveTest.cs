@@ -64,7 +64,7 @@ namespace openHistorian.V2
             //}
             sw2.Stop();
 
-            s_partitionFile.Close();
+            s_partitionFile.Dispose();
             s_partitionFile = null;
 
 

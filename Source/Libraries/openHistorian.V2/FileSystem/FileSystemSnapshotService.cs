@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using openHistorian.V2.Unmanaged;
@@ -41,10 +40,6 @@ namespace openHistorian.V2.FileSystem
         #region [ Members ]
 
         /// <summary>
-        /// Determines if this object is currently being disposed so all read/write transactions will be properly aborted.
-        /// </summary>
-        bool m_disposing;
-        /// <summary>
         /// Determines if this object has been disposed.
         /// </summary>
         bool m_disposed;
@@ -60,19 +55,9 @@ namespace openHistorian.V2.FileSystem
         FileAllocationTable m_fileAllocationTable;
 
         /// <summary>
-        /// This object will be used to synchronize access to aquire a transaction.
-        /// </summary>
-        object m_editTransactionSynchronizationObject = new object();
-
-        /// <summary>
         /// Contains the current active transaction.  If this null, there is no active transaction.
         /// </summary>
         TransactionalEdit m_currentTransaction;
-
-        /// <summary>
-        /// Contains all of the transactions that are currently reading.
-        /// </summary>
-        List<TransactionalRead> m_readTransactions;
 
         #endregion
 
@@ -85,7 +70,6 @@ namespace openHistorian.V2.FileSystem
         {
             m_diskIo = new DiskIo(new MemoryStream(), 0);
             m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
-            m_readTransactions = new List<TransactionalRead>();
         }
 
         /// <summary>
@@ -102,7 +86,6 @@ namespace openHistorian.V2.FileSystem
                 BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
                 m_diskIo = new DiskIo(bufferedFileStream, 0);
                 m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Create, accessMode);
-                m_readTransactions = new List<TransactionalRead>();
             }
             else
             {
@@ -110,7 +93,6 @@ namespace openHistorian.V2.FileSystem
                 BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
                 m_diskIo = new DiskIo(bufferedFileStream, 0);
                 m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Open, accessMode);
-                m_readTransactions = new List<TransactionalRead>();
             }
         }
 
@@ -121,20 +103,16 @@ namespace openHistorian.V2.FileSystem
         /// <summary>
         /// This will start a transactional edit on the file. 
         /// </summary>
-        /// <param name="timeout">the amout of time in milliseconds to wait for a transaction before timing out and returning null.</param>
         /// <returns></returns>
-        public TransactionalEdit BeginEditTransaction(int timeout = -1)
+        public TransactionalEdit BeginEditTransaction()
         {
             if (m_diskIo.IsReadOnly)
                 throw new Exception("File has been opened in readonly mode");
-            if (Monitor.TryEnter(m_editTransactionSynchronizationObject, timeout))
-            {
-                if (m_currentTransaction != null)
-                    throw new Exception("A transaction has already been started");
-                m_currentTransaction = new TransactionalEdit(m_diskIo, m_fileAllocationTable, OnEditTransactionDisposed, OnTransactionRolledBack, OnTransactionCommitted);
-                return m_currentTransaction;
-            }
-            return null;
+            var transaction = new TransactionalEdit(m_diskIo, m_fileAllocationTable, OnTransactionRolledBack, OnTransactionCommitted);
+            Interlocked.CompareExchange(ref m_currentTransaction, transaction, null);
+            if (m_currentTransaction != transaction)
+                throw new Exception("Only one edit transaction can exist at one time.");
+            return m_currentTransaction;
         }
 
         /// <summary>
@@ -143,37 +121,20 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public TransactionalRead BeginReadTransaction()
         {
-            TransactionalRead readTransaction = new TransactionalRead(m_diskIo, m_fileAllocationTable, OnReadTransactionDisposed);
-            m_readTransactions.Add(readTransaction);
+            TransactionalRead readTransaction = new TransactionalRead(m_diskIo, m_fileAllocationTable);
             return readTransaction;
         }
 
-        void OnReadTransactionDisposed(TransactionalRead sender)
+        void OnTransactionCommitted()
         {
-            if (m_disposing)
-                return;
-            m_readTransactions.Remove(sender);
-        }
-
-        void OnEditTransactionDisposed(TransactionalEdit sender)
-        {
-            if (!m_disposing && m_currentTransaction != sender)
-                throw new Exception("Only the current transaction can raise this.");
-            m_currentTransaction = null;
-            Monitor.Exit(m_editTransactionSynchronizationObject);
-        }
-
-        void OnTransactionCommitted(TransactionalEdit sender)
-        {
-            if (!m_disposing && m_currentTransaction != sender)
-                throw new Exception("Only the current transaction can raise this.");
             m_fileAllocationTable = new FileAllocationTable(m_diskIo, OpenMode.Open, AccessMode.ReadOnly);
+            m_currentTransaction = null;
         }
 
-        void OnTransactionRolledBack(TransactionalEdit sender)
+        void OnTransactionRolledBack()
         {
-            if (!m_disposing && m_currentTransaction != sender)
-                throw new Exception("Only the current transaction can raise this.");
+            m_currentTransaction = null;
+
         }
 
         /// <summary>
@@ -183,27 +144,17 @@ namespace openHistorian.V2.FileSystem
         {
             if (!m_disposed)
             {
-                m_disposing = true;
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (m_diskIo != null)
-                    {
-                        m_diskIo.Dispose();
-                        m_diskIo = null;
-                    }
                     if (m_currentTransaction != null)
                     {
                         m_currentTransaction.Dispose();
                         m_currentTransaction = null;
                     }
-                    if (m_readTransactions != null)
+                    if (m_diskIo != null)
                     {
-                        foreach (var transaction in m_readTransactions)
-                        {
-                            transaction.Dispose();
-                        }
-                        m_readTransactions = null;
+                        m_diskIo.Dispose();
+                        m_diskIo = null;
                     }
                 }
                 finally

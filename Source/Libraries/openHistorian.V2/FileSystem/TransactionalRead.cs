@@ -30,21 +30,9 @@ namespace openHistorian.V2.FileSystem
     /// This is read only and will also block the main file from being deleted. 
     /// Therefore it is important to release this lock so the file can be deleted after a rollover.
     /// </summary>
-    public sealed class TransactionalRead : IDisposable
+    public sealed class TransactionalRead
     {
         #region [ Members ]
-
-        /// <summary>
-        /// This delegate is called when the read transaction has been disposed. 
-        /// The purpose of this event is to notify the <see cref="FileSystemSnapshotService"/>
-        /// that this transaction is no longer executing.
-        /// </summary>
-        Action<TransactionalRead> m_delHasBeenDisposed;
-
-        /// <summary>
-        /// Prevents duplicate calls to Dispose;
-        /// </summary>
-        bool m_disposed;
 
         /// <summary>
         /// The readonly snapshot of the archive file.
@@ -66,8 +54,7 @@ namespace openHistorian.V2.FileSystem
         /// <param name="dataReader"> </param>
         /// <param name="fileAllocationTable">This parameter must be in a read only mode.
         ///  This is to ensure that the value is not modified after it has been passed to this class.</param>
-        /// <param name="delHasBeenDisposed">A delegate to call when this transaction is transaction has been disposed</param>
-        internal TransactionalRead(DiskIo dataReader, FileAllocationTable fileAllocationTable, Action<TransactionalRead> delHasBeenDisposed = null)
+        internal TransactionalRead(DiskIo dataReader, FileAllocationTable fileAllocationTable)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -77,7 +64,6 @@ namespace openHistorian.V2.FileSystem
                 throw new ArgumentException("The file passed to this procedure must be read only.", "fileAllocationTable");
             m_fileAllocationTable = fileAllocationTable;
             m_dataReader = dataReader;
-            m_delHasBeenDisposed = delHasBeenDisposed;
         }
 
         #endregion
@@ -91,20 +77,7 @@ namespace openHistorian.V2.FileSystem
         {
             get
             {
-                if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
                 return m_fileAllocationTable.Files;
-            }
-        }
-
-        /// <summary>
-        /// Determines if this object has been disposed
-        /// </summary>
-        public bool IsDisposed
-        {
-            get
-            {
-                return m_disposed;
             }
         }
 
@@ -119,8 +92,6 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream OpenFile(int fileIndex)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
             if (fileIndex < 0 || fileIndex >= m_fileAllocationTable.Files.Count)
                 throw new ArgumentOutOfRangeException("fileIndex", "The file index provided could not be found in the header.");
 
@@ -133,8 +104,6 @@ namespace openHistorian.V2.FileSystem
         /// <returns></returns>
         public ArchiveFileStream OpenFile(Guid fileExtension, int fileFlags)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
             for (int x = 0; x < Files.Count; x++)
             {
                 var file = Files[x];
@@ -144,28 +113,6 @@ namespace openHistorian.V2.FileSystem
                 }
             }
             throw new Exception("File does not exist");
-        }
-
-        /// <summary>
-        /// Releases all the resources used by the <see cref="TransactionalRead"/> object.
-        /// This also closes all ArchiveFileStream objects that were opened in this transaction.
-        /// </summary>
-        public void Dispose()
-        {
-            if (!m_disposed)
-            {
-                try
-                {
-                    if (m_delHasBeenDisposed != null)
-                    {
-                        m_delHasBeenDisposed.Invoke(this);
-                    }
-                }
-                finally
-                {
-                    m_disposed = true;  // Prevent duplicate dispose.
-                }
-            }
         }
 
         #endregion

@@ -50,8 +50,8 @@ namespace openHistorian.V2.FileSystem
                         fs.Dispose();
                         edit.CommitAndDispose();
                     }
-                    using (TransactionalRead read = service.BeginReadTransaction())
                     {
+                        TransactionalRead read = service.BeginReadTransaction();
                         ArchiveFileStream f1 = read.OpenFile(0);
                         var bs1 = f1.CreateBinaryStream();
                         if (bs1.ReadByte() != 1)
@@ -70,8 +70,8 @@ namespace openHistorian.V2.FileSystem
                             throw new Exception();
                         bs1.Dispose();
 
-                        using (TransactionalRead read2 = service.BeginReadTransaction())
                         {
+                            TransactionalRead read2 = service.BeginReadTransaction();
                             ArchiveFileStream f2 = read2.OpenFile(0);
                             var bs2 = f2.CreateBinaryStream();
                             if (bs2.ReadByte() != 1)

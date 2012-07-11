@@ -41,6 +41,7 @@ namespace openHistorian.V2.Server.Database
         PartitionSummary[] m_activePartitions;
         PartitionSummary[] m_processingPartitions;
         PartitionInitializer m_partitionInitializer;
+        object[] m_editLocks = new object[GenerationCount];
 
         /// <summary>
         /// Contais the archives that have successfully been rolled over and are pending
@@ -58,6 +59,10 @@ namespace openHistorian.V2.Server.Database
 
         public ResourceEngine()
         {
+            for (int x = 0; x < GenerationCount; x++)
+            {
+                m_editLocks[x] = new object();
+            }
             m_partitionInitializer = new PartitionInitializer();
             m_activePartitions = new PartitionSummary[GenerationCount];
             m_processingPartitions = new PartitionSummary[GenerationCount];
@@ -122,12 +127,8 @@ namespace openHistorian.V2.Server.Database
 
         void CommitPartitionInsertMode(PartitionInsertMode insertMode)
         {
-            PartitionSummary newPartition = insertMode.Partition.CloneEditableCopy();
-            newPartition.ActiveSnapshot = newPartition.PartitionFileFile.CreateSnapshot();
-            newPartition.FirstKeyValue = newPartition.PartitionFileFile.GetFirstKey1;
-            newPartition.LastKeyValue = newPartition.PartitionFileFile.GetLastKey2;
-            newPartition.KeyMatchMode = PartitionSummary.MatchMode.Bounded;
-            newPartition.IsReadOnly = true;
+            PartitionSummary newPartition = new PartitionSummary(insertMode.Partition.PartitionFileFile);
+
             lock (m_syncRoot)
             {
                 //Since the commit can happen after a rollover is pending, determine where the initial 
@@ -144,14 +145,14 @@ namespace openHistorian.V2.Server.Database
                 {
                     throw new Exception();
                 }
-                Monitor.Exit(insertMode.Partition.EditLockObject);
+                Monitor.Exit(m_editLocks[insertMode.Generation]);
             }
             CommitComplete(insertMode.Generation, 1);
         }
 
         void RollbackPartitionInsertMode(PartitionInsertMode insertMode)
         {
-            Monitor.Exit(insertMode.Partition.EditLockObject);
+            Monitor.Exit(m_editLocks[insertMode.Generation]);
         }
 
         #endregion
@@ -169,7 +170,9 @@ namespace openHistorian.V2.Server.Database
                 m_processingPartitions[generation] = processingPartition;
                 m_activePartitions[generation] = null;
             }
-            processingPartition.WaitForEditLockRelease();
+            lock (m_editLocks[generation])//Wait for lock release
+            {
+            }
             PartitionSummary activePartition = GetAndLockActivePartition(generation + 1);
 
             return new PartitionRolloverMode(processingPartition, activePartition, this, generation);
@@ -177,12 +180,7 @@ namespace openHistorian.V2.Server.Database
 
         void CommitPartitionRolloverMode(PartitionRolloverMode rolloverMode)
         {
-            PartitionSummary newPartition = rolloverMode.DestinationPartition.CloneEditableCopy();
-            newPartition.ActiveSnapshot = newPartition.PartitionFileFile.CreateSnapshot();
-            newPartition.FirstKeyValue = newPartition.PartitionFileFile.GetFirstKey1;
-            newPartition.LastKeyValue = newPartition.PartitionFileFile.GetLastKey2;
-            newPartition.KeyMatchMode = PartitionSummary.MatchMode.Bounded;
-            newPartition.IsReadOnly = true;
+            PartitionSummary newPartition = new PartitionSummary(rolloverMode.DestinationPartition.PartitionFileFile);
 
             lock (m_syncRoot)
             {
@@ -200,7 +198,7 @@ namespace openHistorian.V2.Server.Database
                 {
                     throw new Exception();
                 }
-                Monitor.Exit(rolloverMode.DestinationPartition.EditLockObject);
+                Monitor.Exit(m_editLocks[rolloverMode.DestinationGeneration]);
 
                 m_partitionsPendingDeletions.Add(rolloverMode.SourcePartition);
                 m_processingPartitions[rolloverMode.SourceGeneration] = null;
@@ -211,7 +209,7 @@ namespace openHistorian.V2.Server.Database
 
         void RollbackPartitionRolloverMode(PartitionRolloverMode rolloverMode)
         {
-            Monitor.Exit(rolloverMode.DestinationPartition.EditLockObject);
+            Monitor.Exit(m_editLocks[rolloverMode.DestinationGeneration]);
         }
 
         #endregion
@@ -231,12 +229,12 @@ namespace openHistorian.V2.Server.Database
                 activePartition = m_activePartitions[generation];
                 if (activePartition != null)
                 {
-                    Monitor.Enter(activePartition.EditLockObject);
+                    Monitor.Enter(m_editLocks[generation]);
                     return activePartition;
                 }
             }
             activePartition = m_partitionInitializer.CreatePartition(generation);
-            Monitor.Enter(activePartition.EditLockObject);
+            Monitor.Enter(m_editLocks[generation]);
             lock (m_syncRoot)
             {
                 m_activePartitions[generation] = activePartition;

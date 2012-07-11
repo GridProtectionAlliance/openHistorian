@@ -97,6 +97,7 @@
     <Compile Include="OldCode\BufferedStreamTest.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataListTest.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
+    <Compile Include="PartitionFileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileSystem\ArchiveFileStreamTest.cs" />
     <Compile Include="OldCode\FileSystem\BenchmarkPageSizes.cs" />
@@ -129,6 +130,7 @@
   <ItemGroup>
     <Folder Include="Collections\KeyValue\" />
     <Folder Include="OldCode\Specialized\" />
+    <Folder Include="Server\Database\Partition\" />
   </ItemGroup>
   <ItemGroup>
     <Shadow Include="Test References\openHistorian.V2.accessor" />

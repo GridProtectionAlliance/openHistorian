@@ -45,6 +45,8 @@ namespace openHistorian.V2.Collections.KeyValue
         int m_blockSize;
         long m_rootNodeIndexAddress;
         long m_lastAllocatedBlock;
+        ulong m_firstKey;
+        ulong m_lastKey;
 
         IBinaryStream m_stream;
 
@@ -77,6 +79,8 @@ namespace openHistorian.V2.Collections.KeyValue
             m_rootNodeLevel = 0;
             m_rootNodeIndexAddress = 1;
             m_lastAllocatedBlock = 1;
+            m_firstKey = ulong.MaxValue;
+            m_lastKey = ulong.MinValue;
             LeafNodeCreateEmptyNode(m_rootNodeIndexAddress);
             SaveHeader();
             LoadHeader();
@@ -85,6 +89,32 @@ namespace openHistorian.V2.Collections.KeyValue
         #endregion
 
         #region [ Properties ]
+
+        /// <summary>
+        /// The first key in the tree.  
+        /// If the first key is after the last key, 
+        /// there is no data in the tree.
+        /// </summary>
+        public ulong FirstKey
+        {
+            get
+            {
+                return m_firstKey;
+            }
+        }
+
+        /// <summary>
+        /// The last key in the tree.  
+        /// If the first key is after the last key, 
+        /// there is no data in the tree.
+        /// </summary>
+        public ulong LastKey
+        {
+            get
+            {
+                return m_lastKey;
+            }
+        }
 
         /// <summary>
         /// Contains the stream for reading and writing and optional cloning.
@@ -137,6 +167,11 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <param name="value2">The value to insert.</param>
         public void Add(ulong key1, ulong key2, ulong value1, ulong value2)
         {
+            if (key1 < m_firstKey)
+                m_firstKey = key1;
+            if (key1 > m_lastKey)
+                m_lastKey = key1;
+
             long nodeIndexAddress = m_rootNodeIndexAddress;
             for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
@@ -264,6 +299,8 @@ namespace openHistorian.V2.Collections.KeyValue
             m_blockSize = Stream.ReadInt32();
             m_rootNodeIndexAddress = Stream.ReadInt64();
             m_rootNodeLevel = Stream.ReadByte();
+            m_firstKey = Stream.ReadUInt64();
+            m_lastKey = Stream.ReadUInt64();
         }
 
         /// <summary>
@@ -279,6 +316,8 @@ namespace openHistorian.V2.Collections.KeyValue
             Stream.Write(m_blockSize);
             Stream.Write(m_rootNodeIndexAddress); //Root Index
             Stream.Write(m_rootNodeLevel); //Root Index
+            Stream.Write(m_firstKey); 
+            Stream.Write(m_lastKey); 
             Stream.Position = oldPosotion;
         }
 

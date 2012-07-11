@@ -33,21 +33,53 @@ namespace openHistorian.V2.Server.Database.Partitions
     /// </summary>
     public class PartitionReadOnlySnapshotInstance : IDisposable
     {
-        static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
+
+        //Since there is currently only one BasicTree per partition, this is basically a pass through class.
         
+        #region [ Members ]
+        
+        static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
+
         bool m_disposed;
         BasicTreeContainer m_dataTree;
+
+        #endregion
+
+        #region [ Constructors ]
 
         public PartitionReadOnlySnapshotInstance(TransactionalRead currentTransaction)
         {
             m_dataTree = new BasicTreeContainer(currentTransaction, s_pointDataFile, 1);
         }
 
+        #endregion
+
+        #region [ Properties ]
+
         public bool IsDisposed
         {
             get
             {
                 return m_disposed;
+            }
+        }
+        #endregion
+
+        #region [ Methods ]
+
+        public ulong FirstKey
+        {
+            get
+            {
+                return m_dataTree.FirstKey;
+            }
+        }
+
+        public ulong LastKey
+        {
+            get
+            {
+                return m_dataTree.LastKey;
             }
         }
 
@@ -74,5 +106,7 @@ namespace openHistorian.V2.Server.Database.Partitions
                 }
             }
         }
+        #endregion
+    
     }
 }

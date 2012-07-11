@@ -67,13 +67,6 @@ namespace openHistorian.V2.FileSystem
 
                 m_file = new FileSystemSnapshotService(archiveFile, openMode, accessMode);
             }
-
-
-        }
-
-        ~VirtualFileSystem()
-        {
-            Dispose();
         }
 
         #endregion

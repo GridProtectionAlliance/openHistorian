@@ -1,4 +1,5 @@
-﻿//  TransactionalEdit.cs - Gbtc
+﻿//******************************************************************************************************
+//  TransactionalEdit.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -34,36 +35,23 @@ namespace openHistorian.V2.FileSystem
         #region [ Members ]
 
         /// <summary>
-        /// This delegate is called when the edit transaction has been disposed. 
-        /// The purpose of this delegate is to notify the <see cref="FileSystemSnapshotService"/>
-        /// that this transaction is no longer executing and everything has been properly disposed of.
-        /// </summary>
-        Action<TransactionalEdit> m_delHasBeenDisposed;
-
-        /// <summary>
         /// This delegate is called when the Commit function is called and all the data has been written to the underlying file system.
         /// the purpose of this delegate is to notify the calling class that this transaction is concluded since
         /// only one write transaction can be aquired at a time.
         /// </summary>
-        Action<TransactionalEdit> m_delHasBeenCommitted;
+        Action m_delHasBeenCommitted;
 
         /// <summary>
         /// This delegate is called when the RollBack function is called. This also occurs when the object is disposed.
         /// the purpose of this delegate is to notify the calling class that this transaction is concluded since
         /// only one write transaction can be aquired at a time.
         /// </summary>
-        Action<TransactionalEdit> m_delHasBeenRolledBack;
+        Action m_delHasBeenRolledBack;
 
         /// <summary>
         /// Prevents duplicate calls to Dispose;
         /// </summary>
         bool m_disposed;
-
-        /// <summary>
-        /// Deteremins if the transaction is complete.  This is to 
-        /// prevent duplicate calls to Rollback or Commit.
-        /// </summary>
-        bool m_transactionComplete;
 
         /// <summary>
         /// This provides a snapshot of the origional file system incase the owner 
@@ -97,10 +85,9 @@ namespace openHistorian.V2.FileSystem
         /// <param name="fileAllocationTable">This parameter must be in a read only mode.
         /// This is to ensure that the value is not modified after it has been passed to this class.
         /// This will be converted into an editable version within the constructor of this class</param>
-        /// <param name="delHasBeenDisposed">the delegate to call when this transaction has been disposed</param>
         /// <param name="delHasBeenRolledBack">the delegate to call when this transaction has been rolled back</param>
         /// <param name="delHasBeenCommitted">the delegate to call when this transaction has been committed</param>
-        internal TransactionalEdit(DiskIo dataReader, FileAllocationTable fileAllocationTable, Action<TransactionalEdit> delHasBeenDisposed = null, Action<TransactionalEdit> delHasBeenRolledBack= null, Action<TransactionalEdit> delHasBeenCommitted = null)
+        internal TransactionalEdit(DiskIo dataReader, FileAllocationTable fileAllocationTable, Action delHasBeenRolledBack = null, Action delHasBeenCommitted = null)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -111,11 +98,9 @@ namespace openHistorian.V2.FileSystem
 
             m_openedFiles = new List<ArchiveFileStream>();
             m_disposed = false;
-            m_transactionComplete = false;
             m_transactionalRead = new TransactionalRead(dataReader, fileAllocationTable);
             m_fileAllocationTable = fileAllocationTable.CloneEditableCopy();
             m_dataReader = dataReader;
-            m_delHasBeenDisposed = delHasBeenDisposed;
             m_delHasBeenCommitted = delHasBeenCommitted;
             m_delHasBeenRolledBack = delHasBeenRolledBack;
         }
@@ -244,8 +229,7 @@ namespace openHistorian.V2.FileSystem
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            if (m_transactionComplete)
-                throw new Exception("Duplicate call to Commit/Rollback Transaction");
+
             foreach (var file in m_openedFiles)
             {
                 if (file != null && !file.IsDisposed)
@@ -255,12 +239,14 @@ namespace openHistorian.V2.FileSystem
             {
                 m_fileAllocationTable.WriteToFileSystem(m_dataReader);
                 if (m_delHasBeenCommitted != null)
-                    m_delHasBeenCommitted.Invoke(this);
+                    m_delHasBeenCommitted.Invoke();
             }
             finally
             {
-                m_transactionComplete = true;
-                Dispose();
+                m_transactionalRead = null;
+                m_delHasBeenCommitted = null;
+                m_delHasBeenRolledBack = null;
+                m_disposed = true;
             }
         }
 
@@ -272,8 +258,6 @@ namespace openHistorian.V2.FileSystem
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            if (m_transactionComplete)
-                throw new Exception("Duplicate call to Commit/Rollback Transaction");
 
             foreach (var file in m_openedFiles)
             {
@@ -285,12 +269,14 @@ namespace openHistorian.V2.FileSystem
             try
             {
                 if (m_delHasBeenRolledBack != null)
-                    m_delHasBeenRolledBack.Invoke(this);
+                    m_delHasBeenRolledBack.Invoke();
             }
             finally
             {
-                m_transactionComplete = true;
-                Dispose();
+                m_transactionalRead = null;
+                m_delHasBeenCommitted = null;
+                m_delHasBeenRolledBack = null;
+                m_disposed = true;
             }
         }
 
@@ -330,31 +316,7 @@ namespace openHistorian.V2.FileSystem
         {
             if (!m_disposed)
             {
-                try
-                {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (!m_transactionComplete)
-                        RollbackAndDispose();
-
-                    if (m_transactionalRead != null)
-                    {
-                        m_transactionalRead.Dispose();
-                        m_transactionalRead = null;
-                    }
-
-                    if (m_delHasBeenDisposed != null)
-                    {
-                        m_delHasBeenDisposed(this);
-                        m_delHasBeenDisposed = null;
-                    }
-
-                }
-                finally
-                {
-                    m_delHasBeenCommitted = null;
-                    m_delHasBeenRolledBack = null;
-                    m_disposed = true;  // Prevent duplicate dispose.
-                }
+                RollbackAndDispose();
             }
         }
 

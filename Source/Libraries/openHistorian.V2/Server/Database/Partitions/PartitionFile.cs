@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
 using openHistorian.V2.IO.Unmanaged;
@@ -33,37 +32,100 @@ namespace openHistorian.V2.Server.Database.Partitions
     /// Represents a individual self-contained archive file. 
     /// This is one of many files that are part of a given <see cref="DatabaseEngine"/>.
     /// </summary>
-    public class PartitionFile
+    public class PartitionFile : IDisposable
     {
+
+        #region [ Members ]
+
         static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
 
+        ulong m_firstKey;
+        ulong m_lastKey;
+        bool m_disposed;
         VirtualFileSystem m_fileSystem;
         TransactionalEdit m_currentTransaction;
         BasicTreeContainerEdit m_dataTree;
 
-        public PartitionFile(string file, OpenMode openMode, AccessMode accessMode)
-        {
-            m_fileSystem = new VirtualFileSystem(file, openMode, accessMode);
-            if (openMode==OpenMode.Create)
-            {
-                InitializeNewFile();
-            }
-        }
+        #endregion
+
+        #region [ Constructors ]
+
         public PartitionFile()
         {
             m_fileSystem = new VirtualFileSystem();
             InitializeNewFile();
         }
-      
+
+        public PartitionFile(string file, OpenMode openMode, AccessMode accessMode)
+        {
+            m_fileSystem = new VirtualFileSystem(file, openMode, accessMode);
+            if (openMode == OpenMode.Create)
+            {
+                InitializeNewFile();
+            }
+            else
+            {
+                using (var snapshot = CreateSnapshot().OpenInstance())
+                {
+                    m_firstKey = snapshot.FirstKey;
+                    m_lastKey = snapshot.LastKey;
+                }
+            }
+        }
+
+        #endregion
+
+        #region [ Properties ]
+
+        public bool IsDisposed
+        {
+            get
+            {
+                return m_disposed;
+            }
+        }
+
+        /// <summary>
+        /// The first key.  Note: Values only update on commit.
+        /// </summary>
+        public ulong FirstKey
+        {
+            get
+            {
+                return m_firstKey;
+            }
+        }
+
+        /// <summary>
+        /// The last key.  Note: Values only update on commit.
+        /// </summary>
+        public ulong LastKey
+        {
+            get
+            {
+                return m_lastKey;
+            }
+        }
+
+        #endregion
+
+        #region [ Methods ]
+
         void InitializeNewFile()
         {
-            var trans = m_fileSystem.BeginEdit();
-            var fs = trans.CreateFile(s_pointDataFile, 1);
-            var bs = new BinaryStream(fs);
-            var tree = new BasicTree(bs, ArchiveConstants.DataBlockDataLength);
-            bs.Dispose();
-            fs.Dispose();
-            trans.CommitAndDispose();
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            using (var trans = m_fileSystem.BeginEdit())
+            {
+                using (var fs = trans.CreateFile(s_pointDataFile, 1))
+                using (var bs = new BinaryStream(fs))
+                {
+                    var tree = new BasicTree(bs, ArchiveConstants.DataBlockDataLength);
+                    m_firstKey = tree.FirstKey;
+                    m_lastKey = tree.LastKey;
+                }
+                trans.CommitAndDispose();
+            }
         }
 
         /// <summary>
@@ -72,6 +134,8 @@ namespace openHistorian.V2.Server.Database.Partitions
         /// <returns></returns>
         public PartitionSnapshot CreateSnapshot()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             return new PartitionSnapshot(m_fileSystem);
         }
 
@@ -80,8 +144,9 @@ namespace openHistorian.V2.Server.Database.Partitions
         /// </summary>
         public void BeginEdit()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             m_currentTransaction = m_fileSystem.BeginEdit();
-
             m_dataTree = new BasicTreeContainerEdit(m_currentTransaction, s_pointDataFile, 1);
 
         }
@@ -90,6 +155,10 @@ namespace openHistorian.V2.Server.Database.Partitions
         /// </summary>
         public void CommitEdit()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            m_firstKey = m_dataTree.FirstKey;
+            m_lastKey = m_dataTree.LastKey;
             m_dataTree.Dispose();
             m_currentTransaction.CommitAndDispose();
         }
@@ -99,34 +168,30 @@ namespace openHistorian.V2.Server.Database.Partitions
         /// </summary>
         public void RollbackEdit()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             m_dataTree.Dispose();
             m_currentTransaction.RollbackAndDispose();
         }
 
         public void AddPoint(ulong date, ulong pointId, ulong value1, ulong value2)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             m_dataTree.AddPoint(date, pointId, value1, value2);
         }
 
-        public ulong GetFirstKey1
+        public void Dispose()
         {
-            get
+            if (!m_disposed)
             {
-                return 0;
+                m_fileSystem.Dispose();
+                m_disposed = true;
             }
-        }
-        public ulong GetLastKey2
-        {
-            get
-            {
-                return ulong.MaxValue;
-            }
+
         }
 
-        public void Close()
-        {
-            m_fileSystem.Dispose();
-        }
+        #endregion
 
     }
 }
