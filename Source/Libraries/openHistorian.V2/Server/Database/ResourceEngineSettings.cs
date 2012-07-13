@@ -28,7 +28,7 @@ using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    class ResourceEngineSettings
+    public class ResourceEngineSettings
     {
         public PartitionInitializerSettings PartitionInitializerSettings;
         public List<string> ActivePartitionFileNames;

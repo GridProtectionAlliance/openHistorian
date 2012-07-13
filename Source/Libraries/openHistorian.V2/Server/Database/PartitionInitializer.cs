@@ -23,17 +23,31 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using openHistorian.V2.Server.Database.Partitions;
 
 namespace openHistorian.V2.Server.Database
 {
     class PartitionInitializer
     {
+        PartitionInitializerSettings m_settings;
+
+        public PartitionInitializer(PartitionInitializerSettings settings)
+        {
+            m_settings = settings;
+        }
+
         public PartitionSummary CreatePartition(int generation)
         {
-            return null;
+            var genSettings = m_settings.GenerationSettings[generation];
+            if (genSettings.IsMemoryPartition)
+            {
+                var file = new PartitionFile();
+                return new PartitionSummary(file);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

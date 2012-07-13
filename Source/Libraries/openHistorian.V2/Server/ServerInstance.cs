@@ -41,11 +41,11 @@ namespace openHistorian.V2.Server
             m_databases = new SortedList<string, DatabaseEngine>();
         }
 
-        public void Create(string name)
+        public void Create(string name, DatabaseEngineSettings settings)
         {
             lock (m_syncRoot)
             {
-                DatabaseEngine engine = new DatabaseEngine();
+                DatabaseEngine engine = new DatabaseEngine(settings);
                 m_databases.Add(name.ToUpper(), engine);
             }
         }
@@ -61,22 +61,22 @@ namespace openHistorian.V2.Server
 
         //public void Attach(string name)
         //{
-            
+
         //}
 
         //public void Detach(string name)
         //{
-            
+
         //}
 
         //public void TakeOffline(string instanceName)
         //{
-            
+
         //}
 
         //public void BringOnline(string instanceName)
         //{
-            
+
         //}
 
         public DatabaseEngine Get(string name)

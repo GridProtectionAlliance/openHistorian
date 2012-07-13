@@ -28,7 +28,7 @@ using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    class ProcessInitialInsertsSettings
+    public class ProcessInitialInsertsSettings
     {
         public int AutoCommitCount;
         public TimeSpan AutoCommitInterval;

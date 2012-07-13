@@ -64,11 +64,23 @@ namespace openHistorian.V2.Collections.KeyValue
             NodeHeader.Save(Stream, 0, 0, 0);
         }
 
+        //protected override bool LeafNodeInsert(IDataScanner dataScanner, long nodeIndex, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid)
+        //{
+        //    //ulong firstKey1
+        //    //while (isValid)
+        //    //{
+                
+        //    //}
+           
+
+        //    //return true;
+        //}
+
         protected override bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2)
         {
             int offset;
             var header = new NodeHeader(Stream, BlockSize, nodeIndex);
-            
+
             //Find the best location to insert
             //This is done before checking if a split is required to prevent splitting 
             //if a duplicate key is found

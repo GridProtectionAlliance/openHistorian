@@ -7,10 +7,10 @@ using openHistorian.V2.Server.Database.Partitions;
 namespace openHistorian.V2
 {
     
-    //[TestClass()]
+    [TestClass()]
     public class ArchiveTest
     {
-        //[TestMethod()]
+        [TestMethod()]
         public void TestMethod()
         {
             Test();
@@ -67,7 +67,8 @@ namespace openHistorian.V2
             s_partitionFile.Dispose();
             s_partitionFile = null;
 
-
+            //MessageBox.Show(openHistorian.V2.Collections.KeyValue.BasicTreeBase.PointsAdded + " " +
+            //                openHistorian.V2.Collections.KeyValue.BasicTreeBase.ShortcutsTaken);
             MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + oldCount);
             MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt + " " + (FileSystem.DiskIoSession.ChecksumCount - oldCount));
         }

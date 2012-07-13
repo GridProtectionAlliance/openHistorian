@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.IO;
 using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileSystem;
 using openHistorian.V2.IO.Unmanaged;
@@ -39,6 +40,7 @@ namespace openHistorian.V2.Server.Database.Partitions
 
         static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
 
+        string m_fileName;
         ulong m_firstKey;
         ulong m_lastKey;
         bool m_disposed;
@@ -52,12 +54,14 @@ namespace openHistorian.V2.Server.Database.Partitions
 
         public PartitionFile()
         {
+            m_fileName = string.Empty;
             m_fileSystem = new VirtualFileSystem();
             InitializeNewFile();
         }
 
         public PartitionFile(string file, OpenMode openMode, AccessMode accessMode)
         {
+            m_fileName = file;
             m_fileSystem = new VirtualFileSystem(file, openMode, accessMode);
             if (openMode == OpenMode.Create)
             {
@@ -104,6 +108,17 @@ namespace openHistorian.V2.Server.Database.Partitions
             get
             {
                 return m_lastKey;
+            }
+        }
+
+        /// <summary>
+        /// Returns the name of the file.  Returns <see cref="String.Empty"/> if this is a memory archive.
+        /// </summary>
+        public string FileName
+        {
+            get
+            {
+                return m_fileName;
             }
         }
 
@@ -189,6 +204,19 @@ namespace openHistorian.V2.Server.Database.Partitions
                 m_disposed = true;
             }
 
+        }
+        
+        /// <summary>
+        /// Closes and deletes the partition. Also calls dispose.
+        /// If this is a memory archive, it will release the memory space to the buffer pool.
+        /// </summary>
+        public void Delete()
+        {
+            Dispose();
+            if (m_fileName != string.Empty)
+            {
+                File.Delete(m_fileName);
+            }
         }
 
         #endregion

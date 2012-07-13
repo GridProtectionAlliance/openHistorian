@@ -57,13 +57,16 @@ namespace openHistorian.V2.Server.Database
 
         List<TransactionResources> m_readLockedResourceses;
 
-        public ResourceEngine()
+        ResourceEngineSettings m_settings;
+
+        public ResourceEngine(ResourceEngineSettings settings)
         {
+            m_settings = settings;
             for (int x = 0; x < GenerationCount; x++)
             {
                 m_editLocks[x] = new object();
             }
-            m_partitionInitializer = new PartitionInitializer();
+            m_partitionInitializer = new PartitionInitializer(settings.PartitionInitializerSettings);
             m_activePartitions = new PartitionSummary[GenerationCount];
             m_processingPartitions = new PartitionSummary[GenerationCount];
             m_partitionsPendingDeletions = new List<PartitionSummary>();
@@ -71,17 +74,18 @@ namespace openHistorian.V2.Server.Database
             m_readLockedResourceses = new List<TransactionResources>();
         }
 
+        #region [ Resource Locks ]
         public TransactionResources CreateNewClientResources()
         {
             lock (m_syncRoot)
             {
-                var resources = new TransactionResources();
+                var resources = new TransactionResources(ReleaseClientResources, AcquireSnapshot);
                 m_readLockedResourceses.Add(resources);
                 return resources;
             }
         }
 
-        public void ReleaseClientResources(TransactionResources resources)
+        void ReleaseClientResources(TransactionResources resources)
         {
             lock (m_syncRoot)
             {
@@ -89,18 +93,25 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
-        public void AquireSnapshot(TransactionResources transaction)
+
+        void AcquireSnapshot(TransactionResources transaction)
         {
             lock (m_syncRoot)
             {
-                int count = m_finalPartitions.Count + 6;
-                PartitionSummary[] partitions = new PartitionSummary[count];
+                int requiredSize = m_finalPartitions.Count + 2 * GenerationCount;
+                if (transaction.Tables == null || transaction.Tables.Length < requiredSize)
+                    transaction.Tables = new PartitionSummary[requiredSize];
+                int actualSize = transaction.Tables.Length;
 
-                m_activePartitions.CopyTo(partitions, 0);
-                m_processingPartitions.CopyTo(partitions, GenerationCount);
-                m_finalPartitions.CopyTo(GenerationCount * 2, partitions, 0, m_finalPartitions.Count);
+                m_activePartitions.CopyTo(transaction.Tables, 0);
+                m_processingPartitions.CopyTo(transaction.Tables, GenerationCount);
+                m_finalPartitions.CopyTo(0, transaction.Tables, GenerationCount * 2, m_finalPartitions.Count);
+
+                if (requiredSize > actualSize)
+                    Array.Clear(transaction.Tables, requiredSize, actualSize - requiredSize);
             }
         }
+        #endregion
 
         #region [ Partition Insert Mode ]
 
@@ -241,5 +252,62 @@ namespace openHistorian.V2.Server.Database
             }
             return activePartition;
         }
+
+        void ProcessPendingDeletions()
+        {
+            List<PartitionFile> filesToDelete = new List<PartitionFile>();
+            lock (m_syncRoot)
+            {
+                int index = 0;
+                while (index < m_partitionsPendingDeletions.Count)
+                {
+                    var partition = m_partitionsPendingDeletions[index].PartitionFileFile;
+
+                    if (IsPartitionBeingUsed(partition))
+                    {
+                        filesToDelete.Add(partition);
+                        m_partitionsPendingDeletions.RemoveAt(index);
+                    }
+                    else
+                    {
+                        index++;
+                    }
+                }
+            }
+
+            foreach (var file in filesToDelete)
+            {
+                file.Delete();
+                file.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Called by <see cref="ProcessPendingDeletions"/>. 
+        /// Determines if the provided partition file is currently in use
+        /// by any resource. 
+        /// </summary>
+        /// <param name="partition">the partition to search for.</param>
+        /// <returns></returns>
+        bool IsPartitionBeingUsed(PartitionFile partition)
+        {
+            foreach (var resource in m_readLockedResourceses)
+            {
+                var tables = resource.Tables;
+                if (tables != null)
+                {
+                    for (int x = 0; x < tables.Length; x++)
+                    {
+                        var summary = tables[x];
+                        if (summary != null && summary.PartitionFileFile == partition)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
     }
 }

@@ -110,6 +110,7 @@
     <Compile Include="FileSystem\IndexParserTest.cs" />
     <Compile Include="FileSystem\ShadowCopyAllocatorTest.cs" />
     <Compile Include="FileSystem\TransactionalEditTest.cs" />
+    <Compile Include="Server\Database\ResourceEngineTest.cs" />
     <Compile Include="TestCode.cs" />
     <Compile Include="Test\ArchiveTest.cs" />
     <Compile Include="Test\CompressionTest.cs" />

@@ -28,7 +28,7 @@ using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    class ProcessGenerationRolloverSettings
+    public class ProcessGenerationRolloverSettings
     {
         public int AutoRolloverCount;
         public TimeSpan AutoRolloverInterval;

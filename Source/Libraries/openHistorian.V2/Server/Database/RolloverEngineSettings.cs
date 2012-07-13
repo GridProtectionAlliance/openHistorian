@@ -28,7 +28,7 @@ using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    class RolloverEngineSettings
+    public class RolloverEngineSettings
     {
         public ProcessInitialInsertsSettings ProcessInitialInsertsSettings;
         public List<ProcessGenerationRolloverSettings> ProcessGenerationRolloverSettings;

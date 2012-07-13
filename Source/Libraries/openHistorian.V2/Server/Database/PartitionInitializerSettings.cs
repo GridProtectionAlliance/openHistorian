@@ -28,7 +28,7 @@ using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    class PartitionInitializerSettings
+    public class PartitionInitializerSettings
     {
         public List<PartitionInitializerGenerationSettings> GenerationSettings;
 

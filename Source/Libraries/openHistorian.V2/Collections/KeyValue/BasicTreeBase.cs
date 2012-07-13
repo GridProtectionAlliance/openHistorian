@@ -39,6 +39,27 @@ namespace openHistorian.V2.Collections.KeyValue
     /// </remarks>
     public abstract class BasicTreeBase
     {
+        BucketInfo[] m_cache;
+
+        protected struct BucketInfo
+        {
+            public ulong LowerKey1;
+            public ulong LowerKey2;
+            public ulong UpperKey1;
+            public ulong UpperKey2;
+            public long NodeIndex;
+            public bool IsLowerNull;
+            public bool IsUpperNull;
+            public bool IsValid;
+            public bool Contains(ulong key1, ulong key2)
+            {
+                //return false;
+                return IsValid &&
+                    (IsLowerNull || (CompareKeys(LowerKey1, LowerKey2, key1, key2) <= 0)) &&
+                    (IsUpperNull || (CompareKeys(key1, key2, UpperKey1, UpperKey2) < 0));
+            }
+        }
+
         #region [ Members ]
 
         byte m_rootNodeLevel;
@@ -60,6 +81,8 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <param name="stream">A dedicated stream where data can be read/written to/from.</param>
         protected BasicTreeBase(IBinaryStream stream)
         {
+            m_cache = new BucketInfo[5];
+            ClearCache();
             m_stream = stream;
             LoadHeader();
         }
@@ -74,6 +97,8 @@ namespace openHistorian.V2.Collections.KeyValue
         /// performance benefit because there is fewer I/O's required to find and insert blocks.</param>
         protected BasicTreeBase(IBinaryStream stream, int blockSize)
         {
+            m_cache = new BucketInfo[5];
+            ClearCache();
             m_stream = stream;
             m_blockSize = blockSize;
             m_rootNodeLevel = 0;
@@ -157,6 +182,33 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Public Methods ]
 
+        //Old one that wasn't cached.
+        ///// <summary>
+        ///// Inserts the following data into the tree.
+        ///// </summary>
+        ///// <param name="key1">The unique key value.</param>
+        ///// <param name="key2">The unique key value.</param>
+        ///// <param name="value1">The value to insert.</param>
+        ///// <param name="value2">The value to insert.</param>
+        //public void Add(ulong key1, ulong key2, ulong value1, ulong value2)
+        //{
+        //    if (key1 < m_firstKey)
+        //        m_firstKey = key1;
+        //    if (key1 > m_lastKey)
+        //        m_lastKey = key1;
+
+        //    long nodeIndexAddress = m_rootNodeIndexAddress;
+        //    for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
+        //    {
+        //        nodeIndexAddress = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndexAddress, key1, key2);
+        //    }
+        //    if (LeafNodeInsert(nodeIndexAddress, key1, key2, value1, value2))
+        //        return;
+        //    throw new Exception("Key already exists");
+        //}
+
+        //public static long ShortcutsTaken = 0;
+        //public static long PointsAdded = 0;
 
         /// <summary>
         /// Inserts the following data into the tree.
@@ -175,12 +227,51 @@ namespace openHistorian.V2.Collections.KeyValue
             long nodeIndexAddress = m_rootNodeIndexAddress;
             for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
-                nodeIndexAddress = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndexAddress, key1, key2);
+                //PointsAdded++;
+                BucketInfo currentBucket = m_cache[nodeLevel - 1];
+                if (currentBucket.Contains(key1, key2))
+                {
+                    //ShortcutsTaken++;
+                    nodeIndexAddress = currentBucket.NodeIndex;
+                }
+                else
+                {
+                    Array.Clear(m_cache, 0, nodeLevel);
+                    currentBucket = InternalNodeGetNodeIndexAddressBucket(nodeLevel, nodeIndexAddress, key1, key2);
+                    nodeIndexAddress = currentBucket.NodeIndex;
+                    m_cache[nodeLevel - 1] = currentBucket;
+                }
             }
             if (LeafNodeInsert(nodeIndexAddress, key1, key2, value1, value2))
                 return;
             throw new Exception("Key already exists");
         }
+
+        //public void AddRange(IDataScanner dataScanner)
+        //{
+        //    ulong key1, key2, value1, value2;
+        //    dataScanner.SeekToKey(0, 0);
+        //    var isValid = dataScanner.GetNextKey(out key1, out key2, out value1, out value2);
+        //    if (key1 < m_firstKey)
+        //        m_firstKey = key1;
+
+        //    while (isValid)
+        //    {
+        //        //Search for the proper save node
+        //        long nodeIndexAddress = m_rootNodeIndexAddress;
+        //        for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
+        //        {
+        //            nodeIndexAddress = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndexAddress, key1, key2);
+        //        }
+
+        //        if (!LeafNodeInsert(dataScanner, nodeIndexAddress, ref key1, ref key2, ref value1, ref value2, ref isValid))
+        //            throw new Exception("Key already exists");
+
+        //    }
+        //    if (key1 > m_lastKey)
+        //        m_lastKey = key1;
+
+        //}
 
         /// <summary>
         /// Returns the data for the following key. 
@@ -221,6 +312,7 @@ namespace openHistorian.V2.Collections.KeyValue
         #region [ Internal Node Methods ]
 
         protected abstract long InternalNodeGetNodeIndexAddress(byte nodeLevel, long nodeIndex, ulong key1, ulong key2);
+        protected abstract BucketInfo InternalNodeGetNodeIndexAddressBucket(byte nodeLevel, long nodeIndex, ulong key1, ulong key2);
         protected abstract void InternalNodeInsert(byte nodeLevel, long nodeIndex, ulong key1, ulong key2, long childNodeIndex);
         protected abstract void InternalNodeCreateNode(long newNodeIndex, byte nodeLevel, long firstNodeIndex, ulong dividingKey1, ulong dividingKey2, long secondNodeIndex);
 
@@ -228,6 +320,7 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Leaf Node Methods ]
 
+        //protected abstract bool LeafNodeInsert(IDataScanner dataScanner, long nodeIndex, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid);
         protected abstract bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2);
         protected abstract bool LeafNodeGetValue(long nodeIndex, ulong key1, ulong key2, out ulong value1, out ulong value2);
         protected abstract void LeafNodeCreateEmptyNode(long newNodeIndex);
@@ -263,6 +356,7 @@ namespace openHistorian.V2.Collections.KeyValue
         /// or create a new root if the current root is split.</remarks>
         protected void NodeWasSplit(byte nodeLevel, long nodeIndexOfSplitNode, ulong dividingKey1, ulong dividingKey2, long nodeIndexOfRightSibling)
         {
+            ClearCache();
             if (m_rootNodeLevel > nodeLevel)
             {
                 long nodeIndex = m_rootNodeIndexAddress;
@@ -316,8 +410,8 @@ namespace openHistorian.V2.Collections.KeyValue
             Stream.Write(m_blockSize);
             Stream.Write(m_rootNodeIndexAddress); //Root Index
             Stream.Write(m_rootNodeLevel); //Root Index
-            Stream.Write(m_firstKey); 
-            Stream.Write(m_lastKey); 
+            Stream.Write(m_firstKey);
+            Stream.Write(m_lastKey);
             Stream.Position = oldPosotion;
         }
 
@@ -338,6 +432,11 @@ namespace openHistorian.V2.Collections.KeyValue
             if (firstKey2 < secondKey2) return -1;
 
             return 0;
+        }
+
+        void ClearCache()
+        {
+            Array.Clear(m_cache, 0, 5);
         }
 
 

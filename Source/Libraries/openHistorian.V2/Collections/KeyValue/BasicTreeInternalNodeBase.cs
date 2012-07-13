@@ -133,6 +133,13 @@ namespace openHistorian.V2.Collections.KeyValue
                 }
             }
         }
+        protected override BucketInfo InternalNodeGetNodeIndexAddressBucket(byte nodeLevel, long nodeIndex, ulong key1, ulong key2)
+        {
+            var header = new NodeHeader(Stream, BlockSize, nodeIndex, nodeLevel);
+            return FindOffsetOfKey(nodeIndex, header.NodeRecordCount, key1, key2);
+        }
+
+
 
         #endregion
 
@@ -184,6 +191,91 @@ namespace openHistorian.V2.Collections.KeyValue
             }
             offset = NodeHeader.Size + sizeof(long) + StructureSize * searchLowerBoundsIndex;
             return false;
+        }
+
+        /// <summary>
+        /// Starting from the first byte of the node, 
+        /// this will seek the current node for the best match of the key provided.
+        /// </summary>
+        /// <param name="nodeIndex">the index of the node to search</param>
+        /// <param name="nodeRecordCount">the number of records already in the current node</param>
+        /// <param name="key1">the key to search for</param>
+        /// <param name="key2">the key to search for</param>
+        /// <returns>data about the bucket</returns>
+        /// <remarks>
+        /// Search method is a binary search algorithm
+        /// </remarks>
+        BucketInfo FindOffsetOfKey(long nodeIndex, int nodeRecordCount, ulong key1, ulong key2)
+        {
+            BucketInfo bucket = default(BucketInfo);
+            bucket.IsValid = true;
+
+            long addressOfFirstKey = nodeIndex * BlockSize + NodeHeader.Size + sizeof(long);
+            int searchLowerBoundsIndex = 0;
+            int searchHigherBoundsIndex = nodeRecordCount - 1;
+
+            while (searchLowerBoundsIndex <= searchHigherBoundsIndex)
+            {
+                int currentTestIndex = searchLowerBoundsIndex + (searchHigherBoundsIndex - searchLowerBoundsIndex >> 1);
+                Stream.Position = addressOfFirstKey + StructureSize * currentTestIndex;
+
+                ulong compareKey1 = Stream.ReadUInt64();
+                ulong compareKey2 = Stream.ReadUInt64();
+
+                int compareKeysResults = CompareKeys(key1, key2, compareKey1, compareKey2);
+                if (compareKeysResults == 0)
+                {
+                    //offset = NodeHeader.Size + sizeof(long) + StructureSize * currentTestIndex;
+                    bucket.LowerKey1 = compareKey1;
+                    bucket.LowerKey2 = compareKey2;
+                    bucket.IsLowerNull = false;
+                    bucket.NodeIndex = Stream.ReadInt64();
+                    
+                    if (currentTestIndex == nodeRecordCount)
+                    {
+                        bucket.IsUpperNull = true;
+                    }
+                    else
+                    {
+                        bucket.IsUpperNull = false;
+                        bucket.UpperKey1 = Stream.ReadUInt64();
+                        bucket.UpperKey2 = Stream.ReadUInt64();
+                    }
+                    return bucket;
+                }
+                if (compareKeysResults > 0)
+                    searchLowerBoundsIndex = currentTestIndex + 1;
+                else
+                    searchHigherBoundsIndex = currentTestIndex - 1;
+            }
+
+            if (searchLowerBoundsIndex==0)
+            {
+                Stream.Position = addressOfFirstKey - sizeof (long);
+                bucket.IsLowerNull = true;
+                bucket.NodeIndex = Stream.ReadInt64();
+            }
+            else
+            {
+                Stream.Position = addressOfFirstKey + searchLowerBoundsIndex * StructureSize - sizeof(long) - KeySize;
+                bucket.IsLowerNull = false;
+                bucket.LowerKey1 = Stream.ReadUInt64();
+                bucket.LowerKey2 = Stream.ReadUInt64();
+                bucket.NodeIndex = Stream.ReadInt64();
+            }
+
+            if (searchLowerBoundsIndex == nodeRecordCount)
+            {
+                bucket.IsUpperNull = true;
+            }
+            else
+            {
+                bucket.IsUpperNull = false;
+                bucket.UpperKey1 = Stream.ReadUInt64();
+                bucket.UpperKey2 = Stream.ReadUInt64();
+            }
+
+            return bucket;
         }
 
         /// <summary>

@@ -37,10 +37,12 @@ namespace openHistorian.V2.Server.Database
         RolloverEngine m_rolloverEngine;
         ResourceEngine m_resourceEngine;
         InboundPointQueue m_newPointQueue;
+        DatabaseEngineSettings m_settings;
 
-        public DatabaseEngine()
+        public DatabaseEngine(DatabaseEngineSettings settings)
         {
-            m_resourceEngine = new ResourceEngine();
+            m_settings = settings;
+            m_resourceEngine = new ResourceEngine(settings.ResourceEngineSettings);
             m_rolloverEngine = new RolloverEngine();
             m_newPointQueue = m_rolloverEngine.ProcessInserts.NewPointQueue;
         }

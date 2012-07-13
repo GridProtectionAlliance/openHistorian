@@ -22,8 +22,6 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Data;
 using openHistorian.V2.Server.Database.Partitions;
 
 namespace openHistorian.V2.Server.Database
@@ -34,7 +32,6 @@ namespace openHistorian.V2.Server.Database
     /// </summary>
     class PartitionSummary
     {
-
         #region [ Members ]
 
         ulong m_firstKeyValue;
@@ -114,6 +111,9 @@ namespace openHistorian.V2.Server.Database
         /// <returns></returns>
         public bool Contains(ulong startKey, ulong stopKey)
         {
+            //If the archive file is empty, it will always be searched.  
+            //Since this will likely never happen and has little performance 
+            //implications, I have decided not to include logic that would exclude this case.
             return !(startKey > LastKeyValue || stopKey < FirstKeyValue);
         }
 

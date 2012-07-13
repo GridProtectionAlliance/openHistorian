@@ -28,7 +28,7 @@ using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    class PartitionInitializerGenerationSettings
+    public class PartitionInitializerGenerationSettings
     {
         public bool IsMemoryPartition;
         public List<string> SavePaths;

@@ -27,7 +27,7 @@ using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    class DatabaseEngineSettings
+    public class DatabaseEngineSettings
     {
         public string DatabaseName;
         public RolloverEngineSettings RolloverEngineSettings;
