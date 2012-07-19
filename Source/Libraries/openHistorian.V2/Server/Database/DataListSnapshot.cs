@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TransactionResources.cs - Gbtc
+//  DataListSnapshot.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,11 +30,11 @@ namespace openHistorian.V2.Server.Database
     /// <summary>
     /// Provides a list of resources that each system transaction could be using.
     /// </summary>
-    class TransactionResources : IDisposable
+    class DataListSnapshot : IDisposable
     {
         bool m_disposed;
-        Action<TransactionResources> m_onDisposed;
-        Action<TransactionResources> m_acquireResources;
+        Action<DataListSnapshot> m_onDisposed;
+        Action<DataListSnapshot> m_acquireResources;
 
         public object ClientConnection;
 
@@ -44,12 +44,16 @@ namespace openHistorian.V2.Server.Database
         /// </summary>
         PartitionSummary[] m_tables;
 
-        public TransactionResources(Action<TransactionResources> onDisposed, Action<TransactionResources> acquireResources)
+        public DataListSnapshot(Action<DataListSnapshot> onDisposed, Action<DataListSnapshot> acquireResources)
         {
             m_onDisposed = onDisposed;
             m_acquireResources = acquireResources;
         }
         
+        /// <summary>
+        /// Gets the list of all partitions that are currently in use.  Set partition to null to indicate
+        /// that is is no longer needed.  Set the entire array to null to release all partitions.
+        /// </summary>
         public PartitionSummary[] Tables
         {
             get
@@ -86,7 +90,7 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
-        public void RequestResourceUpdate()
+        public void UpdateSnapshot()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);

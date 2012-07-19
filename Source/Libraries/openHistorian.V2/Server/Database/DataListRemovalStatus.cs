@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionInitializer.cs - Gbtc
+//  DataListRemovalStatus.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,37 +16,59 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/4/2012 - Steven E. Chisholm
+//  7/14/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System;
 using openHistorian.V2.Server.Database.Partitions;
 
 namespace openHistorian.V2.Server.Database
 {
-    class PartitionInitializer
+    /// <summary>
+    /// The return value of <see cref="DataList.Editor.Remove"/> provided to the calling
+    /// function to determine when a resource is no longer being used.
+    /// </summary>
+    class DataListRemovalStatus
     {
-        PartitionInitializerSettings m_settings;
+        bool m_isBeingUsed;
+        PartitionFile m_partition;
+        DataList m_collection;
 
-        public PartitionInitializer(PartitionInitializerSettings settings)
+        public DataListRemovalStatus(PartitionFile partition, DataList collection)
         {
-            m_settings = settings;
+            m_partition = partition;
+            m_collection = collection;
+            m_isBeingUsed = true;
         }
 
-        public PartitionFile CreatePartition(int generation)
+        /// <summary>
+        /// Checks on the status of the removed <see cref="Partition"/> to determine if it is still being used
+        /// by a <see cref="DataList"/>'s <see cref="DataListSnapshot"/>.
+        /// </summary>
+        public bool IsBeingUsed
         {
-            var genSettings = m_settings.GenerationSettings[generation];
-            if (genSettings.IsMemoryPartition)
+            get
             {
-                return new PartitionFile();
-            }
-            else
-            {
-                throw new NotImplementedException();
+                if (m_isBeingUsed)
+                    m_isBeingUsed = m_collection.IsPartitionBeingUsed(m_partition);
+                if (!m_isBeingUsed)
+                    m_collection = null;
+                return m_isBeingUsed;
             }
         }
+
+        /// <summary>
+        /// The <see cref="PartitionFile"/> that was removed from the <see cref="DataList"/>.
+        /// </summary>
+        public PartitionFile Partition
+        {
+            get
+            {
+                return m_partition;
+            }
+        }
+
     }
 }

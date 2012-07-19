@@ -38,7 +38,6 @@ namespace openHistorian.V2.Server.Database
         ulong m_lastKeyValue;
         PartitionFile m_partitionFileFile;
         PartitionSnapshot m_activeSnapshot;
-
         #endregion
 
         #region [ Constructors ]
@@ -56,7 +55,7 @@ namespace openHistorian.V2.Server.Database
         #region [ Properties ]
 
         /// <summary>
-        /// Gets/Sets the <see cref="PartitionFile"/> that this class represents.
+        /// Gets the <see cref="PartitionFile"/> that this class represents.
         /// </summary>
         public PartitionFile PartitionFileFile
         {
@@ -67,7 +66,7 @@ namespace openHistorian.V2.Server.Database
         }
 
         /// <summary>
-        /// Gets/Sets the first key contained in this partition.
+        /// Gets the first key contained in this partition.
         /// </summary>
         public ulong FirstKeyValue
         {
@@ -78,7 +77,7 @@ namespace openHistorian.V2.Server.Database
         }
 
         /// <summary>
-        /// Gets/Sets the last key contained in this partition.
+        /// Gets the last key contained in this partition.
         /// </summary>
         public ulong LastKeyValue
         {
@@ -89,7 +88,7 @@ namespace openHistorian.V2.Server.Database
         }
 
         /// <summary>
-        /// Gets/Sets the most recent <see cref="PartitionSnapshot"/> of this class when it was instanced.
+        /// Gets the most recent <see cref="PartitionSnapshot"/> of this class when it was instanced.
         /// </summary>
         public PartitionSnapshot ActiveSnapshot
         {

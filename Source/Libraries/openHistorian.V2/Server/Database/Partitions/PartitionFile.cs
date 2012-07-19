@@ -35,7 +35,6 @@ namespace openHistorian.V2.Server.Database.Partitions
     /// </summary>
     public class PartitionFile : IDisposable
     {
-
         #region [ Members ]
 
         static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
@@ -119,6 +118,14 @@ namespace openHistorian.V2.Server.Database.Partitions
             get
             {
                 return m_fileName;
+            }
+        }
+
+        public long FileSize
+        {
+            get
+            {
+                return 0;
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerInstanceSettings.cs - Gbtc
+//  PartitionSummary.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,58 +16,26 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/4/2012 - Steven E. Chisholm
+//  7/18/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 
-namespace openHistorian.V2.Server
+namespace openHistorian.V2.Server.Database
 {
-    partial class ServerInstanceSettings
+    class PartitionStateInformation
     {
-        public List<Item> DatabaseSettings;
-
-        public ServerInstanceSettings()
+        public bool IsReadOnly;
+        public bool IsEditLocked;
+        public int Generation;
+        public PartitionSummary Summary;
+        public PartitionStateInformation(bool isReadOnly, bool isEditLocked, int generation)
         {
-            DatabaseSettings = new List<Item>();
-        }
-
-        public ServerInstanceSettings(BinaryReader reader)
-        {
-            Load(reader);
-        }
-
-        public void Load(BinaryReader reader)
-        {
-            switch (reader.ReadByte())
-            {
-                case 0:
-                    int count = reader.ReadInt32();
-                    DatabaseSettings = new List<Item>(count);
-                    while ( count>0)
-                    {
-                        count--;
-                        DatabaseSettings.Add(new Item(reader));
-                    }
-                    break;
-                default:
-                    throw new VersionNotFoundException();
-            }
-        }
-
-        public void Save(BinaryWriter writer)
-        {
-            writer.Write((byte)0);
-            writer.Write(DatabaseSettings.Count);
-            foreach (var s in DatabaseSettings)
-            {
-                s.Save(writer);
-            }
+            IsReadOnly = isReadOnly;
+            IsEditLocked = isEditLocked;
+            Generation = generation;
         }
     }
 }

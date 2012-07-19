@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  InboundPointQueue.cs - Gbtc
+//  PointQueue.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,10 +28,9 @@ using openHistorian.V2.IO.Unmanaged;
 namespace openHistorian.V2.Server.Database
 {
     /// <summary>
-    /// The first layer of data insertion. This is a holding location for point data
-    /// so committing points occurs at a slower interval.
+    /// Provides a way for points to be synchronously queued and processed in bulk.
     /// </summary>
-    class InboundPointQueue : IDisposable
+    class PointQueue : IDisposable
     {
         const int SizeOfData = 32;
 
@@ -49,22 +48,15 @@ namespace openHistorian.V2.Server.Database
         /// Creates a new inbound queue to buffer points.
         /// </summary>
         /// <param name="autoCommitQueueSize">After the queue becomes this size, a <see cref="Action"/> 
-        /// delegate will be called once. This delegate is set by calling <see cref="SetQueueCallback"/>.</param>
-        public InboundPointQueue(int autoCommitQueueSize)
+        /// delegate will be called once.</param>
+        /// <param name="queueFullCallback">The optional callback function once the queue becomes exactly autoCommitQueueSize in size.</param>
+        public PointQueue(int autoCommitQueueSize = -1, Action queueFullCallback = null)
         {
+            m_queueFullCallback = queueFullCallback;
             m_autoCommitQueueSize = autoCommitQueueSize;
             m_syncRoot = new object();
             m_activeQueue = new BinaryStream();
             m_processingQueue = new BinaryStream();
-        }
-
-        /// <summary>
-        /// Sets the delegate that will be invoked when the queue passes a AutoCommitQueueSize limit.
-        /// </summary>
-        /// <param name="queueFullCallback"></param>
-        public void SetQueueCallback(Action queueFullCallback)
-        {
-            m_queueFullCallback = queueFullCallback;
         }
 
         /// <summary>

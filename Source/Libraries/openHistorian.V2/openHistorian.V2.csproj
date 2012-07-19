@@ -96,17 +96,17 @@
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="OpenMode.cs" />
-    <Compile Include="Server\ServerInstanceSettings_Item.cs" />
-    <Compile Include="Server\Database\DatabaseEngineSettings.cs" />
-    <Compile Include="Server\Database\PartitionInitializerGenerationSettings.cs" />
-    <Compile Include="Server\Database\PartitionInitializerSettings.cs" />
-    <Compile Include="Server\Database\ProcessGenerationRolloverSettings.cs" />
-    <Compile Include="Server\Database\ProcessInitialInserts.cs" />
-    <Compile Include="Server\Database\PartitionRolloverMode.cs" />
-    <Compile Include="Server\Database\Database\CreateDatabase.cs" />
-    <Compile Include="Server\Database\Database\File.cs" />
-    <Compile Include="Server\Database\Database\IDatabase.cs" />
-    <Compile Include="Server\Database\PartitionInsertMode.cs" />
+    <Compile Include="Server\Database\DataList.cs" />
+    <Compile Include="Server\Database\DataList_Editor.cs" />
+    <Compile Include="Server\Database\DataListRemovalStatus.cs" />
+    <Compile Include="Server\Database\DataManagement.cs" />
+    <Compile Include="Server\Database\NewPartitionCriteria.cs" />
+    <Compile Include="Server\Database\PartitionStateInformation.cs" />
+    <Compile Include="Server\Database\Settings\ServerInstanceSettings_Item.cs" />
+    <Compile Include="Server\Database\Settings\DatabaseEngineSettings.cs" />
+    <Compile Include="Server\Database\Settings\PartitionInitializerGenerationSettings.cs" />
+    <Compile Include="Server\Database\Settings\PartitionInitializerSettings.cs" />
+    <Compile Include="Server\Database\Settings\ProcessGenerationRolloverSettings.cs" />
     <Compile Include="Server\Database\PartitionInitializer.cs" />
     <Compile Include="Server\Database\Partitions\PartitionFile.cs" />
     <Compile Include="Server\Database\DatabaseEngine.cs" />
@@ -122,7 +122,7 @@
     <Compile Include="OldCode\ContinuousBuffer.cs" />
     <Compile Include="OldCode\DataPoint.cs" />
     <Compile Include="HelperFunctions.cs" />
-    <Compile Include="Server\Database\InboundPointQueue.cs" />
+    <Compile Include="Server\Database\PointQueue.cs" />
     <Compile Include="IO\IBinaryStream.cs" />
     <Compile Include="FileSystem\DiskIo.cs" />
     <Compile Include="OldCode\IO\IStreamingTransport.cs" />
@@ -130,15 +130,13 @@
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
-    <Compile Include="Server\Database\ProcessGenerationRollover.cs" />
-    <Compile Include="Server\Database\ProcessInitialInsertsSettings.cs" />
-    <Compile Include="Server\Database\ResourceEngineSettings.cs" />
-    <Compile Include="Server\Database\RolloverEngineSettings.cs" />
+    <Compile Include="Server\Database\Settings\ProcessInitialInsertsSettings.cs" />
+    <Compile Include="Server\Database\Settings\ResourceEngineSettings.cs" />
+    <Compile Include="Server\Database\Settings\RolloverEngineSettings.cs" />
     <Compile Include="Server\ServerInstance.cs" />
-    <Compile Include="Server\Database\RolloverEngine.cs" />
-    <Compile Include="Server\Database\TransactionResources.cs" />
-    <Compile Include="Server\Database\ResourceEngine.cs" />
-    <Compile Include="Server\ServerInstanceSettings.cs" />
+    <Compile Include="Server\Database\DataListSnapshot.cs" />
+    <Compile Include="Server\Database\DataWriter.cs" />
+    <Compile Include="Server\Database\Settings\ServerInstanceSettings.cs" />
     <Compile Include="Streaming\Client\ClientSocket.cs" />
     <Compile Include="Streaming\IInboundBuffer.cs" />
     <Compile Include="Streaming\ITransportStreaming.cs" />
@@ -258,6 +256,7 @@
   <ItemGroup>
     <Folder Include="FileSystem\Old Code\" />
     <Folder Include="OldCode\PointStream\Sorting\" />
+    <Folder Include="Server\Database\DefaultDataReader\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

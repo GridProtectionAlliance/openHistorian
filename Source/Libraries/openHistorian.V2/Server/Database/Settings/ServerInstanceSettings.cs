@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DatabaseEngineSettings.cs - Gbtc
+//  ServerInstanceSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,24 +22,22 @@
 //
 //******************************************************************************************************
 
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Server
 {
-    public class DatabaseEngineSettings
+    partial class ServerInstanceSettings
     {
-        public string DatabaseName;
-        public RolloverEngineSettings RolloverEngineSettings;
-        public ResourceEngineSettings ResourceEngineSettings;
+        public List<Item> Databases;
 
-        public DatabaseEngineSettings()
+        public ServerInstanceSettings()
         {
-            DatabaseName = string.Empty;
-            RolloverEngineSettings=new RolloverEngineSettings();
-            ResourceEngineSettings=new ResourceEngineSettings();
+            Databases = new List<Item>();
         }
-        public DatabaseEngineSettings(BinaryReader reader)
+
+        public ServerInstanceSettings(BinaryReader reader)
         {
             Load(reader);
         }
@@ -49,9 +47,13 @@ namespace openHistorian.V2.Server.Database
             switch (reader.ReadByte())
             {
                 case 0:
-                    DatabaseName = reader.ReadString();
-                    RolloverEngineSettings=new RolloverEngineSettings(reader);
-                    ResourceEngineSettings=new ResourceEngineSettings(reader);
+                    int count = reader.ReadInt32();
+                    Databases = new List<Item>(count);
+                    while ( count>0)
+                    {
+                        count--;
+                        Databases.Add(new Item(reader));
+                    }
                     break;
                 default:
                     throw new VersionNotFoundException();
@@ -61,11 +63,11 @@ namespace openHistorian.V2.Server.Database
         public void Save(BinaryWriter writer)
         {
             writer.Write((byte)0);
-            writer.Write(DatabaseName);
-            RolloverEngineSettings.Save(writer);
-            ResourceEngineSettings.Save(writer);
+            writer.Write(Databases.Count);
+            foreach (var s in Databases)
+            {
+                s.Save(writer);
+            }
         }
-
     }
-
 }

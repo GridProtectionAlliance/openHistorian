@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionInitializer.cs - Gbtc
+//  DatabaseEngineSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,31 +22,50 @@
 //
 //******************************************************************************************************
 
-using System;
-using openHistorian.V2.Server.Database.Partitions;
+using System.Data;
+using System.IO;
 
 namespace openHistorian.V2.Server.Database
 {
-    class PartitionInitializer
+    public class DatabaseEngineSettings
     {
-        PartitionInitializerSettings m_settings;
+        public string DatabaseName;
+        public RolloverEngineSettings RolloverEngineSettings;
+        public ResourceEngineSettings ResourceEngineSettings;
 
-        public PartitionInitializer(PartitionInitializerSettings settings)
+        public DatabaseEngineSettings()
         {
-            m_settings = settings;
+            DatabaseName = string.Empty;
+            RolloverEngineSettings = new RolloverEngineSettings();
+            ResourceEngineSettings = new ResourceEngineSettings();
+        }
+        public DatabaseEngineSettings(BinaryReader reader)
+        {
+            Load(reader);
         }
 
-        public PartitionFile CreatePartition(int generation)
+        public void Load(BinaryReader reader)
         {
-            var genSettings = m_settings.GenerationSettings[generation];
-            if (genSettings.IsMemoryPartition)
+            switch (reader.ReadByte())
             {
-                return new PartitionFile();
-            }
-            else
-            {
-                throw new NotImplementedException();
+                case 0:
+                    DatabaseName = reader.ReadString();
+                    RolloverEngineSettings = new RolloverEngineSettings(reader);
+                    ResourceEngineSettings = new ResourceEngineSettings(reader);
+                    break;
+                default:
+                    throw new VersionNotFoundException();
             }
         }
+
+        public void Save(BinaryWriter writer)
+        {
+            writer.Write((byte)0);
+            writer.Write(DatabaseName);
+            RolloverEngineSettings.Save(writer);
+            ResourceEngineSettings.Save(writer);
+        }
+
     }
+
 }

@@ -23,9 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Threading;
-using openHistorian.V2.IO.Unmanaged;
-using openHistorian.V2.Server.Database.Partitions;
+using System.Collections.Generic;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -34,17 +32,47 @@ namespace openHistorian.V2.Server.Database
     /// </summary>
     public class DatabaseEngine
     {
-        RolloverEngine m_rolloverEngine;
-        ResourceEngine m_resourceEngine;
-        InboundPointQueue m_newPointQueue;
-        DatabaseEngineSettings m_settings;
+        DataWriter m_dataWriter;
+        //DataReader m_dataReader;
+        DataList m_dataList;
+        PartitionInitializer m_partitionInitializer;
+        List<DataManagement> m_dataManagement;
+
+        //RolloverEngine m_rolloverEngine;
+        //DataWriter m_dataWriter;
+        //InboundPointQueue m_newPointQueue;
+        //DatabaseEngineSettings m_settings;
 
         public DatabaseEngine(DatabaseEngineSettings settings)
         {
-            m_settings = settings;
-            m_resourceEngine = new ResourceEngine(settings.ResourceEngineSettings);
-            m_rolloverEngine = new RolloverEngine();
-            m_newPointQueue = m_rolloverEngine.ProcessInserts.NewPointQueue;
+            var partitionCriteria = default(NewPartitionCriteria);
+            partitionCriteria.CommitCount = 1000;
+            partitionCriteria.PartitionSize = 10 * 1024 * 1024; //10MB
+            partitionCriteria.Interval = new TimeSpan(0, 0, 10); //10 Seconds
+            partitionCriteria.IsCommitCountValid = true;
+            partitionCriteria.IsPartitionSizeValid = true;
+            partitionCriteria.IsIntervalValid = true;
+
+            var partitionCriteria2 = default(NewPartitionCriteria);
+            partitionCriteria2.CommitCount = 1000;
+            partitionCriteria2.PartitionSize = 1 * 1024 * 1024 * 1024; //1 GB
+            partitionCriteria2.Interval = new TimeSpan(0, 10, 0); //10 Minutes
+            partitionCriteria2.IsCommitCountValid = true;
+            partitionCriteria2.IsPartitionSizeValid = true;
+            partitionCriteria2.IsIntervalValid = true;
+
+            m_partitionInitializer = new PartitionInitializer(null);
+            m_dataList = new DataList();
+            m_dataWriter = new DataWriter(m_partitionInitializer, m_dataList, 100, 10000, partitionCriteria);
+
+            m_dataManagement = new List<DataManagement>();
+            m_dataManagement.Add(new DataManagement(m_partitionInitializer, m_dataList, partitionCriteria2, 0));
+
+
+            //m_settings = settings;
+            //m_dataWriter = new DataWriter(settings.ResourceEngineSettings);
+            //m_rolloverEngine = new RolloverEngine();
+            //m_newPointQueue = m_rolloverEngine.ProcessInserts.NewPointQueue;
         }
 
         public long LookupPointId(Guid pointId)
@@ -52,43 +80,9 @@ namespace openHistorian.V2.Server.Database
             return -1;
         }
 
-        //void ProcessRolloverData()
-        //{
-        //    while (true)
-        //    {
-        //        Thread.Sleep(10000);
-
-        //        lock (m_snapshotLock)
-        //        {
-        //            PartitionFile newPartitionFile = new PartitionFile();
-        //            PartitionSummary newPartition = new PartitionSummary();
-        //            newPartition.PartitionFileFile = newPartitionFile;
-        //            newPartition.ActiveSnapshot = newPartitionFile.CreateSnapshot();
-        //            newPartition.FirstKeyValue = ulong.MinValue;
-        //            newPartition.LastKeyValue = ulong.MaxValue;
-        //            newPartition.KeyMatchMode = PartitionSummary.MatchMode.UniverseEntry;
-        //            newPartition.IsReadOnly = true;
-
-        //            //LookupTable currentLookupTable = m_lookupTable.CloneEditableCopy();
-
-        //            //TableSummaryInfo existingTableInfo = currentLookupTable.GetGeneration(0);
-        //            //currentLookupTable.SetGeneration(0, newTableInfo);
-        //            //currentLookupTable.SetGeneration(1, existingTableInfo);
-
-
-        //            //var oldFiles = m_lookupTable.GetLatestSnapshot().Clone();
-        //        }
-
-        //        //determine what files need to be recombined.
-        //        //recombine them
-        //        //update the snapshot library
-        //        //post update.
-        //    }
-        //}
-
         public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            m_newPointQueue.WriteData(key1, key2, value1, value2);
+            m_dataWriter.WriteData(key1, key2, value1, value2);
         }
 
     }

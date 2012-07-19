@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RolloverEngine.cs - Gbtc
+//  NewPartitionCriteria.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,24 +16,23 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/30/2012 - Steven E. Chisholm
+//  7/17/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.IO.Unmanaged;
-using System.Threading;
 
 namespace openHistorian.V2.Server.Database
 {
-    /// <summary>
-    /// Manages the conditions required to rollover and combine an archive file.
-    /// </summary>
-    class RolloverEngine
+    struct NewPartitionCriteria
     {
-        public ProcessInitialInserts ProcessInserts;
-        public ProcessGenerationRollover[] ProcessGenerations;
+        public int CommitCount;
+        public TimeSpan Interval;
+        public long PartitionSize;
+        public bool IsCommitCountValid;
+        public bool IsIntervalValid;
+        public bool IsPartitionSizeValid;
     }
 }
