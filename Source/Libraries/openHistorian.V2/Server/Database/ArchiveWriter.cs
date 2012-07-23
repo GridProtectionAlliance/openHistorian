@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DataWriter.cs - Gbtc
+//  ArchiveWriter.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,7 +26,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using openHistorian.V2.IO.Unmanaged;
-using openHistorian.V2.Server.Database.Partitions;
+using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -34,18 +34,18 @@ namespace openHistorian.V2.Server.Database
     /// Responsible for getting data into the database. This class will prebuffer
     /// points and commit them in bulk operations.
     /// </summary>
-    class DataWriter : IDisposable
+    class ArchiveWriter : IDisposable
     {
 
-        NewPartitionCriteria m_newPartitionCriteria;
+        NewArchiveCriteria m_newArchiveCriteria;
 
-        PartitionInitializer m_partitionInitializer;
+        ArchiveInitializer m_archiveInitializer;
 
         volatile bool m_disposed;
 
-        DataList m_dataList;
+        ArchiveList m_archiveList;
 
-        PartitionFile m_activeFile;
+        ArchiveFile m_activeFile;
 
         PointQueue m_pointQueue;
 
@@ -62,19 +62,19 @@ namespace openHistorian.V2.Server.Database
         Stopwatch m_lastCommitTime;
 
         /// <summary>
-        /// Creates a new <see cref="DataWriter"/>.
+        /// Creates a new <see cref="ArchiveWriter"/>.
         /// </summary>
-        /// <param name="partitionInitializer">Used to create a new partition.</param>
-        /// <param name="dataList">The list used to attach newly created file.</param>
+        /// <param name="archiveInitializer">Used to create a new partition.</param>
+        /// <param name="archiveList">The list used to attach newly created file.</param>
         /// <param name="autoCommitInterval">the number of milliseconds before data is automatically commited to the database.</param>
         /// <param name="autoCommitCount">the number of points added to the <see cref="PointQueue"/> 
         /// before the data is automatically commited to the database. A value of -1 means don't auto commit on a point count.</param>
-        /// <param name="newPartitionCriteria"></param>
-        public DataWriter(PartitionInitializer partitionInitializer, DataList dataList, int autoCommitInterval, int autoCommitCount, NewPartitionCriteria newPartitionCriteria)
+        /// <param name="newArchiveCriteria"></param>
+        public ArchiveWriter(ArchiveInitializer archiveInitializer, ArchiveList archiveList, int autoCommitInterval, int autoCommitCount, NewArchiveCriteria newArchiveCriteria)
         {
-            m_dataList = dataList;
-            m_newPartitionCriteria = newPartitionCriteria;
-            m_partitionInitializer = partitionInitializer;
+            m_archiveList = archiveList;
+            m_newArchiveCriteria = newArchiveCriteria;
+            m_archiveInitializer = archiveInitializer;
             m_autoCommitInterval = autoCommitInterval;
             m_pointQueue = new PointQueue(autoCommitCount, SignalInitialInsert);
 
@@ -101,21 +101,21 @@ namespace openHistorian.V2.Server.Database
                 if (pointCount > 0)
                 {
                     if (m_activeFile == null ||
-                        (m_newPartitionCriteria.IsCommitCountValid && m_commitCount >= m_newPartitionCriteria.CommitCount) ||
-                        (m_newPartitionCriteria.IsIntervalValid && m_lastCommitTime.Elapsed >= m_newPartitionCriteria.Interval) ||
-                        (m_newPartitionCriteria.IsPartitionSizeValid && m_activeFile.FileSize >= m_newPartitionCriteria.PartitionSize))
+                        (m_newArchiveCriteria.IsCommitCountValid && m_commitCount >= m_newArchiveCriteria.CommitCount) ||
+                        (m_newArchiveCriteria.IsIntervalValid && m_lastCommitTime.Elapsed >= m_newArchiveCriteria.Interval) ||
+                        (m_newArchiveCriteria.IsPartitionSizeValid && m_activeFile.FileSize >= m_newArchiveCriteria.PartitionSize))
                     {
                         m_commitCount = 0;
                         m_lastCommitTime.Restart();
-                        var newFile = m_partitionInitializer.CreatePartition(0);
-                        using (var edit = m_dataList.AcquireEditLock())
+                        var newFile = m_archiveInitializer.CreatePartition(0);
+                        using (var edit = m_archiveList.AcquireEditLock())
                         {
                             //Create a new file.
                             if (m_activeFile != null)
                             {
                                 edit.ReleaseEditLock(m_activeFile);
                             }
-                            edit.Add(newFile, new PartitionStateInformation(false, true, 0));
+                            edit.Add(newFile, new ArchiveFileStateInformation(false, true, 0));
                         }
                         m_activeFile = newFile;
                     }
@@ -133,7 +133,7 @@ namespace openHistorian.V2.Server.Database
                     }
                     m_commitCount++;
                     m_activeFile.CommitEdit();
-                    using (var editor = m_dataList.AcquireEditLock())
+                    using (var editor = m_archiveList.AcquireEditLock())
                     {
                         editor.RenewSnapshot(m_activeFile);
                     }

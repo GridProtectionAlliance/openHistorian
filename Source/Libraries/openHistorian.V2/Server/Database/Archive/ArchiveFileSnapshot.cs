@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionSummary.cs - Gbtc
+//  PartitionSnapshot.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,26 +16,51 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/18/2012 - Steven E. Chisholm
+//  5/22/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
 //
 //******************************************************************************************************
 
+using System;
+using openHistorian.V2.FileStructure;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Server.Database.Archive
 {
-    class PartitionStateInformation
+    /// <summary>
+    /// Aquires a read transaction on the current archive partition. This will allow all user created
+    /// transactions to have snapshot isolation of the entire data set.
+    /// </summary>
+    public class ArchiveFileSnapshot
     {
-        public bool IsReadOnly;
-        public bool IsEditLocked;
-        public int Generation;
-        public PartitionSummary Summary;
-        public PartitionStateInformation(bool isReadOnly, bool isEditLocked, int generation)
+        #region [ Members ]
+
+        TransactionalFileStructure m_fileStructure;
+        TransactionalRead m_currentTransaction;
+
+        #endregion
+
+        #region [ Constructors ]
+
+        public ArchiveFileSnapshot(TransactionalFileStructure fileStructure)
         {
-            IsReadOnly = isReadOnly;
-            IsEditLocked = isEditLocked;
-            Generation = generation;
+            m_fileStructure = fileStructure;
+            m_currentTransaction = m_fileStructure.BeginRead();
         }
+
+        #endregion
+
+        #region [ Methods ]
+        
+        /// <summary>
+        /// Opens an instance of the archive file to allow for concurrent reading of a snapshot.
+        /// </summary>
+        /// <returns></returns>
+        public ArchiveFileReadOnlySnapshotInstance OpenInstance()
+        {
+            return new ArchiveFileReadOnlySnapshotInstance(m_currentTransaction);
+        }
+
+        #endregion
+
     }
 }

@@ -96,24 +96,24 @@
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="OpenMode.cs" />
-    <Compile Include="Server\Database\DataList.cs" />
-    <Compile Include="Server\Database\DataList_Editor.cs" />
-    <Compile Include="Server\Database\DataListRemovalStatus.cs" />
-    <Compile Include="Server\Database\DataManagement.cs" />
-    <Compile Include="Server\Database\NewPartitionCriteria.cs" />
-    <Compile Include="Server\Database\PartitionStateInformation.cs" />
+    <Compile Include="Server\Database\ArchiveList.cs" />
+    <Compile Include="Server\Database\ArchiveList_Editor.cs" />
+    <Compile Include="Server\Database\ArchiveListRemovalStatus.cs" />
+    <Compile Include="Server\Database\ArchiveManagement.cs" />
+    <Compile Include="Server\Database\NewArchiveCriteria.cs" />
+    <Compile Include="Server\Database\ArchiveFileStateInformation.cs" />
     <Compile Include="Server\Database\Settings\ServerInstanceSettings_Item.cs" />
     <Compile Include="Server\Database\Settings\DatabaseEngineSettings.cs" />
     <Compile Include="Server\Database\Settings\PartitionInitializerGenerationSettings.cs" />
     <Compile Include="Server\Database\Settings\PartitionInitializerSettings.cs" />
     <Compile Include="Server\Database\Settings\ProcessGenerationRolloverSettings.cs" />
-    <Compile Include="Server\Database\PartitionInitializer.cs" />
-    <Compile Include="Server\Database\Partitions\PartitionFile.cs" />
-    <Compile Include="Server\Database\DatabaseEngine.cs" />
-    <Compile Include="Server\Database\Partitions\PartitionSnapshot.cs" />
-    <Compile Include="Server\Database\Partitions\PartitionReadOnlySnapshotInstance.cs" />
-    <Compile Include="Server\Database\Partitions\BasicTreeContainer.cs" />
-    <Compile Include="Server\Database\Partitions\BasicTreeContainerEdit.cs" />
+    <Compile Include="Server\Database\ArchiveInitializer.cs" />
+    <Compile Include="Server\Database\Archive\ArchiveFile.cs" />
+    <Compile Include="Server\Database\ArchiveManagementSystem.cs" />
+    <Compile Include="Server\Database\Archive\ArchiveFileSnapshot.cs" />
+    <Compile Include="Server\Database\Archive\ArchiveFileReadOnlySnapshotInstance.cs" />
+    <Compile Include="Server\Database\Archive\SortedTreeContainer.cs" />
+    <Compile Include="Server\Database\Archive\SortedTreeContainerEdit.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Base.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase.cs" />
@@ -134,8 +134,8 @@
     <Compile Include="Server\Database\Settings\ResourceEngineSettings.cs" />
     <Compile Include="Server\Database\Settings\RolloverEngineSettings.cs" />
     <Compile Include="Server\ServerInstance.cs" />
-    <Compile Include="Server\Database\DataListSnapshot.cs" />
-    <Compile Include="Server\Database\DataWriter.cs" />
+    <Compile Include="Server\Database\ArchiveListSnapshot.cs" />
+    <Compile Include="Server\Database\ArchiveWriter.cs" />
     <Compile Include="Server\Database\Settings\ServerInstanceSettings.cs" />
     <Compile Include="Streaming\Client\ClientSocket.cs" />
     <Compile Include="Streaming\IInboundBuffer.cs" />
@@ -150,7 +150,7 @@
     <Compile Include="Streaming\Server\ProcessClientStream.cs" />
     <Compile Include="Streaming\Server\ProcessKeepAlive.cs" />
     <Compile Include="Streaming\Server\ServerSocket.cs" />
-    <Compile Include="Server\Database\PartitionSummary.cs" />
+    <Compile Include="Server\Database\ArchiveFileSummary.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
     <Compile Include="OldCode\Collections\BPlusTree.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBase.cs" />
@@ -256,7 +256,7 @@
   <ItemGroup>
     <Folder Include="FileStructure\Old Code\" />
     <Folder Include="OldCode\PointStream\Sorting\" />
-    <Folder Include="Server\Database\DefaultDataReader\" />
+    <Folder Include="Server\Database\DeleteMe\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  NewPartitionCriteria.cs - Gbtc
+//  ArchiveInitializer.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,23 +16,37 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/17/2012 - Steven E. Chisholm
+//  7/4/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
+using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
 {
-    struct NewPartitionCriteria
+    class ArchiveInitializer
     {
-        public int CommitCount;
-        public TimeSpan Interval;
-        public long PartitionSize;
-        public bool IsCommitCountValid;
-        public bool IsIntervalValid;
-        public bool IsPartitionSizeValid;
+        PartitionInitializerSettings m_settings;
+
+        public ArchiveInitializer(PartitionInitializerSettings settings)
+        {
+            m_settings = settings;
+        }
+
+        public ArchiveFile CreatePartition(int generation)
+        {
+            var genSettings = m_settings.GenerationSettings[generation];
+            if (genSettings.IsMemoryPartition)
+            {
+                return new ArchiveFile();
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DataManagement.cs - Gbtc
+//  ArchiveManagement.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -25,7 +25,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using openHistorian.V2.Server.Database.Partitions;
+using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -33,17 +33,17 @@ namespace openHistorian.V2.Server.Database
     /// Performs the required rollovers by reading partitions from the data list
     /// and combining them into a file of a later generation.
     /// </summary>
-    class DataManagement
+    class ArchiveManagement
     {
-        NewPartitionCriteria m_newPartitionCriteria;
+        NewArchiveCriteria m_newArchiveCriteria;
 
-        PartitionInitializer m_partitionInitializer;
+        ArchiveInitializer m_archiveInitializer;
 
         volatile bool m_disposed;
 
-        DataList m_dataList;
+        ArchiveList m_archiveList;
 
-        PartitionFile m_activeFile;
+        ArchiveFile m_activeFile;
 
         Thread m_insertThread;
 
@@ -56,17 +56,17 @@ namespace openHistorian.V2.Server.Database
         int m_rolloverGenerationNumber;
 
         /// <summary>
-        /// Creates a new <see cref="DataManagement"/>.
+        /// Creates a new <see cref="ArchiveManagement"/>.
         /// </summary>
-        /// <param name="partitionInitializer">Used to create a new partition.</param>
-        /// <param name="dataList">The list used to attach newly created file.</param>
-        /// <param name="newPartitionCriteria"></param>
-        public DataManagement(PartitionInitializer partitionInitializer, DataList dataList, NewPartitionCriteria newPartitionCriteria, int rolloverGenerationNumber)
+        /// <param name="archiveInitializer">Used to create a new partition.</param>
+        /// <param name="archiveList">The list used to attach newly created file.</param>
+        /// <param name="newArchiveCriteria"></param>
+        public ArchiveManagement(ArchiveInitializer archiveInitializer, ArchiveList archiveList, NewArchiveCriteria newArchiveCriteria, int rolloverGenerationNumber)
         {
             m_rolloverGenerationNumber = rolloverGenerationNumber;
-            m_dataList = dataList;
-            m_newPartitionCriteria = newPartitionCriteria;
-            m_partitionInitializer = partitionInitializer;
+            m_archiveList = archiveList;
+            m_newArchiveCriteria = newArchiveCriteria;
+            m_archiveInitializer = archiveInitializer;
 
             m_lastCommitTime = Stopwatch.StartNew();
 
@@ -85,9 +85,9 @@ namespace openHistorian.V2.Server.Database
                 m_waitTimer.WaitOne(1000);
                 m_waitTimer.Reset();
 
-                List<PartitionSummary> partitionsToRollOver = new List<PartitionSummary>();
+                List<ArchiveFileSummary> partitionsToRollOver = new List<ArchiveFileSummary>();
 
-                using (var edit = m_dataList.AcquireEditLock())
+                using (var edit = m_archiveList.AcquireEditLock())
                 {
                     foreach (var file in edit.Partitions)
                     {
@@ -102,21 +102,21 @@ namespace openHistorian.V2.Server.Database
                 if (partitionsToRollOver.Count > 0)
                 {
                     if (m_activeFile == null ||
-                        (m_newPartitionCriteria.IsCommitCountValid && m_commitCount >= m_newPartitionCriteria.CommitCount) ||
-                        (m_newPartitionCriteria.IsIntervalValid && m_lastCommitTime.Elapsed >= m_newPartitionCriteria.Interval) ||
-                        (m_newPartitionCriteria.IsPartitionSizeValid && m_activeFile.FileSize >= m_newPartitionCriteria.PartitionSize))
+                        (m_newArchiveCriteria.IsCommitCountValid && m_commitCount >= m_newArchiveCriteria.CommitCount) ||
+                        (m_newArchiveCriteria.IsIntervalValid && m_lastCommitTime.Elapsed >= m_newArchiveCriteria.Interval) ||
+                        (m_newArchiveCriteria.IsPartitionSizeValid && m_activeFile.FileSize >= m_newArchiveCriteria.PartitionSize))
                     {
                         m_commitCount = 0;
                         m_lastCommitTime.Restart();
-                        var newFile = m_partitionInitializer.CreatePartition(m_rolloverGenerationNumber + 1);
-                        using (var edit = m_dataList.AcquireEditLock())
+                        var newFile = m_archiveInitializer.CreatePartition(m_rolloverGenerationNumber + 1);
+                        using (var edit = m_archiveList.AcquireEditLock())
                         {
                             //Create a new file.
                             if (m_activeFile != null)
                             {
                                 edit.ReleaseEditLock(m_activeFile);
                             }
-                            edit.Add(newFile, new PartitionStateInformation(false, true, 0));
+                            edit.Add(newFile, new ArchiveFileStateInformation(false, true, 0));
                         }
                         m_activeFile = newFile;
                     }
@@ -138,7 +138,7 @@ namespace openHistorian.V2.Server.Database
                             }
 
                             m_activeFile.CommitEdit();
-                            using (var editor = m_dataList.AcquireEditLock())
+                            using (var editor = m_archiveList.AcquireEditLock())
                             {
                                 editor.RenewSnapshot(m_activeFile);
                             }
@@ -146,13 +146,13 @@ namespace openHistorian.V2.Server.Database
                         m_commitCount++;
                     }
                     m_activeFile.CommitEdit();
-                    using (var editor = m_dataList.AcquireEditLock())
+                    using (var editor = m_archiveList.AcquireEditLock())
                     {
                         editor.RenewSnapshot(m_activeFile);
                         foreach (var source in partitionsToRollOver)
                         {
-                            DataListRemovalStatus status;
-                            if (editor.Remove(source.PartitionFileFile, out status))
+                            ArchiveListRemovalStatus status;
+                            if (editor.Remove(source.ArchiveFileFile, out status))
                             {
                                 //ToDo: Do something with this removal status
                             }

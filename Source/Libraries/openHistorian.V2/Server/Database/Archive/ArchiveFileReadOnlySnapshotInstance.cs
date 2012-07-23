@@ -25,13 +25,13 @@ using System;
 using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileStructure;
 
-namespace openHistorian.V2.Server.Database.Partitions
+namespace openHistorian.V2.Server.Database.Archive
 {
     /// <summary>
     /// Provides a user with a read-only instance of an archive.
     /// This class is not thread safe.
     /// </summary>
-    public class PartitionReadOnlySnapshotInstance : IDisposable
+    public class ArchiveFileReadOnlySnapshotInstance : IDisposable
     {
 
         //Since there is currently only one BasicTree per partition, this is basically a pass through class.
@@ -41,15 +41,15 @@ namespace openHistorian.V2.Server.Database.Partitions
         static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
 
         bool m_disposed;
-        BasicTreeContainer m_dataTree;
+        SortedTreeContainer m_dataTree;
 
         #endregion
 
         #region [ Constructors ]
 
-        public PartitionReadOnlySnapshotInstance(TransactionalRead currentTransaction)
+        public ArchiveFileReadOnlySnapshotInstance(TransactionalRead currentTransaction)
         {
-            m_dataTree = new BasicTreeContainer(currentTransaction, s_pointDataFile, 1);
+            m_dataTree = new SortedTreeContainer(currentTransaction, s_pointDataFile, 1);
         }
 
         #endregion

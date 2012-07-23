@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionSummary.cs - Gbtc
+//  ArchiveFileSummary.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,7 +22,7 @@
 //
 //******************************************************************************************************
 
-using openHistorian.V2.Server.Database.Partitions;
+using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -30,21 +30,21 @@ namespace openHistorian.V2.Server.Database
     /// Contains an immutable class of the current partition
     /// along with its most recent snapshot.
     /// </summary>
-    class PartitionSummary
+    class ArchiveFileSummary
     {
         #region [ Members ]
 
         ulong m_firstKeyValue;
         ulong m_lastKeyValue;
-        PartitionFile m_partitionFileFile;
-        PartitionSnapshot m_activeSnapshot;
+        ArchiveFile m_archiveFileFile;
+        ArchiveFileSnapshot m_activeSnapshot;
         #endregion
 
         #region [ Constructors ]
        
-        public PartitionSummary(PartitionFile file)
+        public ArchiveFileSummary(ArchiveFile file)
         {
-            m_partitionFileFile = file;
+            m_archiveFileFile = file;
             m_activeSnapshot = file.CreateSnapshot();
             m_firstKeyValue = file.FirstKey;
             m_lastKeyValue = file.LastKey;
@@ -55,13 +55,13 @@ namespace openHistorian.V2.Server.Database
         #region [ Properties ]
 
         /// <summary>
-        /// Gets the <see cref="PartitionFile"/> that this class represents.
+        /// Gets the <see cref="ArchiveFile"/> that this class represents.
         /// </summary>
-        public PartitionFile PartitionFileFile
+        public ArchiveFile ArchiveFileFile
         {
             get
             {
-                return m_partitionFileFile;
+                return m_archiveFileFile;
             }
         }
 
@@ -88,9 +88,9 @@ namespace openHistorian.V2.Server.Database
         }
 
         /// <summary>
-        /// Gets the most recent <see cref="PartitionSnapshot"/> of this class when it was instanced.
+        /// Gets the most recent <see cref="ArchiveFileSnapshot"/> of this class when it was instanced.
         /// </summary>
-        public PartitionSnapshot ActiveSnapshot
+        public ArchiveFileSnapshot ActiveSnapshot
         {
             get
             {

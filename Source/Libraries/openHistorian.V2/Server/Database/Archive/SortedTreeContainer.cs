@@ -26,12 +26,12 @@ using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileStructure;
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Server.Database.Partitions
+namespace openHistorian.V2.Server.Database.Archive
 {
     /// <summary>
     /// Encapsolates the ArchiveFileStream, BinaryStream, and BasicTree for a certain tree.
     /// </summary>
-    internal class BasicTreeContainer : IDisposable
+    internal class SortedTreeContainer : IDisposable
     {
         #region [ Members ]
 
@@ -44,7 +44,7 @@ namespace openHistorian.V2.Server.Database.Partitions
 
         #region [ Constructors ]
 
-        public BasicTreeContainer(TransactionalRead currentTransaction, Guid fileNumber, int flags)
+        public SortedTreeContainer(TransactionalRead currentTransaction, Guid fileNumber, int flags)
         {
             m_subStream = currentTransaction.OpenFile(fileNumber, flags);
             m_binaryStream = new BinaryStream(m_subStream);

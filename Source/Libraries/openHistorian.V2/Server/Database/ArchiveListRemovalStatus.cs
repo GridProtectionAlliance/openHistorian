@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DataListRemovalStatus.cs - Gbtc
+//  ArchiveListRemovalStatus.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,37 +22,37 @@
 //
 //******************************************************************************************************
 
-using openHistorian.V2.Server.Database.Partitions;
+using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
 {
     /// <summary>
-    /// The return value of <see cref="DataList.Editor.Remove"/> provided to the calling
+    /// The return value of <see cref="ArchiveList.Editor.Remove"/> provided to the calling
     /// function to determine when a resource is no longer being used.
     /// </summary>
-    class DataListRemovalStatus
+    class ArchiveListRemovalStatus
     {
         bool m_isBeingUsed;
-        PartitionFile m_partition;
-        DataList m_collection;
+        ArchiveFile m_archive;
+        ArchiveList m_collection;
 
-        public DataListRemovalStatus(PartitionFile partition, DataList collection)
+        public ArchiveListRemovalStatus(ArchiveFile archive, ArchiveList collection)
         {
-            m_partition = partition;
+            m_archive = archive;
             m_collection = collection;
             m_isBeingUsed = true;
         }
 
         /// <summary>
-        /// Checks on the status of the removed <see cref="Partition"/> to determine if it is still being used
-        /// by a <see cref="DataList"/>'s <see cref="DataListSnapshot"/>.
+        /// Checks on the status of the removed <see cref="Archive"/> to determine if it is still being used
+        /// by a <see cref="ArchiveList"/>'s <see cref="ArchiveListSnapshot"/>.
         /// </summary>
         public bool IsBeingUsed
         {
             get
             {
                 if (m_isBeingUsed)
-                    m_isBeingUsed = m_collection.IsPartitionBeingUsed(m_partition);
+                    m_isBeingUsed = m_collection.IsPartitionBeingUsed(m_archive);
                 if (!m_isBeingUsed)
                     m_collection = null;
                 return m_isBeingUsed;
@@ -60,13 +60,13 @@ namespace openHistorian.V2.Server.Database
         }
 
         /// <summary>
-        /// The <see cref="PartitionFile"/> that was removed from the <see cref="DataList"/>.
+        /// The <see cref="ArchiveFile"/> that was removed from the <see cref="ArchiveList"/>.
         /// </summary>
-        public PartitionFile Partition
+        public ArchiveFile Archive
         {
             get
             {
-                return m_partition;
+                return m_archive;
             }
         }
 

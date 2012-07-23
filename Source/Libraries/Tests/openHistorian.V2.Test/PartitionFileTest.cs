@@ -1,4 +1,4 @@
-﻿using openHistorian.V2.Server.Database.Partitions;
+﻿using openHistorian.V2.Server.Database.Archive;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using openHistorian.V2;
@@ -67,7 +67,7 @@ namespace openHistorian.V2.Test
         [TestMethod()]
         public void PartitionFileConstructorTest()
         {
-            using (PartitionFile target = new PartitionFile())
+            using (ArchiveFile target = new ArchiveFile())
             {
             }
         }
@@ -78,7 +78,7 @@ namespace openHistorian.V2.Test
         [TestMethod()]
         public void AddPointTest()
         {
-            using (PartitionFile target = new PartitionFile())
+            using (ArchiveFile target = new ArchiveFile())
             {
                 ulong date = 0;
                 ulong pointId = 0;
@@ -96,7 +96,7 @@ namespace openHistorian.V2.Test
         [TestMethod()]
         public void CreateSnapshotTest()
         {
-            using (PartitionFile target = new PartitionFile())
+            using (ArchiveFile target = new ArchiveFile())
             {
                 ulong date = 1;
                 ulong pointId = 2;
@@ -137,7 +137,7 @@ namespace openHistorian.V2.Test
         [TestMethod()]
         public void RollbackEditTest()
         {
-            using (PartitionFile target = new PartitionFile())
+            using (ArchiveFile target = new ArchiveFile())
             {
                 ulong date = 1;
                 ulong pointId = 2;

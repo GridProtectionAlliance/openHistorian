@@ -16,7 +16,7 @@ namespace Historian2Demo
     public partial class Form1 : Form
     {
         public ServerInstance m_server;
-        public DatabaseEngine m_database;
+        public ArchiveManagementSystem m_database;
 
         public Form1()
         {

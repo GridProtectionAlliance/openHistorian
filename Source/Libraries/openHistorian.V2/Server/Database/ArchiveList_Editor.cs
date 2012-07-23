@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DataList_Editor.cs - Gbtc
+//  ArchiveList_Editor.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -25,29 +25,29 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
-using openHistorian.V2.Server.Database.Partitions;
+using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
 {
-    partial class DataList
+    partial class ArchiveList
     {
         public class Editor : IDisposable
         {
             bool m_disposed;
-            DataList m_collection;
-            ReadOnlyCollection<PartitionStateInformation> m_partitions;
+            ArchiveList m_collection;
+            ReadOnlyCollection<ArchiveFileStateInformation> m_partitions;
 
-            public Editor(DataList collection)
+            public Editor(ArchiveList collection)
             {
                 m_collection = collection;
-                m_partitions = new ReadOnlyCollection<PartitionStateInformation>(collection.m_partitions);
+                m_partitions = new ReadOnlyCollection<ArchiveFileStateInformation>(collection.m_partitions);
                 Monitor.Enter(m_collection.m_syncRoot);
             }
 
             /// <summary>
             /// Represents a readonly list of all of the partitions 
             /// </summary>
-            public ReadOnlyCollection<PartitionStateInformation> Partitions
+            public ReadOnlyCollection<ArchiveFileStateInformation> Partitions
             {
                 get
                 {
@@ -57,14 +57,14 @@ namespace openHistorian.V2.Server.Database
                 }
             }
 
-            public void ReleaseEditLock(PartitionFile partition)
+            public void ReleaseEditLock(ArchiveFile archive)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 var partitions = m_collection.m_partitions;
                 for (int x = 0; x < partitions.Count; x++)
                 {
-                    if (partitions[x].Summary.PartitionFileFile == partition)
+                    if (partitions[x].Summary.ArchiveFileFile == archive)
                     {
                         partitions[x].IsEditLocked = false;
                         return;
@@ -76,52 +76,52 @@ namespace openHistorian.V2.Server.Database
             /// Renews the snapshot of the partition file. This will acquire the latest 
             /// read transaction so all new snapshots will use this later version.
             /// </summary>
-            /// <param name="partition">the file to update the snapshot on.</param>
+            /// <param name="archiveon">the file to update the snapshot on.</param>
             /// <returns></returns>
-            public bool RenewSnapshot(PartitionFile partition)
+            public bool RenewSnapshot(ArchiveFile archive)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 var partitions = m_collection.m_partitions;
                 for (int x = 0; x < partitions.Count; x++)
                 {
-                    if (partitions[x].Summary.PartitionFileFile == partition)
+                    if (partitions[x].Summary.ArchiveFileFile == archive)
                     {
-                        partitions[x].Summary = new PartitionSummary(partition);
+                        partitions[x].Summary = new ArchiveFileSummary(archive);
                         return true;
                     }
                 }
                 return false;
             }
 
-            public void Add(PartitionFile partition, PartitionStateInformation stateInformation)
+            public void Add(ArchiveFile archive, ArchiveFileStateInformation stateInformation)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                stateInformation.Summary = new PartitionSummary(partition);
+                stateInformation.Summary = new ArchiveFileSummary(archive);
                 m_collection.m_partitions.Add(stateInformation);
             }
 
             /// <summary>
-            /// Removes the first occurnace of <see cref="partition"/> from <see cref="DataList"/>.
+            /// Removes the first occurnace of <see cref="archive"/> from <see cref="ArchiveList"/>.
             /// </summary>
-            /// <param name="partition">The partition to remove</param>
-            /// <param name="listRemovalStatus">A <see cref="DataListRemovalStatus"/> that can be used to determine
+            /// <param name="archive">The partition to remove</param>
+            /// <param name="listRemovalStatus">A <see cref="ArchiveListRemovalStatus"/> that can be used to determine
             /// when this resource is no longer being used and can be closed as a result.  
             /// Closing prematurely can cause erratic behaviour which may result in 
             /// data coruption and the application crashing.  Value is null if no item can be found.</param>
             /// <returns>True if the item was removed, False otherwise.</returns>
-            /// <exception cref="Exception">Thrown if <see cref="partition"/> is not in this list.</exception>
-            public bool Remove(PartitionFile partition, out DataListRemovalStatus listRemovalStatus)
+            /// <exception cref="Exception">Thrown if <see cref="archive"/> is not in this list.</exception>
+            public bool Remove(ArchiveFile archive, out ArchiveListRemovalStatus listRemovalStatus)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 var partitions = m_collection.m_partitions;
                 for (int x = 0; x < partitions.Count; x++)
                 {
-                    if (partitions[x].Summary.PartitionFileFile == partition)
+                    if (partitions[x].Summary.ArchiveFileFile == archive)
                     {
-                        listRemovalStatus = new DataListRemovalStatus(partitions[x].Summary.PartitionFileFile, m_collection);
+                        listRemovalStatus = new ArchiveListRemovalStatus(partitions[x].Summary.ArchiveFileFile, m_collection);
                         partitions.RemoveAt(x);
                         return true;
                     }
@@ -131,7 +131,7 @@ namespace openHistorian.V2.Server.Database
             }
 
             /// <summary>
-            /// Releases the lock on the <see cref="DataList"/>.
+            /// Releases the lock on the <see cref="ArchiveList"/>.
             /// </summary>
             public void Dispose()
             {

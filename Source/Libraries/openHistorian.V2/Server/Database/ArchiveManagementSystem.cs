@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DatabaseEngine.cs - Gbtc
+//  ArchiveManagementSystem.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,22 +30,22 @@ namespace openHistorian.V2.Server.Database
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
-    public class DatabaseEngine
+    public class ArchiveManagementSystem
     {
-        DataWriter m_dataWriter;
+        ArchiveWriter m_archiveWriter;
         //DataReader m_dataReader;
-        DataList m_dataList;
-        PartitionInitializer m_partitionInitializer;
-        List<DataManagement> m_dataManagement;
+        ArchiveList m_archiveList;
+        ArchiveInitializer m_archiveInitializer;
+        List<ArchiveManagement> m_archiveManagement;
 
         //RolloverEngine m_rolloverEngine;
         //DataWriter m_dataWriter;
         //InboundPointQueue m_newPointQueue;
         //DatabaseEngineSettings m_settings;
 
-        public DatabaseEngine(DatabaseEngineSettings settings)
+        public ArchiveManagementSystem(DatabaseEngineSettings settings)
         {
-            var partitionCriteria = default(NewPartitionCriteria);
+            var partitionCriteria = default(NewArchiveCriteria);
             partitionCriteria.CommitCount = 1000;
             partitionCriteria.PartitionSize = 10 * 1024 * 1024; //10MB
             partitionCriteria.Interval = new TimeSpan(0, 0, 10); //10 Seconds
@@ -53,7 +53,7 @@ namespace openHistorian.V2.Server.Database
             partitionCriteria.IsPartitionSizeValid = true;
             partitionCriteria.IsIntervalValid = true;
 
-            var partitionCriteria2 = default(NewPartitionCriteria);
+            var partitionCriteria2 = default(NewArchiveCriteria);
             partitionCriteria2.CommitCount = 1000;
             partitionCriteria2.PartitionSize = 1 * 1024 * 1024 * 1024; //1 GB
             partitionCriteria2.Interval = new TimeSpan(0, 10, 0); //10 Minutes
@@ -61,12 +61,12 @@ namespace openHistorian.V2.Server.Database
             partitionCriteria2.IsPartitionSizeValid = true;
             partitionCriteria2.IsIntervalValid = true;
 
-            m_partitionInitializer = new PartitionInitializer(null);
-            m_dataList = new DataList();
-            m_dataWriter = new DataWriter(m_partitionInitializer, m_dataList, 100, 10000, partitionCriteria);
+            m_archiveInitializer = new ArchiveInitializer(null);
+            m_archiveList = new ArchiveList();
+            m_archiveWriter = new ArchiveWriter(m_archiveInitializer, m_archiveList, 100, 10000, partitionCriteria);
 
-            m_dataManagement = new List<DataManagement>();
-            m_dataManagement.Add(new DataManagement(m_partitionInitializer, m_dataList, partitionCriteria2, 0));
+            m_archiveManagement = new List<ArchiveManagement>();
+            m_archiveManagement.Add(new ArchiveManagement(m_archiveInitializer, m_archiveList, partitionCriteria2, 0));
 
 
             //m_settings = settings;
@@ -82,7 +82,7 @@ namespace openHistorian.V2.Server.Database
 
         public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            m_dataWriter.WriteData(key1, key2, value1, value2);
+            m_archiveWriter.WriteData(key1, key2, value1, value2);
         }
 
     }

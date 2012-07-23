@@ -27,13 +27,13 @@ using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileStructure;
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Server.Database.Partitions
+namespace openHistorian.V2.Server.Database.Archive
 {
     /// <summary>
     /// Represents a individual self-contained archive file. 
-    /// This is one of many files that are part of a given <see cref="DatabaseEngine"/>.
+    /// This is one of many files that are part of a given <see cref="ArchiveManagementSystem"/>.
     /// </summary>
-    public class PartitionFile : IDisposable
+    public class ArchiveFile : IDisposable
     {
         #region [ Members ]
 
@@ -45,20 +45,20 @@ namespace openHistorian.V2.Server.Database.Partitions
         bool m_disposed;
         TransactionalFileStructure m_fileStructure;
         TransactionalEdit m_currentTransaction;
-        BasicTreeContainerEdit m_dataTree;
+        SortedTreeContainerEdit m_dataTree;
 
         #endregion
 
         #region [ Constructors ]
 
-        public PartitionFile()
+        public ArchiveFile()
         {
             m_fileName = string.Empty;
             m_fileStructure = new TransactionalFileStructure();
             InitializeNewFile();
         }
 
-        public PartitionFile(string file, OpenMode openMode, AccessMode accessMode)
+        public ArchiveFile(string file, OpenMode openMode, AccessMode accessMode)
         {
             m_fileName = file;
             m_fileStructure = new TransactionalFileStructure(file, openMode, accessMode);
@@ -154,11 +154,11 @@ namespace openHistorian.V2.Server.Database.Partitions
         /// Aquires a snapshot of the current file system.
         /// </summary>
         /// <returns></returns>
-        public PartitionSnapshot CreateSnapshot()
+        public ArchiveFileSnapshot CreateSnapshot()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            return new PartitionSnapshot(m_fileStructure);
+            return new ArchiveFileSnapshot(m_fileStructure);
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace openHistorian.V2.Server.Database.Partitions
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             m_currentTransaction = m_fileStructure.BeginEdit();
-            m_dataTree = new BasicTreeContainerEdit(m_currentTransaction, s_pointDataFile, 1);
+            m_dataTree = new SortedTreeContainerEdit(m_currentTransaction, s_pointDataFile, 1);
 
         }
         /// <summary>

@@ -34,18 +34,18 @@ namespace openHistorian.V2.Server
     public class ServerInstance
     {
         object m_syncRoot = new object();
-        SortedList<string, DatabaseEngine> m_databases;
+        SortedList<string, ArchiveManagementSystem> m_databases;
 
         public ServerInstance()
         {
-            m_databases = new SortedList<string, DatabaseEngine>();
+            m_databases = new SortedList<string, ArchiveManagementSystem>();
         }
 
         public void Create(string name, DatabaseEngineSettings settings)
         {
             lock (m_syncRoot)
             {
-                DatabaseEngine engine = new DatabaseEngine(settings);
+                ArchiveManagementSystem engine = new ArchiveManagementSystem(settings);
                 m_databases.Add(name.ToUpper(), engine);
             }
         }
@@ -79,7 +79,7 @@ namespace openHistorian.V2.Server
 
         //}
 
-        public DatabaseEngine Get(string name)
+        public ArchiveManagementSystem Get(string name)
         {
             lock (m_syncRoot)
             {

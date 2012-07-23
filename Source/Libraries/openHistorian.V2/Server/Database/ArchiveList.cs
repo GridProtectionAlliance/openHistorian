@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DataList.cs - Gbtc
+//  ArchiveList.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,7 +24,7 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.Server.Database.Partitions;
+using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -32,7 +32,7 @@ namespace openHistorian.V2.Server.Database
     /// Manages the complete list of archive resources and the 
     /// associated reading and writing that goes along with it.
     /// </summary>
-    partial class DataList
+    partial class ArchiveList
     {
         object m_syncRoot = new object();
 
@@ -40,43 +40,43 @@ namespace openHistorian.V2.Server.Database
         /// Contains the list of archives that are perminent to the system and 
         /// cannot be written to.
         /// </summary>
-        List<PartitionStateInformation> m_partitions;
+        List<ArchiveFileStateInformation> m_partitions;
 
-        List<DataListSnapshot> m_resources;
+        List<ArchiveListSnapshot> m_resources;
 
-        public DataList()
+        public ArchiveList()
         {
-            m_partitions = new List<PartitionStateInformation>();
-            m_resources = new List<DataListSnapshot>();
+            m_partitions = new List<ArchiveFileStateInformation>();
+            m_resources = new List<ArchiveListSnapshot>();
         }
 
         #region [ Resource Locks ]
 
-        public DataListSnapshot CreateNewClientResources()
+        public ArchiveListSnapshot CreateNewClientResources()
         {
             lock (m_syncRoot)
             {
-                var resources = new DataListSnapshot(ReleaseClientResources, AcquireSnapshot);
+                var resources = new ArchiveListSnapshot(ReleaseClientResources, AcquireSnapshot);
                 m_resources.Add(resources);
                 return resources;
             }
         }
 
-        void ReleaseClientResources(DataListSnapshot dataLists)
+        void ReleaseClientResources(ArchiveListSnapshot archiveLists)
         {
             lock (m_syncRoot)
             {
-                m_resources.Remove(dataLists);
+                m_resources.Remove(archiveLists);
             }
         }
 
-        void AcquireSnapshot(DataListSnapshot transaction)
+        void AcquireSnapshot(ArchiveListSnapshot transaction)
         {
             lock (m_syncRoot)
             {
                 int requiredSize = m_partitions.Count;
                 if (transaction.Tables == null || transaction.Tables.Length < requiredSize)
-                    transaction.Tables = new PartitionSummary[requiredSize];
+                    transaction.Tables = new ArchiveFileSummary[requiredSize];
                 int actualSize = transaction.Tables.Length;
 
                 for (int x = 0; x < m_partitions.Count; x++)
@@ -106,9 +106,9 @@ namespace openHistorian.V2.Server.Database
         /// Determines if the provided partition file is currently in use
         /// by any resource. 
         /// </summary>
-        /// <param name="partition">the partition to search for.</param>
+        /// <param name="archiveon">the partition to search for.</param>
         /// <returns></returns>
-        public bool IsPartitionBeingUsed(PartitionFile partition)
+        public bool IsPartitionBeingUsed(ArchiveFile archive)
         {
             lock (m_syncRoot)
             {
@@ -120,7 +120,7 @@ namespace openHistorian.V2.Server.Database
                         for (int x = 0; x < tables.Length; x++)
                         {
                             var summary = tables[x];
-                            if (summary != null && summary.PartitionFileFile == partition)
+                            if (summary != null && summary.ArchiveFileFile == archive)
                             {
                                 return true;
                             }

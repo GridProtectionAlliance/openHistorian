@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionInitializer.cs - Gbtc
+//  ArchiveFileStateInformation.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,37 +16,26 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/4/2012 - Steven E. Chisholm
+//  7/18/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System;
-using openHistorian.V2.Server.Database.Partitions;
 
 namespace openHistorian.V2.Server.Database
 {
-    class PartitionInitializer
+    class ArchiveFileStateInformation
     {
-        PartitionInitializerSettings m_settings;
-
-        public PartitionInitializer(PartitionInitializerSettings settings)
+        public bool IsReadOnly;
+        public bool IsEditLocked;
+        public int Generation;
+        public ArchiveFileSummary Summary;
+        public ArchiveFileStateInformation(bool isReadOnly, bool isEditLocked, int generation)
         {
-            m_settings = settings;
-        }
-
-        public PartitionFile CreatePartition(int generation)
-        {
-            var genSettings = m_settings.GenerationSettings[generation];
-            if (genSettings.IsMemoryPartition)
-            {
-                return new PartitionFile();
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            IsReadOnly = isReadOnly;
+            IsEditLocked = isEditLocked;
+            Generation = generation;
         }
     }
 }
