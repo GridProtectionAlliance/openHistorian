@@ -42,7 +42,7 @@ namespace openHistorian.V2
 
             s_partitionFile.CommitEdit();
 
-            long oldCount = FileSystem.DiskIoSession.ChecksumCount;
+            long oldCount = FileStructure.DiskIoSession.ChecksumCount;
 
             var reader1 = s_partitionFile.CreateSnapshot().OpenInstance().GetDataRange();
             reader1.SeekToKey(0,0);
@@ -70,7 +70,7 @@ namespace openHistorian.V2
             //MessageBox.Show(openHistorian.V2.Collections.KeyValue.BasicTreeBase.PointsAdded + " " +
             //                openHistorian.V2.Collections.KeyValue.BasicTreeBase.ShortcutsTaken);
             MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + oldCount);
-            MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt + " " + (FileSystem.DiskIoSession.ChecksumCount - oldCount));
+            MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt + " " + (FileStructure.DiskIoSession.ChecksumCount - oldCount));
         }
 
         unsafe static void ReaderNewPoint(HistorianReader.Points pt)

@@ -24,7 +24,7 @@
 using System;
 using System.IO;
 using openHistorian.V2.Collections.KeyValue;
-using openHistorian.V2.FileSystem;
+using openHistorian.V2.FileStructure;
 using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.Server.Database.Partitions
@@ -43,7 +43,7 @@ namespace openHistorian.V2.Server.Database.Partitions
         ulong m_firstKey;
         ulong m_lastKey;
         bool m_disposed;
-        VirtualFileSystem m_fileSystem;
+        TransactionalFileStructure m_fileStructure;
         TransactionalEdit m_currentTransaction;
         BasicTreeContainerEdit m_dataTree;
 
@@ -54,14 +54,14 @@ namespace openHistorian.V2.Server.Database.Partitions
         public PartitionFile()
         {
             m_fileName = string.Empty;
-            m_fileSystem = new VirtualFileSystem();
+            m_fileStructure = new TransactionalFileStructure();
             InitializeNewFile();
         }
 
         public PartitionFile(string file, OpenMode openMode, AccessMode accessMode)
         {
             m_fileName = file;
-            m_fileSystem = new VirtualFileSystem(file, openMode, accessMode);
+            m_fileStructure = new TransactionalFileStructure(file, openMode, accessMode);
             if (openMode == OpenMode.Create)
             {
                 InitializeNewFile();
@@ -137,12 +137,12 @@ namespace openHistorian.V2.Server.Database.Partitions
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            using (var trans = m_fileSystem.BeginEdit())
+            using (var trans = m_fileStructure.BeginEdit())
             {
                 using (var fs = trans.CreateFile(s_pointDataFile, 1))
                 using (var bs = new BinaryStream(fs))
                 {
-                    var tree = new BasicTree(bs, ArchiveConstants.DataBlockDataLength);
+                    var tree = new SortedTree256(bs, FileStructureConstants.DataBlockDataLength);
                     m_firstKey = tree.FirstKey;
                     m_lastKey = tree.LastKey;
                 }
@@ -158,7 +158,7 @@ namespace openHistorian.V2.Server.Database.Partitions
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            return new PartitionSnapshot(m_fileSystem);
+            return new PartitionSnapshot(m_fileStructure);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace openHistorian.V2.Server.Database.Partitions
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            m_currentTransaction = m_fileSystem.BeginEdit();
+            m_currentTransaction = m_fileStructure.BeginEdit();
             m_dataTree = new BasicTreeContainerEdit(m_currentTransaction, s_pointDataFile, 1);
 
         }
@@ -207,7 +207,7 @@ namespace openHistorian.V2.Server.Database.Partitions
         {
             if (!m_disposed)
             {
-                m_fileSystem.Dispose();
+                m_fileStructure.Dispose();
                 m_disposed = true;
             }
 

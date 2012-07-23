@@ -1,13 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿//******************************************************************************************************
+//  HelperFunctions.cs - Gbtc
+//
+//  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://www.opensource.org/licenses/eclipse-1.0.php
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  6/8/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
+//       
+//
+//******************************************************************************************************
+
+using System;
 
 namespace openHistorian.V2
 {
+    /// <summary>
+    /// Contains some random and useful functions.
+    /// </summary>
     static class HelperFunctions
     {
-        
+        /// <summary>
+        /// Performs the given action action and throws an exception if the action
+        /// does not error. This is useful for debugging code and testing for exceptions.
+        /// </summary>
+        /// <param name="errorFunction">the action to perform</param>
         public static void ExpectError(Action errorFunction)
         {
             bool success;
@@ -25,13 +53,24 @@ namespace openHistorian.V2
 
         }
 
+        /// <summary>
+        /// Determines if a number is a power of 2 and outputs some useful values;
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="shiftBits"></param>
+        /// <param name="bitMask"></param>
+        /// <returns></returns>
         public static bool IsPowerOfTwo(uint value, out int shiftBits, out uint bitMask)
         {
             bitMask = value - 1;
             shiftBits = CountBits(bitMask);
             return IsPowerOfTwo(value);
         }
-
+        /// <summary>
+        /// Counts the number of bits that are set
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static int CountBits(uint value)
         {
             uint count;
@@ -42,18 +81,34 @@ namespace openHistorian.V2
             return (int)count;
         }
 
+        /// <summary>
+        /// Determines if the number is a power of 2.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool IsPowerOfTwo(uint value)
         {
             return value != 0 && ((value & (value - 1)) == 0);
         }
 
+        /// <summary>
+        /// Determines if a number is a power of 2 and outputs some useful values;
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="shiftBits"></param>
+        /// <param name="bitMask"></param>
+        /// <returns></returns>
         public static bool IsPowerOfTwo(ulong value, out int shiftBits, out ulong bitMask)
         {
             bitMask = value - 1;
             shiftBits = CountBits(bitMask);
             return IsPowerOfTwo(value);
         }
-
+        /// <summary>
+        /// Counts the number of bits that are set
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static int CountBits(ulong value)
         {
             ulong count;
@@ -63,12 +118,20 @@ namespace openHistorian.V2
             }
             return (int)count;
         }
-
+        /// <summary>
+        /// Determines if the number is a power of 2.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool IsPowerOfTwo(ulong value)
         {
             return value != 0 && ((value & (value - 1)) == 0);
         }
-
+        /// <summary>
+        /// Rounds a number up to the nearest power of 2.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static long RoundUpToNearestPowerOfTwo(long value)
         {
             long result = 1;

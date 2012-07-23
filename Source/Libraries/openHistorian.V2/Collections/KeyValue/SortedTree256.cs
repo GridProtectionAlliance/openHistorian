@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionSnapshot.cs - Gbtc
+//  SortedTree256.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,51 +16,51 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/22/2012 - Steven E. Chisholm
+//  4/5/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//
+//     
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.FileStructure;
+using System.Collections.Generic;
+using openHistorian.V2.IO;
 
-namespace openHistorian.V2.Server.Database.Partitions
+namespace openHistorian.V2.Collections.KeyValue
 {
     /// <summary>
-    /// Aquires a read transaction on the current archive partition. This will allow all user created
-    /// transactions to have snapshot isolation of the entire data set.
+    /// Represents a collection of 128-bit key/128-bit values pairs that is very similiar to a <see cref="SortedList{int128,int128}"/> 
+    /// except it is optimal for storing millions to billions of entries and doing sequential scan of the data.
     /// </summary>
-    public class PartitionSnapshot
+    public class SortedTree256 : SortedTree256LeafNodeBase
     {
-        #region [ Members ]
 
-        TransactionalFileStructure m_fileStructure;
-        TransactionalRead m_currentTransaction;
-
-        #endregion
-
-        #region [ Constructors ]
-
-        public PartitionSnapshot(TransactionalFileStructure fileStructure)
-        {
-            m_fileStructure = fileStructure;
-            m_currentTransaction = m_fileStructure.BeginRead();
-        }
-
-        #endregion
-
-        #region [ Methods ]
-        
         /// <summary>
-        /// Opens an instance of the archive file to allow for concurrent reading of a snapshot.
+        /// Loads an existing <see cref="SortedTree256"/>
+        /// from the provided stream.
         /// </summary>
-        /// <returns></returns>
-        public PartitionReadOnlySnapshotInstance OpenInstance()
+        /// <param name="stream">The stream to load from</param>
+        public SortedTree256(IBinaryStream stream)
+            : base(stream)
         {
-            return new PartitionReadOnlySnapshotInstance(m_currentTransaction);
         }
 
-        #endregion
+        /// <summary>
+        /// Creates an empty <see cref="SortedTree256"/> 
+        /// and writes the data to the provided stream. 
+        /// </summary>
+        /// <param name="stream">The stream to use to store the tree.</param>
+        /// <param name="blockSize">The size in bytes of a single block.</param>
+        public SortedTree256(IBinaryStream stream, int blockSize)
+            : base(stream, blockSize)
+        {
+        }
 
+        protected override Guid FileType
+        {
+            get
+            {
+                return Guid.Empty;
+            }
+        }
     }
 }

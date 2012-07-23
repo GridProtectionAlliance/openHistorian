@@ -93,7 +93,7 @@ namespace openHistorian.V2.Test
                 using (var stream = new MemoryStream())
                 using (var binaryStream = stream.CreateBinaryStream())
                 {
-                    BasicTree tree = new BasicTree(binaryStream, blockSize);
+                    SortedTree256 tree = new SortedTree256(binaryStream, blockSize);
 
                     Random r = new Random(seed);
                     for (int x = 0; x < maxItems; x++)
@@ -138,7 +138,7 @@ namespace openHistorian.V2.Test
                 using (var stream = new MemoryStream())
                 using (var binaryStream = stream.CreateBinaryStream())
                 {
-                    BasicTree tree = new BasicTree(binaryStream, blockSize);
+                    SortedTree256 tree = new SortedTree256(binaryStream, blockSize);
 
                     Random r = new Random(seed);
                     for (int x = 0; x < maxItems; x++)
@@ -185,7 +185,7 @@ namespace openHistorian.V2.Test
                 using (var stream = new MemoryStream())
                 using (var binaryStream = stream.CreateBinaryStream())
                 {
-                    BasicTree tree = new BasicTree(binaryStream, blockSize);
+                    SortedTree256 tree = new SortedTree256(binaryStream, blockSize);
 
                     Random r = new Random(seed);
                     for (int x = 0; x < maxItems; x++)

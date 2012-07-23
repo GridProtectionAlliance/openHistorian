@@ -80,16 +80,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase_DataScanner.cs" />
-    <Compile Include="Collections\KeyValue\BasicTreeInternalNodeBase_NodeHeader.cs" />
-    <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase_NodeHeader.cs" />
-    <Compile Include="Collections\KeyValue\IDataScanner.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_TreeScanner.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase_NodeHeader.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_NodeHeader.cs" />
+    <Compile Include="Collections\KeyValue\ITreeScanner256.cs" />
     <Compile Include="AccessMode.cs" />
-    <Compile Include="FileSystem\ArchiveFileStream_IoSession.cs" />
-    <Compile Include="FileSystem\DiskIoExtensions.cs" />
-    <Compile Include="FileSystem\DiskIoSession.cs" />
-    <Compile Include="FileSystem\DiskIoSessionExtension.cs" />
-    <Compile Include="FileSystem\FileAllocationTableRecovery.cs" />
+    <Compile Include="FileStructure\SubFileStream_IoSession.cs" />
+    <Compile Include="FileStructure\DiskIoExtensions.cs" />
+    <Compile Include="FileStructure\DiskIoSession.cs" />
+    <Compile Include="FileStructure\DiskIoSessionExtension.cs" />
+    <Compile Include="FileStructure\FileHeaderBlockRecovery.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStreamSizing.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
@@ -114,17 +114,17 @@
     <Compile Include="Server\Database\Partitions\PartitionReadOnlySnapshotInstance.cs" />
     <Compile Include="Server\Database\Partitions\BasicTreeContainer.cs" />
     <Compile Include="Server\Database\Partitions\BasicTreeContainerEdit.cs" />
-    <Compile Include="Collections\KeyValue\BasicTree.cs" />
-    <Compile Include="Collections\KeyValue\BasicTreeBase.cs" />
-    <Compile Include="Collections\KeyValue\BasicTreeInternalNodeBase.cs" />
-    <Compile Include="Collections\KeyValue\BasicTreeLeafNodeBase.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256Base.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="OldCode\ContinuousBuffer.cs" />
     <Compile Include="OldCode\DataPoint.cs" />
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="Server\Database\PointQueue.cs" />
     <Compile Include="IO\IBinaryStream.cs" />
-    <Compile Include="FileSystem\DiskIo.cs" />
+    <Compile Include="FileStructure\DiskIo.cs" />
     <Compile Include="OldCode\IO\IStreamingTransport.cs" />
     <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
@@ -206,23 +206,23 @@
     <Compile Include="OldCode\FileSystem\Test\DiskIOUnbufferedTest.cs" />
     <Compile Include="OldCode\FileSystem\Test\DiskIOMemoryStreamTest.cs" />
     <Compile Include="OldCode\FileSystem\DiskIOBase.cs" />
-    <Compile Include="FileSystem\IndexMapper.cs" />
-    <Compile Include="FileSystem\ArchiveConstants.cs" />
+    <Compile Include="FileStructure\IndexMapper.cs" />
+    <Compile Include="FileStructure\FileStructureConstants.cs" />
     <Compile Include="OldCode\FileSystem\Test\DiskIOTest.cs" />
-    <Compile Include="FileSystem\VirtualFileSystem.cs" />
-    <Compile Include="FileSystem\FileAllocationTable.cs" />
+    <Compile Include="FileStructure\TransactionalFileStructure.cs" />
+    <Compile Include="FileStructure\FileHeaderBlock.cs" />
     <Compile Include="OldCode\FileSystem\DiskIOUnbuffered.cs" />
     <Compile Include="OldCode\FileSystem\DiskIOMemoryStream.cs" />
-    <Compile Include="FileSystem\ShadowCopyAllocator.cs" />
-    <Compile Include="FileSystem\IndexParser.cs" />
-    <Compile Include="FileSystem\FileAddressTranslation.cs" />
-    <Compile Include="FileSystem\ArchiveFileStream.cs" />
-    <Compile Include="FileSystem\BlockType.cs" />
-    <Compile Include="FileSystem\PositionData.cs" />
-    <Compile Include="FileSystem\TransactionalRead.cs" />
-    <Compile Include="FileSystem\FileMetaData.cs" />
-    <Compile Include="FileSystem\FileSystemSnapshotService.cs" />
-    <Compile Include="FileSystem\TransactionalEdit.cs" />
+    <Compile Include="FileStructure\ShadowCopyAllocator.cs" />
+    <Compile Include="FileStructure\IndexParser.cs" />
+    <Compile Include="FileStructure\SubFileAddressTranslation.cs" />
+    <Compile Include="FileStructure\SubFileStream.cs" />
+    <Compile Include="FileStructure\BlockType.cs" />
+    <Compile Include="FileStructure\PositionData.cs" />
+    <Compile Include="FileStructure\TransactionalRead.cs" />
+    <Compile Include="FileStructure\SubFileMetaData.cs" />
+    <Compile Include="FileStructure\TransactionService.cs" />
+    <Compile Include="FileStructure\TransactionalEdit.cs" />
     <Compile Include="OldCode\OldFormat\HistorianReader.cs" />
     <Compile Include="OldCode\OldFormat\TimeTag.cs" />
     <Compile Include="OldCode\TimeSeriesDataStructure\BuildPointArchiveSolution.cs" />
@@ -254,7 +254,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="FileSystem\Old Code\" />
+    <Folder Include="FileStructure\Old Code\" />
     <Folder Include="OldCode\PointStream\Sorting\" />
     <Folder Include="Server\Database\DefaultDataReader\" />
   </ItemGroup>

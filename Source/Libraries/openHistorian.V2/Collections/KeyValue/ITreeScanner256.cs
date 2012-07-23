@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  Globals.cs - Gbtc
+//  ITreeScanner256.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,27 +16,20 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  6/8/2012 - Steven E. Chisholm
+//  6/23/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
-using openHistorian.V2.UnmanagedMemory;
-
-namespace openHistorian.V2
+namespace openHistorian.V2.Collections.KeyValue
 {
     /// <summary>
-    /// Maintains the static global classes for the historian.
+    /// Assists in the parsing of data from the <see cref="SortedTree256"/>.
     /// </summary>
-    public static class Globals
+    public interface ITreeScanner256
     {
-        public static BufferPool BufferPool;
-
-        static Globals()
-        {
-            BufferPool = new BufferPool(65536);
-        }
-
+        bool GetNextKey(out ulong key1, out ulong key2, out ulong value1, out ulong value2);
+        
+        void SeekToKey(ulong key1, ulong key2);
     }
 }

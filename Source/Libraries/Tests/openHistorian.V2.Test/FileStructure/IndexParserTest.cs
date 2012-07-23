@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  Globals.cs - Gbtc
+//  IndexParserTest.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,27 +16,32 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  6/8/2012 - Steven E. Chisholm
+//  1/4/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using openHistorian.V2.UnmanagedMemory;
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2
+namespace openHistorian.V2.FileStructure
 {
-    /// <summary>
-    /// Maintains the static global classes for the historian.
-    /// </summary>
-    public static class Globals
+    [TestClass()]
+    public class IndexParserTest
     {
-        public static BufferPool BufferPool;
-
-        static Globals()
+        [TestMethod()]
+        public void Test()
         {
-            BufferPool = new BufferPool(65536);
+            Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
+            IndexMapper map = new IndexMapper();
+            DiskIo stream = new DiskIo(new MemoryStream(), 0);
+            SubFileMetaData node = new SubFileMetaData(1, Guid.NewGuid(), AccessMode.ReadWrite);
+            IndexParser parse = new IndexParser(1, stream, node);
+            parse.SetPosition(14312);
+            Assert.IsTrue(true);
+            Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
         }
-
     }
 }

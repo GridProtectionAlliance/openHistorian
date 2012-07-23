@@ -23,7 +23,7 @@
 
 using System;
 using openHistorian.V2.Collections.KeyValue;
-using openHistorian.V2.FileSystem;
+using openHistorian.V2.FileStructure;
 
 namespace openHistorian.V2.Server.Database.Partitions
 {
@@ -83,7 +83,7 @@ namespace openHistorian.V2.Server.Database.Partitions
             }
         }
 
-        public IDataScanner GetDataRange()
+        public ITreeScanner256 GetDataRange()
         {
             return m_dataTree.GetDataRange();
         }

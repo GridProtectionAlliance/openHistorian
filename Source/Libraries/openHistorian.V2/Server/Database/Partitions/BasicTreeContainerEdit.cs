@@ -23,7 +23,7 @@
 
 using System;
 using openHistorian.V2.Collections.KeyValue;
-using openHistorian.V2.FileSystem;
+using openHistorian.V2.FileStructure;
 using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.Server.Database.Partitions
@@ -36,9 +36,9 @@ namespace openHistorian.V2.Server.Database.Partitions
 
         #region [ Members ]
 
-        ArchiveFileStream m_archiveStream;
+        SubFileStream m_subStream;
         BinaryStream m_binaryStream;
-        BasicTree m_tree;
+        SortedTree256 m_tree;
         bool m_disposed;
 
         #endregion
@@ -47,9 +47,9 @@ namespace openHistorian.V2.Server.Database.Partitions
 
         public BasicTreeContainerEdit(TransactionalEdit currentTransaction, Guid fileNumber, int flags)
         {
-            m_archiveStream = currentTransaction.OpenFile(fileNumber, flags);
-            m_binaryStream = new BinaryStream(m_archiveStream);
-            m_tree = new BasicTree(m_binaryStream);
+            m_subStream = currentTransaction.OpenFile(fileNumber, flags);
+            m_binaryStream = new BinaryStream(m_subStream);
+            m_tree = new SortedTree256(m_binaryStream);
         }
 
         #endregion
@@ -91,7 +91,7 @@ namespace openHistorian.V2.Server.Database.Partitions
             m_tree.Add(date, pointId, value1, value2);
         }
 
-        public IDataScanner GetDataRange()
+        public ITreeScanner256 GetDataRange()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -109,10 +109,10 @@ namespace openHistorian.V2.Server.Database.Partitions
                         m_binaryStream.Dispose();
                         m_binaryStream = null;
                     }
-                    if (m_archiveStream != null)
+                    if (m_subStream != null)
                     {
-                        m_archiveStream.Dispose();
-                        m_archiveStream = null;
+                        m_subStream.Dispose();
+                        m_subStream = null;
                     }
                 }
                 finally

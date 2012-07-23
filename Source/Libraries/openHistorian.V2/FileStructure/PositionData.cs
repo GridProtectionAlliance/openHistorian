@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  Globals.cs - Gbtc
+//  PositionData.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,27 +16,28 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  6/8/2012 - Steven E. Chisholm
-//       Generated original version of source code. 
-//       
+//  1/1/2012 - Steven E. Chisholm
+//       Generated original version of source code.
 //
 //******************************************************************************************************
 
-using openHistorian.V2.UnmanagedMemory;
 
-namespace openHistorian.V2
+namespace openHistorian.V2.FileStructure
 {
-    /// <summary>
-    /// Maintains the static global classes for the historian.
-    /// </summary>
-    public static class Globals
+    public struct PositionData
     {
-        public static BufferPool BufferPool;
-
-        static Globals()
+        public int PhysicalBlockIndex;
+        public long VirtualPosition;
+        public long Length;
+        /// <summary>
+        /// Determines if the position is contained within this translation.
+        /// </summary>
+        /// <param name="virtualPos"></param>
+        /// <returns></returns>
+        public bool Containts(long virtualPos)
         {
-            BufferPool = new BufferPool(65536);
+            return (virtualPos >= VirtualPosition) && (virtualPos < VirtualPosition + Length);
         }
-
+  
     }
 }

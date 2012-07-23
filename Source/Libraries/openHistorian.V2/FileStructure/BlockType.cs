@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  Globals.cs - Gbtc
+//  BlockType.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,27 +16,22 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  6/8/2012 - Steven E. Chisholm
+//  1/4/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using openHistorian.V2.UnmanagedMemory;
 
-namespace openHistorian.V2
+namespace openHistorian.V2.FileStructure
 {
     /// <summary>
-    /// Maintains the static global classes for the historian.
+    /// Each block of bytes in a file is one of these types.
     /// </summary>
-    public static class Globals
+    public enum BlockType : byte
     {
-        public static BufferPool BufferPool;
-
-        static Globals()
-        {
-            BufferPool = new BufferPool(65536);
-        }
-
+        FileAllocationTable = 1,
+        IndexIndirect = 2,
+        DataBlock = 3
     }
 }
