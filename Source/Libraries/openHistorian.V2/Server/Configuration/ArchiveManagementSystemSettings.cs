@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerInstanceSettings.cs - Gbtc
+//  ArchiveManagementSystemSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/4/2012 - Steven E. Chisholm
+//  7/24/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -25,49 +25,45 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using openHistorian.V2.Collections;
 
-namespace openHistorian.V2.Server
+namespace openHistorian.V2.Server.Configuration
 {
-    partial class ServerInstanceSettings
+    public class ArchiveManagementSystemSettings : ISupportsReadonly<ArchiveManagementSystemSettings>
     {
-        public List<Item> Databases;
+        bool m_isReadOnly; 
+        public string DatabaseName;
+       
+        public ArchiveWriterSettings ArchiveWriter;
+        public ReadonlyList<ArchiveManagementSettings> ArchiveManagers;
+        public ArchiveListSettings ArchiveList;
 
-        public ServerInstanceSettings()
-        {
-            Databases = new List<Item>();
-        }
+        
 
-        public ServerInstanceSettings(BinaryReader reader)
-        {
-            Load(reader);
-        }
 
-        public void Load(BinaryReader reader)
+        public bool IsReadOnly
         {
-            switch (reader.ReadByte())
+            get
             {
-                case 0:
-                    int count = reader.ReadInt32();
-                    Databases = new List<Item>(count);
-                    while ( count>0)
-                    {
-                        count--;
-                        Databases.Add(new Item(reader));
-                    }
-                    break;
-                default:
-                    throw new VersionNotFoundException();
+                return m_isReadOnly;
+            }
+            set
+            {
+                if (value ^ m_isReadOnly) //if values are different
+                {
+                    if (m_isReadOnly)
+                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
+                    m_isReadOnly = true;
+                }
             }
         }
 
-        public void Save(BinaryWriter writer)
+
+        public ArchiveManagementSystemSettings EditableClone()
         {
-            writer.Write((byte)0);
-            writer.Write(Databases.Count);
-            foreach (var s in Databases)
-            {
-                s.Save(writer);
-            }
+            throw new System.NotImplementedException();
         }
+
     }
+
 }

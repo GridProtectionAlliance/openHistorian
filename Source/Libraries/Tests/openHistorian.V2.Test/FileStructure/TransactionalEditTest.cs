@@ -64,14 +64,14 @@ namespace openHistorian.V2.FileStructure
             if (fs1.SubFile.FileFlags != 1234)
                 throw new Exception();
             //write to the three files
-            ArchiveFileStreamTest.TestSingleByteWrite(fs1);
-            ArchiveFileStreamTest.TestCustomSizeWrite(fs2, 5);
-            ArchiveFileStreamTest.TestCustomSizeWrite(fs3, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestSingleByteWrite(fs1);
+            SubFileStreamTest.TestCustomSizeWrite(fs2, 5);
+            SubFileStreamTest.TestCustomSizeWrite(fs3, FileStructureConstants.DataBlockDataLength + 20);
 
             //read from them and verify content.
-            ArchiveFileStreamTest.TestCustomSizeRead(fs3, FileStructureConstants.DataBlockDataLength + 20);
-            ArchiveFileStreamTest.TestCustomSizeRead(fs2, 5);
-            ArchiveFileStreamTest.TestSingleByteRead(fs1);
+            SubFileStreamTest.TestCustomSizeRead(fs3, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestCustomSizeRead(fs2, 5);
+            SubFileStreamTest.TestSingleByteRead(fs1);
 
             fs1.Dispose();
             fs2.Dispose();
@@ -91,23 +91,23 @@ namespace openHistorian.V2.FileStructure
             SubFileStream fs3 = trans.OpenFile(2);
 
             //read from them and verify content.
-            ArchiveFileStreamTest.TestSingleByteRead(fs1);
-            ArchiveFileStreamTest.TestCustomSizeRead(fs2, 5);
-            ArchiveFileStreamTest.TestCustomSizeRead(fs3, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestSingleByteRead(fs1);
+            SubFileStreamTest.TestCustomSizeRead(fs2, 5);
+            SubFileStreamTest.TestCustomSizeRead(fs3, FileStructureConstants.DataBlockDataLength + 20);
 
             //rewrite bad data.
-            ArchiveFileStreamTest.TestSingleByteWrite(fs2);
-            ArchiveFileStreamTest.TestCustomSizeWrite(fs3, 5);
-            ArchiveFileStreamTest.TestCustomSizeWrite(fs1, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestSingleByteWrite(fs2);
+            SubFileStreamTest.TestCustomSizeWrite(fs3, 5);
+            SubFileStreamTest.TestCustomSizeWrite(fs1, FileStructureConstants.DataBlockDataLength + 20);
 
             //verify origional still in tact.
             SubFileStream fs11 = trans.OpenOrigionalFile(0);
             SubFileStream fs12 = trans.OpenOrigionalFile(1);
             SubFileStream fs13 = trans.OpenOrigionalFile(2);
 
-            ArchiveFileStreamTest.TestSingleByteRead(fs11);
-            ArchiveFileStreamTest.TestCustomSizeRead(fs12, 5);
-            ArchiveFileStreamTest.TestCustomSizeRead(fs13, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestSingleByteRead(fs11);
+            SubFileStreamTest.TestCustomSizeRead(fs12, 5);
+            SubFileStreamTest.TestCustomSizeRead(fs13, FileStructureConstants.DataBlockDataLength + 20);
 
             fs1.Dispose();
             fs2.Dispose();
@@ -136,14 +136,14 @@ namespace openHistorian.V2.FileStructure
             SubFileStream fs3 = trans.OpenFile(2);
 
             //read from them and verify content.
-            ArchiveFileStreamTest.TestSingleByteRead(fs2);
-            ArchiveFileStreamTest.TestCustomSizeRead(fs3, 5);
-            ArchiveFileStreamTest.TestCustomSizeRead(fs1, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestSingleByteRead(fs2);
+            SubFileStreamTest.TestCustomSizeRead(fs3, 5);
+            SubFileStreamTest.TestCustomSizeRead(fs1, FileStructureConstants.DataBlockDataLength + 20);
 
             //rewrite bad data.
-            ArchiveFileStreamTest.TestSingleByteWrite(fs3);
-            ArchiveFileStreamTest.TestCustomSizeWrite(fs1, 5);
-            ArchiveFileStreamTest.TestCustomSizeWrite(fs2, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestSingleByteWrite(fs3);
+            SubFileStreamTest.TestCustomSizeWrite(fs1, 5);
+            SubFileStreamTest.TestCustomSizeWrite(fs2, FileStructureConstants.DataBlockDataLength + 20);
 
             fs1.Dispose();
             fs2.Dispose();
@@ -170,9 +170,9 @@ namespace openHistorian.V2.FileStructure
             SubFileStream fs3 = trans.OpenFile(2);
 
             //read from them and verify content.
-            ArchiveFileStreamTest.TestSingleByteRead(fs2);
-            ArchiveFileStreamTest.TestCustomSizeRead(fs3, 5);
-            ArchiveFileStreamTest.TestCustomSizeRead(fs1, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestSingleByteRead(fs2);
+            SubFileStreamTest.TestCustomSizeRead(fs3, 5);
+            SubFileStreamTest.TestCustomSizeRead(fs1, FileStructureConstants.DataBlockDataLength + 20);
 
             fs1.Dispose();
             fs2.Dispose();

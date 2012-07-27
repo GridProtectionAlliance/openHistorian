@@ -30,7 +30,7 @@ namespace openHistorian.V2.Server.Database
     /// The return value of <see cref="ArchiveList.Editor.Remove"/> provided to the calling
     /// function to determine when a resource is no longer being used.
     /// </summary>
-    class ArchiveListRemovalStatus
+    public class ArchiveListRemovalStatus
     {
         bool m_isBeingUsed;
         ArchiveFile m_archive;

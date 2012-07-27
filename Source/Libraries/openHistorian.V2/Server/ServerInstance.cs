@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using openHistorian.V2.Server.Configuration;
 using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server
@@ -41,13 +42,13 @@ namespace openHistorian.V2.Server
             m_databases = new SortedList<string, ArchiveManagementSystem>();
         }
 
-        public void Create(string name, DatabaseEngineSettings settings)
+        public void Create(string name, ArchiveManagementSystemSettings settings)
         {
-            lock (m_syncRoot)
-            {
-                ArchiveManagementSystem engine = new ArchiveManagementSystem(settings);
-                m_databases.Add(name.ToUpper(), engine);
-            }
+            //lock (m_syncRoot)
+            //{
+            //    ArchiveManagementSystem engine = new ArchiveManagementSystem(settings);
+            //    m_databases.Add(name.ToUpper(), engine);
+            //}
         }
 
         public void Drop(string name)

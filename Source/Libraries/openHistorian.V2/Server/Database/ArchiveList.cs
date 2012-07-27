@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using openHistorian.V2.Server.Configuration;
 using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
@@ -32,7 +33,7 @@ namespace openHistorian.V2.Server.Database
     /// Manages the complete list of archive resources and the 
     /// associated reading and writing that goes along with it.
     /// </summary>
-    partial class ArchiveList
+    public partial class ArchiveList
     {
         object m_syncRoot = new object();
 
@@ -44,8 +45,11 @@ namespace openHistorian.V2.Server.Database
 
         List<ArchiveListSnapshot> m_resources;
 
-        public ArchiveList()
+        public ArchiveList(ArchiveListSettings settings)
         {
+            if (!settings.IsReadOnly)
+                throw new ArgumentException("Must be set to read only before passing to this function", "settings");
+
             m_partitions = new List<ArchiveFileStateInformation>();
             m_resources = new List<ArchiveListSnapshot>();
         }
@@ -106,7 +110,7 @@ namespace openHistorian.V2.Server.Database
         /// Determines if the provided partition file is currently in use
         /// by any resource. 
         /// </summary>
-        /// <param name="archiveon">the partition to search for.</param>
+        /// <param name="archive">the partition to search for.</param>
         /// <returns></returns>
         public bool IsPartitionBeingUsed(ArchiveFile archive)
         {

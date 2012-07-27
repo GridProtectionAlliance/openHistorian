@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveInitializer.cs - Gbtc
+//  ArchiveListSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,40 +22,54 @@
 //
 //******************************************************************************************************
 
-using System;
-using openHistorian.V2.Server.Database.Archive;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using openHistorian.V2.Collections;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Server.Configuration
 {
-    /// <summary>
-    /// Creates new archive files based on user settings.
-    /// </summary>
-    public class ArchiveInitializer
+    public class ArchiveListSettings : ISupportsReadonly<ArchiveListSettings>
     {
-        ArchiveInitializerGenerationSettings m_settings;
+        bool m_isReadOnly;
+        string m_name;
+        public ReadonlyList<string> AttachedFiles;
 
-        public ArchiveInitializer(ArchiveInitializerGenerationSettings settings)
+        public string Name
         {
-            if (!settings.IsReadOnly)
-                throw new ArgumentException("Must be set to read only before passing to this function", "settings");
-
-            m_settings = settings;
+            get
+            {
+                return m_name;
+            }
+            set
+            {
+                if (m_isReadOnly)
+                    throw new ReadOnlyException("Object has been set as read only");
+                m_name = value;
+            }
         }
 
-        public ArchiveFile CreateArchiveFile()
+        public bool IsReadOnly
         {
-            if (m_settings.IsMemoryArchive)
+            get
             {
-                return new ArchiveFile();
+                return m_isReadOnly;
             }
-            else
+            set
             {
-                throw new NotImplementedException();
+                if (value ^ m_isReadOnly) //if values are different
+                {
+                    if (m_isReadOnly)
+                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
+                    m_isReadOnly = true;
+                    AttachedFiles.IsReadOnly = true;
+                }
             }
-            
         }
 
-   
-
+        public ArchiveListSettings EditableClone()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

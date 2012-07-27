@@ -26,6 +26,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using openHistorian.V2.IO.Unmanaged;
+using openHistorian.V2.Server.Configuration;
 using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
@@ -34,10 +35,9 @@ namespace openHistorian.V2.Server.Database
     /// Responsible for getting data into the database. This class will prebuffer
     /// points and commit them in bulk operations.
     /// </summary>
-    class ArchiveWriter : IDisposable
+    public class ArchiveWriter : IDisposable
     {
-
-        NewArchiveCriteria m_newArchiveCriteria;
+        ArchiveWriterSettings m_settings;
 
         ArchiveInitializer m_archiveInitializer;
 
@@ -53,30 +53,30 @@ namespace openHistorian.V2.Server.Database
 
         ManualResetEvent m_waitTimer;
 
-        /// <summary>
-        /// the number of milliseconds between auto commits
-        /// </summary>
-        int m_autoCommitInterval;
-
         int m_commitCount;
+
         Stopwatch m_lastCommitTime;
 
         /// <summary>
         /// Creates a new <see cref="ArchiveWriter"/>.
         /// </summary>
-        /// <param name="archiveInitializer">Used to create a new partition.</param>
+        /// <param name="settings">The settings for this class.</param>
         /// <param name="archiveList">The list used to attach newly created file.</param>
-        /// <param name="autoCommitInterval">the number of milliseconds before data is automatically commited to the database.</param>
-        /// <param name="autoCommitCount">the number of points added to the <see cref="PointQueue"/> 
-        /// before the data is automatically commited to the database. A value of -1 means don't auto commit on a point count.</param>
-        /// <param name="newArchiveCriteria"></param>
-        public ArchiveWriter(ArchiveInitializer archiveInitializer, ArchiveList archiveList, int autoCommitInterval, int autoCommitCount, NewArchiveCriteria newArchiveCriteria)
+        public ArchiveWriter(ArchiveWriterSettings settings, ArchiveList archiveList)
         {
+            if (!settings.IsReadOnly)
+                throw new ArgumentException("Must be set to read only before passing to this function", "settings");
+
+            m_archiveInitializer = new ArchiveInitializer(settings.Initializer);
+
+            m_settings = settings;
+
             m_archiveList = archiveList;
-            m_newArchiveCriteria = newArchiveCriteria;
-            m_archiveInitializer = archiveInitializer;
-            m_autoCommitInterval = autoCommitInterval;
-            m_pointQueue = new PointQueue(autoCommitCount, SignalInitialInsert);
+            
+            if (settings.CommitOnPointCount.HasValue)
+                m_pointQueue = new PointQueue(settings.CommitOnPointCount.Value, SignalInitialInsert);
+            else
+                m_pointQueue = new PointQueue();
 
             m_lastCommitTime = Stopwatch.StartNew();
 
@@ -92,7 +92,11 @@ namespace openHistorian.V2.Server.Database
         {
             while (!m_disposed)
             {
-                m_waitTimer.WaitOne(m_autoCommitInterval);
+                if (m_settings.CommitOnInterval.HasValue)
+                    m_waitTimer.WaitOne(m_settings.CommitOnInterval.Value);
+                else
+                    m_waitTimer.WaitOne(10000);
+
                 m_waitTimer.Reset();
 
                 BinaryStream stream;
@@ -101,13 +105,13 @@ namespace openHistorian.V2.Server.Database
                 if (pointCount > 0)
                 {
                     if (m_activeFile == null ||
-                        (m_newArchiveCriteria.IsCommitCountValid && m_commitCount >= m_newArchiveCriteria.CommitCount) ||
-                        (m_newArchiveCriteria.IsIntervalValid && m_lastCommitTime.Elapsed >= m_newArchiveCriteria.Interval) ||
-                        (m_newArchiveCriteria.IsPartitionSizeValid && m_activeFile.FileSize >= m_newArchiveCriteria.PartitionSize))
+                        (m_settings.NewFileOnCommitCount.HasValue && m_commitCount >= m_settings.NewFileOnCommitCount.Value) ||
+                        (m_settings.NewFileOnInterval.HasValue && m_lastCommitTime.Elapsed >= m_settings.NewFileOnInterval.Value) ||
+                        (m_settings.NewFileOnSize.HasValue && m_activeFile.FileSize >= m_settings.NewFileOnSize.Value))
                     {
                         m_commitCount = 0;
                         m_lastCommitTime.Restart();
-                        var newFile = m_archiveInitializer.CreatePartition(0);
+                        var newFile = m_archiveInitializer.CreateArchiveFile();
                         using (var edit = m_archiveList.AcquireEditLock())
                         {
                             //Create a new file.
@@ -115,7 +119,7 @@ namespace openHistorian.V2.Server.Database
                             {
                                 edit.ReleaseEditLock(m_activeFile);
                             }
-                            edit.Add(newFile, new ArchiveFileStateInformation(false, true, 0));
+                            edit.Add(newFile, new ArchiveFileStateInformation(false, true, m_settings.DestinationName));
                         }
                         m_activeFile = newFile;
                     }

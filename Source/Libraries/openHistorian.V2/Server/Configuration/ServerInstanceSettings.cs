@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionInitializerGenerationSettings.cs - Gbtc
+//  ServerInstanceSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/4/2012 - Steven E. Chisholm
+//  7/24/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -26,21 +26,18 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Server
 {
-    public class PartitionInitializerGenerationSettings
+    partial class ServerInstanceSettings
     {
-        public bool IsMemoryPartition;
-        public List<string> SavePaths;
-        public long InitialSize;
-        public long AutoGrowthSize;
+        public List<Item> Databases;
 
-        public PartitionInitializerGenerationSettings()
+        public ServerInstanceSettings()
         {
-            SavePaths = new List<string>();
+            Databases = new List<Item>();
         }
 
-        public PartitionInitializerGenerationSettings(BinaryReader reader)
+        public ServerInstanceSettings(BinaryReader reader)
         {
             Load(reader);
         }
@@ -50,15 +47,12 @@ namespace openHistorian.V2.Server.Database
             switch (reader.ReadByte())
             {
                 case 0:
-                    IsMemoryPartition = reader.ReadBoolean();
-                    InitialSize = reader.ReadInt64();
-                    AutoGrowthSize = reader.ReadInt64();
                     int count = reader.ReadInt32();
-                    SavePaths = new List<string>(count);
-                    while (count > 0)
+                    Databases = new List<Item>(count);
+                    while ( count>0)
                     {
                         count--;
-                        SavePaths.Add(reader.ReadString());
+                        Databases.Add(new Item(reader));
                     }
                     break;
                 default:
@@ -69,13 +63,10 @@ namespace openHistorian.V2.Server.Database
         public void Save(BinaryWriter writer)
         {
             writer.Write((byte)0);
-            writer.Write(IsMemoryPartition);
-            writer.Write(InitialSize);
-            writer.Write(AutoGrowthSize);
-            writer.Write(SavePaths.Count);
-            foreach (var s in SavePaths)
+            writer.Write(Databases.Count);
+            foreach (var s in Databases)
             {
-                writer.Write(s);
+                s.Save(writer);
             }
         }
     }

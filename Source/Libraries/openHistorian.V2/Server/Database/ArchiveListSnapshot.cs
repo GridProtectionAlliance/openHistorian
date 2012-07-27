@@ -30,7 +30,7 @@ namespace openHistorian.V2.Server.Database
     /// <summary>
     /// Provides a list of resources that each system transaction could be using.
     /// </summary>
-    class ArchiveListSnapshot : IDisposable
+    public class ArchiveListSnapshot : IDisposable
     {
         bool m_disposed;
         Action<ArchiveListSnapshot> m_onDisposed;

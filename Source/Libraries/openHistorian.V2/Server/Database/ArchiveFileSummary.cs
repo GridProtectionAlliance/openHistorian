@@ -30,7 +30,7 @@ namespace openHistorian.V2.Server.Database
     /// Contains an immutable class of the current partition
     /// along with its most recent snapshot.
     /// </summary>
-    class ArchiveFileSummary
+    public class ArchiveFileSummary
     {
         #region [ Members ]
 

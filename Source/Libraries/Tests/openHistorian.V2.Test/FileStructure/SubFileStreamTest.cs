@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveFileStreamTest.cs - Gbtc
+//  SubFileStreamTest.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -36,7 +36,7 @@ namespace openHistorian.V2.FileStructure
     /// Also provides a way to copy on write to support the versioning file system.
     /// </summary>
     [TestClass()]
-    public class ArchiveFileStreamTest
+    public class SubFileStreamTest
     {
         [TestMethod()]
         public void Test()

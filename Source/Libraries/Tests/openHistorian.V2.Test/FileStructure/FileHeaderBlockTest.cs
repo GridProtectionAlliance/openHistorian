@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FileAllocationTableTest.cs - Gbtc
+//  FileHeaderBlockTest.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,7 +28,7 @@ using openHistorian.V2.IO.Unmanaged;
 namespace openHistorian.V2.FileStructure
 {
     [TestClass()]
-    public class FileAllocationTableTest
+    public class FileHeaderBlockTest
     {
         [TestMethod()]
         public void Test()
@@ -100,7 +100,7 @@ namespace openHistorian.V2.FileStructure
                     else
                     {
                         if (subFileOther == null) return false;
-                        if (!FileMetaDataTest.AreEqual(subFile,subFileOther)) return false;
+                        if (!SubFileMetaDataTest.AreEqual(subFile,subFileOther)) return false;
                     }
                 }
             }

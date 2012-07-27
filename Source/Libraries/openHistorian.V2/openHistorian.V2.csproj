@@ -80,11 +80,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\ISupportsReadonly.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_TreeScanner.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase_NodeHeader.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_NodeHeader.cs" />
     <Compile Include="Collections\KeyValue\ITreeScanner256.cs" />
     <Compile Include="AccessMode.cs" />
+    <Compile Include="Collections\ReadonlyList.cs" />
     <Compile Include="FileStructure\SubFileStream_IoSession.cs" />
     <Compile Include="FileStructure\DiskIoExtensions.cs" />
     <Compile Include="FileStructure\DiskIoSession.cs" />
@@ -100,13 +102,14 @@
     <Compile Include="Server\Database\ArchiveList_Editor.cs" />
     <Compile Include="Server\Database\ArchiveListRemovalStatus.cs" />
     <Compile Include="Server\Database\ArchiveManagement.cs" />
+    <Compile Include="Server\Database\ArchiveManagementSystem_ChangeSettings.cs" />
     <Compile Include="Server\Database\NewArchiveCriteria.cs" />
     <Compile Include="Server\Database\ArchiveFileStateInformation.cs" />
-    <Compile Include="Server\Database\Settings\ServerInstanceSettings_Item.cs" />
-    <Compile Include="Server\Database\Settings\DatabaseEngineSettings.cs" />
-    <Compile Include="Server\Database\Settings\PartitionInitializerGenerationSettings.cs" />
-    <Compile Include="Server\Database\Settings\PartitionInitializerSettings.cs" />
-    <Compile Include="Server\Database\Settings\ProcessGenerationRolloverSettings.cs" />
+    <Compile Include="Server\Configuration\FolderListSettings.cs" />
+    <Compile Include="Server\Configuration\ServerInstanceSettings_Item.cs" />
+    <Compile Include="Server\Configuration\ArchiveManagementSystemSettings.cs" />
+    <Compile Include="Server\Configuration\ArchiveInitializerGenerationSettings.cs" />
+    <Compile Include="Server\Configuration\ArchiveManagementSettings.cs" />
     <Compile Include="Server\Database\ArchiveInitializer.cs" />
     <Compile Include="Server\Database\Archive\ArchiveFile.cs" />
     <Compile Include="Server\Database\ArchiveManagementSystem.cs" />
@@ -130,13 +133,12 @@
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
-    <Compile Include="Server\Database\Settings\ProcessInitialInsertsSettings.cs" />
-    <Compile Include="Server\Database\Settings\ResourceEngineSettings.cs" />
-    <Compile Include="Server\Database\Settings\RolloverEngineSettings.cs" />
+    <Compile Include="Server\Configuration\ArchiveWriterSettings.cs" />
+    <Compile Include="Server\Configuration\ArchiveListSettings.cs" />
     <Compile Include="Server\ServerInstance.cs" />
     <Compile Include="Server\Database\ArchiveListSnapshot.cs" />
     <Compile Include="Server\Database\ArchiveWriter.cs" />
-    <Compile Include="Server\Database\Settings\ServerInstanceSettings.cs" />
+    <Compile Include="Server\Configuration\ServerInstanceSettings.cs" />
     <Compile Include="Streaming\Client\ClientSocket.cs" />
     <Compile Include="Streaming\IInboundBuffer.cs" />
     <Compile Include="Streaming\ITransportStreaming.cs" />

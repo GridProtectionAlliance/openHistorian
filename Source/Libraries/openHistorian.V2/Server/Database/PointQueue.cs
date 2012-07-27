@@ -30,7 +30,7 @@ namespace openHistorian.V2.Server.Database
     /// <summary>
     /// Provides a way for points to be synchronously queued and processed in bulk.
     /// </summary>
-    class PointQueue : IDisposable
+    public class PointQueue : IDisposable
     {
         const int SizeOfData = 32;
 

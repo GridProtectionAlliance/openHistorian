@@ -13,7 +13,7 @@ namespace openHistorian.V2.Test
     ///to contain all BasicTreeTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class BasicTreeTest
+    public class SortedTree256Test
     {
 
 

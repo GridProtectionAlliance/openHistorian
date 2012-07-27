@@ -24,55 +24,48 @@
 
 using System;
 using System.Collections.Generic;
+using openHistorian.V2.Server.Configuration;
 
 namespace openHistorian.V2.Server.Database
 {
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
-    public class ArchiveManagementSystem
+    public partial class ArchiveManagementSystem
     {
+        ArchiveManagementSystemSettings m_settings;
         ArchiveWriter m_archiveWriter;
         //DataReader m_dataReader;
         ArchiveList m_archiveList;
-        ArchiveInitializer m_archiveInitializer;
         List<ArchiveManagement> m_archiveManagement;
 
-        //RolloverEngine m_rolloverEngine;
-        //DataWriter m_dataWriter;
-        //InboundPointQueue m_newPointQueue;
-        //DatabaseEngineSettings m_settings;
-
-        public ArchiveManagementSystem(DatabaseEngineSettings settings)
+        public ArchiveManagementSystem(ArchiveManagementSystemSettings settings)
         {
-            var partitionCriteria = default(NewArchiveCriteria);
-            partitionCriteria.CommitCount = 1000;
-            partitionCriteria.PartitionSize = 10 * 1024 * 1024; //10MB
-            partitionCriteria.Interval = new TimeSpan(0, 0, 10); //10 Seconds
-            partitionCriteria.IsCommitCountValid = true;
-            partitionCriteria.IsPartitionSizeValid = true;
-            partitionCriteria.IsIntervalValid = true;
+            if (!settings.IsReadOnly)
+                throw new ArgumentException("Must be set to read only before passing to this function", "settings");
 
-            var partitionCriteria2 = default(NewArchiveCriteria);
-            partitionCriteria2.CommitCount = 1000;
-            partitionCriteria2.PartitionSize = 1 * 1024 * 1024 * 1024; //1 GB
-            partitionCriteria2.Interval = new TimeSpan(0, 10, 0); //10 Minutes
-            partitionCriteria2.IsCommitCountValid = true;
-            partitionCriteria2.IsPartitionSizeValid = true;
-            partitionCriteria2.IsIntervalValid = true;
+            m_settings = settings;
 
-            m_archiveInitializer = new ArchiveInitializer(null);
-            m_archiveList = new ArchiveList();
-            m_archiveWriter = new ArchiveWriter(m_archiveInitializer, m_archiveList, 100, 10000, partitionCriteria);
-
+            m_archiveList = new ArchiveList(settings.ArchiveList);
             m_archiveManagement = new List<ArchiveManagement>();
-            m_archiveManagement.Add(new ArchiveManagement(m_archiveInitializer, m_archiveList, partitionCriteria2, 0));
+
+            foreach (var managementSettings in settings.ArchiveManagers)
+            {
+                m_archiveManagement.Add(new ArchiveManagement(managementSettings, m_archiveList));
+            }
+
+            m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList);
+        }
 
 
-            //m_settings = settings;
-            //m_dataWriter = new DataWriter(settings.ResourceEngineSettings);
-            //m_rolloverEngine = new RolloverEngine();
-            //m_newPointQueue = m_rolloverEngine.ProcessInserts.NewPointQueue;
+        public ChangeSettings BeginChangeSettings()
+        {
+            return new ChangeSettings(this);
+        }
+
+        public ArchiveManagementSystemSettings GetCurrentSettings()
+        {
+            return m_settings;
         }
 
         public long LookupPointId(Guid pointId)
@@ -84,6 +77,7 @@ namespace openHistorian.V2.Server.Database
         {
             m_archiveWriter.WriteData(key1, key2, value1, value2);
         }
+
 
     }
 }

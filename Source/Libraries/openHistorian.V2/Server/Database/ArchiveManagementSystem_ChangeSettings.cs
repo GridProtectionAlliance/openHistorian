@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ProcessGenerationRolloverSettings.cs - Gbtc
+//  ArchiveManagementSystem.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,53 +16,60 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/4/2012 - Steven E. Chisholm
+//  5/19/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using System.Data;
-using System.IO;
+using System.Collections.Generic;
 
 namespace openHistorian.V2.Server.Database
 {
-    public class ProcessGenerationRolloverSettings
+    /// <summary>
+    /// Represents a single self contained historian that is referenced by an instance name. 
+    /// </summary>
+    public partial class ArchiveManagementSystem
     {
-        public int AutoRolloverCount;
-        public TimeSpan AutoRolloverInterval;
-        public long AutoRolloverSize;
-
-        public ProcessGenerationRolloverSettings()
+        public class ChangeSettings : IDisposable
         {
-        }
-
-        public ProcessGenerationRolloverSettings(BinaryReader reader)
-        {
-            Load(reader);
-        }
-
-        public void Load(BinaryReader reader)
-        {
-            switch (reader.ReadByte())
+            bool m_disposed;
+            ArchiveManagementSystem m_system;
+            
+            public ChangeSettings(ArchiveManagementSystem system)
             {
-                case 0:
-                    AutoRolloverCount = reader.ReadInt32();
-                    AutoRolloverInterval = new TimeSpan(reader.ReadInt64());
-                    AutoRolloverSize = reader.ReadInt64();
-                    break;
-                default:
-                    throw new VersionNotFoundException();
+                m_system = system;
+            }
+
+            public void Commit()
+            {
+                if (m_disposed) 
+                    throw new ObjectDisposedException(GetType().FullName);
+
+
+                m_disposed = true;
+            }
+
+            public void Rollback()
+            {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+
+                m_disposed = true;
+            }
+
+            public void Dispose()
+            {
+                if (!m_disposed)
+                {
+                    Rollback();
+                }
             }
         }
 
-        public void Save(BinaryWriter writer)
-        {
-            writer.Write((byte)0);
-            writer.Write(AutoRolloverCount);
-            writer.Write(AutoRolloverInterval.Ticks);
-            writer.Write(AutoRolloverSize);
-        }
+
+
     }
 }

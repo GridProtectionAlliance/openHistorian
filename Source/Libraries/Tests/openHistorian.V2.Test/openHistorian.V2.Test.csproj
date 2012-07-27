@@ -82,7 +82,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicTreeTest.cs" />
+    <Compile Include="SortedTree256Test.cs" />
     <Compile Include="IO\BufferedFileStreamTest.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBaseTest.cs" />
     <Compile Include="Collections\BitArray.cs" />
@@ -97,15 +97,15 @@
     <Compile Include="OldCode\BufferedStreamTest.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataListTest.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
-    <Compile Include="PartitionFileTest.cs" />
+    <Compile Include="ArchiveFileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FileStructure\ArchiveFileStreamTest.cs" />
+    <Compile Include="FileStructure\SubFileStreamTest.cs" />
     <Compile Include="OldCode\FileSystem\BenchmarkPageSizes.cs" />
     <Compile Include="FileStructure\DiskIOEnhanced2Test.cs" />
     <Compile Include="FileStructure\DiskIOEnhancedTest.cs" />
-    <Compile Include="FileStructure\FileAllocationTableTest.cs" />
-    <Compile Include="FileStructure\FileMetaDataTest.cs" />
-    <Compile Include="FileStructure\FileSystemSnapshotServiceTest.cs" />
+    <Compile Include="FileStructure\FileHeaderBlockTest.cs" />
+    <Compile Include="FileStructure\SubFileMetaDataTest.cs" />
+    <Compile Include="FileStructure\TransactionServiceTest.cs" />
     <Compile Include="FileStructure\IndexMapperTest.cs" />
     <Compile Include="FileStructure\IndexParserTest.cs" />
     <Compile Include="FileStructure\ShadowCopyAllocatorTest.cs" />

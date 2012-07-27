@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DatabaseEngineSettings.cs - Gbtc
+//  FileWriterSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,56 +16,54 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/4/2012 - Steven E. Chisholm
+//  7/24/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+using System;
 using System.Data;
 using System.IO;
+using openHistorian.V2.Collections;
+using openHistorian.V2.Server.Database;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Server.Configuration
 {
-    public class DatabaseEngineSettings
+    public class ArchiveWriterSettings : ISupportsReadonly<ArchiveWriterSettings>
     {
-        public string DatabaseName;
-        public RolloverEngineSettings RolloverEngineSettings;
-        public ResourceEngineSettings ResourceEngineSettings;
+        bool m_isReadOnly;
 
-        public DatabaseEngineSettings()
-        {
-            DatabaseName = string.Empty;
-            RolloverEngineSettings = new RolloverEngineSettings();
-            ResourceEngineSettings = new ResourceEngineSettings();
-        }
-        public DatabaseEngineSettings(BinaryReader reader)
-        {
-            Load(reader);
-        }
+        public string Name;
+        public int? CommitOnPointCount;
+        public TimeSpan? CommitOnInterval;
+        public string DestinationName;
+        public ArchiveInitializerGenerationSettings Initializer;
+        public int? NewFileOnCommitCount;
+        public TimeSpan? NewFileOnInterval;
+        public long? NewFileOnSize;
 
-        public void Load(BinaryReader reader)
+
+        public bool IsReadOnly
         {
-            switch (reader.ReadByte())
+            get
             {
-                case 0:
-                    DatabaseName = reader.ReadString();
-                    RolloverEngineSettings = new RolloverEngineSettings(reader);
-                    ResourceEngineSettings = new ResourceEngineSettings(reader);
-                    break;
-                default:
-                    throw new VersionNotFoundException();
+                return m_isReadOnly;
+            }
+            set
+            {
+                if (value ^ m_isReadOnly) //if values are different
+                {
+                    if (m_isReadOnly)
+                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
+                    m_isReadOnly = true;
+                }
             }
         }
 
-        public void Save(BinaryWriter writer)
+        public ArchiveWriterSettings EditableClone()
         {
-            writer.Write((byte)0);
-            writer.Write(DatabaseName);
-            RolloverEngineSettings.Save(writer);
-            ResourceEngineSettings.Save(writer);
+            throw new NotImplementedException();
         }
-
     }
-
 }

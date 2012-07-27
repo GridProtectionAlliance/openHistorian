@@ -10,7 +10,7 @@ namespace openHistorian.V2.Test
     ///to contain all PartitionFileTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class PartitionFileTest
+    public class ArchiveFileTest
     {
 
         private TestContext testContextInstance;

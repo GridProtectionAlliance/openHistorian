@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ProcessInitialInsertsSettings.cs - Gbtc
+//  ReadonlyList.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,49 +16,29 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/4/2012 - Steven E. Chisholm
+//  7/27/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+
 using System;
-using System.Data;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Collections
 {
-    public class ProcessInitialInsertsSettings
+    /// <summary>
+    /// Represents an object that can be configured as read only and thus made immutable.  
+    /// The origional contents of this class will not be editable once <see cref="IsReadOnly"/> is set to true.
+    /// In order to modify the contest of this object, a clone of the object must be created with <see cref="EditableClone"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    interface ISupportsReadonly<T>
     {
-        public int AutoCommitCount;
-        public TimeSpan AutoCommitInterval;
-
-        public ProcessInitialInsertsSettings()
-        {
-        }
-        public ProcessInitialInsertsSettings(BinaryReader reader)
-        {
-            Load(reader);
-        }
-
-        public void Load(BinaryReader reader)
-        {
-            switch (reader.ReadByte())
-            {
-                case 0:
-                    AutoCommitCount = reader.ReadInt32();
-                    AutoCommitInterval = new TimeSpan(reader.ReadInt64());
-                    break;
-                default:
-                    throw new VersionNotFoundException();
-            }
-        }
-
-        public void Save(BinaryWriter writer)
-        {
-            writer.Write((byte)0);
-            writer.Write(AutoCommitCount);
-            writer.Write(AutoCommitInterval.Ticks);
-        }
+        bool IsReadOnly { get; set; }
+        T EditableClone();
     }
 }

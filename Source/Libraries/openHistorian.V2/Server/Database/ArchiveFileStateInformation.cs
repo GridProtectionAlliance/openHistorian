@@ -25,13 +25,13 @@
 
 namespace openHistorian.V2.Server.Database
 {
-    class ArchiveFileStateInformation
+    public class ArchiveFileStateInformation
     {
         public bool IsReadOnly;
         public bool IsEditLocked;
-        public int Generation;
+        public string Generation;
         public ArchiveFileSummary Summary;
-        public ArchiveFileStateInformation(bool isReadOnly, bool isEditLocked, int generation)
+        public ArchiveFileStateInformation(bool isReadOnly, bool isEditLocked, string generation)
         {
             IsReadOnly = isReadOnly;
             IsEditLocked = isEditLocked;

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionInitializerSettings.cs - Gbtc
+//  ServerInstanceSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,58 +16,53 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/4/2012 - Steven E. Chisholm
+//  7/24/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Server
 {
-    public class PartitionInitializerSettings
+    partial class ServerInstanceSettings
     {
-        public List<PartitionInitializerGenerationSettings> GenerationSettings;
-
-        public PartitionInitializerSettings()
+        public class Item
         {
-            GenerationSettings = new List<PartitionInitializerGenerationSettings>();
-        }
-
-        public PartitionInitializerSettings(BinaryReader reader)
-        {
-            Load(reader);
-        }
-
-        public void Load(BinaryReader reader)
-        {
-            switch (reader.ReadByte())
+            public string DatabaseName;
+            public string FileName;
+            public Item(string databaseName, string fileName)
             {
-                case 0:
-                    int count = reader.ReadInt32();
-                    GenerationSettings = new List<PartitionInitializerGenerationSettings>(count);
-                    while (count > 0)
-                    {
-                        count--;
-                        GenerationSettings.Add(new PartitionInitializerGenerationSettings(reader));
-                    }
-                    break;
-                default:
-                    throw new VersionNotFoundException();
+                DatabaseName = databaseName;
+                FileName = fileName;
             }
-        }
-
-        public void Save(BinaryWriter writer)
-        {
-            writer.Write((byte)0);
-            writer.Write(GenerationSettings.Count);
-            foreach (var s in GenerationSettings)
+            public Item(BinaryReader reader)
             {
-                s.Save(writer);
+                Load(reader);
             }
+
+            public void Load(BinaryReader reader)
+            {
+                switch (reader.ReadByte())
+                {
+                    case 0:
+                        DatabaseName = reader.ReadString();
+                        FileName = reader.ReadString();
+                        break;
+                    default:
+                        throw new VersionNotFoundException();
+                }
+            }
+
+            public void Save(BinaryWriter writer)
+            {
+                writer.Write((byte)0);
+                writer.Write(DatabaseName);
+                writer.Write(FileName);
+            }
+
         }
     }
 }

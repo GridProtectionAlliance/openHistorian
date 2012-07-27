@@ -29,7 +29,7 @@ using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
 {
-    partial class ArchiveList
+    public partial class ArchiveList
     {
         public class Editor : IDisposable
         {

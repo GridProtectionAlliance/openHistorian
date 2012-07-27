@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FileSystemSnapshotServiceTest.cs - Gbtc
+//  TransactionServiceTest.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,7 +28,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace openHistorian.V2.FileStructure
 {
     [TestClass()]
-    public class FileSystemSnapshotServiceTest
+    public class TransactionServiceTest
     {
         [TestMethod()]
         public void Test()

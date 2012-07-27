@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FileMetaDataTest.cs - Gbtc
+//  SubFileMetaDataTest.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,7 +29,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace openHistorian.V2.FileStructure
 {
     [TestClass()]
-    public class FileMetaDataTest
+    public class SubFileMetaDataTest
     {
         [TestMethod()]
         public void Test()

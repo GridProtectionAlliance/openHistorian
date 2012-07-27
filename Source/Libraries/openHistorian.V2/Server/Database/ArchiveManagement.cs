@@ -22,9 +22,11 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using openHistorian.V2.Server.Configuration;
 using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
@@ -33,9 +35,9 @@ namespace openHistorian.V2.Server.Database
     /// Performs the required rollovers by reading partitions from the data list
     /// and combining them into a file of a later generation.
     /// </summary>
-    class ArchiveManagement
+    public class ArchiveManagement
     {
-        NewArchiveCriteria m_newArchiveCriteria;
+        ArchiveManagementSettings m_settings;
 
         ArchiveInitializer m_archiveInitializer;
 
@@ -53,20 +55,20 @@ namespace openHistorian.V2.Server.Database
 
         Stopwatch m_lastCommitTime;
 
-        int m_rolloverGenerationNumber;
-
         /// <summary>
         /// Creates a new <see cref="ArchiveManagement"/>.
         /// </summary>
-        /// <param name="archiveInitializer">Used to create a new partition.</param>
+        /// <param name="settings"></param>
         /// <param name="archiveList">The list used to attach newly created file.</param>
-        /// <param name="newArchiveCriteria"></param>
-        public ArchiveManagement(ArchiveInitializer archiveInitializer, ArchiveList archiveList, NewArchiveCriteria newArchiveCriteria, int rolloverGenerationNumber)
+        public ArchiveManagement(ArchiveManagementSettings settings, ArchiveList archiveList)
         {
-            m_rolloverGenerationNumber = rolloverGenerationNumber;
+            if (!settings.IsReadOnly)
+                throw new ArgumentException("Must be set to read only before passing to this function", "settings");
+
+            m_settings = settings;
+
             m_archiveList = archiveList;
-            m_newArchiveCriteria = newArchiveCriteria;
-            m_archiveInitializer = archiveInitializer;
+            m_archiveInitializer = new ArchiveInitializer(settings.Initializer);
 
             m_lastCommitTime = Stopwatch.StartNew();
 
@@ -91,7 +93,7 @@ namespace openHistorian.V2.Server.Database
                 {
                     foreach (var file in edit.Partitions)
                     {
-                        if (file.Generation == m_rolloverGenerationNumber && !file.IsEditLocked)
+                        if (file.Generation == m_settings.SourceName && !file.IsEditLocked)
                         {
                             partitionsToRollOver.Add(file.Summary);
                             file.IsEditLocked = true;
@@ -102,13 +104,13 @@ namespace openHistorian.V2.Server.Database
                 if (partitionsToRollOver.Count > 0)
                 {
                     if (m_activeFile == null ||
-                        (m_newArchiveCriteria.IsCommitCountValid && m_commitCount >= m_newArchiveCriteria.CommitCount) ||
-                        (m_newArchiveCriteria.IsIntervalValid && m_lastCommitTime.Elapsed >= m_newArchiveCriteria.Interval) ||
-                        (m_newArchiveCriteria.IsPartitionSizeValid && m_activeFile.FileSize >= m_newArchiveCriteria.PartitionSize))
+                        (m_settings.NewFileOnCommitCount.HasValue && m_commitCount >= m_settings.NewFileOnCommitCount.Value) ||
+                        (m_settings.NewFileOnInterval.HasValue && m_lastCommitTime.Elapsed >= m_settings.NewFileOnInterval.Value) ||
+                        (m_settings.NewFileOnSize.HasValue && m_activeFile.FileSize >= m_settings.NewFileOnSize.Value))
                     {
                         m_commitCount = 0;
                         m_lastCommitTime.Restart();
-                        var newFile = m_archiveInitializer.CreatePartition(m_rolloverGenerationNumber + 1);
+                        var newFile = m_archiveInitializer.CreateArchiveFile();
                         using (var edit = m_archiveList.AcquireEditLock())
                         {
                             //Create a new file.
@@ -116,7 +118,7 @@ namespace openHistorian.V2.Server.Database
                             {
                                 edit.ReleaseEditLock(m_activeFile);
                             }
-                            edit.Add(newFile, new ArchiveFileStateInformation(false, true, 0));
+                            edit.Add(newFile, new ArchiveFileStateInformation(false, true, m_settings.DestinationName));
                         }
                         m_activeFile = newFile;
                     }

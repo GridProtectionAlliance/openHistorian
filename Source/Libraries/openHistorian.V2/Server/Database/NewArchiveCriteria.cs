@@ -26,7 +26,7 @@ using System;
 
 namespace openHistorian.V2.Server.Database
 {
-    struct NewArchiveCriteria
+    public struct NewArchiveCriteria
     {
         public int CommitCount;
         public TimeSpan Interval;
