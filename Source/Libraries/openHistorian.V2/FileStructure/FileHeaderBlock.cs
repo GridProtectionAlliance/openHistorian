@@ -23,16 +23,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.FileStructure
 {
     /// <summary>
     /// Contains the information that is in the header page of an archive file.  
     /// </summary>
-    internal class FileHeaderBlock
+    internal class FileHeaderBlock : SupportsReadonlyBase<FileHeaderBlock>
     {
         #region [ Members ]
         #region [ Enumerables ]
@@ -54,10 +54,6 @@ namespace openHistorian.V2.FileStructure
         #endregion
         #region [ Fields ]
 
-        /// <summary>
-        /// Determines if the class is immutable
-        /// </summary>
-        bool m_isReadOnly;
         /// <summary>
         /// The version number required to read the file system.
         /// </summary>
@@ -85,11 +81,7 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// Provides a list of all of the Features that are contained within the file.
         /// </summary>
-        List<SubFileMetaData> m_files;
-        /// <summary>
-        /// This readonly collection is provided so the user can read the files without able to modify the collection.
-        /// </summary>
-        ReadOnlyCollection<SubFileMetaData> m_readOnlyFiles;
+        ReadonlyList<SubFileMetaData> m_files;
         /// <summary>
         /// Maintains any meta data tags that existed in the file header that were not recgonized by this version of the file so they can be saved back to the file.
         /// </summary>
@@ -116,63 +108,12 @@ namespace openHistorian.V2.FileStructure
             {
                 LoadFromBuffer(diskIo, accessMode);
             }
-
-            m_readOnlyFiles = new ReadOnlyCollection<SubFileMetaData>(m_files);
-            m_isReadOnly = (accessMode == AccessMode.ReadOnly);
-        }
-
-        /// <summary>
-        /// Clones an existing FileAllocationTable for editable access
-        /// Automatically increments the sequence number.
-        /// </summary>
-        /// <param name="fileHeaderBlock"></param>
-        FileHeaderBlock(FileHeaderBlock fileHeaderBlock)
-        {
-            if (!fileHeaderBlock.CanWrite)
-                throw new Exception("This file cannot be modified because the file system version is not recgonized");
-            m_isReadOnly = false;
-            m_archiveId = fileHeaderBlock.m_archiveId;
-            m_files = new List<SubFileMetaData>(fileHeaderBlock.Files.Count);
-            foreach (SubFileMetaData t in fileHeaderBlock.Files)
-            {
-                m_files.Add(t.CloneEditableCopy());
-            }
-            m_snapshotSequenceNumber = fileHeaderBlock.m_snapshotSequenceNumber + 1;
-            m_minimumReadVersion = fileHeaderBlock.m_minimumReadVersion;
-            m_minimumWriteVersion = fileHeaderBlock.m_minimumWriteVersion;
-            m_lastAllocatedBlock = fileHeaderBlock.m_lastAllocatedBlock;
-            m_nextFileId = fileHeaderBlock.m_nextFileId;
-            m_unrecgonizedMetaDataTags = fileHeaderBlock.m_unrecgonizedMetaDataTags;
-            m_readOnlyFiles = new ReadOnlyCollection<SubFileMetaData>(m_files);
+            IsReadOnly = (accessMode == AccessMode.ReadOnly);
         }
 
         #endregion
 
         #region [ Properties ]
-
-        /// <summary>
-        /// Determines if the class is immutable
-        /// </summary>
-        public bool IsReadOnly
-        {
-            get
-            {
-                return m_isReadOnly;
-            }
-            set
-            {
-                if (m_isReadOnly && !value)
-                    throw new Exception("Writing to this file type is not supported");
-                if (m_isReadOnly != value)
-                {
-                    m_isReadOnly = value;
-                    foreach (var file in m_files)
-                    {
-                        file.IsReadOnly = value;
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// Determines if the file can be written to because enough features are recgonized by this current version to do it without corrupting the file system.
@@ -241,20 +182,41 @@ namespace openHistorian.V2.FileStructure
             }
         }
 
-        /// <summary>
-        /// Returns the <see cref="SubFileMetaData"/> for all of the files of the file system.
-        /// </summary>
-        public ReadOnlyCollection<SubFileMetaData> Files
+        public ReadonlyList<SubFileMetaData> Files
         {
             get
             {
-                return m_readOnlyFiles;
+                return m_files;
             }
         }
+
 
         #endregion
 
         #region [ Methods ]
+
+        /// <summary>
+        /// Clones the object, while incrementing the sequence number.
+        /// </summary>
+        /// <returns></returns>
+        public override FileHeaderBlock EditableClone()
+        {
+            var clone = base.EditableClone();
+            clone.m_snapshotSequenceNumber++;
+            return clone;
+        }
+
+        protected override void SetInternalMembersAsReadOnly()
+        {
+            m_files.IsReadOnly = true;
+        }
+
+        protected override void SetInternalMembersAsEditable()
+        {
+            if (!CanWrite)
+                throw new Exception("This file cannot be modified because the file system version is not recgonized");
+            m_files = m_files.EditableClone();
+        }
 
         /// <summary>
         /// Allocates a sequential number of blocks at the end of the file and returns the starting address of the allocation
@@ -265,21 +227,10 @@ namespace openHistorian.V2.FileStructure
         {
             if (count <= 0)
                 throw new ArgumentException("the value 0 is not valid", "count");
-            if (IsReadOnly)
-                throw new Exception("class is read only");
+            TestForEditable();
             int blockAddress = m_lastAllocatedBlock + 1;
             m_lastAllocatedBlock += count;
             return blockAddress;
-        }
-
-        /// <summary>
-        /// Creates an editable copy of this class.
-        /// The also increments the sequence number.
-        /// </summary>
-        /// <returns></returns>
-        public FileHeaderBlock CloneEditableCopy()
-        {
-            return new FileHeaderBlock(this);
         }
 
         /// <summary>
@@ -344,9 +295,8 @@ namespace openHistorian.V2.FileStructure
             m_snapshotSequenceNumber = 1;
             m_nextFileId = 0;
             m_lastAllocatedBlock = 9;
-            m_files = new List<SubFileMetaData>();
-            m_isReadOnly = (mode == AccessMode.ReadOnly);
-
+            m_files = new ReadonlyList<SubFileMetaData>();
+            IsReadOnly = (mode == AccessMode.ReadOnly);
 
             byte[] data = GetBytes();
 
@@ -464,7 +414,7 @@ namespace openHistorian.V2.FileStructure
                         if (metaDataLength != fileCount * SubFileMetaData.SizeInBytes + 9)
                             throw new Exception("The file format is corrupt");
 
-                        m_files = new List<SubFileMetaData>(fileCount);
+                        m_files = new ReadonlyList<SubFileMetaData>(fileCount);
                         for (int x = 0; x < fileCount; x++)
                         {
                             m_files.Add(new SubFileMetaData(dataReader, mode));
@@ -480,7 +430,7 @@ namespace openHistorian.V2.FileStructure
             }
             if (!IsFileAllocationTableValid())
                 throw new Exception("File System is invalid");
-            m_isReadOnly = (mode == AccessMode.ReadOnly);
+            IsReadOnly = (mode == AccessMode.ReadOnly);
             if (mode != AccessMode.ReadOnly)
                 m_snapshotSequenceNumber++;
         }

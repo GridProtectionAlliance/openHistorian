@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -35,10 +36,51 @@ namespace openHistorian.V2.Collections
     /// In order to modify the contest of this object, a clone of the object must be created with <see cref="EditableClone"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface ISupportsReadonly<T>
+    public abstract class SupportsReadonlyBase<T> : ISupportsReadonly<T>
+        where T : SupportsReadonlyBase<T>
     {
-        bool IsReadOnly { get; set; }
-        T EditableClone();
-        T ReadonlyClone();
+        bool m_isReadOnly;
+
+        public virtual bool IsReadOnly
+        {
+            get
+            {
+                return m_isReadOnly;
+            }
+            set
+            {
+                if (value ^ m_isReadOnly) //if values are different
+                {
+                    if (m_isReadOnly)
+                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
+                    m_isReadOnly = true;
+                    SetInternalMembersAsReadOnly();
+                }
+            }
+        }
+
+        protected void TestForEditable()
+        {
+            if (IsReadOnly)
+                throw new ReadOnlyException("Object has been set as read only");
+        }
+
+        protected abstract void SetInternalMembersAsReadOnly();
+        protected abstract void SetInternalMembersAsEditable();
+
+        public virtual T EditableClone()
+        {
+            T initializer = (T)MemberwiseClone();
+            initializer.m_isReadOnly = false;
+            initializer.SetInternalMembersAsEditable();
+            return initializer;
+        }
+
+        public virtual T ReadonlyClone()
+        {
+            var copy = EditableClone();
+            copy.IsReadOnly = true;
+            return copy;
+        }
     }
 }

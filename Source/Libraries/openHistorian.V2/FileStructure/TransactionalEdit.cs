@@ -22,7 +22,7 @@
 //******************************************************************************************************
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.FileStructure
 {
@@ -99,7 +99,7 @@ namespace openHistorian.V2.FileStructure
             m_openedFiles = new List<SubFileStream>();
             m_disposed = false;
             m_transactionalRead = new TransactionalRead(dataReader, fileHeaderBlock);
-            m_fileHeaderBlock = fileHeaderBlock.CloneEditableCopy();
+            m_fileHeaderBlock = fileHeaderBlock.EditableClone();
             m_dataReader = dataReader;
             m_delHasBeenCommitted = delHasBeenCommitted;
             m_delHasBeenRolledBack = delHasBeenRolledBack;
@@ -112,7 +112,7 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// A list of all of the files in this collection.
         /// </summary>
-        public ReadOnlyCollection<SubFileMetaData> Files
+        public ReadonlyList<SubFileMetaData> Files
         {
             get
             {
@@ -121,10 +121,11 @@ namespace openHistorian.V2.FileStructure
                 return m_fileHeaderBlock.Files;
             }
         }
+
         /// <summary>
         /// A list of all of the files in this snapshot before they were edited.
         /// </summary>
-        public ReadOnlyCollection<SubFileMetaData> OrigionalFiles
+        public ReadonlyList<SubFileMetaData> OrigionalFiles
         {
             get
             {

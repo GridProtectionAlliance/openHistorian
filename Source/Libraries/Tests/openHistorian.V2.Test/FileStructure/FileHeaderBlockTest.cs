@@ -46,7 +46,7 @@ namespace openHistorian.V2.FileStructure
                 FileHeaderBlock header2 = new FileHeaderBlock(data, OpenMode.Open, AccessMode.ReadOnly);
 
                 CheckEqual(header2, header);
-                header = header2.CloneEditableCopy();
+                header = header2.EditableClone();
                 FileHeaderBlock_Accessor.AttachShadow(header).m_snapshotSequenceNumber--;
                 CheckEqual(header2, header);
 

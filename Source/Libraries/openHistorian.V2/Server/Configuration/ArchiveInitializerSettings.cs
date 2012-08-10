@@ -22,47 +22,34 @@
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using openHistorian.V2.Collections;
 using openHistorian.V2.Server.Configuration;
 
 namespace openHistorian.V2.Server.Database
 {
-    public class ArchiveInitializerGenerationSettings : ISupportsReadonly<ArchiveInitializerGenerationSettings>
+    public class ArchiveInitializerSettings : SupportsReadonlyBase<ArchiveInitializerSettings>
     {
-        bool m_isReadOnly;
-        string m_name;
         bool m_isMemoryArchive;
         FolderListSettings m_savePath;
         long m_initialSize;
         long m_autoGrowthSize;
-
-        public string Name
+        long m_requiredFreeSpaceForNewFile;
+        long m_requiredFreeSpaceForAutoGrowth;
+        
+        public ArchiveInitializerSettings()
         {
-            get
-            {
-                return m_name;
-            }
-            set
-            {
-                if (m_isReadOnly)
-                    throw new ReadOnlyException("Object has been set as read only");
-                m_name = value;
-            }
+            m_savePath = new FolderListSettings();
         }
 
         public bool IsMemoryArchive
-           {
+        {
             get
             {
                 return m_isMemoryArchive;
             }
             set
             {
-                if (m_isReadOnly)
-                    throw new ReadOnlyException("Object has been set as read only");
+                TestForEditable();
                 m_isMemoryArchive = value;
             }
         }
@@ -75,8 +62,7 @@ namespace openHistorian.V2.Server.Database
             }
             set
             {
-                if (m_isReadOnly)
-                    throw new ReadOnlyException("Object has been set as read only");
+                TestForEditable();
                 m_savePath = value;
             }
         }
@@ -89,12 +75,15 @@ namespace openHistorian.V2.Server.Database
             }
             set
             {
-                if (m_isReadOnly)
-                    throw new ReadOnlyException("Object has been set as read only");
+                TestForEditable();
                 m_initialSize = value;
             }
         }
 
+        /// <summary>
+        /// Get/Set the number of bytes an archive will 
+        /// auto-grow by on each allocation
+        /// </summary>
         public long AutoGrowthSize
         {
             get
@@ -103,32 +92,53 @@ namespace openHistorian.V2.Server.Database
             }
             set
             {
-                if (m_isReadOnly)
-                    throw new ReadOnlyException("Object has been set as read only");
+                TestForEditable();
                 m_autoGrowthSize = value;
             }
         }
 
-        public bool IsReadOnly
+        /// <summary>
+        /// Get/Set the required free space in a folder path in order for a new file to
+        /// be created in this path.  
+        /// </summary>
+        public long RequiredFreeSpaceForNewFile
         {
             get
             {
-                return m_isReadOnly;
+                return m_requiredFreeSpaceForNewFile;
             }
             set
             {
-                if (value ^ m_isReadOnly) //if values are different
-                {
-                    if (m_isReadOnly)
-                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
-                    m_isReadOnly = true;
-                }
+                TestForEditable();
+                m_requiredFreeSpaceForNewFile = value;
             }
         }
 
-        public ArchiveInitializerGenerationSettings EditableClone()
+        /// <summary>
+        /// Get/Set the free space point where the file no longer grows freely. 
+        /// </summary>
+        public long RequiredFreeSpaceForAutoGrowth
         {
-            throw new System.NotImplementedException();
+            get
+            {
+                return m_requiredFreeSpaceForAutoGrowth;
+            }
+            set
+            {
+                TestForEditable();
+                m_requiredFreeSpaceForAutoGrowth = value;
+            }
         }
+
+        protected override void SetInternalMembersAsReadOnly()
+        {
+            m_savePath.IsReadOnly = true;
+        }
+
+        protected override void SetInternalMembersAsEditable()
+        {
+            m_savePath = m_savePath.EditableClone();
+        }
+
     }
 }

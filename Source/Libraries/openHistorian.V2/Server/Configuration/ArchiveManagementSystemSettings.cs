@@ -22,46 +22,72 @@
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveManagementSystemSettings : ISupportsReadonly<ArchiveManagementSystemSettings>
+    public class ArchiveManagementSystemSettings : SupportsReadonlyBase<ArchiveManagementSystemSettings>
     {
-        bool m_isReadOnly; 
-        public string DatabaseName;
-       
-        public ArchiveWriterSettings ArchiveWriter;
-        public ReadonlyList<ArchiveManagementSettings> ArchiveManagers;
-        public ArchiveListSettings ArchiveList;
+        ArchiveWriterSettings m_archiveWriter;
+        ReadonlyList<ArchiveManagementSettings> m_archiveManagers;
+        ArchiveListSettings m_archiveList;
 
-        
+        public ArchiveManagementSystemSettings()
+        {
+            m_archiveWriter = new ArchiveWriterSettings();
+            m_archiveManagers = new ReadonlyList<ArchiveManagementSettings>();
+            m_archiveList = new ArchiveListSettings();
+        }
 
-
-        public bool IsReadOnly
+        public ArchiveWriterSettings ArchiveWriter
         {
             get
             {
-                return m_isReadOnly;
+                return m_archiveWriter;
             }
             set
             {
-                if (value ^ m_isReadOnly) //if values are different
-                {
-                    if (m_isReadOnly)
-                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
-                    m_isReadOnly = true;
-                }
+                TestForEditable();
+                m_archiveWriter = value;
+            }
+        }
+        public ReadonlyList<ArchiveManagementSettings> ArchiveManagers
+        {
+            get
+            {
+                return m_archiveManagers;
+            }
+            set
+            {
+                TestForEditable();
+                m_archiveManagers = value;
+            }
+        }
+        public ArchiveListSettings ArchiveList
+        {
+            get
+            {
+                return m_archiveList;
+            }
+            set
+            {
+                TestForEditable();
+                m_archiveList = value;
             }
         }
 
-
-        public ArchiveManagementSystemSettings EditableClone()
+        protected override void SetInternalMembersAsReadOnly()
         {
-            throw new System.NotImplementedException();
+            m_archiveWriter.IsReadOnly = true;
+            m_archiveManagers.IsReadOnly = true;
+            m_archiveList.IsReadOnly = true;
+        }
+
+        protected override void SetInternalMembersAsEditable()
+        {
+            m_archiveWriter = m_archiveWriter.EditableClone();
+            m_archiveManagers = m_archiveManagers.EditableClone();
+            m_archiveList = m_archiveList.EditableClone();
         }
 
     }

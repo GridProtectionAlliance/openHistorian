@@ -24,13 +24,14 @@
 
 using System;
 using System.IO;
+using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.FileStructure
 {
     /// <summary>
     /// This contains the meta data of the file along with index information to map all of the blocks of the file.
     /// </summary>
-    public class SubFileMetaData
+    public class SubFileMetaData : SupportsReadonlyBase<SubFileMetaData>
     {
         #region [ Members ]
 
@@ -40,7 +41,6 @@ namespace openHistorian.V2.FileStructure
         internal const int SizeInBytes = 40;
 
         Guid m_fileExtension;
-        bool m_isReadOnly;
         int m_fileIdNumber;
         int m_fileFlags;
         int m_directBlock;
@@ -59,7 +59,6 @@ namespace openHistorian.V2.FileStructure
         /// <param name="mode"></param>
         public SubFileMetaData(BinaryReader dataReader, AccessMode mode)
         {
-            m_isReadOnly = (mode == AccessMode.ReadOnly);
             m_fileIdNumber = dataReader.ReadInt32();
             m_fileExtension = new Guid(dataReader.ReadBytes(16));
             m_fileFlags = dataReader.ReadInt32();
@@ -67,23 +66,7 @@ namespace openHistorian.V2.FileStructure
             m_singleIndirectBlock = dataReader.ReadInt32();
             m_doubleIndirectBlock = dataReader.ReadInt32();
             m_tripleIndirectBlock = dataReader.ReadInt32();
-        }
-
-        /// <summary>
-        /// Clones a <see cref="SubFileMetaData"/> allowing the caller to change the readonly flag.
-        /// </summary>
-        /// <param name="origionalSubFileMetaData"></param>
-        /// <param name="mode"></param>
-        public SubFileMetaData(SubFileMetaData origionalSubFileMetaData, AccessMode mode)
-        {
-            m_isReadOnly = (mode == AccessMode.ReadOnly);
-            m_fileIdNumber = origionalSubFileMetaData.FileIdNumber;
-            m_fileExtension = origionalSubFileMetaData.FileExtension;
-            m_fileFlags = origionalSubFileMetaData.FileFlags;
-            m_directBlock = origionalSubFileMetaData.DirectBlock;
-            m_singleIndirectBlock = origionalSubFileMetaData.SingleIndirectBlock;
-            m_doubleIndirectBlock = origionalSubFileMetaData.DoubleIndirectBlock;
-            m_tripleIndirectBlock = origionalSubFileMetaData.TripleIndirectBlock;
+            IsReadOnly = (mode == AccessMode.ReadOnly);
         }
 
         /// <summary>
@@ -96,7 +79,7 @@ namespace openHistorian.V2.FileStructure
         {
             if (featureType == Guid.Empty)
                 throw new ArgumentException("The feature type cannot be an empty GUID value", "featureType");
-            m_isReadOnly = (mode == AccessMode.ReadOnly);
+            IsReadOnly = (mode == AccessMode.ReadOnly);
             m_fileIdNumber = fileId;
             m_fileExtension = featureType;
         }
@@ -104,23 +87,6 @@ namespace openHistorian.V2.FileStructure
         #endregion
 
         #region [ Properties ]
-
-        /// <summary>
-        /// Gets/Sets if the class is immutable
-        /// </summary>
-        public bool IsReadOnly
-        {
-            get
-            {
-                return m_isReadOnly;
-            }
-            set
-            {
-                if (m_isReadOnly && !value)
-                    throw new Exception("Class is read only");
-                m_isReadOnly = value;
-            }
-        }
 
         /// <summary>
         /// Gets the unique file identifier for this file.
@@ -155,8 +121,7 @@ namespace openHistorian.V2.FileStructure
             }
             set
             {
-                if (IsReadOnly)
-                    throw new Exception("Class is read only");
+                TestForEditable();
                 m_fileFlags = value;
             }
         }
@@ -172,8 +137,7 @@ namespace openHistorian.V2.FileStructure
             }
             set
             {
-                if (IsReadOnly)
-                    throw new Exception("Class is read only");
+                TestForEditable();
                 m_directBlock = value;
             }
         }
@@ -189,8 +153,7 @@ namespace openHistorian.V2.FileStructure
             }
             set
             {
-                if (IsReadOnly)
-                    throw new Exception("Class is read only");
+                TestForEditable();
                 m_singleIndirectBlock = value;
             }
         }
@@ -206,8 +169,7 @@ namespace openHistorian.V2.FileStructure
             }
             set
             {
-                if (IsReadOnly)
-                    throw new Exception("Class is read only");
+                TestForEditable();
                 m_doubleIndirectBlock = value;
             }
         }
@@ -222,8 +184,7 @@ namespace openHistorian.V2.FileStructure
             }
             set
             {
-                if (IsReadOnly)
-                    throw new Exception("Class is read only");
+                TestForEditable();
                 m_tripleIndirectBlock = value;
             }
         }
@@ -232,13 +193,12 @@ namespace openHistorian.V2.FileStructure
 
         #region [ Methods ]
 
-        /// <summary>
-        /// Creates an editable copy of this class.
-        /// </summary>
-        /// <returns></returns>
-        public SubFileMetaData CloneEditableCopy()
+        protected override void SetInternalMembersAsReadOnly()
         {
-            return new SubFileMetaData(this, AccessMode.ReadWrite);
+        }
+
+        protected override void SetInternalMembersAsEditable()
+        {
         }
 
         /// <summary>

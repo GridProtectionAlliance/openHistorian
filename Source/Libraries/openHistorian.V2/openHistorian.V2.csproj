@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\SupportsReadonlyBase.cs" />
     <Compile Include="Collections\ISupportsReadonly.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_TreeScanner.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase_NodeHeader.cs" />
@@ -108,7 +109,7 @@
     <Compile Include="Server\Configuration\FolderListSettings.cs" />
     <Compile Include="Server\Configuration\ServerInstanceSettings_Item.cs" />
     <Compile Include="Server\Configuration\ArchiveManagementSystemSettings.cs" />
-    <Compile Include="Server\Configuration\ArchiveInitializerGenerationSettings.cs" />
+    <Compile Include="Server\Configuration\ArchiveInitializerSettings.cs" />
     <Compile Include="Server\Configuration\ArchiveManagementSettings.cs" />
     <Compile Include="Server\Database\ArchiveInitializer.cs" />
     <Compile Include="Server\Database\Archive\ArchiveFile.cs" />

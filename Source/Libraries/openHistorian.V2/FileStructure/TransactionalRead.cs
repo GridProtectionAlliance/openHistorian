@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 using System;
-using System.Collections.ObjectModel;
+using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.FileStructure
 {
@@ -73,7 +73,7 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// A list of all of the files in this collection.
         /// </summary>
-        public ReadOnlyCollection<SubFileMetaData> Files
+        public ReadonlyList<SubFileMetaData> Files
         {
             get
             {

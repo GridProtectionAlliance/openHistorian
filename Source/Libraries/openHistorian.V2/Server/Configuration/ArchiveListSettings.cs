@@ -22,54 +22,36 @@
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveListSettings : ISupportsReadonly<ArchiveListSettings>
+    public class ArchiveListSettings : SupportsReadonlyBase<ArchiveListSettings>
     {
-        bool m_isReadOnly;
-        string m_name;
-        public ReadonlyList<string> AttachedFiles;
+        ReadonlyList<string> m_attachedFiles;
 
-        public string Name
+        public ReadonlyList<string> AttachedFiles
         {
             get
             {
-                return m_name;
+                return m_attachedFiles;
             }
             set
             {
-                if (m_isReadOnly)
-                    throw new ReadOnlyException("Object has been set as read only");
-                m_name = value;
+                TestForEditable();
+                m_attachedFiles = value;
             }
         }
 
-        public bool IsReadOnly
+        protected override void SetInternalMembersAsReadOnly()
         {
-            get
-            {
-                return m_isReadOnly;
-            }
-            set
-            {
-                if (value ^ m_isReadOnly) //if values are different
-                {
-                    if (m_isReadOnly)
-                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
-                    m_isReadOnly = true;
-                    AttachedFiles.IsReadOnly = true;
-                }
-            }
+            AttachedFiles.IsReadOnly = true;
         }
 
-        public ArchiveListSettings EditableClone()
+        protected override void SetInternalMembersAsEditable()
         {
-            throw new System.NotImplementedException();
+           m_attachedFiles = m_attachedFiles.EditableClone();
         }
+        
     }
 }

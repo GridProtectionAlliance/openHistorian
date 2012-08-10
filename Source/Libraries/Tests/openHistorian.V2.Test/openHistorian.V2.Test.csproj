@@ -82,6 +82,9 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArchiveInitializerTest.cs" />
+    <Compile Include="ISupportsReadonlyTest.cs" />
+    <Compile Include="Server\Configuration\FolderListSettingsTest.cs" />
     <Compile Include="SortedTree256Test.cs" />
     <Compile Include="IO\BufferedFileStreamTest.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBaseTest.cs" />
@@ -117,6 +120,7 @@
     <Compile Include="OldCode\PooledMemoryStreamTest.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="UnmanagedMemory\Memory.cs" />
+    <Compile Include="WinApiTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\openHistorian.V2\openHistorian.V2.csproj">

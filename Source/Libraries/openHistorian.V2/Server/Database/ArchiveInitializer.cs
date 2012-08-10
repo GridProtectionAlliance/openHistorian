@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.IO;
 using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
@@ -32,9 +33,9 @@ namespace openHistorian.V2.Server.Database
     /// </summary>
     public class ArchiveInitializer
     {
-        ArchiveInitializerGenerationSettings m_settings;
+        ArchiveInitializerSettings m_settings;
 
-        public ArchiveInitializer(ArchiveInitializerGenerationSettings settings)
+        public ArchiveInitializer(ArchiveInitializerSettings settings)
         {
             if (!settings.IsReadOnly)
                 throw new ArgumentException("Must be set to read only before passing to this function", "settings");
@@ -42,6 +43,11 @@ namespace openHistorian.V2.Server.Database
             m_settings = settings;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="ArchiveFile"/> based on the settings passed to this class.
+        /// Once created, it is up to he caller to make sure that this class is properly disposed of.
+        /// </summary>
+        /// <returns></returns>
         public ArchiveFile CreateArchiveFile()
         {
             if (m_settings.IsMemoryArchive)
@@ -50,12 +56,33 @@ namespace openHistorian.V2.Server.Database
             }
             else
             {
-                throw new NotImplementedException();
+                var fileName = CreateArchiveName();
+                var file = new ArchiveFile(fileName, OpenMode.Create, AccessMode.ReadWrite);
+                file.SetFileSize(m_settings.InitialSize, m_settings.AutoGrowthSize, m_settings.RequiredFreeSpaceForAutoGrowth);
+                return file;
             }
-            
         }
 
-   
+        /// <summary>
+        /// Creates a new random file in one of the provided folders in a round robin fashion.
+        /// </summary>
+        /// <returns></returns>
+        string CreateArchiveName()
+        {
+            long requiredFreeSpace = Math.Min(m_settings.RequiredFreeSpaceForNewFile, m_settings.InitialSize);
+            foreach (var path in m_settings.SavePaths.Folders)
+            {
+                long freeSpace, totalSpace;
+                if (WinApi.GetAvailableFreeSpace(path,out freeSpace, out totalSpace))
+                {
+                    if (freeSpace>=requiredFreeSpace)
+                    {
+                        return Path.Combine(path, Guid.NewGuid().ToString() + ".d2");
+                    }
+                }
+            }
+            throw new Exception("Out of free space");
+        }
 
     }
 }

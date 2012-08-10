@@ -22,32 +22,19 @@
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class FolderListSettings : ISupportsReadonly<FolderListSettings>
+    public class FolderListSettings : SupportsReadonlyBase<FolderListSettings>
     {
-        bool m_isReadOnly;
-        string m_name;
         ReadonlyList<string> m_folders;
 
-        public string Name
+        public FolderListSettings()
         {
-            get
-            {
-                return m_name;
-            }
-            set
-            {
-                if (m_isReadOnly)
-                    throw new ReadOnlyException("Object has been set as read only");
-                m_name = value;
-            }
+            m_folders = new ReadonlyList<string>();
         }
+
         public ReadonlyList<string> Folders
         {
             get
@@ -56,33 +43,20 @@ namespace openHistorian.V2.Server.Configuration
             }
             set
             {
-                if (m_isReadOnly)
-                    throw new ReadOnlyException("Object has been set as read only");
+                TestForEditable();
                 m_folders = value;
             }
         }
 
-        public bool IsReadOnly
+        protected override void SetInternalMembersAsReadOnly()
         {
-            get
-            {
-                return m_isReadOnly;
-            }
-            set
-            {
-                if (value ^ m_isReadOnly) //if values are different
-                {
-                    if (m_isReadOnly)
-                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
-                    m_isReadOnly = true;
-                    m_folders.IsReadOnly = true;
-                }
-            }
+            m_folders.IsReadOnly = true;
         }
 
-        public FolderListSettings EditableClone()
+        protected override void SetInternalMembersAsEditable()
         {
-            throw new System.NotImplementedException();
+            m_folders = m_folders.EditableClone();
         }
+
     }
 }

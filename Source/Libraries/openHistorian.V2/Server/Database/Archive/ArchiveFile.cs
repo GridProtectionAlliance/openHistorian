@@ -133,6 +133,11 @@ namespace openHistorian.V2.Server.Database.Archive
 
         #region [ Methods ]
 
+        public void SetFileSize(long initialFileSize, long autoGrowthSize, long requiredFreeSpaceForAutoGrowth)
+        {
+            
+        }
+
         void InitializeNewFile()
         {
             if (m_disposed)

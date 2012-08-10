@@ -22,6 +22,8 @@
 //
 //******************************************************************************************************
 
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using Microsoft.Win32.SafeHandles;
@@ -54,7 +56,7 @@ namespace openHistorian.V2
         /// <remarks>By setting the SuppressUnmanagedCodeSecurityAttribute will decrease the pinvoke overhead by about 2x.</remarks>
         [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false), SuppressUnmanagedCodeSecurityAttribute]
         unsafe public static extern void MoveMemory(byte* destination, byte* source, int count);
-        
+
         //[DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
         //public static extern void MoveMemory(IntPtr dest, IntPtr src, int size);
 
@@ -63,6 +65,56 @@ namespace openHistorian.V2
 
         //[DllImport("msvcrt.dll", EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
         //unsafe public static extern IntPtr memcpy(byte* dest, byte* src, int count);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
+        out ulong lpFreeBytesAvailable,
+        out ulong lpTotalNumberOfBytes,
+        out ulong lpTotalNumberOfFreeBytes);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern bool GetDiskFreeSpace(string lpRootPathName,
+          out uint lpSectorsPerCluster,
+          out uint lpBytesPerSector,
+          out uint lpNumberOfFreeClusters,
+          out uint lpTotalNumberOfClusters);
+
+
+        /// <summary>
+        /// Tries to get the free space values for a given path. This path can be a network share, a mount point.
+        /// </summary>
+        /// <param name="pathName">The path to the location</param>
+        /// <param name="freeSpace">The number of user space bytes</param>
+        /// <param name="totalSize">The total number of bytes on the drive.</param>
+        /// <returns>True if successful, false if there was an error.</returns>
+        public static bool GetAvailableFreeSpace(string pathName, out long freeSpace, out long totalSize)
+        {
+            try
+            {
+                var fullPath = Path.GetFullPath(pathName);
+
+                ulong lpFreeBytesAvailable;
+                ulong lpTotalNumberOfBytes;
+                ulong lpTotalNumberOfFreeBytes;
+
+                var success = GetDiskFreeSpaceEx(fullPath, out lpFreeBytesAvailable, out lpTotalNumberOfBytes,
+                                                 out lpTotalNumberOfFreeBytes);
+
+                freeSpace = (long)lpFreeBytesAvailable;
+                totalSize = (long)lpTotalNumberOfBytes;
+
+                return success;
+            }
+            catch (Exception)
+            {
+                freeSpace = (long)0;
+                totalSize = (long)0;
+                return false;
+            }
+
+        
+        }
 
 
     }

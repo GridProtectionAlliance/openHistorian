@@ -22,10 +22,8 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 
 namespace openHistorian.V2.Collections
 {
@@ -35,9 +33,8 @@ namespace openHistorian.V2.Collections
     /// unless they implement <see cref="T:openHistorian.V2.Collections.ISupportsReadonly`1"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ReadonlyList<T> : IList<T>, ISupportsReadonly<ReadonlyList<T>>
+    public class ReadonlyList<T> : SupportsReadonlyBase<ReadonlyList<T>>, IList<T>
     {
-        bool m_isReadOnly;
         bool m_isISupportsReadonlyType;
         List<T> m_list;
 
@@ -77,16 +74,14 @@ namespace openHistorian.V2.Collections
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
         public void Add(T item)
         {
-            if (m_isReadOnly)
-                throw new ReadOnlyException("Object has been set as read only");
+            TestForEditable();
             m_list.Add(item);
         }
         /// <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
         public void Clear()
         {
-            if (m_isReadOnly)
-                throw new ReadOnlyException("Object has been set as read only");
+            TestForEditable();
             m_list.Clear();
         }
         /// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
@@ -115,10 +110,10 @@ namespace openHistorian.V2.Collections
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
         public bool Remove(T item)
         {
-            if (m_isReadOnly)
-                throw new ReadOnlyException("Object has been set as read only");
+            TestForEditable();
             return m_list.Remove(item);
         }
+
         /// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
         public int Count
@@ -128,55 +123,31 @@ namespace openHistorian.V2.Collections
                 return m_list.Count;
             }
         }
-        /// <summary>
-        /// Get/Sets if this list can be modified. Once set to readonly, this object becomes immutable. 
-        /// In order to modify the list, a new <see cref="T:openHistorian.V2.Collections.ReadonlyList`1"/> must be construted
-        /// by calling <see cref="EditableClone"/>.
-        /// </summary>
-        public bool IsReadOnly
+
+        protected override void SetInternalMembersAsReadOnly()
         {
-            get
+            if (m_isISupportsReadonlyType)
             {
-                return m_isReadOnly;
-            }
-            set
-            {
-                if (value ^ m_isReadOnly) //if values are different
+                for (int x = 0; x < m_list.Count; x++)
                 {
-                    if (m_isReadOnly)
-                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
-                    m_isReadOnly = true;
-                    if (m_isISupportsReadonlyType)
-                    {
-                        for (int x = 0; x < m_list.Count; x++)
-                        {
-                            ((ISupportsReadonly<T>)m_list[x]).IsReadOnly = true;
-                        }
-                    }
+                    ((ISupportsReadonly<T>)m_list[x]).IsReadOnly = true;
                 }
             }
         }
 
-        /// <summary>
-        /// Clones this class restoring the ability to be editable.
-        /// if <see cref="T"/> implements <see cref="T:openHistorian.V2.Collections.ISupportsReadonly`1"/> 
-        /// the internal object will also be converted to editable types.
-        /// </summary>
-        /// <returns></returns>
-        public ReadonlyList<T> EditableClone()
+        protected override void SetInternalMembersAsEditable()
         {
             if (m_isISupportsReadonlyType)
             {
-                var lst = new ReadonlyList<T>(m_list.Count);
+                m_list = new List<T>(m_list.Count);
                 for (int x = 0; x < m_list.Count; x++)
                 {
-                    lst.Add(((ISupportsReadonly<T>)m_list[x]).EditableClone());
+                    m_list.Add(((ISupportsReadonly<T>)m_list[x]).EditableClone());
                 }
-                return lst;
             }
             else
             {
-                return new ReadonlyList<T>(this);
+                m_list = new List<T>(m_list);
             }
         }
 
@@ -195,8 +166,7 @@ namespace openHistorian.V2.Collections
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
         public void Insert(int index, T item)
         {
-            if (m_isReadOnly)
-                throw new ReadOnlyException("Object has been set as read only");
+            TestForEditable();
             m_list.Insert(index, item);
         }
         /// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
@@ -206,8 +176,7 @@ namespace openHistorian.V2.Collections
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
         public void RemoveAt(int index)
         {
-            if (m_isReadOnly)
-                throw new ReadOnlyException("Object has been set as read only");
+            TestForEditable();
             m_list.RemoveAt(index);
         }
 
@@ -225,8 +194,7 @@ namespace openHistorian.V2.Collections
             }
             set
             {
-                if (m_isReadOnly)
-                    throw new ReadOnlyException("Object has been set as read only");
+                TestForEditable();
                 m_list[index] = value;
             }
         }

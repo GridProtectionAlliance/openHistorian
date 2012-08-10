@@ -23,46 +23,109 @@
 //******************************************************************************************************
 
 using System;
-using System.Data;
-using System.IO;
 using openHistorian.V2.Collections;
 using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveManagementSettings : ISupportsReadonly<ArchiveManagementSettings>
+    public class ArchiveManagementSettings : SupportsReadonlyBase<ArchiveManagementSettings>
     {
-        bool m_isReadOnly;
-        public string Name;
-        public string SourceName;
-        public string DestinationName;
-        public ArchiveInitializerGenerationSettings Initializer;
+        string m_sourceName;
+        string m_destinationName;
+        ArchiveInitializerSettings m_initializer;
 
-        public int? NewFileOnCommitCount;
-        public TimeSpan? NewFileOnInterval;
-        public long? NewFileOnSize;
+        int? m_newFileOnCommitCount;
+        TimeSpan? m_newFileOnInterval;
+        long? m_newFileOnSize;
 
-
-        public bool IsReadOnly
+        public string SourceName
         {
             get
             {
-                return m_isReadOnly;
+                return m_sourceName;
             }
             set
             {
-                if (value ^ m_isReadOnly) //if values are different
-                {
-                    if (m_isReadOnly)
-                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
-                    m_isReadOnly = true;
-                }
+                TestForEditable();
+                m_sourceName = value;
             }
         }
 
-        public ArchiveManagementSettings EditableClone()
+        public string DestinationName
         {
-            throw new NotImplementedException();
+            get
+            {
+                return m_destinationName;
+            }
+            set
+            {
+                TestForEditable();
+                m_destinationName = value;
+            }
         }
+
+        public ArchiveInitializerSettings Initializer
+        {
+            get
+            {
+                return m_initializer;
+            }
+            set
+            {
+                TestForEditable();
+                m_initializer = value;
+            }
+        }
+
+        public int? NewFileOnCommitCount
+        {
+            get
+            {
+                return m_newFileOnCommitCount;
+            }
+            set
+            {
+                TestForEditable();
+                m_newFileOnCommitCount = value;
+            }
+        }
+
+        public TimeSpan? NewFileOnInterval
+        {
+            get
+            {
+                return m_newFileOnInterval;
+            }
+            set
+            {
+                TestForEditable();
+                m_newFileOnInterval = value;
+            }
+        }
+
+        public long? NewFileOnSize
+        {
+            get
+            {
+                return m_newFileOnSize;
+            }
+            set
+            {
+                TestForEditable();
+                m_newFileOnSize = value;
+            }
+        }
+
+        protected override void SetInternalMembersAsReadOnly()
+        {
+             m_initializer.IsReadOnly = true;
+        }
+
+        protected override void SetInternalMembersAsEditable()
+        {
+             m_initializer = m_initializer.EditableClone();
+        }
+
+      
     }
 }

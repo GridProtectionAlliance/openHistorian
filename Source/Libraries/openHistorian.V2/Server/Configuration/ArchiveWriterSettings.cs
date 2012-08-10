@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FileWriterSettings.cs - Gbtc
+//  ArchiveWriterSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,47 +23,126 @@
 //******************************************************************************************************
 
 using System;
-using System.Data;
-using System.IO;
 using openHistorian.V2.Collections;
 using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveWriterSettings : ISupportsReadonly<ArchiveWriterSettings>
+    public class ArchiveWriterSettings : SupportsReadonlyBase<ArchiveWriterSettings>
     {
-        bool m_isReadOnly;
+        int? m_commitOnPointCount;
+        TimeSpan? m_commitOnInterval;
+        string m_destinationName;
+        ArchiveInitializerSettings m_initializer;
+        int? m_newFileOnCommitCount;
+        TimeSpan? m_newFileOnInterval;
+        long? m_newFileOnSize;
 
-        public string Name;
-        public int? CommitOnPointCount;
-        public TimeSpan? CommitOnInterval;
-        public string DestinationName;
-        public ArchiveInitializerGenerationSettings Initializer;
-        public int? NewFileOnCommitCount;
-        public TimeSpan? NewFileOnInterval;
-        public long? NewFileOnSize;
+        public ArchiveWriterSettings()
+        {
+            Initializer = new ArchiveInitializerSettings();
+        }
 
-
-        public bool IsReadOnly
+        public int? CommitOnPointCount
         {
             get
             {
-                return m_isReadOnly;
+                return m_commitOnPointCount;
             }
             set
             {
-                if (value ^ m_isReadOnly) //if values are different
-                {
-                    if (m_isReadOnly)
-                        throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
-                    m_isReadOnly = true;
-                }
+                TestForEditable();
+                m_commitOnPointCount = value;
             }
         }
 
-        public ArchiveWriterSettings EditableClone()
+        public TimeSpan? CommitOnInterval
         {
-            throw new NotImplementedException();
+            get
+            {
+                return m_commitOnInterval;
+            }
+            set
+            {
+                TestForEditable();
+                m_commitOnInterval = value;
+            }
         }
+
+        public string DestinationName
+        {
+            get
+            {
+                return m_destinationName;
+            }
+            set
+            {
+                TestForEditable();
+                m_destinationName = value;
+            }
+        }
+
+        public ArchiveInitializerSettings Initializer
+        {
+            get
+            {
+                return m_initializer;
+            }
+            set
+            {
+                TestForEditable();
+                m_initializer = value;
+            }
+        }
+
+        public int? NewFileOnCommitCount
+        {
+            get
+            {
+                return m_newFileOnCommitCount;
+            }
+            set
+            {
+                TestForEditable();
+                m_newFileOnCommitCount = value;
+            }
+        }
+
+        public TimeSpan? NewFileOnInterval
+        {
+            get
+            {
+                return m_newFileOnInterval;
+            }
+            set
+            {
+                TestForEditable();
+                m_newFileOnInterval = value;
+            }
+        }
+
+        public long? NewFileOnSize
+        {
+            get
+            {
+                return m_newFileOnSize;
+            }
+            set
+            {
+                TestForEditable();
+                m_newFileOnSize = value;
+            }
+        }
+
+        protected override void SetInternalMembersAsReadOnly()
+        {
+            m_initializer.IsReadOnly = true;
+        }
+
+        protected override void SetInternalMembersAsEditable()
+        {
+            m_initializer = m_initializer.EditableClone();
+        }
+
     }
 }
