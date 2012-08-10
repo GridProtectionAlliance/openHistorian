@@ -139,10 +139,11 @@ namespace openHistorian.V2.Collections
         {
             if (m_isISupportsReadonlyType)
             {
-                m_list = new List<T>(m_list.Count);
-                for (int x = 0; x < m_list.Count; x++)
+                var oldList = m_list;
+                m_list = new List<T>(oldList.Count);
+                for (int x = 0; x < oldList.Count; x++)
                 {
-                    m_list.Add(((ISupportsReadonly<T>)m_list[x]).EditableClone());
+                    m_list.Add(((ISupportsReadonly<T>)oldList[x]).EditableClone());
                 }
             }
             else

@@ -4,8 +4,6 @@ using System;
 
 namespace openHistorian.V2.Test
 {
-
-
     /// <summary>
     ///This is a test class for ISupportsReadonlyTest and is intended
     ///to contain all ISupportsReadonlyTest Unit Tests
@@ -13,8 +11,7 @@ namespace openHistorian.V2.Test
     [TestClass()]
     public class ISupportsReadonlyTest
     {
-
-
+        
         private TestContext testContextInstance;
 
         /// <summary>
