@@ -26,7 +26,7 @@ using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveManagementSystemSettings : SupportsReadonlyBase<ArchiveManagementSystemSettings>
+    public class ArchiveManagementSystemSettings : SupportsReadonlyAutoBase<ArchiveManagementSystemSettings>
     {
         ArchiveWriterSettings m_archiveWriter;
         ReadonlyList<ArchiveManagementSettings> m_archiveManagers;
@@ -75,21 +75,7 @@ namespace openHistorian.V2.Server.Configuration
                 m_archiveList = value;
             }
         }
-
-        protected override void SetInternalMembersAsReadOnly()
-        {
-            m_archiveWriter.IsReadOnly = true;
-            m_archiveManagers.IsReadOnly = true;
-            m_archiveList.IsReadOnly = true;
-        }
-
-        protected override void SetInternalMembersAsEditable()
-        {
-            m_archiveWriter = m_archiveWriter.EditableClone();
-            m_archiveManagers = m_archiveManagers.EditableClone();
-            m_archiveList = m_archiveList.EditableClone();
-        }
-
+        
     }
 
 }

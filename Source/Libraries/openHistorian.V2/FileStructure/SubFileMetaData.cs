@@ -31,7 +31,7 @@ namespace openHistorian.V2.FileStructure
     /// <summary>
     /// This contains the meta data of the file along with index information to map all of the blocks of the file.
     /// </summary>
-    public class SubFileMetaData : SupportsReadonlyBase<SubFileMetaData>
+    public class SubFileMetaData : SupportsReadonlyAutoBase<SubFileMetaData>
     {
         #region [ Members ]
 
@@ -192,14 +192,6 @@ namespace openHistorian.V2.FileStructure
         #endregion
 
         #region [ Methods ]
-
-        protected override void SetInternalMembersAsReadOnly()
-        {
-        }
-
-        protected override void SetInternalMembersAsEditable()
-        {
-        }
 
         /// <summary>
         /// Writes the data contained in <see cref="SubFileMetaData"/> to the data stream.

@@ -124,7 +124,7 @@ namespace openHistorian.V2.Collections
             }
         }
 
-        protected override void SetInternalMembersAsReadOnly()
+        protected override void SetMembersAsReadOnly()
         {
             if (m_isISupportsReadonlyType)
             {
@@ -135,7 +135,7 @@ namespace openHistorian.V2.Collections
             }
         }
 
-        protected override void SetInternalMembersAsEditable()
+        protected override void CloneMembersAsEditable()
         {
             if (m_isISupportsReadonlyType)
             {
@@ -143,7 +143,7 @@ namespace openHistorian.V2.Collections
                 m_list = new List<T>(oldList.Count);
                 for (int x = 0; x < oldList.Count; x++)
                 {
-                    m_list.Add(((ISupportsReadonly<T>)oldList[x]).EditableClone());
+                    m_list.Add(((ISupportsReadonly<T>)oldList[x]).CloneEditable());
                 }
             }
             else

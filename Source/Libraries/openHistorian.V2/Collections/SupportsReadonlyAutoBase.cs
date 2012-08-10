@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ISupportsReadonly.cs - Gbtc
+//  SupportsReadonlyAutoBase.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,48 +22,50 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Reflection;
 
 namespace openHistorian.V2.Collections
 {
-    public interface ISupportsReadonly
-    {
-        /// <summary>
-        /// Get/Sets if a class is readonly.  Once it has been set as readonly, it is immutable and must be cloned to me modified.
-        /// </summary>
-        bool IsReadOnly { get; set; }
-        /// <summary>
-        /// Makes a clone of this object and allows it to be edited.
-        /// </summary>
-        /// <returns></returns>
-        object CloneEditable();
-        /// <summary>
-        /// Makes a readonly clone of this object. Returns the same object if it is already marked as readonly.
-        /// </summary>
-        /// <returns></returns>
-        object CloneReadonly();
-    }
-
     /// <summary>
     /// Represents an object that can be configured as read only and thus made immutable.  
-    /// The origional contents of this class will not be editable once <see cref="IsReadOnly"/> is set to true.
-    /// In order to modify the contest of this object, a clone of the object must be created with <see cref="CloneEditable"/>.
+    /// This class will automatically clone any field that implements <see cref="T:openHistorian.V2.Collections.ISupportsReadonly`1"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface ISupportsReadonly<T> : ICloneable , ISupportsReadonly
+    public abstract class SupportsReadonlyAutoBase<T> : SupportsReadonlyBase<T>
+        where T : SupportsReadonlyAutoBase<T>
     {
-        /// <summary>
-        /// Makes a clone of this object and allows it to be edited.
-        /// </summary>
-        /// <returns></returns>
-        new T CloneEditable();
-        /// <summary>
-        /// Makes a readonly clone of this object. Returns the same object if it is already marked as readonly.
-        /// </summary>
-        /// <returns></returns>
-        new T CloneReadonly();
+        static List<FieldInfo> s_readonlyFields;
+
+        static SupportsReadonlyAutoBase()
+        {
+            s_readonlyFields = new List<FieldInfo>();
+
+            foreach (FieldInfo field in typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                var type = field.FieldType;
+                var newType = typeof(ISupportsReadonly<>).MakeGenericType(field.FieldType);
+                if (newType.IsAssignableFrom(field.FieldType))
+                    s_readonlyFields.Add(field);
+            }
+        }
+
+        protected override sealed void SetMembersAsReadOnly()
+        {
+            foreach (FieldInfo field in s_readonlyFields)
+            {
+                var value = (ISupportsReadonly)field.GetValue(this);
+                value.IsReadOnly = true;
+            }
+        }
+
+        protected override sealed void CloneMembersAsEditable()
+        {
+            foreach (FieldInfo field in s_readonlyFields)
+            {
+                var value = (ISupportsReadonly)field.GetValue(this);
+                field.SetValue(this, value.CloneEditable());
+            }
+        }
     }
 }

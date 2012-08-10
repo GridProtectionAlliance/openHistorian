@@ -26,7 +26,7 @@ using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class FolderListSettings : SupportsReadonlyBase<FolderListSettings>
+    public class FolderListSettings : SupportsReadonlyAutoBase<FolderListSettings>
     {
         ReadonlyList<string> m_folders;
 
@@ -47,16 +47,5 @@ namespace openHistorian.V2.Server.Configuration
                 m_folders = value;
             }
         }
-
-        protected override void SetInternalMembersAsReadOnly()
-        {
-            m_folders.IsReadOnly = true;
-        }
-
-        protected override void SetInternalMembersAsEditable()
-        {
-            m_folders = m_folders.EditableClone();
-        }
-
     }
 }

@@ -28,7 +28,7 @@ using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveManagementSettings : SupportsReadonlyBase<ArchiveManagementSettings>
+    public class ArchiveManagementSettings : SupportsReadonlyAutoBase<ArchiveManagementSettings>
     {
         string m_sourceName;
         string m_destinationName;
@@ -115,17 +115,5 @@ namespace openHistorian.V2.Server.Configuration
                 m_newFileOnSize = value;
             }
         }
-
-        protected override void SetInternalMembersAsReadOnly()
-        {
-             m_initializer.IsReadOnly = true;
-        }
-
-        protected override void SetInternalMembersAsEditable()
-        {
-             m_initializer = m_initializer.EditableClone();
-        }
-
-      
     }
 }

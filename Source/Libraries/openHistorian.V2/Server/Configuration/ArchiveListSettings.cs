@@ -26,7 +26,7 @@ using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveListSettings : SupportsReadonlyBase<ArchiveListSettings>
+    public class ArchiveListSettings : SupportsReadonlyAutoBase<ArchiveListSettings>
     {
         ReadonlyList<string> m_attachedFiles;
 
@@ -42,16 +42,5 @@ namespace openHistorian.V2.Server.Configuration
                 m_attachedFiles = value;
             }
         }
-
-        protected override void SetInternalMembersAsReadOnly()
-        {
-            AttachedFiles.IsReadOnly = true;
-        }
-
-        protected override void SetInternalMembersAsEditable()
-        {
-           m_attachedFiles = m_attachedFiles.EditableClone();
-        }
-        
     }
 }

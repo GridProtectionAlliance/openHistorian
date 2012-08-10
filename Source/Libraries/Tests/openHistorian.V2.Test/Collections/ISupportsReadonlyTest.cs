@@ -1,8 +1,7 @@
-﻿using openHistorian.V2.Collections;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.V2.Collections
 {
     /// <summary>
     ///This is a test class for ISupportsReadonlyTest and is intended
@@ -65,11 +64,11 @@ namespace openHistorian.V2.Test
         {
             bool origional = obj.IsReadOnly;
 
-            ISupportsReadonly<T> ro = (ISupportsReadonly<T>)obj.ReadonlyClone();
+            ISupportsReadonly<T> ro = (ISupportsReadonly<T>)obj.CloneReadonly();
             Assert.AreEqual(true, ro.IsReadOnly);
             Assert.AreEqual(origional,obj.IsReadOnly);
 
-            ISupportsReadonly<T> rw = (ISupportsReadonly<T>)obj.EditableClone();
+            ISupportsReadonly<T> rw = (ISupportsReadonly<T>)obj.CloneEditable();
             Assert.AreEqual(false, rw.IsReadOnly);
             Assert.AreEqual(origional, obj.IsReadOnly);
             rw.IsReadOnly = true;

@@ -60,7 +60,7 @@ namespace openHistorian.V2.FileStructure
         {
 
             FileHeaderBlock header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
-            header = header.EditableClone();
+            header = header.CloneEditable();
             SubFileMetaData node = header.Files[FileNumber];
             IndexParser parse = new IndexParser(header.SnapshotSequenceNumber, stream, node);
             ShadowCopyAllocator shadow = new ShadowCopyAllocator(stream, header, node, parse);

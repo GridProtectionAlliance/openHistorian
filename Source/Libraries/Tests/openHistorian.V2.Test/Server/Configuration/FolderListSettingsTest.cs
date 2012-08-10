@@ -1,8 +1,8 @@
-﻿using openHistorian.V2.Server.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using openHistorian.V2.Collections;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.V2.Server.Configuration
 {
     
     
@@ -77,11 +77,11 @@ namespace openHistorian.V2.Test
             target.IsReadOnly = true;
             ISupportsReadonlyTest.Test(target);
             Assert.AreEqual(true,target.Folders.IsReadOnly);
-            var editable = target.EditableClone();
+            var editable = target.CloneEditable();
             editable.Folders.Add("4");
             Assert.AreEqual(3,target.Folders.Count);
             editable.IsReadOnly = true;
-            editable = editable.EditableClone();
+            editable = editable.CloneEditable();
             editable.Folders.Add("5");
             Assert.AreEqual(5,editable.Folders.Count);
         }

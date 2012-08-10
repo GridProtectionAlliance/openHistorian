@@ -27,7 +27,7 @@ using openHistorian.V2.Server.Configuration;
 
 namespace openHistorian.V2.Server.Database
 {
-    public class ArchiveInitializerSettings : SupportsReadonlyBase<ArchiveInitializerSettings>
+    public class ArchiveInitializerSettings : SupportsReadonlyAutoBase<ArchiveInitializerSettings>
     {
         bool m_isMemoryArchive;
         FolderListSettings m_savePath;
@@ -129,16 +129,5 @@ namespace openHistorian.V2.Server.Database
                 m_requiredFreeSpaceForAutoGrowth = value;
             }
         }
-
-        protected override void SetInternalMembersAsReadOnly()
-        {
-            m_savePath.IsReadOnly = true;
-        }
-
-        protected override void SetInternalMembersAsEditable()
-        {
-            m_savePath = m_savePath.EditableClone();
-        }
-
     }
 }

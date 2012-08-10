@@ -76,7 +76,7 @@ namespace openHistorian.V2.FileStructure
 
             CheckEqual(node2, node);
 
-            SubFileMetaData node3 = node2.EditableClone();
+            SubFileMetaData node3 = node2.CloneEditable();
 
             CheckEqual(node2, node3);
             return node3;

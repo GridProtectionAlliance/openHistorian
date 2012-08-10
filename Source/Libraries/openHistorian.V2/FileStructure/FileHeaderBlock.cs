@@ -199,23 +199,23 @@ namespace openHistorian.V2.FileStructure
         /// Clones the object, while incrementing the sequence number.
         /// </summary>
         /// <returns></returns>
-        public override FileHeaderBlock EditableClone()
+        public override FileHeaderBlock CloneEditable()
         {
-            var clone = base.EditableClone();
+            var clone = base.CloneEditable();
             clone.m_snapshotSequenceNumber++;
             return clone;
         }
 
-        protected override void SetInternalMembersAsReadOnly()
+        protected override void SetMembersAsReadOnly()
         {
             m_files.IsReadOnly = true;
         }
 
-        protected override void SetInternalMembersAsEditable()
+        protected override void CloneMembersAsEditable()
         {
             if (!CanWrite)
                 throw new Exception("This file cannot be modified because the file system version is not recgonized");
-            m_files = m_files.EditableClone();
+            m_files = m_files.CloneEditable();
         }
 
         /// <summary>

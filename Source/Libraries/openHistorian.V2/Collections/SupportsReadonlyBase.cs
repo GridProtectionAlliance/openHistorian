@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ReadonlyList.cs - Gbtc
+//  SupportsReadonlyBase.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -33,7 +33,7 @@ namespace openHistorian.V2.Collections
     /// <summary>
     /// Represents an object that can be configured as read only and thus made immutable.  
     /// The origional contents of this class will not be editable once <see cref="IsReadOnly"/> is set to true.
-    /// In order to modify the contest of this object, a clone of the object must be created with <see cref="EditableClone"/>.
+    /// In order to modify the contest of this object, a clone of the object must be created with <see cref="CloneEditable"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class SupportsReadonlyBase<T> : ISupportsReadonly<T>
@@ -54,7 +54,7 @@ namespace openHistorian.V2.Collections
                     if (m_isReadOnly)
                         throw new ReadOnlyException("Object has been set as read only and cannot be reversed");
                     m_isReadOnly = true;
-                    SetInternalMembersAsReadOnly();
+                    SetMembersAsReadOnly();
                 }
             }
         }
@@ -65,22 +65,65 @@ namespace openHistorian.V2.Collections
                 throw new ReadOnlyException("Object has been set as read only");
         }
 
-        protected abstract void SetInternalMembersAsReadOnly();
-        protected abstract void SetInternalMembersAsEditable();
+        /// <summary>
+        /// Requests that member fields be set to readonly. 
+        /// </summary>
+        protected abstract void SetMembersAsReadOnly();
+        
+        /// <summary>
+        /// Request that member fields be cloned and marked as editable.
+        /// </summary>
+        protected abstract void CloneMembersAsEditable();
 
-        public virtual T EditableClone()
+        /// <summary>
+        /// Creates a clone of this class that is editable.
+        /// A clone is always created, even if this class is already editable.
+        /// </summary>
+        /// <returns></returns>
+        public virtual T CloneEditable()
         {
             T initializer = (T)MemberwiseClone();
             initializer.m_isReadOnly = false;
-            initializer.SetInternalMembersAsEditable();
+            initializer.CloneMembersAsEditable();
             return initializer;
         }
 
-        public virtual T ReadonlyClone()
+        object ISupportsReadonly.CloneReadonly()
         {
-            var copy = EditableClone();
+            return CloneReadonly();
+        }
+
+        object ISupportsReadonly.CloneEditable()
+        {
+            return CloneEditable();
+        }
+
+        /// <summary>
+        /// Makes a readonly clone of the object.
+        /// If the class is currently marked as readonly, the current instance is returned.
+        /// </summary>
+        /// <returns></returns>
+        public virtual T CloneReadonly()
+        {
+            if (IsReadOnly)
+                return (T)this;
+            
+            var copy = CloneEditable();
             copy.IsReadOnly = true;
             return copy;
+        }
+
+        /// <summary>
+        /// Returns a clone of this class.
+        /// If the class is marked as readonly, it returns the current instance.
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            if (IsReadOnly)
+                return this;
+            else
+                return CloneEditable();
         }
     }
 }

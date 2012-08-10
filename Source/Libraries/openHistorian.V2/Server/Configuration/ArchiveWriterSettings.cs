@@ -28,7 +28,7 @@ using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveWriterSettings : SupportsReadonlyBase<ArchiveWriterSettings>
+    public class ArchiveWriterSettings : SupportsReadonlyAutoBase<ArchiveWriterSettings>
     {
         int? m_commitOnPointCount;
         TimeSpan? m_commitOnInterval;
@@ -134,15 +134,7 @@ namespace openHistorian.V2.Server.Configuration
             }
         }
 
-        protected override void SetInternalMembersAsReadOnly()
-        {
-            m_initializer.IsReadOnly = true;
-        }
-
-        protected override void SetInternalMembersAsEditable()
-        {
-            m_initializer = m_initializer.EditableClone();
-        }
+    
 
     }
 }

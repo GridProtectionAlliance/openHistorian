@@ -99,7 +99,7 @@ namespace openHistorian.V2.FileStructure
             m_openedFiles = new List<SubFileStream>();
             m_disposed = false;
             m_transactionalRead = new TransactionalRead(dataReader, fileHeaderBlock);
-            m_fileHeaderBlock = fileHeaderBlock.EditableClone();
+            m_fileHeaderBlock = fileHeaderBlock.CloneEditable();
             m_dataReader = dataReader;
             m_delHasBeenCommitted = delHasBeenCommitted;
             m_delHasBeenRolledBack = delHasBeenRolledBack;
