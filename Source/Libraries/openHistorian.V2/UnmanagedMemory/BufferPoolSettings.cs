@@ -43,6 +43,13 @@ namespace openHistorian.V2.UnmanagedMemory
         /// </summary>
         public const long MinimumTestedSupportedMemoryFloor = 128 * 1024 * 1024;
 
+        public long LevelNone;
+        public long LevelLow;
+        public long LevelNormal;
+        public long LevelHigh;
+        public long LevelVeryHigh;
+        public long LevelCritical;
+
         /// <summary>
         /// The number of bytes in the smallest buffer pool allocation.
         /// </summary>
@@ -78,6 +85,7 @@ namespace openHistorian.V2.UnmanagedMemory
         public BufferPoolSettings(int pageSize)
         {
             Initialize(pageSize);
+            CalculateThresholds();
         }
 
         #endregion
@@ -148,9 +156,39 @@ namespace openHistorian.V2.UnmanagedMemory
                 return m_memoryBlockSize;
             }
         }
+
         #endregion
 
         #region [ Methods ]
+
+        public int GetCollectionBasedOnSize(long size)
+        {
+            if (size < LevelNone)
+            {
+                return 0;
+            }
+            else if (size < LevelLow)
+            {
+                return 1;
+            }
+            else if (size < LevelNormal)
+            {
+                return 2;
+            }
+            else if (size < LevelHigh)
+            {
+                return 3;
+            }
+            else if (size < LevelVeryHigh)
+            {
+                return 4;
+            }
+            else
+            {
+                return 5;
+            }
+        }
+
 
         /// <summary>
         /// Assigns an appropriate maximum allocation size
@@ -181,6 +219,16 @@ namespace openHistorian.V2.UnmanagedMemory
             m_maximumBufferSize = Math.Max(MinimumTestedSupportedMemoryFloor, availableMemory / 2);
             m_maximumBufferSize = Math.Max(m_maximumBufferSize, totalMemory / 4);
             m_targetBufferSize = 0;
+        }
+
+        void CalculateThresholds()
+        {
+            LevelNone = (long)(0.1 * MaximumBufferSize);
+            LevelLow = (long)(0.25 * MaximumBufferSize);
+            LevelNormal = (long)(0.50 * MaximumBufferSize);
+            LevelHigh = (long)(0.75 * MaximumBufferSize);
+            LevelVeryHigh = (long)(0.90 * MaximumBufferSize);
+            LevelCritical = (long)(0.95 * MaximumBufferSize);
         }
 
         #endregion
@@ -229,12 +277,6 @@ namespace openHistorian.V2.UnmanagedMemory
         }
 
         #endregion
-
-
-
-
-
-
 
     }
 }

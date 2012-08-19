@@ -38,12 +38,15 @@ namespace openHistorian.V2.Server.Database
         object m_syncRoot = new object();
 
         /// <summary>
-        /// Contains the list of archives that are perminent to the system and 
-        /// cannot be written to.
+        /// Contains the list of all archives.
         /// </summary>
         List<ArchiveFileStateInformation> m_partitions;
 
+        /// <summary>
+        /// Contains the latest snapshots of every archive resouce.
+        /// </summary>
         List<ArchiveListSnapshot> m_resources;
+
 
         public ArchiveList(ArchiveListSettings settings)
         {
@@ -52,10 +55,25 @@ namespace openHistorian.V2.Server.Database
 
             m_partitions = new List<ArchiveFileStateInformation>();
             m_resources = new List<ArchiveListSnapshot>();
+            foreach (var file in settings.AttachedFiles)
+            {
+
+                var archiveFile = new ArchiveFile(file.FileLocaiton, OpenMode.Open, file.OpenAsReadOnly ? AccessMode.ReadOnly : AccessMode.ReadWrite);
+                var archiveFileSummary = new ArchiveFileSummary(archiveFile);
+                var archiveFileStateInformation = new ArchiveFileStateInformation(file.OpenAsReadOnly, false, file.GenerationName);
+                archiveFileStateInformation.Summary = archiveFileSummary;
+                m_partitions.Add(archiveFileStateInformation);
+            }
         }
 
         #region [ Resource Locks ]
 
+        /// <summary>
+        /// Creates an object that can be used to get updated snapshots from this <see cref="ArchiveList"/>.
+        /// Client must call <see cref="IDisposable.Dispose"/> method when finished with these resources as they will not 
+        /// automatically be reclaimed by the garbage collector. Class will not be initiallized until calling <see cref="ArchiveListSnapshot.UpdateSnapshot"/>.
+        /// </summary>
+        /// <returns></returns>
         public ArchiveListSnapshot CreateNewClientResources()
         {
             lock (m_syncRoot)
@@ -66,6 +84,10 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
+        /// <summary>
+        /// Invoked by <see cref="ArchiveListSnapshot.Dispose"/> method.
+        /// </summary>
+        /// <param name="archiveLists"></param>
         void ReleaseClientResources(ArchiveListSnapshot archiveLists)
         {
             lock (m_syncRoot)
@@ -74,22 +96,19 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
+        /// <summary>
+        /// Invoked by <see cref="ArchiveListSnapshot.UpdateSnapshot"/>.
+        /// </summary>
+        /// <param name="transaction"></param>
         void AcquireSnapshot(ArchiveListSnapshot transaction)
         {
             lock (m_syncRoot)
             {
-                int requiredSize = m_partitions.Count;
-                if (transaction.Tables == null || transaction.Tables.Length < requiredSize)
-                    transaction.Tables = new ArchiveFileSummary[requiredSize];
-                int actualSize = transaction.Tables.Length;
-
+                transaction.Tables = new ArchiveFileSummary[m_partitions.Count];
                 for (int x = 0; x < m_partitions.Count; x++)
                 {
                     transaction.Tables[x] = m_partitions[x].Summary;
                 }
-
-                if (requiredSize > actualSize)
-                    Array.Clear(transaction.Tables, requiredSize, actualSize - requiredSize);
             }
         }
 

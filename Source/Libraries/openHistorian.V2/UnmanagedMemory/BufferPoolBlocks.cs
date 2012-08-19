@@ -32,6 +32,9 @@ namespace openHistorian.V2.UnmanagedMemory
     /// and their allocation status.
     /// This class will also handle the Windows API allocations.
     /// </summary>
+    /// <remarks>
+    /// This class is not thread safe.
+    /// </remarks>
     class BufferPoolBlocks : IDisposable
     {
         #region [ Members ]
@@ -39,7 +42,7 @@ namespace openHistorian.V2.UnmanagedMemory
         bool m_disposed;
 
         /// <summary>
-        /// Pointers to each allocation.
+        /// Pointers to each windows API allocation.
         /// </summary>
         Memory[] m_memoryBlocks;
 
@@ -47,22 +50,41 @@ namespace openHistorian.V2.UnmanagedMemory
         /// A bit index that contains free/used blocks.
         /// Set means page is used.
         /// </summary>
-        BitArray m_pageAllocations;
+        BitArray m_isPageAllocated;
 
+        /// <summary>
+        /// The maximum number of pages that can be allocated in this structure
+        /// which is based on <see cref="BufferPoolSettings.MaximumBufferCeiling"/>.
+        /// </summary>
         int m_maxAddressablePages;
 
         /// <summary>
-        /// The number of blocks that have been allocated.
+        /// The number of pages that have been allocated.
         /// </summary>
         int m_allocatedPagesCount;
 
+        /// <summary>
+        /// The number of blocks that have been allocated from Windows API
+        /// This figure is kept since some values of m_memoryBlocks[] can be null
+        /// </summary>
         int m_allocatedBlocksCount;
 
+        /// <summary>
+        /// The number of bytes per page
+        /// </summary>
         int m_pageSize;
+
+        /// <summary>
+        /// The number of bytes allocated each time memory is allocated from Windows API
+        /// </summary>
         int m_memoryBlockSize;
 
         int m_pagesPerMemoryBlockShiftBits;
         int m_pagesPerMemoryBlockMask;
+
+        /// <summary>
+        /// The number of pages that exist within a windows API allocaiton.
+        /// </summary>
         int m_pagesPerMemoryBlock;
 
         #endregion
@@ -83,15 +105,7 @@ namespace openHistorian.V2.UnmanagedMemory
 
             m_maxAddressablePages = (int)(settings.MemoryBlockSize * (long)maxAllocationCount / settings.PageSize);
 
-            m_pageAllocations = new BitArray(m_maxAddressablePages, true);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="BufferPoolBlocks"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~BufferPoolBlocks()
-        {
-            Dispose(false);
+            m_isPageAllocated = new BitArray(m_maxAddressablePages, true);
         }
 
         #endregion
@@ -99,9 +113,9 @@ namespace openHistorian.V2.UnmanagedMemory
         #region [ Properties ]
 
         /// <summary>
-        /// Determines if the class can allocate more blocks from Windows API.
+        /// Determines if more blocks can be allocated from Windows API.
         /// </summary>
-        public bool CanAllocateMore
+        public bool CanGrowBuffer
         {
             get
             {
@@ -121,20 +135,21 @@ namespace openHistorian.V2.UnmanagedMemory
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                return m_pageAllocations.ClearCount == 0;
+                return m_isPageAllocated.ClearCount == 0;
             }
         }
 
         /// <summary>
         /// Determines if the buffer pool cannot make another allocation because all available allocations are consumed.
         /// </summary>
+        /// <remarks>Equivalent to IsFull && !CanGrowBuffer</remarks>
         public bool IsCompletelyFull
         {
             get
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                return (m_allocatedPagesCount == m_maxAddressablePages);
+                return IsFull && !CanGrowBuffer;
             }
         }
 
@@ -142,7 +157,7 @@ namespace openHistorian.V2.UnmanagedMemory
         /// Returns the number of bytes allocated by all of the pages.
         /// This does not include any pages that have been allocated but are not in use.
         /// </summary>
-        public long AllocatedBytes
+        public long AllocatedPagesBytes
         {
             get
             {
@@ -167,10 +182,24 @@ namespace openHistorian.V2.UnmanagedMemory
         }
 
         /// <summary>
+        /// Returns the number of bytes that are unallocated
+        /// </summary>
+        public long FreeSpaceBytes
+        {
+            get
+            {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                return BufferPoolSize - AllocatedPagesBytes;
+            }
+        }
+
+        /// <summary>
         /// Gets the percentage of the buffer pool that is currently allocated.  
         /// If the size of the buffer pool is zero, the returned percentage is
         /// defined to be zero.
         /// </summary>
+        /// <remarks>Returns a value between 0 and 1</remarks>
         public float FreeSpace
         {
             get
@@ -179,7 +208,25 @@ namespace openHistorian.V2.UnmanagedMemory
                     throw new ObjectDisposedException(GetType().FullName);
                 if (BufferPoolSize == 0)
                     return 0f;
-                return 1f - (float)AllocatedBytes / BufferPoolSize;
+                return 1f - (float)AllocatedPagesBytes / BufferPoolSize;
+            }
+        }
+
+        /// <summary>
+        /// Gets the percentage of the buffer pool that is currently utilized.  
+        /// If the size of the buffer pool is zero, the returned percentage is
+        /// defined to be zero.
+        /// </summary>
+        /// <remarks>Returns a value between 0 and 1</remarks>
+        public float Utilization
+        {
+            get
+            {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                if (BufferPoolSize == 0)
+                    return 0f;
+                return (float)AllocatedPagesBytes / BufferPoolSize;
             }
         }
 
@@ -192,32 +239,70 @@ namespace openHistorian.V2.UnmanagedMemory
         /// </summary>
         /// <param name="index">the index identifier of the block</param>
         /// <param name="addressPointer">the address to the start of the block</param>
-        public void AllocatePage(out int index, out IntPtr addressPointer)
+        /// <returns>True if successful, false otherwise</returns>
+        public bool TryAllocatePage(out int index, out IntPtr addressPointer)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             if (IsFull)
             {
                 if (IsCompletelyFull)
-                    throw new Exception("Blocks are all used");
+                {
+                    index = 0;
+                    addressPointer = IntPtr.Zero;
+                    return false;
+                }
                 AllocateWinApiBlock();
             }
             m_allocatedPagesCount++;
-            index = m_pageAllocations.FindClearedBit();
-            m_pageAllocations.SetBit(index);
+            index = m_isPageAllocated.FindClearedBit();
+            m_isPageAllocated.SetBit(index);
             addressPointer = GetPageAddress(index);
+            return true;
         }
 
         /// <summary>
         /// Releases a block back to the pool so it can be re-allocated.
         /// </summary>
         /// <param name="index">the index identifier of the block</param>
-        public void ReleasePage(int index)
+        /// <returns>True if the page was released. False if the page was already marked as released.</returns>
+        public bool TryReleasePage(int index)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            m_allocatedPagesCount--;
-            m_pageAllocations.ClearBit(index);
+            if (m_isPageAllocated.TryClearBit(index))
+            {
+                m_allocatedPagesCount--;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to shrink the buffer pool to the provided size
+        /// </summary>
+        /// <param name="size">The size of the buffer pool</param>
+        /// <returns>The final size of the buffer pool</returns>
+        /// <remarks>The buffer pool shrinks to a size less than or equal to <see cref="size"/>.</remarks>
+        public long TryShrinkBufferPool(long size)
+        {
+            for (int x = 0; x < m_memoryBlocks.Length; x++)
+            {
+                if (BufferPoolSize <= size)
+                    return BufferPoolSize;
+
+                if (m_memoryBlocks[x] != null)
+                {
+                    if (m_isPageAllocated.AreBitsCleared(x * m_pagesPerMemoryBlock, m_pagesPerMemoryBlock))
+                    {
+                        m_memoryBlocks[x].Dispose();
+                        m_memoryBlocks = null;
+                        m_isPageAllocated.SetBits(x * m_pagesPerMemoryBlock, m_pagesPerMemoryBlock);
+                        m_allocatedBlocksCount--;
+                    }
+                }
+            }
+            return BufferPoolSize;
         }
 
         /// <summary>
@@ -227,11 +312,14 @@ namespace openHistorian.V2.UnmanagedMemory
         /// <returns></returns>
         IntPtr GetPageAddress(int pageIndex)
         {
-            if (pageIndex < 0 || pageIndex >= m_pageAllocations.Count)
+            if (pageIndex < 0 || pageIndex >= m_isPageAllocated.Count)
                 throw new ArgumentOutOfRangeException("pageIndex");
             int allocationIndex = pageIndex >> m_pagesPerMemoryBlockShiftBits;
             int blockOffset = pageIndex & m_pagesPerMemoryBlockMask;
-            return m_memoryBlocks[allocationIndex].Address + blockOffset * m_pageSize;
+            var block = m_memoryBlocks[allocationIndex];
+            if (block == null || block.Address == null)
+                throw new NullReferenceException("Memory Block is null");
+            return block.Address + blockOffset * m_pageSize;
         }
 
 
@@ -242,20 +330,16 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            for (int x = 0; x < m_memoryBlocks.Length; x++)
+
+            int indexOfNullBlock = Array.IndexOf(m_memoryBlocks, null);
+            if (indexOfNullBlock >= 0)
             {
-                if (m_memoryBlocks[x] == null)
-                {
-                    m_memoryBlocks[x] = new Memory(m_memoryBlockSize);
-                    m_allocatedBlocksCount++;
-                    int start = x * m_pagesPerMemoryBlock;
-                    int stop = start + m_pagesPerMemoryBlock;
-                    for (int i = start; i < stop; i++)
-                    {
-                        m_pageAllocations.ClearBit(i);
-                    }
-                    return;
-                }
+                m_memoryBlocks[indexOfNullBlock] = new Memory(m_memoryBlockSize);
+                m_allocatedBlocksCount++;
+
+                m_isPageAllocated.ClearBits(indexOfNullBlock * m_pagesPerMemoryBlock, m_pagesPerMemoryBlock);
+
+                return;
             }
             throw new Exception("Could not find memory block location to put block");
         }
@@ -265,33 +349,18 @@ namespace openHistorian.V2.UnmanagedMemory
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="BufferPoolBlocks"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
             if (!m_disposed)
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    if (disposing)
+                    for (int x = 0; x < m_memoryBlocks.Length; x++)
                     {
-                        // This will be done only when the object is disposed by calling Dispose().
-                        for (int x = 0; x < m_memoryBlocks.Length; x++)
+                        if (m_memoryBlocks[x] != null)
                         {
-                            if (m_memoryBlocks[x] != null)
-                            {
-                                m_memoryBlocks[x].Dispose();
-                            }
+                            m_memoryBlocks[x].Dispose();
                         }
-                        m_memoryBlocks = null;
                     }
+                    m_memoryBlocks = null;
                 }
                 finally
                 {

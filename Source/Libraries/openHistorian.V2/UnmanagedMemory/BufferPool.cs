@@ -23,16 +23,9 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.UnmanagedMemory
 {
-    public enum BufferPoolCollectionMode
-    {
-        Normal,
-        Emergency,
-        Critical
-    }
     /// <summary>
     /// This class allocates and pools unmanaged memory.
     /// </summary>
@@ -46,25 +39,24 @@ namespace openHistorian.V2.UnmanagedMemory
 
         BufferPoolBlocks m_blocks;
 
+        BufferPoolCollectionEngine m_collectionEngine;
+
         /// <summary>
         /// Each page will be exactly this size (Based on RAM)
         /// </summary>
         public int PageSize { get; private set; }
 
+        /// <summary>
+        /// Provides a mask that the user can apply that can 
+        /// be used to get the offset position of a page.
+        /// </summary>
         public int PageMask { get; private set; }
 
+        /// <summary>
+        /// Gets the number of bits that must be shifted to calculate an index of a position.
+        /// This is not the same as a page index that is returned by the allocate functions.
+        /// </summary>
         public int PageShiftBits { get; private set; }
-
-        /// <summary>
-        /// If after a collection the free space percentage is not at least this much
-        /// grow the buffer pool to have this much free.
-        /// </summary>
-        float m_desiredFreeSpaceAfterCollection = 0.25f;
-        /// <summary>
-        /// If after a collection the free space percentage is greater than this
-        /// then shrink the size of the buffer. 
-        /// </summary>
-        float m_shrinkIfFreeSpaceAfterCollection = 0.75f;
 
         /// <summary>
         /// Requests that classes using this buffer pool release any unused buffers.
@@ -74,7 +66,23 @@ namespace openHistorian.V2.UnmanagedMemory
         /// this will likely cause a deadlock.  
         /// You must use the calling thread to release all objects.</remarks>
         /// </summary>
-        public event Action<BufferPoolCollectionMode> RequestCollection;
+        public event EventHandler<CollectionEventArgs> RequestCollection
+        {
+            add
+            {
+                lock (m_syncRoot)
+                {
+                    m_collectionEngine.AddEvent(value);
+                }
+            }
+            remove
+            {
+                lock (m_syncRoot)
+                {
+                    m_collectionEngine.RemoveEvent(value);
+                }
+            }
+        }
 
         /// <summary>
         /// Used for synchronizing modifications to this class.
@@ -88,9 +96,9 @@ namespace openHistorian.V2.UnmanagedMemory
         public BufferPool(int pageSize)
         {
             if (pageSize < 4096 || pageSize > 256 * 1024)
-                throw new ArgumentOutOfRangeException("Page size must be between 4KB and 256KB and a power of 2");
+                throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
             if (!HelperFunctions.IsPowerOfTwo((uint)pageSize))
-                throw new ArgumentOutOfRangeException("Page size must be between 4KB and 256KB and a power of 2");
+                throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
 
             m_settings = new BufferPoolSettings(pageSize);
             m_blocks = new BufferPoolBlocks(m_settings);
@@ -98,14 +106,7 @@ namespace openHistorian.V2.UnmanagedMemory
             PageSize = pageSize;
             PageMask = pageSize - 1;
             PageShiftBits = HelperFunctions.CountBits((uint)PageMask);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="BufferPool"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~BufferPool()
-        {
-            Dispose(false);
+            m_collectionEngine = new BufferPoolCollectionEngine(this, m_blocks, m_settings);
         }
 
         #endregion
@@ -167,7 +168,7 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             get
             {
-                return m_blocks.AllocatedBytes;
+                return m_blocks.AllocatedPagesBytes;
             }
         }
 
@@ -193,9 +194,12 @@ namespace openHistorian.V2.UnmanagedMemory
             {
                 if (m_blocks.IsFull)
                 {
-                    RequestMoreSpace();
+                    m_collectionEngine.AllocateMoreFreeSpace();
                 }
-                m_blocks.AllocatePage(out index, out addressPointer);
+                if (!m_blocks.TryAllocatePage(out index, out addressPointer))
+                {
+                    throw new OutOfMemoryException("Buffer Pool is full");
+                }
             }
         }
 
@@ -212,84 +216,28 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             lock (m_syncRoot)
             {
-                m_blocks.ReleasePage(pageIndex);
+                if (m_blocks.TryReleasePage(pageIndex))
+                {
+                    //ToDo: Consider calling the garbage collection routine and allow it to consider shrinking the pool.
+                }
             }
         }
 
+    
         #endregion
 
         #region [ Helper Methods ]
-
-        /// <summary>
-        /// This procedure will free up unused blocks/allocate more space.
-        /// If no more space can be allocated, an out of memory exception will occur.
-        /// </summary>
-        void RequestMoreSpace()
-        {
-            if (RequestCollection != null)
-                RequestCollection(BufferPoolCollectionMode.Normal);
-
-            if (m_blocks.FreeSpace < m_desiredFreeSpaceAfterCollection)
-            {
-                GrowBufferToDesiredMaxPercentage();
-            }
-            else if (m_blocks.FreeSpace > m_shrinkIfFreeSpaceAfterCollection)
-            {
-                //ToDo: Figure out how to shrink the buffer pool.
-            }
-
-            if (m_blocks.IsFull)
-                if (RequestCollection != null)
-                    RequestCollection(BufferPoolCollectionMode.Emergency);
-            if (m_blocks.IsFull)
-                if (RequestCollection != null)
-                    RequestCollection(BufferPoolCollectionMode.Critical);
-            if (m_blocks.IsFull)
-            {
-                throw new OutOfMemoryException("Buffer pool is out of memory");
-            }
-        }
-
-        /// <summary>
-        /// Grows the buffer region to have the proper desired amount of free memory.
-        /// </summary>
-        void GrowBufferToDesiredMaxPercentage()
-        {
-            while (m_blocks.FreeSpace < m_desiredFreeSpaceAfterCollection)
-            {
-                //If this goes beyond the desired maximum, exit
-                if (!m_blocks.CanAllocateMore)
-                    return;
-                m_blocks.AllocateWinApiBlock();
-            }
-        }
 
         /// <summary>
         /// Releases all the resources used by the <see cref="BufferPool"/> object.
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="BufferPool"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
             if (!m_disposed)
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
-                        m_blocks.Dispose();
-                    }
+                    m_blocks.Dispose();
                 }
                 finally
                 {

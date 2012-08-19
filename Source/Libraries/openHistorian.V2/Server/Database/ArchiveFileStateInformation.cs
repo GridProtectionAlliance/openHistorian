@@ -25,12 +25,26 @@
 
 namespace openHistorian.V2.Server.Database
 {
+    /// <summary>
+    /// Metadata maintained by <see cref="ArchiveList"/> about each archive file.
+    /// </summary>
     public class ArchiveFileStateInformation
     {
+        /// <summary>
+        /// Determines if the archive supports editing.
+        /// </summary>
         public bool IsReadOnly;
+        /// <summary>
+        /// Determines if the archive is currently locked for edits by another process.
+        /// </summary>
         public bool IsEditLocked;
+        /// <summary>
+        /// The name of the archive generation.
+        /// </summary>
         public string Generation;
+
         public ArchiveFileSummary Summary;
+
         public ArchiveFileStateInformation(bool isReadOnly, bool isEditLocked, string generation)
         {
             IsReadOnly = isReadOnly;

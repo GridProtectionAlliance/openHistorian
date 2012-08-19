@@ -23,7 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -33,9 +32,18 @@ namespace openHistorian.V2.Server.Database
     public class ArchiveListSnapshot : IDisposable
     {
         bool m_disposed;
+        /// <summary>
+        /// A callback to tell <see cref="ArchiveList"/> when resources are no longer being used.
+        /// </summary>
         Action<ArchiveListSnapshot> m_onDisposed;
+        /// <summary>
+        /// A callback to get the latest list of resources from <see cref="ArchiveList"/>.
+        /// </summary>
         Action<ArchiveListSnapshot> m_acquireResources;
 
+        /// <summary>
+        /// For future use. Will allow removing certain resources from the client. 
+        /// </summary>
         public object ClientConnection;
 
         /// <summary>
@@ -43,6 +51,7 @@ namespace openHistorian.V2.Server.Database
         /// This field can be null or any element of this array can also be null.
         /// </summary>
         ArchiveFileSummary[] m_tables;
+
 
         public ArchiveListSnapshot(Action<ArchiveListSnapshot> onDisposed, Action<ArchiveListSnapshot> acquireResources)
         {
@@ -70,6 +79,9 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
+        /// <summary>
+        /// Gets if this class has been disposed.
+        /// </summary>
         public bool IsDisposed
         {
             get
@@ -78,6 +90,9 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
+        /// <summary>
+        /// Disposes this class, releasing all resource locks.
+        /// </summary>
         public void Dispose()
         {
             if (!m_disposed)
@@ -90,6 +105,9 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
+        /// <summary>
+        /// Requests from <see cref="ArchiveList"/> that this snapshot get updated.
+        /// </summary>
         public void UpdateSnapshot()
         {
             if (m_disposed)

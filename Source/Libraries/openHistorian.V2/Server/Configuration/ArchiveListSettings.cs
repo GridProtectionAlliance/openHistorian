@@ -28,9 +28,29 @@ namespace openHistorian.V2.Server.Configuration
 {
     public class ArchiveListSettings : SupportsReadonlyAutoBase<ArchiveListSettings>
     {
-        ReadonlyList<string> m_attachedFiles;
+        /// <summary>
+        /// Basic information about the file.
+        /// </summary>
+        public struct FileSettings
+        {
+            public string FileLocaiton;
+            public string GenerationName;
+            public bool OpenAsReadOnly;
 
-        public ReadonlyList<string> AttachedFiles
+            public FileSettings(string fileLocation, string generationName, bool openAsReadOnly)
+            {
+                FileLocaiton = fileLocation;
+                GenerationName = generationName;
+                OpenAsReadOnly = openAsReadOnly;
+            }
+        }
+
+        ReadonlyList<FileSettings> m_attachedFiles;
+
+        /// <summary>
+        /// Maintains a list of all archive files to be used.
+        /// </summary>
+        public ReadonlyList<FileSettings> AttachedFiles
         {
             get
             {

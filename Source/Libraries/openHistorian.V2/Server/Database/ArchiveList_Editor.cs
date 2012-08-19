@@ -31,6 +31,12 @@ namespace openHistorian.V2.Server.Database
 {
     public partial class ArchiveList
     {
+        /// <summary>
+        /// Provides a way to edit an <see cref="ArchiveList"/> since all edits must be atomic.
+        /// WARNING: Instancing this class on an <see cref="ArchiveList"/> will lock the class
+        /// until <see cref="Dispose"/> is called. Therefore, keep locks to a minimum and always
+        /// use a Using block.
+        /// </summary>
         public class Editor : IDisposable
         {
             bool m_disposed;
@@ -45,7 +51,8 @@ namespace openHistorian.V2.Server.Database
             }
 
             /// <summary>
-            /// Represents a readonly list of all of the partitions 
+            /// Represents a readonly list of all of the partitions. 
+            /// To edit the partitions, call <see cref="Add"/>, <see cref="Remove"/>, or <see cref="RenewSnapshot"/>.
             /// </summary>
             public ReadOnlyCollection<ArchiveFileStateInformation> Partitions
             {
@@ -57,6 +64,10 @@ namespace openHistorian.V2.Server.Database
                 }
             }
 
+            /// <summary>
+            /// Releases an edit lock that was placed on an archive file.
+            /// </summary>
+            /// <param name="archive"></param>
             public void ReleaseEditLock(ArchiveFile archive)
             {
                 if (m_disposed)
@@ -76,7 +87,7 @@ namespace openHistorian.V2.Server.Database
             /// Renews the snapshot of the partition file. This will acquire the latest 
             /// read transaction so all new snapshots will use this later version.
             /// </summary>
-            /// <param name="archiveon">the file to update the snapshot on.</param>
+            /// <param name="archive">the file to update the snapshot on.</param>
             /// <returns></returns>
             public bool RenewSnapshot(ArchiveFile archive)
             {
@@ -94,6 +105,11 @@ namespace openHistorian.V2.Server.Database
                 return false;
             }
 
+            /// <summary>
+            /// Adds an archive file to the list with the given state information.
+            /// </summary>
+            /// <param name="archive"></param>
+            /// <param name="stateInformation"></param>
             public void Add(ArchiveFile archive, ArchiveFileStateInformation stateInformation)
             {
                 if (m_disposed)

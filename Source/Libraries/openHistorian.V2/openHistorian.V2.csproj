@@ -204,7 +204,9 @@
     <Compile Include="OldCode\PooledMemoryStream.cs" />
     <Compile Include="OldCode\IO\BinaryStream.cs" />
     <Compile Include="UnmanagedMemory\BufferPoolBlocks.cs" />
+    <Compile Include="UnmanagedMemory\BufferPoolCollectionEngine.cs" />
     <Compile Include="UnmanagedMemory\BufferPoolSettings.cs" />
+    <Compile Include="UnmanagedMemory\CollectionEventArgs.cs" />
     <Compile Include="UnmanagedMemory\Memory.cs" />
     <Compile Include="OldCode\UnmanagedMemory\WinApi.cs" />
     <Compile Include="OldCode\FileSystem\Test\DiskIOUnbufferedTest.cs" />

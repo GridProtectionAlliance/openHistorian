@@ -31,7 +31,7 @@ namespace openHistorian.V2.UnmanagedMemory
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
 
 
-            var del = new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
+            var del = new EventHandler<CollectionEventArgs>(BufferPool_RequestCollection);
             Globals.BufferPool.RequestCollection += del;
 
             //Test1();
@@ -135,16 +135,16 @@ namespace openHistorian.V2.UnmanagedMemory
                 throw new Exception("");
         }
 
-        static void BufferPool_RequestCollection(BufferPoolCollectionMode obj)
+        static void BufferPool_RequestCollection(object sender, CollectionEventArgs eventArgs)
         {
             if (lst == null)
                 return;
-            if (obj == BufferPoolCollectionMode.Critical)
+            if (eventArgs.CollectionMode == BufferPoolCollectionMode.Critical)
             {
                 int ItemsToRemove = lst.Count / 5;
                 while (lst.Count > ItemsToRemove)
                 {
-                    Globals.BufferPool.ReleasePage(lst[lst.Count - 1]);
+                    eventArgs.ReleasePage(lst[lst.Count - 1]);
                     lst.RemoveAt(lst.Count - 1);
                 }
                 //for (int x = 0; x<lst.Count; x+=3)

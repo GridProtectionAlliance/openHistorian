@@ -43,7 +43,7 @@ namespace openHistorian.V2.Collections
         #endregion
 
         #region [ Constructors ]
-       
+
         /// <summary>
         /// Initializes <see cref="BitArray"/>.
         /// </summary>
@@ -134,7 +134,7 @@ namespace openHistorian.V2.Collections
                 return m_count - m_setCount;
             }
         }
-        
+
         #endregion
 
         #region [ Methods ]
@@ -164,6 +164,19 @@ namespace openHistorian.V2.Collections
             {
                 m_setCount++;
                 m_array[index >> 5] |= bit;
+            }
+        }
+
+        /// <summary>
+        /// Sets a series of bits
+        /// </summary>
+        /// <param name="index">the starting index to clear</param>
+        /// <param name="length">the length of bits</param>
+        public void SetBits(int index, int length)
+        {
+            for (int x = index; x < index + length; x++)
+            {
+                SetBit(x);
             }
         }
 
@@ -202,6 +215,39 @@ namespace openHistorian.V2.Collections
                 m_setCount--;
                 m_array[index >> 5] &= ~bit;
             }
+        }
+
+        /// <summary>
+        /// Clears a series of bits
+        /// </summary>
+        /// <param name="index">the starting index to clear</param>
+        /// <param name="length">the length of bits</param>
+        public void ClearBits(int index, int length)
+        {
+            for (int x = index; x < index + length; x++)
+            {
+                ClearBit(x);
+            }
+        }
+
+        public bool AreBitsSet(int index, int length)
+        {
+            for (int x = index; x < index + length; x++)
+            {
+                if (!GetBit(x))
+                    return false;
+            }
+            return true;
+        }
+
+        public bool AreBitsCleared(int index, int length)
+        {
+            for (int x = index; x < index + length; x++)
+            {
+                if (GetBit(x))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -277,8 +323,18 @@ namespace openHistorian.V2.Collections
             }
             return -1;
         }
+        public void CopyTo(BitArray otherArray)
+        {
+            if (otherArray.Count != Count)
+                throw new Exception("Arrays must be the same size");
+            m_array.CopyTo(otherArray.m_array, 0);
+            otherArray.m_count = m_count;
+            otherArray.m_initialState = m_initialState;
+            otherArray.m_lastFoundClearedIndex = m_lastFoundClearedIndex;
+            otherArray.m_setCount = m_setCount;
+        }
 
         #endregion
-        
+
     }
 }

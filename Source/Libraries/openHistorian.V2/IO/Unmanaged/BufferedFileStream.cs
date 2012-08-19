@@ -143,7 +143,7 @@ namespace openHistorian.V2.Unmanaged
         {
             m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement();
             m_baseStream = stream;
-            Globals.BufferPool.RequestCollection += new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
+            Globals.BufferPool.RequestCollection += BufferPool_RequestCollection;
         }
 
         public int RemainingSupportedIoSessions
@@ -189,16 +189,16 @@ namespace openHistorian.V2.Unmanaged
 
         void IDisposable.Dispose()
         {
-            Globals.BufferPool.RequestCollection -= new Action<BufferPoolCollectionMode>(BufferPool_RequestCollection);
+            Globals.BufferPool.RequestCollection -= BufferPool_RequestCollection;
 
             if (StreamDisposed != null)
                 StreamDisposed.Invoke(this, EventArgs.Empty);
             m_pageReplacementAlgorithm.Dispose();
         }
 
-        void BufferPool_RequestCollection(BufferPoolCollectionMode obj)
+        void BufferPool_RequestCollection(object sender, CollectionEventArgs e)
         {
-            if (obj == BufferPoolCollectionMode.Critical)
+            if (e.CollectionMode == BufferPoolCollectionMode.Critical)
             {
                 Flush();
             }
