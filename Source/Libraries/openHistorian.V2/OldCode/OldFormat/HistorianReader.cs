@@ -9,6 +9,15 @@ namespace openHistorian.V2
 {
     public class HistorianReader
     {
+        public static unsafe UInt32 ToUInt(float value)
+        {
+            return *(UInt32*)&value;
+        }
+        public static unsafe float ToSingle(UInt32 value)
+        {
+            return *(float*)&value;
+        }
+
         public delegate void NewPointEventHandler(Points pt);
 
         public event NewPointEventHandler NewPoint;
