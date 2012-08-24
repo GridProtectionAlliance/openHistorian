@@ -38,85 +38,12 @@ namespace openHistorian.V2.Unmanaged
     /// <remarks>
     /// The cache algorithm is a least recently used algorithm.
     /// but will place more emphysis on object that are repeatidly accessed over 
-    /// once that are rarely accessed. This is accomplised by incrementing a counter
+    /// ones that are rarely accessed. This is accomplised by incrementing a counter
     /// every time a page is accessed and dividing by 2 every time a collection occurs from the buffer pool.
     /// </remarks>
-    unsafe public class BufferedFileStream : ISupportsBinaryStreamSizing
+    unsafe public partial class BufferedFileStream : ISupportsBinaryStreamSizing
     {
-        // Nested Types
-        class IoSession : IBinaryStreamIoSession
-        {
-            bool m_disposed;
-            BufferedFileStream m_stream;
-            LeastRecentlyUsedPageReplacement.IoSession m_ioSession;
-
-            public IoSession(BufferedFileStream stream, LeastRecentlyUsedPageReplacement.IoSession ioSession)
-            {
-                m_stream = stream;
-                m_ioSession = ioSession;
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
-            /// </summary>
-            ~IoSession()
-            {
-                Dispose(false);
-            }
-
-            /// <summary>
-            /// Releases all the resources used by the <see cref="IoSession"/> object.
-            /// </summary>
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
-            /// </summary>
-            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            void Dispose(bool disposing)
-            {
-                if (!m_disposed)
-                {
-                    try
-                    {
-                        // This will be done regardless of whether the object is finalized or disposed.
-                        m_ioSession.Dispose();
-                        if (disposing)
-                        {
-                            // This will be done only when the object is disposed by calling Dispose().
-                        }
-                    }
-                    finally
-                    {
-                        m_disposed = true;  // Prevent duplicate dispose.
-                    }
-                }
-            }
-
-            public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
-            {
-                m_stream.GetBlock(m_ioSession, position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
-            }
-
-            public void Clear()
-            {
-                m_ioSession.Clear();
-            }
-
-
-            public bool IsDisposed
-            {
-                get
-                {
-                    return m_disposed;
-                }
-            }
-        }
-
+        
         /// <summary>
         /// A buffer to use to read/write from a disk.
         /// </summary>
@@ -124,13 +51,6 @@ namespace openHistorian.V2.Unmanaged
         /// This buffer provides a means to do the disk IO</remarks>
         /// ToDo: Create multiple static blocks so concurrent IO can occur.
         static byte[] s_tmpBuffer = new byte[Globals.BufferPool.PageSize];
-
-        /// <summary>
-        /// An event raised when this class has been disposed.
-        /// </summary>
-        /// <remarks>It is important for anything that utilizes IO Sessions discontinue use of them
-        /// after this event since that can cause data corruption.</remarks>
-        public event EventHandler StreamDisposed;
 
         /// <summary>
         /// The file stream use by this class.
@@ -191,8 +111,6 @@ namespace openHistorian.V2.Unmanaged
         {
             Globals.BufferPool.RequestCollection -= BufferPool_RequestCollection;
 
-            if (StreamDisposed != null)
-                StreamDisposed.Invoke(this, EventArgs.Empty);
             m_pageReplacementAlgorithm.Dispose();
         }
 
@@ -248,7 +166,6 @@ namespace openHistorian.V2.Unmanaged
         {
             throw new NotImplementedException();
         }
-
 
         public bool IsReadOnly
         {

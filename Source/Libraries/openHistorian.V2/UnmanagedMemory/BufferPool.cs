@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 
 namespace openHistorian.V2.UnmanagedMemory
 {
@@ -172,6 +173,14 @@ namespace openHistorian.V2.UnmanagedMemory
             }
         }
 
+        public bool IsDisposed
+        {
+            get
+            {
+                return m_disposed;
+            }
+        }
+
         #endregion
 
         #region [ Methods ]
@@ -219,6 +228,17 @@ namespace openHistorian.V2.UnmanagedMemory
                 if (m_blocks.TryReleasePage(pageIndex))
                 {
                     //ToDo: Consider calling the garbage collection routine and allow it to consider shrinking the pool.
+                }
+            }
+        }
+
+        public void ReleasePages(IEnumerable<int> pageIndexes)
+        {
+            lock (m_syncRoot)
+            {
+                foreach (int x in pageIndexes)
+                {
+                    m_blocks.TryReleasePage(x);
                 }
             }
         }

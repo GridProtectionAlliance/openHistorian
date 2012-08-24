@@ -35,74 +35,9 @@ namespace openHistorian.V2.IO.Unmanaged
     /// <remarks>
     /// This class is used by <see cref="BufferedFileStream"/> to decide which pages should be replaced.
     /// </remarks>
-    unsafe public class LeastRecentlyUsedPageReplacement : IDisposable
+    unsafe public partial class LeastRecentlyUsedPageReplacement : IDisposable
     {
         #region [ Members ]
-
-        // Nested Types
-        public class IoSession : IDisposable
-        {
-            LeastRecentlyUsedPageReplacement m_lru;
-            bool m_disposed;
-            public readonly int IoSessionId;
-
-            public IoSession(LeastRecentlyUsedPageReplacement lru, int ioSessionId)
-            {
-                m_lru = lru;
-                IoSessionId = ioSessionId;
-            }
-            /// <summary>
-            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
-            /// </summary>
-            ~IoSession()
-            {
-                Dispose(false);
-            }
-
-            public SubPageMetaData TryGetSubPageOrCreateNew(long position, bool isWriting, Action<IntPtr, long> delLoadFromFile)
-            {
-                return m_lru.TryGetSubPageOrCreateNew(position, IoSessionId, isWriting, delLoadFromFile);
-            }
-
-            public void Clear()
-            {
-                m_lru.ClearIoSession(IoSessionId);
-            }
-
-            /// <summary>
-            /// Releases all the resources used by the <see cref="IoSession"/> object.
-            /// </summary>
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
-            /// </summary>
-            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            void Dispose(bool disposing)
-            {
-                if (!m_disposed)
-                {
-                    try
-                    {
-                        // This will be done regardless of whether the object is finalized or disposed.
-                        m_lru.ReleaseIoSession(IoSessionId);
-
-                        if (disposing)
-                        {
-                            // This will be done only when the object is disposed by calling Dispose().
-                        }
-                    }
-                    finally
-                    {
-                        m_disposed = true;  // Prevent duplicate dispose.
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// Contains meta data about each page that is allocated.  
@@ -162,17 +97,18 @@ namespace openHistorian.V2.IO.Unmanaged
             m_activeBlockIndexes = new List<int>();
             m_allocatedPagesLookupList = new SortedList<int, int>();
         }
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="LeastRecentlyUsedPageReplacement"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~LeastRecentlyUsedPageReplacement()
-        {
-            Dispose(false);
-        }
 
         #endregion
 
         #region [ Properties ]
+
+        public bool IsDisposed
+        {
+            get
+            {
+                return m_disposed;
+            }
+        }
 
         #endregion
 
@@ -303,31 +239,16 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
-
         /// <summary>
         /// Releases all the resources used by the <see cref="LeastRecentlyUsedPageReplacement"/> object.
         /// </summary>
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="LeastRecentlyUsedPageReplacement"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
                 try
                 {
                     m_pageList.Dispose();
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
-                    }
                 }
                 finally
                 {
