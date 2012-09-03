@@ -43,7 +43,6 @@ namespace openHistorian.V2.Unmanaged
     /// </remarks>
     unsafe public partial class BufferedFileStream : ISupportsBinaryStreamSizing
     {
-        
         /// <summary>
         /// A buffer to use to read/write from a disk.
         /// </summary>
@@ -58,6 +57,8 @@ namespace openHistorian.V2.Unmanaged
         FileStream m_baseStream;
 
         LeastRecentlyUsedPageReplacement m_pageReplacementAlgorithm;
+
+        bool m_disposed;
 
         public BufferedFileStream(FileStream stream)
         {
@@ -107,11 +108,14 @@ namespace openHistorian.V2.Unmanaged
             }
         }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
-            Globals.BufferPool.RequestCollection -= BufferPool_RequestCollection;
-
-            m_pageReplacementAlgorithm.Dispose();
+            if (!m_disposed)
+            {
+                m_disposed = true;
+                Globals.BufferPool.RequestCollection -= BufferPool_RequestCollection;
+                m_pageReplacementAlgorithm.Dispose();
+            }
         }
 
         void BufferPool_RequestCollection(object sender, CollectionEventArgs e)
@@ -145,7 +149,7 @@ namespace openHistorian.V2.Unmanaged
         long ISupportsBinaryStreamSizing.SetLength(long length)
         {
             //if (m_baseStream.Length < length)
-                m_baseStream.SetLength(length);
+            m_baseStream.SetLength(length);
             return m_baseStream.Length;
         }
 
@@ -169,12 +173,18 @@ namespace openHistorian.V2.Unmanaged
 
         public bool IsReadOnly
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return m_baseStream.CanWrite;
+            }
         }
 
         public bool IsDisposed
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return m_disposed;
+            }
         }
     }
 }

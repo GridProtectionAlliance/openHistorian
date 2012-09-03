@@ -23,9 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using openHistorian.V2.Unmanaged;
-using openHistorian.V2.UnmanagedMemory;
 
 namespace openHistorian.V2.IO.Unmanaged
 {
@@ -50,14 +48,6 @@ namespace openHistorian.V2.IO.Unmanaged
                 IoSessionId = ioSessionId;
             }
 
-            /// <summary>
-            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
-            /// </summary>
-            ~IoSession()
-            {
-                Dispose(false);
-            }
-
             public SubPageMetaData TryGetSubPageOrCreateNew(long position, bool isWriting, Action<IntPtr, long> delLoadFromFile)
             {
                 return m_lru.TryGetSubPageOrCreateNew(position, IoSessionId, isWriting, delLoadFromFile);
@@ -68,33 +58,15 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_lru.ClearIoSession(IoSessionId);
             }
 
-            /// <summary>
-            /// Releases all the resources used by the <see cref="IoSession"/> object.
-            /// </summary>
             public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
-            /// </summary>
-            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            void Dispose(bool disposing)
             {
                 if (!m_disposed)
                 {
                     try
                     {
-                        // This will be done regardless of whether the object is finalized or disposed.
                         if (!m_lru.IsDisposed)
                         {
                             m_lru.ReleaseIoSession(IoSessionId);
-                        }
-                        if (disposing)
-                        {
-                            // This will be done only when the object is disposed by calling Dispose().
                         }
                     }
                     finally

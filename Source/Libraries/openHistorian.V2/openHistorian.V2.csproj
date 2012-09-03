@@ -80,6 +80,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\ILargeArray.cs" />
+    <Compile Include="Collections\LargeArray.cs" />
+    <Compile Include="Collections\LargeUnmanagedArray.cs" />
+    <Compile Include="Collections\NullableLargeArray.cs" />
     <Compile Include="Collections\SupportsReadonlyAutoBase.cs" />
     <Compile Include="Collections\SupportsReadonlyBase.cs" />
     <Compile Include="Collections\ISupportsReadonly.cs" />

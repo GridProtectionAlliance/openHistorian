@@ -38,9 +38,11 @@ namespace openHistorian.V2.IO.Unmanaged
 
         /// <summary>
         /// Contains meta data about each page that is allocated.  
-        /// Check <see cref="PageMetaDataList.m_isPageUsed"/> to see if the page is used.
         /// </summary>
-        /// <remarks>This structure is used internally in the <see cref="PageMetaDataList.m_listOfPages"/> list.</remarks>
+        /// <remarks>
+        /// Each one can only address 256KB of 4KB pages since we are limited by the 64 bit IsDirtyFlags.
+        /// This structure is used internally in the <see cref="PageMetaDataList.m_listOfPages"/> list.
+        /// </remarks>
         struct InternalPageMetaData
         {
             /// <summary>
@@ -56,14 +58,13 @@ namespace openHistorian.V2.IO.Unmanaged
             /// </summary>
             public int BufferPoolIndex;
             /// <summary>
-            /// The bytes that this page represents. Position * 64KB.
+            /// The bytes that this page represents. Position * BufferPoolSize.
             /// </summary>
             public int PositionIndex;
             /// <summary>
             /// The number of times this object has been referenced
             /// </summary>
             public int ReferencedCount;
-
 
             public PageMetaData ToPageMetaData(int metaDataIndex)
             {
@@ -79,15 +80,28 @@ namespace openHistorian.V2.IO.Unmanaged
 
         public struct PageMetaData
         {
+            /// <summary>
+            /// Dirty flags representing the 4KB block.
+            /// </summary>
             public ulong IsDirtyFlags;
+            /// <summary>
+            /// The pointer
+            /// </summary>
             public byte* LocationOfPage;
+            /// <summary>
+            /// The index position in the <see cref="PageMetaDataList"/> of this page so updates can occur rapidly.
+            /// </summary>
             public int MetaDataIndex;
+            /// <summary>
+            /// The bytes that this page represents. Position * BufferPoolSize.
+            /// </summary>
             public int PositionIndex;
         }
 
-        List<InternalPageMetaData> m_listOfPages;
-
-        BitArray m_isPageUsed;
+        /// <summary>
+        /// A list of all pages.
+        /// </summary>
+        NullableLargeArray<InternalPageMetaData> m_listOfPages;
 
         bool m_disposed;
 
@@ -97,58 +111,37 @@ namespace openHistorian.V2.IO.Unmanaged
 
         public PageMetaDataList()
         {
-            m_listOfPages = new List<InternalPageMetaData>();
-            m_isPageUsed = new BitArray(80, false);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="PageMetaDataList"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~PageMetaDataList()
-        {
-            Dispose(false);
+            m_listOfPages = new NullableLargeArray<InternalPageMetaData>();
         }
 
         #endregion
 
         #region [ Properties ]
 
+        InternalPageMetaData this[int index]
+        {
+            get
+            {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                return m_listOfPages.GetValue(index);
+            }
+            set
+            {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                m_listOfPages.OverwriteValue(index, value);
+            }
+        }
+
         #endregion
 
         #region [ Methods ]
-
-        InternalPageMetaData GetPage(int index)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (!m_isPageUsed[index])
-                throw new IndexOutOfRangeException("index does not exist");
-            return m_listOfPages[index];
-        }
-
-        void SetPage(int index, InternalPageMetaData value)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (!m_isPageUsed[index])
-                throw new IndexOutOfRangeException("index does not exist");
-            m_listOfPages[index] = value;
-        }
 
         /// <summary>
         /// Releases all the resources used by the <see cref="PageMetaDataList"/> object.
         /// </summary>
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="PageMetaDataList"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
@@ -158,11 +151,6 @@ namespace openHistorian.V2.IO.Unmanaged
                     {
                         Globals.BufferPool.ReleasePages(GetPageList());
                         m_listOfPages = null;
-                        m_isPageUsed = null;
-                    }
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
                     }
                 }
                 finally
@@ -171,19 +159,14 @@ namespace openHistorian.V2.IO.Unmanaged
                 }
             }
         }
+
         /// <summary>
         /// A helper function to <see cref="Dispose"/> which provides an IEnumerable
         /// </summary>
         /// <returns></returns>
         IEnumerable<int> GetPageList()
         {
-            for (int x = 0; x < m_listOfPages.Count; x++)
-            {
-                if (m_isPageUsed[x])
-                {
-                    yield return m_listOfPages[x].BufferPoolIndex;
-                }
-            }
+            return m_listOfPages.GetEnumerator(x => x.BufferPoolIndex);
         }
 
         /// <summary>
@@ -195,19 +178,8 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-
-            //Get a free block to read the data to.
-            int cachePageIndex = m_isPageUsed.FindClearedBit();
-            if (cachePageIndex < 0)
-            {
-                m_isPageUsed.SetCapacity(m_isPageUsed.Count * 2);
-                cachePageIndex = m_isPageUsed.FindClearedBit();
-            }
-
-            IntPtr ptr;
-
-            //Allocate a new one
             InternalPageMetaData cachePage;
+            IntPtr ptr;
             int index;
             Globals.BufferPool.AllocatePage(out index, out ptr);
             cachePage.BufferPoolIndex = index;
@@ -216,17 +188,13 @@ namespace openHistorian.V2.IO.Unmanaged
             cachePage.ReferencedCount = 0;
             cachePage.PositionIndex = positionIndex;
 
-            m_isPageUsed.SetBit(cachePageIndex);
-            if (cachePageIndex < m_listOfPages.Count)
-                m_listOfPages[cachePageIndex] = cachePage;
-            else
-                m_listOfPages.Add(cachePage);
-            return cachePageIndex;
+            return m_listOfPages.AddValue(cachePage);
         }
+
 
         public PageMetaData GetMetaDataPage(int index, ulong isWritingFlag = 0, int incrementReferencedCount = 0)
         {
-            var metaData = GetPage(index);
+            var metaData = this[index];
             metaData.IsDirtyFlags |= isWritingFlag;
             if (incrementReferencedCount > 0)
             {
@@ -237,15 +205,16 @@ namespace openHistorian.V2.IO.Unmanaged
                     metaData.ReferencedCount = (int)newValue;
             }
 
-            SetPage(index, metaData);
+            this[index] = metaData;
             return metaData.ToPageMetaData(index);
         }
 
+
         public void ClearDirtyBits(int index)
         {
-            var metaData = GetPage(index);
+            var metaData = this[index];
             metaData.IsDirtyFlags = 0;
-            SetPage(index, metaData);
+            this[index] = metaData;
         }
 
         /// <summary>
@@ -265,13 +234,13 @@ namespace openHistorian.V2.IO.Unmanaged
                 throw new ArgumentOutOfRangeException("shiftLevel", "must be non negative");
 
             int collectionCount = 0;
-            for (int x = 0; x < m_listOfPages.Count; x++)
+            for (int x = 0; x < m_listOfPages.Capacity; x++)
             {
-                if (m_isPageUsed[x])
+                if (m_listOfPages.HasValue(x))
                 {
-                    var block = m_listOfPages[x];
+                    var block = m_listOfPages.GetValue(x);
                     block.ReferencedCount >>= shiftLevel;
-                    m_listOfPages[x] = block;
+                    m_listOfPages.SetValue(x, block);
                     if (block.ReferencedCount == 0 && block.IsDirtyFlags == 0)
                     {
                         if (shouldCollect(x, block.PositionIndex))
@@ -279,7 +248,7 @@ namespace openHistorian.V2.IO.Unmanaged
                             collectionCount++;
                             //todo: call the correct callback
                             Globals.BufferPool.ReleasePage(block.BufferPoolIndex);
-                            m_isPageUsed[x] = false;
+                            m_listOfPages.SetNull(x);
                         }
                     }
                 }

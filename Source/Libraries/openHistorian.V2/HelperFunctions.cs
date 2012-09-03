@@ -141,6 +141,20 @@ namespace openHistorian.V2
             }
             return result;
         }
+        /// <summary>
+        /// Rounds a number up to the nearest power of 2.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static int RoundUpToNearestPowerOfTwo(int value)
+        {
+            int result = 1;
+            while (result <= value)
+            {
+                result <<= 1;
+            }
+            return result;
+        }
 
 
         /// <summary>

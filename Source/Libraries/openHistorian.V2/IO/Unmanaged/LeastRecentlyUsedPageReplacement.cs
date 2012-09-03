@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using openHistorian.V2.Unmanaged;
-using openHistorian.V2.UnmanagedMemory;
 
 namespace openHistorian.V2.IO.Unmanaged
 {
