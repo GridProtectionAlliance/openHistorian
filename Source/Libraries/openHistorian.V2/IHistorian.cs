@@ -49,7 +49,7 @@ namespace openHistorian.V2
         void Write(IPointStream points);
         void Write(ulong key1, ulong key2, ulong value1, ulong value2);
         long WriteBulk(IPointStream points);
-        long Disconnect();
+        void Disconnect();
     }
 
 

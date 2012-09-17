@@ -106,7 +106,9 @@ namespace openHistorian.V2.Local
 
             public IPointStream Read(ulong startKey, ulong endKey, IEnumerable<ulong> points)
             {
-                throw new NotImplementedException();
+                var scanner = m_historian.m_tree.GetDataRange();
+                scanner.SeekToKey(startKey, 0);
+                return new PointStreamList(scanner, endKey, ulong.MaxValue, points.ToArray());
             }
 
             public void Write(IPointStream points)
@@ -127,9 +129,9 @@ namespace openHistorian.V2.Local
                 return 1;
             }
 
-            public long Disconnect()
+            public void Disconnect()
             {
-                throw new NotImplementedException();
+                
             }
         }
     }
