@@ -48,7 +48,7 @@ namespace openHistorian.V2.Collections
         Func<IntPtr, T> m_read;
         Action<IntPtr, T> m_write;
 
-        protected LargeUnmanagedArray(int sizeOfT, BufferPool pool, Func<IntPtr, T> read, Action<IntPtr, T> write)
+        public LargeUnmanagedArray(int sizeOfT, BufferPool pool, Func<IntPtr, T> read, Action<IntPtr, T> write)
         {
             m_read = read;
             m_write = write;

@@ -99,10 +99,13 @@
     <Compile Include="FileStructure\DiskIoSessionExtension.cs" />
     <Compile Include="FileStructure\FileHeaderBlockRecovery.cs" />
     <Compile Include="Globals.cs" />
+    <Compile Include="IHistorian.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStreamSizing.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
+    <Compile Include="Local\Historian.cs" />
+    <Compile Include="Local\Historian_HistorianReadWrite.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="OpenMode.cs" />
