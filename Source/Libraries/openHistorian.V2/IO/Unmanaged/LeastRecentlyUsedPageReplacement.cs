@@ -50,6 +50,9 @@ namespace openHistorian.V2.IO.Unmanaged
             public int Length;
         }
 
+        const int IsCleared = -1;
+        const int IsNull = -2;
+
         // Constants
         /// <summary>
         /// Gets the size of a sub page. A sub page is the smallest
@@ -71,20 +74,13 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <summary>
         /// contains a list of all the meta pages.
         /// </summary>
-        /// <remarks>These items in the list are not in any particular order.
-        /// To lookup the correct pages, use <see cref="m_allocatedPagesLookupList"/> </remarks>
+        /// <remarks>These items in the list are not in any particular order.</remarks>
         PageMetaDataList m_pageList;
 
         /// <summary>
         /// Contains the currently active IO sessions that cannot be cleaned up by a collection.
         /// </summary>
         List<int> m_activeBlockIndexes;
-
-        /// <summary>
-        /// Contains all of the pages that are cached for the file stream.
-        /// </summary>
-        /// ToDO: Change this type to a b+ tree so it can store more pages efficiently.
-        SortedList<int, int> m_allocatedPagesLookupList;
 
         #endregion
 
@@ -94,7 +90,6 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             m_pageList = new PageMetaDataList();
             m_activeBlockIndexes = new List<int>();
-            m_allocatedPagesLookupList = new SortedList<int, int>();
         }
 
         #endregion
@@ -113,24 +108,57 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #region [ Methods ]
 
-        SubPageMetaData TryGetSubPageOrCreateNew(long position, int ioSession, bool isWriting, Action<IntPtr, long> delLoadFromFile)
+        bool TryGetSubPage(long position, int ioSession, bool isWriting, out SubPageMetaData subPage)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            int pageIndex = (int)(position >> Globals.BufferPool.PageShiftBits);
+            int positionIndex = (int)(position >> Globals.BufferPool.PageShiftBits);
             int subPageIndex = (int)((position & Globals.BufferPool.PageMask) >> SubPageShiftBits);
             ushort subPageDirtyFlag = (ushort)(1 << subPageIndex);
-            bool existsInLookupTable;
-            int pageMetaDataIndex = GetPageMetaDataIndex(pageIndex, out existsInLookupTable);
+            int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
+            if (arrayIndex < 0)
+            {
+                subPage = default(SubPageMetaData);
+                return false;
+            }
 
-            m_activeBlockIndexes[ioSession] = pageMetaDataIndex;
+            m_activeBlockIndexes[ioSession] = arrayIndex;
 
-            var pageMetaData = GetPageMetaData(isWriting, subPageDirtyFlag, pageMetaDataIndex);
+            var pageMetaData = GetPageMetaData(isWriting, subPageDirtyFlag, arrayIndex);
             bool isSubPageDirty = ((pageMetaData.IsDirtyFlags & subPageDirtyFlag) != 0);
 
-            if (!existsInLookupTable)
-                delLoadFromFile.Invoke((IntPtr)pageMetaData.LocationOfPage, (long)pageMetaData.PositionIndex * Globals.BufferPool.PageSize);
+            subPage = new SubPageMetaData
+            {
+                IsDirty = isSubPageDirty,
+                Location = pageMetaData.LocationOfPage + subPageIndex * SubPageSize,
+                Position = position & ~(long)SubPageMask,
+                Length = SubPageSize
+            };
+            return true;
+        }
+
+        SubPageMetaData CreateNewSubPage(long position, int ioSession, bool isWriting, Action<IntPtr, long> delLoadFromFile)
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            int positionIndex = (int)(position >> Globals.BufferPool.PageShiftBits);
+            int subPageIndex = (int)((position & Globals.BufferPool.PageMask) >> SubPageShiftBits);
+            ushort subPageDirtyFlag = (ushort)(1 << subPageIndex);
+            int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
+            if (arrayIndex >= 0)
+            {
+                throw new Exception("Page already exists");
+            }
+
+            arrayIndex = m_pageList.AllocateNewPage(positionIndex);
+            m_activeBlockIndexes[ioSession] = arrayIndex;
+
+            var pageMetaData = GetPageMetaData(isWriting, subPageDirtyFlag, arrayIndex);
+            bool isSubPageDirty = ((pageMetaData.IsDirtyFlags & subPageDirtyFlag) != 0);
+
+            delLoadFromFile.Invoke((IntPtr)pageMetaData.LocationOfPage, (long)pageMetaData.PositionIndex * Globals.BufferPool.PageSize);
 
             return new SubPageMetaData
             {
@@ -157,13 +185,13 @@ namespace openHistorian.V2.IO.Unmanaged
 
             for (int x = 0; x < m_activeBlockIndexes.Count; x++)
             {
-                if (m_activeBlockIndexes[x] == -2)
+                if (m_activeBlockIndexes[x] == IsNull)
                 {
-                    m_activeBlockIndexes[x] = -1;
+                    m_activeBlockIndexes[x] = IsCleared;
                     return new IoSession(this, x);
                 }
             }
-            m_activeBlockIndexes.Add(-1);
+            m_activeBlockIndexes.Add(IsCleared);
             return new IoSession(this, m_activeBlockIndexes.Count - 1);
         }
 
@@ -171,14 +199,14 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             if (m_disposed)
                 return;
-            m_activeBlockIndexes[ioSession] = -2;
+            m_activeBlockIndexes[ioSession] = IsNull;
         }
 
         void ClearIoSession(int ioSession)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            m_activeBlockIndexes[ioSession] = -1;
+            m_activeBlockIndexes[ioSession] = IsCleared;
         }
 
         /// <summary>
@@ -195,10 +223,7 @@ namespace openHistorian.V2.IO.Unmanaged
 
         bool CheckForCollection(int index, int positionIndex)
         {
-            if (m_activeBlockIndexes.Contains(index))
-                return false;
-            m_allocatedPagesLookupList.Remove(positionIndex);
-            return true;
+            return !m_activeBlockIndexes.Contains(index);
         }
 
         /// <summary>
@@ -212,10 +237,10 @@ namespace openHistorian.V2.IO.Unmanaged
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (m_activeBlockIndexes.Contains(pageMetaData.MetaDataIndex))
+            if (m_activeBlockIndexes.Contains(pageMetaData.ArrayIndex))
                 throw new NotSupportedException("A page's dirty bits can only be cleared if the page is currently not being used.");
 
-            m_pageList.ClearDirtyBits(pageMetaData.MetaDataIndex);
+            m_pageList.ClearDirtyBits(pageMetaData.ArrayIndex);
         }
 
         /// <summary>
@@ -228,14 +253,7 @@ namespace openHistorian.V2.IO.Unmanaged
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            foreach (var block in m_allocatedPagesLookupList)
-            {
-                var pageMetaData = m_pageList.GetMetaDataPage(block.Value);
-                if (pageMetaData.IsDirtyFlags != 0 &&  //Page must be dirty
-                    !(skipPagesInUse && m_activeBlockIndexes.Contains(block.Value)) //and not an actively used page if skip pages in use is set
-                    )
-                    yield return pageMetaData;
-            }
+            return m_pageList.GetDirtyPages(x => (skipPagesInUse && m_activeBlockIndexes.Contains(x)));
         }
 
         /// <summary>
@@ -258,24 +276,12 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #region [ Helper Methods ]
 
-        PageMetaDataList.PageMetaData GetPageMetaData(bool isWriting, ushort subPageDirtyFlag, int pageMetaDataIndex)
+        PageMetaDataList.PageMetaData GetPageMetaData(bool isWriting, ulong subPageDirtyFlag, int arrayIndex)
         {
             if (isWriting)
-                return m_pageList.GetMetaDataPage(pageMetaDataIndex, subPageDirtyFlag, 1);
+                return m_pageList.GetMetaDataPage(arrayIndex, subPageDirtyFlag, 1);
             else
-                return m_pageList.GetMetaDataPage(pageMetaDataIndex, 0, 1);
-        }
-
-        int GetPageMetaDataIndex(int pageIndex, out bool existsInLookupTable)
-        {
-            int pageMetaDataIndex;
-            existsInLookupTable = m_allocatedPagesLookupList.TryGetValue(pageIndex, out pageMetaDataIndex);
-            if (!existsInLookupTable)
-            {
-                pageMetaDataIndex = m_pageList.AllocateNewPage(pageIndex);
-                m_allocatedPagesLookupList.Add(pageIndex, pageMetaDataIndex);
-            }
-            return pageMetaDataIndex;
+                return m_pageList.GetMetaDataPage(arrayIndex, 0, 1);
         }
 
         #endregion

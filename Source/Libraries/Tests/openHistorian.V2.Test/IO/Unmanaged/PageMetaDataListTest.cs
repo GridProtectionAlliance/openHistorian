@@ -78,13 +78,11 @@ namespace openHistorian.V2.Test
                 target.Dispose();
             }
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-            PageMetaDataList target2 = new PageMetaDataList();
-            target2.AllocateNewPage(1);
-            Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
-
-            target2 = null;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            using (PageMetaDataList target2 = new PageMetaDataList())
+            {
+                target2.AllocateNewPage(1);
+                Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
+            }
 
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
         }
@@ -106,9 +104,9 @@ namespace openHistorian.V2.Test
                 Assert.AreEqual(Globals.BufferPool.PageSize * 1, Globals.BufferPool.AllocatedBytes);
                 Assert.AreEqual(0, target.AllocateNewPage(0));
                 Assert.AreEqual(2, target.AllocateNewPage(24352));
-                Assert.AreEqual(0, target.GetMetaDataPage(0).PositionIndex);
-                Assert.AreEqual(2, target.GetMetaDataPage(1).PositionIndex);
-                Assert.AreEqual(24352, target.GetMetaDataPage(2).PositionIndex);
+                Assert.AreEqual(0, target.GetMetaDataPage(0,0,0).PositionIndex);
+                Assert.AreEqual(2, target.GetMetaDataPage(1,0,0).PositionIndex);
+                Assert.AreEqual(24352, target.GetMetaDataPage(2,0,0).PositionIndex);
             }
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
         }
@@ -123,8 +121,8 @@ namespace openHistorian.V2.Test
             using (PageMetaDataList target = new PageMetaDataList())
             {
                 Assert.AreEqual(0, target.AllocateNewPage(0));
-                Assert.AreEqual(0x23, target.GetMetaDataPage(0, 0x23, 0).IsDirtyFlags);
-                Assert.AreEqual(0x63, target.GetMetaDataPage(0, 0x40, 0).IsDirtyFlags);
+                Assert.AreEqual(0x23ul, target.GetMetaDataPage(0, 0x23, 0).IsDirtyFlags);
+                Assert.AreEqual(0x63ul, target.GetMetaDataPage(0, 0x40, 0).IsDirtyFlags);
 
                 Assert.AreEqual(0, target.DoCollection(32, (x, y) => true));
                 target.ClearDirtyBits(0);
@@ -158,13 +156,13 @@ namespace openHistorian.V2.Test
             using (PageMetaDataList target = new PageMetaDataList())
             {
                 target.AllocateNewPage(0);
-                target.AllocateNewPage(0);
-                target.AllocateNewPage(0);
-                target.AllocateNewPage(0);
-                target.AllocateNewPage(0);
-                target.AllocateNewPage(0);
-                target.AllocateNewPage(0);
-                target.AllocateNewPage(0);
+                target.AllocateNewPage(1);
+                target.AllocateNewPage(2);
+                target.AllocateNewPage(3);
+                target.AllocateNewPage(4);
+                target.AllocateNewPage(5);
+                target.AllocateNewPage(6);
+                target.AllocateNewPage(7);
 
                 target.GetMetaDataPage(0, 0, 0);
                 target.GetMetaDataPage(1, 0, 1 << 0);

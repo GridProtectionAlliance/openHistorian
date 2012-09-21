@@ -31,7 +31,9 @@ namespace openHistorian.V2.IO.Unmanaged
 {
     /// <summary>
     /// Contains a list of page meta data. Provides a simplified way to interact with this list.
+    /// This class is not thread safe.
     /// </summary>
+    /// <remarks>Maintains the following relationship: PositionIndex, ArrayIndex, PageMetaData</remarks>
     unsafe public class PageMetaDataList : IDisposable
     {
         #region [ Members ]
@@ -40,7 +42,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// Contains meta data about each page that is allocated.  
         /// </summary>
         /// <remarks>
-        /// Each one can only address 256KB of 4KB pages since we are limited by the 64 bit IsDirtyFlags.
+        /// Each one can only address up to 256KB of 4KB pages since we are limited by the 64 bit IsDirtyFlags.
         /// This structure is used internally in the <see cref="PageMetaDataList.m_listOfPages"/> list.
         /// </remarks>
         struct InternalPageMetaData
@@ -66,14 +68,14 @@ namespace openHistorian.V2.IO.Unmanaged
             /// </summary>
             public int ReferencedCount;
 
-            public PageMetaData ToPageMetaData(int metaDataIndex)
+            public PageMetaData ToPageMetaData(int arrayIndex)
             {
                 return new PageMetaData
                 {
                     LocationOfPage = LocationOfPage,
                     PositionIndex = PositionIndex,
                     IsDirtyFlags = IsDirtyFlags,
-                    MetaDataIndex = metaDataIndex
+                    ArrayIndex = arrayIndex
                 };
             }
         }
@@ -91,12 +93,19 @@ namespace openHistorian.V2.IO.Unmanaged
             /// <summary>
             /// The index position in the <see cref="PageMetaDataList"/> of this page so updates can occur rapidly.
             /// </summary>
-            public int MetaDataIndex;
+            public int ArrayIndex;
             /// <summary>
             /// The bytes that this page represents. Position * BufferPoolSize.
             /// </summary>
             public int PositionIndex;
         }
+
+        /// <summary>
+        /// Contains all of the pages that are cached for the file stream.
+        /// Map is PositionIndex,ArrayIndex
+        /// </summary>
+        /// ToDO: Change this type to a b+ tree so it can store more pages efficiently.
+        SortedList<int, int> m_indexMap;
 
         /// <summary>
         /// A list of all pages.
@@ -112,6 +121,7 @@ namespace openHistorian.V2.IO.Unmanaged
         public PageMetaDataList()
         {
             m_listOfPages = new NullableLargeArray<InternalPageMetaData>();
+            m_indexMap = new SortedList<int, int>();
         }
 
         #endregion
@@ -149,7 +159,8 @@ namespace openHistorian.V2.IO.Unmanaged
                 {
                     if (!Globals.BufferPool.IsDisposed)
                     {
-                        Globals.BufferPool.ReleasePages(GetPageList());
+                        Globals.BufferPool.ReleasePages(m_listOfPages.GetEnumerator(x => x.BufferPoolIndex));
+                        m_listOfPages.Dispose();
                         m_listOfPages = null;
                     }
                 }
@@ -161,19 +172,26 @@ namespace openHistorian.V2.IO.Unmanaged
         }
 
         /// <summary>
-        /// A helper function to <see cref="Dispose"/> which provides an IEnumerable
+        /// Converts a number from it's position index into an array index.
         /// </summary>
-        /// <returns></returns>
-        IEnumerable<int> GetPageList()
+        /// <param name="positionIndex"></param>
+        /// <returns>returns a -1 if the position index does not exist</returns>
+        public int ToArrayIndex(int positionIndex)
         {
-            return m_listOfPages.GetEnumerator(x => x.BufferPoolIndex);
+            int arrayIndex;
+            if (m_indexMap.TryGetValue(positionIndex, out arrayIndex))
+            {
+                return arrayIndex;
+            }
+            return -1;
         }
+
 
         /// <summary>
         /// Finds the next unused cache page index. Marks it as used.
         /// Allocates a page from the buffer pool.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The Array Index</returns>
         public int AllocateNewPage(int positionIndex)
         {
             if (m_disposed)
@@ -187,15 +205,15 @@ namespace openHistorian.V2.IO.Unmanaged
             cachePage.IsDirtyFlags = 0;
             cachePage.ReferencedCount = 0;
             cachePage.PositionIndex = positionIndex;
-
-            return m_listOfPages.AddValue(cachePage);
+            int arrayIndex = m_listOfPages.AddValue(cachePage);
+            m_indexMap.Add(positionIndex,arrayIndex);
+            return arrayIndex;
         }
 
-
-        public PageMetaData GetMetaDataPage(int index, ulong isWritingFlag = 0, int incrementReferencedCount = 0)
+        public PageMetaData GetMetaDataPage(int arrayIndex, ulong isWritingMask, int incrementReferencedCount)
         {
-            var metaData = this[index];
-            metaData.IsDirtyFlags |= isWritingFlag;
+            var metaData = this[arrayIndex];
+            metaData.IsDirtyFlags |= isWritingMask;
             if (incrementReferencedCount > 0)
             {
                 long newValue = metaData.ReferencedCount + (long)incrementReferencedCount;
@@ -204,17 +222,37 @@ namespace openHistorian.V2.IO.Unmanaged
                 else
                     metaData.ReferencedCount = (int)newValue;
             }
-
-            this[index] = metaData;
-            return metaData.ToPageMetaData(index);
+            this[arrayIndex] = metaData;
+            return metaData.ToPageMetaData(arrayIndex);
         }
 
-
-        public void ClearDirtyBits(int index)
+        /// <summary>
+        /// Clears all of the dirty bits for a given index.
+        /// </summary>
+        /// <param name="arrayIndex"></param>
+        public void ClearDirtyBits(int arrayIndex)
         {
-            var metaData = this[index];
+            var metaData = this[arrayIndex];
             metaData.IsDirtyFlags = 0;
-            this[index] = metaData;
+            this[arrayIndex] = metaData;
+        }
+
+        /// <summary>
+        /// Returns all dirty pages in this class.  If pages are subsequentially written to the disk,
+        /// be sure to clear the dirty bits via <see cref="ClearDirtyBits"/>.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<PageMetaData> GetDirtyPages(Func<int,bool> isFiltered)
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            foreach (var block in m_indexMap)
+            {
+                var pageMetaData = this[block.Value];
+                if (pageMetaData.IsDirtyFlags != 0 && !isFiltered(block.Value))
+                    yield return pageMetaData.ToPageMetaData(block.Value);
+            }
         }
 
         /// <summary>
@@ -246,7 +284,7 @@ namespace openHistorian.V2.IO.Unmanaged
                         if (shouldCollect(x, block.PositionIndex))
                         {
                             collectionCount++;
-                            //todo: call the correct callback
+                            m_indexMap.Remove(block.PositionIndex);
                             Globals.BufferPool.ReleasePage(block.BufferPoolIndex);
                             m_listOfPages.SetNull(x);
                         }

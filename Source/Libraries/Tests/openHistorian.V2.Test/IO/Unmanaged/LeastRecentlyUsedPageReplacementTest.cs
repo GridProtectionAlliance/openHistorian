@@ -86,13 +86,12 @@ namespace openHistorian.V2.Test
             }
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
 
-            var target2 = new LeastRecentlyUsedPageReplacement();
-            var io2 = target2.CreateNewIoSession();
-            io2.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
-            Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
-
-            target2 = null;
-            io2 = null;
+            using (var target2 = new LeastRecentlyUsedPageReplacement())
+            using (var io2 = target2.CreateNewIoSession())
+            {
+                io2.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
+                Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
+            }
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
@@ -175,6 +174,7 @@ namespace openHistorian.V2.Test
                 }
 
                 io1.Clear();
+                io2.Dispose();
                 io2 = null;
                 io3.Clear();
                 GC.Collect();

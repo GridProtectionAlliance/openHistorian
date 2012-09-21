@@ -33,9 +33,11 @@ namespace openHistorian.V2.IO.Unmanaged
     /// <remarks>
     /// This class is used by <see cref="BufferedFileStream"/> to decide which pages should be replaced.
     /// </remarks>
-    unsafe public partial class LeastRecentlyUsedPageReplacement : IDisposable
+    public partial class LeastRecentlyUsedPageReplacement : IDisposable
     {
-        // Nested Types
+        /// <summary>
+        /// This class is used to keep track of the pages that are currently referenced.
+        /// </summary>
         public class IoSession : IDisposable
         {
             LeastRecentlyUsedPageReplacement m_lru;
@@ -50,7 +52,12 @@ namespace openHistorian.V2.IO.Unmanaged
 
             public SubPageMetaData TryGetSubPageOrCreateNew(long position, bool isWriting, Action<IntPtr, long> delLoadFromFile)
             {
-                return m_lru.TryGetSubPageOrCreateNew(position, IoSessionId, isWriting, delLoadFromFile);
+                SubPageMetaData subPage;
+                if (m_lru.TryGetSubPage(position,IoSessionId,isWriting,out subPage))
+                {
+                    return subPage;
+                }
+                return m_lru.CreateNewSubPage(position, IoSessionId, isWriting, delLoadFromFile);
             }
 
             public void Clear()
