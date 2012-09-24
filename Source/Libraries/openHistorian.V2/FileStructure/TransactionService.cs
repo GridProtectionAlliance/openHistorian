@@ -24,7 +24,7 @@
 using System;
 using System.IO;
 using System.Threading;
-using openHistorian.V2.Unmanaged;
+using openHistorian.V2.IO.Unmanaged;
 using MemoryStream = openHistorian.V2.IO.Unmanaged.MemoryStream;
 
 namespace openHistorian.V2.FileStructure

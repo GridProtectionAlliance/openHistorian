@@ -73,12 +73,12 @@ namespace openHistorian.V2.Test
         {
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
 
-            using (PageMetaDataList target = new PageMetaDataList())
+            using (PageMetaDataList target = new PageMetaDataList(Globals.BufferPool))
             {
                 target.Dispose();
             }
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-            using (PageMetaDataList target2 = new PageMetaDataList())
+            using (PageMetaDataList target2 = new PageMetaDataList(Globals.BufferPool))
             {
                 target2.AllocateNewPage(1);
                 Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
@@ -94,7 +94,7 @@ namespace openHistorian.V2.Test
         public void AllocateNewPageTest()
         {
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-            using (PageMetaDataList target = new PageMetaDataList())
+            using (PageMetaDataList target = new PageMetaDataList(Globals.BufferPool))
             {
                 Assert.AreEqual(0, target.AllocateNewPage(0));
                 Assert.AreEqual(Globals.BufferPool.PageSize * 1, Globals.BufferPool.AllocatedBytes);
@@ -118,7 +118,7 @@ namespace openHistorian.V2.Test
         public void ClearDirtyBitsTest()
         {
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-            using (PageMetaDataList target = new PageMetaDataList())
+            using (PageMetaDataList target = new PageMetaDataList(Globals.BufferPool))
             {
                 Assert.AreEqual(0, target.AllocateNewPage(0));
                 Assert.AreEqual(0x23ul, target.GetMetaDataPage(0, 0x23, 0).IsDirtyFlags);
@@ -138,7 +138,7 @@ namespace openHistorian.V2.Test
         public void DisposeTest()
         {
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-            using (PageMetaDataList target = new PageMetaDataList())
+            using (PageMetaDataList target = new PageMetaDataList(Globals.BufferPool))
             {
                 target.AllocateNewPage(0);
                 target.Dispose();
@@ -153,7 +153,7 @@ namespace openHistorian.V2.Test
         public void DoCollectionTest()
         {
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-            using (PageMetaDataList target = new PageMetaDataList())
+            using (PageMetaDataList target = new PageMetaDataList(Globals.BufferPool))
             {
                 target.AllocateNewPage(0);
                 target.AllocateNewPage(1);

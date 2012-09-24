@@ -6,7 +6,7 @@ using openHistorian.V2.UnmanagedMemory;
 
 namespace openHistorian.V2.Test
 {
-    
+
     /// <summary>
     ///This is a test class for LeastRecentlyUsedPageReplacementTest and is intended
     ///to contain all LeastRecentlyUsedPageReplacementTest Unit Tests
@@ -73,23 +73,23 @@ namespace openHistorian.V2.Test
 
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
 
-            using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
+            using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement(4096, Globals.BufferPool))
             {
                 Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
                 using (var io = target.CreateNewIoSession())
                 {
                     Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-                    io.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
+                    io.CreateNew(0, false, new byte[Globals.BufferPool.PageSize], 0);
                     Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
                 }
                 target.Dispose();
             }
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
 
-            using (var target2 = new LeastRecentlyUsedPageReplacement())
+            using (var target2 = new LeastRecentlyUsedPageReplacement(4096, Globals.BufferPool))
             using (var io2 = target2.CreateNewIoSession())
             {
-                io2.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
+                io2.CreateNew(0, false, new byte[Globals.BufferPool.PageSize], 0);
                 Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
             }
             GC.Collect();
@@ -105,13 +105,13 @@ namespace openHistorian.V2.Test
         public void ClearDirtyBitsTest()
         {
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-            using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
+            using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement(4096, Globals.BufferPool))
             {
                 Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
                 using (var io = target.CreateNewIoSession())
                 {
                     Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-                    var metaData = io.TryGetSubPageOrCreateNew(0, true, (x, y) => y = y);
+                    var metaData = io.CreateNew(0, true, new byte[Globals.BufferPool.PageSize], 0);
                     foreach (var page in target.GetDirtyPages(true))
                     {
                         Assert.Fail();
@@ -140,24 +140,29 @@ namespace openHistorian.V2.Test
         public void CreateNewIoSessionTest()
         {
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-            using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement())
+            using (LeastRecentlyUsedPageReplacement target = new LeastRecentlyUsedPageReplacement(4096, Globals.BufferPool))
             {
                 Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
                 var io1 = target.CreateNewIoSession();
-                var metaData1 = io1.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
+                var metaData1 = io1.CreateNew(0, false, new byte[Globals.BufferPool.PageSize], 0);
                 var io2 = target.CreateNewIoSession();
-                var metaData2 = io2.TryGetSubPageOrCreateNew(200, true, (x, y) => y = y);
+
+                LeastRecentlyUsedPageReplacement.SubPageMetaData metaData2;
+                Assert.AreEqual(true, io2.TryGetSubPage(200, true, out metaData2));
+
+                LeastRecentlyUsedPageReplacement.SubPageMetaData metaData3;
                 var io3 = target.CreateNewIoSession();
-                var metaData3 = io3.TryGetSubPageOrCreateNew(4099, true, (x, y) => y = y);
+                Assert.AreEqual(true, io3.TryGetSubPage(4099, true, out metaData3));
+
                 var io4 = target.CreateNewIoSession();
-                var metaData4 = io4.TryGetSubPageOrCreateNew(65536, true, (x, y) => y = y);
+                var metaData4 = io4.CreateNew(65536, true, new byte[Globals.BufferPool.PageSize], 0);
 
                 Assert.AreEqual(false, metaData1.IsDirty);
                 Assert.AreEqual(0, metaData1.Position);
 
                 Assert.AreEqual(true, metaData2.IsDirty);
                 Assert.AreEqual(0, metaData2.Position);
-                metaData1 = io1.TryGetSubPageOrCreateNew(0, false, (x, y) => y = y);
+                Assert.AreEqual(true, io1.TryGetSubPage(0, false, out metaData1));
 
                 Assert.AreEqual(true, metaData1.IsDirty);
                 Assert.AreEqual(0, metaData1.Position);

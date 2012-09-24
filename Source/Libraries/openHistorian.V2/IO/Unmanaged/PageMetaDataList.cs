@@ -100,6 +100,8 @@ namespace openHistorian.V2.IO.Unmanaged
             public int PositionIndex;
         }
 
+        BufferPool m_pool;
+
         /// <summary>
         /// Contains all of the pages that are cached for the file stream.
         /// Map is PositionIndex,ArrayIndex
@@ -118,8 +120,9 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #region [ Constructors ]
 
-        public PageMetaDataList()
+        public PageMetaDataList(BufferPool pool)
         {
+            m_pool = pool;
             m_listOfPages = new NullableLargeArray<InternalPageMetaData>();
             m_indexMap = new SortedList<int, int>();
         }
@@ -157,9 +160,9 @@ namespace openHistorian.V2.IO.Unmanaged
             {
                 try
                 {
-                    if (!Globals.BufferPool.IsDisposed)
+                    if (!m_pool.IsDisposed)
                     {
-                        Globals.BufferPool.ReleasePages(m_listOfPages.GetEnumerator(x => x.BufferPoolIndex));
+                        m_pool.ReleasePages(m_listOfPages.GetEnumerator(x => x.BufferPoolIndex));
                         m_listOfPages.Dispose();
                         m_listOfPages = null;
                     }
@@ -199,7 +202,7 @@ namespace openHistorian.V2.IO.Unmanaged
             InternalPageMetaData cachePage;
             IntPtr ptr;
             int index;
-            Globals.BufferPool.AllocatePage(out index, out ptr);
+            m_pool.AllocatePage(out index, out ptr);
             cachePage.BufferPoolIndex = index;
             cachePage.LocationOfPage = (byte*)ptr;
             cachePage.IsDirtyFlags = 0;
@@ -285,7 +288,7 @@ namespace openHistorian.V2.IO.Unmanaged
                         {
                             collectionCount++;
                             m_indexMap.Remove(block.PositionIndex);
-                            Globals.BufferPool.ReleasePage(block.BufferPoolIndex);
+                            m_pool.ReleasePage(block.BufferPoolIndex);
                             m_listOfPages.SetNull(x);
                         }
                     }

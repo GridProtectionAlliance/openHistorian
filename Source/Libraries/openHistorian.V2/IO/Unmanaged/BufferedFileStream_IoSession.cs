@@ -25,9 +25,9 @@
 using System;
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Unmanaged
+namespace openHistorian.V2.IO.Unmanaged
 {
-    unsafe public partial class BufferedFileStream : ISupportsBinaryStreamSizing
+    public partial class BufferedFileStream : ISupportsBinaryStreamSizing
     {
         // Nested Types
         class IoSession : IBinaryStreamIoSession
@@ -43,27 +43,9 @@ namespace openHistorian.V2.Unmanaged
             }
 
             /// <summary>
-            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
-            /// </summary>
-            ~IoSession()
-            {
-                Dispose(false);
-            }
-
-            /// <summary>
             /// Releases all the resources used by the <see cref="IoSession"/> object.
             /// </summary>
             public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
-            /// </summary>
-            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            void Dispose(bool disposing)
             {
                 if (!m_disposed)
                 {
@@ -71,10 +53,6 @@ namespace openHistorian.V2.Unmanaged
                     {
                         // This will be done regardless of whether the object is finalized or disposed.
                         m_ioSession.Dispose();
-                        if (disposing)
-                        {
-                            // This will be done only when the object is disposed by calling Dispose().
-                        }
                     }
                     finally
                     {

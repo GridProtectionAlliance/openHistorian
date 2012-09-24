@@ -84,6 +84,8 @@
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="Collections\LargeUnmanagedArray.cs" />
     <Compile Include="Collections\NullableLargeArray.cs" />
+    <Compile Include="Collections\ResourceQueue.cs" />
+    <Compile Include="Collections\ResourceQueueCollection.cs" />
     <Compile Include="Collections\SupportsReadonlyAutoBase.cs" />
     <Compile Include="Collections\SupportsReadonlyBase.cs" />
     <Compile Include="Collections\ISupportsReadonly.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Collections\KeyValue\ITreeScanner256.cs" />
     <Compile Include="AccessMode.cs" />
     <Compile Include="Collections\ReadonlyList.cs" />
+    <Compile Include="BitMath.cs" />
     <Compile Include="FileStructure\SubFileStream_IoSession.cs" />
     <Compile Include="FileStructure\DiskIoExtensions.cs" />
     <Compile Include="FileStructure\DiskIoSession.cs" />
@@ -101,6 +104,7 @@
     <Compile Include="Globals.cs" />
     <Compile Include="IHistorian.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
+    <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStreamSizing.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />

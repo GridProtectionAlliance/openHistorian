@@ -82,6 +82,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\ResourceQueueCollection.cs" />
+    <Compile Include="Collections\ResourceQueue.cs" />
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="Server\Database\ArchiveListSnapshotTest.cs" />
     <Compile Include="Server\Database\ArchiveInitializerTest.cs" />

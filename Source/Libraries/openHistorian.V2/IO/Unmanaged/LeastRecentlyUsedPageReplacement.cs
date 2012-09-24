@@ -24,7 +24,8 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.Unmanaged;
+using System.Runtime.InteropServices;
+using openHistorian.V2.UnmanagedMemory;
 
 namespace openHistorian.V2.IO.Unmanaged
 {
@@ -53,16 +54,15 @@ namespace openHistorian.V2.IO.Unmanaged
         const int IsCleared = -1;
         const int IsNull = -2;
 
-        // Constants
-        /// <summary>
-        /// Gets the size of a sub page. A sub page is the smallest
-        /// unit of I/O that can occur. This will then set dirty bits on this level.
-        /// </summary>
-        const int SubPageSize = 4096;
+        int m_bufferPageSize;
+        int m_bufferPageSizeMask;
+        int m_bufferPageSizeShiftBits;
 
-        const int SubPageShiftBits = 12;
+        int m_dirtyPageSize;
 
-        const int SubPageMask = SubPageSize - 1;
+        int m_dirtyPageSizeShiftBits;
+
+        int m_dirtyPageSizeMask;
 
         // Delegates
 
@@ -86,9 +86,17 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #region [ Constructors ]
 
-        public LeastRecentlyUsedPageReplacement()
+        public LeastRecentlyUsedPageReplacement(int dirtyPageSize, BufferPool pool)
         {
-            m_pageList = new PageMetaDataList();
+            m_dirtyPageSize = dirtyPageSize;
+            m_dirtyPageSizeMask = dirtyPageSize - 1;
+            m_dirtyPageSizeShiftBits = BitMath.CountBitsSet((uint)m_dirtyPageSizeMask);
+
+            m_bufferPageSize = pool.PageSize;
+            m_bufferPageSizeMask = pool.PageSize - 1;
+            m_bufferPageSizeShiftBits = BitMath.CountBitsSet((uint)m_bufferPageSizeMask);
+
+            m_pageList = new PageMetaDataList(pool);
             m_activeBlockIndexes = new List<int>();
         }
 
@@ -113,8 +121,8 @@ namespace openHistorian.V2.IO.Unmanaged
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            int positionIndex = (int)(position >> Globals.BufferPool.PageShiftBits);
-            int subPageIndex = (int)((position & Globals.BufferPool.PageMask) >> SubPageShiftBits);
+            int positionIndex = (int)(position >> m_bufferPageSizeShiftBits);
+            int subPageIndex = (int)((position & m_bufferPageSizeMask) >> m_dirtyPageSizeShiftBits);
             ushort subPageDirtyFlag = (ushort)(1 << subPageIndex);
             int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
             if (arrayIndex < 0)
@@ -131,20 +139,20 @@ namespace openHistorian.V2.IO.Unmanaged
             subPage = new SubPageMetaData
             {
                 IsDirty = isSubPageDirty,
-                Location = pageMetaData.LocationOfPage + subPageIndex * SubPageSize,
-                Position = position & ~(long)SubPageMask,
-                Length = SubPageSize
+                Location = pageMetaData.LocationOfPage + subPageIndex * m_dirtyPageSize,
+                Position = position & ~(long)m_dirtyPageSizeMask,
+                Length = m_dirtyPageSize
             };
             return true;
         }
 
-        SubPageMetaData CreateNewSubPage(long position, int ioSession, bool isWriting, Action<IntPtr, long> delLoadFromFile)
+        SubPageMetaData CreateNewSubPage(long position, int ioSession, bool isWriting, byte[] data, int startIndex)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            int positionIndex = (int)(position >> Globals.BufferPool.PageShiftBits);
-            int subPageIndex = (int)((position & Globals.BufferPool.PageMask) >> SubPageShiftBits);
+            int positionIndex = (int)(position >> m_bufferPageSizeShiftBits);
+            int subPageIndex = (int)((position & m_bufferPageSizeMask) >> m_dirtyPageSizeShiftBits);
             ushort subPageDirtyFlag = (ushort)(1 << subPageIndex);
             int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
             if (arrayIndex >= 0)
@@ -158,14 +166,14 @@ namespace openHistorian.V2.IO.Unmanaged
             var pageMetaData = GetPageMetaData(isWriting, subPageDirtyFlag, arrayIndex);
             bool isSubPageDirty = ((pageMetaData.IsDirtyFlags & subPageDirtyFlag) != 0);
 
-            delLoadFromFile.Invoke((IntPtr)pageMetaData.LocationOfPage, (long)pageMetaData.PositionIndex * Globals.BufferPool.PageSize);
+            Marshal.Copy(data, startIndex, (IntPtr)pageMetaData.LocationOfPage, m_bufferPageSize);
 
             return new SubPageMetaData
             {
                 IsDirty = isSubPageDirty,
-                Location = pageMetaData.LocationOfPage + subPageIndex * SubPageSize,
-                Position = position & ~(long)SubPageMask,
-                Length = SubPageSize
+                Location = pageMetaData.LocationOfPage + subPageIndex * m_dirtyPageSize,
+                Position = position & ~(long)m_dirtyPageSizeMask,
+                Length = m_dirtyPageSize
             };
         }
 

@@ -1,0 +1,104 @@
+﻿//******************************************************************************************************
+//  ResourceQueueCollection.cs - Gbtc
+//
+//  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://www.opensource.org/licenses/eclipse-1.0.php
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  9/22/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
+//       
+//
+//******************************************************************************************************
+
+using System;
+using System.Collections.Generic;
+
+namespace openHistorian.V2.Collections
+{
+    /// <summary>
+    /// Provides a thread safe collection of many different resources of the same type.
+    /// </summary>
+    /// <typeparam name="TKey">An ICompariable type that is used to distinquish different resource queues.</typeparam>
+    /// <typeparam name="TResource">They type of the resource queue.</typeparam>
+    public class ResourceQueueCollection<TKey, TResource>
+        where TResource : class
+    {
+        SortedList<TKey, ResourceQueue<TResource>> m_list;
+        Func<TKey, Func<TResource>> m_instanceObject;
+        Func<TKey, int> m_maximumCount;
+        Func<TKey, int> m_initialCount;
+
+        /// <summary>
+        /// Creates a new ResourceQueueCollection.
+        /// </summary>
+        /// <param name="instance">A function to pass to the ResourceQueue for a given TCompare </param>
+        /// <param name="initialCount">The initial size of each resource queue</param>
+        /// <param name="maximumCount">The maximum size of each resource queue</param>
+        public ResourceQueueCollection(Func<TResource> instance, int initialCount, int maximumCount)
+            : this(x => instance, x => initialCount, x => maximumCount)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new ResourceQueueCollection.
+        /// </summary>
+        /// <param name="instance">A function that will return the function to pass to the ResourceQueue for a given TCompare </param>
+        /// <param name="initialCount">The initial size of each resource queue</param>
+        /// <param name="maximumCount">The maximum size of each resource queue</param>
+        public ResourceQueueCollection(Func<TKey, TResource> instance, int initialCount, int maximumCount)
+            : this(key => () => instance(key), x => initialCount, x => maximumCount)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new ResourceQueueCollection.
+        /// </summary>
+        /// <param name="instance">A function that will return the function to pass to the ResourceQueue for a given TCompare </param>
+        /// <param name="initialCount">The initial size of each resource queue</param>
+        /// <param name="maximumCount">The maximum size of each resource queue</param>
+        public ResourceQueueCollection(Func<TKey, Func<TResource>> instance, int initialCount, int maximumCount)
+            : this(instance, x => initialCount, x => maximumCount)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new ResourceQueueCollection.
+        /// </summary>
+        /// <param name="instance">A function that will return the function to pass to the ResourceQueue for a given TCompare </param>
+        /// <param name="initialCount">The initial size of each resource queue</param>
+        /// <param name="maximumCount">The maximum size of each resource queue</param>
+        public ResourceQueueCollection(Func<TKey, Func<TResource>> instance, Func<TKey, int> initialCount, Func<TKey, int> maximumCount)
+        {
+            m_instanceObject = instance;
+            m_initialCount = initialCount;
+            m_maximumCount = maximumCount;
+            m_list = new SortedList<TKey, ResourceQueue<TResource>>();
+        }
+
+        public ResourceQueue<TResource> GetResourceQueue(TKey key)
+        {
+            ResourceQueue<TResource> resourceQueue;
+            lock (m_list)
+            {
+                if (!m_list.TryGetValue(key, out resourceQueue))
+                {
+                    resourceQueue = new ResourceQueue<TResource>(m_instanceObject(key), m_initialCount(key), m_maximumCount(key));
+                    m_list.Add(key, resourceQueue);
+                }
+            }
+            return resourceQueue;
+        }
+    }
+}

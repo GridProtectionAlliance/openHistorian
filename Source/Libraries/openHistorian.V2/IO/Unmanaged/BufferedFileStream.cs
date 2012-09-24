@@ -24,12 +24,10 @@
 
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
-using openHistorian.V2.IO;
-using openHistorian.V2.IO.Unmanaged;
+using System.Linq;
 using openHistorian.V2.UnmanagedMemory;
 
-namespace openHistorian.V2.Unmanaged
+namespace openHistorian.V2.IO.Unmanaged
 {
     /// <summary>
     /// A buffered file stream utilizes the buffer pool to intellectually cache
@@ -43,13 +41,13 @@ namespace openHistorian.V2.Unmanaged
     /// </remarks>
     unsafe public partial class BufferedFileStream : ISupportsBinaryStreamSizing
     {
-        /// <summary>
-        /// A buffer to use to read/write from a disk.
-        /// </summary>
-        /// <remarks>Since all disk IO inside .NET must be with a managed type. 
-        /// This buffer provides a means to do the disk IO</remarks>
-        /// ToDo: Create multiple static blocks so concurrent IO can occur.
-        static byte[] s_tmpBuffer = new byte[Globals.BufferPool.PageSize];
+        object m_syncRoot;
+        object m_syncFlush;
+
+
+        BufferPool m_pool;
+
+        int m_dirtyPageSize;
 
         /// <summary>
         /// The file stream use by this class.
@@ -60,9 +58,30 @@ namespace openHistorian.V2.Unmanaged
 
         bool m_disposed;
 
+        IoQueue m_queue;
+
+
         public BufferedFileStream(FileStream stream)
+            : this(stream, Globals.BufferPool, 4096)
         {
-            m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement();
+
+        }
+
+        /// <summary>
+        /// Creates a file backed memory stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="pool"></param>
+        /// <param name="dirtyPageSize"></param>
+        public BufferedFileStream(FileStream stream, BufferPool pool, int dirtyPageSize)
+        {
+            m_pool = pool;
+            m_dirtyPageSize = dirtyPageSize;
+            m_queue = new IoQueue(stream, pool.PageSize, dirtyPageSize);
+
+            m_syncRoot = new object();
+            m_syncFlush = new object();
+            m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement(dirtyPageSize, pool);
             m_baseStream = stream;
             Globals.BufferPool.RequestCollection += BufferPool_RequestCollection;
         }
@@ -77,35 +96,53 @@ namespace openHistorian.V2.Unmanaged
 
         public void Flush(bool waitForWriteToDisk = false, bool skipPagesInUse = true)
         {
-            foreach (var block in m_pageReplacementAlgorithm.GetDirtyPages(skipPagesInUse))
+            lock (m_syncFlush)
             {
-                m_baseStream.Position = block.PositionIndex * (long)Globals.BufferPool.PageSize;
-                Marshal.Copy((IntPtr)block.LocationOfPage, s_tmpBuffer, 0, s_tmpBuffer.Length);
-                m_baseStream.Write(s_tmpBuffer, 0, s_tmpBuffer.Length);
-                m_pageReplacementAlgorithm.ClearDirtyBits(block);
+                PageMetaDataList.PageMetaData[] dirtyPages;
+                lock (m_syncRoot)
+                {
+                    dirtyPages = m_pageReplacementAlgorithm.GetDirtyPages(skipPagesInUse).ToArray();
+
+                    foreach (var block in dirtyPages)
+                    {
+                        m_pageReplacementAlgorithm.ClearDirtyBits(block);
+                    }
+                }
+                m_queue.Write(dirtyPages, waitForWriteToDisk);
             }
-            m_baseStream.Flush(waitForWriteToDisk);
-            if (waitForWriteToDisk)
-                WinApi.FlushFileBuffers(m_baseStream.SafeFileHandle);
         }
 
         void GetBlock(LeastRecentlyUsedPageReplacement.IoSession ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
         {
-            var pageMetaData = ioSession.TryGetSubPageOrCreateNew(position, isWriting, LoadFromFile);
-            firstPointer = (IntPtr)pageMetaData.Location;
-            length = pageMetaData.Length;
-            firstPosition = pageMetaData.Position;
-            supportsWriting = pageMetaData.IsDirty;
-        }
+            LeastRecentlyUsedPageReplacement.SubPageMetaData subPage;
 
-        void LoadFromFile(IntPtr pageLocation, long pagePosition)
-        {
-            m_baseStream.Position = pagePosition;
-            lock (s_tmpBuffer)
+            lock (m_syncRoot)
             {
-                m_baseStream.Read(s_tmpBuffer, 0, s_tmpBuffer.Length);
-                Marshal.Copy(s_tmpBuffer, 0, pageLocation, s_tmpBuffer.Length);
+                if (ioSession.TryGetSubPage(position, isWriting, out subPage))
+                {
+                    firstPointer = (IntPtr)subPage.Location;
+                    length = subPage.Length;
+                    firstPosition = subPage.Position;
+                    supportsWriting = subPage.IsDirty;
+                    return;
+                }
             }
+
+            Action<byte[]> callback = data =>
+                {
+                    lock (m_syncRoot)
+                    {
+                        subPage = ioSession.CreateNew(position, isWriting, data, 0);
+                    }
+                };
+            m_queue.Read(position, callback);
+
+            firstPointer = (IntPtr)subPage.Location;
+            length = subPage.Length;
+            firstPosition = subPage.Position;
+            supportsWriting = subPage.IsDirty;
+            return;
+
         }
 
         public void Dispose()
@@ -124,14 +161,19 @@ namespace openHistorian.V2.Unmanaged
             {
                 Flush();
             }
-            m_pageReplacementAlgorithm.DoCollection();
+            lock (m_syncRoot)
+            {
+                m_pageReplacementAlgorithm.DoCollection();
+            }
         }
 
         IBinaryStreamIoSession ISupportsBinaryStream.GetNextIoSession()
         {
-            return new IoSession(this, m_pageReplacementAlgorithm.CreateNewIoSession());
+            lock (m_syncRoot)
+            {
+                return new IoSession(this, m_pageReplacementAlgorithm.CreateNewIoSession());
+            }
         }
-
 
         public IBinaryStream CreateBinaryStream()
         {
@@ -148,9 +190,12 @@ namespace openHistorian.V2.Unmanaged
 
         long ISupportsBinaryStreamSizing.SetLength(long length)
         {
-            //if (m_baseStream.Length < length)
-            m_baseStream.SetLength(length);
-            return m_baseStream.Length;
+            lock (m_syncRoot)
+            {
+                //if (m_baseStream.Length < length)
+                m_baseStream.SetLength(length);
+                return m_baseStream.Length;
+            }
         }
 
         public int BlockSize
@@ -163,12 +208,15 @@ namespace openHistorian.V2.Unmanaged
 
         public void Flush()
         {
-            throw new NotImplementedException();
+            Flush(false, true);
         }
 
         public void TrimEditsAfterPosition(long position)
         {
-            throw new NotImplementedException();
+            lock (m_syncFlush)
+            {
+
+            }
         }
 
         public bool IsReadOnly

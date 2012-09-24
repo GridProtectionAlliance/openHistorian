@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HelperFunctions.cs - Gbtc
+//  BitMath.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,49 +29,65 @@ namespace openHistorian.V2
     /// <summary>
     /// Contains some random and useful functions.
     /// </summary>
-    static class HelperFunctions
+    static class BitMath
     {
-        /// <summary>
-        /// Performs the given action action and throws an exception if the action
-        /// does not error. This is useful for debugging code and testing for exceptions.
-        /// </summary>
-        /// <param name="errorFunction">the action to perform</param>
-        public static void ExpectError(Action errorFunction)
-        {
-            bool success;
-            try
-            {
-                errorFunction.Invoke();
-                success = true;
-            }
-            catch
-            {
-                success = false;
-            }
-            if (success)
-                throw new Exception("This procedure should have thrown an error.");
-
-        }
+        #region [ Is Power Of Two ]
 
         /// <summary>
-        /// Determines if a number is a power of 2 and outputs some useful values;
+        /// Determines if the number is a power of 2.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="shiftBits"></param>
-        /// <param name="bitMask"></param>
+        /// <param name="value">The value to check power of two properties</param>
         /// <returns></returns>
-        public static bool IsPowerOfTwo(uint value, out int shiftBits, out uint bitMask)
+        /// <exception cref="ArgumentOutOfRangeException">If <see cref="value"/> is less than zero</exception>
+        public static bool IsPowerOfTwo(int value)
         {
-            bitMask = value - 1;
-            shiftBits = CountBits(bitMask);
-            return IsPowerOfTwo(value);
+            if (value < 0)
+                throw new ArgumentOutOfRangeException("value", "Must be greater than or equal to zero");
+            return IsPowerOfTwo((uint)value);
         }
+
+        /// <summary>
+        /// Determines if the number is a power of 2.
+        /// </summary>
+        /// <param name="value">The value to check power of two properties</param>
+        /// <exception cref="ArgumentOutOfRangeException">If <see cref="value"/> is less than zero</exception>
+        public static bool IsPowerOfTwo(long value)
+        {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException("value", "Must be greater than or equal to zero");
+            return IsPowerOfTwo((ulong)value);
+        }
+
+        /// <summary>
+        /// Determines if the number is a power of 2.
+        /// </summary>
+        /// <param name="value">The value to check power of two properties</param>
+        /// <returns></returns>
+        public static bool IsPowerOfTwo(uint value)
+        {
+            return value != 0 && ((value & (value - 1)) == 0);
+        }
+
+        /// <summary>
+        /// Determines if the number is a power of 2.
+        /// </summary>
+        /// <param name="value">The value to check power of two properties</param>
+        /// <returns></returns>
+        public static bool IsPowerOfTwo(ulong value)
+        {
+            return value != 0 && ((value & (value - 1)) == 0);
+        }
+
+        #endregion
+   
+        #region [ Count Bits ]
+
         /// <summary>
         /// Counts the number of bits that are set
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static int CountBits(uint value)
+        public static int CountBitsSet(uint value)
         {
             uint count;
             for (count = 0; value > 0; value >>= 1)
@@ -82,35 +98,11 @@ namespace openHistorian.V2
         }
 
         /// <summary>
-        /// Determines if the number is a power of 2.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static bool IsPowerOfTwo(uint value)
-        {
-            return value != 0 && ((value & (value - 1)) == 0);
-        }
-
-        /// <summary>
-        /// Determines if a number is a power of 2 and outputs some useful values;
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="shiftBits"></param>
-        /// <param name="bitMask"></param>
-        /// <returns></returns>
-        public static bool IsPowerOfTwo(ulong value, out int shiftBits, out ulong bitMask)
-        {
-            bitMask = value - 1;
-            shiftBits = CountBits(bitMask);
-            return IsPowerOfTwo(value);
-        }
-
-        /// <summary>
         /// Counts the number of bits that are set
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static int CountBits(ulong value)
+        public static int CountBitsSet(ulong value)
         {
             ulong count;
             for (count = 0; value > 0; value >>= 1)
@@ -119,25 +111,41 @@ namespace openHistorian.V2
             }
             return (int)count;
         }
+
         /// <summary>
-        /// Determines if the number is a power of 2.
+        /// Counts the number of bits that are not set
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static bool IsPowerOfTwo(ulong value)
+        public static int CountBitsCleared(uint value)
         {
-            return value != 0 && ((value & (value - 1)) == 0);
+            return CountBitsSet(~value);
         }
 
         /// <summary>
-        /// Rounds a number up to the nearest power of 2.
+        /// Counts the number of bits that are not set
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static long RoundUpToNearestPowerOfTwo(long value)
+        public static int CountBitsCleared(ulong value)
         {
-            long result = 1;
-            while (result <= value)
+            return CountBitsSet(~value);
+        }
+
+        #endregion
+
+        #region [ Round To Power Of Two ]
+
+        /// <summary>
+        /// Rounds a number up to the nearest power of 2.
+        /// If the value is a power of two, the same value is returned.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static ulong RoundUpToNearestPowerOfTwo(ulong value)
+        {
+            ulong result = 1;
+            while (result < value)
             {
                 result <<= 1;
             }
@@ -145,19 +153,65 @@ namespace openHistorian.V2
         }
         /// <summary>
         /// Rounds a number up to the nearest power of 2.
+        /// If the value is a power of two, the same value is returned.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static int RoundUpToNearestPowerOfTwo(int value)
+        public static uint RoundUpToNearestPowerOfTwo(uint value)
         {
-            int result = 1;
-            while (result <= value)
+            uint result = 1;
+            while (result < value)
             {
                 result <<= 1;
             }
             return result;
         }
 
+        /// <summary>
+        /// Rounds a number down to the nearest power of 2.
+        /// If the value is a power of two, the same value is returned.
+        /// If value is zero, zero is returned (which is not a valid power of two)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static ulong RoundDownToNearestPowerOfTwo(ulong value)
+        {
+            ulong result = ulong.MaxValue;
+            while (result > value)
+            {
+                result >>= 1;
+            }
+            return result;
+        }
+        /// <summary>
+        /// Rounds a number down to the nearest power of 2.
+        /// If the value is a power of two, the same value is returned.
+        /// If value is zero, zero is returned (which is not a valid power of two)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static uint RoundDownToNearestPowerOfTwo(uint value)
+        {
+            uint result = uint.MaxValue;
+            while (result > value)
+            {
+                result >>= 1;
+            }
+            return result;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Creates a bit mask for a number with the given number of bits.
+        /// </summary>
+        /// <param name="bitCount"></param>
+        /// <returns></returns>
+        public static ulong CreateBitMask(int bitCount)
+        {
+            return ulong.MaxValue >> (64 - bitCount);
+        }
+      
 
         /// <summary>
         /// Returns the bit position of the first 0 bit.
@@ -195,8 +249,6 @@ namespace openHistorian.V2
             position = position + (value & 0x1);
             return position;
         }
-
-       
 
     }
 }

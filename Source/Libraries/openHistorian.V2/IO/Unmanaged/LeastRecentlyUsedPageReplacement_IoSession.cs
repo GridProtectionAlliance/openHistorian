@@ -23,7 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.Unmanaged;
 
 namespace openHistorian.V2.IO.Unmanaged
 {
@@ -50,14 +49,14 @@ namespace openHistorian.V2.IO.Unmanaged
                 IoSessionId = ioSessionId;
             }
 
-            public SubPageMetaData TryGetSubPageOrCreateNew(long position, bool isWriting, Action<IntPtr, long> delLoadFromFile)
+            public bool TryGetSubPage(long position, bool isWriting, out SubPageMetaData subPage)
             {
-                SubPageMetaData subPage;
-                if (m_lru.TryGetSubPage(position,IoSessionId,isWriting,out subPage))
-                {
-                    return subPage;
-                }
-                return m_lru.CreateNewSubPage(position, IoSessionId, isWriting, delLoadFromFile);
+                return m_lru.TryGetSubPage(position, IoSessionId, isWriting, out subPage);
+            }
+
+            public SubPageMetaData CreateNew(long position, bool isWriting, byte[] data, int startIndex)
+            {
+                return m_lru.CreateNewSubPage(position, IoSessionId, isWriting, data, startIndex);
             }
 
             public void Clear()
