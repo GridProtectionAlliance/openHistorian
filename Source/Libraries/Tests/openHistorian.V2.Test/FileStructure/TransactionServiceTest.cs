@@ -25,7 +25,7 @@ using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.V2.FileStructure.Test
 {
     [TestClass()]
     public class TransactionServiceTest

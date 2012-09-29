@@ -29,7 +29,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using openHistorian.V2.IO;
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.V2.FileStructure.Test
 {
     /// <summary>
     /// Provides a stream that converts the virtual addresses of the internal feature files to physical address

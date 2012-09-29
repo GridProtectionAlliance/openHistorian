@@ -29,7 +29,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.V2.FileStructure.Test
 {
     [TestClass()]
     public class ShadowCopyAllocatorTest

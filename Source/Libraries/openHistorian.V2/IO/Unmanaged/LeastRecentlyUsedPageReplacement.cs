@@ -45,13 +45,33 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <remarks>This structure is passed to the users of this class.</remarks>
         public struct SubPageMetaData
         {
+            /// <summary>
+            /// A pointer to the first byte of an individual dirty page
+            /// </summary>
             public byte* Location;
+            /// <summary>
+            /// The absolute position of the first byte of an individual page
+            /// </summary>
             public long Position;
+            /// <summary>
+            /// A flag specifiying if the page is dirty
+            /// </summary>
             public bool IsDirty;
+            /// <summary>
+            /// The valid length of the current sub page.
+            /// </summary>
             public int Length;
         }
 
+        /// <summary>
+        /// A constant used by <see cref="m_ioSessionCurrentlyUsedArrayIndexes"/> to flag 
+        /// when an <see cref="IoSession"/> is not referencing any pages.
+        /// </summary>
         const int IsCleared = -1;
+        /// <summary>
+        /// A constant used by <see cref="m_ioSessionCurrentlyUsedArrayIndexes"/> to flag 
+        /// when no <see cref="IoSession"/> is assigned to this list position.
+        /// </summary>
         const int IsNull = -2;
 
         int m_bufferPageSize;
@@ -59,16 +79,9 @@ namespace openHistorian.V2.IO.Unmanaged
         int m_bufferPageSizeShiftBits;
 
         int m_dirtyPageSize;
-
         int m_dirtyPageSizeShiftBits;
-
         int m_dirtyPageSizeMask;
 
-        // Delegates
-
-        // Events
-
-        // Fields
         bool m_disposed;
 
         /// <summary>
@@ -78,16 +91,33 @@ namespace openHistorian.V2.IO.Unmanaged
         PageMetaDataList m_pageList;
 
         /// <summary>
-        /// Contains the currently active IO sessions that cannot be cleaned up by a collection.
+        /// Contains the currently active IO sessions.
+        /// The value is either the array index or <see cref="IsNull"/> or <see cref="IsCleared"/>.
         /// </summary>
-        List<int> m_activeBlockIndexes;
+        List<int> m_ioSessionCurrentlyUsedArrayIndexes;
 
         #endregion
 
         #region [ Constructors ]
 
+        /// <summary>
+        /// Creates a new instance of <see cref="LeastRecentlyUsedPageReplacement"/>.
+        /// </summary>
+        /// <param name="dirtyPageSize">The size of a single dirty page. Must be a power of 2.</param>
+        /// <param name="pool">The buffer pool that blocks will be allocated on.</param>
         public LeastRecentlyUsedPageReplacement(int dirtyPageSize, BufferPool pool)
         {
+            if (pool.PageSize < 4096)
+                throw new ArgumentOutOfRangeException("PageSize Must be greater than 4096", "pool");
+            if (dirtyPageSize > pool.PageSize)
+                throw new ArgumentOutOfRangeException("Must not be greater than Pool.PageSize", "dirtyPageSize");
+            if (!BitMath.IsPowerOfTwo(pool.PageSize))
+                throw new ArgumentException("PageSize Must be a power of 2", "pool");
+            if (!BitMath.IsPowerOfTwo(dirtyPageSize))
+                throw new ArgumentException("Must be a power of 2", "dirtyPageSize");
+            if (dirtyPageSize * 64 < pool.PageSize)
+                throw new ArgumentException("PageSize Cannot be greater than 64 * dirtyPageSize", "pool");
+
             m_dirtyPageSize = dirtyPageSize;
             m_dirtyPageSizeMask = dirtyPageSize - 1;
             m_dirtyPageSizeShiftBits = BitMath.CountBitsSet((uint)m_dirtyPageSizeMask);
@@ -97,7 +127,7 @@ namespace openHistorian.V2.IO.Unmanaged
             m_bufferPageSizeShiftBits = BitMath.CountBitsSet((uint)m_bufferPageSizeMask);
 
             m_pageList = new PageMetaDataList(pool);
-            m_activeBlockIndexes = new List<int>();
+            m_ioSessionCurrentlyUsedArrayIndexes = new List<int>();
         }
 
         #endregion
@@ -116,6 +146,14 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #region [ Methods ]
 
+        /// <summary>
+        /// Attempts to get a sub page. 
+        /// </summary>
+        /// <param name="position">the absolute position in the stream to get the page for.</param>
+        /// <param name="ioSession">the index value of the <see cref="IoSession.IoSessionId"/> of the caller.</param>
+        /// <param name="isWriting">a bool indicating if this individual page will be written to.</param>
+        /// <param name="subPage">an output field of the resulting sub page</param>
+        /// <returns>False if the page does not exists and needs to be added.</returns>
         bool TryGetSubPage(long position, int ioSession, bool isWriting, out SubPageMetaData subPage)
         {
             if (m_disposed)
@@ -131,9 +169,14 @@ namespace openHistorian.V2.IO.Unmanaged
                 return false;
             }
 
-            m_activeBlockIndexes[ioSession] = arrayIndex;
+            m_ioSessionCurrentlyUsedArrayIndexes[ioSession] = arrayIndex;
 
-            var pageMetaData = GetPageMetaData(isWriting, subPageDirtyFlag, arrayIndex);
+            PageMetaDataList.PageMetaData pageMetaData;
+            if (isWriting)
+                pageMetaData = m_pageList.GetMetaDataPage(arrayIndex, subPageDirtyFlag, 1);
+            else
+                pageMetaData = m_pageList.GetMetaDataPage(arrayIndex, 0, 1);
+
             bool isSubPageDirty = ((pageMetaData.IsDirtyFlags & subPageDirtyFlag) != 0);
 
             subPage = new SubPageMetaData
@@ -146,35 +189,42 @@ namespace openHistorian.V2.IO.Unmanaged
             return true;
         }
 
-        SubPageMetaData CreateNewSubPage(long position, int ioSession, bool isWriting, byte[] data, int startIndex)
+        /// <summary>
+        /// Adds a new page to the list of available pages unless it alread exists.
+        /// NOTE: The page added must be the entire page and cannot be a subset.
+        /// I.E. Equal to the buffer pool size.
+        /// </summary>
+        /// <param name="position">The position of the first byte in the page</param>
+        /// <param name="data">the data to be copied to the internal buffer</param>
+        /// <param name="startIndex">the starting index of <see cref="data"/> to copy</param>
+        /// <param name="length">the length to copy, must be equal to the buffer pool page size</param>
+        /// <returns>True if the page was sucessfully added. False if it already exists and was not added.</returns>
+        bool TryAddNewPage(long position, byte[] data, int startIndex, int length)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
+            if (length != m_bufferPageSize)
+                throw new ArgumentException("Must be equal to BufferPool.PageSize");
+            if (data.Length < (long)startIndex + length)
+                throw new ArgumentException("Array is not large enough for startIndex + length.", "data");
 
             int positionIndex = (int)(position >> m_bufferPageSizeShiftBits);
             int subPageIndex = (int)((position & m_bufferPageSizeMask) >> m_dirtyPageSizeShiftBits);
-            ushort subPageDirtyFlag = (ushort)(1 << subPageIndex);
+            if (subPageIndex != 0)
+                throw new ArgumentException("Is not at the start of a page boundry", "position");
+
             int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
             if (arrayIndex >= 0)
             {
-                throw new Exception("Page already exists");
+                return false;
             }
 
             arrayIndex = m_pageList.AllocateNewPage(positionIndex);
-            m_activeBlockIndexes[ioSession] = arrayIndex;
 
-            var pageMetaData = GetPageMetaData(isWriting, subPageDirtyFlag, arrayIndex);
-            bool isSubPageDirty = ((pageMetaData.IsDirtyFlags & subPageDirtyFlag) != 0);
+            var pageMetaData = m_pageList.GetMetaDataPage(arrayIndex, 0, 0);
+            Marshal.Copy(data, startIndex, (IntPtr)pageMetaData.LocationOfPage, length);
 
-            Marshal.Copy(data, startIndex, (IntPtr)pageMetaData.LocationOfPage, m_bufferPageSize);
-
-            return new SubPageMetaData
-            {
-                IsDirty = isSubPageDirty,
-                Location = pageMetaData.LocationOfPage + subPageIndex * m_dirtyPageSize,
-                Position = position & ~(long)m_dirtyPageSizeMask,
-                Length = m_dirtyPageSize
-            };
+            return true;
         }
 
         /// <summary>
@@ -191,61 +241,75 @@ namespace openHistorian.V2.IO.Unmanaged
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            for (int x = 0; x < m_activeBlockIndexes.Count; x++)
+            for (int x = 0; x < m_ioSessionCurrentlyUsedArrayIndexes.Count; x++)
             {
-                if (m_activeBlockIndexes[x] == IsNull)
+                if (m_ioSessionCurrentlyUsedArrayIndexes[x] == IsNull)
                 {
-                    m_activeBlockIndexes[x] = IsCleared;
+                    m_ioSessionCurrentlyUsedArrayIndexes[x] = IsCleared;
                     return new IoSession(this, x);
                 }
             }
-            m_activeBlockIndexes.Add(IsCleared);
-            return new IoSession(this, m_activeBlockIndexes.Count - 1);
+            m_ioSessionCurrentlyUsedArrayIndexes.Add(IsCleared);
+            return new IoSession(this, m_ioSessionCurrentlyUsedArrayIndexes.Count - 1);
         }
 
+        /// <summary>
+        /// Removes the current IoSession from the list of available session IDs
+        /// This is done on a dispose operation.
+        /// </summary>
+        /// <param name="ioSession"></param>
         void ReleaseIoSession(int ioSession)
         {
             if (m_disposed)
                 return;
-            m_activeBlockIndexes[ioSession] = IsNull;
+            m_ioSessionCurrentlyUsedArrayIndexes[ioSession] = IsNull;
         }
 
+        /// <summary>
+        /// De-references the current IoSession's page.
+        /// </summary>
+        /// <param name="ioSession"></param>
         void ClearIoSession(int ioSession)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            m_activeBlockIndexes[ioSession] = IsCleared;
+            m_ioSessionCurrentlyUsedArrayIndexes[ioSession] = IsCleared;
         }
 
         /// <summary>
         /// Executes a collection cycle of the pages that are unused.
         /// </summary>
         /// <returns></returns>
-        public int DoCollection()
+        public int DoCollection(CollectionEventArgs e)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return m_pageList.DoCollection(1, CheckForCollection);
+            return m_pageList.DoCollection(1, CheckForCollection, e);
         }
 
-        bool CheckForCollection(int index, int positionIndex)
+        /// <summary>
+        /// Returns true if the page can be collected because it is not currently being referenced.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        bool CheckForCollection(int index)
         {
-            return !m_activeBlockIndexes.Contains(index);
+            return !m_ioSessionCurrentlyUsedArrayIndexes.Contains(index);
         }
 
         /// <summary>
         /// Marks the entire page as written to the disk.
         /// </summary>
         /// <param name="pageMetaData"></param>
-        /// <remarks>These pages are 64KB in size. Calling this function does not write the data to the 
+        /// <remarks>Calling this function does not write the data to the 
         /// base stream.  It only sets the status of the corresponding page.</remarks>
         public void ClearDirtyBits(PageMetaDataList.PageMetaData pageMetaData)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (m_activeBlockIndexes.Contains(pageMetaData.ArrayIndex))
+            if (m_ioSessionCurrentlyUsedArrayIndexes.Contains(pageMetaData.ArrayIndex))
                 throw new NotSupportedException("A page's dirty bits can only be cleared if the page is currently not being used.");
 
             m_pageList.ClearDirtyBits(pageMetaData.ArrayIndex);
@@ -261,7 +325,7 @@ namespace openHistorian.V2.IO.Unmanaged
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return m_pageList.GetDirtyPages(x => (skipPagesInUse && m_activeBlockIndexes.Contains(x)));
+            return m_pageList.GetDirtyPages(x => (skipPagesInUse && m_ioSessionCurrentlyUsedArrayIndexes.Contains(x)));
         }
 
         /// <summary>
@@ -283,14 +347,6 @@ namespace openHistorian.V2.IO.Unmanaged
         }
 
         #region [ Helper Methods ]
-
-        PageMetaDataList.PageMetaData GetPageMetaData(bool isWriting, ulong subPageDirtyFlag, int arrayIndex)
-        {
-            if (isWriting)
-                return m_pageList.GetMetaDataPage(arrayIndex, subPageDirtyFlag, 1);
-            else
-                return m_pageList.GetMetaDataPage(arrayIndex, 0, 1);
-        }
 
         #endregion
 

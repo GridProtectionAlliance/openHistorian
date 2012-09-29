@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using openHistorian.V2.UnmanagedMemory;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.V2.IO.Unmanaged.Test
 {
 
     /// <summary>
@@ -112,7 +112,7 @@ namespace openHistorian.V2.Test
                             BinaryStream bs2 = new BinaryStream(bfs2);
                             Assert.AreEqual(0L, bs2.ReadInt64());
                         }
-                        bfs.Flush(true, false);
+                        bfs.Flush();
                         using (BufferedFileStream bfs2 = new BufferedFileStream(fs))
                         {
                             BinaryStream bs2 = new BinaryStream(bfs2);

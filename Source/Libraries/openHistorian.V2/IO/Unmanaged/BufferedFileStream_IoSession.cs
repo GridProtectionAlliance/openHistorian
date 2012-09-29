@@ -23,11 +23,10 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.IO.Unmanaged
 {
-    public partial class BufferedFileStream : ISupportsBinaryStreamSizing
+    public partial class BufferedFileStream
     {
         // Nested Types
         class IoSession : IBinaryStreamIoSession
@@ -36,7 +35,12 @@ namespace openHistorian.V2.IO.Unmanaged
             BufferedFileStream m_stream;
             LeastRecentlyUsedPageReplacement.IoSession m_ioSession;
 
-            public IoSession(BufferedFileStream stream, LeastRecentlyUsedPageReplacement.IoSession ioSession)
+            /// <summary>
+            /// Creates a new <see cref="IoSession"/>
+            /// </summary>
+            /// <param name="stream">the base class</param>
+            /// <param name="ioSession">The LRU IO Session</param>
+            internal IoSession(BufferedFileStream stream, LeastRecentlyUsedPageReplacement.IoSession ioSession)
             {
                 m_stream = stream;
                 m_ioSession = ioSession;
@@ -51,7 +55,6 @@ namespace openHistorian.V2.IO.Unmanaged
                 {
                     try
                     {
-                        // This will be done regardless of whether the object is finalized or disposed.
                         m_ioSession.Dispose();
                     }
                     finally
@@ -61,16 +64,32 @@ namespace openHistorian.V2.IO.Unmanaged
                 }
             }
 
+            /// <summary>
+            /// Gets a block for the following Io session.
+            /// </summary>
+            /// <param name="position">the block returned must contain this position</param>
+            /// <param name="isWriting">indicates if the stream plans to write to this block</param>
+            /// <param name="firstPointer">the pointer for the first byte of the block</param>
+            /// <param name="firstPosition">the position that corresponds to <see cref="firstPointer"/></param>
+            /// <param name="length">the length of the block</param>
+            /// <param name="supportsWriting">notifies the calling class if this block supports 
+            /// writing without requiring this function to be called again if <see cref="isWriting"/> was set to false.</param>
             public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
             {
                 m_stream.GetBlock(m_ioSession, position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
             }
 
+            /// <summary>
+            /// Sets the current usage of the <see cref="IBinaryStreamIoSession"/> to null.
+            /// </summary>
             public void Clear()
             {
-                m_ioSession.Clear();
+               m_stream.Clear(m_ioSession);
             }
 
+            /// <summary>
+            /// Gets if the object has been disposed
+            /// </summary>
             public bool IsDisposed
             {
                 get

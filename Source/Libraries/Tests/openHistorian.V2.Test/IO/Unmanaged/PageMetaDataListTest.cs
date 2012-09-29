@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using openHistorian.V2.UnmanagedMemory;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.V2.IO.Unmanaged.Test
 {
 
 
@@ -14,7 +14,6 @@ namespace openHistorian.V2.Test
     [TestClass()]
     public class PageMetaDataListTest
     {
-
 
         private TestContext testContextInstance;
 
@@ -100,7 +99,7 @@ namespace openHistorian.V2.Test
                 Assert.AreEqual(Globals.BufferPool.PageSize * 1, Globals.BufferPool.AllocatedBytes);
                 Assert.AreEqual(1, target.AllocateNewPage(2));
                 Assert.AreEqual(Globals.BufferPool.PageSize * 2, Globals.BufferPool.AllocatedBytes);
-                target.DoCollection(32, (x, y) => x == 0);
+                target.DoCollection(32, (x) => x == 0, GetEventArgs());
                 Assert.AreEqual(Globals.BufferPool.PageSize * 1, Globals.BufferPool.AllocatedBytes);
                 Assert.AreEqual(0, target.AllocateNewPage(0));
                 Assert.AreEqual(2, target.AllocateNewPage(24352));
@@ -124,9 +123,9 @@ namespace openHistorian.V2.Test
                 Assert.AreEqual(0x23ul, target.GetMetaDataPage(0, 0x23, 0).IsDirtyFlags);
                 Assert.AreEqual(0x63ul, target.GetMetaDataPage(0, 0x40, 0).IsDirtyFlags);
 
-                Assert.AreEqual(0, target.DoCollection(32, (x, y) => true));
+                Assert.AreEqual(0, target.DoCollection(32, (x) => true, GetEventArgs()));
                 target.ClearDirtyBits(0);
-                Assert.AreEqual(1, target.DoCollection(0, (x, y) => true));
+                Assert.AreEqual(1, target.DoCollection(0, (x) => true, GetEventArgs()));
             }
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
         }
@@ -173,16 +172,26 @@ namespace openHistorian.V2.Test
                 target.GetMetaDataPage(6, 0, 1 << 4);
                 target.GetMetaDataPage(7, 0, 1 << 6);
 
-                Assert.AreEqual(2, target.DoCollection(1, (x, y) => true));
-                Assert.AreEqual(2, target.DoCollection(1, (x, y) => true));
-                Assert.AreEqual(1, target.DoCollection(1, (x, y) => true));
-                Assert.AreEqual(1, target.DoCollection(1, (x, y) => true));
-                Assert.AreEqual(1, target.DoCollection(1, (x, y) => true));
-                Assert.AreEqual(0, target.DoCollection(1, (x, y) => true));
-                Assert.AreEqual(1, target.DoCollection(1, (x, y) => true));
+                Assert.AreEqual(2, target.DoCollection(1, (x) => true, GetEventArgs()));
+                Assert.AreEqual(2, target.DoCollection(1, (x) => true, GetEventArgs()));
+                Assert.AreEqual(1, target.DoCollection(1, (x) => true, GetEventArgs()));
+                Assert.AreEqual(1, target.DoCollection(1, (x) => true, GetEventArgs()));
+                Assert.AreEqual(1, target.DoCollection(1, (x) => true, GetEventArgs()));
+                Assert.AreEqual(0, target.DoCollection(1, (x) => true, GetEventArgs()));
+                Assert.AreEqual(1, target.DoCollection(1, (x) => true, GetEventArgs()));
             }
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
 
+        }
+
+        static CollectionEventArgs GetEventArgs()
+        {
+            return new CollectionEventArgs((x) =>
+            {
+                Globals.BufferPool.ReleasePage(x);
+                return true;
+            }
+                                           , BufferPoolCollectionMode.Normal, 0);
         }
 
     }

@@ -85,7 +85,6 @@ namespace openHistorian.V2.IO.Unmanaged
             Dispose(false);
         }
 
-
         /// <summary>
         /// Returns the page that corresponds to the absolute position.  
         /// This function will also autogrow the stream.

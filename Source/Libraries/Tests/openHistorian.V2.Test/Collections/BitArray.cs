@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using openHistorian.V2.Collections;
 
-namespace openHistorian.V2.UnmanagedMemory
+namespace openHistorian.V2.UnmanagedMemory.Test
 {
     [TestClass()]
     public class BitArrayTest

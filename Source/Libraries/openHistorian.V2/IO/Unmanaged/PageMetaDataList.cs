@@ -38,17 +38,10 @@ namespace openHistorian.V2.IO.Unmanaged
     {
         #region [ Members ]
 
-        /// <summary>
-        /// Contains meta data about each page that is allocated.  
-        /// </summary>
-        /// <remarks>
-        /// Each one can only address up to 256KB of 4KB pages since we are limited by the 64 bit IsDirtyFlags.
-        /// This structure is used internally in the <see cref="PageMetaDataList.m_listOfPages"/> list.
-        /// </remarks>
         struct InternalPageMetaData
         {
             /// <summary>
-            /// Dirty flags representing the 4KB block.
+            /// Dirty flags representing the user defined block size.
             /// </summary>
             public ulong IsDirtyFlags;
             /// <summary>
@@ -67,7 +60,11 @@ namespace openHistorian.V2.IO.Unmanaged
             /// The number of times this object has been referenced
             /// </summary>
             public int ReferencedCount;
-
+            /// <summary>
+            /// Convert struct to a PageMetaData struct.
+            /// </summary>
+            /// <param name="arrayIndex">the Array Index to store in the PageMetaData</param>
+            /// <returns></returns>
             public PageMetaData ToPageMetaData(int arrayIndex)
             {
                 return new PageMetaData
@@ -80,10 +77,13 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
+        /// <summary>
+        /// Contains meta data about each page.
+        /// </summary>
         public struct PageMetaData
         {
             /// <summary>
-            /// Dirty flags representing the 4KB block.
+            /// Dirty flags representing the user defined block size.
             /// </summary>
             public ulong IsDirtyFlags;
             /// <summary>
@@ -120,6 +120,10 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #region [ Constructors ]
 
+        /// <summary>
+        /// Creates a new PageMetaDataList.
+        /// </summary>
+        /// <param name="pool">The buffer pool to utilize if any unmanaged memory needs to be created.</param>
         public PageMetaDataList(BufferPool pool)
         {
             m_pool = pool;
@@ -175,7 +179,7 @@ namespace openHistorian.V2.IO.Unmanaged
         }
 
         /// <summary>
-        /// Converts a number from it's position index into an array index.
+        /// Converts a number from its position index into an array index.
         /// </summary>
         /// <param name="positionIndex"></param>
         /// <returns>returns a -1 if the position index does not exist</returns>
@@ -213,6 +217,14 @@ namespace openHistorian.V2.IO.Unmanaged
             return arrayIndex;
         }
 
+
+        /// <summary>
+        /// Returns the meta data page for the provided index. 
+        /// </summary>
+        /// <param name="arrayIndex"></param>
+        /// <param name="isWritingMask">A write mask that is used to set the dirty flags if they need to be modified.</param>
+        /// <param name="incrementReferencedCount">the level to increment the referenced count.</param>
+        /// <returns></returns>
         public PageMetaData GetMetaDataPage(int arrayIndex, ulong isWritingMask, int incrementReferencedCount)
         {
             var metaData = this[arrayIndex];
@@ -245,6 +257,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// be sure to clear the dirty bits via <see cref="ClearDirtyBits"/>.
         /// </summary>
         /// <returns></returns>
+        //ToDo: I should probably change the isFiltered callback to an IEnumerable<int>.
         public IEnumerable<PageMetaData> GetDirtyPages(Func<int,bool> isFiltered)
         {
             if (m_disposed)
@@ -265,9 +278,19 @@ namespace openHistorian.V2.IO.Unmanaged
         /// Value may be zero but cannot be negative</param>
         /// <param name="shouldCollect">a function that notifies the caller what page is about to be
         /// collected and gives the caller an opertunity to override this collection attempt.</param>
+        /// <param name="e">Arguments for the collection.</param>
         /// <returns>The number of pages returned to the buffer pool</returns>
-        public int DoCollection(int shiftLevel, Func<int, int, bool> shouldCollect)
+        /// <remarks>If the collection mode is Emergency or Critical, it will only release the required number of pages and no more</remarks>
+        //ToDo: Since i'll be parsing the entire list, rebuilding a new sorted tree may be quicker than removing individual blocks and copying.
+        //ToDo: Also, I should probably change the ShouldCollect callback to an IEnumerable<int>.
+        public int DoCollection(int shiftLevel, Func<int, bool> shouldCollect, CollectionEventArgs e)
         {
+            int maxCollectCount = -1;
+            if (e.CollectionMode == BufferPoolCollectionMode.Emergency || e.CollectionMode == BufferPoolCollectionMode.Critical)
+            {
+                maxCollectCount = e.DesiredPageReleaseCount;
+            }
+
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -284,12 +307,15 @@ namespace openHistorian.V2.IO.Unmanaged
                     m_listOfPages.SetValue(x, block);
                     if (block.ReferencedCount == 0 && block.IsDirtyFlags == 0)
                     {
-                        if (shouldCollect(x, block.PositionIndex))
+                        if (maxCollectCount != collectionCount)
                         {
-                            collectionCount++;
-                            m_indexMap.Remove(block.PositionIndex);
-                            m_pool.ReleasePage(block.BufferPoolIndex);
-                            m_listOfPages.SetNull(x);
+                            if (shouldCollect(x))
+                            {
+                                collectionCount++;
+                                m_indexMap.Remove(block.PositionIndex);
+                                m_listOfPages.SetNull(x);
+                                e.ReleasePage(block.BufferPoolIndex);
+                            }
                         }
                     }
                 }

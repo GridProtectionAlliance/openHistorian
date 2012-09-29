@@ -79,7 +79,9 @@ namespace openHistorian.V2.IO.Unmanaged
                     m_stream.Position = position;
                     results = m_stream.BeginRead(buffer, 0, buffer.Length, null, null);
                 }
-                m_stream.EndRead(results);
+                int bytesRead = m_stream.EndRead(results);
+                if (bytesRead < buffer.Length)
+                    Array.Clear(buffer, bytesRead, buffer.Length - bytesRead);
                 callback(buffer);
                 m_bufferQueue.Enqueue(buffer);
             }

@@ -1,10 +1,9 @@
-﻿using openHistorian.V2.IO.Unmanaged;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using openHistorian.V2.UnmanagedMemory;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.V2.IO.Unmanaged.Test
 {
 
     /// <summary>
@@ -79,7 +78,7 @@ namespace openHistorian.V2.Test
                 using (var io = target.CreateNewIoSession())
                 {
                     Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-                    io.CreateNew(0, false, new byte[Globals.BufferPool.PageSize], 0);
+                    io.TryAddNewPage(0, new byte[Globals.BufferPool.PageSize], 0, Globals.BufferPool.PageSize);
                     Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
                 }
                 target.Dispose();
@@ -89,7 +88,7 @@ namespace openHistorian.V2.Test
             using (var target2 = new LeastRecentlyUsedPageReplacement(4096, Globals.BufferPool))
             using (var io2 = target2.CreateNewIoSession())
             {
-                io2.CreateNew(0, false, new byte[Globals.BufferPool.PageSize], 0);
+                io2.TryAddNewPage(0, new byte[Globals.BufferPool.PageSize], 0, Globals.BufferPool.PageSize);
                 Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
             }
             GC.Collect();
@@ -111,7 +110,9 @@ namespace openHistorian.V2.Test
                 using (var io = target.CreateNewIoSession())
                 {
                     Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-                    var metaData = io.CreateNew(0, true, new byte[Globals.BufferPool.PageSize], 0);
+                    io.TryAddNewPage(0, new byte[Globals.BufferPool.PageSize], 0, Globals.BufferPool.PageSize);
+                    LeastRecentlyUsedPageReplacement.SubPageMetaData metaData;
+                    io.TryGetSubPage(0, true, out metaData);
                     foreach (var page in target.GetDirtyPages(true))
                     {
                         Assert.Fail();
@@ -144,7 +145,11 @@ namespace openHistorian.V2.Test
             {
                 Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
                 var io1 = target.CreateNewIoSession();
-                var metaData1 = io1.CreateNew(0, false, new byte[Globals.BufferPool.PageSize], 0);
+
+                io1.TryAddNewPage(0, new byte[Globals.BufferPool.PageSize], 0, Globals.BufferPool.PageSize);
+                LeastRecentlyUsedPageReplacement.SubPageMetaData metaData1;
+                io1.TryGetSubPage(0, false, out metaData1);
+
                 var io2 = target.CreateNewIoSession();
 
                 LeastRecentlyUsedPageReplacement.SubPageMetaData metaData2;
@@ -155,7 +160,9 @@ namespace openHistorian.V2.Test
                 Assert.AreEqual(true, io3.TryGetSubPage(4099, true, out metaData3));
 
                 var io4 = target.CreateNewIoSession();
-                var metaData4 = io4.CreateNew(65536, true, new byte[Globals.BufferPool.PageSize], 0);
+                io4.TryAddNewPage(65536, new byte[Globals.BufferPool.PageSize], 0, Globals.BufferPool.PageSize);
+                LeastRecentlyUsedPageReplacement.SubPageMetaData metaData4;
+                io4.TryGetSubPage(65536, true, out metaData4);
 
                 Assert.AreEqual(false, metaData1.IsDirty);
                 Assert.AreEqual(0, metaData1.Position);
@@ -190,23 +197,33 @@ namespace openHistorian.V2.Test
                     target.ClearDirtyBits(page);
                 }
 
-                Assert.AreEqual(0, target.DoCollection());
-                Assert.AreEqual(0, target.DoCollection());
-                Assert.AreEqual(1, target.DoCollection()); //There have been 4 calls
+                Assert.AreEqual(0, target.DoCollection(GetEventArgs()));
+
+                Assert.AreEqual(0, target.DoCollection(GetEventArgs()));
+                Assert.AreEqual(1, target.DoCollection(GetEventArgs())); //There have been 4 calls
 
                 io4.Clear();
 
-                Assert.AreEqual(0, target.DoCollection());
+                Assert.AreEqual(0, target.DoCollection(GetEventArgs()));
                 foreach (var page in target.GetDirtyPages(true))
                 {
                     target.ClearDirtyBits(page);
                 }
-                Assert.AreEqual(1, target.DoCollection()); //There have been 4 calls
+                Assert.AreEqual(1, target.DoCollection(GetEventArgs())); //There have been 4 calls
 
 
                 target.Dispose();
             }
             Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
+        }
+        static CollectionEventArgs GetEventArgs()
+        {
+            return new CollectionEventArgs((x) =>
+                {
+                    Globals.BufferPool.ReleasePage(x);
+                    return true;
+                }
+                                           , BufferPoolCollectionMode.Normal, 0);
         }
 
     }

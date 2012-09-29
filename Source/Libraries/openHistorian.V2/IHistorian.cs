@@ -41,6 +41,7 @@ namespace openHistorian.V2
         bool IsCommitted(long transactionId);
         bool IsDiskCommitted(long transactionId);
     }
+
     public interface IHistorianReadWrite
     {
         IPointStream Read(ulong key);

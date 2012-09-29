@@ -39,11 +39,18 @@ namespace openHistorian.V2.IO.Unmanaged
     /// ones that are rarely accessed. This is accomplised by incrementing a counter
     /// every time a page is accessed and dividing by 2 every time a collection occurs from the buffer pool.
     /// </remarks>
+    //ToDo: Consider allowing this class to scale horizontally like how the concurrent dictionary scales.
+    //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
     unsafe public partial class BufferedFileStream : ISupportsBinaryStreamSizing
     {
+        /// <summary>
+        /// To synchronize all calls to this class.
+        /// </summary>
         object m_syncRoot;
+        /// <summary>
+        /// To limit flushing to a single flush call
+        /// </summary>
         object m_syncFlush;
-
 
         BufferPool m_pool;
 
@@ -60,7 +67,6 @@ namespace openHistorian.V2.IO.Unmanaged
 
         IoQueue m_queue;
 
-
         public BufferedFileStream(FileStream stream)
             : this(stream, Globals.BufferPool, 4096)
         {
@@ -70,7 +76,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <summary>
         /// Creates a file backed memory stream.
         /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="stream">The file stream to back</param>
         /// <param name="pool"></param>
         /// <param name="dirtyPageSize"></param>
         public BufferedFileStream(FileStream stream, BufferPool pool, int dirtyPageSize)
@@ -86,6 +92,11 @@ namespace openHistorian.V2.IO.Unmanaged
             Globals.BufferPool.RequestCollection += BufferPool_RequestCollection;
         }
 
+        /// <summary>
+        /// Gets the number of available simultaneous read/write sessions.
+        /// </summary>
+        /// <remarks>This value is used to determine if a binary stream can be cloned
+        /// to improve read/write/copy performance.</remarks>
         public int RemainingSupportedIoSessions
         {
             get
@@ -94,7 +105,16 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
-        public void Flush(bool waitForWriteToDisk = false, bool skipPagesInUse = true)
+        /// <summary>
+        /// Writes all of the current data to the disk subsystem.
+        /// </summary>
+        public void Flush()
+        {
+            Flush(false, true, -1);
+        }
+
+
+        void Flush(bool waitForWriteToDisk, bool skipPagesInUse, int desiredFlushCount)
         {
             lock (m_syncFlush)
             {
@@ -102,7 +122,6 @@ namespace openHistorian.V2.IO.Unmanaged
                 lock (m_syncRoot)
                 {
                     dirtyPages = m_pageReplacementAlgorithm.GetDirtyPages(skipPagesInUse).ToArray();
-
                     foreach (var block in dirtyPages)
                     {
                         m_pageReplacementAlgorithm.ClearDirtyBits(block);
@@ -132,9 +151,11 @@ namespace openHistorian.V2.IO.Unmanaged
                 {
                     lock (m_syncRoot)
                     {
-                        subPage = ioSession.CreateNew(position, isWriting, data, 0);
+                        ioSession.TryAddNewPage(position, data, 0, data.Length);
+                        ioSession.TryGetSubPage(position, isWriting, out subPage);
                     }
                 };
+
             m_queue.Read(position, callback);
 
             firstPointer = (IntPtr)subPage.Location;
@@ -143,6 +164,14 @@ namespace openHistorian.V2.IO.Unmanaged
             supportsWriting = subPage.IsDirty;
             return;
 
+        }
+
+        void Clear(LeastRecentlyUsedPageReplacement.IoSession ioSession)
+        {
+            lock (m_syncRoot)
+            {
+                ioSession.Clear();
+            }
         }
 
         public void Dispose()
@@ -159,11 +188,15 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             if (e.CollectionMode == BufferPoolCollectionMode.Critical)
             {
-                Flush();
+                lock (m_syncRoot)
+                {
+                    m_pageReplacementAlgorithm.DoCollection(e);
+                }
+                Flush(false, true, e.DesiredPageReleaseCount);
             }
             lock (m_syncRoot)
             {
-                m_pageReplacementAlgorithm.DoCollection();
+                m_pageReplacementAlgorithm.DoCollection(e);
             }
         }
 
@@ -204,11 +237,6 @@ namespace openHistorian.V2.IO.Unmanaged
             {
                 return Globals.BufferPool.PageSize;
             }
-        }
-
-        public void Flush()
-        {
-            Flush(false, true);
         }
 
         public void TrimEditsAfterPosition(long position)

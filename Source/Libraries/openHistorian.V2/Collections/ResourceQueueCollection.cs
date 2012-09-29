@@ -87,6 +87,14 @@ namespace openHistorian.V2.Collections
             m_list = new SortedList<TKey, ResourceQueue<TResource>>();
         }
 
+        public ResourceQueue<TResource> this[TKey key]
+        {
+            get
+            {
+                return GetResourceQueue(key);
+            }
+        }
+
         public ResourceQueue<TResource> GetResourceQueue(TKey key)
         {
             ResourceQueue<TResource> resourceQueue;
