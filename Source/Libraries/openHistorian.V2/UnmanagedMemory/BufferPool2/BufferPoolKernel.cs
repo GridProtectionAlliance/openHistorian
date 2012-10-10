@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BufferPool.cs - Gbtc
+//  BufferPoolKernel.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  3/16/2012 - Steven E. Chisholm
+//  10/5/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -28,21 +28,28 @@ using System.Collections.Generic;
 namespace openHistorian.V2.UnmanagedMemory
 {
     /// <summary>
-    /// This class allocates and pools unmanaged memory.
+    /// Provides the fundamental functionality of many different <see cref="BufferPool"/> classes.
     /// </summary>
-    public partial class BufferPool : IDisposable
+    /// <remarks>
+    /// All of the <see cref="BufferPool"/> classes should reside in one <see cref="BufferPoolKernel"/>.
+    /// This allows for the classes to share a common set of resources. Thus allowing for a true maximum amount of allocated memory
+    /// that can be shared across all pools.  Once the resource pool starts to become low. This modifies the behavior of all <see cref="BufferPool"/> 
+    /// classes that share this kernel.
+    /// </remarks>
+    public partial class BufferPoolKernel : IDisposable
     {
-        #region [ Members ]
-
-
+        
         /// <summary>
-        /// Represents the ceiling for the amount of memory the buffer pool can use (124GB)
+        /// Deteremines the desired buffer pool utilization level.
+        /// Setting to Low will cause collection cycles to occur more often to keep the 
+        /// utilization level to low. 
         /// </summary>
-        public const long MaximumTestedSupportedMemoryCeiling = 124 * 1024 * 1024 * 1024L;
-        /// <summary>
-        /// Represents the minimum amount of memory that the buffer pool needs to work properly (10MB)
-        /// </summary>
-        public const long MinimumTestedSupportedMemoryFloor = 10 * 1024 * 1024;
+        public enum TargetUtilizationLevels
+        {
+            Low = 0,
+            Medium = 1,
+            High = 2
+        }
 
         /// <summary>
         /// Contains 7 different levels of garbage collection that <see cref="BufferPool"/> classes
@@ -59,21 +66,24 @@ namespace openHistorian.V2.UnmanagedMemory
             Full = 6
         }
 
+        #region [ Members ]
+
         /// <summary>
-        /// Deteremines the desired buffer pool utilization level.
-        /// Setting to Low will cause collection cycles to occur more often to keep the 
-        /// utilization level to low. 
+        /// Represents the ceiling for the amount of memory the buffer pool can use (124GB)
         /// </summary>
-        public enum TargetUtilizationLevels
-        {
-            Low = 0,
-            Medium = 1,
-            High = 2
-        }
+        public const long MaximumTestedSupportedMemoryCeiling = 124 * 1024 * 1024 * 1024L;
+        /// <summary>
+        /// Represents the minimum amount of memory that the buffer pool needs to work properly (128MB)
+        /// </summary>
+        public const long MinimumTestedSupportedMemoryFloor = 128 * 1024 * 1024;
 
-        bool m_disposed;
+        /// <summary>
+        /// Gets the current <see cref="TargetUtilizationLevels"/>.
+        /// </summary>
+        public TargetUtilizationLevels TargetUtilizationLevel { get; private set; }
 
-        CollectionEngine m_collectionEngine;
+
+        internal CollectionModes CollectionMode { get; private set; }
 
         /// <summary>
         /// Each page will be exactly this size (Based on RAM)
@@ -92,38 +102,26 @@ namespace openHistorian.V2.UnmanagedMemory
         /// </summary>
         public int PageShiftBits { get; private set; }
 
-        internal CollectionModes CollectionMode { get; private set; }
-
         /// <summary>
-        /// Requests that classes using this buffer pool release any unused buffers.
-        /// Failing to do so may result in an out of memory exception.
-        /// <remarks>IMPORTANT NOTICE:  All collection must be performed on this thread.
-        /// if calling any method of <see cref="BufferPool"/> with a different thread 
-        /// this will likely cause a deadlock.  
-        /// You must use the calling thread to release all objects.</remarks>
+        /// When a buffer pool is completely full, a forced collection will occur.
+        /// The severity of the collection is specified as an integer passed in this event.
+        /// When Zero, the user initialized the collection.
+        /// When 1-10 the collection is due to out of memory.
+        /// If no more space is freed after the 10 is called, an out of memory exception occurs.
         /// </summary>
-        public event EventHandler<CollectionEventArgs> RequestCollection
-        {
-            add
-            {
-                lock (m_syncRoot)
-                {
-                    m_collectionEngine.AddEvent(value);
-                }
-            }
-            remove
-            {
-                lock (m_syncRoot)
-                {
-                    m_collectionEngine.RemoveEvent(value);
-                }
-            }
-        }
+        internal event Action<int> ForceCollection;
 
         /// <summary>
-        /// Used for synchronizing modifications to this class.
+        /// Notifies the <see cref="BufferPool"/> that the collection mode should be modified
+        /// </summary>
+        internal event Action<CollectionModes> CollectionModeChanged;
+
+        /// <summary>
+        /// Used for synchronizing access to this class.
         /// </summary>
         object m_syncRoot;
+
+        bool m_disposed;
 
         #endregion
 
@@ -136,13 +134,8 @@ namespace openHistorian.V2.UnmanagedMemory
         /// <see cref="BufferPool.PageSize"/> that will be created using this kernel. The recommeneded size is 1MB.</param>
         /// <param name="maximumBufferSize">The desired maximum size of the allocation. Note: could be less if there is not enough system memory.</param>
         /// <param name="utilizationLevel">Specifies the desired utilization level of the allocated space.</param>
-        public BufferPool(int pageSize = 64*1024, long maximumBufferSize = MaximumTestedSupportedMemoryCeiling, TargetUtilizationLevels utilizationLevel = TargetUtilizationLevels.Low)
+        public BufferPoolKernel(int pageSize = 1*1024*1024, long maximumBufferSize = MaximumTestedSupportedMemoryCeiling, TargetUtilizationLevels utilizationLevel = TargetUtilizationLevels.Low)
         {
-            if (pageSize < 4096 || pageSize > 256 * 1024)
-                throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
-            if (!HelperFunctions.IsPowerOfTwo((uint)pageSize))
-                throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
-
             m_syncRoot = new object();
             PageSize = pageSize;
             PageMask = PageSize - 1;
@@ -150,10 +143,9 @@ namespace openHistorian.V2.UnmanagedMemory
 
             InitializeSettings();
             InitializeList();
+
             SetMaximumBufferSize(maximumBufferSize);
             SetTargetUtilizationLevel(utilizationLevel);
-
-            m_collectionEngine = new CollectionEngine(this);
         }
 
 
@@ -161,12 +153,6 @@ namespace openHistorian.V2.UnmanagedMemory
         #endregion
 
         #region [ Properties ]
-
-        /// <summary>
-        /// Gets the current <see cref="TargetUtilizationLevels"/>.
-        /// </summary>
-        public TargetUtilizationLevels TargetUtilizationLevel { get; private set; }
-
 
         /// <summary>
         /// The number maximum supported number of bytes that can be allocated based
@@ -186,17 +172,6 @@ namespace openHistorian.V2.UnmanagedMemory
         public long MaximumBufferSize { get; private set; }
 
         /// <summary>
-        /// Returns the number of bytes currently allocated by the buffer pool to other objects
-        /// </summary>
-        public long AllocatedBytes
-        {
-            get
-            {
-                return CurrentAllocatedSize;
-            }
-        }
-
-        /// <summary>
         /// Returns the number of bytes allocated by all buffer pools.
         /// This does not include any pages that have been allocated but are not in use.
         /// </summary>
@@ -204,7 +179,7 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             get
             {
-                return m_allocatedPagesCount * (long)PageSize;
+                return m_isPageAllocated.SetCount * (long)PageSize;
             }
         }
 
@@ -228,22 +203,6 @@ namespace openHistorian.V2.UnmanagedMemory
             }
         }
 
-        bool IsFull
-        {
-            get
-            {
-                return CurrentCapacity == CurrentAllocatedSize;
-            }
-        }
-
-        long FreeSpaceBytes
-        {
-            get
-            {
-                return CurrentCapacity - CurrentAllocatedSize;
-            }
-        }
-
         #endregion
 
         #region [ Methods ]
@@ -252,7 +211,7 @@ namespace openHistorian.V2.UnmanagedMemory
         /// Requests a page from the buffered pool.
         /// If there is not a free one available, method will block
         /// and request a collection of unused pages by raising 
-        /// <see cref="RequestCollection"/> event.
+        /// <see cref="ForceCollection"/> event.
         /// </summary>
         /// <param name="index">the index id of the page that was allocated</param>
         /// <param name="addressPointer"> outputs a address that can be used
@@ -266,12 +225,11 @@ namespace openHistorian.V2.UnmanagedMemory
             {
                 if (CurrentAllocatedSize == CurrentCapacity)
                 {
-                 
-                    m_collectionEngine.AllocateMoreFreeSpace();
                     //Grow the allocated pool
 
-                    //long newSize = CurrentAllocatedSize;
-                    //GrowBufferToSize(newSize + (long)(0.1 * MaximumBufferSize));
+                    long newSize = CurrentAllocatedSize;
+                    GrowBufferToSize(newSize + (long)(0.1 * MaximumBufferSize));
+
                 }
                 GetNextPage(out index, out addressPointer);
             }
@@ -317,7 +275,7 @@ namespace openHistorian.V2.UnmanagedMemory
         {
             lock (m_syncRoot)
             {
-                MaximumBufferSize = Math.Max(Math.Min(SystemBufferCeiling, value), MinimumTestedSupportedMemoryFloor);
+                MaximumBufferSize = Math.Max(Math.Min(MaximumTestedSupportedMemoryCeiling, value), MinimumTestedSupportedMemoryFloor);
                 CalculateThresholds(MaximumBufferSize, TargetUtilizationLevel);
                 return MaximumBufferSize;
             }
@@ -336,10 +294,14 @@ namespace openHistorian.V2.UnmanagedMemory
             }
         }
 
-
-        #endregion
-
-        #region [ Helper Methods ]
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            m_disposed = true;
+        }
 
         /// <summary>
         /// Grows the buffer pool to have the desired size
@@ -350,29 +312,11 @@ namespace openHistorian.V2.UnmanagedMemory
             while (CurrentCapacity < size)
             {
                 int pageIndex = m_memoryBlocks.AddValue(new Memory(MemoryBlockSize));
-                m_isPageAvailable.EnsureCapacity((pageIndex + 1) * m_pagesPerMemoryBlock);
-                m_isPageAvailable.SetBits(pageIndex * m_pagesPerMemoryBlock, m_pagesPerMemoryBlock);
-            }
-        }
-
-        /// <summary>
-        /// Releases all the resources used by the <see cref="BufferPool"/> object.
-        /// </summary>
-        public void Dispose()
-        {
-            if (!m_disposed)
-            {
-                try
-                {
-                    DisposeList();
-                }
-                finally
-                {
-                    m_disposed = true;  // Prevent duplicate dispose.
-                }
+                m_isPageAllocated.ClearBits(pageIndex * m_pagesPerMemoryBlock, m_pagesPerMemoryBlock);
             }
         }
 
         #endregion
+
     }
 }

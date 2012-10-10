@@ -37,9 +37,10 @@ namespace openHistorian.V2.UnmanagedMemory
     /// .NET does not respond well when managing tens of GBs of ram.  If a very large buffer pool must be created,
     /// it would be good to allocate that buffer pool in unmanaged memory.
     /// </remarks>
+    // ToDo: Consider adding support for managed memory allocation. By allocating a Byte[] and using GCHandle.Alloc() to pin the object.
+    // ToDo: Support Large block allocations via the OS.
     public sealed class Memory : IDisposable
     {
-
         #region [ Members ]
 
         /// <summary>
@@ -112,10 +113,6 @@ namespace openHistorian.V2.UnmanagedMemory
                     if (Address != IntPtr.Zero)
                     {
                         Marshal.FreeHGlobal(Address);
-                    }
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
                     }
                 }
                 finally

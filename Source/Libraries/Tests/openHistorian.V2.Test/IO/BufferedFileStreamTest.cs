@@ -1,4 +1,5 @@
-﻿using openHistorian.V2.IO.Unmanaged;
+﻿using System.Windows.Forms;
+using openHistorian.V2.IO.Unmanaged;
 using openHistorian.V2.Unmanaged;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -102,7 +103,7 @@ namespace openHistorian.V2.IO.Unmanaged.Test
                 {
                     using (BufferedFileStream bfs = new BufferedFileStream(fs))
                     {
-                        Globals.BufferPool.MaximumBufferSize = (1 * 1000 * 1000);
+                        Globals.BufferPool.SetMaximumBufferSize(1 * 1000 * 1000);
 
                         BinaryStream bs = new BinaryStream(bfs);
                         bs.Write(1L);
@@ -151,6 +152,62 @@ namespace openHistorian.V2.IO.Unmanaged.Test
                         Assert.AreEqual(2L, bs.ReadInt64());
                     }
                 }
+            }
+            finally
+            {
+                File.Delete(fileName);
+            }
+        }
+
+        /// <summary>
+        ///Tests to verify that the exact same memory buffer is used with two different binary streams.
+        ///</summary>
+        [TestMethod()]
+        public void TestLargeFile()
+        {
+
+            string fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".tmp");
+            try
+            {
+                using (FileStream fs = new FileStream(fileName, FileMode.Create))
+                {
+                    using (BufferPool pool = new BufferPool(65536))
+                    {
+                        pool.SetMaximumBufferSize(10 * 1024 * 1024);
+                        using (BufferedFileStream bfs = new BufferedFileStream(fs, pool, 4096))
+                        {
+                            BinaryStream bs = new BinaryStream(bfs);
+                            for (long x = 0; x < 1000 * 1000 * 10; x++) //80 MB written
+                            {
+                                bs.Write(x);
+                            }
+                            bs.Position = 0;
+                            for (long x = 0; x < 1000 * 1000 * 10; x++) //80 MB written
+                            {
+                                Assert.AreEqual(x, bs.ReadInt64());
+                            }
+                            bs.ClearLocks();
+                            bfs.Flush();
+                        }
+                    }
+                }
+                using (FileStream fs = new FileStream(fileName, FileMode.Open))
+                {
+                    using (BufferPool pool = new BufferPool(65536))
+                    {
+                        pool.SetMaximumBufferSize(10 * 1024 * 1024);
+                        using (BufferedFileStream bfs = new BufferedFileStream(fs, pool, 4096))
+                        {
+                            BinaryStream bs = new BinaryStream(bfs);
+                            for (long x = 0; x < 1000 * 1000 * 10; x++) //80 MB written
+                            {
+                                Assert.AreEqual(x, bs.ReadInt64());
+                            }
+                        }
+                    }
+                    Clipboard.SetText(fs.Length.ToString());
+                }
+
             }
             finally
             {

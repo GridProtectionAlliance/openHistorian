@@ -413,5 +413,30 @@ namespace openHistorian.V2
 
         #endregion
 
+        #region [ Count Leading/Trailing Zeros ]
+
+      
+        public static int CountTrailingOnes(uint value)
+        {
+            return CountTrailingZeros(~value);
+        }
+
+        public static int CountTrailingOnes(ulong value)
+        {
+            return CountTrailingZeros(~value);           
+        }
+        
+        public static int CountLeadingOnes(uint value)
+        {
+            return CountLeadingZeros(~value);
+        }
+        
+        public static int CountLeadingOnes(ulong value)
+        {
+            return CountLeadingZeros(~value);
+        }
+
+        #endregion
+
     }
 }

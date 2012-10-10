@@ -12,14 +12,17 @@ namespace openHistorian.V2.UnmanagedMemory.Test
     [TestClass()]
     public class BitArrayTest
     {
+        //ToDo: Add another test procedure to properly test for FindNextBit function.
         [TestMethod()]
         public void Test()
         {
             Random rand = new Random();
             int seed = rand.Next();
 
-            TestSequential(0);
+            TestSequential(rand.Next(30));
+            TestSequentialInv(rand.Next(30));
             TestSequential(rand.Next(100000) + 10);
+            TestSequentialInv(rand.Next(100000) + 10);
             TestRandom(seed);
             Benchmark();
             Assert.IsTrue(true);
@@ -52,7 +55,36 @@ namespace openHistorian.V2.UnmanagedMemory.Test
                 if (array.FindClearedBit() != (x == count - 1 ? -1 : x + 1))
                     throw new Exception();
             }
+        }
 
+        static void TestSequentialInv(int count)
+        {
+            BitArray array = new BitArray(count, false);
+            for (int x = 0; x < count; x++)
+            {
+                if (array.GetBit(x))
+                    throw new Exception("each bit should be cleared");
+            }
+
+            array = new BitArray(count, true);
+            for (int x = 0; x < count; x++)
+            {
+                if (!array.GetBit(x))
+                    throw new Exception("each bit should be set");
+            }
+            for (int x = 0; x < count; x++)
+            {
+                array.ClearBit(x);
+                if (array.GetBit(x))
+                    throw new Exception("each bit should be cleared");
+                array.SetBit(x);
+                if (!array.GetBit(x))
+                    throw new Exception("each bit should be cleared");
+                array.ClearBit(x);
+
+                if (array.FindSetBit() != (x == count - 1 ? -1 : x + 1))
+                    throw new Exception();
+            }
         }
 
         static void TestRandom(int seed)

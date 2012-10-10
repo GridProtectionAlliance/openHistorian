@@ -31,8 +31,12 @@ namespace openHistorian.V2.IO.Unmanaged
 {
     public partial class BufferedFileStream
     {
+        public static long BytesWritten=0;
+        public static long BytesRead = 0;
+
         /// <summary>
         /// Manages the I/O for the file stream
+        /// Also provides a way to synchronize calls to the FileStream.
         /// </summary>
         unsafe internal class IoQueue
         {
@@ -49,6 +53,12 @@ namespace openHistorian.V2.IO.Unmanaged
                 s_resourceList = new ResourceQueueCollection<int, byte[]>((blockSize => (() => new byte[blockSize])), 10, 20);
             }
 
+            /// <summary>
+            /// Creates a new IoQueue
+            /// </summary>
+            /// <param name="stream">The filestream to use as the base stream</param>
+            /// <param name="bufferPoolSize">The size of a buffer pool entry</param>
+            /// <param name="dirtyPageSize">The size of an individual dirty page</param>
             public IoQueue(FileStream stream, int bufferPoolSize, int dirtyPageSize)
             {
                 if (bufferPoolSize < 4096)
@@ -70,8 +80,15 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_stream = stream;
             }
 
+            /// <summary>
+            /// Reads an entire page at the provided locaiton
+            /// </summary>
+            /// <param name="position">The stream position. May be any position inside the desired block</param>
+            /// <param name="callback">Provides the temporary block of data so something can be done with it. After returning, the byte[] will be reclaimed.</param>
             public void Read(long position, Action<byte[]> callback)
             {
+                position = position & ~(long)(m_bufferPoolSize - 1);
+
                 var buffer = m_bufferQueue.Dequeue();
                 IAsyncResult results;
                 lock (m_syncRoot)
@@ -80,12 +97,18 @@ namespace openHistorian.V2.IO.Unmanaged
                     results = m_stream.BeginRead(buffer, 0, buffer.Length, null, null);
                 }
                 int bytesRead = m_stream.EndRead(results);
+                BytesRead += bytesRead;
                 if (bytesRead < buffer.Length)
                     Array.Clear(buffer, bytesRead, buffer.Length - bytesRead);
                 callback(buffer);
                 m_bufferQueue.Enqueue(buffer);
             }
 
+            /// <summary>
+            /// Writes all of the dirty blocks passed onto the disk subsystem.
+            /// </summary>
+            /// <param name="pagesToWrite">The list of all pages to write to the disk</param>
+            /// <param name="waitForWriteToDisk">True to wait for a complete commit to disk before returning from this function.</param>
             public void Write(PageMetaDataList.PageMetaData[] pagesToWrite, bool waitForWriteToDisk)
             {
                 var buffer = m_bufferQueue.Dequeue();
@@ -103,8 +126,9 @@ namespace openHistorian.V2.IO.Unmanaged
                             results = m_stream.BeginWrite(buffer, 0, buffer.Length, null, null);
                         }
                         m_stream.EndWrite(results);
+                        BytesWritten += buffer.Length;
                     }
-                    else //otherwise, write each dirty page at a time.
+                    else //otherwise, write each dirty page one at a time.
                     {
                         for (int x = 0; x < dirtyPagesPerBlock; x++)
                         {
@@ -119,10 +143,10 @@ namespace openHistorian.V2.IO.Unmanaged
                                     results = m_stream.BeginWrite(buffer, 0, m_dirtyPageSize, null, null);
                                 }
                                 m_stream.EndWrite(results);
+                                BytesWritten += m_dirtyPageSize;
                             }
                         }
                     }
-
                 }
                 m_bufferQueue.Enqueue(buffer);
 

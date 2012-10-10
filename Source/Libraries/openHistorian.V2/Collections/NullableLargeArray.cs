@@ -88,7 +88,7 @@ namespace openHistorian.V2.Collections
         }
 
         /// <summary>
-        /// Gets the number of items in the array.
+        /// Gets the number of items that can be stored in the array.
         /// </summary>
         public int Capacity
         {
@@ -97,6 +97,36 @@ namespace openHistorian.V2.Collections
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 return m_list.Capacity;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of items that are in the array that are not null
+        /// </summary>
+        public int CountUsed
+        {
+            get
+            {
+                return m_isUsed.SetCount;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of available spaces in the array. Equal to <see cref="Capacity"/> - <see cref="CountUsed"/>.
+        /// </summary>
+        public int CountFree
+        {
+            get
+            {
+                return Capacity - CountUsed;
+            }
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                return GetValue(index);
             }
         }
 

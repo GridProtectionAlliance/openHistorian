@@ -29,133 +29,16 @@ namespace openHistorian.V2.UnmanagedMemory
     /// <summary>
     /// Maintains the core settings for the buffer pool and the methods for how they are calculated.
     /// </summary>
-    public class BufferPoolSettings
+    public partial class BufferPool
     {
 
         #region [ Members ]
 
-        /// <summary>
-        /// Represents the ceiling for the amount of memory the buffer pool can use (124GB)
-        /// </summary>
-        public const long MaximumTestedSupportedMemoryCeiling = 124 * 1024 * 1024 * 1024L;
-        /// <summary>
-        /// Represents the minimum amount of memory that the buffer pool needs to work properly
-        /// </summary>
-        public const long MinimumTestedSupportedMemoryFloor = 128 * 1024 * 1024;
-
-        public long LevelNone;
-        public long LevelLow;
-        public long LevelNormal;
-        public long LevelHigh;
-        public long LevelVeryHigh;
-        public long LevelCritical;
-
-        /// <summary>
-        /// The number of bytes in the smallest buffer pool allocation.
-        /// </summary>
-        int m_pageSize;
-
-        /// <summary>
-        /// The number maximum supported number of bytes that can be allocated based
-        /// on the amount of RAM in the system.  This is not user configurable.
-        /// </summary>
-        long m_maximumBufferCeiling;
-
-        /// <summary>
-        /// The maximum amount of RAM that this buffer pool is configured to support
-        /// Attempting to allocate more than this will cause an out of memory exception
-        /// </summary>
-        long m_maximumBufferSize;
-
-        /// <summary>
-        /// The target amount of memory to allocate before issuing garbage collection cycles.
-        /// </summary>
-        long m_targetBufferSize;
-
-        /// <summary>
-        /// The number of bytes per Windows API allocation block
-        /// </summary>
-        int m_memoryBlockSize;
-
-        #endregion
-
-        #region [ Constructors ]
-
-
-        public BufferPoolSettings(int pageSize)
-        {
-            Initialize(pageSize);
-            CalculateThresholds();
-        }
-
-        #endregion
-
-        #region [ Properties ]
-        /// <summary>
-        /// The number of bytes per page.
-        /// Must be a power of 2. Greater than 4KB and less than 256KB
-        /// </summary>
-        public int PageSize
-        {
-            get
-            {
-                return m_pageSize;
-            }
-        }
-
-        /// <summary>
-        /// Defines the maximum amount of memory before excessive garbage collection will occur.
-        /// </summary>
-        public long MaximumBufferSize
-        {
-            get
-            {
-                return m_maximumBufferSize;
-            }
-            set
-            {
-                m_maximumBufferSize = Math.Max(Math.Min(MaximumTestedSupportedMemoryCeiling, value),
-                                               MinimumTestedSupportedMemoryFloor);
-            }
-        }
-
-        /// <summary>
-        /// Defines the target amount of memory. No garbage collection will occur until this threshold has been reached.
-        /// </summary>
-        public long TargetBufferSize
-        {
-            get
-            {
-                return m_targetBufferSize;
-            }
-            set
-            {
-                m_maximumBufferSize = Math.Min(value, MaximumTestedSupportedMemoryCeiling);
-            }
-        }
-
-        /// <summary>
-        /// The number maximum supported number of bytes that can be allocated based
-        /// on the amount of RAM in the system.  This is not user configurable.
-        /// </summary>
-        public long MaximumBufferCeiling
-        {
-            get
-            {
-                return m_maximumBufferCeiling;
-            }
-        }
-
-        /// <summary>
-        /// The number of bytes per Windows API allocation block
-        /// </summary>
-        public int MemoryBlockSize
-        {
-            get
-            {
-                return m_memoryBlockSize;
-            }
-        }
+        long m_levelNone;
+        long m_levelLow;
+        long m_levelNormal;
+        long m_levelHigh;
+        long m_levelVeryHigh;
 
         #endregion
 
@@ -163,23 +46,23 @@ namespace openHistorian.V2.UnmanagedMemory
 
         public int GetCollectionBasedOnSize(long size)
         {
-            if (size < LevelNone)
+            if (size < m_levelNone)
             {
                 return 0;
             }
-            else if (size < LevelLow)
+            else if (size < m_levelLow)
             {
                 return 1;
             }
-            else if (size < LevelNormal)
+            else if (size < m_levelNormal)
             {
                 return 2;
             }
-            else if (size < LevelHigh)
+            else if (size < m_levelHigh)
             {
                 return 3;
             }
-            else if (size < LevelVeryHigh)
+            else if (size < m_levelVeryHigh)
             {
                 return 4;
             }
@@ -195,10 +78,8 @@ namespace openHistorian.V2.UnmanagedMemory
         /// Calculates an allocation size.
         /// Sets a minimum size of zero.
         /// </summary>
-        void Initialize(int pageSize)
+        void InitializeSettings()
         {
-            m_pageSize = pageSize;
-
             var info = new Microsoft.VisualBasic.Devices.ComputerInfo();
 
             long totalMemory = (long)info.TotalPhysicalMemory;
@@ -210,25 +91,82 @@ namespace openHistorian.V2.UnmanagedMemory
                 availableMemory = Math.Min(int.MaxValue - GC.GetTotalMemory(false), availableMemory); //Clip at 2GB
             }
 
-            m_memoryBlockSize = CalculateRecommendedMemoryBlockSize(pageSize, totalMemory);
-            m_maximumBufferCeiling = CalculateBufferSizeCeiling(m_memoryBlockSize, totalMemory);
+            MemoryBlockSize = CalculateRecommendedMemoryBlockSize(PageSize, totalMemory);
+            SystemBufferCeiling = CalculateBufferSizeCeiling(MemoryBlockSize, totalMemory);
 
             //Maximum size is at least 128MB
             //At least 50% of the free space
             //At least 25% of the total system memory.
-            m_maximumBufferSize = Math.Max(MinimumTestedSupportedMemoryFloor, availableMemory / 2);
-            m_maximumBufferSize = Math.Max(m_maximumBufferSize, totalMemory / 4);
-            m_targetBufferSize = 0;
+            MaximumBufferSize = Math.Max(MinimumTestedSupportedMemoryFloor, availableMemory / 2);
+            MaximumBufferSize = Math.Max(MaximumBufferSize, totalMemory / 4);
+
+            CalculateThresholds(MaximumBufferSize, TargetUtilizationLevels.Low);
         }
 
-        void CalculateThresholds()
+        void UpdateCollectionState(long size)
         {
-            LevelNone = (long)(0.1 * MaximumBufferSize);
-            LevelLow = (long)(0.25 * MaximumBufferSize);
-            LevelNormal = (long)(0.50 * MaximumBufferSize);
-            LevelHigh = (long)(0.75 * MaximumBufferSize);
-            LevelVeryHigh = (long)(0.90 * MaximumBufferSize);
-            LevelCritical = (long)(0.95 * MaximumBufferSize);
+            CollectionModes newState;
+            if (size < m_levelNone)
+            {
+                newState = CollectionModes.None;
+            }
+            else if (size < m_levelLow)
+            {
+                newState = CollectionModes.Low;
+            }
+            else if (size < m_levelNormal)
+            {
+                newState = CollectionModes.Normal;
+            }
+            else if (size < m_levelHigh)
+            {
+                newState = CollectionModes.High;
+            }
+            else if (size < m_levelVeryHigh)
+            {
+                newState = CollectionModes.VeryHigh;
+            }
+            else if (size < MaximumBufferSize)
+            {
+                newState = CollectionModes.Critical;
+            }
+            else
+            {
+                newState = CollectionModes.Full;
+            }
+
+            CollectionMode = newState;
+        }
+
+        void CalculateThresholds(long maximumBufferSize, TargetUtilizationLevels levels)
+        {
+            switch (levels)
+            {
+                case TargetUtilizationLevels.Low:
+                    m_levelNone = (long)(0.1 * maximumBufferSize);
+                    m_levelLow = (long)(0.25 * maximumBufferSize);
+                    m_levelNormal = (long)(0.50 * maximumBufferSize);
+                    m_levelHigh = (long)(0.75 * maximumBufferSize);
+                    m_levelVeryHigh = (long)(0.90 * maximumBufferSize);
+                    break;
+                case TargetUtilizationLevels.Medium:
+                    m_levelNone = (long)(0.25 * maximumBufferSize);
+                    m_levelLow = (long)(0.50 * maximumBufferSize);
+                    m_levelNormal = (long)(0.75 * maximumBufferSize);
+                    m_levelHigh = (long)(0.85 * maximumBufferSize);
+                    m_levelVeryHigh = (long)(0.95 * maximumBufferSize);
+                    break;
+                case TargetUtilizationLevels.High:
+                    m_levelNone = (long)(0.5 * maximumBufferSize);
+                    m_levelLow = (long)(0.75 * maximumBufferSize);
+                    m_levelNormal = (long)(0.85 * maximumBufferSize);
+                    m_levelHigh = (long)(0.95 * maximumBufferSize);
+                    m_levelVeryHigh = (long)(0.97 * maximumBufferSize);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("levels");
+
+            }
         }
 
         #endregion

@@ -86,6 +86,7 @@
     <Compile Include="Collections\ResourceQueue.cs" />
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="BitMath.cs" />
+    <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
     <Compile Include="Server\Database\ArchiveListSnapshotTest.cs" />
     <Compile Include="Server\Database\ArchiveInitializerTest.cs" />

@@ -34,10 +34,15 @@ namespace openHistorian.V2.Collections
     {
         #region [ Members ]
 
-        int[] m_array;
+        const int BitsPerElementShift = 6;
+        const int BitsPerElementMask = BitsPerElement - 1;
+        const int BitsPerElement = sizeof(long) * 8;
+
+        long[] m_array;
         int m_count;
         int m_setCount;
         int m_lastFoundClearedIndex;
+        int m_lastFoundSetIndex;
         bool m_initialState;
 
         #endregion
@@ -49,7 +54,7 @@ namespace openHistorian.V2.Collections
         /// </summary>
         /// <param name="initialState">Set to true to initial will all elements set.  False to have all elements cleared.</param>
         public BitArray(bool initialState) :
-            this(32, initialState)
+            this(BitsPerElement, initialState)
         {
         }
 
@@ -62,10 +67,10 @@ namespace openHistorian.V2.Collections
         {
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count");
-            if ((count & 31) != 0)
-                m_array = new int[(count >> 5) + 1];
+            if ((count & BitsPerElementMask) != 0)
+                m_array = new long[(count >> BitsPerElementShift) + 1];
             else
-                m_array = new int[count >> 5];
+                m_array = new long[count >> BitsPerElementShift];
 
             if (initialState)
             {
@@ -148,7 +153,7 @@ namespace openHistorian.V2.Collections
         {
             if (index < 0 || index >= m_count)
                 throw new ArgumentOutOfRangeException("index");
-            return (m_array[index >> 5] & (1 << (index & 31))) != 0;
+            return (m_array[index >> BitsPerElementShift] & (1L << (index & BitsPerElementMask))) != 0;
         }
 
         /// <summary>
@@ -159,11 +164,12 @@ namespace openHistorian.V2.Collections
         {
             if (index < 0 || index >= m_count)
                 throw new ArgumentOutOfRangeException("index");
-            int bit = 1 << (index & 31);
-            if ((m_array[index >> 5] & bit) == 0) //if bit is cleared
+            long bit = 1L << (index & BitsPerElementMask);
+            if ((m_array[index >> BitsPerElementShift] & bit) == 0) //if bit is cleared
             {
+                m_lastFoundSetIndex = 0;
                 m_setCount++;
-                m_array[index >> 5] |= bit;
+                m_array[index >> BitsPerElementShift] |= bit;
             }
         }
 
@@ -190,11 +196,12 @@ namespace openHistorian.V2.Collections
         {
             if (index < 0 || index >= m_count)
                 throw new ArgumentOutOfRangeException("index");
-            int bit = 1 << (index & 31);
-            if ((m_array[index >> 5] & bit) == 0) //if bit is cleared
+            long bit = 1L << (index & BitsPerElementMask);
+            if ((m_array[index >> BitsPerElementShift] & bit) == 0) //if bit is cleared
             {
+                m_lastFoundSetIndex = 0;
                 m_setCount++;
-                m_array[index >> 5] |= bit;
+                m_array[index >> BitsPerElementShift] |= bit;
                 return true;
             }
             return false;
@@ -208,12 +215,12 @@ namespace openHistorian.V2.Collections
         {
             if (index < 0 || index >= m_count)
                 throw new ArgumentOutOfRangeException("index");
-            int bit = 1 << (index & 31);
-            if ((m_array[index >> 5] & bit) != 0) //if bit is set
+            long bit = 1L << (index & BitsPerElementMask);
+            if ((m_array[index >> BitsPerElementShift] & bit) != 0) //if bit is set
             {
                 m_lastFoundClearedIndex = 0;
                 m_setCount--;
-                m_array[index >> 5] &= ~bit;
+                m_array[index >> BitsPerElementShift] &= ~bit;
             }
         }
 
@@ -260,12 +267,12 @@ namespace openHistorian.V2.Collections
         {
             if (index < 0 || index >= m_count)
                 throw new ArgumentOutOfRangeException("index");
-            int bit = 1 << (index & 31);
-            if ((m_array[index >> 5] & bit) != 0) //if bit is set
+            long bit = 1L << (index & BitsPerElementMask);
+            if ((m_array[index >> BitsPerElementShift] & bit) != 0) //if bit is set
             {
                 m_lastFoundClearedIndex = 0;
                 m_setCount--;
-                m_array[index >> 5] &= ~bit;
+                m_array[index >> BitsPerElementShift] &= ~bit;
                 return true;
             }
             return false;
@@ -278,14 +285,14 @@ namespace openHistorian.V2.Collections
         /// <returns></returns>
         public void SetCapacity(int capacity)
         {
-            int[] array;
+            long[] array;
 
             if (m_count >= capacity)
                 return;
-            if ((capacity & 31) != 0)
-                array = new int[(capacity >> 5) + 1];
+            if ((capacity & BitsPerElementMask) != 0)
+                array = new long[(capacity >> BitsPerElementShift) + 1];
             else
-                array = new int[capacity >> 5];
+                array = new long[capacity >> BitsPerElementShift];
 
             m_array.CopyTo(array, 0);
             if (m_initialState)
@@ -301,6 +308,21 @@ namespace openHistorian.V2.Collections
         }
 
         /// <summary>
+        /// Verifies that the <see cref="BitArray"/> has the capacity 
+        /// to store the provided number of elements.
+        /// If not, the bit array will autogrow by a factor of 2 or at least the capacity
+        /// </summary>
+        /// <param name="capacity"></param>
+        public void EnsureCapacity(int capacity)
+        {
+            if (capacity > Count)
+            {
+                SetCapacity(Math.Max(m_array.Length * BitsPerElement * 2, capacity));
+            }
+
+        }
+
+        /// <summary>
         /// Returns the index of the first bit that is cleared. 
         /// -1 is returned if all bits are set.
         /// </summary>
@@ -309,12 +331,13 @@ namespace openHistorian.V2.Collections
         {
             //parse each item, 32 bits at a time
             int count = m_array.Length;
-            for (int x = m_lastFoundClearedIndex >> 5; x < count; x++)
+            for (int x = m_lastFoundClearedIndex >> BitsPerElementShift; x < count; x++)
             {
                 //If the result is not -1, then use this element
                 if (m_array[x] != -1)
                 {
-                    int position = HelperFunctions.FindFirstClearedBit(m_array[x]) + (x << 5); ;
+                    //int position = HelperFunctions.FindFirstClearedBit(m_array[x]) + (x << 5); ;
+                    int position = BitMath.CountTrailingOnes((ulong)m_array[x]) + (x << BitsPerElementShift); ;
                     m_lastFoundClearedIndex = position;
                     if (m_lastFoundClearedIndex >= m_count)
                         return -1;
@@ -323,6 +346,31 @@ namespace openHistorian.V2.Collections
             }
             return -1;
         }
+
+        /// <summary>
+        /// Returns the index of the first bit that is set. 
+        /// -1 is returned if all bits are cleared.
+        /// </summary>
+        /// <returns></returns>
+        public int FindSetBit()
+        {
+            //parse each item, 32 bits at a time
+            int count = m_array.Length;
+            for (int x = m_lastFoundSetIndex >> BitsPerElementShift; x < count; x++)
+            {
+                //If the result is not -1, then use this element
+                if (m_array[x] != 0)
+                {
+                    int position = BitMath.CountTrailingZeros((ulong)m_array[x]) + (x << BitsPerElementShift); ;
+                    m_lastFoundSetIndex = position;
+                    if (m_lastFoundSetIndex >= m_count)
+                        return -1;
+                    return position;
+                }
+            }
+            return -1;
+        }
+
         public void CopyTo(BitArray otherArray)
         {
             if (otherArray.Count != Count)
@@ -331,6 +379,7 @@ namespace openHistorian.V2.Collections
             otherArray.m_count = m_count;
             otherArray.m_initialState = m_initialState;
             otherArray.m_lastFoundClearedIndex = m_lastFoundClearedIndex;
+            otherArray.m_lastFoundSetIndex = m_lastFoundSetIndex;
             otherArray.m_setCount = m_setCount;
         }
 

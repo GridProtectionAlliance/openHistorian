@@ -49,9 +49,9 @@ namespace openHistorian.V2.Collections
 
         public LargeArray(int jaggedArrayDepth)
         {
-            m_size = HelperFunctions.RoundUpToNearestPowerOfTwo(jaggedArrayDepth);
+            m_size = (int)BitMath.RoundUpToNearestPowerOfTwo((uint)jaggedArrayDepth);
             m_mask = m_size - 1;
-            m_bitShift = HelperFunctions.CountBits((uint)m_mask);
+            m_bitShift = BitMath.CountBitsSet((uint)m_mask);
             m_array = new List<T[]>();
         }
 

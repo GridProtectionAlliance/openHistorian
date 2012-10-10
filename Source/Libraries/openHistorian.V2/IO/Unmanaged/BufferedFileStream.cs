@@ -89,7 +89,7 @@ namespace openHistorian.V2.IO.Unmanaged
             m_syncFlush = new object();
             m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement(dirtyPageSize, pool);
             m_baseStream = stream;
-            Globals.BufferPool.RequestCollection += BufferPool_RequestCollection;
+            pool.RequestCollection += BufferPool_RequestCollection;
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 {
                     lock (m_syncRoot)
                     {
-                        ioSession.TryAddNewPage(position, data, 0, data.Length);
+                        ioSession.TryAddNewPage(position & ~(long)(data.Length - 1), data, 0, data.Length);
                         ioSession.TryGetSubPage(position, isWriting, out subPage);
                     }
                 };
