@@ -25,49 +25,24 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using openHistorian.V2.Collections;
 
-namespace openHistorian.V2.Server
+namespace openHistorian.V2.Server.Configuration
 {
-    partial class ServerInstanceSettings
+    public class ServerInstanceSettings
     {
-        public List<Item> Databases;
+        public ReadonlySortedList<string, ArchiveManagementSystemSettings> Databases;
 
-        public ServerInstanceSettings()
+        public ServerInstanceSettings(ConfigNode node)
         {
-            Databases = new List<Item>();
-        }
-
-        public ServerInstanceSettings(BinaryReader reader)
-        {
-            Load(reader);
-        }
-
-        public void Load(BinaryReader reader)
-        {
-            switch (reader.ReadByte())
+            Databases = new ReadonlySortedList<string, ArchiveManagementSystemSettings>();
+            foreach (var instances in node.GetChildren("Instance"))
             {
-                case 0:
-                    int count = reader.ReadInt32();
-                    Databases = new List<Item>(count);
-                    while ( count>0)
-                    {
-                        count--;
-                        Databases.Add(new Item(reader));
-                    }
-                    break;
-                default:
-                    throw new VersionNotFoundException();
+                var ams = new ArchiveManagementSystemSettings(instances);
+                Databases.Add(ams.Name.ToLower(), ams);
             }
+            Databases.IsReadOnly = true;
         }
 
-        public void Save(BinaryWriter writer)
-        {
-            writer.Write((byte)0);
-            writer.Write(Databases.Count);
-            foreach (var s in Databases)
-            {
-                s.Save(writer);
-            }
-        }
     }
 }

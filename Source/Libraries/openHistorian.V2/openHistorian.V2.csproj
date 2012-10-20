@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\ReadonlySortedList.cs" />
     <Compile Include="Collections\ILargeArray.cs" />
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="Collections\LargeUnmanagedArray.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="FileStructure\FileHeaderBlockRecovery.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IHistorian.cs" />
+    <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
@@ -113,6 +115,8 @@
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="OpenMode.cs" />
+    <Compile Include="Server\Configuration\ConfigNode.cs" />
+    <Compile Include="Server\Configuration\XmlConfig.cs" />
     <Compile Include="Server\Database\ArchiveList.cs" />
     <Compile Include="Server\Database\ArchiveList_Editor.cs" />
     <Compile Include="Server\Database\ArchiveListRemovalStatus.cs" />
@@ -120,8 +124,6 @@
     <Compile Include="Server\Database\ArchiveManagementSystem_ChangeSettings.cs" />
     <Compile Include="Server\Database\NewArchiveCriteria.cs" />
     <Compile Include="Server\Database\ArchiveFileStateInformation.cs" />
-    <Compile Include="Server\Configuration\FolderListSettings.cs" />
-    <Compile Include="Server\Configuration\ServerInstanceSettings_Item.cs" />
     <Compile Include="Server\Configuration\ArchiveManagementSystemSettings.cs" />
     <Compile Include="Server\Configuration\ArchiveInitializerSettings.cs" />
     <Compile Include="Server\Configuration\ArchiveManagementSettings.cs" />

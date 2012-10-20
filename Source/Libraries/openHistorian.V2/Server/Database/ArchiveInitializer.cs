@@ -37,9 +37,6 @@ namespace openHistorian.V2.Server.Database
 
         public ArchiveInitializer(ArchiveInitializerSettings settings)
         {
-            if (!settings.IsReadOnly)
-                throw new ArgumentException("Must be set to read only before passing to this function", "settings");
-
             m_settings = settings;
         }
 
@@ -70,7 +67,7 @@ namespace openHistorian.V2.Server.Database
         string CreateArchiveName()
         {
             long requiredFreeSpace = Math.Min(m_settings.RequiredFreeSpaceForNewFile, m_settings.InitialSize);
-            foreach (var path in m_settings.SavePaths.Folders)
+            foreach (var path in m_settings.Folders)
             {
                 long freeSpace, totalSpace;
                 if (WinApi.GetAvailableFreeSpace(path,out freeSpace, out totalSpace))

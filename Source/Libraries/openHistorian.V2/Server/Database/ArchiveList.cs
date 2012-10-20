@@ -50,8 +50,6 @@ namespace openHistorian.V2.Server.Database
 
         public ArchiveList(ArchiveListSettings settings)
         {
-            if (!settings.IsReadOnly)
-                throw new ArgumentException("Must be set to read only before passing to this function", "settings");
 
             m_partitions = new List<ArchiveFileStateInformation>();
             m_resources = new List<ArchiveListSnapshot>();

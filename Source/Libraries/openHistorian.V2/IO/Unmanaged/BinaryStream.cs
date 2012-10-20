@@ -87,6 +87,15 @@ namespace openHistorian.V2.IO.Unmanaged
         }
 
         /// <summary>
+        /// Creates a <see cref="BinaryStream"/> that is in memory only.
+        /// </summary>
+        public BinaryStream(BufferPool pool)
+            : this(new MemoryStream(pool), false)
+        {
+
+        }
+
+        /// <summary>
         /// Creates a <see cref="BinaryStream"/> that is at position 0 of the provided stream.
         /// </summary>
         /// <param name="stream">The base stream to use.</param>

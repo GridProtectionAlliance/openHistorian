@@ -28,113 +28,28 @@ using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveWriterSettings : SupportsReadonlyAutoBase<ArchiveWriterSettings>
+    public class ArchiveWriterSettings
     {
-        int? m_commitOnPointCount;
-        TimeSpan? m_commitOnInterval;
-        string m_destinationName;
-        ArchiveInitializerSettings m_initializer;
-        int? m_newFileOnCommitCount;
-        TimeSpan? m_newFileOnInterval;
-        long? m_newFileOnSize;
+        public int? CommitOnPointCount { get; private set; }
+        public TimeSpan? CommitOnInterval;
+        public string DestinationName;
+        public ArchiveInitializerSettings Initializer;
+        public int? NewFileOnCommitCount;
+        public TimeSpan? NewFileOnInterval;
+        public long? NewFileOnSize;
 
-        public ArchiveWriterSettings()
+        public ArchiveWriterSettings(ConfigNode node)
         {
-            Initializer = new ArchiveInitializerSettings();
-        }
 
-        public int? CommitOnPointCount
-        {
-            get
-            {
-                return m_commitOnPointCount;
-            }
-            set
-            {
-                TestForEditable();
-                m_commitOnPointCount = value;
-            }
+            CommitOnPointCount = node.GetValueInt("CommitOnPointCount");
+            CommitOnInterval = node.GetValueTimeSpan("CommitOnInterval", TimeSpan.TicksPerSecond);
+            DestinationName = node["Name", ""];
+            NewFileOnCommitCount = node.GetValueInt("NewFileOnCommitCount");
+            NewFileOnInterval = node.GetValueTimeSpan("NewFileOnInterval", TimeSpan.TicksPerSecond);
+            NewFileOnSize = node.GetValueLong("NewFileOnSize", 1024 * 1024);
+            
+            Initializer = new ArchiveInitializerSettings(node["Initialization"]);
         }
-
-        public TimeSpan? CommitOnInterval
-        {
-            get
-            {
-                return m_commitOnInterval;
-            }
-            set
-            {
-                TestForEditable();
-                m_commitOnInterval = value;
-            }
-        }
-
-        public string DestinationName
-        {
-            get
-            {
-                return m_destinationName;
-            }
-            set
-            {
-                TestForEditable();
-                m_destinationName = value;
-            }
-        }
-
-        public ArchiveInitializerSettings Initializer
-        {
-            get
-            {
-                return m_initializer;
-            }
-            set
-            {
-                TestForEditable();
-                m_initializer = value;
-            }
-        }
-
-        public int? NewFileOnCommitCount
-        {
-            get
-            {
-                return m_newFileOnCommitCount;
-            }
-            set
-            {
-                TestForEditable();
-                m_newFileOnCommitCount = value;
-            }
-        }
-
-        public TimeSpan? NewFileOnInterval
-        {
-            get
-            {
-                return m_newFileOnInterval;
-            }
-            set
-            {
-                TestForEditable();
-                m_newFileOnInterval = value;
-            }
-        }
-
-        public long? NewFileOnSize
-        {
-            get
-            {
-                return m_newFileOnSize;
-            }
-            set
-            {
-                TestForEditable();
-                m_newFileOnSize = value;
-            }
-        }
-
-    
 
     }
 }

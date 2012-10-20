@@ -26,8 +26,15 @@ using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveListSettings : SupportsReadonlyAutoBase<ArchiveListSettings>
+    public class ArchiveListSettings
     {
+        public ReadonlyList<FileSettings> AttachedFiles { get; private set; }
+        
+        public ArchiveListSettings(ConfigNode node)
+        {
+            
+        }
+
         /// <summary>
         /// Basic information about the file.
         /// </summary>
@@ -45,22 +52,7 @@ namespace openHistorian.V2.Server.Configuration
             }
         }
 
-        ReadonlyList<FileSettings> m_attachedFiles;
-
-        /// <summary>
-        /// Maintains a list of all archive files to be used.
-        /// </summary>
-        public ReadonlyList<FileSettings> AttachedFiles
-        {
-            get
-            {
-                return m_attachedFiles;
-            }
-            set
-            {
-                TestForEditable();
-                m_attachedFiles = value;
-            }
-        }
+        
+        
     }
 }

@@ -28,92 +28,20 @@ using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveManagementSettings : SupportsReadonlyAutoBase<ArchiveManagementSettings>
+    public class ArchiveManagementSettings
     {
-        string m_sourceName;
-        string m_destinationName;
-        ArchiveInitializerSettings m_initializer;
+        public string SourceName { get; private set; }
+        public string DestinationName { get; private set; }
+        public ArchiveInitializerSettings Initializer { get; private set; }
 
-        int? m_newFileOnCommitCount;
-        TimeSpan? m_newFileOnInterval;
-        long? m_newFileOnSize;
+        public int? NewFileOnCommitCount { get; private set; }
+        public TimeSpan? NewFileOnInterval { get; private set; }
+        public long? NewFileOnSize { get; private set; }
 
-        public string SourceName
+        public ArchiveManagementSettings(ConfigNode node)
         {
-            get
-            {
-                return m_sourceName;
-            }
-            set
-            {
-                TestForEditable();
-                m_sourceName = value;
-            }
+            
         }
 
-        public string DestinationName
-        {
-            get
-            {
-                return m_destinationName;
-            }
-            set
-            {
-                TestForEditable();
-                m_destinationName = value;
-            }
-        }
-
-        public ArchiveInitializerSettings Initializer
-        {
-            get
-            {
-                return m_initializer;
-            }
-            set
-            {
-                TestForEditable();
-                m_initializer = value;
-            }
-        }
-
-        public int? NewFileOnCommitCount
-        {
-            get
-            {
-                return m_newFileOnCommitCount;
-            }
-            set
-            {
-                TestForEditable();
-                m_newFileOnCommitCount = value;
-            }
-        }
-
-        public TimeSpan? NewFileOnInterval
-        {
-            get
-            {
-                return m_newFileOnInterval;
-            }
-            set
-            {
-                TestForEditable();
-                m_newFileOnInterval = value;
-            }
-        }
-
-        public long? NewFileOnSize
-        {
-            get
-            {
-                return m_newFileOnSize;
-            }
-            set
-            {
-                TestForEditable();
-                m_newFileOnSize = value;
-            }
-        }
     }
 }

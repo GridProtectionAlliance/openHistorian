@@ -26,56 +26,28 @@ using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveManagementSystemSettings : SupportsReadonlyAutoBase<ArchiveManagementSystemSettings>
+    public class ArchiveManagementSystemSettings 
     {
-        ArchiveWriterSettings m_archiveWriter;
-        ReadonlyList<ArchiveManagementSettings> m_archiveManagers;
-        ArchiveListSettings m_archiveList;
+        public string Name { get; private set; }
+        public ArchiveWriterSettings ArchiveWriter;
+        public ReadonlyList<ArchiveManagementSettings> ArchiveManagers;
+        public ArchiveListSettings ArchiveList;
+       
+        public ArchiveManagementSystemSettings(ConfigNode node)
+        {
+            Name = node.GetChildString("Name", "default");
+            if (node.Contains("ArchiveWriter"))
+                ArchiveWriter = new ArchiveWriterSettings(node.GetChild("ArchiveWriter"));  
+            ArchiveManagers = new ReadonlyList<ArchiveManagementSettings>();
+            foreach (var n in node.GetChildren())
+            {
+                ArchiveManagers.Add(new ArchiveManagementSettings(n));
+            }
+            ArchiveList = new ArchiveListSettings(node);
 
-        public ArchiveManagementSystemSettings()
-        {
-            m_archiveWriter = new ArchiveWriterSettings();
-            m_archiveManagers = new ReadonlyList<ArchiveManagementSettings>();
-            m_archiveList = new ArchiveListSettings();
+            ArchiveManagers.IsReadOnly = true;
         }
 
-        public ArchiveWriterSettings ArchiveWriter
-        {
-            get
-            {
-                return m_archiveWriter;
-            }
-            set
-            {
-                TestForEditable();
-                m_archiveWriter = value;
-            }
-        }
-        public ReadonlyList<ArchiveManagementSettings> ArchiveManagers
-        {
-            get
-            {
-                return m_archiveManagers;
-            }
-            set
-            {
-                TestForEditable();
-                m_archiveManagers = value;
-            }
-        }
-        public ArchiveListSettings ArchiveList
-        {
-            get
-            {
-                return m_archiveList;
-            }
-            set
-            {
-                TestForEditable();
-                m_archiveList = value;
-            }
-        }
-        
     }
 
 }

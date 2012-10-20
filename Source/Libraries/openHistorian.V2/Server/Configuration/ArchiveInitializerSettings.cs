@@ -22,112 +22,41 @@
 //
 //******************************************************************************************************
 
-using openHistorian.V2.Collections;
 using openHistorian.V2.Server.Configuration;
-
+using openHistorian.V2.Collections;
 namespace openHistorian.V2.Server.Database
 {
-    public class ArchiveInitializerSettings : SupportsReadonlyAutoBase<ArchiveInitializerSettings>
+    public class ArchiveInitializerSettings
     {
-        bool m_isMemoryArchive;
-        FolderListSettings m_savePath;
-        long m_initialSize;
-        long m_autoGrowthSize;
-        long m_requiredFreeSpaceForNewFile;
-        long m_requiredFreeSpaceForAutoGrowth;
-        
-        public ArchiveInitializerSettings()
+        public bool IsMemoryArchive { get; private set; }
+        public ReadonlyList<string> Folders{ get; private set; }
+        public long InitialSize { get; private set; }
+        public long AutoGrowthSize { get; private set; }
+        public long RequiredFreeSpaceForNewFile { get; private set; }
+        public long RequiredFreeSpaceForAutoGrowth { get; private set; }
+
+        public ArchiveInitializerSettings(ConfigNode node)
         {
-            m_savePath = new FolderListSettings();
+            Folders = new ReadonlyList<string>();
+
+            if (bool.Parse(node["IsMemoryArchive","false"]))
+            {
+                IsMemoryArchive = true;
+            }
+            else
+            {
+                IsMemoryArchive = false;
+                InitialSize = long.Parse(node["InitialSize"]);
+                AutoGrowthSize = long.Parse(node["AutoGrowthSize"]);
+                RequiredFreeSpaceForNewFile = long.Parse(node["RequiredFreeSpaceForNewFile"]);
+                RequiredFreeSpaceForAutoGrowth = long.Parse(node["RequiredFreeSpaceForAutoGrowth"]);
+                foreach (var child in node.GetChildren("FolderList"))
+                {
+                    Folders.Add(child);
+                }
+            }
+            Folders.IsReadOnly = true;
         }
 
-        public bool IsMemoryArchive
-        {
-            get
-            {
-                return m_isMemoryArchive;
-            }
-            set
-            {
-                TestForEditable();
-                m_isMemoryArchive = value;
-            }
-        }
-
-        public FolderListSettings SavePaths
-        {
-            get
-            {
-                return m_savePath;
-            }
-            set
-            {
-                TestForEditable();
-                m_savePath = value;
-            }
-        }
-
-        public long InitialSize
-        {
-            get
-            {
-                return m_initialSize;
-            }
-            set
-            {
-                TestForEditable();
-                m_initialSize = value;
-            }
-        }
-
-        /// <summary>
-        /// Get/Set the number of bytes an archive will 
-        /// auto-grow by on each allocation
-        /// </summary>
-        public long AutoGrowthSize
-        {
-            get
-            {
-                return m_autoGrowthSize;
-            }
-            set
-            {
-                TestForEditable();
-                m_autoGrowthSize = value;
-            }
-        }
-
-        /// <summary>
-        /// Get/Set the required free space in a folder path in order for a new file to
-        /// be created in this path.  
-        /// </summary>
-        public long RequiredFreeSpaceForNewFile
-        {
-            get
-            {
-                return m_requiredFreeSpaceForNewFile;
-            }
-            set
-            {
-                TestForEditable();
-                m_requiredFreeSpaceForNewFile = value;
-            }
-        }
-
-        /// <summary>
-        /// Get/Set the free space point where the file no longer grows freely. 
-        /// </summary>
-        public long RequiredFreeSpaceForAutoGrowth
-        {
-            get
-            {
-                return m_requiredFreeSpaceForAutoGrowth;
-            }
-            set
-            {
-                TestForEditable();
-                m_requiredFreeSpaceForAutoGrowth = value;
-            }
-        }
     }
 }

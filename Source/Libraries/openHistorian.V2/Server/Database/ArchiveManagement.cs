@@ -62,8 +62,6 @@ namespace openHistorian.V2.Server.Database
         /// <param name="archiveList">The list used to attach newly created file.</param>
         public ArchiveManagement(ArchiveManagementSettings settings, ArchiveList archiveList)
         {
-            if (!settings.IsReadOnly)
-                throw new ArgumentException("Must be set to read only before passing to this function", "settings");
 
             m_settings = settings;
 

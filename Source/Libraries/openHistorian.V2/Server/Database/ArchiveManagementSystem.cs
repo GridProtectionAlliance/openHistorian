@@ -41,8 +41,6 @@ namespace openHistorian.V2.Server.Database
 
         public ArchiveManagementSystem(ArchiveManagementSystemSettings settings)
         {
-            if (!settings.IsReadOnly)
-                throw new ArgumentException("Must be set to read only before passing to this function", "settings");
 
             m_settings = settings;
 

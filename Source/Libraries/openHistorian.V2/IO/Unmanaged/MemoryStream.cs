@@ -34,19 +34,20 @@ namespace openHistorian.V2.IO.Unmanaged
     /// </summary>
     unsafe public partial class MemoryStream : ISupportsBinaryStreamSizing
     {
-     
+
+        BufferPool m_pool;
         /// <summary>
         /// The number of bits in the page size.
         /// </summary>
-        int ShiftLength = Globals.BufferPool.PageShiftBits;
+        int ShiftLength;
         /// <summary>
         /// The mask that can be used to Logical AND the position to get the relative position within the page.
         /// </summary>
-        int OffsetMask = Globals.BufferPool.PageMask;
+        int OffsetMask;
         /// <summary>
         /// The size of each page.
         /// </summary>
-        int Length = Globals.BufferPool.PageSize;
+        int Length;
 
         /// <summary>
         /// The byte position in the stream
@@ -67,11 +68,22 @@ namespace openHistorian.V2.IO.Unmanaged
         /// </summary>
         public long LookupCount = 0;
 
+        public MemoryStream()
+            : this(Globals.BufferPool)
+        {
+        }
+
         /// <summary>
         /// Create a new <see cref="MemoryStream"/>
         /// </summary>
-        public MemoryStream()
+        public MemoryStream(BufferPool pool)
         {
+            m_pool = pool;
+
+            ShiftLength = pool.PageShiftBits;
+            OffsetMask = pool.PageMask;
+            Length = pool.PageSize;
+
             m_position = 0;
             m_pageIndex = new List<int>(100);
             m_pagePointer = new List<long>(100);
@@ -102,8 +114,8 @@ namespace openHistorian.V2.IO.Unmanaged
             {
                 int pageIndex;
                 IntPtr pagePointer;
-                Globals.BufferPool.AllocatePage(out pageIndex, out pagePointer);
-                Memory.Clear((byte*)pagePointer, Globals.BufferPool.PageSize);
+                m_pool.AllocatePage(out pageIndex, out pagePointer);
+                Memory.Clear((byte*)pagePointer, m_pool.PageSize);
                 m_pageIndex.Add(pageIndex);
                 m_pagePointer.Add(pagePointer.ToInt64());
             }
@@ -149,7 +161,7 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             get
             {
-                return (long)m_pageIndex.Count * Globals.BufferPool.PageSize;
+                return (long)m_pageIndex.Count * m_pool.PageSize;
             }
         }
 
@@ -269,7 +281,7 @@ namespace openHistorian.V2.IO.Unmanaged
                     // This will be done regardless of whether the object is finalized or disposed.
                     foreach (int index in m_pageIndex)
                     {
-                        Globals.BufferPool.ReleasePage(index);
+                        m_pool.ReleasePage(index);
                     }
                     m_pageIndex = null;
                     m_pagePointer = null;
@@ -319,7 +331,7 @@ namespace openHistorian.V2.IO.Unmanaged
                     int index = m_pageIndex[m_pageIndex.Count - 1];
                     m_pageIndex.RemoveAt(m_pageIndex.Count - 1);
                     m_pagePointer.RemoveAt(m_pageIndex.Count - 1);
-                    Globals.BufferPool.ReleasePage(index);
+                    m_pool.ReleasePage(index);
                 }
             }
             return FileSize;
@@ -329,7 +341,7 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             get
             {
-                return Globals.BufferPool.PageSize;
+                return m_pool.PageSize;
             }
         }
 
