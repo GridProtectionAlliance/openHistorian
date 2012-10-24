@@ -5,7 +5,7 @@ namespace openHistorian.V2.Streaming.Server
     interface ITransportHost
     {
         //ITransportStreaming TransportStream { get; }
-        ServerInstance Engine { get; }
+        HistorianEngine Engine { get; }
         IOutboundBuffer Send { get; }
         IInboundBuffer Receive { get; }
         void CommandAdd(ITransportCommand command);

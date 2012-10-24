@@ -30,14 +30,14 @@ namespace openHistorian.V2.Server.Database
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
-    public partial class ArchiveManagementSystem
+    public partial class ArchiveDatabaseEngine
     {
         public class ChangeSettings : IDisposable
         {
             bool m_disposed;
-            ArchiveManagementSystem m_system;
+            ArchiveDatabaseEngine m_system;
             
-            public ChangeSettings(ArchiveManagementSystem system)
+            public ChangeSettings(ArchiveDatabaseEngine system)
             {
                 m_system = system;
             }

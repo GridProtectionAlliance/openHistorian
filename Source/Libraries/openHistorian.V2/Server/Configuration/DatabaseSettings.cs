@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FileManagementSettings.cs - Gbtc
+//  DatabaseSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,26 +22,22 @@
 //
 //******************************************************************************************************
 
-using System;
-using openHistorian.V2.Collections;
-using openHistorian.V2.Server.Database;
+using System.Collections.Generic;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveManagementSettings
+    public class DatabaseSettings
     {
-        public string SourceName { get; private set; }
-        public string DestinationName { get; private set; }
-        public ArchiveInitializerSettings Initializer { get; private set; }
+        public string Name;
+        public ArchiveWriterSettings ArchiveWriter;
+        public List<ArchiveRolloverSettings> ArchiveRollovers;
+        public ArchiveListSettings ArchiveList;
 
-        public int? NewFileOnCommitCount { get; private set; }
-        public TimeSpan? NewFileOnInterval { get; private set; }
-        public long? NewFileOnSize { get; private set; }
-
-        public ArchiveManagementSettings(ConfigNode node)
+        public DatabaseSettings()
         {
-            
+            ArchiveRollovers = new List<ArchiveRolloverSettings>();
         }
 
     }
+
 }

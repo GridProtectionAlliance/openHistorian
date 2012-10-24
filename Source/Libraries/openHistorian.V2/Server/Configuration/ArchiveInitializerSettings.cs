@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionInitializerGenerationSettings.cs - Gbtc
+//  ArchiveInitializerSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,40 +22,21 @@
 //
 //******************************************************************************************************
 
-using openHistorian.V2.Server.Configuration;
-using openHistorian.V2.Collections;
+using System.Collections.Generic;
 namespace openHistorian.V2.Server.Database
 {
     public class ArchiveInitializerSettings
     {
-        public bool IsMemoryArchive { get; private set; }
-        public ReadonlyList<string> Folders{ get; private set; }
-        public long InitialSize { get; private set; }
-        public long AutoGrowthSize { get; private set; }
-        public long RequiredFreeSpaceForNewFile { get; private set; }
-        public long RequiredFreeSpaceForAutoGrowth { get; private set; }
+        public bool IsMemoryArchive { get; set; }
+        public List<string> Paths { get; private set; }
+        public long InitialSize { get; set; }
+        public long AutoGrowthSize { get; set; }
+        public long RequiredFreeSpaceForNewFile { get; set; }
+        public long RequiredFreeSpaceForAutoGrowth { get; set; }
 
-        public ArchiveInitializerSettings(ConfigNode node)
+        public ArchiveInitializerSettings()
         {
-            Folders = new ReadonlyList<string>();
-
-            if (bool.Parse(node["IsMemoryArchive","false"]))
-            {
-                IsMemoryArchive = true;
-            }
-            else
-            {
-                IsMemoryArchive = false;
-                InitialSize = long.Parse(node["InitialSize"]);
-                AutoGrowthSize = long.Parse(node["AutoGrowthSize"]);
-                RequiredFreeSpaceForNewFile = long.Parse(node["RequiredFreeSpaceForNewFile"]);
-                RequiredFreeSpaceForAutoGrowth = long.Parse(node["RequiredFreeSpaceForAutoGrowth"]);
-                foreach (var child in node.GetChildren("FolderList"))
-                {
-                    Folders.Add(child);
-                }
-            }
-            Folders.IsReadOnly = true;
+            Paths = new List<string>();
         }
 
     }

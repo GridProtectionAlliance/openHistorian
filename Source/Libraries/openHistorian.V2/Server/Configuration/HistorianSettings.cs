@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerInstanceSettings.cs - Gbtc
+//  HistorianSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,25 +23,16 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using openHistorian.V2.Collections;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ServerInstanceSettings
+    public class HistorianSettings
     {
-        public ReadonlySortedList<string, ArchiveManagementSystemSettings> Databases;
+        public SortedList<string, DatabaseSettings> Instances;
 
-        public ServerInstanceSettings(ConfigNode node)
+        public HistorianSettings()
         {
-            Databases = new ReadonlySortedList<string, ArchiveManagementSystemSettings>();
-            foreach (var instances in node.GetChildren("Instance"))
-            {
-                var ams = new ArchiveManagementSystemSettings(instances);
-                Databases.Add(ams.Name.ToLower(), ams);
-            }
-            Databases.IsReadOnly = true;
+            Instances = new SortedList<string, DatabaseSettings>();
         }
 
     }

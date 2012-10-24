@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerInstance.cs - Gbtc
+//  HistorianEngine.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -32,17 +32,17 @@ namespace openHistorian.V2.Server
     /// <summary>
     /// The main engine of the openHistorian. Instance this class to host a historian.
     /// </summary>
-    public class ServerInstance
+    public class HistorianEngine
     {
         object m_syncRoot = new object();
-        SortedList<string, ArchiveManagementSystem> m_databases;
+        SortedList<string, ArchiveDatabaseEngine> m_databases;
 
-        public ServerInstance()
+        public HistorianEngine()
         {
-            m_databases = new SortedList<string, ArchiveManagementSystem>();
+            m_databases = new SortedList<string, ArchiveDatabaseEngine>();
         }
 
-        public void Create(string name, ArchiveManagementSystemSettings settings)
+        public void Create(string name, DatabaseSettings settings)
         {
             //lock (m_syncRoot)
             //{
@@ -80,7 +80,7 @@ namespace openHistorian.V2.Server
 
         //}
 
-        public ArchiveManagementSystem Get(string name)
+        public ArchiveDatabaseEngine Get(string name)
         {
             lock (m_syncRoot)
             {

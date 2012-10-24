@@ -68,7 +68,7 @@ namespace openHistorian.V2.Streaming.Server
         bool m_connected;
         public void Execute()
         {
-            if (m_databaseInstance.ArchiveManagementSystem == null)
+            if (m_databaseInstance.ArchiveDatabaseEngine == null)
             {
                 m_host.Terminate();
                 return;

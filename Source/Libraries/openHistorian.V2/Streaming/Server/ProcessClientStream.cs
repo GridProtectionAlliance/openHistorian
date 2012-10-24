@@ -37,9 +37,9 @@ namespace openHistorian.V2.Streaming.Server
         bool m_connected;
         Thread m_processClientThread;
         ITransportCommand[] m_routingTable;
-        ServerInstance m_engine;
+        HistorianEngine m_engine;
 
-        public ProcessClientStream(ITransportStreaming clientStream, ServerInstance engine)
+        public ProcessClientStream(ITransportStreaming clientStream, HistorianEngine engine)
         {
             m_engine = engine;
             m_connected = true;
@@ -72,7 +72,7 @@ namespace openHistorian.V2.Streaming.Server
                 return m_receive;
             }
         }
-        public ServerInstance Engine
+        public HistorianEngine Engine
         {
             get
             {

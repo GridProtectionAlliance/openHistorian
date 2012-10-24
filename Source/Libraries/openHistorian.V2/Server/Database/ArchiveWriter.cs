@@ -39,8 +39,6 @@ namespace openHistorian.V2.Server.Database
     {
         ArchiveWriterSettings m_settings;
 
-        ArchiveInitializer m_archiveInitializer;
-
         volatile bool m_disposed;
 
         ArchiveList m_archiveList;
@@ -64,9 +62,6 @@ namespace openHistorian.V2.Server.Database
         /// <param name="archiveList">The list used to attach newly created file.</param>
         public ArchiveWriter(ArchiveWriterSettings settings, ArchiveList archiveList)
         {
-
-            m_archiveInitializer = new ArchiveInitializer(settings.Initializer);
-
             m_settings = settings;
 
             m_archiveList = archiveList;
@@ -109,7 +104,7 @@ namespace openHistorian.V2.Server.Database
                     {
                         m_commitCount = 0;
                         m_lastCommitTime.Restart();
-                        var newFile = m_archiveInitializer.CreateArchiveFile();
+                        var newFile = new ArchiveFile();
                         using (var edit = m_archiveList.AcquireEditLock())
                         {
                             //Create a new file.

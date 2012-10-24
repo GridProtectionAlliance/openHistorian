@@ -15,8 +15,8 @@ namespace Historian2Demo
 {
     public partial class Form1 : Form
     {
-        public ServerInstance m_server;
-        public ArchiveManagementSystem m_database;
+        public HistorianEngine m_server;
+        public ArchiveDatabaseEngine m_database;
 
         public Form1()
         {
@@ -35,7 +35,7 @@ namespace Historian2Demo
 
         private void BtnStartEngine_Click(object sender, EventArgs e)
         {
-            m_server = new ServerInstance();
+            m_server = new HistorianEngine();
             m_server.Create("Audio",null);
             m_database = m_server.Get("Audio");
         }

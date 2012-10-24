@@ -22,29 +22,24 @@
 //
 //******************************************************************************************************
 
-using openHistorian.V2.Collections;
+using System.Collections.Generic;
 
 namespace openHistorian.V2.Server.Configuration
 {
     public class ArchiveListSettings
     {
-        public ReadonlyList<FileSettings> AttachedFiles { get; private set; }
+        public List<FileSettings> AttachedFiles { get; set; }
         
-        public ArchiveListSettings(ConfigNode node)
-        {
-            
-        }
-
         /// <summary>
         /// Basic information about the file.
         /// </summary>
         public struct FileSettings
         {
             public string FileLocaiton;
-            public string GenerationName;
+            public int GenerationName;
             public bool OpenAsReadOnly;
 
-            public FileSettings(string fileLocation, string generationName, bool openAsReadOnly)
+            public FileSettings(string fileLocation, int generationName, bool openAsReadOnly)
             {
                 FileLocaiton = fileLocation;
                 GenerationName = generationName;

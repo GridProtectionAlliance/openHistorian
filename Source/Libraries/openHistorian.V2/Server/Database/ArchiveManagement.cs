@@ -37,7 +37,7 @@ namespace openHistorian.V2.Server.Database
     /// </summary>
     public class ArchiveManagement
     {
-        ArchiveManagementSettings m_settings;
+        ArchiveRolloverSettings m_settings;
 
         ArchiveInitializer m_archiveInitializer;
 
@@ -60,9 +60,8 @@ namespace openHistorian.V2.Server.Database
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="archiveList">The list used to attach newly created file.</param>
-        public ArchiveManagement(ArchiveManagementSettings settings, ArchiveList archiveList)
+        public ArchiveManagement(ArchiveRolloverSettings settings, ArchiveList archiveList)
         {
-
             m_settings = settings;
 
             m_archiveList = archiveList;

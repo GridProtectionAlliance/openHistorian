@@ -23,33 +23,19 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.Collections;
 using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server.Configuration
 {
     public class ArchiveWriterSettings
     {
-        public int? CommitOnPointCount { get; private set; }
+        public int? CommitOnPointCount;
         public TimeSpan? CommitOnInterval;
-        public string DestinationName;
-        public ArchiveInitializerSettings Initializer;
+        public int DestinationName;
+
         public int? NewFileOnCommitCount;
         public TimeSpan? NewFileOnInterval;
         public long? NewFileOnSize;
-
-        public ArchiveWriterSettings(ConfigNode node)
-        {
-
-            CommitOnPointCount = node.GetValueInt("CommitOnPointCount");
-            CommitOnInterval = node.GetValueTimeSpan("CommitOnInterval", TimeSpan.TicksPerSecond);
-            DestinationName = node["Name", ""];
-            NewFileOnCommitCount = node.GetValueInt("NewFileOnCommitCount");
-            NewFileOnInterval = node.GetValueTimeSpan("NewFileOnInterval", TimeSpan.TicksPerSecond);
-            NewFileOnSize = node.GetValueLong("NewFileOnSize", 1024 * 1024);
-            
-            Initializer = new ArchiveInitializerSettings(node["Initialization"]);
-        }
 
     }
 }

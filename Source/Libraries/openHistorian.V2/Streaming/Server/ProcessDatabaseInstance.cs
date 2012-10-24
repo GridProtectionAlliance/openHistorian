@@ -38,7 +38,7 @@ namespace openHistorian.V2.Streaming.Server
         bool m_connected;
         bool m_authenticated;
         string m_instanceName;
-        ArchiveManagementSystem m_archiveManagementSystem;
+        ArchiveDatabaseEngine m_archiveDatabaseEngine;
 
         public ProcessDatabaseInstance(ITransportHost host)
         {
@@ -55,11 +55,11 @@ namespace openHistorian.V2.Streaming.Server
             }
         }
 
-        public ArchiveManagementSystem ArchiveManagementSystem
+        public ArchiveDatabaseEngine ArchiveDatabaseEngine
         {
             get
             {
-                return m_archiveManagementSystem;
+                return m_archiveDatabaseEngine;
             }
         }
 

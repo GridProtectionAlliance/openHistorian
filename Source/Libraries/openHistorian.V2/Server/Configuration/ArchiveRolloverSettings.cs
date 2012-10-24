@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveManagementSystemSettings.cs - Gbtc
+//  FileManagementSettings.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,32 +22,22 @@
 //
 //******************************************************************************************************
 
+using System;
 using openHistorian.V2.Collections;
+using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server.Configuration
 {
-    public class ArchiveManagementSystemSettings 
+    public class ArchiveRolloverSettings
     {
-        public string Name { get; private set; }
-        public ArchiveWriterSettings ArchiveWriter;
-        public ReadonlyList<ArchiveManagementSettings> ArchiveManagers;
-        public ArchiveListSettings ArchiveList;
-       
-        public ArchiveManagementSystemSettings(ConfigNode node)
-        {
-            Name = node.GetChildString("Name", "default");
-            if (node.Contains("ArchiveWriter"))
-                ArchiveWriter = new ArchiveWriterSettings(node.GetChild("ArchiveWriter"));  
-            ArchiveManagers = new ReadonlyList<ArchiveManagementSettings>();
-            foreach (var n in node.GetChildren())
-            {
-                ArchiveManagers.Add(new ArchiveManagementSettings(n));
-            }
-            ArchiveList = new ArchiveListSettings(node);
+        public int SourceName;
+        public int DestinationName;
+        public ArchiveInitializerSettings Initializer;
 
-            ArchiveManagers.IsReadOnly = true;
-        }
+        public int? NewFileOnCommitCount;
+        public TimeSpan? NewFileOnInterval;
+        public long? NewFileOnSize;
+
 
     }
-
 }

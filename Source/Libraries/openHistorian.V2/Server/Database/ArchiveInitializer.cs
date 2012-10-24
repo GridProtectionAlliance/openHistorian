@@ -67,7 +67,7 @@ namespace openHistorian.V2.Server.Database
         string CreateArchiveName()
         {
             long requiredFreeSpace = Math.Min(m_settings.RequiredFreeSpaceForNewFile, m_settings.InitialSize);
-            foreach (var path in m_settings.Folders)
+            foreach (var path in m_settings.Paths)
             {
                 long freeSpace, totalSpace;
                 if (WinApi.GetAvailableFreeSpace(path,out freeSpace, out totalSpace))

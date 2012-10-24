@@ -41,11 +41,11 @@ namespace openHistorian.V2.Server.Database
         /// <summary>
         /// The name of the archive generation.
         /// </summary>
-        public string Generation;
+        public int Generation;
 
         public ArchiveFileSummary Summary;
 
-        public ArchiveFileStateInformation(bool isReadOnly, bool isEditLocked, string generation)
+        public ArchiveFileStateInformation(bool isReadOnly, bool isEditLocked, int generation)
         {
             IsReadOnly = isReadOnly;
             IsEditLocked = isEditLocked;

@@ -42,7 +42,7 @@ namespace openHistorian.V2.Local
             m_tree = new SortedTree256(m_stream, 4096);
         }
 
-        public IHistorianReadWrite ConnectToInstance(string name)
+        public IHistorianReadWrite ConnectToDatabase(string databaseName)
         {
             return new HistorianReadWrite(this);
         }
@@ -55,6 +55,11 @@ namespace openHistorian.V2.Local
         public bool IsDiskCommitted(long transactionId)
         {
             return true;
+        }
+
+        public IManageHistorian Manage()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveManagementSystem.cs - Gbtc
+//  ArchiveDatabaseEngine.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -31,23 +31,20 @@ namespace openHistorian.V2.Server.Database
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
-    public partial class ArchiveManagementSystem
+    public partial class ArchiveDatabaseEngine
     {
-        ArchiveManagementSystemSettings m_settings;
+        DatabaseSettings m_settings;
         ArchiveWriter m_archiveWriter;
-        //DataReader m_dataReader;
         ArchiveList m_archiveList;
         List<ArchiveManagement> m_archiveManagement;
 
-        public ArchiveManagementSystem(ArchiveManagementSystemSettings settings)
+        public ArchiveDatabaseEngine(DatabaseSettings settings)
         {
-
             m_settings = settings;
-
             m_archiveList = new ArchiveList(settings.ArchiveList);
             m_archiveManagement = new List<ArchiveManagement>();
 
-            foreach (var managementSettings in settings.ArchiveManagers)
+            foreach (var managementSettings in settings.ArchiveRollovers)
             {
                 m_archiveManagement.Add(new ArchiveManagement(managementSettings, m_archiveList));
             }
@@ -61,7 +58,7 @@ namespace openHistorian.V2.Server.Database
             return new ChangeSettings(this);
         }
 
-        public ArchiveManagementSystemSettings GetCurrentSettings()
+        public DatabaseSettings GetCurrentSettings()
         {
             return m_settings;
         }
