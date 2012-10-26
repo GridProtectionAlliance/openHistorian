@@ -25,47 +25,48 @@
 using System;
 using System.Collections.Generic;
 using openHistorian.V2.Server.Configuration;
+using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
 {
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
-    public partial class ArchiveDatabaseEngine
+    public class ArchiveDatabaseEngine
     {
-        DatabaseSettings m_settings;
+        //ToDo: The dispose pattern has to be handled properly. Architect that solution.
         ArchiveWriter m_archiveWriter;
         ArchiveList m_archiveList;
-        List<ArchiveManagement> m_archiveManagement;
+        ArchiveManagement[] m_archiveManagement;
 
         public ArchiveDatabaseEngine(DatabaseSettings settings)
         {
-            m_settings = settings;
-            m_archiveList = new ArchiveList(settings.ArchiveList);
-            m_archiveManagement = new List<ArchiveManagement>();
+            m_archiveList = new ArchiveList(settings.AttachedFiles);
+            m_archiveManagement = new ArchiveManagement[settings.ArchiveRollovers.Count];
 
-            foreach (var managementSettings in settings.ArchiveRollovers)
+            ArchiveManagement previousManagement = null;
+            for (int x = settings.ArchiveRollovers.Count - 1; x >= 0; x-- ) //Go in reverse order since there is chaining that occurs
             {
-                m_archiveManagement.Add(new ArchiveManagement(managementSettings, m_archiveList));
+                var managementSettings = settings.ArchiveRollovers[x];
+                if (previousManagement == null)
+                {
+                    m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, FinalizeArchiveFile);
+                    previousManagement = m_archiveManagement[x];
+                }
+                else
+                {
+                    m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, previousManagement.ProcessArchive);
+                    previousManagement = m_archiveManagement[x];
+                }
             }
-
-            m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList);
-        }
-
-
-        public ChangeSettings BeginChangeSettings()
-        {
-            return new ChangeSettings(this);
-        }
-
-        public DatabaseSettings GetCurrentSettings()
-        {
-            return m_settings;
-        }
-
-        public long LookupPointId(Guid pointId)
-        {
-            return -1;
+            if (previousManagement == null)
+            {
+                m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, FinalizeArchiveFile);
+            }
+            else
+            {
+                m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, previousManagement.ProcessArchive);
+            }
         }
 
         public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
@@ -73,6 +74,13 @@ namespace openHistorian.V2.Server.Database
             m_archiveWriter.WriteData(key1, key2, value1, value2);
         }
 
+        void FinalizeArchiveFile(ArchiveFile archive)
+        {
+            using (var edit = m_archiveList.AcquireEditLock())
+            {
+                edit.ReleaseEditLock(archive);
+            }
+        }
 
     }
 }

@@ -23,19 +23,27 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Server.Configuration
 {
+    /// <summary>
+    /// Controls the initial write stages when writing in a stream-like fassion.
+    /// </summary>
     public class ArchiveWriterSettings
     {
-        public int? CommitOnPointCount;
-        public TimeSpan? CommitOnInterval;
-        public int DestinationName;
-
-        public int? NewFileOnCommitCount;
-        public TimeSpan? NewFileOnInterval;
-        public long? NewFileOnSize;
-
+        /// <summary>
+        /// On this interval, new data that is added to the stream will be written
+        /// so it can be referenced by the end user. This is typically the 
+        /// memory commit interval and is short. Like a fraction of a second.
+        /// </summary>
+        public TimeSpan CommitOnInterval;
+        /// <summary>
+        /// On this interval, the existing archive file will no longer be appended to.
+        /// The edit lock will be released and a new file will be created to append data
+        /// to. This is typically the disk commit interval since all of the contents of
+        /// this file will usually be rolled over into a higher generation file
+        /// that is disk backed. Recommended ranges of 1-30 seconds.
+        /// </summary>
+        public TimeSpan NewFileOnInterval;
     }
 }

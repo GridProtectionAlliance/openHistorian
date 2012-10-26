@@ -40,27 +40,25 @@ namespace openHistorian.V2.Server.Database
         /// <summary>
         /// Contains the list of all archives.
         /// </summary>
-        List<ArchiveFileStateInformation> m_partitions;
+        List<ArchiveFileSummary> m_fileSummaries;
+        List<ArchiveFile> m_lockedFiles;
 
         /// <summary>
-        /// Contains the latest snapshots of every archive resouce.
+        /// Contains all of the active snapshots of the archive lists
+        /// This is used for determining when resources are no longer in use.
         /// </summary>
-        List<ArchiveListSnapshot> m_resources;
+        List<ArchiveListSnapshot> m_allSnapshots;
 
-
-        public ArchiveList(ArchiveListSettings settings)
+        public ArchiveList(IEnumerable<string> archiveFiles)
         {
-
-            m_partitions = new List<ArchiveFileStateInformation>();
-            m_resources = new List<ArchiveListSnapshot>();
-            foreach (var file in settings.AttachedFiles)
+            m_lockedFiles = new List<ArchiveFile>();
+            m_fileSummaries = new List<ArchiveFileSummary>();
+            m_allSnapshots = new List<ArchiveListSnapshot>();
+            foreach (var file in archiveFiles)
             {
-
-                var archiveFile = new ArchiveFile(file.FileLocaiton, OpenMode.Open, file.OpenAsReadOnly ? AccessMode.ReadOnly : AccessMode.ReadWrite);
+                var archiveFile = new ArchiveFile(file, OpenMode.Open, AccessMode.ReadOnly);
                 var archiveFileSummary = new ArchiveFileSummary(archiveFile);
-                var archiveFileStateInformation = new ArchiveFileStateInformation(file.OpenAsReadOnly, false, file.GenerationName);
-                archiveFileStateInformation.Summary = archiveFileSummary;
-                m_partitions.Add(archiveFileStateInformation);
+                m_fileSummaries.Add(archiveFileSummary);
             }
         }
 
@@ -77,7 +75,7 @@ namespace openHistorian.V2.Server.Database
             lock (m_syncRoot)
             {
                 var resources = new ArchiveListSnapshot(ReleaseClientResources, AcquireSnapshot);
-                m_resources.Add(resources);
+                m_allSnapshots.Add(resources);
                 return resources;
             }
         }
@@ -90,7 +88,7 @@ namespace openHistorian.V2.Server.Database
         {
             lock (m_syncRoot)
             {
-                m_resources.Remove(archiveLists);
+                m_allSnapshots.Remove(archiveLists);
             }
         }
 
@@ -102,11 +100,7 @@ namespace openHistorian.V2.Server.Database
         {
             lock (m_syncRoot)
             {
-                transaction.Tables = new ArchiveFileSummary[m_partitions.Count];
-                for (int x = 0; x < m_partitions.Count; x++)
-                {
-                    transaction.Tables[x] = m_partitions[x].Summary;
-                }
+                transaction.Tables = m_fileSummaries.ToArray();
             }
         }
 
@@ -133,7 +127,7 @@ namespace openHistorian.V2.Server.Database
         {
             lock (m_syncRoot)
             {
-                foreach (var resource in m_resources)
+                foreach (var resource in m_allSnapshots)
                 {
                     var tables = resource.Tables;
                     if (tables != null)

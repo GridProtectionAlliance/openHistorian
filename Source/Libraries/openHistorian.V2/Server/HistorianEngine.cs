@@ -37,26 +37,25 @@ namespace openHistorian.V2.Server
         object m_syncRoot = new object();
         SortedList<string, ArchiveDatabaseEngine> m_databases;
 
-        public HistorianEngine()
+        public HistorianEngine(HistorianSettings settings)
         {
             m_databases = new SortedList<string, ArchiveDatabaseEngine>();
+            foreach (var database in settings.Databases)
+            {
+                m_databases.Add(database.Key, new ArchiveDatabaseEngine(database.Value));
+            }
         }
 
-        public void Create(string name, DatabaseSettings settings)
+        public void Create(string databaseName, DatabaseSettings settings)
         {
-            //lock (m_syncRoot)
-            //{
-            //    ArchiveManagementSystem engine = new ArchiveManagementSystem(settings);
-            //    m_databases.Add(name.ToUpper(), engine);
-            //}
+        
         }
 
-        public void Drop(string name)
+        public void Drop(string databaseName)
         {
             lock (m_syncRoot)
             {
-                var engine = Get(name);
-                m_databases.Remove(name.ToUpper());
+                
             }
         }
 
@@ -80,19 +79,19 @@ namespace openHistorian.V2.Server
 
         //}
 
-        public ArchiveDatabaseEngine Get(string name)
+        public ArchiveDatabaseEngine Get(string databaseName)
         {
             lock (m_syncRoot)
             {
-                return m_databases[name.ToUpper()];
+                return m_databases[databaseName.ToUpper()];
             }
         }
 
-        public bool Exists(string name)
+        public bool Contains(string databaseName)
         {
             lock (m_syncRoot)
             {
-                return m_databases.ContainsKey(name.ToUpper());
+                return m_databases.ContainsKey(databaseName.ToUpper());
             }
         }
 

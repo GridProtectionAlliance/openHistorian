@@ -31,11 +31,12 @@ namespace openHistorian.V2.Server.Configuration
         public string Name;
         public ArchiveWriterSettings ArchiveWriter;
         public List<ArchiveRolloverSettings> ArchiveRollovers;
-        public ArchiveListSettings ArchiveList;
+        public List<string> AttachedFiles { get; set; }
 
         public DatabaseSettings()
         {
             ArchiveRollovers = new List<ArchiveRolloverSettings>();
+            AttachedFiles=new List<string>();
         }
 
     }

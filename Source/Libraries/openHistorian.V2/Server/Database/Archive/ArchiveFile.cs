@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionFile.cs - Gbtc
+//  ArchiveFile.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -33,7 +33,10 @@ namespace openHistorian.V2.Server.Database.Archive
     /// Represents a individual self-contained archive file. 
     /// This is one of many files that are part of a given <see cref="ArchiveDatabaseEngine"/>.
     /// </summary>
-    public class ArchiveFile : IDisposable
+    /// <remarks>
+    /// 
+    /// </remarks>
+    public partial class ArchiveFile : IDisposable
     {
         #region [ Members ]
 
@@ -43,14 +46,16 @@ namespace openHistorian.V2.Server.Database.Archive
         ulong m_firstKey;
         ulong m_lastKey;
         bool m_disposed;
-        TransactionalFileStructure m_fileStructure;
-        TransactionalEdit m_currentTransaction;
-        SortedTreeContainerEdit m_dataTree;
 
+        TransactionalFileStructure m_fileStructure;
+        ArchiveFileEditor m_activeEditor;
         #endregion
 
         #region [ Constructors ]
 
+        /// <summary>
+        /// Creates a new in memory archive file.
+        /// </summary>
         public ArchiveFile()
         {
             m_fileName = string.Empty;
@@ -58,6 +63,12 @@ namespace openHistorian.V2.Server.Database.Archive
             InitializeNewFile();
         }
 
+        /// <summary>
+        /// Creates/Opens an archive file.
+        /// </summary>
+        /// <param name="file">the path for the file</param>
+        /// <param name="openMode">The <see cref="OpenMode"/> state</param>
+        /// <param name="accessMode">The <see cref="AccessMode"/> state</param>
         public ArchiveFile(string file, OpenMode openMode, AccessMode accessMode)
         {
             m_fileName = file;
@@ -121,6 +132,9 @@ namespace openHistorian.V2.Server.Database.Archive
             }
         }
 
+        /// <summary>
+        /// Gets the size of the file.
+        /// </summary>
         public long FileSize
         {
             get
@@ -135,13 +149,14 @@ namespace openHistorian.V2.Server.Database.Archive
 
         public void SetFileSize(long initialFileSize, long autoGrowthSize, long requiredFreeSpaceForAutoGrowth)
         {
-            
+
         }
 
+        /// <summary>
+        /// Called only by the constructor if a new archive file will be created.
+        /// </summary>
         void InitializeNewFile()
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
             using (var trans = m_fileStructure.BeginEdit())
             {
                 using (var fs = trans.CreateFile(s_pointDataFile, 1))
@@ -169,55 +184,27 @@ namespace openHistorian.V2.Server.Database.Archive
         /// <summary>
         /// Begins an edit of the current archive file.
         /// </summary>
-        public void BeginEdit()
+        public ArchiveFileEditor BeginEdit()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            m_currentTransaction = m_fileStructure.BeginEdit();
-            m_dataTree = new SortedTreeContainerEdit(m_currentTransaction, s_pointDataFile, 1);
-
-        }
-        /// <summary>
-        /// Commits the edits to the current archive file.
-        /// </summary>
-        public void CommitEdit()
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            m_firstKey = m_dataTree.FirstKey;
-            m_lastKey = m_dataTree.LastKey;
-            m_dataTree.Dispose();
-            m_currentTransaction.CommitAndDispose();
-        }
-
-        /// <summary>
-        /// Rolls back all edits that are made to the archive file.
-        /// </summary>
-        public void RollbackEdit()
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            m_dataTree.Dispose();
-            m_currentTransaction.RollbackAndDispose();
-        }
-
-        public void AddPoint(ulong date, ulong pointId, ulong value1, ulong value2)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            m_dataTree.AddPoint(date, pointId, value1, value2);
+            if (m_activeEditor != null)
+                throw new Exception("Only one concurrent edit is supported");
+            m_activeEditor = new ArchiveFileEditor(this);
+            return m_activeEditor;
         }
 
         public void Dispose()
         {
             if (!m_disposed)
             {
+                if (m_activeEditor != null)
+                    m_activeEditor.Dispose();
                 m_fileStructure.Dispose();
                 m_disposed = true;
             }
-
         }
-        
+
         /// <summary>
         /// Closes and deletes the partition. Also calls dispose.
         /// If this is a memory archive, it will release the memory space to the buffer pool.

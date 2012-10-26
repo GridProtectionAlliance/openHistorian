@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveListSettings.cs - Gbtc
+//  ConfigHistorian.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,38 +16,37 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/24/2012 - Steven E. Chisholm
+//  10/25/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace openHistorian.V2.Server.Configuration
+namespace openHistorian.V2.Local
 {
-    public class ArchiveListSettings
+    public class ConfigHistorian
     {
-        public List<FileSettings> AttachedFiles { get; set; }
-        
-        /// <summary>
-        /// Basic information about the file.
-        /// </summary>
-        public struct FileSettings
-        {
-            public string FileLocaiton;
-            public int GenerationName;
-            public bool OpenAsReadOnly;
+        public SortedList<string, ConfigDatabase> Databases;
 
-            public FileSettings(string fileLocation, int generationName, bool openAsReadOnly)
-            {
-                FileLocaiton = fileLocation;
-                GenerationName = generationName;
-                OpenAsReadOnly = openAsReadOnly;
-            }
+        public ConfigHistorian()
+        {
+            
+        }
+        public ConfigHistorian(string fileName)
+        {
+            
         }
 
-        
-        
+        public void Save()
+        {
+            
+        }
+
     }
+ 
 }

@@ -35,25 +35,17 @@ namespace openHistorian.V2.Server.Database
         const int SizeOfData = 32;
 
         //ToDo: Keep statistics on the size of the queue.  It's possible that the underlying memory stream may get very large and will never reduce in size.
-        Action m_queueFullCallback;
 
         bool m_disposed;
         BinaryStream m_processingQueue;
         BinaryStream m_activeQueue;
         object m_syncRoot;
-        int m_autoCommitQueueSize;
-        int m_activePointCount;
 
         /// <summary>
         /// Creates a new inbound queue to buffer points.
         /// </summary>
-        /// <param name="autoCommitQueueSize">After the queue becomes this size, a <see cref="Action"/> 
-        /// delegate will be called once.</param>
-        /// <param name="queueFullCallback">The optional callback function once the queue becomes exactly autoCommitQueueSize in size.</param>
-        public PointQueue(int autoCommitQueueSize = -1, Action queueFullCallback = null)
+        public PointQueue()
         {
-            m_queueFullCallback = queueFullCallback;
-            m_autoCommitQueueSize = autoCommitQueueSize;
             m_syncRoot = new object();
             m_activeQueue = new BinaryStream();
             m_processingQueue = new BinaryStream();
@@ -70,18 +62,13 @@ namespace openHistorian.V2.Server.Database
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            bool isQueueFull;
             lock (m_syncRoot)
             {
-                m_activePointCount++;
-                isQueueFull = (m_autoCommitQueueSize == m_activePointCount);
                 m_activeQueue.Write(key1);
                 m_activeQueue.Write(key2);
                 m_activeQueue.Write(value1);
                 m_activeQueue.Write(value2);
             }
-            if (isQueueFull && m_queueFullCallback != null)
-                m_queueFullCallback.Invoke();
         }
 
         /// <summary>
@@ -104,7 +91,6 @@ namespace openHistorian.V2.Server.Database
 
                 m_activeQueue = m_processingQueue;
                 m_activeQueue.Position = 0;
-                m_activePointCount = 0;
 
                 m_processingQueue = stream;
             }
@@ -127,7 +113,6 @@ namespace openHistorian.V2.Server.Database
                 }
                 finally
                 {
-                    m_queueFullCallback = null;
                     m_disposed = true;
                     m_activeQueue = null;
                     m_processingQueue = null;

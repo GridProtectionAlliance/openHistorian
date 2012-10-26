@@ -439,6 +439,11 @@ namespace openHistorian.V2.Collections.KeyValue
             Array.Clear(m_cache, 0, 5);
         }
 
+        public void Save()
+        {
+            SaveHeader();
+        }
+
 
         #endregion
 

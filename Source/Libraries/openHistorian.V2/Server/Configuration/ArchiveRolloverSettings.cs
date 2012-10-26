@@ -30,14 +30,12 @@ namespace openHistorian.V2.Server.Configuration
 {
     public class ArchiveRolloverSettings
     {
-        public int SourceName;
-        public int DestinationName;
         public ArchiveInitializerSettings Initializer;
-
-        public int? NewFileOnCommitCount;
-        public TimeSpan? NewFileOnInterval;
-        public long? NewFileOnSize;
-
-
+        public TimeSpan NewFileOnInterval;
+        public long NewFileOnSize;
+        public ArchiveRolloverSettings()
+        {
+            Initializer = new ArchiveInitializerSettings();
+        }
     }
 }

@@ -28,11 +28,11 @@ namespace openHistorian.V2.Server.Configuration
 {
     public class HistorianSettings
     {
-        public SortedList<string, DatabaseSettings> Instances;
+        public SortedList<string, DatabaseSettings> Databases;
 
         public HistorianSettings()
         {
-            Instances = new SortedList<string, DatabaseSettings>();
+            Databases = new SortedList<string, DatabaseSettings>();
         }
 
     }

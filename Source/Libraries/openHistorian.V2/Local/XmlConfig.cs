@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 
-namespace openHistorian.V2.Server.Configuration
+namespace openHistorian.V2.Local
 {
 
     /// <summary>

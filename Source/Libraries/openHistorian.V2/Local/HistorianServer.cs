@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveManagementSystem.cs - Gbtc
+//  HistorianServer.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,60 +16,46 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/19/2012 - Steven E. Chisholm
+//  10/25/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
+using openHistorian.V2.Server;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Local
 {
-    /// <summary>
-    /// Represents a single self contained historian that is referenced by an instance name. 
-    /// </summary>
-    public partial class ArchiveDatabaseEngine
+    public partial class HistorianServer : IHistorian
     {
-        public class ChangeSettings : IDisposable
+        HistorianEngine m_engine;
+        ConfigHistorian m_config;
+
+        public HistorianServer()
         {
-            bool m_disposed;
-            ArchiveDatabaseEngine m_system;
-            
-            public ChangeSettings(ArchiveDatabaseEngine system)
-            {
-                m_system = system;
-            }
 
-            public void Commit()
-            {
-                if (m_disposed) 
-                    throw new ObjectDisposedException(GetType().FullName);
-
-
-                m_disposed = true;
-            }
-
-            public void Rollback()
-            {
-                if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-
-
-                m_disposed = true;
-            }
-
-            public void Dispose()
-            {
-                if (!m_disposed)
-                {
-                    Rollback();
-                }
-            }
         }
 
+        public IHistorianReadWrite ConnectToDatabase(string databaseName)
+        {
+            var database = m_engine.Get(databaseName);
 
+            return new HistorianReadWrite(this, database);
+        }
 
+        public bool IsCommitted(long transactionId)
+        {
+            return true;
+        }
+
+        public bool IsDiskCommitted(long transactionId)
+        {
+            return true;
+        }
+
+        public IManageHistorian Manage()
+        {
+            return new HistorianManage(this);
+        }
     }
 }

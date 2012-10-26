@@ -80,6 +80,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\KeyValue\NullTreeScanner256.cs" />
+    <Compile Include="Collections\KeyValue\UnionScanner256.cs" />
     <Compile Include="Collections\ReadonlySortedList.cs" />
     <Compile Include="Collections\ILargeArray.cs" />
     <Compile Include="Collections\LargeArray.cs" />
@@ -110,20 +112,24 @@
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStreamSizing.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
+    <Compile Include="Local\ConfigHistorian.cs" />
+    <Compile Include="Local\ConfigDatabase.cs" />
+    <Compile Include="Local\HistorianServer_HistorianManage.cs" />
+    <Compile Include="Local\HistorianServer_HistorianReadWrite.cs" />
     <Compile Include="Local\Historian.cs" />
+    <Compile Include="Local\HistorianServer.cs" />
     <Compile Include="Local\Historian_HistorianReadWrite.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="OpenMode.cs" />
-    <Compile Include="Server\Configuration\ConfigNode.cs" />
-    <Compile Include="Server\Configuration\XmlConfig.cs" />
+    <Compile Include="Local\ConfigNode.cs" />
+    <Compile Include="Local\XmlConfig.cs" />
     <Compile Include="Server\Database\ArchiveList.cs" />
     <Compile Include="Server\Database\ArchiveList_Editor.cs" />
     <Compile Include="Server\Database\ArchiveListRemovalStatus.cs" />
     <Compile Include="Server\Database\ArchiveManagement.cs" />
-    <Compile Include="Server\Database\ArchiveManagementSystem_ChangeSettings.cs" />
-    <Compile Include="Server\Database\NewArchiveCriteria.cs" />
-    <Compile Include="Server\Database\ArchiveFileStateInformation.cs" />
+    <Compile Include="Server\Database\ArchiveReader.cs" />
+    <Compile Include="Server\Database\Archive\ArchiveFileEditor.cs" />
     <Compile Include="Server\Configuration\DatabaseSettings.cs" />
     <Compile Include="Server\Configuration\ArchiveInitializerSettings.cs" />
     <Compile Include="Server\Configuration\ArchiveRolloverSettings.cs" />
@@ -151,7 +157,6 @@
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
     <Compile Include="Server\Configuration\ArchiveWriterSettings.cs" />
-    <Compile Include="Server\Configuration\ArchiveListSettings.cs" />
     <Compile Include="Server\HistorianEngine.cs" />
     <Compile Include="Server\Database\ArchiveListSnapshot.cs" />
     <Compile Include="Server\Database\ArchiveWriter.cs" />

@@ -23,7 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using openHistorian.V2.Server.Configuration;
@@ -51,23 +51,28 @@ namespace openHistorian.V2.Server.Database
 
         ManualResetEvent m_waitTimer;
 
-        int m_commitCount;
+        Stopwatch m_newFileCreationTime;
 
-        Stopwatch m_lastCommitTime;
+        ConcurrentQueue<ArchiveFile> m_filesToProcess;
+
+        Action<ArchiveFile> m_callbackFileComplete;
 
         /// <summary>
         /// Creates a new <see cref="ArchiveManagement"/>.
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="archiveList">The list used to attach newly created file.</param>
-        public ArchiveManagement(ArchiveRolloverSettings settings, ArchiveList archiveList)
+        /// <param name="callbackFileComplete">Once a file is complete with this layer, this callback is invoked</param>
+        public ArchiveManagement(ArchiveRolloverSettings settings, ArchiveList archiveList, Action<ArchiveFile> callbackFileComplete)
         {
+            m_filesToProcess=new ConcurrentQueue<ArchiveFile>();
+            m_callbackFileComplete = callbackFileComplete;
             m_settings = settings;
 
             m_archiveList = archiveList;
             m_archiveInitializer = new ArchiveInitializer(settings.Initializer);
 
-            m_lastCommitTime = Stopwatch.StartNew();
+            m_newFileCreationTime = new Stopwatch();
 
             m_waitTimer = new ManualResetEvent(false);
             m_insertThread = new Thread(ProcessInsertingData);
@@ -81,84 +86,80 @@ namespace openHistorian.V2.Server.Database
         {
             while (!m_disposed)
             {
-                m_waitTimer.WaitOne(1000);
+                if (m_filesToProcess.Count == 0)
+                    m_waitTimer.WaitOne(1000);
                 m_waitTimer.Reset();
 
-                List<ArchiveFileSummary> partitionsToRollOver = new List<ArchiveFileSummary>();
 
-                using (var edit = m_archiveList.AcquireEditLock())
+                bool timeToCloseCurrentFile = m_activeFile != null &&
+                                              ((m_newFileCreationTime.Elapsed >= m_settings.NewFileOnInterval) ||
+                                              (m_activeFile.FileSize >= m_settings.NewFileOnSize));
+
+                //Create a new file if need be
+                if (timeToCloseCurrentFile)
                 {
-                    foreach (var file in edit.Partitions)
-                    {
-                        if (file.Generation == m_settings.SourceName && !file.IsEditLocked)
-                        {
-                            partitionsToRollOver.Add(file.Summary);
-                            file.IsEditLocked = true;
-                        }
-                    }
+                    m_newFileCreationTime.Reset();
+                    if (m_activeFile != null)
+                        m_callbackFileComplete(m_activeFile);
+                    m_activeFile = null;
                 }
 
-                if (partitionsToRollOver.Count > 0)
+                ArchiveFile fileToCombine;
+                if (m_filesToProcess.TryDequeue(out fileToCombine))
                 {
-                    if (m_activeFile == null ||
-                        (m_settings.NewFileOnCommitCount.HasValue && m_commitCount >= m_settings.NewFileOnCommitCount.Value) ||
-                        (m_settings.NewFileOnInterval.HasValue && m_lastCommitTime.Elapsed >= m_settings.NewFileOnInterval.Value) ||
-                        (m_settings.NewFileOnSize.HasValue && m_activeFile.FileSize >= m_settings.NewFileOnSize.Value))
+
+                    //Create a new file if need be
+                    if (m_activeFile == null)
                     {
-                        m_commitCount = 0;
-                        m_lastCommitTime.Restart();
+                        m_newFileCreationTime.Start();
                         var newFile = m_archiveInitializer.CreateArchiveFile();
                         using (var edit = m_archiveList.AcquireEditLock())
                         {
                             //Create a new file.
-                            if (m_activeFile != null)
-                            {
-                                edit.ReleaseEditLock(m_activeFile);
-                            }
-                            edit.Add(newFile, new ArchiveFileStateInformation(false, true, m_settings.DestinationName));
+                            edit.Add(newFile, true);
                         }
                         m_activeFile = newFile;
                     }
-                    m_activeFile.BeginEdit();
 
-                    foreach (var source in partitionsToRollOver)
+                    ArchiveFileSummary summary = new ArchiveFileSummary(fileToCombine);
+
+                    using (var src = summary.ActiveSnapshot.OpenInstance())
                     {
-                        using (var src = source.ActiveSnapshot.OpenInstance())
+                        using (var fileEditor = m_activeFile.BeginEdit())
                         {
-                            m_activeFile.BeginEdit();
-
                             var reader = src.GetDataRange();
                             reader.SeekToKey(0, 0);
 
                             ulong value1, value2, key1, key2;
                             while (reader.GetNextKey(out key1, out key2, out value1, out value2))
                             {
-                                m_activeFile.AddPoint(key1, key2, value1, value2);
+                                fileEditor.AddPoint(key1, key2, value1, value2);
                             }
 
-                            m_activeFile.CommitEdit();
+                            fileEditor.Commit();
                             using (var editor = m_archiveList.AcquireEditLock())
                             {
                                 editor.RenewSnapshot(m_activeFile);
                             }
                         }
-                        m_commitCount++;
                     }
-                    m_activeFile.CommitEdit();
                     using (var editor = m_archiveList.AcquireEditLock())
                     {
                         editor.RenewSnapshot(m_activeFile);
-                        foreach (var source in partitionsToRollOver)
+                        ArchiveListRemovalStatus status;
+                        if (editor.Remove(fileToCombine, out status))
                         {
-                            ArchiveListRemovalStatus status;
-                            if (editor.Remove(source.ArchiveFileFile, out status))
-                            {
-                                //ToDo: Do something with this removal status
-                            }
+                            //ToDo: Do something with this removal status
                         }
                     }
                 }
             }
+        }
+
+        public void ProcessArchive(ArchiveFile archiveFile)
+        {
+            m_filesToProcess.Enqueue(archiveFile);
+            SignalProcessRollover();
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveFileStateInformation.cs - Gbtc
+//  ConfigDatabase.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,40 +16,40 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/18/2012 - Steven E. Chisholm
+//  10/25/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Local
 {
-    /// <summary>
-    /// Metadata maintained by <see cref="ArchiveList"/> about each archive file.
-    /// </summary>
-    public class ArchiveFileStateInformation
+    public class ConfigDatabase
     {
-        /// <summary>
-        /// Determines if the archive supports editing.
-        /// </summary>
-        public bool IsReadOnly;
-        /// <summary>
-        /// Determines if the archive is currently locked for edits by another process.
-        /// </summary>
-        public bool IsEditLocked;
-        /// <summary>
-        /// The name of the archive generation.
-        /// </summary>
-        public int Generation;
-
-        public ArchiveFileSummary Summary;
-
-        public ArchiveFileStateInformation(bool isReadOnly, bool isEditLocked, int generation)
+        public ConfigDatabase()
         {
-            IsReadOnly = isReadOnly;
-            IsEditLocked = isEditLocked;
-            Generation = generation;
+            
         }
+        public ConfigDatabase(ConfigNode node)
+        {
+            
+        }
+
+        public string DatabaseName;
+        public bool IsOnline;
+        public bool IsReadOnly;
+        public bool IsInMemoryOnly;
+        public List<string> ReadPath;
+        public List<string> SavePath;
+        public TimeSpan MemoryCommitInterval;
+        public TimeSpan DiskCommitInterval;
+        public float OptimalPointsPerSecond;
+
+
     }
 }

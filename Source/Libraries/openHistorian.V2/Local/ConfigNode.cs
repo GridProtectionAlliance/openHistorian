@@ -28,7 +28,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.V2.Server.Configuration
+namespace openHistorian.V2.Local
 {
     public class ConfigNode
     {

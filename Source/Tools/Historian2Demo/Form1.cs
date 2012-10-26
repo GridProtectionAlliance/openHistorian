@@ -35,7 +35,7 @@ namespace Historian2Demo
 
         private void BtnStartEngine_Click(object sender, EventArgs e)
         {
-            m_server = new HistorianEngine();
+            m_server = new HistorianEngine(null);
             m_server.Create("Audio",null);
             m_database = m_server.Get("Audio");
         }

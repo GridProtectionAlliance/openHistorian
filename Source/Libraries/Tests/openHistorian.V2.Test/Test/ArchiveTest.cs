@@ -16,7 +16,7 @@ namespace openHistorian.V2
             Test();
         }
 
-        static ArchiveFile s_archiveFile;
+        static ArchiveFile.ArchiveFileEditor s_fileEditor;
         static int s_points;
 
         public static void Test()
@@ -26,22 +26,27 @@ namespace openHistorian.V2
             //if (File.Exists(file))
             //    File.Delete(file);
             //s_archive = new Archive(file);
-            s_archiveFile = new ArchiveFile();
-
-            s_archiveFile.BeginEdit();
-
-            HistorianReader reader = new HistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
-            reader.NewPoint += ReaderNewPoint;
-            Stopwatch sw = new Stopwatch();
-            Stopwatch sw2 = new Stopwatch();
-            sw.Start();
-            reader.Read();
-            sw.Stop();
+            ArchiveFile s_archiveFile = new ArchiveFile();
             int cnt = 0;
-            sw2.Start();
 
-            s_archiveFile.CommitEdit();
 
+            Stopwatch sw;
+            Stopwatch sw2;
+            using (var fileEditor = s_archiveFile.BeginEdit())
+            {
+                s_fileEditor = fileEditor;
+                HistorianReader reader = new HistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
+                reader.NewPoint += ReaderNewPoint;
+                sw = new Stopwatch();
+                sw2 = new Stopwatch();
+                sw.Start();
+                reader.Read();
+                sw.Stop();
+                
+                sw2.Start();
+
+                fileEditor.Commit();
+            }
             long oldCount = FileStructure.DiskIoSession.ChecksumCount;
 
             var reader1 = s_archiveFile.CreateSnapshot().OpenInstance().GetDataRange();
@@ -79,7 +84,7 @@ namespace openHistorian.V2
             //    Clipboard.SetText(s_points.ToString());
             s_points++;
             //if (s_points % 10000 == 0)
-            s_archiveFile.AddPoint((ulong)pt.Time.Ticks, (ulong)pt.PointID, (ulong)pt.flags, (ulong)*(int*)&pt.Value);
+            s_fileEditor.AddPoint((ulong)pt.Time.Ticks, (ulong)pt.PointID, (ulong)pt.flags, (ulong)*(int*)&pt.Value);
         }
     }
 }

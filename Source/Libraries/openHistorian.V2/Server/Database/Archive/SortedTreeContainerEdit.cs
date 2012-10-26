@@ -104,6 +104,11 @@ namespace openHistorian.V2.Server.Database.Archive
             {
                 try
                 {
+                    if(m_tree != null)
+                    {
+                        m_tree.Save();
+                        m_tree = null;
+                    }
                     if (m_binaryStream != null)
                     {
                         m_binaryStream.Dispose();

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using openHistorian.V2.Local;
 
 //ToDo: More comprehensive tests
 namespace openHistorian.V2.Server.Configuration

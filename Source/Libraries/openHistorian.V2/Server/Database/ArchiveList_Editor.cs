@@ -41,12 +41,12 @@ namespace openHistorian.V2.Server.Database
         {
             bool m_disposed;
             ArchiveList m_collection;
-            ReadOnlyCollection<ArchiveFileStateInformation> m_partitions;
+            ReadOnlyCollection<ArchiveFileSummary> m_archiveFiles;
 
             public Editor(ArchiveList collection)
             {
                 m_collection = collection;
-                m_partitions = new ReadOnlyCollection<ArchiveFileStateInformation>(collection.m_partitions);
+                m_archiveFiles = new ReadOnlyCollection<ArchiveFileSummary>(collection.m_fileSummaries);
                 Monitor.Enter(m_collection.m_syncRoot);
             }
 
@@ -54,13 +54,13 @@ namespace openHistorian.V2.Server.Database
             /// Represents a readonly list of all of the partitions. 
             /// To edit the partitions, call <see cref="Add"/>, <see cref="Remove"/>, or <see cref="RenewSnapshot"/>.
             /// </summary>
-            public ReadOnlyCollection<ArchiveFileStateInformation> Partitions
+            public ReadOnlyCollection<ArchiveFileSummary> ArchiveFiles
             {
                 get
                 {
                     if (m_disposed)
                         throw new ObjectDisposedException(GetType().FullName);
-                    return m_partitions;
+                    return m_archiveFiles;
                 }
             }
 
@@ -70,17 +70,10 @@ namespace openHistorian.V2.Server.Database
             /// <param name="archive"></param>
             public void ReleaseEditLock(ArchiveFile archive)
             {
+                
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                var partitions = m_collection.m_partitions;
-                for (int x = 0; x < partitions.Count; x++)
-                {
-                    if (partitions[x].Summary.ArchiveFileFile == archive)
-                    {
-                        partitions[x].IsEditLocked = false;
-                        return;
-                    }
-                }
+                m_collection.m_lockedFiles.Remove(archive);
             }
 
             /// <summary>
@@ -93,12 +86,12 @@ namespace openHistorian.V2.Server.Database
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                var partitions = m_collection.m_partitions;
+                var partitions = m_collection.m_fileSummaries;
                 for (int x = 0; x < partitions.Count; x++)
                 {
-                    if (partitions[x].Summary.ArchiveFileFile == archive)
+                    if (partitions[x].ArchiveFileFile == archive)
                     {
-                        partitions[x].Summary = new ArchiveFileSummary(archive);
+                        partitions[x] = new ArchiveFileSummary(archive);
                         return true;
                     }
                 }
@@ -109,13 +102,15 @@ namespace openHistorian.V2.Server.Database
             /// Adds an archive file to the list with the given state information.
             /// </summary>
             /// <param name="archive"></param>
-            /// <param name="stateInformation"></param>
-            public void Add(ArchiveFile archive, ArchiveFileStateInformation stateInformation)
+            /// <param name="isLocked"></param>
+            public void Add(ArchiveFile archive, bool isLocked)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                stateInformation.Summary = new ArchiveFileSummary(archive);
-                m_collection.m_partitions.Add(stateInformation);
+                var summary = new ArchiveFileSummary(archive);
+                m_collection.m_fileSummaries.Add(summary);
+                if (isLocked)
+                    m_collection.m_lockedFiles.Add(archive);
             }
 
             /// <summary>
@@ -132,13 +127,14 @@ namespace openHistorian.V2.Server.Database
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                var partitions = m_collection.m_partitions;
+                var partitions = m_collection.m_fileSummaries;
                 for (int x = 0; x < partitions.Count; x++)
                 {
-                    if (partitions[x].Summary.ArchiveFileFile == archive)
+                    if (partitions[x].ArchiveFileFile == archive)
                     {
-                        listRemovalStatus = new ArchiveListRemovalStatus(partitions[x].Summary.ArchiveFileFile, m_collection);
+                        listRemovalStatus = new ArchiveListRemovalStatus(partitions[x].ArchiveFileFile, m_collection);
                         partitions.RemoveAt(x);
+                        m_collection.m_lockedFiles.Remove(archive);
                         return true;
                     }
                 }
@@ -154,7 +150,7 @@ namespace openHistorian.V2.Server.Database
                 if (!m_disposed)
                 {
                     Monitor.Exit(m_collection.m_syncRoot);
-                    m_partitions = null;
+                    m_archiveFiles = null;
                     m_collection = null;
                     m_disposed = true;
                 }

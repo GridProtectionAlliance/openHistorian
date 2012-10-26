@@ -37,6 +37,9 @@ namespace openHistorian.V2.Server.Database
     /// </summary>
     public class ArchiveWriter : IDisposable
     {
+        //ToDo: In the event that gobs of points are added, it might be quicker to presort the values.
+        //ToDo: Build in some kind of auto slowdown method if the disk is getting bogged down.
+
         ArchiveWriterSettings m_settings;
 
         volatile bool m_disposed;
@@ -51,27 +54,27 @@ namespace openHistorian.V2.Server.Database
 
         ManualResetEvent m_waitTimer;
 
-        int m_commitCount;
+        Stopwatch m_newFileCreationTime;
 
-        Stopwatch m_lastCommitTime;
+        Action<ArchiveFile> m_callbackFileComplete;
 
         /// <summary>
         /// Creates a new <see cref="ArchiveWriter"/>.
         /// </summary>
         /// <param name="settings">The settings for this class.</param>
         /// <param name="archiveList">The list used to attach newly created file.</param>
-        public ArchiveWriter(ArchiveWriterSettings settings, ArchiveList archiveList)
+        /// <param name="callbackFileComplete">Once a file is complete with this layer, this callback is invoked</param>
+        public ArchiveWriter(ArchiveWriterSettings settings, ArchiveList archiveList, Action<ArchiveFile> callbackFileComplete)
         {
+            m_callbackFileComplete = callbackFileComplete;
+
             m_settings = settings;
 
             m_archiveList = archiveList;
-            
-            if (settings.CommitOnPointCount.HasValue)
-                m_pointQueue = new PointQueue(settings.CommitOnPointCount.Value, SignalInitialInsert);
-            else
-                m_pointQueue = new PointQueue();
 
-            m_lastCommitTime = Stopwatch.StartNew();
+            m_pointQueue = new PointQueue();
+
+            m_newFileCreationTime = new Stopwatch();
 
             m_waitTimer = new ManualResetEvent(false);
             m_insertThread = new Thread(ProcessInsertingData);
@@ -85,66 +88,74 @@ namespace openHistorian.V2.Server.Database
         {
             while (!m_disposed)
             {
-                if (m_settings.CommitOnInterval.HasValue)
-                    m_waitTimer.WaitOne(m_settings.CommitOnInterval.Value);
-                else
-                    m_waitTimer.WaitOne(10000);
-
+                m_waitTimer.WaitOne((int)m_settings.CommitOnInterval.TotalMilliseconds);
                 m_waitTimer.Reset();
 
+                bool timeToCloseCurrentFile = m_activeFile != null && (m_newFileCreationTime.Elapsed >= m_settings.NewFileOnInterval);
                 BinaryStream stream;
                 int pointCount;
                 m_pointQueue.GetPointBlock(out stream, out pointCount);
-                if (pointCount > 0)
+
+                if (timeToCloseCurrentFile)
                 {
-                    if (m_activeFile == null ||
-                        (m_settings.NewFileOnCommitCount.HasValue && m_commitCount >= m_settings.NewFileOnCommitCount.Value) ||
-                        (m_settings.NewFileOnInterval.HasValue && m_lastCommitTime.Elapsed >= m_settings.NewFileOnInterval.Value) ||
-                        (m_settings.NewFileOnSize.HasValue && m_activeFile.FileSize >= m_settings.NewFileOnSize.Value))
+                    m_newFileCreationTime.Reset(); 
+                    if (m_activeFile != null)
+                        m_callbackFileComplete(m_activeFile);
+                    m_activeFile = null;
+                }
+
+                if (pointCount > 0) //If there is data to write
+                {
+                    if (m_activeFile == null) //Create a new file
                     {
-                        m_commitCount = 0;
-                        m_lastCommitTime.Restart();
                         var newFile = new ArchiveFile();
                         using (var edit = m_archiveList.AcquireEditLock())
                         {
-                            //Create a new file.
-                            if (m_activeFile != null)
-                            {
-                                edit.ReleaseEditLock(m_activeFile);
-                            }
-                            edit.Add(newFile, new ArchiveFileStateInformation(false, true, m_settings.DestinationName));
+                            //Add the newly created file.
+                            edit.Add(newFile, true);
                         }
+                        m_newFileCreationTime.Start();
                         m_activeFile = newFile;
                     }
-                    m_activeFile.BeginEdit();
-                    while (pointCount > 0)
+
+                    using (var fileEditor = m_activeFile.BeginEdit())
                     {
-                        pointCount--;
+                        while (pointCount > 0)
+                        {
+                            pointCount--;
 
-                        ulong time = stream.ReadUInt64();
-                        ulong id = stream.ReadUInt64();
-                        ulong flags = stream.ReadUInt64();
-                        ulong value = stream.ReadUInt64();
+                            ulong time = stream.ReadUInt64();
+                            ulong id = stream.ReadUInt64();
+                            ulong flags = stream.ReadUInt64();
+                            ulong value = stream.ReadUInt64();
 
-                        m_activeFile.AddPoint(time, id, flags, value);
+                            fileEditor.AddPoint(time, id, flags, value);
+                        }
+                        fileEditor.Commit();
                     }
-                    m_commitCount++;
-                    m_activeFile.CommitEdit();
                     using (var editor = m_archiveList.AcquireEditLock())
                     {
-                        editor.RenewSnapshot(m_activeFile);
+                        editor.RenewSnapshot(m_activeFile); //updates the current read transaction of this archive file.
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Adds data to the input queue that will be committed at the user defined interval
+        /// </summary>
+        /// <param name="key1"></param>
+        /// <param name="key2"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
         public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
             m_pointQueue.WriteData(key1, key2, value1, value2);
         }
 
         /// <summary>
-        /// Moves data from the queue and inserts it into Generation 0's Archive.
+        /// Moves data from the queue and inserts it into the current archive
+        /// ToDo: This function has a good use case, I just don't know what it is yet or should be called. Maybe a Flush or something like that
         /// </summary>
         public void SignalInitialInsert()
         {

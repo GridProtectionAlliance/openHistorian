@@ -13,8 +13,7 @@ namespace openHistorian.V2.Server.Database
     [TestClass()]
     public class ArchiveListSnapshotTest
     {
-
-
+        
         private TestContext testContextInstance;
 
         /// <summary>

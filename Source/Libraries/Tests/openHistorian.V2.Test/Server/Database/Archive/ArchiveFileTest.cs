@@ -84,9 +84,37 @@ namespace openHistorian.V2.Test
                 ulong pointId = 0;
                 ulong value1 = 0;
                 ulong value2 = 0;
-                target.BeginEdit();
-                target.AddPoint(date, pointId, value1, value2);
-                target.CommitEdit();
+                using (var fileEditor = target.BeginEdit())
+                {
+                    fileEditor.AddPoint(date, pointId, value1, value2);
+                    fileEditor.Commit();
+                }
+            }
+        }
+
+        /// <summary>
+        ///A test for AddPoint
+        ///</summary>
+        [TestMethod()]
+        public void EnduranceTest()
+        {
+            using (ArchiveFile target = new ArchiveFile())
+            {
+                for (uint x = 0; x < 100; x++)
+                {
+                    using (var fileEditor = target.BeginEdit())
+                    {
+                        for (int y = 0; y < 10; y++)
+                        {
+                            fileEditor.AddPoint(x, x, x, x);
+                            x++;
+                        }
+                        fileEditor.Commit();
+                    }
+                    Assert.AreEqual(target.FirstKey, (ulong)0);
+                    Assert.AreEqual(target.LastKey, (ulong)(x-1));
+                }
+                
             }
         }
 
@@ -102,11 +130,14 @@ namespace openHistorian.V2.Test
                 ulong pointId = 2;
                 ulong value1 = 3;
                 ulong value2 = 4;
-                target.BeginEdit();
-                target.AddPoint(date, pointId, value1, value2);
-                target.AddPoint(date + 1, pointId, value1, value2);
-                var snap1 = target.CreateSnapshot();
-                target.CommitEdit();
+                ArchiveFileSnapshot snap1;
+                using (var fileEditor = target.BeginEdit())
+                {
+                    fileEditor.AddPoint(date, pointId, value1, value2);
+                    fileEditor.AddPoint(date + 1, pointId, value1, value2);
+                    snap1 = target.CreateSnapshot();
+                    fileEditor.Commit();
+                }
                 var snap2 = target.CreateSnapshot();
 
                 using (var instance = snap1.OpenInstance())
@@ -143,10 +174,13 @@ namespace openHistorian.V2.Test
                 ulong pointId = 2;
                 ulong value1 = 3;
                 ulong value2 = 4;
-                target.BeginEdit();
-                target.AddPoint(date, pointId, value1, value2);
-                var snap1 = target.CreateSnapshot();
-                target.RollbackEdit();
+                ArchiveFileSnapshot snap1;
+                using (var fileEditor = target.BeginEdit())
+                {
+                    fileEditor.AddPoint(date, pointId, value1, value2);
+                    snap1 = target.CreateSnapshot();
+                    fileEditor.Rollback();
+                }
                 var snap2 = target.CreateSnapshot();
 
                 using (var instance = snap1.OpenInstance())
@@ -164,7 +198,7 @@ namespace openHistorian.V2.Test
             }
         }
 
- 
+
 
     }
 }

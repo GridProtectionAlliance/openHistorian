@@ -38,6 +38,7 @@ namespace openHistorian.V2.Server.Database
         ulong m_lastKeyValue;
         ArchiveFile m_archiveFileFile;
         ArchiveFileSnapshot m_activeSnapshot;
+
         #endregion
 
         #region [ Constructors ]
