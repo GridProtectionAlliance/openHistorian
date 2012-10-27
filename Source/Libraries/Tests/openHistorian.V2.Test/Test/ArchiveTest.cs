@@ -35,7 +35,7 @@ namespace openHistorian.V2
             using (var fileEditor = s_archiveFile.BeginEdit())
             {
                 s_fileEditor = fileEditor;
-                HistorianReader reader = new HistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
+                OldHistorianReader reader = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
                 reader.NewPoint += ReaderNewPoint;
                 sw = new Stopwatch();
                 sw2 = new Stopwatch();
@@ -78,7 +78,7 @@ namespace openHistorian.V2
             MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt + " " + (FileStructure.DiskIoSession.ChecksumCount - oldCount));
         }
 
-        unsafe static void ReaderNewPoint(HistorianReader.Points pt)
+        unsafe static void ReaderNewPoint(OldHistorianReader.Points pt)
         {
             //if (s_points % 10000 == 0)
             //    Clipboard.SetText(s_points.ToString());

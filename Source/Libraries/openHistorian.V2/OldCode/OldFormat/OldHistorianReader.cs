@@ -7,7 +7,7 @@ using System.IO;
 
 namespace openHistorian.V2
 {
-    public class HistorianReader
+    public class OldHistorianReader
     {
         public static unsafe UInt32 ToUInt(float value)
         {
@@ -23,7 +23,7 @@ namespace openHistorian.V2
         public event NewPointEventHandler NewPoint;
 
         public string File;
-        public HistorianReader(string File)
+        public OldHistorianReader(string File)
         {
             this.File = File;
         }

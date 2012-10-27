@@ -106,7 +106,7 @@ namespace openHistorian.V2.Server.Database
                     var table = m_snapshot.Tables[x];
                     if (table != null)
                     {
-                        if (!table.Contains(startKey, stopKey))
+                        if (table.Contains(startKey, stopKey))
                         {
                             m_tables.Enqueue(new KeyValuePair<int, ArchiveFileSummary>(x, table));
                         }
@@ -127,7 +127,8 @@ namespace openHistorian.V2.Server.Database
                     if (key1 <= m_stopKey)
                         return true;
                 }
-                prepareNextFile();
+                if (!prepareNextFile())
+                    return false;
                 return Read(out key1, out key2, out value1, out value2);
             }
 
@@ -150,6 +151,7 @@ namespace openHistorian.V2.Server.Database
                 else
                 {
                     m_currentScanner = NullTreeScanner256.Instance;
+                    return false;
                 }
                 return true;
             }

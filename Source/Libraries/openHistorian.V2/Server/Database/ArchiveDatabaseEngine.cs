@@ -74,6 +74,18 @@ namespace openHistorian.V2.Server.Database
             m_archiveWriter.WriteData(key1, key2, value1, value2);
         }
 
+        /// <summary>
+        /// Creates a reader that supports queires where only one
+        /// can be executed at a time. To support concurrent queries, simply
+        /// call this class again. Be sure to call Dispose() when finished with this class.
+        /// </summary>
+        /// <returns></returns>
+        public ArchiveReader CreateReader()
+        {
+            return new ArchiveReader(m_archiveList);
+        }
+
+
         void FinalizeArchiveFile(ArchiveFile archive)
         {
             using (var edit = m_archiveList.AcquireEditLock())

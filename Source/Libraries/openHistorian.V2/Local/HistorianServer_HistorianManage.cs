@@ -35,42 +35,34 @@ namespace openHistorian.V2.Local
             {
                 m_server = server;
             }
-
             public bool Contains(string databaseName)
             {
                 return m_server.m_engine.Contains(databaseName);
             }
-
             public DatabaseConfig GetConfig(string databaseName)
             {
                 throw new NotImplementedException();
             }
-
             public void SetConfig(string databaseName, DatabaseConfig config)
             {
                 throw new NotImplementedException();
             }
-
             public void Add(string databaseName, DatabaseConfig config = null)
             {
                 throw new NotImplementedException();
             }
-
             public void Drop(string databaseName, float waitTimeSeconds)
             {
                 throw new NotImplementedException();
             }
-
             public void TakeOffline(string databaseName, float waitTimeSeconds)
             {
                 throw new NotImplementedException();
             }
-
             public void BringOnline(string databaseName)
             {
                 throw new NotImplementedException();
             }
-
             public void Shutdown(float waitTimeSeconds)
             {
                 throw new NotImplementedException();

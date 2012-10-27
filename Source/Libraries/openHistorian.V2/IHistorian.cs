@@ -43,7 +43,7 @@ namespace openHistorian.V2
         IManageHistorian Manage();
     }
 
-    public interface IHistorianReadWrite
+    public interface IHistorianReadWrite : IDisposable
     {
         IPointStream Read(ulong key);
         IPointStream Read(ulong startKey, ulong endKey);

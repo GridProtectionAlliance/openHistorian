@@ -33,13 +33,11 @@ namespace openHistorian.V2.Local
 
         public HistorianServer()
         {
-
         }
 
         public IHistorianReadWrite ConnectToDatabase(string databaseName)
         {
             var database = m_engine.Get(databaseName);
-
             return new HistorianReadWrite(this, database);
         }
 

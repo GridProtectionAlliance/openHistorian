@@ -22,10 +22,7 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using openHistorian.V2.Server.Database;
 
 namespace openHistorian.V2.Local
@@ -36,6 +33,7 @@ namespace openHistorian.V2.Local
         {
             HistorianServer m_server;
             ArchiveDatabaseEngine m_database;
+            ArchiveReader m_reader;
             public HistorianReadWrite(HistorianServer server, ArchiveDatabaseEngine database)
             {
                 m_server = server;
@@ -44,18 +42,23 @@ namespace openHistorian.V2.Local
 
             public IPointStream Read(ulong key)
             {
-                
-                throw new NotImplementedException();
+                if (m_reader == null)
+                    m_reader = m_database.CreateReader();
+                return m_reader.Read(key);
             }
 
             public IPointStream Read(ulong startKey, ulong endKey)
             {
-                throw new NotImplementedException();
+                if (m_reader == null)
+                    m_reader = m_database.CreateReader();
+                return m_reader.Read(startKey, endKey);
             }
 
             public IPointStream Read(ulong startKey, ulong endKey, IEnumerable<ulong> points)
             {
-                throw new NotImplementedException();
+                if (m_reader == null)
+                    m_reader = m_database.CreateReader();
+                return m_reader.Read(startKey, endKey, points);
             }
 
             public void Write(IPointStream points)
@@ -80,7 +83,20 @@ namespace openHistorian.V2.Local
 
             public void Disconnect()
             {
-                throw new NotImplementedException();
+                if (m_reader != null)
+                {
+                    m_reader.Dispose();
+                    m_reader = null;
+                }
+            }
+
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
+            /// <filterpriority>2</filterpriority>
+            public void Dispose()
+            {
+                Disconnect();
             }
         }
     }

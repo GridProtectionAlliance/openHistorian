@@ -256,7 +256,7 @@
     <Compile Include="FileStructure\SubFileMetaData.cs" />
     <Compile Include="FileStructure\TransactionService.cs" />
     <Compile Include="FileStructure\TransactionalEdit.cs" />
-    <Compile Include="OldCode\OldFormat\HistorianReader.cs" />
+    <Compile Include="OldCode\OldFormat\OldHistorianReader.cs" />
     <Compile Include="OldCode\OldFormat\TimeTag.cs" />
     <Compile Include="OldCode\TimeSeriesDataStructure\BuildPointArchiveSolution.cs" />
     <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\Method1.cs" />
