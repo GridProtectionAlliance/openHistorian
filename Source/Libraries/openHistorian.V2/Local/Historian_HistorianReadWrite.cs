@@ -129,6 +129,40 @@ namespace openHistorian.V2.Local
                 return 1;
             }
 
+            public bool IsCommitted(long transactionId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool IsDiskCommitted(long transactionId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool WaitForCommitted(long transactionId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool WaitForDiskCommitted(long transactionId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Commit()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void CommitToDisk()
+            {
+                throw new NotImplementedException();
+            }
+
+            public long LastCommittedTransactionId { get; private set; }
+            public long LastDiskCommittedTransactionId { get; private set; }
+            public long CurrentTransactionId { get; private set; }
+
             public void Disconnect()
             {
                 

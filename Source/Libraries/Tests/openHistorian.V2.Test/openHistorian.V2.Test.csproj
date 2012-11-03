@@ -86,6 +86,7 @@
     <Compile Include="Collections\ResourceQueue.cs" />
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="BitMath.cs" />
+    <Compile Include="DebugStopwatch.cs" />
     <Compile Include="IO\BinaryStreamWrapperTest.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
@@ -94,6 +95,8 @@
     <Compile Include="Server\Database\ArchiveListSnapshotTest.cs" />
     <Compile Include="Server\Database\ArchiveInitializerTest.cs" />
     <Compile Include="Collections\ISupportsReadonlyTest.cs" />
+    <Compile Include="Server\Database\ArchiveWriterTest.cs" />
+    <Compile Include="Server\Database\ArchiveWriter_ArchiveFileTest.cs" />
     <Compile Include="SortedTree256Test.cs" />
     <Compile Include="IO\BufferedFileStreamTest.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBaseTest.cs" />

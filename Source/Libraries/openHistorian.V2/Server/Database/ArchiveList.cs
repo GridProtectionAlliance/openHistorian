@@ -49,11 +49,16 @@ namespace openHistorian.V2.Server.Database
         /// </summary>
         List<ArchiveListSnapshot> m_allSnapshots;
 
-        public ArchiveList(IEnumerable<string> archiveFiles)
+        public ArchiveList()
         {
             m_lockedFiles = new List<ArchiveFile>();
             m_fileSummaries = new List<ArchiveFileSummary>();
             m_allSnapshots = new List<ArchiveListSnapshot>();
+        }
+
+        public ArchiveList(IEnumerable<string> archiveFiles)
+            : this()
+        {
             foreach (var file in archiveFiles)
             {
                 var archiveFile = new ArchiveFile(file, OpenMode.Open, AccessMode.ReadOnly);

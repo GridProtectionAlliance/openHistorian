@@ -22,6 +22,7 @@
 //
 //******************************************************************************************************
 
+using System.IO;
 using openHistorian.V2.Server;
 
 namespace openHistorian.V2.Local
@@ -30,9 +31,16 @@ namespace openHistorian.V2.Local
     {
         HistorianEngine m_engine;
         ConfigHistorian m_config;
+        HistorianManage m_manage;
+
 
         public HistorianServer()
         {
+            
+        }
+        public HistorianServer(string configFileName)
+        {
+            
         }
 
         public IHistorianReadWrite ConnectToDatabase(string databaseName)

@@ -81,6 +81,40 @@ namespace openHistorian.V2.Local
                 return -1;
             }
 
+            public bool IsCommitted(long transactionId)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public bool IsDiskCommitted(long transactionId)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public bool WaitForCommitted(long transactionId)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public bool WaitForDiskCommitted(long transactionId)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public void Commit()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public void CommitToDisk()
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public long LastCommittedTransactionId { get; private set; }
+            public long LastDiskCommittedTransactionId { get; private set; }
+            public long CurrentTransactionId { get; private set; }
+
             public void Disconnect()
             {
                 if (m_reader != null)

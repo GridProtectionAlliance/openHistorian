@@ -38,6 +38,7 @@ namespace openHistorian.V2.Server.Database
         ArchiveWriter m_archiveWriter;
         ArchiveList m_archiveList;
         ArchiveManagement[] m_archiveManagement;
+        volatile bool m_disposed;
 
         public ArchiveDatabaseEngine(DatabaseSettings settings)
         {
@@ -45,17 +46,17 @@ namespace openHistorian.V2.Server.Database
             m_archiveManagement = new ArchiveManagement[settings.ArchiveRollovers.Count];
 
             ArchiveManagement previousManagement = null;
-            for (int x = settings.ArchiveRollovers.Count - 1; x >= 0; x-- ) //Go in reverse order since there is chaining that occurs
+            for (int x = settings.ArchiveRollovers.Count - 1; x >= 0; x--) //Go in reverse order since there is chaining that occurs
             {
                 var managementSettings = settings.ArchiveRollovers[x];
                 if (previousManagement == null)
                 {
-                    m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, FinalizeArchiveFile);
+                    m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, FinalizeArchiveFile,ProcessRemoval);
                     previousManagement = m_archiveManagement[x];
                 }
                 else
                 {
-                    m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, previousManagement.ProcessArchive);
+                    m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, previousManagement.ProcessArchive,ProcessRemoval);
                     previousManagement = m_archiveManagement[x];
                 }
             }
@@ -71,6 +72,8 @@ namespace openHistorian.V2.Server.Database
 
         public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             m_archiveWriter.WriteData(key1, key2, value1, value2);
         }
 
@@ -82,17 +85,43 @@ namespace openHistorian.V2.Server.Database
         /// <returns></returns>
         public ArchiveReader CreateReader()
         {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             return new ArchiveReader(m_archiveList);
         }
 
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                m_disposed = true;
+                m_archiveWriter.Dispose();
+                foreach (var management in m_archiveManagement)
+                {
+                    management.Dispose();   
+                }
+                //m_archiveList.Dispose();
+            }
+        }
 
-        void FinalizeArchiveFile(ArchiveFile archive)
+        public void Commit()
+        {
+            
+        }
+
+        void FinalizeArchiveFile(ArchiveFile archive, long sequenceId)
         {
             using (var edit = m_archiveList.AcquireEditLock())
             {
                 edit.ReleaseEditLock(archive);
             }
         }
+        void ProcessRemoval(ArchiveListRemovalStatus removalStatus)
+        {
+            
+        }
+
+
 
     }
 }

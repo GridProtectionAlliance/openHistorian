@@ -23,6 +23,8 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace openHistorian.V2.Local
 {
@@ -30,43 +32,94 @@ namespace openHistorian.V2.Local
     {
         private class HistorianManage : IManageHistorian
         {
+            SortedList<string, DatabaseConfig> m_config;
             HistorianServer m_server;
-            public HistorianManage(HistorianServer server)
+
+            string m_configFileName;
+
+            public HistorianManage(HistorianServer server, string configFileName = null)
             {
+                m_config = new SortedList<string, DatabaseConfig>();
                 m_server = server;
+                m_configFileName = configFileName;
+
+                if (m_configFileName != null)
+                {
+                    if (File.Exists(configFileName))
+                    {
+                        Load();
+                    }
+                    else
+                    {
+                        Save();
+                    }
+                }
             }
+            
             public bool Contains(string databaseName)
             {
-                return m_server.m_engine.Contains(databaseName);
+                return m_config.ContainsKey(databaseName.ToUpper());
             }
-            public DatabaseConfig GetConfig(string databaseName)
+            public IDatabaseConfig GetConfig(string databaseName)
+            {
+                return m_config[databaseName.ToUpper()].Clone();
+            }
+            public void SetConfig(string databaseName, IDatabaseConfig config)
             {
                 throw new NotImplementedException();
+                DatabaseConfig cfg = config as DatabaseConfig;
+                if (cfg == null)
+                    throw new ArgumentException("Must be the same type as received from GetConfig.", "config");
+                m_config[databaseName.ToUpper()] = cfg.Clone();
+                Save();
             }
-            public void SetConfig(string databaseName, DatabaseConfig config)
+            public void Add(string databaseName, IDatabaseConfig config = null)
             {
-                throw new NotImplementedException();
-            }
-            public void Add(string databaseName, DatabaseConfig config = null)
-            {
-                throw new NotImplementedException();
+                if (config == null)
+                    config = new DatabaseConfig();
+                DatabaseConfig cfg = config as DatabaseConfig;
+                if (cfg == null)
+                    throw new ArgumentException("Must be the same type as received from GetConfig.", "config");
+                m_server.m_engine.CreateDatabase(databaseName, config);
+                m_config.Add(databaseName.ToUpper(), cfg.Clone());
+                Save();
             }
             public void Drop(string databaseName, float waitTimeSeconds)
             {
                 throw new NotImplementedException();
+                m_config.Remove(databaseName.ToUpper());
+                Save();
             }
             public void TakeOffline(string databaseName, float waitTimeSeconds)
             {
                 throw new NotImplementedException();
+                m_config[databaseName].IsOnline = false;
+                Save();
             }
             public void BringOnline(string databaseName)
             {
                 throw new NotImplementedException();
+                m_config[databaseName].IsOnline = true;
+                Save();
             }
+
             public void Shutdown(float waitTimeSeconds)
             {
-                throw new NotImplementedException();
+
             }
+
+            void Save()
+            {
+                if (m_configFileName != null)
+                {
+
+                }
+            }
+            void Load()
+            {
+                
+            }
+
         }
     }
 }

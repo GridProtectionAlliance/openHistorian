@@ -114,6 +114,7 @@
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
     <Compile Include="Local\ConfigHistorian.cs" />
     <Compile Include="Local\ConfigDatabase.cs" />
+    <Compile Include="Local\HistorianServer_DatabaseConfig.cs" />
     <Compile Include="Local\HistorianServer_HistorianManage.cs" />
     <Compile Include="Local\HistorianServer_HistorianReadWrite.cs" />
     <Compile Include="Local\Historian.cs" />
@@ -148,6 +149,8 @@
     <Compile Include="OldCode\ContinuousBuffer.cs" />
     <Compile Include="OldCode\DataPoint.cs" />
     <Compile Include="HelperFunctions.cs" />
+    <Compile Include="Server\Database\ArchiveWriter_Old.cs" />
+    <Compile Include="Server\Database\ArchiveWriter_ActiveFile.cs" />
     <Compile Include="Server\Database\PointQueue.cs" />
     <Compile Include="IO\IBinaryStream.cs" />
     <Compile Include="FileStructure\DiskIo.cs" />

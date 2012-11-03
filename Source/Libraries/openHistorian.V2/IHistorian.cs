@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using openHistorian.V2.IO;
+using openHistorian.V2.Local;
 
 namespace openHistorian.V2
 {
@@ -38,8 +39,6 @@ namespace openHistorian.V2
     public interface IHistorian
     {
         IHistorianReadWrite ConnectToDatabase(string databaseName);
-        bool IsCommitted(long transactionId);
-        bool IsDiskCommitted(long transactionId);
         IManageHistorian Manage();
     }
 
@@ -51,6 +50,20 @@ namespace openHistorian.V2
         void Write(IPointStream points);
         void Write(ulong key1, ulong key2, ulong value1, ulong value2);
         long WriteBulk(IPointStream points);
+        
+        bool IsCommitted(long transactionId);
+        bool IsDiskCommitted(long transactionId);
+
+        bool WaitForCommitted(long transactionId);
+        bool WaitForDiskCommitted(long transactionId);
+
+        void Commit();
+        void CommitToDisk();
+
+        long LastCommittedTransactionId { get; }
+        long LastDiskCommittedTransactionId { get; }
+        long CurrentTransactionId { get; }
+
         void Disconnect();
     }
 
@@ -58,17 +71,23 @@ namespace openHistorian.V2
     public interface IManageHistorian
     {
         bool Contains(string databaseName);
-        DatabaseConfig GetConfig(string databaseName);
-        void SetConfig(string databaseName, DatabaseConfig config);
-        void Add(string databaseName, DatabaseConfig config = null);
+        IDatabaseConfig GetConfig(string databaseName);
+        void SetConfig(string databaseName, IDatabaseConfig config);
+        void Add(string databaseName, IDatabaseConfig config = null);
         void Drop(string databaseName, float waitTimeSeconds);
         void TakeOffline(string databaseName, float waitTimeSeconds);
         void BringOnline(string databaseName);
         void Shutdown(float waitTimeSeconds);
     }
 
-    public class DatabaseConfig
+    public struct WriterOptions
     {
+        public bool IsValid { get; private set; }
+        /// <summary>
+        /// Determines if writes to this historian will only 
+        /// occur in memory and never commited to the disk.
+        /// </summary>
+        public bool IsInMemoryOnly { get; private set; }
         /// <summary>
         /// Determines the number of seconds to allow the realtime queue 
         /// to buffer points before forcing them to be added to the historian.
@@ -79,7 +98,7 @@ namespace openHistorian.V2
         /// 
         /// Setting to null allows the historian to auto configure this parameter.
         /// </remarks>
-        public float? MemoryCommitInterval { get; set; }
+        public float? MemoryCommitInterval { get; private set; }
         /// <summary>
         /// Determines the number of seconds to allow memory buffers to manage newly 
         /// inserted points before forcing them to be committed to the disk. 
@@ -95,7 +114,7 @@ namespace openHistorian.V2
         /// 
         /// Setting to null allows the historian to auto configure this parameter.
         /// </remarks>
-        public float? DiskCommitInterval { get; set; }
+        public float? DiskCommitInterval { get; private set; }
         /// <summary>
         /// Gives the historian an idea of the volume of data that it will be dealing with.
         /// </summary>
@@ -105,8 +124,7 @@ namespace openHistorian.V2
         /// 
         /// Setting to null allows the historian to auto configure this parameter.
         /// </remarks>
-        public float? OptimalPointsPerSecond { get; set; }
-
+        public float? OptimalPointsPerSecond { get; private set; }
         /// <summary>
         /// Determines if the historian supports writing points.
         /// </summary>
@@ -114,21 +132,44 @@ namespace openHistorian.V2
         /// Setting to null allows the historian to determine this based 
         /// on if it has available places to save files and available free space.
         /// </remarks>
-        public bool? IsReadOnly { get; set; }
-        /// <summary>
-        /// Determines if writes to this historian will only 
-        /// occur in memory and never commited to the disk.
-        /// </summary>
-        public bool IsInMemoryOnly { get; set;}
+
+        public static WriterOptions IsMemoryOnly(float commitInterval = 0.25f, float optimalPointsPerSecond = 8*30*10)
+        {
+            WriterOptions options = default(WriterOptions);
+            options.IsValid = true;
+            options.IsInMemoryOnly = true;
+            options.MemoryCommitInterval = commitInterval;
+            options.DiskCommitInterval = null;
+            options.OptimalPointsPerSecond = optimalPointsPerSecond;
+            return options;
+        }
+
+        public static WriterOptions IsFileBased(float memoryCommitInterval = 0.25f, float diskCommitInterval = 10f, float optimalPointsPerSecond = 8*30*10)
+        {
+            WriterOptions options = default(WriterOptions);
+            options.IsValid = true;
+            options.IsInMemoryOnly = false;
+            options.MemoryCommitInterval = memoryCommitInterval;
+            options.DiskCommitInterval = diskCommitInterval;
+            options.OptimalPointsPerSecond = optimalPointsPerSecond;
+            return options;
+        }
+    }
+
+    public interface IDatabaseConfig
+    {
+        WriterOptions? Writer { get; set; }
+
         /// <summary>
         /// Gets if this instance is online.
         /// </summary>
-        public bool IsOnline { get; private set; }
+        bool IsOnline { get; }
+
         /// <summary>
         /// Gets all of the paths that are known by this historian.
         /// A path can be a file name or a folder.
         /// </summary>
-        public IPathList Paths { get; private set; }
+        IPathList Paths { get; }
     }
 
     public interface IPathList
@@ -139,5 +180,7 @@ namespace openHistorian.V2
         void DropPath(string path, float waitTimeSeconds);
         void DropSavePath(string path, bool terminateActiveFiles);
     }
+
+
 
 }

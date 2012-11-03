@@ -48,15 +48,20 @@ namespace openHistorian.V2.Server
 
         public void Create(string databaseName, DatabaseSettings settings)
         {
-        
+
         }
 
         public void Drop(string databaseName)
         {
             lock (m_syncRoot)
             {
-                
+
             }
+        }
+
+        public void CreateDatabase(string databaseName, IDatabaseConfig config)
+        {
+            m_databases.Add(databaseName, new ArchiveDatabaseEngine(new DatabaseSettings(config)));
         }
 
         //public void Attach(string name)

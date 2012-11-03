@@ -37,15 +37,18 @@ namespace openHistorian.V2.Server.Database
         //ToDo: Keep statistics on the size of the queue.  It's possible that the underlying memory stream may get very large and will never reduce in size.
 
         bool m_disposed;
+        bool m_stopped;
         BinaryStream m_processingQueue;
         BinaryStream m_activeQueue;
         object m_syncRoot;
+        long m_sequenceId;
 
         /// <summary>
         /// Creates a new inbound queue to buffer points.
         /// </summary>
         public PointQueue()
         {
+            m_sequenceId = 0;
             m_syncRoot = new object();
             m_activeQueue = new BinaryStream();
             m_processingQueue = new BinaryStream();
@@ -58,16 +61,31 @@ namespace openHistorian.V2.Server.Database
         /// <param name="key2"></param>
         /// <param name="value1"></param>
         /// <param name="value2"></param>
-        public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
+        public long WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             lock (m_syncRoot)
             {
+                if (m_stopped)
+                    throw new Exception("No new points can be added. Point queue has been stopped.");
+                m_sequenceId++;
                 m_activeQueue.Write(key1);
                 m_activeQueue.Write(key2);
                 m_activeQueue.Write(value1);
                 m_activeQueue.Write(value2);
+                return m_sequenceId;
+            }
+        }
+
+        public long SequenceId
+        {
+            get
+            {
+                lock (m_syncRoot)
+                {
+                    return m_sequenceId;
+                }
             }
         }
 
@@ -76,15 +94,20 @@ namespace openHistorian.V2.Server.Database
         /// </summary>
         /// <param name="stream">The input queue stream</param>
         /// <param name="pointCount">the number of points in the stream</param>
+        /// <param name="sequenceId">the sequence number that represents all of these points</param>
+        /// <param name="stopInputs">set if class is getting ready to dispose and therefore all writes should terminate</param>
         /// <remarks>This call will dequeue all points currently in the point queue.
         /// Since this class swaps an active and a processing queue, reads do not have to be
         /// synchronized with active inputs.</remarks>
-        public void GetPointBlock(out BinaryStream stream, out int pointCount)
+        public void GetPointBlock(out BinaryStream stream, out int pointCount, out long sequenceId, bool stopInputs)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             lock (m_syncRoot)
             {
+                if (stopInputs)
+                    m_stopped = true;
+
                 stream = m_activeQueue;
                 pointCount = (int)(stream.Position / SizeOfData);
                 stream.Position = 0;
@@ -93,6 +116,7 @@ namespace openHistorian.V2.Server.Database
                 m_activeQueue.Position = 0;
 
                 m_processingQueue = stream;
+                sequenceId = m_sequenceId;
             }
         }
 
@@ -118,7 +142,15 @@ namespace openHistorian.V2.Server.Database
                     m_processingQueue = null;
                 }
             }
+        }
 
+        public long Stop()
+        {
+            lock (m_syncRoot)
+            {
+                m_stopped = true;
+                return m_sequenceId;
+            }
         }
     }
 }
