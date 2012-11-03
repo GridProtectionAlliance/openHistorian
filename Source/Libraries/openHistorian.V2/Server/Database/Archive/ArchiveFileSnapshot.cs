@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PartitionSnapshot.cs - Gbtc
+//  ArchiveFileSnapshot.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //

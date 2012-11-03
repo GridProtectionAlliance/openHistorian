@@ -48,7 +48,9 @@ namespace openHistorian.V2.Server.Database.Archive
         bool m_disposed;
 
         TransactionalFileStructure m_fileStructure;
+
         ArchiveFileEditor m_activeEditor;
+
         #endregion
 
         #region [ Constructors ]

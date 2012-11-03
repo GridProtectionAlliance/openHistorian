@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  BasicTreeContainer.cs - Gbtc
+//  SortedTreeContainer.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //

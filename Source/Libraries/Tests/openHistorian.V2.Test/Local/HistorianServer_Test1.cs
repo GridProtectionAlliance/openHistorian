@@ -37,8 +37,7 @@ namespace openHistorian.V2.Local
                 var manage = engine.Manage();
                 IDatabaseConfig cfg = manage.CreateConfig(WriterOptions.IsMemoryOnly());
                 engine.Manage().Add("default", cfg);
-
-
+                
                 using (var db = engine.ConnectToDatabase("dEfAuLt"))
                 {
                     for (uint x = 0; x < 1000; x++)

@@ -3,10 +3,10 @@
 //using System.Linq;
 //using System.Text;
 
-//namespace openHistorian.V2.IO
+//namespace openHistorian.V2.Streaming.Client
 //{
-//    interface IStreamingTransport
+//    class ClientSocket
 //    {
-        
+
 //    }
 //}
