@@ -36,7 +36,7 @@ namespace openHistorian.V2
         void Cancel();
     }
 
-    public interface IHistorian
+    public interface IHistorian : IDisposable
     {
         IHistorianReadWrite ConnectToDatabase(string databaseName);
         IManageHistorian Manage();
@@ -78,6 +78,8 @@ namespace openHistorian.V2
         void TakeOffline(string databaseName, float waitTimeSeconds);
         void BringOnline(string databaseName);
         void Shutdown(float waitTimeSeconds);
+        IDatabaseConfig CreateConfig();
+        IDatabaseConfig CreateConfig(WriterOptions writerOptions);
     }
 
     public struct WriterOptions

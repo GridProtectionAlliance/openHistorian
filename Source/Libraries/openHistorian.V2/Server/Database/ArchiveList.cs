@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.Server.Configuration;
 using openHistorian.V2.Server.Database.Archive;
 
 namespace openHistorian.V2.Server.Database
@@ -33,8 +32,9 @@ namespace openHistorian.V2.Server.Database
     /// Manages the complete list of archive resources and the 
     /// associated reading and writing that goes along with it.
     /// </summary>
-    public partial class ArchiveList
+    public partial class ArchiveList : IDisposable
     {
+        bool m_disposed;
         object m_syncRoot = new object();
 
         /// <summary>
@@ -151,5 +151,24 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                using (var edit = AcquireEditLock())
+                {
+                    foreach (var f in edit.ArchiveFiles)
+                    {
+                        f.ArchiveFileFile.Dispose();
+                    }
+                }
+                m_disposed = true;
+            }
+
+        }
     }
 }

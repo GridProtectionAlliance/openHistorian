@@ -32,15 +32,16 @@ namespace openHistorian.V2.Local
         HistorianEngine m_engine;
         ConfigHistorian m_config;
         HistorianManage m_manage;
-
+        bool m_disposed;
 
         public HistorianServer()
         {
-            
+            m_engine = new HistorianEngine();
         }
         public HistorianServer(string configFileName)
+            : this()
         {
-            
+
         }
 
         public IHistorianReadWrite ConnectToDatabase(string databaseName)
@@ -62,6 +63,15 @@ namespace openHistorian.V2.Local
         public IManageHistorian Manage()
         {
             return new HistorianManage(this);
+        }
+
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                m_disposed = true;
+                m_engine.Dispose();
+            }
         }
     }
 }

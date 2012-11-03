@@ -32,57 +32,32 @@ namespace openHistorian.V2.Server
     /// <summary>
     /// The main engine of the openHistorian. Instance this class to host a historian.
     /// </summary>
-    public class HistorianEngine
+    public class HistorianEngine : IDisposable
     {
+        bool m_disposed;
         object m_syncRoot = new object();
         SortedList<string, ArchiveDatabaseEngine> m_databases;
 
-        public HistorianEngine(HistorianSettings settings)
+        public HistorianEngine()
         {
             m_databases = new SortedList<string, ArchiveDatabaseEngine>();
+        }
+        public HistorianEngine(HistorianSettings settings)
+            : this()
+        {
             foreach (var database in settings.Databases)
             {
-                m_databases.Add(database.Key, new ArchiveDatabaseEngine(database.Value));
-            }
-        }
-
-        public void Create(string databaseName, DatabaseSettings settings)
-        {
-
-        }
-
-        public void Drop(string databaseName)
-        {
-            lock (m_syncRoot)
-            {
-
+                m_databases.Add(database.Key.ToUpper(), new ArchiveDatabaseEngine(database.Value));
             }
         }
 
         public void CreateDatabase(string databaseName, IDatabaseConfig config)
         {
-            m_databases.Add(databaseName, new ArchiveDatabaseEngine(new DatabaseSettings(config)));
+            lock (m_syncRoot)
+            {
+                m_databases.Add(databaseName.ToUpper(), new ArchiveDatabaseEngine(new DatabaseSettings(config)));
+            }
         }
-
-        //public void Attach(string name)
-        //{
-
-        //}
-
-        //public void Detach(string name)
-        //{
-
-        //}
-
-        //public void TakeOffline(string instanceName)
-        //{
-
-        //}
-
-        //public void BringOnline(string instanceName)
-        //{
-
-        //}
 
         public ArchiveDatabaseEngine Get(string databaseName)
         {
@@ -108,5 +83,20 @@ namespace openHistorian.V2.Server
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                m_disposed = true;
+                foreach (var db in m_databases.Values)
+                {
+                    db.Dispose();
+                }
+            }
+        }
     }
 }

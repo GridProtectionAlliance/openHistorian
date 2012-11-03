@@ -62,6 +62,7 @@ namespace openHistorian.V2.Local
             }
             public IDatabaseConfig GetConfig(string databaseName)
             {
+                throw new NotImplementedException();
                 return m_config[databaseName.ToUpper()].Clone();
             }
             public void SetConfig(string databaseName, IDatabaseConfig config)
@@ -105,7 +106,19 @@ namespace openHistorian.V2.Local
 
             public void Shutdown(float waitTimeSeconds)
             {
+                m_server.Dispose();
+            }
 
+            public IDatabaseConfig CreateConfig()
+            {
+                return new DatabaseConfig();
+            }
+
+            public IDatabaseConfig CreateConfig(WriterOptions writerOptions)
+            {
+                var cfg = new DatabaseConfig();
+                cfg.Writer = writerOptions;
+                return cfg;
             }
 
             void Save()

@@ -36,7 +36,7 @@ namespace openHistorian.V2.Server.Database
     /// Performs the required rollovers by reading partitions from the data list
     /// and combining them into a file of a later generation.
     /// </summary>
-    public class ArchiveManagement
+    public class ArchiveManagement : IDisposable
     {
         /// <summary>
         /// Provides a way to block a thread until data has been committed to the archive writer.
@@ -101,8 +101,18 @@ namespace openHistorian.V2.Server.Database
         /// <param name="settings"></param>
         /// <param name="archiveList">The list used to attach newly created file.</param>
         /// <param name="callbackFileComplete">Once a file is complete with this layer, this callback is invoked</param>
+        /// <param name="archivesPendingDeletion">Where to pass archive files that are pending deletion</param>
         public ArchiveManagement(ArchiveRolloverSettings settings, ArchiveList archiveList, Action<ArchiveFile, long> callbackFileComplete, Action<ArchiveListRemovalStatus> archivesPendingDeletion)
         {
+            if (settings == null)
+                throw new ArgumentNullException("settings");
+            if (archiveList == null)
+                throw new ArgumentNullException("archiveList");
+            if (callbackFileComplete == null)
+                throw new ArgumentNullException("callbackFileComplete");
+            if (archivesPendingDeletion == null)
+                throw new ArgumentNullException("archivesPendingDeletion");
+
             m_archivesPendingDeletion = archivesPendingDeletion;
             m_pendingCommitRequests = new List<WaitingForCommit>();
             m_syncRoot = new object();

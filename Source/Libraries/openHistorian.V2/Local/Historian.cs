@@ -35,6 +35,7 @@ namespace openHistorian.V2.Local
     {
         SortedTree256 m_tree;
         BinaryStream m_stream;
+        bool m_disposed;
 
         public Historian()
         {
@@ -47,19 +48,22 @@ namespace openHistorian.V2.Local
             return new HistorianReadWrite(this);
         }
 
-        public bool IsCommitted(long transactionId)
-        {
-            return true;
-        }
-
-        public bool IsDiskCommitted(long transactionId)
-        {
-            return true;
-        }
-
         public IManageHistorian Manage()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                m_disposed = true;
+                m_stream.Dispose();
+            }
         }
     }
 }

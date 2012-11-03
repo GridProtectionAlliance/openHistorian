@@ -83,37 +83,55 @@ namespace openHistorian.V2.Local
 
             public bool IsCommitted(long transactionId)
             {
-                throw new System.NotImplementedException();
+                return m_database.IsCommitted(transactionId);
             }
 
             public bool IsDiskCommitted(long transactionId)
             {
-                throw new System.NotImplementedException();
+                return m_database.IsDiskCommitted(transactionId);
             }
 
             public bool WaitForCommitted(long transactionId)
             {
-                throw new System.NotImplementedException();
+                return m_database.WaitForCommitted(transactionId);
             }
 
             public bool WaitForDiskCommitted(long transactionId)
             {
-                throw new System.NotImplementedException();
+                return m_database.WaitForDiskCommitted(transactionId);
             }
 
             public void Commit()
             {
-                throw new System.NotImplementedException();
+                m_database.Commit();
             }
 
             public void CommitToDisk()
             {
-                throw new System.NotImplementedException();
+                m_database.CommitToDisk();
             }
 
-            public long LastCommittedTransactionId { get; private set; }
-            public long LastDiskCommittedTransactionId { get; private set; }
-            public long CurrentTransactionId { get; private set; }
+            public long LastCommittedTransactionId
+            {
+                get
+                {
+                    return m_database.LastCommittedTransactionId;
+                }
+            }
+            public long LastDiskCommittedTransactionId
+            {
+                get
+                {
+                    return m_database.LastDiskCommittedTransactionId;
+                }
+            }
+            public long CurrentTransactionId
+            {
+                get
+                {
+                    return m_database.CurrentTransactionId;
+                }
+            }
 
             public void Disconnect()
             {

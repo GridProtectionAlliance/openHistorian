@@ -107,6 +107,13 @@ namespace openHistorian.V2.Server.Database
         /// <param name="callbackFileComplete">Once a file is complete with this layer, this callback is invoked</param>
         public ArchiveWriter(ArchiveWriterSettings settings, ArchiveList archiveList, Action<ArchiveFile,long> callbackFileComplete)
         {
+            if (settings == null)
+                throw new ArgumentNullException("settings");
+            if (archiveList == null)
+                throw new ArgumentNullException("archiveList");
+            if (callbackFileComplete == null)
+                throw new ArgumentNullException("callbackFileComplete");
+
             m_pendingCommitRequests = new List<WaitingForCommit>();
             m_syncRoot = new object();
             m_lastCommitedSequenceNumber = -1;
@@ -246,6 +253,13 @@ namespace openHistorian.V2.Server.Database
             }
         }
 
+        public long CurrentSequenceNumber
+        {
+            get
+            {
+                return m_pointQueue.SequenceId;
+            }
+        }
         public long LastCommittedSequenceNumber
         {
             get
