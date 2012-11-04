@@ -54,6 +54,10 @@ namespace openHistorian.V2.FileStructure
         /// <remarks>Object is not owned by this class and will not be disposed of.</remarks>
         DiskIo m_dataReader;
 
+        int m_blockSize;
+
+        int m_blockDataLength;
+
         #endregion
 
         #region [ Constructors ]
@@ -65,11 +69,14 @@ namespace openHistorian.V2.FileStructure
         /// being read or the one that is currently being written to.</param>
         /// <param name="dataReader">The disk that will be read to parse the cluster addresses from the file</param>
         /// <param name="subFile">The file that is to be read.</param>
-        public IndexParser(int snapshotSequenceNumber, DiskIo dataReader, SubFileMetaData subFile)
+        public IndexParser(int blockSize, int snapshotSequenceNumber, DiskIo dataReader, SubFileMetaData subFile)
         {
+            m_blockSize = blockSize;
+            m_blockDataLength = blockSize - FileStructureConstants.BlockFooterLength;
+
             m_dataReader = dataReader;
             m_snapshotSequenceNumber = snapshotSequenceNumber;
-            m_mapping = new IndexMapper();
+            m_mapping = new IndexMapper(blockSize);
             m_subFile = subFile;
         }
         #endregion
@@ -218,13 +225,13 @@ namespace openHistorian.V2.FileStructure
             SetPosition(position);
             PositionData positionData;
             long offset = position - BaseVirtualAddress;
-            int pageIndex = (int)(offset / FileStructureConstants.DataBlockDataLength);
-            positionData.VirtualPosition = BaseVirtualAddress + pageIndex * FileStructureConstants.DataBlockDataLength;
+            int pageIndex = (int)(offset / m_blockDataLength);
+            positionData.VirtualPosition = BaseVirtualAddress + pageIndex * m_blockDataLength;
             if (DataClusterAddress == 0)
                 positionData.PhysicalBlockIndex = 0;
             else
                 positionData.PhysicalBlockIndex = DataClusterAddress + pageIndex;
-            positionData.Length = FileStructureConstants.DataBlockDataLength;
+            positionData.Length = m_blockDataLength;
             return positionData;
         }
 
@@ -322,8 +329,8 @@ namespace openHistorian.V2.FileStructure
             {
                 buffer.Read(blockIndex, BlockType.IndexIndirect, blockBaseIndex, m_subFile.FileIdNumber, m_snapshotSequenceNumber);
             }
-            
-            if (buffer.Pointer[FileStructureConstants.BlockSize - 22] != indexIndirectNumber)
+
+            if (buffer.Pointer[m_blockSize - 31] != indexIndirectNumber)
                 throw new Exception("The redirect value of this page is incorrect");
 
             return *(int*)(buffer.Pointer + offset);

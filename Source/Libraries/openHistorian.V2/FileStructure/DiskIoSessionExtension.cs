@@ -32,20 +32,20 @@ namespace openHistorian.V2.FileStructure
         public static void Read(this DiskIoSession diskIoSession, int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] destination)
         {
             diskIoSession.Read(blockIndex, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
-            Marshal.Copy(diskIoSession.IntPtr, destination, 0, FileStructureConstants.BlockSize);
+            Marshal.Copy(diskIoSession.IntPtr, destination, 0, diskIoSession.BlockSize);
         }
 
         public static void WriteToExistingBlock(this DiskIoSession diskIoSession, int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] data)
         {
             diskIoSession.BeginWriteToExistingBlock(blockIndex, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
-            Marshal.Copy(data, 0, diskIoSession.IntPtr, FileStructureConstants.BlockSize);
+            Marshal.Copy(data, 0, diskIoSession.IntPtr, diskIoSession.BlockSize);
             diskIoSession.EndWrite(blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
         }
 
         public static void WriteToNewBlock(this DiskIoSession diskIoSession, int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] data)
         {
             diskIoSession.BeginWriteToNewBlock(blockIndex);
-            Marshal.Copy(data, 0, diskIoSession.IntPtr, FileStructureConstants.BlockSize);
+            Marshal.Copy(data, 0, diskIoSession.IntPtr, diskIoSession.BlockSize);
             diskIoSession.EndWrite(blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
         }
 

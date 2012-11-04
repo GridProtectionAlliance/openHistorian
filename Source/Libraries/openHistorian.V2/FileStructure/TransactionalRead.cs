@@ -44,6 +44,8 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         DiskIo m_dataReader;
 
+        int m_blockSize;
+
         #endregion
 
         #region [ Constructors ]
@@ -54,7 +56,7 @@ namespace openHistorian.V2.FileStructure
         /// <param name="dataReader"> </param>
         /// <param name="fileHeaderBlock">This parameter must be in a read only mode.
         ///  This is to ensure that the value is not modified after it has been passed to this class.</param>
-        internal TransactionalRead(DiskIo dataReader, FileHeaderBlock fileHeaderBlock)
+        internal TransactionalRead(int blockSize, DiskIo dataReader, FileHeaderBlock fileHeaderBlock)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -62,6 +64,7 @@ namespace openHistorian.V2.FileStructure
                 throw new ArgumentNullException("fileHeaderBlock");
             if (!fileHeaderBlock.IsReadOnly)
                 throw new ArgumentException("The file passed to this procedure must be read only.", "fileHeaderBlock");
+            m_blockSize = blockSize;
             m_fileHeaderBlock = fileHeaderBlock;
             m_dataReader = dataReader;
         }
@@ -95,7 +98,7 @@ namespace openHistorian.V2.FileStructure
             if (fileIndex < 0 || fileIndex >= m_fileHeaderBlock.Files.Count)
                 throw new ArgumentOutOfRangeException("fileIndex", "The file index provided could not be found in the header.");
 
-            return new SubFileStream(m_dataReader, m_fileHeaderBlock.Files[fileIndex], m_fileHeaderBlock, AccessMode.ReadOnly);
+            return new SubFileStream(m_blockSize, m_dataReader, m_fileHeaderBlock.Files[fileIndex], m_fileHeaderBlock, AccessMode.ReadOnly);
         }
 
         /// <summary>

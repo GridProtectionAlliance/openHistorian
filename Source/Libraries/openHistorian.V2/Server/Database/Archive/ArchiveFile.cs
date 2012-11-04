@@ -164,7 +164,7 @@ namespace openHistorian.V2.Server.Database.Archive
                 using (var fs = trans.CreateFile(s_pointDataFile, 1))
                 using (var bs = new BinaryStream(fs))
                 {
-                    var tree = new SortedTree256(bs, FileStructureConstants.DataBlockDataLength);
+                    var tree = new SortedTree256(bs, m_fileStructure.DataBlockSize);
                     m_firstKey = tree.FirstKey;
                     m_lastKey = tree.LastKey;
                 }

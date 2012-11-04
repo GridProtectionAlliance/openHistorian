@@ -33,15 +33,8 @@ namespace openHistorian.V2.FileStructure
     {
         #region [ Members ]
 
-        /// <summary>
-        /// Internal variable used by SetPosition:
-        /// This determines what has changed in the most recent update request.
-        /// The calling classes can use this to determine what lookup information needs to be 
-        /// scrapped, and what can be kept.
-        /// 0=Immediate, 1=Single, 2=Double, 3=Triple, 4=NoChange
-        /// </summary>
-        int m_lowestChange;
-        
+        int m_blockDataLength;
+
         #endregion
 
         #region [ Constructors ]
@@ -49,8 +42,10 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// Creates a index mapper that is based on a given cluster size,
         /// </summary>
-        public IndexMapper()
+        public IndexMapper(int blockSize)
         {
+            m_blockDataLength = blockSize - FileStructureConstants.BlockFooterLength;
+
             //initializes all of the values
             SetPosition(0);
         }
@@ -71,7 +66,7 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         /// <remarks>Returns a -1 of invalid.  -1 was chosen since it will likely generate an error if not handled properly.</remarks>
         public int FirstIndirectOffset { get; private set; }
-       
+
         /// <summary>
         /// Gets the offset position for the address that must be read within the indirect block
         /// at the second indirect block. This address is an absolute offset and has already been multiplied by
@@ -79,7 +74,7 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         /// <remarks>Returns a -1 of invalid.  -1 was chosen since it will likely generate an error if not handled properly.</remarks>
         public int SecondIndirectOffset { get; private set; }
-    
+
         /// <summary>
         /// Gets the offset position for the address that must be read within the indirect block
         /// at the third indirect block. This address is an absolute offset and has already been multiplied by
@@ -93,13 +88,13 @@ namespace openHistorian.V2.FileStructure
         /// the footer of the indirect page will have this address.
         /// </summary>
         public int FirstIndirectBaseIndex { get; private set; }
-      
+
         /// <summary>
         /// Gets the index of the second cluster that can be accessed by this indirect block.  This value is useful because 
         /// the footer of the indirect page will have this address.
         /// </summary>
         public int SecondIndirectBaseIndex { get; private set; }
-       
+
         /// <summary>
         /// Gets the index of the third cluster that can be accessed by this indirect block.  This value is useful because 
         /// the footer of the indirect page will have this address.
@@ -132,13 +127,18 @@ namespace openHistorian.V2.FileStructure
         /// </returns>
         public int SetPosition(long position)
         {
-            m_lowestChange = 4;
+            int addressesPerBlock = m_blockDataLength >> 2;
+            const int firstSingleIndirectBlockIndex = 1;
+            int firstDoubleIndirectBlockIndex = firstSingleIndirectBlockIndex + addressesPerBlock;
+            int firstTripleIndirectIndex = (int)Math.Min(int.MaxValue, firstDoubleIndirectBlockIndex + (long)addressesPerBlock * (long)addressesPerBlock);
+            int lastAddressableBlockIndex = (int)Math.Min(int.MaxValue, firstTripleIndirectIndex + (long)addressesPerBlock * (long)addressesPerBlock * (long)addressesPerBlock - 1);
+            int lowestChange = 4;
 
             if (position < 0)
                 throw new ArgumentException("Position cannot be negative", "position");
 
             //the index if the data block
-            long indexNumberLng = position / FileStructureConstants.DataBlockDataLength;
+            long indexNumberLng = position / m_blockDataLength;
 
             if (indexNumberLng >= int.MaxValue)
                 throw new IndexOutOfRangeException("Reading outside the bounds of the feature is not supported");
@@ -146,88 +146,45 @@ namespace openHistorian.V2.FileStructure
             //Divide by and mod of an int is quite a bit faster.
             int indexNumber = (int)indexNumberLng;
 
-            BaseVirtualAddress = (long)indexNumber * FileStructureConstants.DataBlockDataLength;
+            BaseVirtualAddress = (long)indexNumber * m_blockDataLength;
             BaseVirtualAddressIndexValue = indexNumber;
 
-            if (indexNumber < FileStructureConstants.FirstSingleIndirectBlockIndex) //immediate
+            if (indexNumber < firstSingleIndirectBlockIndex) //immediate
             {
-                SetIndirectNumber(0);
-                SetFirstIndirectOffset(-1);
-                SetSecondIndirectOffset(-1);
-                SetThirdIndirectOffset(-1);
+                SetIndirectNumber(0, ref lowestChange);
+                SetFirstIndirectOffset(-1, ref lowestChange);
+                SetSecondIndirectOffset(-1, ref lowestChange);
+                SetThirdIndirectOffset(-1, ref lowestChange);
             }
-            else if (indexNumber < FileStructureConstants.FirstDoubleIndirectBlockIndex) //single redirect
+            else if (indexNumber < firstDoubleIndirectBlockIndex) //single redirect
             {
-                SetIndirectNumber(1);
-                indexNumber -= FileStructureConstants.FirstSingleIndirectBlockIndex;
-                SetFirstIndirectOffset((indexNumber) << 2);
-                SetSecondIndirectOffset(-1);
-                SetThirdIndirectOffset(-1);
+                SetIndirectNumber(1, ref lowestChange);
+                indexNumber -= firstSingleIndirectBlockIndex;
+                SetFirstIndirectOffset((indexNumber) << 2, ref lowestChange);
+                SetSecondIndirectOffset(-1, ref lowestChange);
+                SetThirdIndirectOffset(-1, ref lowestChange);
             }
-            else if (indexNumber < FileStructureConstants.FirstTripleIndirectIndex) //double redirect
+            else if (indexNumber < firstTripleIndirectIndex) //double redirect
             {
-                SetIndirectNumber(2);
-                indexNumber -= FileStructureConstants.FirstDoubleIndirectBlockIndex;
-
-                SetFirstIndirectOffset((indexNumber / FileStructureConstants.AddressesPerBlock) << 2);
-                SetSecondIndirectOffset((indexNumber % FileStructureConstants.AddressesPerBlock) << 2);
-                SetThirdIndirectOffset(-1);
+                SetIndirectNumber(2, ref lowestChange);
+                indexNumber -= firstDoubleIndirectBlockIndex;
+                SetFirstIndirectOffset((indexNumber / addressesPerBlock) << 2, ref lowestChange);
+                SetSecondIndirectOffset((indexNumber % addressesPerBlock) << 2, ref lowestChange);
+                SetThirdIndirectOffset(-1, ref lowestChange);
             }
-            else if (indexNumber <= FileStructureConstants.LastAddressableBlockIndex) //triple
+            else if (indexNumber <= lastAddressableBlockIndex) //triple
             {
-                SetIndirectNumber(3);
-                indexNumber -= FileStructureConstants.FirstTripleIndirectIndex;
-
-                SetFirstIndirectOffset((indexNumber / FileStructureConstants.AddressesPerBlockSquare) << 2);
-                SetSecondIndirectOffset((indexNumber / FileStructureConstants.AddressesPerBlock % FileStructureConstants.AddressesPerBlock) << 2);
-                SetThirdIndirectOffset((indexNumber % FileStructureConstants.AddressesPerBlock) << 2);
+                SetIndirectNumber(3, ref lowestChange);
+                indexNumber -= firstTripleIndirectIndex;
+                SetFirstIndirectOffset((indexNumber / (addressesPerBlock * addressesPerBlock)) << 2, ref lowestChange);
+                SetSecondIndirectOffset((indexNumber / addressesPerBlock % addressesPerBlock) << 2, ref lowestChange);
+                SetThirdIndirectOffset((indexNumber % addressesPerBlock) << 2, ref lowestChange);
             }
             else
             {
                 throw new Exception("Position goes beyond the valid address space of the inode");
             }
-            ComputeBaseIndexValues();
-            return m_lowestChange;
-        }
 
-        void SetIndirectNumber(int value)
-        {
-            if (IndirectNumber != value)
-            {
-                IndirectNumber = value;
-                m_lowestChange = Math.Min(0, m_lowestChange);
-            }
-        }
-        void SetFirstIndirectOffset(int value)
-        {
-            if (FirstIndirectOffset != value)
-            {
-                FirstIndirectOffset = value;
-                m_lowestChange = Math.Min(1, m_lowestChange);
-            }
-        }
-        void SetSecondIndirectOffset(int value)
-        {
-            if (SecondIndirectOffset != value)
-            {
-                SecondIndirectOffset = value;
-                m_lowestChange = Math.Min(2, m_lowestChange);
-            }
-        }
-        void SetThirdIndirectOffset(int value)
-        {
-            if (ThirdIndirectOffset != value)
-            {
-                ThirdIndirectOffset = value;
-                m_lowestChange = Math.Min(3, m_lowestChange);
-            }
-        }
-
-        /// <summary>
-        /// Computes the base index value of every redirect index.
-        /// </summary>
-        void ComputeBaseIndexValues()
-        {
             switch (IndirectNumber)
             {
                 case 0:
@@ -236,22 +193,57 @@ namespace openHistorian.V2.FileStructure
                     ThirdIndirectBaseIndex = 0;
                     break;
                 case 1:
-                    FirstIndirectBaseIndex = FileStructureConstants.FirstSingleIndirectBlockIndex;
+                    FirstIndirectBaseIndex = firstSingleIndirectBlockIndex;
                     SecondIndirectBaseIndex = 0;
                     ThirdIndirectBaseIndex = 0;
                     break;
                 case 2:
-                    FirstIndirectBaseIndex = FileStructureConstants.FirstSingleIndirectBlockIndex;
-                    SecondIndirectBaseIndex = (FirstIndirectBaseIndex + FileStructureConstants.AddressesPerBlock * (FirstIndirectOffset >> 2));
+                    FirstIndirectBaseIndex = firstSingleIndirectBlockIndex;
+                    SecondIndirectBaseIndex = (FirstIndirectBaseIndex + addressesPerBlock * (FirstIndirectOffset >> 2));
                     ThirdIndirectBaseIndex = 0;
                     break;
                 case 3:
-                    FirstIndirectBaseIndex = FileStructureConstants.FirstSingleIndirectBlockIndex;
-                    SecondIndirectBaseIndex = (FirstIndirectBaseIndex + FileStructureConstants.AddressesPerBlockSquare * (FirstIndirectOffset >> 2));
-                    ThirdIndirectBaseIndex = (SecondIndirectBaseIndex + FileStructureConstants.AddressesPerBlock * (SecondIndirectOffset >> 2));
+                    FirstIndirectBaseIndex = firstSingleIndirectBlockIndex;
+                    SecondIndirectBaseIndex = (FirstIndirectBaseIndex + addressesPerBlock * addressesPerBlock * (FirstIndirectOffset >> 2));
+                    ThirdIndirectBaseIndex = (SecondIndirectBaseIndex + addressesPerBlock * (SecondIndirectOffset >> 2));
                     break;
                 default:
                     throw new Exception();
+            }
+
+            return lowestChange;
+        }
+
+        void SetIndirectNumber(int value, ref int lowestChange)
+        {
+            if (IndirectNumber != value)
+            {
+                IndirectNumber = value;
+                lowestChange = Math.Min(0, lowestChange);
+            }
+        }
+        void SetFirstIndirectOffset(int value, ref int lowestChange)
+        {
+            if (FirstIndirectOffset != value)
+            {
+                FirstIndirectOffset = value;
+                lowestChange = Math.Min(1, lowestChange);
+            }
+        }
+        void SetSecondIndirectOffset(int value, ref int lowestChange)
+        {
+            if (SecondIndirectOffset != value)
+            {
+                SecondIndirectOffset = value;
+                lowestChange = Math.Min(2, lowestChange);
+            }
+        }
+        void SetThirdIndirectOffset(int value, ref int lowestChange)
+        {
+            if (ThirdIndirectOffset != value)
+            {
+                ThirdIndirectOffset = value;
+                lowestChange = Math.Min(3, lowestChange);
             }
         }
 

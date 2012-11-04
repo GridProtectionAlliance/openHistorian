@@ -38,12 +38,15 @@ namespace openHistorian.V2.FileStructure.Test
     [TestClass()]
     public class SubFileStreamTest
     {
+        static int BlockSize = 4096;
+        static int BlockDataLength = BlockSize - FileStructureConstants.BlockFooterLength;
+
         [TestMethod()]
         public void Test()
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
 
-            DiskIo stream = new DiskIo(new MemoryStream(), 0);
+            DiskIo stream = new DiskIo(BlockSize, new MemoryStream(), 0);
             TestReadAndWrites(stream);
             TestReadAndWritesWithCommit(stream);
             TestReadAndWritesToDifferentFilesWithCommit(stream);
@@ -55,31 +58,31 @@ namespace openHistorian.V2.FileStructure.Test
         }
         static void TestBinaryStream(DiskIo stream)
         {
-            FileHeaderBlock header = new FileHeaderBlock(stream, OpenMode.Create, AccessMode.ReadWrite);
+            FileHeaderBlock header = new FileHeaderBlock(BlockSize, stream, OpenMode.Create, AccessMode.ReadWrite);
             SubFileMetaData node = header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
 
-            SubFileStream ds = new SubFileStream(stream, node, header, AccessMode.ReadWrite);
+            SubFileStream ds = new SubFileStream(BlockSize, stream, node, header, AccessMode.ReadWrite);
             BinaryStreamTest.Test(ds);
         }
 
         static void TestReadAndWrites(DiskIo stream)
         {
-            FileHeaderBlock header = new FileHeaderBlock(stream, OpenMode.Create, AccessMode.ReadWrite);
+            FileHeaderBlock header = new FileHeaderBlock(BlockSize, stream, OpenMode.Create, AccessMode.ReadWrite);
             SubFileMetaData node = header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
 
-            SubFileStream ds = new SubFileStream(stream, node, header, AccessMode.ReadWrite);
+            SubFileStream ds = new SubFileStream(BlockSize, stream, node, header, AccessMode.ReadWrite);
             TestSingleByteWrite(ds);
             TestSingleByteRead(ds);
 
             TestCustomSizeWrite(ds, 5);
             TestCustomSizeRead(ds, 5);
 
-            TestCustomSizeWrite(ds, FileStructureConstants.DataBlockDataLength + 20);
-            TestCustomSizeRead(ds, FileStructureConstants.DataBlockDataLength + 20);
+            TestCustomSizeWrite(ds, BlockDataLength + 20);
+            TestCustomSizeRead(ds, BlockDataLength + 20);
             header.WriteToFileSystem(stream);
         }
 
@@ -89,40 +92,40 @@ namespace openHistorian.V2.FileStructure.Test
             SubFileMetaData node;
             SubFileStream ds, ds1, ds2;
             //Open The File For Editing
-            header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadWrite);
+            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadWrite);
             node = header.Files[0];
-            ds = new SubFileStream(stream, node, header, AccessMode.ReadWrite);
+            ds = new SubFileStream(BlockSize, stream, node, header, AccessMode.ReadWrite);
             TestSingleByteWrite(ds);
             header.WriteToFileSystem(stream);
 
-            header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
+            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
             node = header.Files[0];
-            ds1 = ds = new SubFileStream(stream, node, header, AccessMode.ReadOnly);
+            ds1 = ds = new SubFileStream(BlockSize, stream, node, header, AccessMode.ReadOnly);
             TestSingleByteRead(ds);
 
             //Open The File For Editing
-            header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadWrite);
+            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadWrite);
             node = header.Files[0];
-            ds = new SubFileStream(stream, node, header, AccessMode.ReadWrite);
+            ds = new SubFileStream(BlockSize, stream, node, header, AccessMode.ReadWrite);
             TestCustomSizeWrite(ds, 5);
             header.WriteToFileSystem(stream);
 
-            header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
+            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
             node = header.Files[0];
-            ds2 = ds = new SubFileStream(stream, node, header, AccessMode.ReadOnly);
+            ds2 = ds = new SubFileStream(BlockSize, stream, node, header, AccessMode.ReadOnly);
             TestCustomSizeRead(ds, 5);
 
             //Open The File For Editing
-            header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadWrite);
+            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadWrite);
             node = header.Files[0];
-            ds = new SubFileStream(stream, node, header, AccessMode.ReadWrite);
-            TestCustomSizeWrite(ds, FileStructureConstants.DataBlockDataLength + 20);
+            ds = new SubFileStream(BlockSize, stream, node, header, AccessMode.ReadWrite);
+            TestCustomSizeWrite(ds, BlockDataLength + 20);
             header.WriteToFileSystem(stream);
 
-            header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
+            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
             node = header.Files[0];
-            ds = new SubFileStream(stream, node, header, AccessMode.ReadOnly);
-            TestCustomSizeRead(ds, FileStructureConstants.DataBlockDataLength + 20);
+            ds = new SubFileStream(BlockSize, stream, node, header, AccessMode.ReadOnly);
+            TestCustomSizeRead(ds, BlockDataLength + 20);
 
             //check old versions of the file
             TestSingleByteRead(ds1);
@@ -135,22 +138,22 @@ namespace openHistorian.V2.FileStructure.Test
 
             SubFileStream ds;
             //Open The File For Editing
-            header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadWrite);
-            ds = new SubFileStream(stream, header.Files[0], header, AccessMode.ReadWrite);
+            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadWrite);
+            ds = new SubFileStream(BlockSize, stream, header.Files[0], header, AccessMode.ReadWrite);
             TestSingleByteWrite(ds);
-            ds = new SubFileStream(stream, header.Files[1], header, AccessMode.ReadWrite);
+            ds = new SubFileStream(BlockSize, stream, header.Files[1], header, AccessMode.ReadWrite);
             TestCustomSizeWrite(ds, 5);
-            ds = new SubFileStream(stream, header.Files[2], header, AccessMode.ReadWrite);
-            TestCustomSizeWrite(ds, FileStructureConstants.DataBlockDataLength + 20);
+            ds = new SubFileStream(BlockSize, stream, header.Files[2], header, AccessMode.ReadWrite);
+            TestCustomSizeWrite(ds, BlockDataLength + 20);
             header.WriteToFileSystem(stream);
 
-            header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
-            ds = new SubFileStream(stream, header.Files[0], header, AccessMode.ReadOnly);
+            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
+            ds = new SubFileStream(BlockSize, stream, header.Files[0], header, AccessMode.ReadOnly);
             TestSingleByteRead(ds);
-            ds = new SubFileStream(stream, header.Files[1], header, AccessMode.ReadOnly);
+            ds = new SubFileStream(BlockSize, stream, header.Files[1], header, AccessMode.ReadOnly);
             TestCustomSizeRead(ds, 5);
-            ds = new SubFileStream(stream, header.Files[2], header, AccessMode.ReadOnly);
-            TestCustomSizeRead(ds, FileStructureConstants.DataBlockDataLength + 20);
+            ds = new SubFileStream(BlockSize, stream, header.Files[2], header, AccessMode.ReadOnly);
+            TestCustomSizeRead(ds, BlockDataLength + 20);
 
         }
 

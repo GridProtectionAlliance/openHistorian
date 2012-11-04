@@ -66,6 +66,8 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         SubFileMetaData m_subFile;
 
+        int m_blockSize;
+
         #endregion
 
         #region [ Constructors ]
@@ -77,8 +79,9 @@ namespace openHistorian.V2.FileStructure
         /// <param name="subFile">The file to read.</param>
         /// <param name="fileHeaderBlock">The FileAllocationTable</param>
         /// <param name="accessMode">Determines if the file stream allows writing.</param>
-        internal SubFileStream(DiskIo dataReader, SubFileMetaData subFile, FileHeaderBlock fileHeaderBlock, AccessMode accessMode)
+        internal SubFileStream(int blockSize, DiskIo dataReader, SubFileMetaData subFile, FileHeaderBlock fileHeaderBlock, AccessMode accessMode)
         {
+            m_blockSize = blockSize;
             m_isReadOnly = (accessMode == AccessMode.ReadOnly);
             m_lastReadOnlyBlock = fileHeaderBlock.LastAllocatedBlock;
             m_fileHeaderBlock = fileHeaderBlock;
@@ -162,7 +165,7 @@ namespace openHistorian.V2.FileStructure
                 throw new ObjectDisposedException(GetType().FullName);
             if (RemainingSupportedIoSessions == 0)
                 throw new Exception("There are not any remaining IO Sessions");
-            m_ioStream = new IoSession(this);
+            m_ioStream = new IoSession(m_blockSize, this);
             return m_ioStream;
         }
 

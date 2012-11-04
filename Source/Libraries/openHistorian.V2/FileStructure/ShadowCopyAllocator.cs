@@ -56,6 +56,8 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         IndexParser m_parser;
 
+        int m_blockSize;
+
         #endregion
 
         #region [ Constructors ]
@@ -67,7 +69,7 @@ namespace openHistorian.V2.FileStructure
         /// <param name="fileHeaderBlock">The file allocation table that is editable</param>
         /// <param name="subFileMetaData">The file that is used</param>
         /// <param name="parser">The indexparser used by the caller to designate what block needs to be copied.</param>
-        public ShadowCopyAllocator(DiskIo dataReader, FileHeaderBlock fileHeaderBlock, SubFileMetaData subFileMetaData, IndexParser parser)
+        public ShadowCopyAllocator(int blockSize, DiskIo dataReader, FileHeaderBlock fileHeaderBlock, SubFileMetaData subFileMetaData, IndexParser parser)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -83,7 +85,7 @@ namespace openHistorian.V2.FileStructure
                 throw new ArgumentException("FileAllocationTable is read only", "fileHeaderBlock");
             if (subFileMetaData.IsReadOnly)
                 throw new ArgumentException("FileMetaData is read only", "subFileMetaData");
-
+            m_blockSize = blockSize;
             m_parser = parser;
             m_lastReadOnlyBlock = fileHeaderBlock.LastAllocatedBlock;
             m_fileHeaderBlock = fileHeaderBlock;
@@ -212,7 +214,7 @@ namespace openHistorian.V2.FileStructure
                 else
                     bufferSource.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
 
-                if (bufferSource.Pointer[FileStructureConstants.BlockSize - 22] != indexIndirectNumber)
+                if (bufferSource.Pointer[m_blockSize - 31] != indexIndirectNumber)
                     throw new Exception("The redirect value of this page is incorrect");
 
 
@@ -247,7 +249,7 @@ namespace openHistorian.V2.FileStructure
         /// <param name="remoteBlockAddress">the value of the remote address</param>
         void WriteIndexIndirectBlock(byte* pointer, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
         {
-            pointer[FileStructureConstants.BlockSize - 22] = indexIndirectNumber;
+            pointer[m_blockSize - 31] = indexIndirectNumber;
             *(int*)(pointer + remoteAddressOffset) = remoteBlockAddress;
         }
 

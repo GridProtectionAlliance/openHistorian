@@ -35,37 +35,30 @@ namespace openHistorian.V2.FileStructure
     internal class FileHeaderBlock : SupportsReadonlyBase<FileHeaderBlock>
     {
         #region [ Members ]
-        #region [ Enumerables ]
-        /// <summary>
-        /// Provides a convinent text description for what the MetaDataCode names are.
-        /// </summary>
-        enum MetaDataCodes : short
-        {
-            ListOfFiles = 1
-        }
-        #endregion
-        #region [ Constants ]
+
         /// <summary>
         /// The file header bytes which equals: "openHistorian Archive 2.0\00"
         /// </summary>
         static byte[] s_fileAllocationTableHeaderBytes = new byte[] { 0x6F, 0x70, 0x65, 0x6E, 0x48, 0x69, 0x73, 0x74, 0x6F, 0x72, 0x69, 0x61, 0x6E, 0x20, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x20, 0x32, 0x2E, 0x30, 0x00 };
-        const int FileAllocationTableVersion = 0;
 
-        #endregion
-        #region [ Fields ]
+        const short FileAllocationTableVersion = 0;
 
         /// <summary>
         /// The version number required to read the file system.
         /// </summary>
-        int m_minimumReadVersion;
+        short m_minimumReadVersion;
         /// <summary>
         /// The version number required to write to the file system.
         /// </summary>
-        int m_minimumWriteVersion;
+        short m_minimumWriteVersion;
         /// <summary>
         /// The GUID for this archive file system.
         /// </summary>
         Guid m_archiveId;
+        /// <summary>
+        /// The GUID to represent the type of this archive file.
+        /// </summary>
+        Guid m_archiveType;
         /// <summary>
         /// This will be updated every time the file system has been modified. Initially, it will be one.
         /// </summary>
@@ -85,9 +78,10 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// Maintains any meta data tags that existed in the file header that were not recgonized by this version of the file so they can be saved back to the file.
         /// </summary>
-        List<byte[]> m_unrecgonizedMetaDataTags;
+        byte[] m_userData;
 
-        #endregion
+        int m_blockSize;
+
         #endregion
 
         #region [ Constructors ]
@@ -98,8 +92,9 @@ namespace openHistorian.V2.FileStructure
         /// <param name="diskIo"></param>
         /// <param name="openMode"> </param>
         /// <param name="accessMode"> </param>
-        public FileHeaderBlock(DiskIo diskIo, OpenMode openMode, AccessMode accessMode)
+        public FileHeaderBlock(int blockSize, DiskIo diskIo, OpenMode openMode, AccessMode accessMode)
         {
+            m_blockSize = blockSize;
             if (openMode == OpenMode.Create)
             {
                 CreateNewFileAllocationTable(diskIo, accessMode);
@@ -149,6 +144,22 @@ namespace openHistorian.V2.FileStructure
         }
 
         /// <summary>
+        /// The GUID number for this archive.
+        /// </summary>
+        public Guid ArchiveType
+        {
+            get
+            {
+                return m_archiveType;
+            }
+            set
+            {
+                TestForEditable();
+                m_archiveType = value;
+            }
+        }
+
+        /// <summary>
         /// Maintains a sequential number that represents the version of the file.
         /// </summary>
         public int SnapshotSequenceNumber
@@ -190,6 +201,29 @@ namespace openHistorian.V2.FileStructure
             }
         }
 
+        public byte[] UserData
+        {
+            get
+            {
+                if (IsReadOnly)
+                    return (byte[])m_userData.Clone();
+                else
+                    return m_userData;
+            }
+            set
+            {
+                base.TestForEditable();
+                if (value == null)
+                    m_userData = new byte[] { };
+                else
+                {
+                    if (m_files.Count * SubFileMetaData.SizeInBytes + 84 + 32 + value.Length > m_blockSize)
+                        throw new Exception("User block is too big for the current file.");
+                    m_userData = value;
+                }
+            }
+        }
+
 
         #endregion
 
@@ -216,6 +250,7 @@ namespace openHistorian.V2.FileStructure
             if (!CanWrite)
                 throw new Exception("This file cannot be modified because the file system version is not recgonized");
             m_files = m_files.CloneEditable();
+            m_userData = (byte[])m_userData.Clone();
         }
 
         /// <summary>
@@ -297,6 +332,7 @@ namespace openHistorian.V2.FileStructure
             m_lastAllocatedBlock = 9;
             m_files = new ReadonlyList<SubFileMetaData>();
             IsReadOnly = (mode == AccessMode.ReadOnly);
+            m_userData = new byte[] { };
 
             byte[] data = GetBytes();
 
@@ -316,45 +352,39 @@ namespace openHistorian.V2.FileStructure
             if (!IsFileAllocationTableValid())
                 throw new InvalidOperationException("File Allocation Table is invalid");
 
-            byte[] dataBytes = new byte[FileStructureConstants.BlockSize];
+            byte[] dataBytes = new byte[m_blockSize];
             MemoryStream stream = new MemoryStream(dataBytes);
             BinaryWriter dataWriter = new BinaryWriter(stream);
 
             dataWriter.Write(s_fileAllocationTableHeaderBytes);
+
+            if (BitConverter.IsLittleEndian)
+            {
+                dataWriter.Write('L');
+            }
+            else
+            {
+                dataWriter.Write('B');
+            }
+            dataWriter.Write((byte)(BitMath.CountBitsSet((uint)(m_blockSize - 1))));
+
             dataWriter.Write(m_minimumReadVersion);
             dataWriter.Write(m_minimumWriteVersion);
             dataWriter.Write(ArchiveId.ToByteArray());
-            dataWriter.Write((byte)(0)); //IsOpenedForExclusiveEditing
+            dataWriter.Write(ArchiveType.ToByteArray());
             dataWriter.Write(SnapshotSequenceNumber);
-
-            //Write meta data tags.
-            //Currently only 1 is recgonized.  So unless there are unrecgonized tags, write 1.
-            if (m_unrecgonizedMetaDataTags == null)
-                dataWriter.Write((short)1); //meta data page count
-            else
-                dataWriter.Write((short)(1 + m_unrecgonizedMetaDataTags.Count)); //meta data page count
-
-            byte fileCount = (byte)FileCount;
-
-            dataWriter.Write((short)MetaDataCodes.ListOfFiles); //Meta Data Code
-            dataWriter.Write((short)(fileCount * SubFileMetaData.SizeInBytes + 9)); //Meta data length
             dataWriter.Write(LastAllocatedBlock);
             dataWriter.Write(m_nextFileId);
-            dataWriter.Write(fileCount);
-
+            dataWriter.Write(m_files.Count);
             foreach (SubFileMetaData node in m_files)
             {
-                if (node != null)
-                    node.Save(dataWriter);
+                node.Save(dataWriter);
             }
+            dataWriter.Write(m_userData.Length);
+            dataWriter.Write(m_userData);
 
-            if (m_unrecgonizedMetaDataTags != null) //If there were tags that were not recgonized, simply copy them to the new archive file.
-            {
-                foreach (byte[] tag in m_unrecgonizedMetaDataTags)
-                {
-                    dataWriter.Write(tag);
-                }
-            }
+            if (stream.Position + 32 > dataBytes.Length)
+                throw new Exception("the file size exceedes the allowable size.");
 
             return dataBytes;
         }
@@ -367,10 +397,8 @@ namespace openHistorian.V2.FileStructure
         /// <param name="mode"></param>
         void LoadFromBuffer(DiskIo diskIo, AccessMode mode)
         {
-            byte[] buffer = new byte[FileStructureConstants.BlockSize];
+            byte[] buffer = new byte[m_blockSize];
             diskIo.Read(0, BlockType.FileAllocationTable, 0, 0, int.MaxValue, buffer);
-
-            int metaDataCount;
 
             MemoryStream stream = new MemoryStream(buffer);
             BinaryReader dataReader = new BinaryReader(stream);
@@ -378,61 +406,64 @@ namespace openHistorian.V2.FileStructure
             if (!dataReader.ReadBytes(26).SequenceEqual(s_fileAllocationTableHeaderBytes))
                 throw new Exception("This file is not an archive file system, or the file is corrupt, or this file system major version is not recgonized by this version of the historian");
 
-            m_minimumReadVersion = dataReader.ReadInt32();
-            m_minimumWriteVersion = dataReader.ReadInt32();
+            char endian = dataReader.ReadChar();
+            if (BitConverter.IsLittleEndian)
+            {
+                if (endian != 'L')
+                    throw new Exception("This archive file was not writen with a little endian processor");
+            }
+            else
+            {
+                if (endian != 'B')
+                    throw new Exception("This archive file was not writen with a big endian processor");
+            }
+
+            byte blockSizePower = dataReader.ReadByte();
+            if (blockSizePower > 30 || blockSizePower < 5)
+                throw new Exception("Block size of this file is not supported");
+            int blockSize = 1 << blockSizePower;
+
+            if (m_blockSize != blockSize)
+                throw new Exception("Block size is unexpected");
+
+            m_minimumReadVersion = dataReader.ReadInt16();
+            m_minimumWriteVersion = dataReader.ReadInt16();
 
             if (!CanRead)
                 throw new Exception("The version of this file system is not recgonized");
 
             m_archiveId = new Guid(dataReader.ReadBytes(16));
-
-            bool isOpenedForExclusiveEditing = (dataReader.ReadByte() != 0);
-            if (isOpenedForExclusiveEditing)
-                throw new Exception("The file was opened for exclusive editing.");
+            m_archiveType = new Guid(dataReader.ReadBytes(16));
 
             m_snapshotSequenceNumber = dataReader.ReadInt32();
+            m_lastAllocatedBlock = dataReader.ReadInt32();
+            m_nextFileId = dataReader.ReadInt32();
+            int fileCount = dataReader.ReadInt32();
 
-            //Process all of the meta data
-            metaDataCount = dataReader.ReadInt16();
-            for (; metaDataCount > 0; metaDataCount--)
+            //ToDo: check based on block
+            if (fileCount > 64)
+                throw new Exception("Only 64 features are supported per archive");
+            
+            m_files = new ReadonlyList<SubFileMetaData>(fileCount);
+            for (int x = 0; x < fileCount; x++)
             {
-                int metaDataCode = dataReader.ReadInt16();
-                int metaDataLength = dataReader.ReadInt16();
-                if (metaDataLength + stream.Position > FileStructureConstants.BlockSize)
-                    throw new Exception("File Allocation Tables larger than a block size is not supported");
-
-                switch (metaDataCode)
-                {
-                    case 1:
-                        if (metaDataLength < 9)
-                            throw new Exception("The file format is corrupt");
-                        m_lastAllocatedBlock = dataReader.ReadInt32();
-                        m_nextFileId = dataReader.ReadInt32();
-                        int fileCount = dataReader.ReadByte();
-                        if (fileCount > 64)
-                            throw new Exception("Only 64 features are supported per archive");
-                        if (metaDataLength != fileCount * SubFileMetaData.SizeInBytes + 9)
-                            throw new Exception("The file format is corrupt");
-
-                        m_files = new ReadonlyList<SubFileMetaData>(fileCount);
-                        for (int x = 0; x < fileCount; x++)
-                        {
-                            m_files.Add(new SubFileMetaData(dataReader, mode));
-                        }
-                        break;
-                    default:
-                        stream.Position -= 4;
-                        if (m_unrecgonizedMetaDataTags == null)
-                            m_unrecgonizedMetaDataTags = new List<byte[]>();
-                        m_unrecgonizedMetaDataTags.Add(dataReader.ReadBytes(metaDataLength + 4));
-                        break;
-                }
+                m_files.Add(new SubFileMetaData(dataReader, mode));
             }
+
+            //ToDo: check based on block length
+            int userSpaceLength = dataReader.ReadInt32();
+            m_userData = dataReader.ReadBytes(userSpaceLength);
+
             if (!IsFileAllocationTableValid())
                 throw new Exception("File System is invalid");
             IsReadOnly = (mode == AccessMode.ReadOnly);
             if (mode != AccessMode.ReadOnly)
                 m_snapshotSequenceNumber++;
+        }
+
+        public static int SearchForBlockSize()
+        {
+            return 1;
         }
 
         #endregion

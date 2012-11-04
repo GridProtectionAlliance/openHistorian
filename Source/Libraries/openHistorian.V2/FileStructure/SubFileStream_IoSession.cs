@@ -51,14 +51,17 @@ namespace openHistorian.V2.FileStructure
             /// </summary>
             DiskIoSession m_buffer;
 
+            int m_blockDataLength;
+
             #endregion
 
             #region [ Constructors ]
 
-            public IoSession(SubFileStream stream)
+            public IoSession(int blockSize, SubFileStream stream)
             {
+                m_blockDataLength = blockSize - FileStructureConstants.BlockFooterLength;
                 m_stream = stream;
-                m_addressTranslation = new SubFileAddressTranslation(stream.m_subFile, stream.m_dataReader, stream.m_fileHeaderBlock, stream.m_isReadOnly ? AccessMode.ReadOnly : AccessMode.ReadWrite);
+                m_addressTranslation = new SubFileAddressTranslation(blockSize, stream.m_subFile, stream.m_dataReader, stream.m_fileHeaderBlock, stream.m_isReadOnly ? AccessMode.ReadOnly : AccessMode.ReadWrite);
                 m_buffer = stream.m_dataReader.CreateDiskIoSession();
             }
 
@@ -117,7 +120,7 @@ namespace openHistorian.V2.FileStructure
             {
                 if (m_buffer.IsValid && m_buffer.IsPendingWriteComplete)
                 {
-                    int indexValue = (int)(m_positionBlock.VirtualPosition / FileStructureConstants.DataBlockDataLength);
+                    int indexValue = (int)(m_positionBlock.VirtualPosition / m_blockDataLength);
                     int fileIdNumber = m_stream.m_subFile.FileIdNumber;
                     int snapshotSequenceNumber = m_stream.m_fileHeaderBlock.SnapshotSequenceNumber;
                     m_buffer.EndWrite(BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber);
@@ -135,7 +138,7 @@ namespace openHistorian.V2.FileStructure
                     m_positionBlock = m_addressTranslation.VirtualToPhysical(position);
                     if (m_positionBlock.PhysicalBlockIndex == 0)
                         throw new Exception("Failure to shadow copy the page.");
-                    int indexValue = (int)(m_positionBlock.VirtualPosition / FileStructureConstants.DataBlockDataLength);
+                    int indexValue = (int)(m_positionBlock.VirtualPosition / m_blockDataLength);
                     int featureSequenceNumber = m_stream.m_subFile.FileIdNumber;
                     int revisionSequenceNumber = m_stream.m_fileHeaderBlock.SnapshotSequenceNumber;
                     m_buffer.Read(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber);
@@ -153,7 +156,7 @@ namespace openHistorian.V2.FileStructure
                     m_positionBlock = m_addressTranslation.VirtualToShadowPagePhysical(position);
                     if (m_positionBlock.PhysicalBlockIndex == 0)
                         throw new Exception("Failure to shadow copy the page.");
-                    int indexValue = (int)(m_positionBlock.VirtualPosition / FileStructureConstants.DataBlockDataLength);
+                    int indexValue = (int)(m_positionBlock.VirtualPosition / m_blockDataLength);
                     int featureSequenceNumber = m_stream.m_subFile.FileIdNumber;
                     int revisionSequenceNumber = m_stream.m_fileHeaderBlock.SnapshotSequenceNumber;
                     m_buffer.BeginWriteToExistingBlock(m_positionBlock.PhysicalBlockIndex, BlockType.DataBlock, indexValue, featureSequenceNumber, revisionSequenceNumber);

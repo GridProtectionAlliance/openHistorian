@@ -59,6 +59,8 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         TransactionalEdit m_currentTransaction;
 
+        int m_blockSize;
+
         #endregion
 
         #region [ Constructors ]
@@ -66,10 +68,11 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// Creates a new archive file that is completely in memory
         ///  </summary>
-        public TransactionService()
+        public TransactionService(int blockSize)
         {
-            m_diskIo = new DiskIo(new MemoryStream(), 0);
-            m_fileHeaderBlock = new FileHeaderBlock(m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
+            m_blockSize = blockSize;
+            m_diskIo = new DiskIo(blockSize, new MemoryStream(), 0);
+            m_fileHeaderBlock = new FileHeaderBlock(blockSize, m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
         }
 
         /// <summary>
@@ -78,21 +81,22 @@ namespace openHistorian.V2.FileStructure
         /// <param name="fileName">The name of the file.</param>
         /// <param name="openMode"></param>
         /// <param name="accessMode"></param>
-        public TransactionService(string fileName, OpenMode openMode, AccessMode accessMode)
+        public TransactionService(int blockSize, string fileName, OpenMode openMode, AccessMode accessMode)
         {
+            m_blockSize = blockSize;
             if (openMode == OpenMode.Create)
             {
                 FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
                 BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
-                m_diskIo = new DiskIo(bufferedFileStream, 0);
-                m_fileHeaderBlock = new FileHeaderBlock(m_diskIo, OpenMode.Create, accessMode);
+                m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
+                m_fileHeaderBlock = new FileHeaderBlock(blockSize, m_diskIo, OpenMode.Create, accessMode);
             }
             else
             {
                 FileStream fileStream = new FileStream(fileName, FileMode.Open, (accessMode == AccessMode.ReadOnly) ? FileAccess.Read : FileAccess.ReadWrite);
                 BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
-                m_diskIo = new DiskIo(bufferedFileStream, 0);
-                m_fileHeaderBlock = new FileHeaderBlock(m_diskIo, OpenMode.Open, accessMode);
+                m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
+                m_fileHeaderBlock = new FileHeaderBlock(blockSize, m_diskIo, OpenMode.Open, accessMode);
             }
         }
 
@@ -108,7 +112,7 @@ namespace openHistorian.V2.FileStructure
         {
             if (m_diskIo.IsReadOnly)
                 throw new Exception("File has been opened in readonly mode");
-            var transaction = new TransactionalEdit(m_diskIo, m_fileHeaderBlock, OnTransactionRolledBack, OnTransactionCommitted);
+            var transaction = new TransactionalEdit(m_blockSize, m_diskIo, m_fileHeaderBlock, OnTransactionRolledBack, OnTransactionCommitted);
             Interlocked.CompareExchange(ref m_currentTransaction, transaction, null);
             if (m_currentTransaction != transaction)
                 throw new Exception("Only one edit transaction can exist at one time.");
@@ -121,13 +125,13 @@ namespace openHistorian.V2.FileStructure
         /// <returns></returns>
         public TransactionalRead BeginReadTransaction()
         {
-            TransactionalRead readTransaction = new TransactionalRead(m_diskIo, m_fileHeaderBlock);
+            TransactionalRead readTransaction = new TransactionalRead(m_blockSize, m_diskIo, m_fileHeaderBlock);
             return readTransaction;
         }
 
         void OnTransactionCommitted()
         {
-            m_fileHeaderBlock = new FileHeaderBlock(m_diskIo, OpenMode.Open, AccessMode.ReadOnly);
+            m_fileHeaderBlock = new FileHeaderBlock(m_blockSize, m_diskIo, OpenMode.Open, AccessMode.ReadOnly);
             m_currentTransaction = null;
         }
 

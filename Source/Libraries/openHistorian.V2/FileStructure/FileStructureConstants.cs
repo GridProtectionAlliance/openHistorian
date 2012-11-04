@@ -21,77 +21,40 @@
 //     
 //******************************************************************************************************
 
+using System;
+
 namespace openHistorian.V2.FileStructure
 {
     /// <summary>
     /// Maintains some global constants for the archive file.
     /// </summary>
-    public static class FileStructureConstants
+    public class FileStructureConstants
     {
+        ///// <summary>
+        ///// The number of bytes in a block. (the smallest unit of data space).
+        ///// </summary>
+        //public int BlockSize;
+
         /// <summary>
         /// The largest supported file system size
         /// </summary>
-        public const long MaxFileSystemSize = (long)BlockSize * int.MaxValue;
-        /// <summary>
-        /// The number of bytes in a block. (the smallest unit of data space).
-        /// </summary>
-        public const int BlockSize = 4096;
-        /// <summary>
-        /// The number of addresses that can fit in each indirect block
-        /// </summary>
-        public const int AddressesPerBlock = IndexIndirectBlockDataLength / 4; //rounds down
-        /// <summary>
-        /// The number of addresses that can fit in a double indirect block
-        /// </summary>
-        public const int AddressesPerBlockSquare = AddressesPerBlock * AddressesPerBlock;
-        /// <summary>
-        /// The number of addresses that can fit in a triple indirect block
-        /// </summary>
-        public const long AddressesPerBlockCube = (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock;
-        /// <summary>
-        /// The number of bytes in the footer of the file allocation table block
-        /// </summary>
-        public const int FileAllocationTableFooterLength = 21;
-        /// <summary>
-        /// The number of data bytes available for a file allocation table block
-        /// </summary>
-        public const int FileAllocationTableDataLength = BlockSize - FileAllocationTableFooterLength;
-        /// <summary>
-        /// The number of bytes in the footer of the indirect block
-        /// </summary>
-        public const int IndexIndirectBlockFooterLength = 22;
-        /// <summary>
-        /// The number of data bytes available for a indirect block
-        /// </summary>
-        public const int IndexIndirectBlockDataLength = BlockSize - IndexIndirectBlockFooterLength;
-        /// <summary>
-        /// The number of bytes in the footer of a data block
-        /// </summary>
-        public const int DataBlockFooterLength = 21;
-        /// <summary>
-        /// The number of data bytes available in a data block
-        /// </summary>
-        public const int DataBlockDataLength = BlockSize - DataBlockFooterLength;
-
-        const long TmpFirstDoubleIndirectBlockIndex = FirstSingleIndirectBlockIndex + (long)AddressesPerBlock;
-        const long TmpFirstTripleIndirectIndex = FirstDoubleIndirectBlockIndex + (long)AddressesPerBlock * (long)AddressesPerBlock;
-        const long TmpLastAddressableBlockIndex = FirstTripleIndirectIndex + (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock - 1;
+        public long MaxFileSystemSize;
 
         /// <summary>
-        /// The index of the first block in the single indirect blocks
+        /// The number of bytes in the footer of a block
         /// </summary>
-        public const int FirstSingleIndirectBlockIndex = 1;
-        /// <summary>
-        /// The index of the first block in the double indirect blocks
-        /// </summary>
-        public const int FirstDoubleIndirectBlockIndex = (int)(TmpFirstDoubleIndirectBlockIndex > int.MaxValue ? int.MaxValue : TmpFirstDoubleIndirectBlockIndex);
-        /// <summary>
-        /// The index of the first block in the triple indirect blocks
-        /// </summary>
-        public const int FirstTripleIndirectIndex = (int)(TmpFirstTripleIndirectIndex > int.MaxValue ? int.MaxValue : TmpFirstTripleIndirectIndex);
-        /// <summary>
-        /// The index of the first block in the quadruple indirect blocks
-        /// </summary>
-        public const int LastAddressableBlockIndex = (int)(TmpLastAddressableBlockIndex > int.MaxValue ? int.MaxValue : TmpLastAddressableBlockIndex);
+        public const int BlockFooterLength = 32;
+
+        ///// <summary>
+        ///// The number of bytes available in a block
+        ///// </summary>
+        //public int BlockDataLength;
+
+        public FileStructureConstants(int blockSize)
+        {
+            //BlockSize = blockSize;
+            //MaxFileSystemSize = (long)BlockSize * int.MaxValue;
+            //BlockDataLength = blockSize - BlockFooterLength;
+        }
     }
 }

@@ -30,6 +30,29 @@ namespace openHistorian.V2.FileStructure.Test
     [TestClass()]
     public class IndexMapperTest
     {
+        static FileStructureConstants constants = new FileStructureConstants(4096);
+
+        static int BlockSize;
+        static int BlockDataLength;
+        static int AddressesPerBlock;
+        static int AddressesPerBlockSquare;
+        static int FirstSingleIndirectBlockIndex;
+        static int FirstDoubleIndirectBlockIndex;
+        static int FirstTripleIndirectIndex;
+        static int LastAddressableBlockIndex;
+
+        static IndexMapperTest()
+        {
+            BlockSize = 4096;
+            BlockDataLength = BlockSize - FileStructureConstants.BlockFooterLength;
+            AddressesPerBlock = BlockDataLength / 4; //rounds down
+            AddressesPerBlockSquare = AddressesPerBlock * AddressesPerBlock;
+            FirstSingleIndirectBlockIndex = 1;
+            FirstDoubleIndirectBlockIndex = (int)Math.Min(int.MaxValue, FirstSingleIndirectBlockIndex + (long)AddressesPerBlock);
+            FirstTripleIndirectIndex = (int)Math.Min(int.MaxValue, FirstDoubleIndirectBlockIndex + (long)AddressesPerBlock * (long)AddressesPerBlock);
+            LastAddressableBlockIndex = (int)Math.Min(int.MaxValue, FirstTripleIndirectIndex + (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock - 1);
+        }
+
         [TestMethod()]
         public void Test()
         {
@@ -48,29 +71,29 @@ namespace openHistorian.V2.FileStructure.Test
         {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
-            IndexMapper map = new IndexMapper();
-            long page = (long)FileStructureConstants.LastAddressableBlockIndex * FileStructureConstants.DataBlockDataLength;
+            IndexMapper map = new IndexMapper(BlockSize);
+            long page = (long)LastAddressableBlockIndex * BlockDataLength;
 
             for (int x = 0; x < 10000000; x++)
             {
-                page += FileStructureConstants.DataBlockDataLength;
+                page += BlockDataLength;
                 map.SetPosition(page);
             }
 
             sw.Stop();
-            System.Windows.Forms.MessageBox.Show(((int.MaxValue / FileStructureConstants.DataBlockDataLength) / sw.Elapsed.TotalSeconds).ToString());
+            System.Windows.Forms.MessageBox.Show(((int.MaxValue / BlockDataLength) / sw.Elapsed.TotalSeconds).ToString());
         }
 
         public static void TestMethod1()
         {
-            IndexMapper map = new IndexMapper();
+            IndexMapper map = new IndexMapper(BlockSize);
             CheckValues check = new CheckValues();
-            long lastAddress = Math.Min((long)int.MaxValue * FileStructureConstants.DataBlockDataLength, FileStructureConstants.LastAddressableBlockIndex * (long)FileStructureConstants.DataBlockDataLength);
+            long lastAddress = Math.Min((long)int.MaxValue * BlockDataLength, LastAddressableBlockIndex * (long)BlockDataLength);
 
             //this line is to shortcut so the test is less comprehensive.
-            lastAddress = (long)FileStructureConstants.DataBlockDataLength * (long)FileStructureConstants.FirstTripleIndirectIndex + 100;
+            lastAddress = (long)BlockDataLength * (long)FirstTripleIndirectIndex + 100;
 
-            for (long x = 0; x < lastAddress; x += FileStructureConstants.DataBlockDataLength)
+            for (long x = 0; x < lastAddress; x += BlockDataLength)
             {
                 map.SetPosition(x);
                 check.Check(map, x);
@@ -108,22 +131,22 @@ namespace openHistorian.V2.FileStructure.Test
             void Increment()
             {
                 BaseVirtualAddressIndexValue++;
-                BaseVirtualAddress += FileStructureConstants.DataBlockDataLength;
+                BaseVirtualAddress += BlockDataLength;
                 switch (RedirectNumber)
                 {
                     case 3:
                         ThirdRedirectOffset += 4;
-                        if (ThirdRedirectOffset == FileStructureConstants.AddressesPerBlock * 4)
+                        if (ThirdRedirectOffset == AddressesPerBlock * 4)
                         {
                             SecondRedirectOffset += 4;
                             ThirdRedirectOffset = 0;
                         }
-                        if (SecondRedirectOffset == FileStructureConstants.AddressesPerBlock * 4)
+                        if (SecondRedirectOffset == AddressesPerBlock * 4)
                         {
                             FirstRedirectOffset += 4;
                             SecondRedirectOffset = 0;
                         }
-                        if (FirstRedirectOffset == FileStructureConstants.AddressesPerBlock * 4)
+                        if (FirstRedirectOffset == AddressesPerBlock * 4)
                         {
                             RedirectNumber = 4;
                             FirstRedirectOffset = 0;
@@ -133,12 +156,12 @@ namespace openHistorian.V2.FileStructure.Test
                         break;
                     case 2:
                         SecondRedirectOffset += 4;
-                        if (SecondRedirectOffset == FileStructureConstants.AddressesPerBlock * 4)
+                        if (SecondRedirectOffset == AddressesPerBlock * 4)
                         {
                             FirstRedirectOffset += 4;
                             SecondRedirectOffset = 0;
                         }
-                        if (FirstRedirectOffset == FileStructureConstants.AddressesPerBlock * 4)
+                        if (FirstRedirectOffset == AddressesPerBlock * 4)
                         {
                             RedirectNumber = 3;
                             FirstRedirectOffset = 0;
@@ -148,7 +171,7 @@ namespace openHistorian.V2.FileStructure.Test
                         break;
                     case 1:
                         FirstRedirectOffset += 4;
-                        if (FirstRedirectOffset == FileStructureConstants.AddressesPerBlock * 4)
+                        if (FirstRedirectOffset == AddressesPerBlock * 4)
                         {
                             RedirectNumber = 2;
                             FirstRedirectOffset = 0;

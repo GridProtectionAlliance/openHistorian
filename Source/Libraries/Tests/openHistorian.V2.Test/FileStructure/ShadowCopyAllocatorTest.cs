@@ -34,12 +34,34 @@ namespace openHistorian.V2.FileStructure.Test
     [TestClass()]
     public class ShadowCopyAllocatorTest
     {
+
+        static int BlockSize;
+        static int BlockDataLength;
+        static int AddressesPerBlock;
+        static int AddressesPerBlockSquare;
+        static int FirstSingleIndirectBlockIndex;
+        static int FirstDoubleIndirectBlockIndex;
+        static int FirstTripleIndirectIndex;
+        static int LastAddressableBlockIndex;
+
+        static ShadowCopyAllocatorTest()
+        {
+            BlockSize = 4096;
+            BlockDataLength = BlockSize - FileStructureConstants.BlockFooterLength;
+            AddressesPerBlock = BlockDataLength / 4; //rounds down
+            AddressesPerBlockSquare = AddressesPerBlock * AddressesPerBlock;
+            FirstSingleIndirectBlockIndex = 1;
+            FirstDoubleIndirectBlockIndex = (int)Math.Min(int.MaxValue, FirstSingleIndirectBlockIndex + (long)AddressesPerBlock);
+            FirstTripleIndirectIndex = (int)Math.Min(int.MaxValue, FirstDoubleIndirectBlockIndex + (long)AddressesPerBlock * (long)AddressesPerBlock);
+            LastAddressableBlockIndex = (int)Math.Min(int.MaxValue, FirstTripleIndirectIndex + (long)AddressesPerBlock * (long)AddressesPerBlock * (long)AddressesPerBlock - 1);
+        }
+
         [TestMethod()]
         public void Test()
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
-            DiskIo stream = new DiskIo(new MemoryStream(), 0);
-            FileHeaderBlock header = new FileHeaderBlock(stream, OpenMode.Create, AccessMode.ReadWrite);
+            DiskIo stream = new DiskIo(BlockSize, new MemoryStream(), 0);
+            FileHeaderBlock header = new FileHeaderBlock(BlockSize, stream, OpenMode.Create, AccessMode.ReadWrite);
             header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
@@ -50,7 +72,7 @@ namespace openHistorian.V2.FileStructure.Test
             TestWrite(stream, 0);
             TestWrite(stream, 1);
             TestWrite(stream, 2);
-            header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
+            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
             Assert.IsTrue(true);
             stream.Dispose();
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
@@ -59,14 +81,14 @@ namespace openHistorian.V2.FileStructure.Test
         internal static void TestWrite(DiskIo stream, int FileNumber)
         {
 
-            FileHeaderBlock header = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
+            FileHeaderBlock header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
             header = header.CloneEditable();
             SubFileMetaData node = header.Files[FileNumber];
-            IndexParser parse = new IndexParser(header.SnapshotSequenceNumber, stream, node);
-            ShadowCopyAllocator shadow = new ShadowCopyAllocator(stream, header, node, parse);
+            IndexParser parse = new IndexParser(BlockSize, header.SnapshotSequenceNumber, stream, node);
+            ShadowCopyAllocator shadow = new ShadowCopyAllocator(BlockSize, stream, header, node, parse);
 
             int nextPage = header.LastAllocatedBlock + 1;
-            byte[] block = new byte[FileStructureConstants.BlockSize];
+            byte[] block = new byte[BlockSize];
 
 
             shadow.ShadowDataBlock(0);
@@ -75,7 +97,7 @@ namespace openHistorian.V2.FileStructure.Test
                 throw new Exception();
             if (parse.DataClusterAddress != nextPage)
                 throw new Exception();
-            stream.WriteToNewBlock(parse.DataClusterAddress, BlockType.DataBlock, (int)(pd.VirtualPosition / FileStructureConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, block);
+            stream.WriteToNewBlock(parse.DataClusterAddress, BlockType.DataBlock, (int)(pd.VirtualPosition / BlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, block);
 
 
             //should do nothing since the page has already been allocated
@@ -85,12 +107,12 @@ namespace openHistorian.V2.FileStructure.Test
                 throw new Exception();
             if (parse.DataClusterAddress != nextPage)
                 throw new Exception();
-            stream.WriteToNewBlock(parse.DataClusterAddress, BlockType.DataBlock, (int)(pd.VirtualPosition / FileStructureConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, block);
+            stream.WriteToNewBlock(parse.DataClusterAddress, BlockType.DataBlock, (int)(pd.VirtualPosition / BlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, block);
 
 
             //Allocate in the 3th indirect block
-            shadow.ShadowDataBlock(FileStructureConstants.FirstTripleIndirectIndex * (long)FileStructureConstants.DataBlockDataLength);
-            pd = parse.GetPositionData(FileStructureConstants.FirstTripleIndirectIndex * (long)FileStructureConstants.DataBlockDataLength);
+            shadow.ShadowDataBlock(FirstTripleIndirectIndex * (long)BlockDataLength);
+            pd = parse.GetPositionData(FirstTripleIndirectIndex * (long)BlockDataLength);
             if (node.DirectBlock != nextPage)
                 throw new Exception();
             if (parse.DataClusterAddress != nextPage + 1)
@@ -101,7 +123,7 @@ namespace openHistorian.V2.FileStructure.Test
                 throw new Exception();
             if (parse.ThirdIndirectBlockAddress != nextPage + 2)
                 throw new Exception();
-            stream.WriteToNewBlock(parse.DataClusterAddress, BlockType.DataBlock, (int)(pd.VirtualPosition / FileStructureConstants.DataBlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, block);
+            stream.WriteToNewBlock(parse.DataClusterAddress, BlockType.DataBlock, (int)(pd.VirtualPosition / BlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, block);
 
             //if (node.DirectCluster != nextPage)
             //    throw new Exception();

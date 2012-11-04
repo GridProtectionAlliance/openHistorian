@@ -57,14 +57,14 @@ namespace openHistorian.V2.FileStructure
         /// <param name="dataReader">Disk Reader</param>
         /// <param name="fileHeaderBlock">FileAllocationTable</param>
         /// <param name="accessMode">Determines if the file will be opened allowing shadow copies or not.</param>
-        public SubFileAddressTranslation(SubFileMetaData subFile, DiskIo dataReader, FileHeaderBlock fileHeaderBlock, AccessMode accessMode)
+        public SubFileAddressTranslation(int blockSize, SubFileMetaData subFile, DiskIo dataReader, FileHeaderBlock fileHeaderBlock, AccessMode accessMode)
         {
             m_isReadOnly = (accessMode == AccessMode.ReadOnly);
-            m_parser = new IndexParser(fileHeaderBlock.SnapshotSequenceNumber, dataReader, subFile);
+            m_parser = new IndexParser(blockSize, fileHeaderBlock.SnapshotSequenceNumber, dataReader, subFile);
 
             if (!IsReadOnly)
             {
-                m_pager = new ShadowCopyAllocator(dataReader, fileHeaderBlock, subFile, m_parser);
+                m_pager = new ShadowCopyAllocator(blockSize, dataReader, fileHeaderBlock, subFile, m_parser);
             }
 
         }

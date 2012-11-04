@@ -74,6 +74,8 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         List<SubFileStream> m_openedFiles;
 
+        int m_blockSize;
+
         #endregion
 
         #region [ Constructors ]
@@ -87,7 +89,7 @@ namespace openHistorian.V2.FileStructure
         /// This will be converted into an editable version within the constructor of this class</param>
         /// <param name="delHasBeenRolledBack">the delegate to call when this transaction has been rolled back</param>
         /// <param name="delHasBeenCommitted">the delegate to call when this transaction has been committed</param>
-        internal TransactionalEdit(DiskIo dataReader, FileHeaderBlock fileHeaderBlock, Action delHasBeenRolledBack = null, Action delHasBeenCommitted = null)
+        internal TransactionalEdit(int blockSize, DiskIo dataReader, FileHeaderBlock fileHeaderBlock, Action delHasBeenRolledBack = null, Action delHasBeenCommitted = null)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -96,9 +98,11 @@ namespace openHistorian.V2.FileStructure
             if (!fileHeaderBlock.IsReadOnly)
                 throw new ArgumentException("The file passed to this procedure must be read only.", "fileHeaderBlock");
 
+            m_blockSize = blockSize;
+
             m_openedFiles = new List<SubFileStream>();
             m_disposed = false;
-            m_transactionalRead = new TransactionalRead(dataReader, fileHeaderBlock);
+            m_transactionalRead = new TransactionalRead(blockSize, dataReader, fileHeaderBlock);
             m_fileHeaderBlock = fileHeaderBlock.CloneEditable();
             m_dataReader = dataReader;
             m_delHasBeenCommitted = delHasBeenCommitted;
@@ -166,7 +170,7 @@ namespace openHistorian.V2.FileStructure
             if (fileIndex < 0 || fileIndex >= m_fileHeaderBlock.Files.Count)
                 throw new ArgumentOutOfRangeException("fileIndex", "The file index provided could not be found in the header.");
             SubFileMetaData subFile = m_fileHeaderBlock.Files[fileIndex];
-            var fileStream = new SubFileStream(m_dataReader, subFile, m_fileHeaderBlock, AccessMode.ReadWrite);
+            var fileStream = new SubFileStream(m_blockSize,m_dataReader, subFile, m_fileHeaderBlock, AccessMode.ReadWrite);
             m_openedFiles.Add(fileStream);
             return fileStream;
         }
@@ -306,7 +310,7 @@ namespace openHistorian.V2.FileStructure
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                return m_dataReader.FileSize - (m_fileHeaderBlock.LastAllocatedBlock + 1) * FileStructureConstants.BlockSize;
+                return m_dataReader.FileSize - (m_fileHeaderBlock.LastAllocatedBlock + 1) * m_blockSize;
             }
         }
 

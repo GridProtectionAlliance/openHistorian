@@ -82,6 +82,7 @@ namespace openHistorian.V2.FileStructure
         int m_length;
         int m_blockIndex;
         byte* m_pointer;
+        int m_blockSize;
 
         #endregion
 
@@ -92,7 +93,7 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         /// <param name="diskIo">owner of the disk</param>
         /// <param name="stream">the stream that the IoSession can be created from</param>
-        public DiskIoSession(DiskIo diskIo, ISupportsBinaryStream stream)
+        public DiskIoSession(int blockSize, DiskIo diskIo, ISupportsBinaryStream stream)
         {
             if (diskIo == null)
                 throw new ArgumentNullException("diskIo");
@@ -103,6 +104,7 @@ namespace openHistorian.V2.FileStructure
             if (stream.IsDisposed)
                 throw new ObjectDisposedException(stream.GetType().FullName);
 
+            m_blockSize = blockSize;
             m_diskIo = diskIo;
             m_ioSession = stream.GetNextIoSession();
             m_isValid = false;
@@ -204,6 +206,13 @@ namespace openHistorian.V2.FileStructure
             }
         }
 
+        public int BlockSize
+        {
+            get
+            {
+                return m_blockSize;
+            }
+        }
         #endregion
 
         #region [ Methods ]
@@ -227,7 +236,7 @@ namespace openHistorian.V2.FileStructure
             m_isValid = false;
 
             //If the file is not large enough to write to this block, autogrow the file.
-            if ((long)(blockIndex + 1) * FileStructureConstants.BlockSize > m_diskIo.FileSize)
+            if ((long)(blockIndex + 1) * m_blockSize > m_diskIo.FileSize)
             {
                 m_diskIo.SetFileLength(0, blockIndex + 1);
             }
@@ -397,19 +406,21 @@ namespace openHistorian.V2.FileStructure
             int validLength;
             long positionOfFirstByte;
             bool supportsWriting;
-            long position = (long)blockIndex * FileStructureConstants.BlockSize;
+            long position = (long)blockIndex * m_blockSize;
 
             m_ioSession.GetBlock(position, requestWriteAccess, out pointerToFirstByte, out positionOfFirstByte, out validLength, out supportsWriting);
             int offsetOfPosition = (int)(position - positionOfFirstByte);
 
-            if (validLength - offsetOfPosition < FileStructureConstants.BlockSize)
+            if (validLength - offsetOfPosition < m_blockSize)
                 throw new Exception("stream is not lining up on page boundries");
 
             m_blockIndex = blockIndex;
             m_pointer = (byte*)(pointerToFirstByte + offsetOfPosition);
-            m_length = FileStructureConstants.BlockSize;
+            m_length = m_blockSize;
             m_blockSupportsWriting = supportsWriting;
         }
+
+
 
         #endregion
 
@@ -426,8 +437,9 @@ namespace openHistorian.V2.FileStructure
         /// Computes the custom checksum of the data.
         /// </summary>
         /// <param name="data">the data to compute the checksum for.</param>
-        /// <returns></returns>
-        static long ComputeChecksum(byte* data)
+        /// <param name="checksum1">the 64 bit component of this checksum</param>
+        /// <param name="checksum2">the 32 bit component of this checksum</param>
+        void ComputeChecksum(byte* data, out long checksum1, out int checksum2)
         {
             ChecksumCount += 1;
             ulong* ptr = (ulong*)data;
@@ -435,12 +447,15 @@ namespace openHistorian.V2.FileStructure
             ulong a = 1;
             ulong b = 0;
 
-            for (int x = 0; x < FileStructureConstants.BlockSize / 8 - 1; x++)
+            int iterationCount = m_blockSize / 8 - 2;
+
+            for (int x = 0; x < iterationCount; x++)
             {
                 a += ptr[x];
                 b += a;
             }
-            return (long)(a ^ b);
+            checksum1 = (long)b;
+            checksum2 = (int)a ^ (int)(a >> 32);
         }
 
         ///// <summary>
@@ -476,20 +491,23 @@ namespace openHistorian.V2.FileStructure
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
         /// <returns>State information about the state of the footer data</returns>
-        static IoReadState IsFooterValid(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
+        IoReadState IsFooterValid(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
-            long checksum = ComputeChecksum(data);
-            long checksumInData = *(long*)(data + FileStructureConstants.BlockSize - 8);
+            long checksum1;
+            int checksum2;
+            ComputeChecksum(data, out checksum1, out checksum2);
+            long checksumInData1 = *(long*)(data + m_blockSize - 16);
+            int checksumInData2 = *(int*)(data + m_blockSize - 8);
 
-            if (checksum == checksumInData)
+            if (checksum1 == checksumInData1 && checksum2 == checksumInData2)
             {
-                if (data[FileStructureConstants.BlockSize - 21] != (byte)blockType)
+                if (data[m_blockSize - 32] != (byte)blockType)
                     return IoReadState.BlockTypeMismatch;
-                if (*(int*)(data + FileStructureConstants.BlockSize - 20) != indexValue)
+                if (*(int*)(data + m_blockSize - 28) != indexValue)
                     return IoReadState.IndexNumberMissmatch;
-                if ((uint)*(int*)(data + FileStructureConstants.BlockSize - 12) > snapshotSequenceNumber) //Note: Convert to uint so negative numbers also fall in this category
+                if ((uint)*(int*)(data + m_blockSize - 20) > snapshotSequenceNumber) //Note: Convert to uint so negative numbers also fall in this category
                     return IoReadState.PageNewerThanSnapshotSequenceNumber;
-                if (*(int*)(data + FileStructureConstants.BlockSize - 16) != fileIdNumber)
+                if (*(int*)(data + m_blockSize - 24) != fileIdNumber)
                     return IoReadState.FileIdNumberDidNotMatch;
                 return IoReadState.Valid;
             }
@@ -505,18 +523,21 @@ namespace openHistorian.V2.FileStructure
         /// <param name="fileIdNumber">the file number this block is associated with</param>
         /// <param name="snapshotSequenceNumber">the file system sequence number that this read must be valid for.</param>
         /// <returns></returns>
-        static void WriteFooterData(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
+        void WriteFooterData(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
             if (indexValue < 0 | fileIdNumber < 0 | snapshotSequenceNumber < 0)
                 throw new Exception();
 
-            data[FileStructureConstants.BlockSize - 21] = (byte)blockType;
-            *(int*)(data + FileStructureConstants.BlockSize - 20) = indexValue;
-            *(int*)(data + FileStructureConstants.BlockSize - 16) = fileIdNumber;
-            *(int*)(data + FileStructureConstants.BlockSize - 12) = snapshotSequenceNumber;
+            data[m_blockSize - 32] = (byte)blockType;
+            *(int*)(data + m_blockSize - 28) = indexValue;
+            *(int*)(data + m_blockSize - 24) = fileIdNumber;
+            *(int*)(data + m_blockSize - 20) = snapshotSequenceNumber;
 
-            long checksum = ComputeChecksum(data);
-            *(long*)(data + FileStructureConstants.BlockSize - 8) = checksum;
+            long checksum1;
+            int checksum2;
+            ComputeChecksum(data, out checksum1, out checksum2);
+            *(long*)(data + m_blockSize - 16) = checksum1;
+            *(int*)(data + m_blockSize - 8) = checksum2;
         }
 
         #endregion

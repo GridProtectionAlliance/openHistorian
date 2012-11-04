@@ -37,9 +37,9 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// Creates a new inMemory archive file
         /// </summary>
-        public TransactionalFileStructure()
+        public TransactionalFileStructure(int blockSize = 4096)
         {
-            m_file = new TransactionService();
+            m_file = new TransactionService(blockSize);
         }
 
         /// <summary>
@@ -58,19 +58,35 @@ namespace openHistorian.V2.FileStructure
                 if (System.IO.File.Exists(archiveFile))
                     throw new Exception("ArchiveFile Already Exists");
 
-                m_file = new TransactionService(archiveFile, openMode, accessMode);
+                m_file = new TransactionService(4096, archiveFile, openMode, accessMode);
             }
             else
             {
                 if (!System.IO.File.Exists(archiveFile))
                     throw new Exception("ArchiveFile Does Not Exist");
 
-                m_file = new TransactionService(archiveFile, openMode, accessMode);
+                m_file = new TransactionService(4096, archiveFile, openMode, accessMode);
             }
         }
 
         #endregion
         #region [ Properties ]
+
+        public int BlockSize
+        {
+            get
+            {
+                return 4096;
+            }
+        }
+
+        public int DataBlockSize
+        {
+            get
+            {
+                return 4096 - 32;
+            }
+        }
 
         //public Guid ArchiveID
         //{

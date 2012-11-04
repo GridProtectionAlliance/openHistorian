@@ -38,11 +38,13 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// The number of bytes that are required to save this class.
         /// </summary>
-        internal const int SizeInBytes = 40;
+        internal const int SizeInBytes = 48;
 
         Guid m_fileExtension;
-        int m_fileIdNumber;
         int m_fileFlags;
+        int m_fileIdNumber;
+        int m_dataBlockCount;
+        int m_totalBlocksCount;
         int m_directBlock;
         int m_singleIndirectBlock;
         int m_doubleIndirectBlock;
@@ -59,9 +61,11 @@ namespace openHistorian.V2.FileStructure
         /// <param name="mode"></param>
         public SubFileMetaData(BinaryReader dataReader, AccessMode mode)
         {
-            m_fileIdNumber = dataReader.ReadInt32();
             m_fileExtension = new Guid(dataReader.ReadBytes(16));
             m_fileFlags = dataReader.ReadInt32();
+            m_fileIdNumber = dataReader.ReadInt32();
+            m_dataBlockCount = dataReader.ReadInt32();
+            m_totalBlocksCount = dataReader.ReadInt32();
             m_directBlock = dataReader.ReadInt32();
             m_singleIndirectBlock = dataReader.ReadInt32();
             m_doubleIndirectBlock = dataReader.ReadInt32();
@@ -125,6 +129,40 @@ namespace openHistorian.V2.FileStructure
                 m_fileFlags = value;
             }
         }
+
+        /// <summary>
+        /// Gets the number of blocks the data portion of this file contains
+        /// </summary>
+        public int DataBlockCount
+        {
+            get
+            {
+                return m_dataBlockCount;
+            }
+            set
+            {
+                TestForEditable();
+                m_dataBlockCount = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the total number of blocks that has been used by this file. 
+        /// This includes meta data blocks and previous version blocks
+        /// </summary>
+        public int TotalBlockCount
+        {
+            get
+            {
+                return m_totalBlocksCount;
+            }
+            set
+            {
+                TestForEditable();
+                m_totalBlocksCount = value;
+            }
+        }
+
 
         /// <summary>
         /// Gets the block address for the first direct block of this file.
@@ -199,9 +237,11 @@ namespace openHistorian.V2.FileStructure
         /// <param name="dataWriter">The stream to write to.</param>
         public void Save(BinaryWriter dataWriter)
         {
-            dataWriter.Write(m_fileIdNumber);
             dataWriter.Write(m_fileExtension.ToByteArray());
             dataWriter.Write(m_fileFlags);
+            dataWriter.Write(m_fileIdNumber);
+            dataWriter.Write(m_dataBlockCount);
+            dataWriter.Write(m_totalBlocksCount);
             dataWriter.Write(m_directBlock);
             dataWriter.Write(m_singleIndirectBlock);
             dataWriter.Write(m_doubleIndirectBlock);

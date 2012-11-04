@@ -34,11 +34,12 @@ namespace openHistorian.V2.FileStructure.Test
         [TestMethod()]
         public void Test()
         {
+            int blockSize = 4096;
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
-            IndexMapper map = new IndexMapper();
-            DiskIo stream = new DiskIo(new MemoryStream(), 0);
+            IndexMapper map = new IndexMapper(blockSize);
+            DiskIo stream = new DiskIo(blockSize, new MemoryStream(), 0);
             SubFileMetaData node = new SubFileMetaData(1, Guid.NewGuid(), AccessMode.ReadWrite);
-            IndexParser parse = new IndexParser(1, stream, node);
+            IndexParser parse = new IndexParser(blockSize, 1, stream, node);
             parse.SetPosition(14312);
             Assert.IsTrue(true);
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);

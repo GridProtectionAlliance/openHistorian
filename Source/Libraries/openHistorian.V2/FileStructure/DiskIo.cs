@@ -37,17 +37,21 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         int m_lastReadOnlyBlock;
         ISupportsBinaryStreamSizing m_stream;
+        
+        int m_blockSize;
 
         #endregion
 
         #region [ Constructors ]
 
-        public DiskIo(ISupportsBinaryStreamSizing stream, int lastReadOnlyBlock)
+        public DiskIo(int blockSize, ISupportsBinaryStreamSizing stream, int lastReadOnlyBlock)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream");
-            if (stream.BlockSize <= 0 || stream.BlockSize % FileStructureConstants.BlockSize != 0)
-                throw new ArgumentException("The block size of the stream must be a multiple of " + FileStructureConstants.BlockSize.ToString() + ".", "stream");
+            if (stream.BlockSize <= 0 || stream.BlockSize % blockSize != 0)
+                throw new ArgumentException("The block size of the stream must be a multiple of " + blockSize.ToString() + ".", "stream");
+
+            m_blockSize = blockSize;
             m_stream = stream;
             m_lastReadOnlyBlock = lastReadOnlyBlock;
         }
@@ -127,7 +131,7 @@ namespace openHistorian.V2.FileStructure
         {
             if (lastValidBlock < m_lastReadOnlyBlock)
                 throw new ArgumentOutOfRangeException("lastValidBlock", "Cannot roll back beyond the committed writes");
-            m_stream.TrimEditsAfterPosition((lastValidBlock + 1L) * FileStructureConstants.BlockSize);
+            m_stream.TrimEditsAfterPosition((lastValidBlock + 1L) * m_blockSize);
         }
 
         /// <summary>
@@ -137,7 +141,7 @@ namespace openHistorian.V2.FileStructure
         public DiskIoSession CreateDiskIoSession()
         {
             CheckIsDisposed();
-            return new DiskIoSession(this, m_stream);
+            return new DiskIoSession(m_blockSize, this, m_stream);
         }
 
         /// <summary>
@@ -157,21 +161,21 @@ namespace openHistorian.V2.FileStructure
         public long SetFileLength(long size, int nextUnallocatedBlock)
         {
             CheckIsDisposed();
-            if (nextUnallocatedBlock * FileStructureConstants.BlockSize > size)
+            if (nextUnallocatedBlock * m_blockSize > size)
             {
                 //if shrinking beyond the allocated space, 
                 //adjust the size exactly to the allocated space.
-                size = nextUnallocatedBlock * FileStructureConstants.BlockSize;
+                size = nextUnallocatedBlock * m_blockSize;
             }
             else
             {
-                long remainder = (size % FileStructureConstants.BlockSize);
+                long remainder = (size % m_blockSize);
                 //if there will be a fragmented page remaining
                 if (remainder != 0)
                 {
                     //if the requested size is not a multiple of the page size
                     //round up to the nearest page
-                    size = size + FileStructureConstants.BlockSize - remainder;
+                    size = size + m_blockSize - remainder;
                 }
             }
             return m_stream.SetLength(size);

@@ -30,6 +30,7 @@ namespace openHistorian.V2.FileStructure.Test
     [TestClass()]
     public class TransactionServiceTest
     {
+        static int BlockSize = 4096;
         [TestMethod()]
         public void Test()
         {
@@ -39,7 +40,7 @@ namespace openHistorian.V2.FileStructure.Test
             try
             {
                 //using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateFile(file))
-                using (TransactionService service = new TransactionService())
+                using (TransactionService service = new TransactionService(BlockSize))
                 {
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {

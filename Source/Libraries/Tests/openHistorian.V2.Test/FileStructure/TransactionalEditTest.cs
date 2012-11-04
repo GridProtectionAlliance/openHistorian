@@ -31,20 +31,23 @@ namespace openHistorian.V2.FileStructure.Test
     [TestClass()]
     public class TransactionalEditTest
     {
+        static int BlockSize = 4096;
+        static int BlockDataLength = BlockSize - FileStructureConstants.BlockFooterLength;
+
         [TestMethod()]
         public void Test()
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
-            DiskIo stream = new DiskIo(new MemoryStream(), 0);
-            FileHeaderBlock fat = new FileHeaderBlock(stream, OpenMode.Create, AccessMode.ReadWrite);
+            DiskIo stream = new DiskIo(BlockSize, new MemoryStream(), 0);
+            FileHeaderBlock fat = new FileHeaderBlock(BlockSize, stream, OpenMode.Create, AccessMode.ReadWrite);
             //obtain a readonly copy of the file allocation table.
-            fat = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
+            fat = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
             TestCreateNewFile(stream, fat);
-            fat = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
+            fat = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
             TestOpenExistingFile(stream, fat);
-            fat = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
+            fat = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
             TestRollback(stream, fat);
-            fat = new FileHeaderBlock(stream, OpenMode.Open, AccessMode.ReadOnly);
+            fat = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
             TestVerifyRollback(stream, fat);
             Assert.IsTrue(true);
             stream.Dispose();
@@ -53,7 +56,7 @@ namespace openHistorian.V2.FileStructure.Test
         static void TestCreateNewFile(DiskIo stream, FileHeaderBlock fat)
         {
             Guid id = Guid.NewGuid();
-            TransactionalEdit trans = new TransactionalEdit(stream, fat);
+            TransactionalEdit trans = new TransactionalEdit(BlockSize, stream, fat);
             //create 3 files
 
             SubFileStream fs1 = trans.CreateFile(id, 1234);
@@ -66,10 +69,10 @@ namespace openHistorian.V2.FileStructure.Test
             //write to the three files
             SubFileStreamTest.TestSingleByteWrite(fs1);
             SubFileStreamTest.TestCustomSizeWrite(fs2, 5);
-            SubFileStreamTest.TestCustomSizeWrite(fs3, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestCustomSizeWrite(fs3, BlockDataLength + 20);
 
             //read from them and verify content.
-            SubFileStreamTest.TestCustomSizeRead(fs3, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestCustomSizeRead(fs3, BlockDataLength + 20);
             SubFileStreamTest.TestCustomSizeRead(fs2, 5);
             SubFileStreamTest.TestSingleByteRead(fs1);
 
@@ -83,7 +86,7 @@ namespace openHistorian.V2.FileStructure.Test
         static void TestOpenExistingFile(DiskIo stream, FileHeaderBlock fat)
         {
             Guid id = Guid.NewGuid();
-            TransactionalEdit trans = new TransactionalEdit(stream, fat);
+            TransactionalEdit trans = new TransactionalEdit(BlockSize, stream, fat);
             //create 3 files
 
             SubFileStream fs1 = trans.OpenFile(0);
@@ -93,12 +96,12 @@ namespace openHistorian.V2.FileStructure.Test
             //read from them and verify content.
             SubFileStreamTest.TestSingleByteRead(fs1);
             SubFileStreamTest.TestCustomSizeRead(fs2, 5);
-            SubFileStreamTest.TestCustomSizeRead(fs3, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestCustomSizeRead(fs3, BlockDataLength + 20);
 
             //rewrite bad data.
             SubFileStreamTest.TestSingleByteWrite(fs2);
             SubFileStreamTest.TestCustomSizeWrite(fs3, 5);
-            SubFileStreamTest.TestCustomSizeWrite(fs1, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestCustomSizeWrite(fs1, BlockDataLength + 20);
 
             //verify origional still in tact.
             SubFileStream fs11 = trans.OpenOrigionalFile(0);
@@ -107,7 +110,7 @@ namespace openHistorian.V2.FileStructure.Test
 
             SubFileStreamTest.TestSingleByteRead(fs11);
             SubFileStreamTest.TestCustomSizeRead(fs12, 5);
-            SubFileStreamTest.TestCustomSizeRead(fs13, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestCustomSizeRead(fs13, BlockDataLength + 20);
 
             fs1.Dispose();
             fs2.Dispose();
@@ -123,7 +126,7 @@ namespace openHistorian.V2.FileStructure.Test
         static void TestRollback(DiskIo stream, FileHeaderBlock fat)
         {
             Guid id = Guid.NewGuid();
-            TransactionalEdit trans = new TransactionalEdit(stream, fat);
+            TransactionalEdit trans = new TransactionalEdit(BlockSize, stream, fat);
 
             //create 3 files additional files
             SubFileStream fs21 = trans.CreateFile(id, 1234);
@@ -138,12 +141,12 @@ namespace openHistorian.V2.FileStructure.Test
             //read from them and verify content.
             SubFileStreamTest.TestSingleByteRead(fs2);
             SubFileStreamTest.TestCustomSizeRead(fs3, 5);
-            SubFileStreamTest.TestCustomSizeRead(fs1, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestCustomSizeRead(fs1, BlockDataLength + 20);
 
             //rewrite bad data.
             SubFileStreamTest.TestSingleByteWrite(fs3);
             SubFileStreamTest.TestCustomSizeWrite(fs1, 5);
-            SubFileStreamTest.TestCustomSizeWrite(fs2, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestCustomSizeWrite(fs2, BlockDataLength + 20);
 
             fs1.Dispose();
             fs2.Dispose();
@@ -159,7 +162,7 @@ namespace openHistorian.V2.FileStructure.Test
         static void TestVerifyRollback(DiskIo stream, FileHeaderBlock fat)
         {
             Guid id = Guid.NewGuid();
-            TransactionalEdit trans = new TransactionalEdit(stream, fat);
+            TransactionalEdit trans = new TransactionalEdit(BlockSize, stream, fat);
 
             if (trans.Files.Count != 3)
                 throw new Exception();
@@ -172,7 +175,7 @@ namespace openHistorian.V2.FileStructure.Test
             //read from them and verify content.
             SubFileStreamTest.TestSingleByteRead(fs2);
             SubFileStreamTest.TestCustomSizeRead(fs3, 5);
-            SubFileStreamTest.TestCustomSizeRead(fs1, FileStructureConstants.DataBlockDataLength + 20);
+            SubFileStreamTest.TestCustomSizeRead(fs1, BlockDataLength + 20);
 
             fs1.Dispose();
             fs2.Dispose();
