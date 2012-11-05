@@ -40,7 +40,7 @@ namespace openHistorian.V2.FileStructure.Test
             try
             {
                 //using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateFile(file))
-                using (TransactionService service = new TransactionService(BlockSize))
+                using (TransactionService service = TransactionService.CreateInMemory(BlockSize))
                 {
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {

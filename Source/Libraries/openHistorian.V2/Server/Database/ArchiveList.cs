@@ -61,7 +61,7 @@ namespace openHistorian.V2.Server.Database
         {
             foreach (var file in archiveFiles)
             {
-                var archiveFile = new ArchiveFile(file, OpenMode.Open, AccessMode.ReadOnly);
+                var archiveFile = ArchiveFile.OpenFile(file, AccessMode.ReadOnly);
                 var archiveFileSummary = new ArchiveFileSummary(archiveFile);
                 m_fileSummaries.Add(archiveFileSummary);
             }

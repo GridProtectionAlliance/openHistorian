@@ -38,7 +38,6 @@ namespace openHistorian.V2.Server.Database.Archive
         
         #region [ Members ]
         
-        static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
 
         bool m_disposed;
         SortedTreeContainer m_dataTree;
@@ -49,7 +48,7 @@ namespace openHistorian.V2.Server.Database.Archive
 
         public ArchiveFileReadOnlySnapshotInstance(TransactionalRead currentTransaction)
         {
-            m_dataTree = new SortedTreeContainer(currentTransaction, s_pointDataFile, 1);
+            m_dataTree = new SortedTreeContainer(currentTransaction, ArchiveFile.s_pointDataFile, 1);
         }
 
         #endregion

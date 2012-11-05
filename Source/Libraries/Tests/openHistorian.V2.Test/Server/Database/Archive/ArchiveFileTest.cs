@@ -67,7 +67,7 @@ namespace openHistorian.V2.Test
         [TestMethod()]
         public void PartitionFileConstructorTest()
         {
-            using (ArchiveFile target = new ArchiveFile())
+            using (ArchiveFile target = ArchiveFile.CreateInMemory())
             {
             }
         }
@@ -78,7 +78,7 @@ namespace openHistorian.V2.Test
         [TestMethod()]
         public void AddPointTest()
         {
-            using (ArchiveFile target = new ArchiveFile())
+            using (ArchiveFile target = ArchiveFile.CreateInMemory())
             {
                 ulong date = 0;
                 ulong pointId = 0;
@@ -98,7 +98,7 @@ namespace openHistorian.V2.Test
         [TestMethod()]
         public void EnduranceTest()
         {
-            using (ArchiveFile target = new ArchiveFile())
+            using (ArchiveFile target = ArchiveFile.CreateInMemory())
             {
                 for (uint x = 0; x < 100; x++)
                 {
@@ -124,7 +124,7 @@ namespace openHistorian.V2.Test
         [TestMethod()]
         public void CreateSnapshotTest()
         {
-            using (ArchiveFile target = new ArchiveFile())
+            using (ArchiveFile target = ArchiveFile.CreateInMemory())
             {
                 ulong date = 1;
                 ulong pointId = 2;
@@ -168,7 +168,7 @@ namespace openHistorian.V2.Test
         [TestMethod()]
         public void RollbackEditTest()
         {
-            using (ArchiveFile target = new ArchiveFile())
+            using (ArchiveFile target = ArchiveFile.CreateInMemory())
             {
                 ulong date = 1;
                 ulong pointId = 2;

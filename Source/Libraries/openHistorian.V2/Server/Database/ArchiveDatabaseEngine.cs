@@ -49,28 +49,31 @@ namespace openHistorian.V2.Server.Database
             m_archiveList = new ArchiveList(settings.AttachedFiles);
             m_archiveManagement = new ArchiveManagement[settings.ArchiveRollovers.Count];
 
-            ArchiveManagement previousManagement = null;
-            for (int x = settings.ArchiveRollovers.Count - 1; x >= 0; x--) //Go in reverse order since there is chaining that occurs
+            if (settings.ArchiveWriter != null)
             {
-                var managementSettings = settings.ArchiveRollovers[x];
+                ArchiveManagement previousManagement = null;
+                for (int x = settings.ArchiveRollovers.Count - 1; x >= 0; x--) //Go in reverse order since there is chaining that occurs
+                {
+                    var managementSettings = settings.ArchiveRollovers[x];
+                    if (previousManagement == null)
+                    {
+                        m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, FinalizeArchiveFile, ProcessRemoval);
+                        previousManagement = m_archiveManagement[x];
+                    }
+                    else
+                    {
+                        m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, previousManagement.ProcessArchive, ProcessRemoval);
+                        previousManagement = m_archiveManagement[x];
+                    }
+                }
                 if (previousManagement == null)
                 {
-                    m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, FinalizeArchiveFile, ProcessRemoval);
-                    previousManagement = m_archiveManagement[x];
+                    m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, FinalizeArchiveFile);
                 }
                 else
                 {
-                    m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, previousManagement.ProcessArchive, ProcessRemoval);
-                    previousManagement = m_archiveManagement[x];
+                    m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, previousManagement.ProcessArchive);
                 }
-            }
-            if (previousManagement == null)
-            {
-                m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, FinalizeArchiveFile);
-            }
-            else
-            {
-                m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, previousManagement.ProcessArchive);
             }
         }
 
@@ -78,6 +81,8 @@ namespace openHistorian.V2.Server.Database
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
+            if (m_archiveWriter == null)
+                throw new Exception("Writing is not configured on this historian");
             m_archiveWriter.WriteData(key1, key2, value1, value2);
         }
 
@@ -99,7 +104,8 @@ namespace openHistorian.V2.Server.Database
             if (!m_disposed)
             {
                 m_disposed = true;
-                m_archiveWriter.Dispose();
+                if (m_archiveWriter != null)
+                    m_archiveWriter.Dispose();
                 foreach (var management in m_archiveManagement)
                 {
                     management.Dispose();
@@ -110,7 +116,6 @@ namespace openHistorian.V2.Server.Database
                 {
                     status.Archive.Dispose();
                 }
-
             }
         }
 

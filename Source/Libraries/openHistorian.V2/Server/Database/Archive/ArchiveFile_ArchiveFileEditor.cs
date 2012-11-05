@@ -58,6 +58,7 @@ namespace openHistorian.V2.Server.Database.Archive
                     throw new ObjectDisposedException(GetType().FullName);
                 m_archiveFile.m_firstKey = m_dataTree.FirstKey;
                 m_archiveFile.m_lastKey = m_dataTree.LastKey;
+                m_currentTransaction.UserData = m_archiveFile.SaveUserData();
                 m_dataTree.Dispose();
                 m_currentTransaction.CommitAndDispose();
                 InternalDispose();
@@ -93,6 +94,7 @@ namespace openHistorian.V2.Server.Database.Archive
                     Rollback();
                 }
             }
+
             void InternalDispose()
             {
                 m_disposed = true;

@@ -23,6 +23,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using openHistorian.V2.IO.Unmanaged;
 using MemoryStream = openHistorian.V2.IO.Unmanaged.MemoryStream;
@@ -65,42 +66,106 @@ namespace openHistorian.V2.FileStructure
 
         #region [ Constructors ]
 
+        TransactionService()
+        {
+        }
+
         /// <summary>
         /// Creates a new archive file that is completely in memory
         ///  </summary>
-        public TransactionService(int blockSize)
+        public static TransactionService CreateInMemory(int blockSize)
         {
-            m_blockSize = blockSize;
-            m_diskIo = new DiskIo(blockSize, new MemoryStream(), 0);
-            m_fileHeaderBlock = new FileHeaderBlock(blockSize, m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
+            var ts = new TransactionService();
+            ts.m_blockSize = blockSize;
+            ts.m_diskIo = new DiskIo(blockSize, new MemoryStream(), 0);
+            ts.m_fileHeaderBlock = new FileHeaderBlock(blockSize, ts.m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
+            return ts;
         }
 
         /// <summary>
-        /// Opens/Creates and archive file.
-        /// </summary>
-        /// <param name="fileName">The name of the file.</param>
-        /// <param name="openMode"></param>
-        /// <param name="accessMode"></param>
-        public TransactionService(int blockSize, string fileName, OpenMode openMode, AccessMode accessMode)
+        /// Creates a new archive file that is completely in memory
+        ///  </summary>
+        public static TransactionService CreateFile(string fileName, int blockSize)
         {
-            m_blockSize = blockSize;
-            if (openMode == OpenMode.Create)
+            var ts = new TransactionService();
+            FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
+            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
+            ts.m_blockSize = blockSize;
+            ts.m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
+            ts.m_fileHeaderBlock = new FileHeaderBlock(blockSize, ts.m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
+            return ts;
+        }
+
+        /// <summary>
+        /// Creates a new archive file that is completely in memory
+        ///  </summary>
+        public static TransactionService OpenFile(string fileName, AccessMode accessMode)
+        {
+            var ts = new TransactionService();
+            FileStream fileStream = new FileStream(fileName, FileMode.Open, (accessMode == AccessMode.ReadOnly) ? FileAccess.Read : FileAccess.ReadWrite);
+            int blockSize = FileHeaderBlock.SearchForBlockSize(fileStream);
+
+            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
+
+            ts.m_blockSize = blockSize;
+            ts.m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
+            ts.m_fileHeaderBlock = new FileHeaderBlock(blockSize, ts.m_diskIo, OpenMode.Open, AccessMode.ReadOnly);
+            return ts;
+        }
+        
+        #endregion
+
+        public int BlockSize
+        {
+            get
             {
-                FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
-                BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
-                m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
-                m_fileHeaderBlock = new FileHeaderBlock(blockSize, m_diskIo, OpenMode.Create, accessMode);
-            }
-            else
-            {
-                FileStream fileStream = new FileStream(fileName, FileMode.Open, (accessMode == AccessMode.ReadOnly) ? FileAccess.Read : FileAccess.ReadWrite);
-                BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
-                m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
-                m_fileHeaderBlock = new FileHeaderBlock(blockSize, m_diskIo, OpenMode.Open, accessMode);
+                return m_blockSize;
             }
         }
 
-        #endregion
+        public Guid ArchiveType
+        {
+            get
+            {
+                return m_fileHeaderBlock.ArchiveType;
+            }
+        }
+
+        public byte[] UserData
+        {
+            get
+            {
+                return m_fileHeaderBlock.UserData;
+            }
+        }
+
+        public long DataSpace
+        {
+            get
+            {
+                int dataBlocks = m_fileHeaderBlock.Files.Sum(file => file.DataBlockCount);
+                return (long)m_blockSize * dataBlocks;
+            }
+        }
+
+        public long TotalSize
+        {
+            get
+            {
+                int allBlocks = m_fileHeaderBlock.Files.Sum(file => file.TotalBlockCount);
+                allBlocks += 10; //The header overhead.
+                return (long)m_blockSize * allBlocks;
+            }
+        }
+
+        public long ArchiveSize
+        {
+            get
+            {
+                return m_diskIo.FileSize;
+            }
+        }
+        
 
         #region [ Methods ]
 
@@ -155,6 +220,7 @@ namespace openHistorian.V2.FileStructure
                         m_currentTransaction.Dispose();
                         m_currentTransaction = null;
                     }
+
                     if (m_diskIo != null)
                     {
                         m_diskIo.Dispose();

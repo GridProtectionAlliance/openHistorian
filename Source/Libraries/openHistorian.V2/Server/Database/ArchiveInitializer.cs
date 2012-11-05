@@ -49,12 +49,12 @@ namespace openHistorian.V2.Server.Database
         {
             if (m_settings.IsMemoryArchive)
             {
-                return new ArchiveFile();
+                return ArchiveFile.CreateInMemory();
             }
             else
             {
                 var fileName = CreateArchiveName();
-                var file = new ArchiveFile(fileName, OpenMode.Create, AccessMode.ReadWrite);
+                var file = ArchiveFile.CreateFile(fileName);
                 file.SetFileSize(m_settings.InitialSize, m_settings.AutoGrowthSize, m_settings.RequiredFreeSpaceForAutoGrowth);
                 return file;
             }

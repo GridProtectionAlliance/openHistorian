@@ -60,17 +60,22 @@ namespace openHistorian.V2.Local
 
         class PathList : IPathList
         {
+            List<string> m_paths = new List<string>();
+            List<string> m_savePaths = new List<string>();
+
             public IEnumerable<string> GetPaths()
             {
-                return new string[] { };
+                return m_paths;
             }
             public IEnumerable<string> GetSavePaths()
             {
-                return new string[] { };
+                return m_savePaths;
             }
             public void AddPath(string path, bool allowWritingToPath)
             {
-                throw new NotImplementedException();
+                m_paths.Add(path);
+                if (allowWritingToPath)
+                    m_savePaths.Add(path);
             }
             public void DropPath(string path, float waitTimeSeconds)
             {

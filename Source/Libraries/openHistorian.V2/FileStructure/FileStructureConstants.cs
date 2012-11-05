@@ -30,31 +30,11 @@ namespace openHistorian.V2.FileStructure
     /// </summary>
     public class FileStructureConstants
     {
-        ///// <summary>
-        ///// The number of bytes in a block. (the smallest unit of data space).
-        ///// </summary>
-        //public int BlockSize;
-
-        /// <summary>
-        /// The largest supported file system size
-        /// </summary>
-        public long MaxFileSystemSize;
-
+        
         /// <summary>
         /// The number of bytes in the footer of a block
         /// </summary>
         public const int BlockFooterLength = 32;
-
-        ///// <summary>
-        ///// The number of bytes available in a block
-        ///// </summary>
-        //public int BlockDataLength;
-
-        public FileStructureConstants(int blockSize)
-        {
-            //BlockSize = blockSize;
-            //MaxFileSystemSize = (long)BlockSize * int.MaxValue;
-            //BlockDataLength = blockSize - BlockFooterLength;
-        }
+       
     }
 }

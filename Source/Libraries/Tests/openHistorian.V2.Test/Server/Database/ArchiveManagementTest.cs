@@ -231,7 +231,7 @@ namespace openHistorian.V2.Server.Database
 
         ArchiveFile MakeArchive(uint start, uint stop, uint step)
         {
-            var file = new ArchiveFile();
+            var file = ArchiveFile.CreateInMemory();
             using (var edit = file.BeginEdit())
             {
                 for (ulong value = start; value <= stop; value += step)

@@ -139,6 +139,30 @@ namespace openHistorian.V2.FileStructure
             }
         }
 
+        public Guid ArchiveType
+        {
+            get
+            {
+                return m_fileHeaderBlock.ArchiveType;
+            }
+            set
+            {
+                m_fileHeaderBlock.ArchiveType = value;
+            }
+        }
+
+        public byte[] UserData
+        {
+            get
+            {
+                return m_fileHeaderBlock.UserData;
+            }
+            set
+            {
+                m_fileHeaderBlock.UserData = value;
+            }
+        }
+
         #endregion
 
         #region [ Methods ]

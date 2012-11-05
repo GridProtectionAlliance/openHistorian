@@ -172,6 +172,8 @@ namespace openHistorian.V2.FileStructure
                 using (var buffer = m_diskIo.CreateDiskIoSession())
                 {
                     indexIndirectBlock = m_fileHeaderBlock.AllocateFreeBlocks(1);
+                    m_subFileMetaData.TotalBlockCount++;
+
                     buffer.BeginWriteToNewBlock(indexIndirectBlock);
                     Memory.Clear(buffer.Pointer, buffer.Length);
                     WriteIndexIndirectBlock(buffer.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
@@ -182,6 +184,8 @@ namespace openHistorian.V2.FileStructure
             else if (sourceBlockAddress <= m_lastReadOnlyBlock)
             {
                 indexIndirectBlock = m_fileHeaderBlock.AllocateFreeBlocks(1);
+                m_subFileMetaData.TotalBlockCount++;
+
                 ReadThenWriteIndexIndirectBlock(sourceBlockAddress, indexIndirectBlock, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
             }
             //The page has already been copied, use the existing address.
@@ -265,6 +269,10 @@ namespace openHistorian.V2.FileStructure
                 m_parser.DataClusterAddress <= m_lastReadOnlyBlock)
             {
                 dataBlockAddress = m_fileHeaderBlock.AllocateFreeBlocks(1);
+                if (m_parser.DataClusterAddress == 0)
+                    m_subFileMetaData.DataBlockCount++;
+                
+                m_subFileMetaData.TotalBlockCount++;
                 ShadowCopyDataCluster(m_parser.DataClusterAddress, m_parser.BaseVirtualAddressIndexValue, dataBlockAddress);
             }
             else

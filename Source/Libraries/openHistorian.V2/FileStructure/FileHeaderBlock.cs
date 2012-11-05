@@ -333,6 +333,7 @@ namespace openHistorian.V2.FileStructure
             m_files = new ReadonlyList<SubFileMetaData>();
             IsReadOnly = (mode == AccessMode.ReadOnly);
             m_userData = new byte[] { };
+            m_archiveType = Guid.Empty;
 
             byte[] data = GetBytes();
 
@@ -461,9 +462,33 @@ namespace openHistorian.V2.FileStructure
                 m_snapshotSequenceNumber++;
         }
 
-        public static int SearchForBlockSize()
+        public static int SearchForBlockSize(FileStream stream)
         {
-            return 1;
+            var oldPosition = stream.Position;
+            BinaryReader dataReader = new BinaryReader(stream);
+            stream.Position = 0;
+            
+            if (!dataReader.ReadBytes(26).SequenceEqual(s_fileAllocationTableHeaderBytes))
+                throw new Exception("This file is not an archive file system, or the file is corrupt, or this file system major version is not recgonized by this version of the historian");
+
+            char endian = dataReader.ReadChar();
+            if (BitConverter.IsLittleEndian)
+            {
+                if (endian != 'L')
+                    throw new Exception("This archive file was not writen with a little endian processor");
+            }
+            else
+            {
+                if (endian != 'B')
+                    throw new Exception("This archive file was not writen with a big endian processor");
+            }
+
+            byte blockSizePower = dataReader.ReadByte();
+            if (blockSizePower > 30 || blockSizePower < 5)
+                throw new Exception("Block size of this file is not supported");
+            int blockSize = 1 << blockSizePower;
+            stream.Position = oldPosition;
+            return blockSize;
         }
 
         #endregion

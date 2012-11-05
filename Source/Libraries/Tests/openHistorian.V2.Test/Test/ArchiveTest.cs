@@ -26,7 +26,7 @@ namespace openHistorian.V2
             //if (File.Exists(file))
             //    File.Delete(file);
             //s_archive = new Archive(file);
-            ArchiveFile s_archiveFile = new ArchiveFile();
+            ArchiveFile s_archiveFile = ArchiveFile.CreateInMemory();
             int cnt = 0;
 
 

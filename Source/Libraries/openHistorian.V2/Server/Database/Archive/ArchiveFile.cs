@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Data;
 using System.IO;
 using openHistorian.V2.Collections.KeyValue;
 using openHistorian.V2.FileStructure;
@@ -40,7 +41,10 @@ namespace openHistorian.V2.Server.Database.Archive
     {
         #region [ Members ]
 
-        static Guid s_pointDataFile = new Guid("{29D7CCC2-A474-11E1-885A-B52D6288709B}");
+        // {644FF6C8-ED70-4966-9E5D-E43B51FF4801}
+        public static readonly Guid s_fileType = new Guid(0x644ff6c8, 0xed70, 0x4966, 0x9e, 0x5d, 0xe4, 0x3b, 0x51, 0xff, 0x48, 0x1);
+        // {BABDB82D-7457-46D9-899C-D76036F0312E}
+        public static readonly Guid s_pointDataFile = new Guid(0xbabdb82d, 0x7457, 0x46d9, 0x89, 0x9c, 0xd7, 0x60, 0x36, 0xf0, 0x31, 0x2e);
 
         string m_fileName;
         ulong m_firstKey;
@@ -55,38 +59,59 @@ namespace openHistorian.V2.Server.Database.Archive
 
         #region [ Constructors ]
 
+        ArchiveFile()
+        {
+        }
+
+
         /// <summary>
         /// Creates a new in memory archive file.
         /// </summary>
-        public ArchiveFile()
+        public static ArchiveFile CreateInMemory(int blockSize = 4096)
         {
-            m_fileName = string.Empty;
-            m_fileStructure = new TransactionalFileStructure();
-            InitializeNewFile();
+            var af = new ArchiveFile();
+            af.m_fileName = string.Empty;
+            af.m_fileStructure = TransactionalFileStructure.CreateInMemory(blockSize);
+            af.InitializeNewFile();
+            return af;
         }
 
         /// <summary>
-        /// Creates/Opens an archive file.
+        /// Creates an archive file.
         /// </summary>
         /// <param name="file">the path for the file</param>
-        /// <param name="openMode">The <see cref="OpenMode"/> state</param>
-        /// <param name="accessMode">The <see cref="AccessMode"/> state</param>
-        public ArchiveFile(string file, OpenMode openMode, AccessMode accessMode)
+        public static ArchiveFile CreateFile(string file, int blockSize = 4096)
         {
-            m_fileName = file;
-            m_fileStructure = new TransactionalFileStructure(file, openMode, accessMode);
-            if (openMode == OpenMode.Create)
+            var af = new ArchiveFile();
+            af.m_fileName = file;
+            af.m_fileStructure = TransactionalFileStructure.CreateFile(file);
+            af.InitializeNewFile();
+            return af;
+        }
+
+        /// <summary>
+        /// Opens an archive file.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="accessMode"></param>
+        /// <returns></returns>
+        public static ArchiveFile OpenFile(string file, AccessMode accessMode)
+        {
+            var af = new ArchiveFile();
+            af.m_fileName = file;
+            af.m_fileStructure = TransactionalFileStructure.OpenFile(file, accessMode);
+            if (af.m_fileStructure.ArchiveType != s_fileType)
+                throw new Exception("Archive type is unknown");
+            
+            if (!af.LoadUserData(af.m_fileStructure.UserData))
             {
-                InitializeNewFile();
-            }
-            else
-            {
-                using (var snapshot = CreateSnapshot().OpenInstance())
+                using (var snapshot = af.CreateSnapshot().OpenInstance())
                 {
-                    m_firstKey = snapshot.FirstKey;
-                    m_lastKey = snapshot.LastKey;
+                    af.m_firstKey = snapshot.FirstKey;
+                    af.m_lastKey = snapshot.LastKey;
                 }
             }
+            return af;
         }
 
         #endregion
@@ -141,7 +166,7 @@ namespace openHistorian.V2.Server.Database.Archive
         {
             get
             {
-                return 0;
+                return m_fileStructure.ArchiveSize;
             }
         }
 
@@ -168,6 +193,8 @@ namespace openHistorian.V2.Server.Database.Archive
                     m_firstKey = tree.FirstKey;
                     m_lastKey = tree.LastKey;
                 }
+                trans.ArchiveType = s_fileType;
+                trans.UserData = SaveUserData();
                 trans.CommitAndDispose();
             }
         }
@@ -218,6 +245,38 @@ namespace openHistorian.V2.Server.Database.Archive
             {
                 File.Delete(m_fileName);
             }
+        }
+
+        bool LoadUserData(byte[] userData)
+        {
+            try
+            {
+                var ms = new System.IO.MemoryStream();
+                var rd = new BinaryReader(ms);
+                switch (rd.ReadByte())
+                {
+                    case 1:
+                        m_firstKey = rd.ReadUInt64();
+                        m_lastKey = rd.ReadUInt64();
+                        break;
+                    default:
+                        throw new VersionNotFoundException();
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        byte[] SaveUserData()
+        {
+            var ms = new System.IO.MemoryStream();
+            var wr = new BinaryWriter(ms);
+            wr.Write((byte)1);
+            wr.Write(m_firstKey);
+            wr.Write(m_lastKey);
+            return ms.ToArray();
         }
 
         #endregion

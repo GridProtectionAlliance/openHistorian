@@ -30,8 +30,6 @@ namespace openHistorian.V2.FileStructure.Test
     [TestClass()]
     public class IndexMapperTest
     {
-        static FileStructureConstants constants = new FileStructureConstants(4096);
-
         static int BlockSize;
         static int BlockDataLength;
         static int AddressesPerBlock;

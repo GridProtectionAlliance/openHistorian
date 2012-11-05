@@ -30,43 +30,57 @@ namespace openHistorian.V2.FileStructure
         #region [ Members ]
 
         TransactionService m_file;
+        int m_blockSize;
 
         #endregion
         #region [ Constructors ]
 
-        /// <summary>
-        /// Creates a new inMemory archive file
-        /// </summary>
-        public TransactionalFileStructure(int blockSize = 4096)
+
+        TransactionalFileStructure()
         {
-            m_file = new TransactionService(blockSize);
         }
 
         /// <summary>
-        /// Opens/Creates and archive file.
+        /// Creates a new inMemory archive file
         /// </summary>
-        /// <param name="archiveFile"></param>
-        /// <param name="openMode"></param>
-        /// <param name="accessMode"></param>
-        public TransactionalFileStructure(string archiveFile, OpenMode openMode, AccessMode accessMode)
+        public static TransactionalFileStructure CreateInMemory(int blockSize = 4096)
+        {
+            var fs = new TransactionalFileStructure();
+            fs.m_blockSize = blockSize;
+            fs.m_file = TransactionService.CreateInMemory(blockSize);
+            return fs;
+        }
+
+        /// <summary>
+        /// Creates a new archive file
+        /// </summary>
+        public static TransactionalFileStructure CreateFile(string archiveFile, int blockSize = 4096)
         {
             if (archiveFile == null)
                 throw new ArgumentNullException("archiveFile");
+            if (System.IO.File.Exists(archiveFile))
+                throw new Exception("ArchiveFile Already Exists");
 
-            if (openMode == OpenMode.Create)
-            {
-                if (System.IO.File.Exists(archiveFile))
-                    throw new Exception("ArchiveFile Already Exists");
+            var fs = new TransactionalFileStructure();
+            fs.m_blockSize = blockSize;
+            fs.m_file = TransactionService.CreateFile(archiveFile, blockSize);
+            return fs;
+        }
 
-                m_file = new TransactionService(4096, archiveFile, openMode, accessMode);
-            }
-            else
-            {
-                if (!System.IO.File.Exists(archiveFile))
-                    throw new Exception("ArchiveFile Does Not Exist");
+        /// <summary>
+        /// Creates a new archive file
+        /// </summary>
+        public static TransactionalFileStructure OpenFile(string archiveFile, AccessMode accessMode)
+        {
+            if (archiveFile == null)
+                throw new ArgumentNullException("archiveFile");
+            if (!System.IO.File.Exists(archiveFile))
+                throw new Exception("ArchiveFile Already Exists");
 
-                m_file = new TransactionService(4096, archiveFile, openMode, accessMode);
-            }
+            var fs = new TransactionalFileStructure();
+            fs.m_file = TransactionService.OpenFile(archiveFile, accessMode);
+            fs.m_blockSize = fs.m_file.BlockSize;
+            return fs;
         }
 
         #endregion
@@ -76,7 +90,7 @@ namespace openHistorian.V2.FileStructure
         {
             get
             {
-                return 4096;
+                return m_blockSize;
             }
         }
 
@@ -84,7 +98,7 @@ namespace openHistorian.V2.FileStructure
         {
             get
             {
-                return 4096 - 32;
+                return m_blockSize - FileStructureConstants.BlockFooterLength;
             }
         }
 
@@ -103,10 +117,29 @@ namespace openHistorian.V2.FileStructure
         //    get { throw new NotImplementedException(); }
         //}
 
-        //public long FileSize
-        //{
-        //    get { return m_file.FileSize; }
-        //}
+        public long ArchiveSize
+        {
+            get
+            {
+                return m_file.ArchiveSize;
+            }
+        }
+
+        public Guid ArchiveType
+        {
+            get
+            {
+                return m_file.ArchiveType;
+            }
+        }
+
+        public byte[] UserData
+        {
+            get
+            {
+                return m_file.UserData;
+            }
+        }
 
         //public long FreeSpace
         //{

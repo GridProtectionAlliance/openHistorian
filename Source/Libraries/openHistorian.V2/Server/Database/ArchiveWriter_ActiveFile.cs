@@ -72,7 +72,7 @@ namespace openHistorian.V2.Server.Database
             {
                 if (m_archiveFile == null)
                 {
-                    m_archiveFile = new ArchiveFile();
+                    m_archiveFile = ArchiveFile.CreateInMemory();
                     using (var edit = m_archiveList.AcquireEditLock())
                     {
                         //Add the newly created file.

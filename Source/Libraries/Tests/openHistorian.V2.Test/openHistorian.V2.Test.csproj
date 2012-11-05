@@ -89,6 +89,7 @@
     <Compile Include="IO\BinaryStreamWrapperTest.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
+    <Compile Include="Local\HistorianServer_Test2.cs" />
     <Compile Include="Local\HistorianServer_Test1.cs" />
     <Compile Include="Server\Configuration\XmlConfigTest.cs" />
     <Compile Include="Server\Database\ArchiveDatabaseEngineTest.cs" />

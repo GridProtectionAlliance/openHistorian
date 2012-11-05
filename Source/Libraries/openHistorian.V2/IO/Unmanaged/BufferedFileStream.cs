@@ -43,7 +43,7 @@ namespace openHistorian.V2.IO.Unmanaged
     //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
     unsafe public partial class BufferedFileStream : ISupportsBinaryStreamSizing
     {
-      
+
         /// <summary>
         /// To synchronize all calls to this class.
         /// </summary>
@@ -134,7 +134,7 @@ namespace openHistorian.V2.IO.Unmanaged
 
         void GetBlock(LeastRecentlyUsedPageReplacement.IoSession ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
         {
-            
+
             LeastRecentlyUsedPageReplacement.SubPageMetaData subPage;
 
             lock (m_syncRoot)
@@ -180,9 +180,11 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             if (!m_disposed)
             {
+                Flush(true, false, -1);
                 m_disposed = true;
                 Globals.BufferPool.RequestCollection -= BufferPool_RequestCollection;
                 m_pageReplacementAlgorithm.Dispose();
+                m_baseStream.Dispose();
             }
         }
 
@@ -253,7 +255,7 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             get
             {
-                return m_baseStream.CanWrite;
+                return !m_baseStream.CanWrite;
             }
         }
 
