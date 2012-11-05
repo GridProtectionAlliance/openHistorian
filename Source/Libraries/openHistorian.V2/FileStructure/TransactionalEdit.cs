@@ -266,7 +266,9 @@ namespace openHistorian.V2.FileStructure
             }
             try
             {
+                //ToDo: First commit the data, then the file system.
                 m_fileHeaderBlock.WriteToFileSystem(m_dataReader);
+                m_dataReader.Flush();
                 if (m_delHasBeenCommitted != null)
                     m_delHasBeenCommitted.Invoke();
             }
@@ -288,6 +290,7 @@ namespace openHistorian.V2.FileStructure
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
+            //ToDo: Trim the data that was written so that it might not be written to the disk.
             foreach (var file in m_openedFiles)
             {
                 if (file != null && !file.IsDisposed)

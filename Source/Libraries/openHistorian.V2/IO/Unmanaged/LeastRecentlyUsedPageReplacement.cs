@@ -309,8 +309,11 @@ namespace openHistorian.V2.IO.Unmanaged
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (m_ioSessionCurrentlyUsedArrayIndexes.Contains(pageMetaData.ArrayIndex))
-                throw new NotSupportedException("A page's dirty bits can only be cleared if the page is currently not being used.");
+            //ToDo: Commenting this out could cause some problems in the future. I'll need to somehow handle this properly. 
+            //ToDO: The problem exists when a user opens a read transaction and has a hold on a block that needs to be flushed.
+            //ToDo: Since this block may tell the binary stream that you can write to it, this flag is thrown.
+            //if (m_ioSessionCurrentlyUsedArrayIndexes.Contains(pageMetaData.ArrayIndex))
+            //    throw new NotSupportedException("A page's dirty bits can only be cleared if the page is currently not being used.");
 
             m_pageList.ClearDirtyBits(pageMetaData.ArrayIndex);
         }

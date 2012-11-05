@@ -89,7 +89,7 @@ namespace openHistorian.V2.FileStructure
         {
             var ts = new TransactionService();
             FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
-            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
+            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream, true);
             ts.m_blockSize = blockSize;
             ts.m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
             ts.m_fileHeaderBlock = new FileHeaderBlock(blockSize, ts.m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
@@ -105,14 +105,14 @@ namespace openHistorian.V2.FileStructure
             FileStream fileStream = new FileStream(fileName, FileMode.Open, (accessMode == AccessMode.ReadOnly) ? FileAccess.Read : FileAccess.ReadWrite);
             int blockSize = FileHeaderBlock.SearchForBlockSize(fileStream);
 
-            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream);
+            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream, true);
 
             ts.m_blockSize = blockSize;
             ts.m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
             ts.m_fileHeaderBlock = new FileHeaderBlock(blockSize, ts.m_diskIo, OpenMode.Open, AccessMode.ReadOnly);
             return ts;
         }
-        
+
         #endregion
 
         public int BlockSize
@@ -165,7 +165,7 @@ namespace openHistorian.V2.FileStructure
                 return m_diskIo.FileSize;
             }
         }
-        
+
 
         #region [ Methods ]
 

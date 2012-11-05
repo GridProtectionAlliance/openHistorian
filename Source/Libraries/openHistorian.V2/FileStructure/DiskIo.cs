@@ -110,29 +110,38 @@ namespace openHistorian.V2.FileStructure
 
         #region [ Methods ]
 
-        /// <summary>
-        /// Flushes all edits to the underlying stream.
-        /// </summary>
-        void Flush(int lastReadOnlyBlock)
+        public void Flush()
         {
             CheckIsDisposed();
             if (m_stream.IsReadOnly)
                 throw new ReadOnlyException();
-            m_stream.Flush();
-            m_lastReadOnlyBlock = lastReadOnlyBlock;
+            m_stream.Flush();  
         }
+        
+        //ToDo: Activate these functions.
+        ///// <summary>
+        ///// Flushes all edits to the underlying stream.
+        ///// </summary>
+        //void Flush(int lastReadOnlyBlock)
+        //{
+        //    CheckIsDisposed();
+        //    if (m_stream.IsReadOnly)
+        //        throw new ReadOnlyException();
+        //    m_stream.Flush();
+        //    m_lastReadOnlyBlock = lastReadOnlyBlock;
+        //}
 
-        /// <summary>
-        /// Will invalidate all of the changes that have been made so during the next flush cycle, 
-        /// the data will not have to be written to the disk
-        /// </summary>
-        /// <param name="lastValidBlock">the block to roll back to, cannot be less than the last committed block.</param>
-        void RollbackAllWrites(int lastValidBlock)
-        {
-            if (lastValidBlock < m_lastReadOnlyBlock)
-                throw new ArgumentOutOfRangeException("lastValidBlock", "Cannot roll back beyond the committed writes");
-            m_stream.TrimEditsAfterPosition((lastValidBlock + 1L) * m_blockSize);
-        }
+        ///// <summary>
+        ///// Will invalidate all of the changes that have been made so during the next flush cycle, 
+        ///// the data will not have to be written to the disk
+        ///// </summary>
+        ///// <param name="lastValidBlock">the block to roll back to, cannot be less than the last committed block.</param>
+        //void RollbackAllWrites(int lastValidBlock)
+        //{
+        //    if (lastValidBlock < m_lastReadOnlyBlock)
+        //        throw new ArgumentOutOfRangeException("lastValidBlock", "Cannot roll back beyond the committed writes");
+        //    m_stream.TrimEditsAfterPosition((lastValidBlock + 1L) * m_blockSize);
+        //}
 
         /// <summary>
         /// Creates a <see cref="DiskIoSession"/> that can be used to perform basic read/write functions.

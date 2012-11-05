@@ -65,11 +65,12 @@ namespace openHistorian.V2.IO.Unmanaged
         LeastRecentlyUsedPageReplacement m_pageReplacementAlgorithm;
 
         bool m_disposed;
+        bool m_ownsStream;
 
         IoQueue m_queue;
 
-        public BufferedFileStream(FileStream stream)
-            : this(stream, Globals.BufferPool, 4096)
+        public BufferedFileStream(FileStream stream, bool ownsStream = false)
+            : this(stream, Globals.BufferPool, 4096, ownsStream)
         {
 
         }
@@ -80,8 +81,9 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <param name="stream">The file stream to back</param>
         /// <param name="pool"></param>
         /// <param name="dirtyPageSize"></param>
-        public BufferedFileStream(FileStream stream, BufferPool pool, int dirtyPageSize)
+        public BufferedFileStream(FileStream stream, BufferPool pool, int dirtyPageSize, bool ownsStream = false)
         {
+            m_ownsStream = ownsStream;
             m_pool = pool;
             m_dirtyPageSize = dirtyPageSize;
             m_queue = new IoQueue(stream, pool.PageSize, dirtyPageSize);
@@ -111,7 +113,8 @@ namespace openHistorian.V2.IO.Unmanaged
         /// </summary>
         public void Flush()
         {
-            Flush(false, true, -1);
+            //Flush(false, true, -1);
+            Flush(true, false, -1);
         }
 
 
@@ -180,11 +183,12 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             if (!m_disposed)
             {
-                Flush(true, false, -1);
+                //Flush(true, false, -1);
                 m_disposed = true;
                 Globals.BufferPool.RequestCollection -= BufferPool_RequestCollection;
                 m_pageReplacementAlgorithm.Dispose();
-                m_baseStream.Dispose();
+                if (m_ownsStream)
+                    m_baseStream.Dispose();
             }
         }
 
