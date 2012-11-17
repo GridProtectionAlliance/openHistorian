@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace openHistorian.V2.Local
 {
@@ -73,6 +74,20 @@ namespace openHistorian.V2.Local
             }
             public void AddPath(string path, bool allowWritingToPath)
             {
+                if (allowWritingToPath)
+                {
+                    if (File.Exists(path))
+                        throw new Exception("Only directories can be written to, not files.");
+                    if (!Directory.Exists(path))
+                        throw new ArgumentException("Could not locate the specified directory", "path");
+                }
+                else
+                {
+                    if (!File.Exists(path) || !Directory.Exists(path))
+                        throw new ArgumentException("Could not locate the specified path","path");
+                }
+                
+
                 m_paths.Add(path);
                 if (allowWritingToPath)
                     m_savePaths.Add(path);

@@ -54,16 +54,28 @@ namespace openHistorian.V2.Server.Configuration
         {
             foreach (string path in config.Paths.GetPaths())
             {
-                FileAttributes attributes = File.GetAttributes(path);
-                if ((attributes & FileAttributes.Directory) != 0)
-                {
-                    AttachedFiles.AddRange(Directory.GetFiles(path, "*.d2", SearchOption.TopDirectoryOnly));
-                }
-                else if (File.Exists(path))
+                if (File.Exists(path))
                 {
                     AttachedFiles.Add(path);
                 }
+                else if (Directory.Exists(path))
+                {
+                    AttachedFiles.AddRange(Directory.GetFiles(path, "*.d2", SearchOption.TopDirectoryOnly));
+                }
             }
+            //For some reason, File.GetAttributes() sometimes threw exceptions.
+            //foreach (string path in config.Paths.GetPaths())
+            //{
+            //    FileAttributes attributes = File.GetAttributes(path);
+            //    if ((attributes & FileAttributes.Directory) != 0)
+            //    {
+            //        AttachedFiles.AddRange(Directory.GetFiles(path, "*.d2", SearchOption.TopDirectoryOnly));
+            //    }
+            //    else if (File.Exists(path))
+            //    {
+            //        AttachedFiles.Add(path);
+            //    }
+            //}
         }
 
         void SetupWriters(IDatabaseConfig config)
