@@ -127,13 +127,6 @@ namespace openHistorian.V2
         /// Setting to null allows the historian to auto configure this parameter.
         /// </remarks>
         public float? OptimalPointsPerSecond { get; private set; }
-        /// <summary>
-        /// Determines if the historian supports writing points.
-        /// </summary>
-        /// <remarks>
-        /// Setting to null allows the historian to determine this based 
-        /// on if it has available places to save files and available free space.
-        /// </remarks>
 
         public static WriterOptions IsMemoryOnly(float commitInterval = 0.25f, float optimalPointsPerSecond = 8*30*10)
         {

@@ -150,13 +150,7 @@ namespace openHistorian.V2.Server.Configuration
                     ArchiveRollovers.Add(rollover);
                 }
             }
-
-
         }
-
-
-
-
     }
 
 }

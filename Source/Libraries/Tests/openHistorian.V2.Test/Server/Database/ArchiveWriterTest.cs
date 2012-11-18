@@ -5,6 +5,7 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using openHistorian.V2.Server.Configuration;
 using openHistorian.V2.Server.Database.Archive;
+using openHistorian.V2.Server.Database.ArchiveWriters;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -61,7 +62,7 @@ namespace openHistorian.V2.Server.Database
             settings.CommitOnInterval = new TimeSpan(0, 0, 0, 0, 10);
             settings.NewFileOnInterval = new TimeSpan(0, 0, 0, 0, 100);
             var list = new ArchiveList();
-            using (var writer = new ArchiveWriter(settings, list, (file, x) => FinishArchive(list, file)))
+            using (var writer = new ConcurrentWriterAutoCommit(settings, list, (file, x) => FinishArchive(list, file)))
             {
                 Thread.Sleep(150);
                 sw.Start();
@@ -83,7 +84,7 @@ namespace openHistorian.V2.Server.Database
             settings.CommitOnInterval = new TimeSpan(0, 0, 0, 0, 10);
             settings.NewFileOnInterval = new TimeSpan(0, 0, 0, 0, 100);
             var list = new ArchiveList();
-            using (var writer = new ArchiveWriter(settings, list, (file, x) => FinishArchive(list, file)))
+            using (var writer = new ConcurrentWriterAutoCommit(settings, list, (file, x) => FinishArchive(list, file)))
             {
                 Thread.Sleep(15);
                 sw.Start();
@@ -107,7 +108,7 @@ namespace openHistorian.V2.Server.Database
             settings.CommitOnInterval = new TimeSpan(0, 0, 0, 0, 10);
             settings.NewFileOnInterval = new TimeSpan(0, 0, 0, 0, 100);
             var list = new ArchiveList();
-            using (var writer = new ArchiveWriter(settings, list, (file, x) => FinishArchive(list, file)))
+            using (var writer = new ConcurrentWriterAutoCommit(settings, list, (file, x) => FinishArchive(list, file)))
             {
                 sw.DoGC();
                 long sequenceId = writer.WriteData(0ul, 0ul, 0ul, 0ul);
@@ -132,7 +133,7 @@ namespace openHistorian.V2.Server.Database
             settings.CommitOnInterval = new TimeSpan(0, 0, 0, 0, 20);
             settings.NewFileOnInterval = new TimeSpan(0, 0, 0, 0, 110);
             var list = new ArchiveList();
-            using (var writer = new ArchiveWriter(settings, list, (file, x) => FinishArchive(list, file)))
+            using (var writer = new ConcurrentWriterAutoCommit(settings, list, (file, x) => FinishArchive(list, file)))
             {
                 sw.DoGC();
                 long sequenceId = writer.WriteData(0ul, 0ul, 0ul, 0ul);
@@ -173,7 +174,7 @@ namespace openHistorian.V2.Server.Database
             settings.CommitOnInterval = new TimeSpan(0, 0, 0, 0, 10);
             settings.NewFileOnInterval = new TimeSpan(0, 0, 0, 0, 100);
             var list = new ArchiveList();
-            using (var writer = new ArchiveWriter(settings, list, (file, x) => FinishArchive(list, file)))
+            using (var writer = new ConcurrentWriterAutoCommit(settings, list, (file, x) => FinishArchive(list, file)))
             {
                 writer.WriteData(0ul, 0ul, 0ul, 0ul);
                 writer.CommitAndRollover();

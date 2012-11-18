@@ -24,9 +24,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using openHistorian.V2.Server.Configuration;
 using openHistorian.V2.Server.Database.Archive;
+using openHistorian.V2.Server.Database.ArchiveWriters;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -36,44 +36,21 @@ namespace openHistorian.V2.Server.Database
     public class ArchiveDatabaseEngine
     {
         List<ArchiveListRemovalStatus> m_pendingDispose;
-        ArchiveWriter m_archiveWriter;
+        IArchiveWriter m_archiveWriter;
         ArchiveList m_archiveList;
-        ArchiveManagement[] m_archiveManagement;
         volatile bool m_disposed;
-        object m_syncRoot;
 
         public ArchiveDatabaseEngine(DatabaseSettings settings)
         {
-            m_syncRoot = new object();
             m_pendingDispose = new List<ArchiveListRemovalStatus>();
             m_archiveList = new ArchiveList(settings.AttachedFiles);
-            m_archiveManagement = new ArchiveManagement[settings.ArchiveRollovers.Count];
 
             if (settings.ArchiveWriter != null)
             {
-                ArchiveManagement previousManagement = null;
-                for (int x = settings.ArchiveRollovers.Count - 1; x >= 0; x--) //Go in reverse order since there is chaining that occurs
-                {
-                    var managementSettings = settings.ArchiveRollovers[x];
-                    if (previousManagement == null)
-                    {
-                        m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, FinalizeArchiveFile, ProcessRemoval);
-                        previousManagement = m_archiveManagement[x];
-                    }
-                    else
-                    {
-                        m_archiveManagement[x] = new ArchiveManagement(managementSettings, m_archiveList, previousManagement.ProcessArchive, ProcessRemoval);
-                        previousManagement = m_archiveManagement[x];
-                    }
-                }
-                if (previousManagement == null)
-                {
-                    m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, FinalizeArchiveFile);
-                }
+                if (settings.ArchiveWriter.AutoCommit)
+                    m_archiveWriter = new AutoCommit(settings, m_archiveList);
                 else
-                {
-                    m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, previousManagement.ProcessArchive);
-                }
+                    m_archiveWriter = new ManualCommit(settings, m_archiveList);
             }
         }
 
@@ -106,46 +83,12 @@ namespace openHistorian.V2.Server.Database
                 m_disposed = true;
                 if (m_archiveWriter != null)
                     m_archiveWriter.Dispose();
-                foreach (var management in m_archiveManagement)
-                {
-                    management.Dispose();
-                }
+
                 m_archiveList.Dispose();
 
                 foreach (var status in m_pendingDispose)
                 {
                     status.Archive.Dispose();
-                }
-            }
-        }
-
-        void FinalizeArchiveFile(ArchiveFile archive, long sequenceId)
-        {
-            using (var edit = m_archiveList.AcquireEditLock())
-            {
-                edit.ReleaseEditLock(archive);
-            }
-        }
-        void ProcessRemoval(ArchiveListRemovalStatus removalStatus)
-        {
-            lock (m_syncRoot)
-            {
-                if (!removalStatus.IsBeingUsed)
-                {
-                    removalStatus.Archive.Dispose();
-                }
-                else
-                {
-                    m_pendingDispose.Add(removalStatus);
-                }
-                for (int x = m_pendingDispose.Count - 1; x >= 0; x--)
-                {
-                    var status = m_pendingDispose[x];
-                    if (!status.IsBeingUsed)
-                    {
-                        status.Archive.Dispose();
-                        m_pendingDispose.RemoveAt(x);
-                    }
                 }
             }
         }
@@ -157,17 +100,17 @@ namespace openHistorian.V2.Server.Database
 
         public bool IsDiskCommitted(long transactionId)
         {
-            return m_archiveManagement.Last().IsCommitted(transactionId);
+            return m_archiveWriter.IsDiskCommitted(transactionId);
         }
 
         public bool WaitForCommitted(long transactionId)
         {
-            return m_archiveWriter.WaitForCommit(transactionId, false);
+            return m_archiveWriter.WaitForCommitted(transactionId);
         }
 
         public bool WaitForDiskCommitted(long transactionId)
         {
-            return m_archiveManagement.Last().WaitForCommit(transactionId, false);
+            return m_archiveWriter.WaitForDiskCommitted(transactionId);
         }
 
         public void Commit()
@@ -177,39 +120,28 @@ namespace openHistorian.V2.Server.Database
 
         public void CommitToDisk()
         {
-            m_archiveWriter.CommitAndRollover();
-            for (int x = 0; x < m_archiveManagement.Length; x++)
-            {
-                if (x == m_archiveManagement.Length - 1)
-                {
-                    m_archiveManagement[x].Commit();
-                }
-                else
-                {
-                    m_archiveManagement[x].CommitAndRollover();
-                }
-            }
+            m_archiveWriter.CommitToDisk();
         }
 
         public long LastCommittedTransactionId
         {
             get
             {
-                return m_archiveWriter.LastCommittedSequenceNumber;
+                return m_archiveWriter.LastCommittedTransactionId;
             }
         }
         public long LastDiskCommittedTransactionId
         {
             get
             {
-                return m_archiveManagement.Last().LastCommittedSequenceNumber;
+                return m_archiveWriter.LastDiskCommittedTransactionId;
             }
         }
         public long CurrentTransactionId
         {
             get
             {
-                return m_archiveWriter.CurrentSequenceNumber;
+                return m_archiveWriter.CurrentTransactionId;
             }
         }
 

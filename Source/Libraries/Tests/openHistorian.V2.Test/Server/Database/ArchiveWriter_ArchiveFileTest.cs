@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using openHistorian.V2.IO.Unmanaged;
 using openHistorian.V2.Server.Database.Archive;
+using openHistorian.V2.Server.Database.ArchiveWriters;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -19,7 +20,7 @@ namespace openHistorian.V2.Server.Database
             var stream = new BinaryStream();
             int fileCount = 0;
             var list = new ArchiveList();
-            var archive = new ArchiveWriter.ActiveFile(list, (file,x) => fileCount++);
+            var archive = new ConcurrentWriterAutoCommit.ActiveFile(list, (file,x) => fileCount++);
             Assert.AreEqual(0, CountFiles(list));
             archive.CreateIfNotExists();
             Assert.AreEqual(1, CountFiles(list));
@@ -61,7 +62,7 @@ namespace openHistorian.V2.Server.Database
             var stream = new BinaryStream();
             int fileCount = 0;
             var list = new ArchiveList();
-            var archive = new ArchiveWriter.ActiveFile(list, (file, x) => fileCount++);
+            var archive = new ConcurrentWriterAutoCommit.ActiveFile(list, (file, x) => fileCount++);
 
             GCSettings.LatencyMode = GCLatencyMode.Batch;
             GC.Collect();

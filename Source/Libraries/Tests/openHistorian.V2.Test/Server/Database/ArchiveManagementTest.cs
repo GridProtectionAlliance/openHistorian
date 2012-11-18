@@ -4,6 +4,7 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using openHistorian.V2.Server.Configuration;
 using openHistorian.V2.Server.Database.Archive;
+using openHistorian.V2.Server.Database.ArchiveWriters;
 
 namespace openHistorian.V2.Server.Database
 {
@@ -23,7 +24,7 @@ namespace openHistorian.V2.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ArchiveManagement(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 Thread.Sleep(150);
                 sw.Start();
@@ -47,7 +48,7 @@ namespace openHistorian.V2.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ArchiveManagement(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 Thread.Sleep(150);
                 var archive = MakeArchive(0, 20, 1);
@@ -78,7 +79,7 @@ namespace openHistorian.V2.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ArchiveManagement(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 Thread.Sleep(150);
                 var archive = MakeArchive(0, 20, 1);
@@ -108,7 +109,7 @@ namespace openHistorian.V2.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ArchiveManagement(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 Thread.Sleep(150);
                 var archive = MakeArchive(0, 20, 1);
@@ -136,7 +137,7 @@ namespace openHistorian.V2.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ArchiveManagement(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 var archive1 = MakeArchive(2, 100, 2);
                 var archive2 = MakeArchive(1, 81, 2);
@@ -212,7 +213,7 @@ namespace openHistorian.V2.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ArchiveManagement(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 Thread.Sleep(150);
                 var archive = MakeArchive(0, 200, 1);

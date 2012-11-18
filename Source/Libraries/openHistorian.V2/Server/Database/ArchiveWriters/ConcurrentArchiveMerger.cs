@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveManagement.cs - Gbtc
+//  ConcurrentArchiveMerger.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,13 +30,13 @@ using System.Threading;
 using openHistorian.V2.Server.Configuration;
 using openHistorian.V2.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.V2.Server.Database.ArchiveWriters
 {
     /// <summary>
     /// Performs the required rollovers by reading partitions from the data list
     /// and combining them into a file of a later generation.
     /// </summary>
-    public class ArchiveManagement : IDisposable
+    public class ConcurrentArchiveMerger : IDisposable
     {
         /// <summary>
         /// Provides a way to block a thread until data has been committed to the archive writer.
@@ -96,13 +96,13 @@ namespace openHistorian.V2.Server.Database
         long m_latestSequenceId;
 
         /// <summary>
-        /// Creates a new <see cref="ArchiveManagement"/>.
+        /// Creates a new <see cref="ConcurrentArchiveMerger"/>.
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="archiveList">The list used to attach newly created file.</param>
         /// <param name="callbackFileComplete">Once a file is complete with this layer, this callback is invoked</param>
         /// <param name="archivesPendingDeletion">Where to pass archive files that are pending deletion</param>
-        public ArchiveManagement(ArchiveRolloverSettings settings, ArchiveList archiveList, Action<ArchiveFile, long> callbackFileComplete, Action<ArchiveListRemovalStatus> archivesPendingDeletion)
+        public ConcurrentArchiveMerger(ArchiveRolloverSettings settings, ArchiveList archiveList, Action<ArchiveFile, long> callbackFileComplete, Action<ArchiveListRemovalStatus> archivesPendingDeletion)
         {
             if (settings == null)
                 throw new ArgumentNullException("settings");

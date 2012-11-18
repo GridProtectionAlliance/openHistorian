@@ -114,6 +114,7 @@
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
     <Compile Include="Local\ConfigHistorian.cs" />
     <Compile Include="Local\ConfigDatabase.cs" />
+    <Compile Include="Local\HistorianFile.cs" />
     <Compile Include="Local\HistorianServer_DatabaseConfig.cs" />
     <Compile Include="Local\HistorianServer_HistorianManage.cs" />
     <Compile Include="Local\HistorianServer_HistorianReadWrite.cs" />
@@ -128,8 +129,13 @@
     <Compile Include="Server\Database\ArchiveList.cs" />
     <Compile Include="Server\Database\ArchiveList_Editor.cs" />
     <Compile Include="Server\Database\ArchiveListRemovalStatus.cs" />
-    <Compile Include="Server\Database\ArchiveManagement.cs" />
+    <Compile Include="Server\Database\ArchiveWriters\ConcurrentArchiveMerger.cs" />
     <Compile Include="Server\Database\ArchiveReader.cs" />
+    <Compile Include="Server\Database\ArchiveWriters\AutoCommit.cs" />
+    <Compile Include="Server\Database\ArchiveWriters\ArchiveMerger.cs" />
+    <Compile Include="Server\Database\ArchiveWriters\WriterManualCommit.cs" />
+    <Compile Include="Server\Database\ArchiveWriters\WriterManualCommit_ActiveFile.cs" />
+    <Compile Include="Server\Database\ArchiveWriters\ManualCommit.cs" />
     <Compile Include="Server\Database\Archive\ArchiveFile_ArchiveFileEditor.cs" />
     <Compile Include="Server\Configuration\DatabaseSettings.cs" />
     <Compile Include="Server\Configuration\ArchiveInitializerSettings.cs" />
@@ -150,8 +156,9 @@
     <Compile Include="OldCode\DataPoint.cs" />
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="OldCode\ArchiveWriter_Old.cs" />
-    <Compile Include="Server\Database\ArchiveWriter_ActiveFile.cs" />
-    <Compile Include="Server\Database\PointQueue.cs" />
+    <Compile Include="Server\Database\ArchiveWriters\ConcurrentWriterAutoCommit_ActiveFile.cs" />
+    <Compile Include="Server\Database\IArchiveWriter.cs" />
+    <Compile Include="Server\Database\ArchiveWriters\ConcurrentPointQueue.cs" />
     <Compile Include="IO\IBinaryStream.cs" />
     <Compile Include="FileStructure\DiskIo.cs" />
     <Compile Include="OldCode\IO\IStreamingTransport.cs" />
@@ -162,7 +169,7 @@
     <Compile Include="Server\Configuration\ArchiveWriterSettings.cs" />
     <Compile Include="Server\HistorianEngine.cs" />
     <Compile Include="Server\Database\ArchiveListSnapshot.cs" />
-    <Compile Include="Server\Database\ArchiveWriter.cs" />
+    <Compile Include="Server\Database\ArchiveWriters\ConcurrentWriterAutoCommit.cs" />
     <Compile Include="Server\Configuration\HistorianSettings.cs" />
     <Compile Include="OldCode\Streaming\Client\ClientSocket.cs" />
     <Compile Include="OldCode\Streaming\IInboundBuffer.cs" />
