@@ -80,6 +80,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\KeyValue\SortedTree256Compressed.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCompressedBase.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCompressedBase_NodeHeader.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCompressedBase_TreeScanner.cs" />
     <Compile Include="Collections\KeyValue\NullTreeScanner256.cs" />
     <Compile Include="Collections\KeyValue\UnionScanner256.cs" />
     <Compile Include="Collections\ReadonlySortedList.cs" />
@@ -106,6 +110,7 @@
     <Compile Include="FileStructure\FileHeaderBlockRecovery.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IHistorian.cs" />
+    <Compile Include="IHistorianNew.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
