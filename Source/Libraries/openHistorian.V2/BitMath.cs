@@ -29,7 +29,7 @@ namespace openHistorian.V2
     /// <summary>
     /// Contains some random and useful functions.
     /// </summary>
-    static class BitMath
+    public static class BitMath
     {
         #region [ Is Power Of Two ]
 
@@ -415,7 +415,7 @@ namespace openHistorian.V2
 
         #region [ Count Leading/Trailing Zeros ]
 
-      
+
         public static int CountTrailingOnes(uint value)
         {
             return CountTrailingZeros(~value);
@@ -423,20 +423,30 @@ namespace openHistorian.V2
 
         public static int CountTrailingOnes(ulong value)
         {
-            return CountTrailingZeros(~value);           
+            return CountTrailingZeros(~value);
         }
-        
+
         public static int CountLeadingOnes(uint value)
         {
             return CountLeadingZeros(~value);
         }
-        
+
         public static int CountLeadingOnes(ulong value)
         {
             return CountLeadingZeros(~value);
         }
 
         #endregion
+
+        public unsafe static ulong ConvertToUInt64(float value)
+        {
+            return (ulong)*(uint*)&value;
+        }
+        public unsafe static float ConvertToSingle(ulong value)
+        {
+            uint tmpValue = (uint)value;
+            return *(float*)&tmpValue;
+        }
 
     }
 }

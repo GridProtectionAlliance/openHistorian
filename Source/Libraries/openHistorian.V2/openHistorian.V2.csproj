@@ -80,6 +80,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\KeyValue\SortedTree256Coded.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCodedBase.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCodedBase_NodeHeader.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCodedBase_TreeScanner.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Compressed.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCompressedBase.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCompressedBase_NodeHeader.cs" />

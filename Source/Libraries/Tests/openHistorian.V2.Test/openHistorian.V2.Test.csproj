@@ -85,6 +85,8 @@
     <Compile Include="Collections\ResourceQueue.cs" />
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="BitMath.cs" />
+    <Compile Include="SortedTree256CodedTest.cs" />
+    <Compile Include="SortedTree256CompareTest.cs" />
     <Compile Include="SortedTree256CompressedTest.cs" />
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="IO\BinaryStreamWrapperTest.cs" />

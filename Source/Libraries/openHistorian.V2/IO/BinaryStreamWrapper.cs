@@ -239,14 +239,64 @@ namespace openHistorian.V2.IO
             return m_br.ReadUInt16();
         }
 
+        public uint ReadUInt24()
+        {
+            uint value = ReadUInt16();
+            return value | ((uint)ReadByte() << 16);
+        }
+
         public uint ReadUInt32()
         {
             return m_br.ReadUInt32();
         }
 
+        public ulong ReadUInt40()
+        {
+            ulong value = ReadUInt32();
+            return value | ((ulong)ReadByte() << 32);
+        }
+
+        public ulong ReadUInt48()
+        {
+            ulong value = ReadUInt32();
+            return value | ((ulong)ReadUInt16() << 32);
+        }
+
+        public ulong ReadUInt56()
+        {
+            ulong value = ReadUInt32();
+            return value | ((ulong)ReadUInt24() << 32);
+        }
+
         public ulong ReadUInt64()
         {
             return m_br.ReadUInt64();
+        }
+
+        public ulong ReadUInt(int bytes)
+        {
+            switch (bytes)
+            {
+                case 0:
+                    return 0;
+                case 1:
+                    return ReadByte();
+                case 2:
+                    return ReadUInt16();
+                case 3:
+                    return ReadUInt24();
+                case 4:
+                    return ReadUInt32();
+                case 5:
+                    return ReadUInt40();
+                case 6:
+                    return ReadUInt48();
+                case 7:
+                    return ReadUInt56();
+                case 8:
+                    return ReadUInt64();
+            }
+            throw new ArgumentOutOfRangeException("bytes", "must be between 0 and 8 inclusive.");
         }
 
         public byte ReadByte()
@@ -320,5 +370,6 @@ namespace openHistorian.V2.IO
         {
             return m_br.Read(value, offset, count);
         }
+        
     }
 }

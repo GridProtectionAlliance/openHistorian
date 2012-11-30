@@ -110,8 +110,13 @@ namespace openHistorian.V2.IO
         sbyte ReadSByte();
         bool ReadBoolean();
         ushort ReadUInt16();
+        uint ReadUInt24();
         uint ReadUInt32();
+        ulong ReadUInt40();
+        ulong ReadUInt48();
+        ulong ReadUInt56();
         ulong ReadUInt64();
+        ulong ReadUInt(int bytes);
         byte ReadByte();
         short ReadInt16();
         int ReadInt32();

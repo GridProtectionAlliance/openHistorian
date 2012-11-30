@@ -15,9 +15,11 @@ namespace openHistorian.V2.Test
         [STAThread]
         private static void Main()
         {
+            GetEncodingValues();
+            return;
             ArchiveTest.Test();
             return;
-            
+
             int cnt = 300000;
             var T = new SocketAsyncEventArgs();
             var array = new SocketAsyncEventArgs[cnt];
@@ -47,6 +49,21 @@ namespace openHistorian.V2.Test
                 MessageBox.Show(ex.ToString());
             }
             return;
+        }
+
+        private unsafe static void GetEncodingValues()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (float value1 = 0; value1 < 360; value1 += 1f)
+            {
+                float valueF = value1 / 10f;
+                uint value = (*(uint*)&valueF);
+                uint sign = value >> 31;
+                int exponent = (int)((value >> 23) & 255) - 127;
+                uint fraction = value & ((1 << 23) - 1);
+                sb.AppendLine(valueF.ToString() + '\t' + value + '\t' + sign + '\t' + exponent + '\t' + fraction.ToString("X") + '\t' + value.ToString("X"));
+            }
+            Clipboard.SetText(sb.ToString());
         }
 
         internal static void ExpectException(Action del)

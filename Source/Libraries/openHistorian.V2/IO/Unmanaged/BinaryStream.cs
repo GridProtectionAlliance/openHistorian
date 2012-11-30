@@ -121,6 +121,14 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #region [ Properties ]
 
+        public ISupportsBinaryStream BaseStream
+        {
+            get
+            {
+                return m_stream;
+            }
+        }
+
         /// <summary>
         /// Determines if the binary stream can be cloned.  
         /// Since a base stream may only be able to support a definate 
@@ -848,14 +856,95 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             return (ushort)ReadInt16();
         }
+
+        public uint ReadUInt24()
+        {
+            uint value;
+            if (m_current + 4 <= m_lastRead)
+            {
+                value = (*(uint*)m_current) & 0xFFFFFFu;
+                m_current += 3;
+                return value;
+            }
+            value = ReadUInt16();
+            return value | ((uint)ReadByte() << 16);
+        }
+
         public uint ReadUInt32()
         {
             return (uint)ReadInt32();
         }
+
+        public ulong ReadUInt40()
+        {
+            ulong value;
+            if (m_current + 8 <= m_lastRead)
+            {
+                value = (*(ulong*)m_current) & 0xFFFFFFFFFFul;
+                m_current += 5;
+                return value;
+            }
+            value = ReadUInt32();
+            return value | ((ulong)ReadByte() << 32);
+        }
+
+        public ulong ReadUInt48()
+        {
+            ulong value;
+            if (m_current + 8 <= m_lastRead)
+            {
+                value = (*(ulong*)m_current) & 0xFFFFFFFFFFFFul;
+                m_current += 6;
+                return value;
+            }
+            value = ReadUInt32();
+            return value | ((ulong)ReadUInt16() << 32);
+        }
+
+        public ulong ReadUInt56()
+        {
+            ulong value;
+            if (m_current + 8 <= m_lastRead)
+            {
+                value = (*(ulong*)m_current) & 0xFFFFFFFFFFFFFFul;
+                m_current += 7;
+                return value;
+            }
+            value = ReadUInt32();
+            return value | ((ulong)ReadUInt24() << 32);
+        }
+
         public ulong ReadUInt64()
         {
             return (ulong)ReadInt64();
         }
+
+        public ulong ReadUInt(int bytes)
+        {
+            switch (bytes)
+            {
+                case 0:
+                    return 0;
+                case 1:
+                    return ReadByte();
+                case 2:
+                    return ReadUInt16();
+                case 3:
+                    return ReadUInt24();
+                case 4:
+                    return ReadUInt32();
+                case 5:
+                    return ReadUInt40();
+                case 6:
+                    return ReadUInt48();
+                case 7:
+                    return ReadUInt56();
+                case 8:
+                    return ReadUInt64();
+            }
+            throw new ArgumentOutOfRangeException("bytes", "must be between 0 and 8 inclusive.");
+        }
+
         #endregion
 
         #region Core Types
