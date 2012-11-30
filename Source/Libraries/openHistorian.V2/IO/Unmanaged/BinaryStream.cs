@@ -28,9 +28,8 @@ using openHistorian.V2.UnmanagedMemory;
 
 namespace openHistorian.V2.IO.Unmanaged
 {
-    public unsafe class BinaryStream : IBinaryStream
+    public unsafe class BinaryStream : BinaryStreamBase
     {
-
         #region [ Members ]
 
         /// <summary>
@@ -102,6 +101,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <param name="leaveOpen">Determines if the underlying stream will automatically be 
         /// disposed of when this class has it's dispose method called.</param>
         public BinaryStream(ISupportsBinaryStream stream, bool leaveOpen = true)
+            : base()
         {
             m_temp = new byte[16];
             m_stream = stream;
@@ -135,7 +135,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// number of concurrent IO Sessions, this should be analized
         /// before cloning the stream.
         /// </summary>
-        public bool SupportsAnotherClone
+        public override bool SupportsAnotherClone
         {
             get
             {
@@ -149,7 +149,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// this class buffers the results of the query.  Setting this field does not gaurentee that
         /// the underlying stream will get set. Call FlushToUnderlyingStream to acomplish this.</remarks>
         /// </summary>
-        public long Position
+        public override long Position
         {
             get
             {
@@ -219,7 +219,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// Clones a binary stream if it is supported.  Check <see cref="SupportsAnotherClone"/> before calling this method.
         /// </summary>
         /// <returns></returns>
-        public IBinaryStream CloneStream()
+        public override BinaryStreamBase CloneStream()
         {
             if (!SupportsAnotherClone)
                 throw new Exception("Base stream does not support additional clones");
@@ -260,7 +260,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// Updates the local buffer data.
         /// </summary>
         /// <param name="isWriting">hints to the stream if write access is desired.</param>
-        public void UpdateLocalBuffer(bool isWriting)
+        public override void UpdateLocalBuffer(bool isWriting)
         {
             //If the block block is already looked up, skip this step.
             if (isWriting && RemainingWriteLength > 0 || !isWriting && RemainingReadLength > 0)
@@ -291,7 +291,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <param name="source"></param>
         /// <param name="destination"></param>
         /// <param name="length"></param>
-        public void Copy(long source, long destination, int length)
+        public override void Copy(long source, long destination, int length)
         {
             if (source < 0)
                 throw new ArgumentException("value cannot be less than zero", "source");
@@ -359,7 +359,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// However, it's much more complicated than this. So this is a pretty useful function.
         /// The newly created space is uninitialized. 
         /// </remarks>
-        public void InsertBytes(int numberOfBytes, int lengthOfValidDataToShift)
+        public override void InsertBytes(int numberOfBytes, int lengthOfValidDataToShift)
         {
             long pos = Position;
             Copy(Position, Position + numberOfBytes, lengthOfValidDataToShift);
@@ -378,42 +378,16 @@ namespace openHistorian.V2.IO.Unmanaged
         /// However, it's much more complicated than this. So this is a pretty useful function.
         /// The space at the end of the copy is uninitialized. 
         /// </remarks>
-        public void RemoveBytes(int numberOfBytes, int lengthOfValidDataToShift)
+        public override void RemoveBytes(int numberOfBytes, int lengthOfValidDataToShift)
         {
             long pos = Position;
             Copy(Position + numberOfBytes, Position, lengthOfValidDataToShift);
             Position = pos;
         }
 
-        #region Derived Types
-        public void Write(sbyte value)
-        {
-            Write((byte)value);
-        }
-        public void Write(bool value)
-        {
-            if (value)
-                Write((byte)1);
-            else
-                Write((byte)0);
-        }
-        public void Write(ushort value)
-        {
-            Write((short)value);
-        }
-        public void Write(uint value)
-        {
-            Write((int)value);
-        }
-        public void Write(ulong value)
-        {
-            Write((long)value);
-        }
-        #endregion
-
         #region Core Types
 
-        public void Write(byte value)
+        public override void Write(byte value)
         {
             const int size = sizeof(byte);
             byte* cur = m_current;
@@ -439,7 +413,7 @@ namespace openHistorian.V2.IO.Unmanaged
             m_temp[0] = value;
             Write(m_temp, 0, size);
         }
-        public void Write(short value)
+        public override void Write(short value)
         {
             const int size = sizeof(short);
             byte* cur = m_current;
@@ -466,7 +440,7 @@ namespace openHistorian.V2.IO.Unmanaged
             m_temp[1] = (byte)(value >> 8);
             Write(m_temp, 0, size);
         }
-        public void Write(int value)
+        public override void Write(int value)
         {
             const int size = sizeof(int);
             byte* cur = m_current;
@@ -495,7 +469,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
             Write(m_temp, 0, size);
         }
-        public void Write(float value)
+        public override void Write(float value)
         {
             const int size = sizeof(float);
             byte* cur = m_current;
@@ -524,7 +498,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
             Write(m_temp, 0, size);
         }
-        public void Write(long value)
+        public override void Write(long value)
         {
             const int size = sizeof(long);
             byte* cur = m_current;
@@ -553,7 +527,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
             Write(m_temp, 0, size);
         }
-        public void Write(double value)
+        public override void Write(double value)
         {
             const int size = sizeof(double);
             byte* cur = m_current;
@@ -582,7 +556,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
             Write(m_temp, 0, size);
         }
-        public void Write(DateTime value)
+        public override void Write(DateTime value)
         {
             const int size = 8;
             byte* cur = m_current;
@@ -611,7 +585,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
             Write(m_temp, 0, size);
         }
-        public void Write(decimal value)
+        public override void Write(decimal value)
         {
             const int size = sizeof(decimal);
             byte* cur = m_current;
@@ -640,7 +614,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
             Write(m_temp, 0, size);
         }
-        public void Write(Guid value)
+        public override void Write(Guid value)
         {
             const int size = 16;
             byte* cur = m_current;
@@ -669,7 +643,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
             Write(m_temp, 0, size);
         }
-        public void Write7Bit(uint value)
+        public override void Write7Bit(uint value)
         {
             const int size = 5;
             byte* stream = m_current;
@@ -725,7 +699,7 @@ namespace openHistorian.V2.IO.Unmanaged
             Compression.Write7Bit(m_temp, ref pos, value);
             Write(m_temp, 0, size);
         }
-        public void Write7Bit(ulong value)
+        public override void Write7Bit(ulong value)
         {
             const int size = 9;
             byte* stream = m_current;
@@ -809,7 +783,7 @@ namespace openHistorian.V2.IO.Unmanaged
             Compression.Write7Bit(m_temp, ref pos, value);
             Write(m_temp, 0, size);
         }
-        public void Write(byte[] value, int offset, int count)
+        public override void Write(byte[] value, int offset, int count)
         {
             if (m_current + count <= m_lastWrite)
             {
@@ -843,21 +817,9 @@ namespace openHistorian.V2.IO.Unmanaged
 
         #region Derived Types
 
-        public sbyte ReadSByte()
-        {
-            return (sbyte)ReadByte();
-        }
 
-        public bool ReadBoolean()
-        {
-            return (ReadByte() != 0);
-        }
-        public ushort ReadUInt16()
-        {
-            return (ushort)ReadInt16();
-        }
 
-        public uint ReadUInt24()
+        public override uint ReadUInt24()
         {
             uint value;
             if (m_current + 4 <= m_lastRead)
@@ -870,12 +832,7 @@ namespace openHistorian.V2.IO.Unmanaged
             return value | ((uint)ReadByte() << 16);
         }
 
-        public uint ReadUInt32()
-        {
-            return (uint)ReadInt32();
-        }
-
-        public ulong ReadUInt40()
+        public override ulong ReadUInt40()
         {
             ulong value;
             if (m_current + 8 <= m_lastRead)
@@ -888,7 +845,7 @@ namespace openHistorian.V2.IO.Unmanaged
             return value | ((ulong)ReadByte() << 32);
         }
 
-        public ulong ReadUInt48()
+        public override ulong ReadUInt48()
         {
             ulong value;
             if (m_current + 8 <= m_lastRead)
@@ -901,7 +858,7 @@ namespace openHistorian.V2.IO.Unmanaged
             return value | ((ulong)ReadUInt16() << 32);
         }
 
-        public ulong ReadUInt56()
+        public override ulong ReadUInt56()
         {
             ulong value;
             if (m_current + 8 <= m_lastRead)
@@ -914,12 +871,7 @@ namespace openHistorian.V2.IO.Unmanaged
             return value | ((ulong)ReadUInt24() << 32);
         }
 
-        public ulong ReadUInt64()
-        {
-            return (ulong)ReadInt64();
-        }
-
-        public ulong ReadUInt(int bytes)
+        public override ulong ReadUInt(int bytes)
         {
             switch (bytes)
             {
@@ -948,7 +900,7 @@ namespace openHistorian.V2.IO.Unmanaged
         #endregion
 
         #region Core Types
-        public byte ReadByte()
+        public override byte ReadByte()
         {
             const int size = sizeof(byte);
             if (m_current < m_lastRead)
@@ -974,7 +926,7 @@ namespace openHistorian.V2.IO.Unmanaged
             return m_temp[0];
         }
 
-        public short ReadInt16()
+        public override short ReadInt16()
         {
             const int size = sizeof(short);
             if (m_current + size <= m_lastRead)
@@ -999,7 +951,7 @@ namespace openHistorian.V2.IO.Unmanaged
             Read(m_temp, 0, size);
             return (short)(m_temp[0] | (m_temp[1] << 8));
         }
-        public int ReadInt32()
+        public override int ReadInt32()
         {
             const int size = sizeof(int);
             if (m_current + size <= m_lastRead)
@@ -1027,7 +979,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 return *(int*)(lp);
             }
         }
-        public float ReadSingle()
+        public override float ReadSingle()
         {
             const int size = sizeof(float);
             if (m_current + size <= m_lastRead)
@@ -1055,7 +1007,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 return *(float*)(lp);
             }
         }
-        public long ReadInt64()
+        public override long ReadInt64()
         {
             const int size = sizeof(long);
             if (m_current + size <= m_lastRead)
@@ -1083,7 +1035,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 return *(long*)(lp);
             }
         }
-        public double ReadDouble()
+        public override double ReadDouble()
         {
             const int size = sizeof(double);
             if (m_current + size <= m_lastRead)
@@ -1111,7 +1063,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 return *(double*)(lp);
             }
         }
-        public DateTime ReadDateTime()
+        public override DateTime ReadDateTime()
         {
             const int size = 8;
             if (m_current + size <= m_lastRead)
@@ -1139,7 +1091,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 return *(DateTime*)(lp);
             }
         }
-        public decimal ReadDecimal()
+        public override decimal ReadDecimal()
         {
             const int size = sizeof(decimal);
             if (m_current + size <= m_lastRead)
@@ -1167,7 +1119,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 return *(decimal*)(lp);
             }
         }
-        public Guid ReadGuid()
+        public override Guid ReadGuid()
         {
             const int size = 16;
             if (m_current + size <= m_lastRead)
@@ -1196,7 +1148,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
-        public uint Read7BitUInt32()
+        public override uint Read7BitUInt32()
         {
             const int size = 5;
             byte* stream = m_current;
@@ -1260,7 +1212,7 @@ namespace openHistorian.V2.IO.Unmanaged
             return value11;
         }
 
-        public ulong Read7BitUInt64()
+        public override ulong Read7BitUInt64()
         {
             const int size = 9;
             byte* stream = m_current;
@@ -1367,7 +1319,7 @@ namespace openHistorian.V2.IO.Unmanaged
             return value11 ^ 0x102040810204080L;
         }
 
-        public int Read(byte[] value, int offset, int count)
+        public override int Read(byte[] value, int offset, int count)
         {
             if (RemainingReadLength >= count)
             {
@@ -1402,7 +1354,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// <summary>
         /// Releases all the resources used by the <see cref="BinaryStream"/> object.
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
             if (!m_disposed)
             {

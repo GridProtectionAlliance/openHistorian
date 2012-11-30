@@ -22,6 +22,8 @@
 //
 //******************************************************************************************************
 
+using System;
+
 namespace openHistorian.V2
 {
     /// <summary>
@@ -132,7 +134,36 @@ namespace openHistorian.V2
             position += 5;
             return;
         }
-       
+
+        public static void Write7Bit(Action<byte> stream, uint value1)
+        {
+            if (value1 < 128)
+            {
+                stream((byte)value1);
+                return;
+            }
+            stream((byte)(value1 | 128));
+            if (value1 < 128 * 128)
+            {
+                stream((byte)(value1 >> 7));
+                return;
+            }
+            stream((byte)((value1 >> 7) | 128));
+            if (value1 < 128 * 128 * 128)
+            {
+                stream((byte)(value1 >> 14));
+                return;
+            }
+            stream((byte)((value1 >> 14) | 128));
+            if (value1 < 128 * 128 * 128 * 128)
+            {
+                stream((byte)(value1 >> 21));
+                return;
+            }
+            stream((byte)((value1 >> 21) | 128));
+            stream((byte)(value1 >> 28));
+        }
+
         public static void Read7BitUInt32(byte[] stream, ref int position, out uint value1)
         {
             int pos = position;
@@ -170,6 +201,81 @@ namespace openHistorian.V2
             value1 = value11;
             return;
         }
+
+        public static uint Read7BitUInt32(Func<byte> stream)
+        {
+            uint value11;
+            value11 = stream();
+            if (value11 < 128)
+            {
+                return value11;
+            }
+            value11 ^= ((uint)stream() << 7);
+            if (value11 < 128 * 128)
+            {
+                return value11 ^ 0x80;
+            }
+            value11 ^= ((uint)stream() << 14);
+            if (value11 < 128 * 128 * 128)
+            {
+                return value11 ^ 0x4080;
+            }
+            value11 ^= ((uint)stream() << 21);
+            if (value11 < 128 * 128 * 128 * 128)
+            {
+                return value11 ^ 0x204080;
+            }
+            value11 ^= ((uint)stream() << 28) ^ 0x10204080;
+            return value11;
+        }
+
+        public static ulong Read7BitUInt64(Func<byte> stream)
+        {
+            ulong value11;
+            value11 = stream();
+            if (value11 < 128)
+            {
+                return value11;
+            }
+            value11 ^= ((ulong)stream() << (7));
+            if (value11 < 128 * 128)
+            {
+                return value11 ^ 0x80;
+            }
+            value11 ^= ((ulong)stream() << (7 + 7));
+            if (value11 < 128 * 128 * 128)
+            {
+                return value11 ^ 0x4080;
+            }
+            value11 ^= ((ulong)stream() << (7 + 7 + 7));
+            if (value11 < 128 * 128 * 128 * 128)
+            {
+                return value11 ^ 0x204080;
+            }
+            value11 ^= ((ulong)stream() << (7 + 7 + 7 + 7));
+            if (value11 < 128L * 128 * 128 * 128 * 128)
+            {
+                return value11 ^ 0x10204080L;
+            }
+            value11 ^= ((ulong)stream() << (7 + 7 + 7 + 7 + 7));
+            if (value11 < 128L * 128 * 128 * 128 * 128 * 128)
+            {
+                return value11 ^ 0x810204080L;
+            }
+            value11 ^= ((ulong)stream() << (7 + 7 + 7 + 7 + 7 + 7));
+            if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128)
+            {
+                return value11 ^ 0x40810204080L;
+            }
+            value11 ^= ((ulong)stream() << (7 + 7 + 7 + 7 + 7 + 7 + 7));
+            if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128 * 128)
+            {
+                return value11 ^ 0x2040810204080L;
+            }
+            value11 ^= ((ulong)stream() << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
+            return value11 ^ 0x102040810204080L;
+        }
+
 
         public static void Read7BitUInt64(byte[] stream, ref int position, out ulong value1)
         {
@@ -299,7 +405,7 @@ namespace openHistorian.V2
             position += 9;
             return;
         }
-      
+
         public static void Write7Bit(byte[] stream, ref int position, ulong value1)
         {
             if (value1 < 128)
@@ -360,6 +466,59 @@ namespace openHistorian.V2
             stream[position + 7] = (byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7) | 128);
             stream[position + 8] = (byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
             position += 9;
+            return;
+        }
+        public static void Write7Bit(Action<byte> stream, ulong value1)
+        {
+            if (value1 < 128)
+            {
+                stream((byte)value1);
+                return;
+            }
+            stream((byte)(value1 | 128));
+            if (value1 < 128 * 128)
+            {
+                stream((byte)(value1 >> 7));
+                return;
+            }
+            stream((byte)((value1 >> 7) | 128));
+            if (value1 < 128 * 128 * 128)
+            {
+                stream((byte)(value1 >> (7 + 7)));
+                return;
+            }
+            stream((byte)((value1 >> (7 + 7)) | 128));
+            if (value1 < 128 * 128 * 128 * 128)
+            {
+                stream((byte)(value1 >> (7 + 7 + 7)));
+                return;
+            }
+            stream((byte)((value1 >> (7 + 7 + 7)) | 128));
+            if (value1 < 128L * 128 * 128 * 128 * 128)
+            {
+                stream((byte)(value1 >> (7 + 7 + 7 + 7)));
+                return;
+            }
+            stream((byte)((value1 >> (7 + 7 + 7 + 7)) | 128));
+            if (value1 < 128L * 128 * 128 * 128 * 128 * 128)
+            {
+                stream((byte)(value1 >> (7 + 7 + 7 + 7 + 7)));
+                return;
+            }
+            stream((byte)((value1 >> (7 + 7 + 7 + 7 + 7)) | 128));
+            if (value1 < 128L * 128 * 128 * 128 * 128 * 128 * 128)
+            {
+                stream((byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7)));
+                return;
+            }
+            stream((byte)((value1 >> (7 + 7 + 7 + 7 + 7 + 7)) | 128));
+            if (value1 < 128L * 128 * 128 * 128 * 128 * 128 * 128 * 128)
+            {
+                stream((byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7)));
+                return;
+            }
+            stream((byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7) | 128));
+            stream((byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7)));
             return;
         }
         //public unsafe static void Write(byte[] stream1, ref int position, uint value1, uint value2, uint value3, uint value4)

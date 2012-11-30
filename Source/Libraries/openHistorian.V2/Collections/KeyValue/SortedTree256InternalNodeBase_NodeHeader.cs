@@ -40,7 +40,7 @@ namespace openHistorian.V2.Collections.KeyValue
             public long LeftSiblingNodeIndex;
             public long RightSiblingNodeIndex;
 
-            public NodeHeader(IBinaryStream stream, int blockSize, long nodeIndex, byte expectedNodeLevel)
+            public NodeHeader(BinaryStreamBase stream, int blockSize, long nodeIndex, byte expectedNodeLevel)
             {
                 stream.Position = blockSize * nodeIndex;
                 NodeLevel = stream.ReadByte();
@@ -51,7 +51,7 @@ namespace openHistorian.V2.Collections.KeyValue
                 if (NodeLevel != expectedNodeLevel)
                     throw new Exception("The current node is not an internal node.");
             }
-            public void Save(IBinaryStream stream, int blockSize, long nodeIndex)
+            public void Save(BinaryStreamBase stream, int blockSize, long nodeIndex)
             {
                 stream.Position = blockSize * nodeIndex;
                 stream.Write(NodeLevel);
@@ -60,7 +60,7 @@ namespace openHistorian.V2.Collections.KeyValue
                 stream.Write(RightSiblingNodeIndex);
             }
 
-            public static void Save(IBinaryStream stream, byte nodeLevel, int nodeRecordCount, long leftSiblingNodeIndex, long rightSiblingNodeIndex)
+            public static void Save(BinaryStreamBase stream, byte nodeLevel, int nodeRecordCount, long leftSiblingNodeIndex, long rightSiblingNodeIndex)
             {
                 stream.Write(nodeLevel);
                 stream.Write(nodeRecordCount);

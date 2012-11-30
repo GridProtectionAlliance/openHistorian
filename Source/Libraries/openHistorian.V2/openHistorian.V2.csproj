@@ -168,7 +168,7 @@
     <Compile Include="Server\Database\ArchiveWriters\ConcurrentWriterAutoCommit_ActiveFile.cs" />
     <Compile Include="Server\Database\IArchiveWriter.cs" />
     <Compile Include="Server\Database\ArchiveWriters\ConcurrentPointQueue.cs" />
-    <Compile Include="IO\IBinaryStream.cs" />
+    <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="FileStructure\DiskIo.cs" />
     <Compile Include="OldCode\IO\IStreamingTransport.cs" />
     <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />

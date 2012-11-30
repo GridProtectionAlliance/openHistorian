@@ -169,7 +169,7 @@ namespace openHistorian.V2.FileStructure
             return m_ioStream;
         }
 
-        public IBinaryStream CreateBinaryStream()
+        public BinaryStreamBase CreateBinaryStream()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);

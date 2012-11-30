@@ -38,13 +38,13 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Constructors ]
 
-        protected SortedTree256InternalNodeBase(IBinaryStream stream)
+        protected SortedTree256InternalNodeBase(BinaryStreamBase stream)
             : base(stream)
         {
             Initialize();
         }
 
-        protected SortedTree256InternalNodeBase(IBinaryStream stream, int blockSize)
+        protected SortedTree256InternalNodeBase(BinaryStreamBase stream, int blockSize)
             : base(stream, blockSize)
         {
             Initialize();

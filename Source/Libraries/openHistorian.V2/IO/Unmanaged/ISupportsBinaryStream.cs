@@ -56,7 +56,7 @@ namespace openHistorian.V2.IO.Unmanaged
         /// Creates a new binary from an IO session
         /// </summary>
         /// <returns></returns>
-        IBinaryStream CreateBinaryStream();
+        BinaryStreamBase CreateBinaryStream();
 
     }
 }

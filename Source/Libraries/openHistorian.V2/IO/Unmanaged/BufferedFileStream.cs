@@ -216,7 +216,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
-        public IBinaryStream CreateBinaryStream()
+        public BinaryStreamBase CreateBinaryStream()
         {
             return new BinaryStream(this);
         }

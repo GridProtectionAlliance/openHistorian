@@ -15,6 +15,8 @@ namespace openHistorian.V2.Test
         [STAThread]
         private static void Main()
         {
+            openHistorian.V2.Unmanaged.BinaryStreamBenchmark.Run();
+            return;
             GetEncodingValues();
             return;
             ArchiveTest.Test();

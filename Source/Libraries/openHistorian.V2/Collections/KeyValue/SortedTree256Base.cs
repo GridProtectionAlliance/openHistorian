@@ -69,7 +69,7 @@ namespace openHistorian.V2.Collections.KeyValue
         ulong m_firstKey;
         ulong m_lastKey;
 
-        IBinaryStream m_stream;
+        BinaryStreamBase m_stream;
 
         #endregion
 
@@ -79,7 +79,7 @@ namespace openHistorian.V2.Collections.KeyValue
         /// Opens an existing <see cref="SortedTree256Base"/> from the stream.
         /// </summary>
         /// <param name="stream">A dedicated stream where data can be read/written to/from.</param>
-        protected SortedTree256Base(IBinaryStream stream)
+        protected SortedTree256Base(BinaryStreamBase stream)
         {
             m_cache = new BucketInfo[5];
             ClearCache();
@@ -95,7 +95,7 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <param name="blockSize">the size of one block.  This should exactly match the
         /// amount of data space available in the underlying data object. BPlus trees get their 
         /// performance benefit because there is fewer I/O's required to find and insert blocks.</param>
-        protected SortedTree256Base(IBinaryStream stream, int blockSize)
+        protected SortedTree256Base(BinaryStreamBase stream, int blockSize)
         {
             m_cache = new BucketInfo[5];
             ClearCache();
@@ -144,7 +144,7 @@ namespace openHistorian.V2.Collections.KeyValue
         /// <summary>
         /// Contains the stream for reading and writing and optional cloning.
         /// </summary>
-        protected IBinaryStream Stream
+        protected BinaryStreamBase Stream
         {
             get
             {

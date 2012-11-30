@@ -6,36 +6,22 @@ using System.Text;
 
 namespace openHistorian.V2.IO
 {
-    public class BinaryStreamWrapper : IBinaryStream
+    public class BinaryStreamWrapper : BinaryStreamBase
     {
         Stream m_stream;
-        BinaryReader m_br;
-        BinaryWriter m_bw;
         public BinaryStreamWrapper(Stream stream)
         {
             m_stream = stream;
-            m_br = new BinaryReader(stream);
-            m_bw = new BinaryWriter(stream);
-            SupportsAnotherClone = false;
-
         }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        public override void Dispose()
         {
 
         }
-
-        /// <summary>
-        /// Determines if the binary stream can be cloned.  
-        /// Since a base stream may only be able to support a definate 
-        /// number of concurrent IO Sessions, this should be analized
-        /// before cloning the stream.
-        /// </summary>
-        public bool SupportsAnotherClone { get; private set; }
 
         /// <summary>
         /// Gets/Sets the current position for the stream.
@@ -43,7 +29,7 @@ namespace openHistorian.V2.IO
         /// this class buffers the results of the query.  Setting this field does not gaurentee that
         /// the underlying stream will get set. Call FlushToUnderlyingStream to acomplish this.</remarks>
         /// </summary>
-        public long Position
+        public override long Position
         {
             get
             {
@@ -55,321 +41,31 @@ namespace openHistorian.V2.IO
             }
         }
 
-        /// <summary>
-        /// Clones a binary stream if it is supported.  Check <see cref="IBinaryStream.SupportsAnotherClone"/> before calling this method.
-        /// </summary>
-        /// <returns></returns>
-        public IBinaryStream CloneStream()
+        public override void Write(byte value)
         {
-            throw new NotImplementedException();
+            m_stream.WriteByte(value);
         }
 
-        /// <summary>
-        /// Updates the local buffer data.
-        /// </summary>
-        /// <param name="isWriting">hints to the stream if write access is desired.</param>
-        public void UpdateLocalBuffer(bool isWriting)
+        public override void Write(byte[] value, int offset, int count)
         {
-            //throw new NotImplementedException();
+            m_stream.Write(value, offset, count);
         }
 
-        /// <summary>
-        /// Copies a specified number of bytes to a new location
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="destination"></param>
-        /// <param name="length"></param>
-        public void Copy(long source, long destination, int length)
+        public override byte ReadByte()
         {
-            byte[] data = new byte[length];
-            long oldPos = Position;
-            Position = source;
-            Read(data, 0, length);
-            Position = destination;
-            Write(data, 0, length);
-            Position = oldPos;
+            int value = m_stream.ReadByte();
+            if (value < 0)
+                throw new EndOfStreamException();
+            return (byte)value;
         }
 
-        /// <summary>
-        /// Inserts a certain number of bytes into the stream, shifting valid data to the right.  The stream's position remains unchanged. 
-        /// (ie. pointing to the beginning of the newly inserted bytes).
-        /// </summary>
-        /// <param name="numberOfBytes">The number of bytes to insert</param>
-        /// <param name="lengthOfValidDataToShift">The number of bytes that will need to be shifted to perform this insert</param>
-        /// <remarks>Internally this fuction merely acomplishes an Array.Copy(stream,position,stream,position+numberOfBytes,lengthOfValidDataToShift)
-        /// However, it's much more complicated than this. So this is a pretty useful function.
-        /// The newly created space is uninitialized. 
-        /// </remarks>
-        public void InsertBytes(int numberOfBytes, int lengthOfValidDataToShift)
+        public override int Read(byte[] value, int offset, int count)
         {
-            byte[] data = new byte[lengthOfValidDataToShift];
-            long oldPos = Position;
-            Read(data, 0, lengthOfValidDataToShift);
-            Position = oldPos + numberOfBytes;
-            Write(data, 0, lengthOfValidDataToShift);
-            Position = oldPos;
+            int len = m_stream.Read(value, offset, count);
+            if (len != count)
+                throw new EndOfStreamException();
+            return len;
         }
 
-        /// <summary>
-        /// Removes a certain number of bytes from the stream, shifting valid data after this location to the left.  The stream's position remains unchanged. 
-        /// (ie. pointing to where the data used to exist).
-        /// </summary>
-        /// <param name="numberOfBytes">The distance to shift.  Positive means shifting to the right (ie. inserting data)
-        /// Negative means shift to the left (ie. deleteing data)</param>
-        /// <param name="lengthOfValidDataToShift">The number of bytes that will need to be shifted to perform the remove. 
-        /// This only includes the data that is valid after the shift is complete, and not the data that will be removed.</param>
-        /// <remarks>Internally this fuction merely acomplishes an Array.Copy(stream,position+numberOfBytes,stream,position,lengthOfValidDataToShift)
-        /// However, it's much more complicated than this. So this is a pretty useful function.
-        /// The space at the end of the copy is uninitialized. 
-        /// </remarks>
-        public void RemoveBytes(int numberOfBytes, int lengthOfValidDataToShift)
-        {
-            byte[] data = new byte[lengthOfValidDataToShift];
-            long oldPos = Position;
-            Position = oldPos + numberOfBytes;
-            Read(data, 0, lengthOfValidDataToShift);
-            Position = oldPos;
-            Write(data, 0, lengthOfValidDataToShift);
-            Position = oldPos;
-        }
-
-        public void Write(sbyte value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(bool value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(ushort value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(uint value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(ulong value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(byte value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(short value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(int value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(float value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(long value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(double value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(DateTime value)
-        {
-            m_bw.Write(value.Ticks);
-        }
-
-        public void Write(decimal value)
-        {
-            m_bw.Write(value);
-        }
-
-        public void Write(Guid value)
-        {
-            m_bw.Write(value.ToByteArray());
-        }
-
-        public void Write7Bit(uint value)
-        {
-            byte[] data = new byte[Compression.Get7BitSize(value)];
-            int x = 0;
-            Compression.Write7Bit(data, ref x, value);
-            Write(data,0,data.Length);
-        }
-
-        public void Write7Bit(ulong value)
-        {
-            byte[] data = new byte[Compression.Get7BitSize(value)];
-            int x = 0;
-            Compression.Write7Bit(data, ref x, value);
-            Write(data, 0, data.Length);
-        }
-
-        public void Write(byte[] value, int offset, int count)
-        {
-            m_bw.Write(value, offset, count);
-        }
-
-        public sbyte ReadSByte()
-        {
-            return m_br.ReadSByte();
-        }
-
-        public bool ReadBoolean()
-        {
-            return m_br.ReadBoolean();
-        }
-
-        public ushort ReadUInt16()
-        {
-            return m_br.ReadUInt16();
-        }
-
-        public uint ReadUInt24()
-        {
-            uint value = ReadUInt16();
-            return value | ((uint)ReadByte() << 16);
-        }
-
-        public uint ReadUInt32()
-        {
-            return m_br.ReadUInt32();
-        }
-
-        public ulong ReadUInt40()
-        {
-            ulong value = ReadUInt32();
-            return value | ((ulong)ReadByte() << 32);
-        }
-
-        public ulong ReadUInt48()
-        {
-            ulong value = ReadUInt32();
-            return value | ((ulong)ReadUInt16() << 32);
-        }
-
-        public ulong ReadUInt56()
-        {
-            ulong value = ReadUInt32();
-            return value | ((ulong)ReadUInt24() << 32);
-        }
-
-        public ulong ReadUInt64()
-        {
-            return m_br.ReadUInt64();
-        }
-
-        public ulong ReadUInt(int bytes)
-        {
-            switch (bytes)
-            {
-                case 0:
-                    return 0;
-                case 1:
-                    return ReadByte();
-                case 2:
-                    return ReadUInt16();
-                case 3:
-                    return ReadUInt24();
-                case 4:
-                    return ReadUInt32();
-                case 5:
-                    return ReadUInt40();
-                case 6:
-                    return ReadUInt48();
-                case 7:
-                    return ReadUInt56();
-                case 8:
-                    return ReadUInt64();
-            }
-            throw new ArgumentOutOfRangeException("bytes", "must be between 0 and 8 inclusive.");
-        }
-
-        public byte ReadByte()
-        {
-            return m_br.ReadByte();
-        }
-
-        public short ReadInt16()
-        {
-            return m_br.ReadInt16();
-        }
-
-        public int ReadInt32()
-        {
-            return m_br.ReadInt32();
-        }
-
-        public float ReadSingle()
-        {
-            return m_br.ReadSingle();
-        }
-
-        public long ReadInt64()
-        {
-            return m_br.ReadInt64();
-        }
-
-        public double ReadDouble()
-        {
-            return m_br.ReadDouble();
-        }
-
-        public DateTime ReadDateTime()
-        {
-            return new DateTime(m_br.ReadInt64());
-        }
-
-        public decimal ReadDecimal()
-        {
-            return m_br.ReadDecimal();
-        }
-
-        public Guid ReadGuid()
-        {
-            return new Guid(m_br.ReadBytes(16));
-        }
-
-        public uint Read7BitUInt32()
-        {
-            byte[] data = new byte[5];
-            Read(data, 0, 5);
-            int x = 0;
-            uint value = 0;
-            Compression.Read7BitUInt32(data, ref x, out value);
-            Position -= (5 - x);
-            return value;
-        }
-
-        public ulong Read7BitUInt64()
-        {
-            byte[] data = new byte[10];
-            Read(data, 0, 10);
-            int x = 0;
-            ulong value = 0;
-            Compression.Read7BitUInt64(data, ref x, out value);
-            Position -= (10 - x);
-            return value;
-        }
-
-        public int Read(byte[] value, int offset, int count)
-        {
-            return m_br.Read(value, offset, count);
-        }
-        
     }
 }

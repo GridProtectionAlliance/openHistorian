@@ -42,7 +42,7 @@ namespace openHistorian.V2.Collections.KeyValue
             public long LeftSiblingNodeIndex;
             public long RightSiblingNodeIndex;
 
-            public NodeHeader(IBinaryStream stream, int blockSize, long nodeIndex)
+            public NodeHeader(BinaryStreamBase stream, int blockSize, long nodeIndex)
             {
                 stream.Position = blockSize * nodeIndex;
                 if (stream.ReadByte() != 0)
@@ -51,7 +51,7 @@ namespace openHistorian.V2.Collections.KeyValue
                 LeftSiblingNodeIndex = stream.ReadInt64();
                 RightSiblingNodeIndex = stream.ReadInt64();
             }
-            public void Save(IBinaryStream stream, int blockSize, long nodeIndex)
+            public void Save(BinaryStreamBase stream, int blockSize, long nodeIndex)
             {
                 stream.Position = blockSize * nodeIndex;
                 stream.Write((byte)0);
@@ -60,7 +60,7 @@ namespace openHistorian.V2.Collections.KeyValue
                 stream.Write(RightSiblingNodeIndex);
             }
 
-            public static void Save(IBinaryStream stream, int validBytes, long leftSiblingNodeIndex, long rightSiblingNodeIndex)
+            public static void Save(BinaryStreamBase stream, int validBytes, long leftSiblingNodeIndex, long rightSiblingNodeIndex)
             {
                 stream.Write((byte)0);
                 stream.Write(validBytes);

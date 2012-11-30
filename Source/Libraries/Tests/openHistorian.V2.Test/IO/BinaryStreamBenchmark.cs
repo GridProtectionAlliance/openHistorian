@@ -30,7 +30,22 @@ namespace openHistorian.V2.Unmanaged
             sb.AppendLine(RunULong(count, bs));
             sb.AppendLine(RunLong(count, bs));
             sb.AppendLine(RunDouble(count, bs));
-
+            sb.AppendLine(Run7Bit32(count, bs, 10));
+            sb.AppendLine(Run7Bit32(count, bs, 128 + 10));
+            sb.AppendLine(Run7Bit32(count, bs, 128 * 128 + 10));
+            sb.AppendLine(Run7Bit32(count, bs, 128 * 128 * 128 + 10));
+            sb.AppendLine(Run7Bit32(count, bs, 128 * 128 * 128 * 128 + 10));
+            sb.AppendLine(Run7Bit64(count, bs, 10));
+            sb.AppendLine(Run7Bit64(count, bs, 128 + 10));
+            sb.AppendLine(Run7Bit64(count, bs, 128 * 128 + 10));
+            sb.AppendLine(Run7Bit64(count, bs, 128 * 128 * 128 + 10));
+            sb.AppendLine(Run7Bit64(count, bs, 128L * 128L * 128L * 128L + 10));
+            sb.AppendLine(Run7Bit64(count, bs, 128L * 128L * 128L * 128L * 128L + 10));
+            sb.AppendLine(Run7Bit64(count, bs, 128L * 128L * 128L * 128L * 128L * 128L + 10));
+            sb.AppendLine(Run7Bit64(count, bs, 128L * 128L * 128L * 128L * 128L * 128L * 128L + 10));
+            sb.AppendLine(Run7Bit64(count, bs, 128L * 128L * 128L * 128L * 128L * 128L * 128L * 128L + 10));
+            sb.AppendLine(Run7Bit64(count, bs, ulong.MaxValue));
+            
             Clipboard.SetText(sb.ToString());
             MessageBox.Show(sb.ToString());
 
@@ -336,6 +351,138 @@ namespace openHistorian.V2.Unmanaged
             }
             sw2.Stop();
             return "Double\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
+                (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+        }
+
+        public static string Run7Bit64(int thousands, BinaryStream bs, ulong b)
+        {
+            Stopwatch sw1 = new Stopwatch();
+            Stopwatch sw2 = new Stopwatch();
+
+            for (int x2 = 0; x2 < thousands; x2++)
+            {
+                bs.Position = 0;
+                for (int x = 0; x < 100; x++)
+                {
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                }
+            }
+
+            sw1.Start();
+            for (int x2 = 0; x2 < thousands; x2++)
+            {
+                bs.Position = 0;
+                for (int x = 0; x < 100; x++)
+                {
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                }
+            }
+            sw1.Stop();
+
+            sw2.Start();
+            for (int x2 = 0; x2 < thousands; x2++)
+            {
+                bs.Position = 0;
+                for (int x = 0; x < 100; x++)
+                {
+                    bs.Read7BitUInt64();
+                    bs.Read7BitUInt64();
+                    bs.Read7BitUInt64();
+                    bs.Read7BitUInt64();
+                    bs.Read7BitUInt64();
+                    bs.Read7BitUInt64();
+                    bs.Read7BitUInt64();
+                    bs.Read7BitUInt64();
+                    bs.Read7BitUInt64();
+                    bs.Read7BitUInt64();
+                }
+            }
+            sw2.Stop();
+            return "7Bit64 " + Compression.Get7BitSize(b) + "\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
+                (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
+        }
+
+        public static string Run7Bit32(int thousands, BinaryStream bs, uint b)
+        {
+            Stopwatch sw1 = new Stopwatch();
+            Stopwatch sw2 = new Stopwatch();
+
+            for (int x2 = 0; x2 < thousands; x2++)
+            {
+                bs.Position = 0;
+                for (int x = 0; x < 100; x++)
+                {
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                }
+            }
+
+            sw1.Start();
+            for (int x2 = 0; x2 < thousands; x2++)
+            {
+                bs.Position = 0;
+                for (int x = 0; x < 100; x++)
+                {
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                    bs.Write7Bit(b);
+                }
+            }
+            sw1.Stop();
+
+            sw2.Start();
+            for (int x2 = 0; x2 < thousands; x2++)
+            {
+                bs.Position = 0;
+                for (int x = 0; x < 100; x++)
+                {
+                    bs.Read7BitUInt32();
+                    bs.Read7BitUInt32();
+                    bs.Read7BitUInt32();
+                    bs.Read7BitUInt32();
+                    bs.Read7BitUInt32();
+                    bs.Read7BitUInt32();
+                    bs.Read7BitUInt32();
+                    bs.Read7BitUInt32();
+                    bs.Read7BitUInt32();
+                    bs.Read7BitUInt32();
+                }
+            }
+            sw2.Stop();
+            return "7Bit32 " + Compression.Get7BitSize(b) + "\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
                 (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
