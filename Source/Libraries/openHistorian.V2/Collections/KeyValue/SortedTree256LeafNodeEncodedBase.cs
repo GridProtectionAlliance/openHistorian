@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTree256LeafNodeCodedBase.cs - Gbtc
+//  SortedTree256LeafNodeEncodedBase.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,25 +26,24 @@ using openHistorian.V2.IO;
 
 namespace openHistorian.V2.Collections.KeyValue
 {
-    public abstract partial class SortedTree256LeafNodeCodedBase : SortedTree256InternalNodeBase
+    public abstract partial class SortedTree256LeafNodeEncodedBase : SortedTree256InternalNodeBase
     {
         long m_cachedNodeIndex;
         ulong m_lastKey1;
         ulong m_lastKey2;
         ulong m_lastValue1;
         ulong m_lastValue2;
-        ulong m_lastPrevValue2;
 
         #region [ Constructors ]
 
-        protected SortedTree256LeafNodeCodedBase(BinaryStreamBase stream)
+        protected SortedTree256LeafNodeEncodedBase(BinaryStreamBase stream)
             : base(stream)
         {
             m_cachedNodeIndex = -1;
         }
 
 
-        protected SortedTree256LeafNodeCodedBase(BinaryStreamBase stream, int blockSize)
+        protected SortedTree256LeafNodeEncodedBase(BinaryStreamBase stream, int blockSize)
             : base(stream, blockSize)
         {
             m_cachedNodeIndex = -1;
@@ -53,6 +52,14 @@ namespace openHistorian.V2.Collections.KeyValue
         #endregion
 
         #region [ Methods ]
+
+        #region [ Abstract Methods ]
+
+        protected abstract unsafe int EncodeRecord(byte* buffer, ulong key1, ulong key2, ulong value1, ulong value2, ulong prevKey1, ulong prevKey2, ulong prevValue1, ulong prevValue2);
+
+        protected abstract void DecodeNextRecord(ref ulong curKey1, ref ulong curKey2, ref ulong curValue1, ref ulong curValue2);
+
+        #endregion
 
         #region [ Override Methods ]
 
@@ -85,11 +92,10 @@ namespace openHistorian.V2.Collections.KeyValue
             ulong prevKey2 = 0;
             ulong prevValue1 = 0;
             ulong prevValue2 = 0;
-            ulong oldPrevValue2 = 0;
 
             bool insertAfter = true; //The default case. This will be reassigned if needing to be inserted before.
             bool skipScan = false; //If using the cached values reveals that the current key is after the end of the stream. the sequential scan can be skipped.
-            m_cachedNodeIndex = -1;
+            //m_cachedNodeIndex = -1;
             if (m_cachedNodeIndex == nodeIndex)
             {
                 int compareKeysResults = (CompareKeys(key1, key2, m_lastKey1, m_lastKey2));
@@ -104,7 +110,6 @@ namespace openHistorian.V2.Collections.KeyValue
                     curKey2 = m_lastKey2;
                     curValue1 = m_lastValue1;
                     curValue2 = m_lastValue2;
-                    prevValue2 = m_lastPrevValue2;
                     prevPosition = endOfStreamPosition;
                     curPosition = prevPosition;
                 }
@@ -117,10 +122,9 @@ namespace openHistorian.V2.Collections.KeyValue
                     prevKey1 = curKey1;
                     prevKey2 = curKey2;
                     prevValue1 = curValue1;
-                    oldPrevValue2 = prevValue2;
                     prevValue2 = curValue2;
 
-                    DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2, ref prevValue2);
+                    DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
                     curPosition = Stream.Position;
 
                     int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
@@ -140,7 +144,7 @@ namespace openHistorian.V2.Collections.KeyValue
             if (insertAfter)
             {
                 //Insert afters only occur at the end of the stream
-                int shiftDelta = EncodeRecord(buffer, key1, key2, value1, value2, curKey1, curKey2, curValue1, curValue2, prevValue2);
+                int shiftDelta = EncodeRecord(buffer, key1, key2, value1, value2, curKey1, curKey2, curValue1, curValue2);
                 if (bytesRemaining < shiftDelta)
                 {
                     if (header.RightSiblingNodeIndex == 0)
@@ -160,7 +164,6 @@ namespace openHistorian.V2.Collections.KeyValue
                 m_lastKey2 = key2;
                 m_lastValue1 = value1;
                 m_lastValue2 = value2;
-                m_lastPrevValue2 = curValue2;
 
                 Stream.Position = prevPosition;
                 WriteToStream(buffer, shiftDelta);
@@ -176,9 +179,9 @@ namespace openHistorian.V2.Collections.KeyValue
                 {
                     //if the insert is at the beginning of the stream
 
-                    int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, 0, 0, 0, 0, 0);
+                    int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, 0, 0, 0, 0);
 
-                    int shiftDelta2 = EncodeRecord(buffer2, curKey1, curKey2, curValue1, curValue2, key1, key2, value1, value2, 0);
+                    int shiftDelta2 = EncodeRecord(buffer2, curKey1, curKey2, curValue1, curValue2, key1, key2, value1, value2);
 
                     int shiftDelta = shiftDelta1 + shiftDelta2;
                     shiftDelta -= (int)(curPosition - prevPosition);
@@ -207,9 +210,9 @@ namespace openHistorian.V2.Collections.KeyValue
                     //if the insert is in the middle of the the stream
                     Stream.Position = curPosition;
 
-                    int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, prevKey1, prevKey2, prevValue1, prevValue2, oldPrevValue2);
+                    int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, prevKey1, prevKey2, prevValue1, prevValue2);
 
-                    int shiftDelta2 = EncodeRecord(buffer2, curKey1, curKey2, curValue1, curValue2, key1, key2, value1, value2, prevValue2);
+                    int shiftDelta2 = EncodeRecord(buffer2, curKey1, curKey2, curValue1, curValue2, key1, key2, value1, value2);
 
                     int shiftDelta = shiftDelta1 + shiftDelta2;
 
@@ -257,11 +260,10 @@ namespace openHistorian.V2.Collections.KeyValue
             ulong curKey2 = 0;
             ulong curValue1 = 0;
             ulong curValue2 = 0;
-            ulong prevValue2 = 0;
 
             while (Stream.Position < lastPosition)
             {
-                DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2, ref prevValue2);
+                DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
 
                 int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
                 if (compareKeysResults == 0) //if keys match, result is found.
@@ -282,176 +284,7 @@ namespace openHistorian.V2.Collections.KeyValue
             return false;
         }
 
-        unsafe int EncodeRecord(byte* buffer, ulong key1, ulong key2, ulong value1, ulong value2, ulong prevKey1, ulong prevKey2, ulong prevValue1, ulong prevValue2, ulong oldPrevValue2)
-        {
-            byte code = 0;
-            int size = 1; //1 is the code prefix.
 
-            //Code key1, and key2
-            if (prevKey1 != key1)
-            {
-                code |= 3 << 6;
-                Compression.Write7Bit(buffer, ref size, key1 - prevKey1);
-                Compression.Write7Bit(buffer, ref size, key2);
-            }
-            else if (key2 == prevKey2 + 1)
-            {
-                code |= 0 << 6;
-            }
-            else if (key2 == prevKey2 + 2)
-            {
-                code |= 1 << 6;
-            }
-            else
-            {
-                code |= 2 << 6;
-                Compression.Write7Bit(buffer, ref size, key2 - prevKey2);
-            }
-
-            //Code the quality (value1)
-            if (value1 == 0)
-            {
-                code |= 0 << 4;
-            }
-            else if (value1 == prevValue1)
-            {
-                code |= 1 << 4;
-            }
-            else if (value1 < (value1 ^ prevValue1))
-            {
-                code |= 2 << 4;
-                Compression.Write7Bit(buffer, ref size, value1);
-            }
-            else
-            {
-                code |= 3 << 4;
-                Compression.Write7Bit(buffer, ref size, value1 ^ prevValue1);
-            }
-
-            Compression.Write7Bit(buffer, ref size, value2 ^ prevValue2);
-            buffer[0] = code;
-            return size;
-
-            //Code the value (value2)
-            code |= 11;
-            Compression.Write7Bit(buffer, ref size, value2);
-            buffer[0] = code;
-            return size;
-        }
-
-        void DecodeNextRecord(ref ulong curKey1, ref ulong curKey2, ref ulong curValue1, ref ulong curValue2, ref ulong prevValue2)
-        {
-            ulong tmpValue;
-            byte code = Stream.ReadByte();
-
-            switch (code >> 6)
-            {
-                case 0:
-                    curKey2++;
-                    break;
-                case 1:
-                    curKey2 += 2;
-                    break;
-                case 2:
-                    curKey2 += Stream.Read7BitUInt64();
-                    break;
-                case 3:
-                    curKey1 += Stream.Read7BitUInt64();
-                    curKey2 = Stream.Read7BitUInt64();
-                    break;
-            }
-           
-            //The quality bit
-            switch ((code >> 4) & 3)
-            {
-                case 0:
-                    curValue1 = 0;
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    curValue1 = Stream.Read7BitUInt64();
-                    break;
-                case 3:
-                    curValue1 = curValue1 ^ Stream.Read7BitUInt64();
-                    break;
-            }
-
-            curValue2 = curValue2 ^ Stream.Read7BitUInt64();
-            return;
-            //The actual value
-            switch (code & 15)
-            {
-                case 0:
-                    break;
-                case 1:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 ^ Stream.ReadByte();
-                    break;
-                case 2:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 ^ Stream.ReadUInt16();
-                    break;
-                case 3:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 ^ Stream.ReadUInt24();
-                    break;
-                case 4:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 ^ Stream.ReadUInt32();
-                    break;
-                case 5:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 ^ Stream.ReadUInt40();
-                    break;
-                case 6:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 ^ Stream.ReadUInt48();
-                    break;
-                case 7:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 ^ Stream.ReadUInt56();
-                    break;
-                case 8:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 ^ Stream.ReadUInt64();
-                    break;
-                case 9:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 - Stream.Read7BitUInt64();
-                    break;
-                case 10:
-                    prevValue2 = curValue2;
-                    curValue2 = curValue2 + Stream.Read7BitUInt64();
-                    break;
-                case 11:
-                    prevValue2 = curValue2;
-                    curValue2 = Stream.Read7BitUInt64();
-                    break;
-                case 12:
-                    prevValue2 = curValue2;
-                    curValue2 = 0;
-                    break;
-                case 13:
-                    //assuming the previous difference occured again, backtrack this about (7-bit)
-                    tmpValue = curValue2;
-                    curValue2 = curValue2 + (curValue2 - prevValue2) - Stream.Read7BitUInt64();
-                    prevValue2 = tmpValue;
-                    break;
-                case 14:
-                    //assuming the previous difference occured twice, backtrack this about (7-bit)
-                    tmpValue = curValue2;
-                    curValue2 = curValue2 + (curValue2 - prevValue2) + (curValue2 - prevValue2) - Stream.Read7BitUInt64();
-                    prevValue2 = tmpValue;
-                    break;
-                case 15:
-                    //assuming the previous difference occured three times, backtrack this about (7-bit)
-                    tmpValue = curValue2;
-                    curValue2 = curValue2 + (curValue2 - prevValue2) + (curValue2 - prevValue2) + (curValue2 - prevValue2) - Stream.Read7BitUInt64();
-                    prevValue2 = tmpValue;
-                    break;
-            }
-        }
 
         protected override ITreeScanner256 LeafNodeGetScanner()
         {
@@ -483,7 +316,7 @@ namespace openHistorian.V2.Collections.KeyValue
 
             Stream.Position = secondNodeIndex * BlockSize + NodeHeader.Size;
 
-            int length = EncodeRecord(buffer, key1, key2, value1, value2, 0, 0, 0, 0, 0);
+            int length = EncodeRecord(buffer, key1, key2, value1, value2, 0, 0, 0, 0);
             WriteToStream(buffer, length);
             secondNodeHeader.ValidBytes = (int)(Stream.Position - secondNodeIndex * BlockSize);
             secondNodeHeader.Save(Stream, BlockSize, secondNodeIndex);
@@ -535,17 +368,16 @@ namespace openHistorian.V2.Collections.KeyValue
             ulong curKey2 = 0;
             ulong curValue1 = 0;
             ulong curValue2 = 0;
-            ulong prevValue2 = 0;
 
             while (curPosition < midPoint)
             {
                 prevPosition = Stream.Position;
-                DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2, ref prevValue2);
+                DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
                 curPosition = Stream.Position;
             }
 
             //Determine how many bytes it will take to store the new KVP since it will no longer be a delta
-            int storageSize = EncodeRecord(buffer, curKey1, curKey2, curValue1, curValue2, 0, 0, 0, 0, 0);
+            int storageSize = EncodeRecord(buffer, curKey1, curKey2, curValue1, curValue2, 0, 0, 0, 0);
 
             long secondNodeIndex = GetNextNewNodeIndex();
             long sourceStartingAddress = curPosition;

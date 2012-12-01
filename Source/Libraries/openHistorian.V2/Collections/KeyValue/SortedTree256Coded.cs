@@ -31,7 +31,7 @@ namespace openHistorian.V2.Collections.KeyValue
     /// Represents a collection of 128-bit key/128-bit values pairs that is very similiar to a <see cref="SortedList{int128,int128}"/> 
     /// except it is optimal for storing millions to billions of entries and doing sequential scan of the data.
     /// </summary>
-    public class SortedTree256Coded : SortedTree256LeafNodeCodedBase
+    public class SortedTree256Coded : SortedTree256LeafNodeEncodedBase
     {
 
         /// <summary>
@@ -60,6 +60,171 @@ namespace openHistorian.V2.Collections.KeyValue
             get
             {
                 return Guid.Empty;
+            }
+        }
+
+        public static long SizeByNoComp = 0;
+
+        protected override unsafe int EncodeRecord(byte* buffer, ulong key1, ulong key2, ulong value1, ulong value2, ulong prevKey1, ulong prevKey2, ulong prevValue1, ulong prevValue2)
+        {
+
+            if (key1 == prevKey1 && key2 == prevKey2 + 1 && value1 == prevValue1)
+            {
+                //Bit7=0
+                //Occurs when key1 and value1 have not changed. And key2 was incremented by 1.
+                ulong delta;
+                byte code;
+                if ((value2 - prevValue2) <= (prevValue2 - value2))
+                {
+                    //Bit6=0
+                    //Occurs when needing to add the delta
+                    code = 0;
+                    delta = (value2 - prevValue2);
+                }
+                else
+                {
+                    //Bit6=1
+                    //Occurs when needing to subtract delta
+                    code = (1 << 6);
+                    delta = (prevValue2 - value2);
+                }
+
+                int bitCount = 64 - BitMath.CountLeadingZeros(delta);
+                if (bitCount == 0)
+                {
+                    buffer[0] = 0;
+                    return 1;
+                }
+                if (bitCount <= 6 * 8 + 3)
+                {
+                    uint extraBytes = (uint)(bitCount - 3 + 7) >> 3; //adding 7 will cause a round up instead of a round down.
+                    buffer[0] = (byte)(code | (delta & 7) | (extraBytes << 3));
+                    *(ulong*)(buffer + 1) = delta >> 3;
+                    return 1 + (int)extraBytes;
+                }
+                else if (bitCount <= 7 * 8 + 2)
+                {
+                    buffer[0] = (byte)((14 << 2) | code);
+                    *(ulong*)(buffer + 1) = delta >> 2;
+                    return 8;
+                }
+                else
+                {
+                    buffer[0] = (byte)((15 << 2) | code);
+                    *(ulong*)(buffer + 1) = delta;
+                    return 9;
+                }
+
+            }
+            else
+            {
+                //Bit7=1
+                int size = 1;
+                buffer[0] = 1 << 7;
+                Compression.Write7Bit(buffer, ref size, key1 ^ prevKey1);
+                Compression.Write7Bit(buffer, ref size, key2 ^ prevKey2);
+                Compression.Write7Bit(buffer, ref size, value1 ^ prevValue1);
+                Compression.Write7Bit(buffer, ref size, value2 ^ prevValue2);
+                SizeByNoComp += size;
+                return size;
+
+            }
+
+
+        }
+
+        protected override void DecodeNextRecord(ref ulong curKey1, ref ulong curKey2, ref ulong curValue1, ref ulong curValue2)
+        {
+            ulong tmpValue;
+            byte code = Stream.ReadByte();
+            if (code < 128)
+            {
+                curKey2++;
+                if (code < 64)
+                {
+                    //Add Delta
+                    switch (code >> 3)
+                    {
+                        case 0:
+                            curValue2 = curValue2 + code;
+                            return;
+                        case 1:
+                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadByte() << 3));
+                            return;
+                        case 2:
+                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt16() << 3));
+                            return;
+                        case 3:
+                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt24() << 3));
+                            return;
+                        case 4:
+                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt32() << 3));
+                            return;
+                        case 5:
+                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt40() << 3));
+                            return;
+                        case 6:
+                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt48() << 3));
+                            return;
+                    }
+                    if ((code & 4) == 0)
+                    {
+                        curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt56() << 2));
+                        return;
+                    }
+                    else
+                    {
+                        curValue2 = curValue2 + (ulong)Stream.ReadUInt64();
+                        return;
+                    }
+                }
+                else
+                {
+                    code &= 63;
+                    //Subtract Delta
+                    switch (code >> 3)
+                    {
+                        case 0:
+                            curValue2 = curValue2 - code;
+                            return;
+                        case 1:
+                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadByte() << 3));
+                            return;
+                        case 2:
+                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt16() << 3));
+                            return;
+                        case 3:
+                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt24() << 3));
+                            return;
+                        case 4:
+                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt32() << 3));
+                            return;
+                        case 5:
+                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt40() << 3));
+                            return;
+                        case 6:
+                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt48() << 3));
+                            return;
+                    }
+                    if ((code & 4) == 0)
+                    {
+                        curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt56() << 2));
+                        return;
+                    }
+                    else
+                    {
+                        curValue2 = curValue2 - (ulong)Stream.ReadUInt64();
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                curKey1 ^= Stream.Read7BitUInt64();
+                curKey2 ^= Stream.Read7BitUInt64();
+                curValue1 ^= Stream.Read7BitUInt64();
+                curValue2 ^= Stream.Read7BitUInt64();
+                return;
             }
         }
     }

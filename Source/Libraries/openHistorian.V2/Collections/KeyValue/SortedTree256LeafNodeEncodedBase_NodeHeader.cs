@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTree256LeafNodeCodedBase_NodeHeader.cs - Gbtc
+//  SortedTree256LeafNodeEncodedBase_NodeHeader.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,7 +26,7 @@ using openHistorian.V2.IO;
 
 namespace openHistorian.V2.Collections.KeyValue
 {
-    public abstract partial class SortedTree256LeafNodeCodedBase
+    public abstract partial class SortedTree256LeafNodeEncodedBase
     {
 
         /// <summary>

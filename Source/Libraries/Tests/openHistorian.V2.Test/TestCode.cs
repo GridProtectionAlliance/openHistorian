@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows.Forms;
+using openHistorian.V2.Collections.KeyValue;
 
 namespace openHistorian.V2.Test
 {
@@ -15,6 +16,10 @@ namespace openHistorian.V2.Test
         [STAThread]
         private static void Main()
         {
+            SortedTree256CompareTest.RunBenchmark();
+            return;
+            OptimizeCompressionMethodTest.Run();
+            return;
             openHistorian.V2.Unmanaged.BinaryStreamBenchmark.Run();
             return;
             GetEncodingValues();

@@ -397,22 +397,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current = cur + size;
                 return;
             }
-            Write2(value);
+            base.Write(value);
         }
-        void Write2(byte value)
-        {
-            const int size = sizeof(byte);
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                *m_current = value;
-                m_current += size;
-                return;
-            }
-            m_temp[0] = value;
-            Write(m_temp, 0, size);
-        }
+
         public override void Write(short value)
         {
             const int size = sizeof(short);
@@ -423,23 +410,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current = cur + size;
                 return;
             }
-            Write2(value);
+            base.Write(value);
         }
-        void Write2(short value)
-        {
-            const int size = sizeof(short);
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                *(short*)m_current = value;
-                m_current += size;
-                return;
-            }
-            m_temp[0] = (byte)value;
-            m_temp[1] = (byte)(value >> 8);
-            Write(m_temp, 0, size);
-        }
+       
         public override void Write(int value)
         {
             const int size = sizeof(int);
@@ -450,25 +423,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current = cur + size;
                 return;
             }
-            Write2(value);
+            base.Write(value);
         }
-        void Write2(int value)
-        {
-            const int size = sizeof(int);
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                *(int*)m_current = value;
-                m_current = m_current + size;
-                return;
-            }
-            fixed (byte* lp = m_temp)
-            {
-                *(int*)lp = value;
-            }
-            Write(m_temp, 0, size);
-        }
+        
         public override void Write(float value)
         {
             const int size = sizeof(float);
@@ -479,25 +436,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current = cur + size;
                 return;
             }
-            Write2(value);
+            base.Write(value);
         }
-        void Write2(float value)
-        {
-            const int size = sizeof(float);
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                *(float*)m_current = value;
-                m_current = m_current + size;
-                return;
-            }
-            fixed (byte* lp = m_temp)
-            {
-                *(float*)lp = value;
-            }
-            Write(m_temp, 0, size);
-        }
+        
         public override void Write(long value)
         {
             const int size = sizeof(long);
@@ -508,25 +449,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current = cur + size;
                 return;
             }
-            Write2(value);
+            base.Write(value);
         }
-        void Write2(long value)
-        {
-            const int size = sizeof(long);
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                *(long*)m_current = value;
-                m_current = m_current + size;
-                return;
-            }
-            fixed (byte* lp = m_temp)
-            {
-                *(long*)lp = value;
-            }
-            Write(m_temp, 0, size);
-        }
+        
         public override void Write(double value)
         {
             const int size = sizeof(double);
@@ -537,54 +462,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current = cur + size;
                 return;
             }
-            Write2(value);
+            base.Write(value);
         }
-        void Write2(double value)
-        {
-            const int size = sizeof(double);
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                *(double*)m_current = value;
-                m_current = m_current + size;
-                return;
-            }
-            fixed (byte* lp = m_temp)
-            {
-                *(double*)lp = value;
-            }
-            Write(m_temp, 0, size);
-        }
-        public override void Write(DateTime value)
-        {
-            const int size = 8;
-            byte* cur = m_current;
-            if (cur + size <= m_lastWrite)
-            {
-                *(DateTime*)cur = value;
-                m_current = cur + size;
-                return;
-            }
-            Write2(value);
-        }
-        void Write2(DateTime value)
-        {
-            const int size = 8;
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                *(DateTime*)m_current = value;
-                m_current = m_current + size;
-                return;
-            }
-            fixed (byte* lp = m_temp)
-            {
-                *(DateTime*)lp = value;
-            }
-            Write(m_temp, 0, size);
-        }
+        
         public override void Write(decimal value)
         {
             const int size = sizeof(decimal);
@@ -595,25 +475,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current = cur + size;
                 return;
             }
-            Write2(value);
+            base.Write(value);
         }
-        void Write2(decimal value)
-        {
-            const int size = sizeof(decimal);
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                *(decimal*)m_current = value;
-                m_current = m_current + size;
-                return;
-            }
-            fixed (byte* lp = m_temp)
-            {
-                *(decimal*)lp = value;
-            }
-            Write(m_temp, 0, size);
-        }
+        
         public override void Write(Guid value)
         {
             const int size = 16;
@@ -624,25 +488,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current = cur + size;
                 return;
             }
-            Write2(value);
+            base.Write(value);
         }
-        void Write2(Guid value)
-        {
-            const int size = 16;
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                *(Guid*)m_current = value;
-                m_current = m_current + size;
-                return;
-            }
-            fixed (byte* lp = m_temp)
-            {
-                *(Guid*)lp = value;
-            }
-            Write(m_temp, 0, size);
-        }
+       
         public override void Write7Bit(uint value)
         {
             const int size = 5;
@@ -681,24 +529,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += 5;
                 return;
             }
-            Write7Bit2(value);
+            base.Write7Bit(value);
         }
-        void Write7Bit2(uint value)
-        {
-            int size = Compression.Get7BitSize(value);
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                int index = 0;
-                Compression.Write7Bit(m_current, ref index, value);
-                m_current += index;
-                return;
-            }
-            int pos = 0;
-            Compression.Write7Bit(m_temp, ref pos, value);
-            Write(m_temp, 0, size);
-        }
+       
         public override void Write7Bit(ulong value)
         {
             const int size = 9;
@@ -765,24 +598,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += 9;
                 return;
             }
-            Write7Bit2(value);
+            base.Write7Bit(value);
         }
-        void Write7Bit2(ulong value)
-        {
-            int size = Compression.Get7BitSize(value);
-            if (RemainingWriteLength <= 0)
-                UpdateLocalBuffer(true);
-            if (RemainingWriteLength >= size)
-            {
-                int index = 0;
-                Compression.Write7Bit(m_current, ref index, value);
-                m_current += index;
-                return;
-            }
-            int pos = 0;
-            Compression.Write7Bit(m_temp, ref pos, value);
-            Write(m_temp, 0, size);
-        }
+        
         public override void Write(byte[] value, int offset, int count)
         {
             if (m_current + count <= m_lastWrite)
@@ -816,8 +634,6 @@ namespace openHistorian.V2.IO.Unmanaged
         #region Reading
 
         #region Derived Types
-
-
 
         public override uint ReadUInt24()
         {
@@ -871,35 +687,10 @@ namespace openHistorian.V2.IO.Unmanaged
             return value | ((ulong)ReadUInt24() << 32);
         }
 
-        public override ulong ReadUInt(int bytes)
-        {
-            switch (bytes)
-            {
-                case 0:
-                    return 0;
-                case 1:
-                    return ReadByte();
-                case 2:
-                    return ReadUInt16();
-                case 3:
-                    return ReadUInt24();
-                case 4:
-                    return ReadUInt32();
-                case 5:
-                    return ReadUInt40();
-                case 6:
-                    return ReadUInt48();
-                case 7:
-                    return ReadUInt56();
-                case 8:
-                    return ReadUInt64();
-            }
-            throw new ArgumentOutOfRangeException("bytes", "must be between 0 and 8 inclusive.");
-        }
-
         #endregion
 
         #region Core Types
+      
         public override byte ReadByte()
         {
             const int size = sizeof(byte);
@@ -909,23 +700,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += size;
                 return value;
             }
-            return ReadByte2();
+            return base.ReadByte();
         }
-        byte ReadByte2()
-        {
-            const int size = sizeof(byte);
-            if (RemainingReadLength <= 0)
-                UpdateLocalBuffer(false);
-            if (RemainingReadLength >= size)
-            {
-                byte value = *m_current;
-                m_current += size;
-                return value;
-            }
-            Read(m_temp, 0, size);
-            return m_temp[0];
-        }
-
+       
         public override short ReadInt16()
         {
             const int size = sizeof(short);
@@ -935,22 +712,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += size;
                 return value;
             }
-            return ReadInt162();
+            return base.ReadInt16();
         }
-        short ReadInt162()
-        {
-            const int size = sizeof(short);
-            if (RemainingReadLength <= 0)
-                UpdateLocalBuffer(false);
-            if (RemainingReadLength >= size)
-            {
-                short value = *(short*)m_current;
-                m_current += size;
-                return value;
-            }
-            Read(m_temp, 0, size);
-            return (short)(m_temp[0] | (m_temp[1] << 8));
-        }
+        
         public override int ReadInt32()
         {
             const int size = sizeof(int);
@@ -960,25 +724,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += size;
                 return value;
             }
-            return ReadInt322();
+            return base.ReadInt32();
         }
-        int ReadInt322()
-        {
-            const int size = sizeof(int);
-            if (RemainingReadLength <= 0)
-                UpdateLocalBuffer(false);
-            if (RemainingReadLength >= size)
-            {
-                int value = *(int*)m_current;
-                m_current += size;
-                return value;
-            }
-            Read(m_temp, 0, size);
-            fixed (byte* lp = m_temp)
-            {
-                return *(int*)(lp);
-            }
-        }
+      
         public override float ReadSingle()
         {
             const int size = sizeof(float);
@@ -988,25 +736,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += size;
                 return value;
             }
-            return ReadSingle2();
+            return base.ReadSingle();
         }
-        float ReadSingle2()
-        {
-            const int size = sizeof(float);
-            if (RemainingReadLength <= 0)
-                UpdateLocalBuffer(false);
-            if (RemainingReadLength >= size)
-            {
-                float value = *(float*)m_current;
-                m_current += size;
-                return value;
-            }
-            Read(m_temp, 0, size);
-            fixed (byte* lp = m_temp)
-            {
-                return *(float*)(lp);
-            }
-        }
+        
         public override long ReadInt64()
         {
             const int size = sizeof(long);
@@ -1016,25 +748,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += size;
                 return value;
             }
-            return ReadInt642();
+            return base.ReadInt64();
         }
-        long ReadInt642()
-        {
-            const int size = sizeof(long);
-            if (RemainingReadLength <= 0)
-                UpdateLocalBuffer(false);
-            if (RemainingReadLength >= size)
-            {
-                long value = *(long*)m_current;
-                m_current += size;
-                return value;
-            }
-            Read(m_temp, 0, size);
-            fixed (byte* lp = m_temp)
-            {
-                return *(long*)(lp);
-            }
-        }
+        
         public override double ReadDouble()
         {
             const int size = sizeof(double);
@@ -1044,53 +760,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += size;
                 return value;
             }
-            return ReadDouble2();
+            return base.ReadDouble();
         }
-        double ReadDouble2()
-        {
-            const int size = sizeof(double);
-            if (RemainingReadLength <= 0)
-                UpdateLocalBuffer(false);
-            if (RemainingReadLength >= size)
-            {
-                double value = *(double*)m_current;
-                m_current += size;
-                return value;
-            }
-            Read(m_temp, 0, size);
-            fixed (byte* lp = m_temp)
-            {
-                return *(double*)(lp);
-            }
-        }
-        public override DateTime ReadDateTime()
-        {
-            const int size = 8;
-            if (m_current + size <= m_lastRead)
-            {
-                DateTime value = *(DateTime*)m_current;
-                m_current += size;
-                return value;
-            }
-            return ReadDateTime2();
-        }
-        DateTime ReadDateTime2()
-        {
-            const int size = 8;
-            if (RemainingReadLength <= 0)
-                UpdateLocalBuffer(false);
-            if (RemainingReadLength >= size)
-            {
-                DateTime value = *(DateTime*)m_current;
-                m_current += size;
-                return value;
-            }
-            Read(m_temp, 0, size);
-            fixed (byte* lp = m_temp)
-            {
-                return *(DateTime*)(lp);
-            }
-        }
+        
         public override decimal ReadDecimal()
         {
             const int size = sizeof(decimal);
@@ -1100,25 +772,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += size;
                 return value;
             }
-            return ReadDecimal2();
+            return base.ReadDecimal();
         }
-        decimal ReadDecimal2()
-        {
-            const int size = sizeof(decimal);
-            if (RemainingReadLength <= 0)
-                UpdateLocalBuffer(false);
-            if (RemainingReadLength >= size)
-            {
-                decimal value = *(decimal*)m_current;
-                m_current += size;
-                return value;
-            }
-            Read(m_temp, 0, size);
-            fixed (byte* lp = m_temp)
-            {
-                return *(decimal*)(lp);
-            }
-        }
+      
         public override Guid ReadGuid()
         {
             const int size = 16;
@@ -1128,24 +784,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += size;
                 return value;
             }
-            return ReadGuid2();
-        }
-        Guid ReadGuid2()
-        {
-            const int size = 16;
-            if (RemainingReadLength <= 0)
-                UpdateLocalBuffer(false);
-            if (RemainingReadLength >= size)
-            {
-                Guid value = *(Guid*)m_current;
-                m_current += size;
-                return value;
-            }
-            Read(m_temp, 0, size);
-            fixed (byte* lp = m_temp)
-            {
-                return *(Guid*)(lp);
-            }
+            return base.ReadGuid();
         }
 
         public override uint Read7BitUInt32()
@@ -1183,35 +822,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += 5;
                 return value11;
             }
-            return Read7BitUInt322();
+            return base.Read7BitUInt32();
         }
-        uint Read7BitUInt322()
-        {
-            uint value11;
-            value11 = ReadByte();
-            if (value11 < 128)
-            {
-                return value11;
-            }
-            value11 ^= ((uint)ReadByte() << 7);
-            if (value11 < 128 * 128)
-            {
-                return value11 ^ 0x80;
-            }
-            value11 ^= ((uint)ReadByte() << 14);
-            if (value11 < 128 * 128 * 128)
-            {
-                return value11 ^ 0x4080;
-            }
-            value11 ^= ((uint)ReadByte() << 21);
-            if (value11 < 128 * 128 * 128 * 128)
-            {
-                return value11 ^ 0x204080;
-            }
-            value11 ^= ((uint)ReadByte() << 28) ^ 0x10204080;
-            return value11;
-        }
-
+        
         public override ulong Read7BitUInt64()
         {
             const int size = 9;
@@ -1271,54 +884,9 @@ namespace openHistorian.V2.IO.Unmanaged
                 m_current += 9;
                 return value11 ^ 0x102040810204080L;
             }
-            return Read7BitUInt642();
+            return base.Read7BitUInt64();
         }
-        ulong Read7BitUInt642()
-        {
-            ulong value11 = ReadByte();
-            if (value11 < 128)
-            {
-                return value11;
-            }
-            value11 ^= ((ulong)ReadByte() << 7);
-            if (value11 < 128 * 128)
-            {
-                return value11 ^ 0x80;
-            }
-            value11 ^= ((ulong)ReadByte() << 14);
-            if (value11 < 128 * 128 * 128)
-            {
-                return value11 ^ 0x4080;
-            }
-            value11 ^= ((ulong)ReadByte() << 21);
-            if (value11 < 128 * 128 * 128 * 128)
-            {
-                return value11 ^ 0x204080;
-            }
-            value11 ^= ((ulong)ReadByte() << (7 + 7 + 7 + 7));
-            if (value11 < 128L * 128 * 128 * 128 * 128)
-            {
-                return value11 ^ 0x10204080L;
-            }
-            value11 ^= ((ulong)ReadByte() << (7 + 7 + 7 + 7 + 7));
-            if (value11 < 128L * 128 * 128 * 128 * 128 * 128)
-            {
-                return value11 ^ 0x810204080L;
-            }
-            value11 ^= ((ulong)ReadByte() << (7 + 7 + 7 + 7 + 7 + 7));
-            if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128)
-            {
-                return value11 ^ 0x40810204080L;
-            }
-            value11 ^= ((ulong)ReadByte() << (7 + 7 + 7 + 7 + 7 + 7 + 7));
-            if (value11 < 128L * 128 * 128 * 128 * 128 * 128 * 128 * 128)
-            {
-                return value11 ^ 0x2040810204080L;
-            }
-            value11 ^= ((ulong)ReadByte() << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7));
-            return value11 ^ 0x102040810204080L;
-        }
-
+      
         public override int Read(byte[] value, int offset, int count)
         {
             if (RemainingReadLength >= count)

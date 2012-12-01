@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTree256LeafNodeCodedBase_TreeScanner.cs - Gbtc
+//  SortedTree256LeafNodeEncodedBase_TreeScanner.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,11 +23,11 @@
 
 namespace openHistorian.V2.Collections.KeyValue
 {
-    public partial class SortedTree256LeafNodeCodedBase
+    public partial class SortedTree256LeafNodeEncodedBase
     {
         private class TreeScanner : ITreeScanner256
         {
-            SortedTree256LeafNodeCodedBase m_tree;
+            SortedTree256LeafNodeEncodedBase m_tree;
             long m_positionOfCurrentKey;
             long m_rightSiblingNodeIndex;
             long m_nodeIndex;
@@ -38,7 +38,7 @@ namespace openHistorian.V2.Collections.KeyValue
             ulong m_lastValue2;
             long m_lastPosition;
 
-            public TreeScanner(SortedTree256LeafNodeCodedBase tree)
+            public TreeScanner(SortedTree256LeafNodeEncodedBase tree)
             {
                 m_tree = tree;
             }
