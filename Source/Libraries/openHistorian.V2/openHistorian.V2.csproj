@@ -80,14 +80,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\KeyValue\SortedTree256Coded.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeEncodedBase.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeEncodedBase_NodeHeader.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeEncodedBase_TreeScanner.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256Compressed.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCompressedBase.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCompressedBase_NodeHeader.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256LeafNodeCompressedBase_TreeScanner.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256TSEncoded.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256EncodedLeafNodeBase.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256EncodedLeafNodeBase_NodeHeader.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256EncodedLeafNodeBase_TreeScanner.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256DeltaEncoded.cs" />
     <Compile Include="Collections\KeyValue\NullTreeScanner256.cs" />
     <Compile Include="Collections\KeyValue\UnionScanner256.cs" />
     <Compile Include="Collections\ReadonlySortedList.cs" />

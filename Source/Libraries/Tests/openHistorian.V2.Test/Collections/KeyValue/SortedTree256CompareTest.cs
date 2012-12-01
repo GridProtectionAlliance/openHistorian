@@ -19,8 +19,8 @@ namespace openHistorian.V2.Collections.KeyValue
             var bs3 = new BinaryStream();
             var tree0 = new SortedTree256(bs0, 4096);
             var tree1 = new SortedTree256(bs1, 4096);
-            var tree2 = new SortedTree256Compressed(bs2, 4096);
-            var tree3 = new SortedTree256Coded(bs3, 4096);
+            var tree2 = new SortedTree256DeltaEncoded(bs2, 4096);
+            var tree3 = new SortedTree256TSEncoded(bs3, 4096);
 
             //var hist = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1_archive_2012-07-26 15!35!36.166_to_2012-07-26 15!40!36.666.d");
             var hist = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
@@ -74,7 +74,7 @@ namespace openHistorian.V2.Collections.KeyValue
             var bs2 = new BinaryStream();
             var tree0 = new SortedTree256(bs0, 4096);
             var tree1 = new SortedTree256(bs1, 4096);
-            var tree2 = new SortedTree256Compressed(bs2, 4096);
+            var tree2 = new SortedTree256DeltaEncoded(bs2, 4096);
 
             var hist = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
 
@@ -115,7 +115,7 @@ namespace openHistorian.V2.Collections.KeyValue
             var bs2 = new BinaryStream();
             var tree0 = new SortedTree256(bs0, 4096);
             var tree1 = new SortedTree256(bs1, 4096);
-            var tree2 = new SortedTree256Compressed(bs2, 4096);
+            var tree2 = new SortedTree256DeltaEncoded(bs2, 4096);
 
             var hist = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
 
@@ -158,7 +158,7 @@ namespace openHistorian.V2.Collections.KeyValue
             var bs2 = new BinaryStream();
             var tree0 = new SortedTree256(bs0, 4096);
             var tree1 = new SortedTree256(bs1, 4096);
-            var tree2 = new SortedTree256Coded(bs2, 4096);
+            var tree2 = new SortedTree256TSEncoded(bs2, 4096);
             //var tree2 = new SortedTree256Compressed(bs2, 4096);
 
             var hist = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
@@ -195,7 +195,6 @@ namespace openHistorian.V2.Collections.KeyValue
             //these will never raise an exception, but are there so the compilier will not simplify out these variables.
             Assert.AreNotEqual(0f, size0Mb);
             Assert.AreNotEqual(0f, size1Mb);
-            SortedTree256Coded.SizeByNoComp++;
             Assert.AreNotEqual(0f, size2Mb);
         }
 

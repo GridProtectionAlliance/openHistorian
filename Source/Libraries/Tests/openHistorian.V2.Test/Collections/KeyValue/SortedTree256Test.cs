@@ -4,7 +4,7 @@ using System;
 using openHistorian.V2.IO;
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.V2.Collections.KeyValue
 {
 
 
@@ -15,8 +15,6 @@ namespace openHistorian.V2.Test
     [TestClass()]
     public class SortedTree256Test
     {
-
-
         private TestContext testContextInstance;
 
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTree256Coded.cs - Gbtc
+//  SortedTree256TSEncoded.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -31,15 +31,17 @@ namespace openHistorian.V2.Collections.KeyValue
     /// Represents a collection of 128-bit key/128-bit values pairs that is very similiar to a <see cref="SortedList{int128,int128}"/> 
     /// except it is optimal for storing millions to billions of entries and doing sequential scan of the data.
     /// </summary>
-    public class SortedTree256Coded : SortedTree256LeafNodeEncodedBase
+    public class SortedTree256TSEncoded : SortedTree256EncodedLeafNodeBase
     {
+        // {88CC6EDA-7F05-449E-9943-97 38 BC FC CF 40}
+        static Guid s_fileType = new Guid(0x88cc6eda, 0x7f05, 0x449e, 0x99, 0x43, 0x97, 0x38, 0xbc, 0xfc, 0xcf, 0x40);
 
         /// <summary>
         /// Loads an existing <see cref="SortedTree256"/>
         /// from the provided stream.
         /// </summary>
         /// <param name="stream">The stream to load from</param>
-        public SortedTree256Coded(BinaryStreamBase stream)
+        public SortedTree256TSEncoded(BinaryStreamBase stream)
             : base(stream)
         {
         }
@@ -50,7 +52,7 @@ namespace openHistorian.V2.Collections.KeyValue
         /// </summary>
         /// <param name="stream">The stream to use to store the tree.</param>
         /// <param name="blockSize">The size in bytes of a single block.</param>
-        public SortedTree256Coded(BinaryStreamBase stream, int blockSize)
+        public SortedTree256TSEncoded(BinaryStreamBase stream, int blockSize)
             : base(stream, blockSize)
         {
         }
@@ -59,11 +61,9 @@ namespace openHistorian.V2.Collections.KeyValue
         {
             get
             {
-                return Guid.Empty;
+                return s_fileType;
             }
         }
-
-        public static long SizeByNoComp = 0;
 
         protected override unsafe int EncodeRecord(byte* buffer, ulong key1, ulong key2, ulong value1, ulong value2, ulong prevKey1, ulong prevKey2, ulong prevValue1, ulong prevValue2)
         {
@@ -125,12 +125,8 @@ namespace openHistorian.V2.Collections.KeyValue
                 Compression.Write7Bit(buffer, ref size, key2 ^ prevKey2);
                 Compression.Write7Bit(buffer, ref size, value1 ^ prevValue1);
                 Compression.Write7Bit(buffer, ref size, value2 ^ prevValue2);
-                SizeByNoComp += size;
                 return size;
-
             }
-
-
         }
 
         protected override void DecodeNextRecord(ref ulong curKey1, ref ulong curKey2, ref ulong curValue1, ref ulong curValue2)

@@ -4,7 +4,7 @@ using System;
 using openHistorian.V2.IO;
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.V2.Collections.KeyValue
 {
 
 
@@ -13,9 +13,8 @@ namespace openHistorian.V2.Test
     ///to contain all BasicTreeTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SortedTree256CompressedTest
+    public class SortedTree256DeltaEncodedTest
     {
-
 
         private TestContext testContextInstance;
 
@@ -96,7 +95,7 @@ namespace openHistorian.V2.Test
             using (var stream = new MemoryStream())
             using (var binaryStream = stream.CreateBinaryStream())
             {
-                SortedTree256Compressed tree = new SortedTree256Compressed(binaryStream, 4096);
+                SortedTree256DeltaEncoded tree = new SortedTree256DeltaEncoded(binaryStream, 4096);
                 for (uint x = 0; x < 10000; x++)
                 {
                     ulong k1 = x;
@@ -136,7 +135,7 @@ namespace openHistorian.V2.Test
             using (var stream = new MemoryStream())
             using (var binaryStream = stream.CreateBinaryStream())
             {
-                SortedTree256Compressed tree = new SortedTree256Compressed(binaryStream, 4096);
+                SortedTree256DeltaEncoded tree = new SortedTree256DeltaEncoded(binaryStream, 4096);
                 for (uint x = 5000; x >= 1; x--)
                 {
                     ulong k1 = x;
@@ -173,7 +172,7 @@ namespace openHistorian.V2.Test
             using (var stream = new MemoryStream())
             using (var binaryStream = stream.CreateBinaryStream())
             {
-                SortedTree256Compressed tree = new SortedTree256Compressed(binaryStream, 4096);
+                SortedTree256DeltaEncoded tree = new SortedTree256DeltaEncoded(binaryStream, 4096);
                 for (uint x = 1; x < 5000; x++)
                 {
                     ulong k1 = 10000 + x;
@@ -226,7 +225,7 @@ namespace openHistorian.V2.Test
             using (var stream = new MemoryStream())
             using (var binaryStream = stream.CreateBinaryStream())
             {
-                SortedTree256Compressed tree = new SortedTree256Compressed(binaryStream, 4096);
+                SortedTree256DeltaEncoded tree = new SortedTree256DeltaEncoded(binaryStream, 4096);
                 for (uint x = 5000; x >= 1; x--)
                 {
                     ulong k1 = 10000 + x;
@@ -277,7 +276,7 @@ namespace openHistorian.V2.Test
                 using (var stream = new MemoryStream())
                 using (var binaryStream = stream.CreateBinaryStream())
                 {
-                    SortedTree256Compressed tree = new SortedTree256Compressed(binaryStream, blockSize);
+                    SortedTree256DeltaEncoded tree = new SortedTree256DeltaEncoded(binaryStream, blockSize);
 
                     Random r = new Random(seed);
                     for (int x = 0; x < maxItems; x++)
@@ -326,7 +325,7 @@ namespace openHistorian.V2.Test
                 using (var stream = new MemoryStream())
                 using (var binaryStream = stream.CreateBinaryStream())
                 {
-                    SortedTree256Compressed tree = new SortedTree256Compressed(binaryStream, blockSize);
+                    SortedTree256DeltaEncoded tree = new SortedTree256DeltaEncoded(binaryStream, blockSize);
 
                     Random r = new Random(seed);
                     for (int x = 0; x < maxItems; x++)
@@ -373,13 +372,11 @@ namespace openHistorian.V2.Test
                 using (var stream = new MemoryStream())
                 using (var binaryStream = stream.CreateBinaryStream())
                 {
-                    SortedTree256Compressed tree = new SortedTree256Compressed(binaryStream, blockSize);
+                    SortedTree256DeltaEncoded tree = new SortedTree256DeltaEncoded(binaryStream, blockSize);
 
                     Random r = new Random(seed);
                     for (int x = 0; x < maxItems; x++)
                     {
-                        if (x == 7)
-                            x = x;
                         ulong k1 = (ulong)r.Next();
                         ulong k2 = (ulong)r.Next();
                         ulong v1 = (ulong)r.Next();

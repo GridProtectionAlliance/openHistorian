@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTree256LeafNodeCompressedBase.cs - Gbtc
+//  SortedTree256EncodedLeafNodeBase.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/18/2012 - Steven E. Chisholm
+//  11/24/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
@@ -26,7 +26,7 @@ using openHistorian.V2.IO;
 
 namespace openHistorian.V2.Collections.KeyValue
 {
-    public abstract partial class SortedTree256LeafNodeCompressedBase : SortedTree256InternalNodeBase
+    public abstract partial class SortedTree256EncodedLeafNodeBase : SortedTree256InternalNodeBase
     {
         long m_cachedNodeIndex;
         ulong m_lastKey1;
@@ -36,14 +36,14 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Constructors ]
 
-        protected SortedTree256LeafNodeCompressedBase(BinaryStreamBase stream)
+        protected SortedTree256EncodedLeafNodeBase(BinaryStreamBase stream)
             : base(stream)
         {
             m_cachedNodeIndex = -1;
         }
 
 
-        protected SortedTree256LeafNodeCompressedBase(BinaryStreamBase stream, int blockSize)
+        protected SortedTree256EncodedLeafNodeBase(BinaryStreamBase stream, int blockSize)
             : base(stream, blockSize)
         {
             m_cachedNodeIndex = -1;
@@ -53,6 +53,14 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Methods ]
 
+        #region [ Abstract Methods ]
+
+        protected abstract unsafe int EncodeRecord(byte* buffer, ulong key1, ulong key2, ulong value1, ulong value2, ulong prevKey1, ulong prevKey2, ulong prevValue1, ulong prevValue2);
+
+        protected abstract void DecodeNextRecord(ref ulong curKey1, ref ulong curKey2, ref ulong curValue1, ref ulong curValue2);
+
+        #endregion
+
         #region [ Override Methods ]
 
         protected override void LeafNodeCreateEmptyNode(long newNodeIndex)
@@ -61,8 +69,10 @@ namespace openHistorian.V2.Collections.KeyValue
             NodeHeader.Save(Stream, NodeHeader.Size, 0, 0);
         }
 
-        protected override bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2)
+        unsafe protected override bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2)
         {
+            byte* buffer = stackalloc byte[64];
+            byte* buffer2 = stackalloc byte[64];
             var header = new NodeHeader(Stream, BlockSize, nodeIndex);
             long firstPosition = nodeIndex * BlockSize + NodeHeader.Size;
             long endOfStreamPosition = nodeIndex * BlockSize + header.ValidBytes;
@@ -78,6 +88,10 @@ namespace openHistorian.V2.Collections.KeyValue
             ulong curKey2 = 0;
             ulong curValue1 = 0;
             ulong curValue2 = 0;
+            ulong prevKey1 = 0;
+            ulong prevKey2 = 0;
+            ulong prevValue1 = 0;
+            ulong prevValue2 = 0;
 
             bool insertAfter = true; //The default case. This will be reassigned if needing to be inserted before.
             bool skipScan = false; //If using the cached values reveals that the current key is after the end of the stream. the sequential scan can be skipped.
@@ -105,10 +119,12 @@ namespace openHistorian.V2.Collections.KeyValue
             {
                 while (curPosition < endOfStreamPosition)
                 {
-                    curKey1 = curKey1 ^ Stream.Read7BitUInt64();
-                    curKey2 = curKey2 ^ Stream.Read7BitUInt64();
-                    curValue1 = curValue1 ^ Stream.Read7BitUInt64();
-                    curValue2 = curValue2 ^ Stream.Read7BitUInt64();
+                    prevKey1 = curKey1;
+                    prevKey2 = curKey2;
+                    prevValue1 = curValue1;
+                    prevValue2 = curValue2;
+
+                    DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
                     curPosition = Stream.Position;
 
                     int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
@@ -128,12 +144,7 @@ namespace openHistorian.V2.Collections.KeyValue
             if (insertAfter)
             {
                 //Insert afters only occur at the end of the stream
-
-                int shiftDelta = Compression.Get7BitSize(curKey1 ^ key1);
-                shiftDelta += Compression.Get7BitSize(curKey2 ^ key2);
-                shiftDelta += Compression.Get7BitSize(curValue1 ^ value1);
-                shiftDelta += Compression.Get7BitSize(curValue2 ^ value2);
-
+                int shiftDelta = EncodeRecord(buffer, key1, key2, value1, value2, curKey1, curKey2, curValue1, curValue2);
                 if (bytesRemaining < shiftDelta)
                 {
                     if (header.RightSiblingNodeIndex == 0)
@@ -155,11 +166,7 @@ namespace openHistorian.V2.Collections.KeyValue
                 m_lastValue2 = value2;
 
                 Stream.Position = prevPosition;
-
-                Stream.Write7Bit(curKey1 ^ key1);
-                Stream.Write7Bit(curKey2 ^ key2);
-                Stream.Write7Bit(curValue1 ^ value1);
-                Stream.Write7Bit(curValue2 ^ value2);
+                WriteToStream(buffer, shiftDelta);
 
                 header.ValidBytes += shiftDelta;
                 header.Save(Stream, BlockSize, nodeIndex);
@@ -172,16 +179,11 @@ namespace openHistorian.V2.Collections.KeyValue
                 {
                     //if the insert is at the beginning of the stream
 
-                    int shiftDelta = Compression.Get7BitSize(key1);
-                    shiftDelta += Compression.Get7BitSize(key2);
-                    shiftDelta += Compression.Get7BitSize(value1);
-                    shiftDelta += Compression.Get7BitSize(value2);
+                    int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, 0, 0, 0, 0);
 
-                    shiftDelta += Compression.Get7BitSize(curKey1 ^ key1);
-                    shiftDelta += Compression.Get7BitSize(curKey2 ^ key2);
-                    shiftDelta += Compression.Get7BitSize(curValue1 ^ value1);
-                    shiftDelta += Compression.Get7BitSize(curValue2 ^ value2);
+                    int shiftDelta2 = EncodeRecord(buffer2, curKey1, curKey2, curValue1, curValue2, key1, key2, value1, value2);
 
+                    int shiftDelta = shiftDelta1 + shiftDelta2;
                     shiftDelta -= (int)(curPosition - prevPosition);
 
                     if (bytesRemaining < shiftDelta)
@@ -196,15 +198,8 @@ namespace openHistorian.V2.Collections.KeyValue
                     else
                         Stream.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
 
-                    Stream.Write7Bit(key1);
-                    Stream.Write7Bit(key2);
-                    Stream.Write7Bit(value1);
-                    Stream.Write7Bit(value2);
-
-                    Stream.Write7Bit(curKey1 ^ key1);
-                    Stream.Write7Bit(curKey2 ^ key2);
-                    Stream.Write7Bit(curValue1 ^ value1);
-                    Stream.Write7Bit(curValue2 ^ value2);
+                    WriteToStream(buffer, shiftDelta1);
+                    WriteToStream(buffer2, shiftDelta2);
 
                     header.ValidBytes += shiftDelta;
                     header.Save(Stream, BlockSize, nodeIndex);
@@ -213,21 +208,13 @@ namespace openHistorian.V2.Collections.KeyValue
                 else
                 {
                     //if the insert is in the middle of the the stream
-                    Stream.Position = prevPosition;
-                    ulong prevKey1 = curKey1 ^ Stream.Read7BitUInt64();
-                    ulong prevKey2 = curKey2 ^ Stream.Read7BitUInt64();
-                    ulong prevValue1 = curValue1 ^ Stream.Read7BitUInt64();
-                    ulong prevValue2 = curValue2 ^ Stream.Read7BitUInt64();
+                    Stream.Position = curPosition;
 
-                    int shiftDelta = Compression.Get7BitSize(prevKey1 ^ key1);
-                    shiftDelta += Compression.Get7BitSize(prevKey2 ^ key2);
-                    shiftDelta += Compression.Get7BitSize(prevValue1 ^ value1);
-                    shiftDelta += Compression.Get7BitSize(prevValue2 ^ value2);
+                    int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, prevKey1, prevKey2, prevValue1, prevValue2);
 
-                    shiftDelta += Compression.Get7BitSize(curKey1 ^ key1);
-                    shiftDelta += Compression.Get7BitSize(curKey2 ^ key2);
-                    shiftDelta += Compression.Get7BitSize(curValue1 ^ value1);
-                    shiftDelta += Compression.Get7BitSize(curValue2 ^ value2);
+                    int shiftDelta2 = EncodeRecord(buffer2, curKey1, curKey2, curValue1, curValue2, key1, key2, value1, value2);
+
+                    int shiftDelta = shiftDelta1 + shiftDelta2;
 
                     shiftDelta -= (int)(curPosition - prevPosition);
 
@@ -243,15 +230,8 @@ namespace openHistorian.V2.Collections.KeyValue
                     else
                         Stream.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
 
-                    Stream.Write7Bit(prevKey1 ^ key1);
-                    Stream.Write7Bit(prevKey2 ^ key2);
-                    Stream.Write7Bit(prevValue1 ^ value1);
-                    Stream.Write7Bit(prevValue2 ^ value2);
-
-                    Stream.Write7Bit(curKey1 ^ key1);
-                    Stream.Write7Bit(curKey2 ^ key2);
-                    Stream.Write7Bit(curValue1 ^ value1);
-                    Stream.Write7Bit(curValue2 ^ value2);
+                    WriteToStream(buffer, shiftDelta1);
+                    WriteToStream(buffer2, shiftDelta2);
 
                     header.ValidBytes += shiftDelta;
                     header.Save(Stream, BlockSize, nodeIndex);
@@ -283,10 +263,7 @@ namespace openHistorian.V2.Collections.KeyValue
 
             while (Stream.Position < lastPosition)
             {
-                curKey1 = curKey1 ^ Stream.Read7BitUInt64();
-                curKey2 = curKey2 ^ Stream.Read7BitUInt64();
-                curValue1 = curValue1 ^ Stream.Read7BitUInt64();
-                curValue2 = curValue2 ^ Stream.Read7BitUInt64();
+                DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
 
                 int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
                 if (compareKeysResults == 0) //if keys match, result is found.
@@ -307,6 +284,8 @@ namespace openHistorian.V2.Collections.KeyValue
             return false;
         }
 
+
+
         protected override ITreeScanner256 LeafNodeGetScanner()
         {
             return new TreeScanner(this);
@@ -316,8 +295,10 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Helper Methods ]
 
-        void NewNodeThenInsert(ulong key1, ulong key2, ulong value1, ulong value2, long firstNodeIndex)
+        unsafe void NewNodeThenInsert(ulong key1, ulong key2, ulong value1, ulong value2, long firstNodeIndex)
         {
+            byte* buffer = stackalloc byte[64];
+
             m_cachedNodeIndex = -1;
             NodeHeader firstNodeHeader = new NodeHeader(Stream, BlockSize, firstNodeIndex);
             NodeHeader secondNodeHeader = default(NodeHeader);
@@ -334,18 +315,43 @@ namespace openHistorian.V2.Collections.KeyValue
             secondNodeHeader.LeftSiblingNodeIndex = firstNodeIndex;
 
             Stream.Position = secondNodeIndex * BlockSize + NodeHeader.Size;
-            Stream.Write7Bit(key1);
-            Stream.Write7Bit(key2);
-            Stream.Write7Bit(value1);
-            Stream.Write7Bit(value2);
+
+            int length = EncodeRecord(buffer, key1, key2, value1, value2, 0, 0, 0, 0);
+            WriteToStream(buffer, length);
             secondNodeHeader.ValidBytes = (int)(Stream.Position - secondNodeIndex * BlockSize);
             secondNodeHeader.Save(Stream, BlockSize, secondNodeIndex);
 
             NodeWasSplit(0, firstNodeIndex, key1, key2, secondNodeIndex);
         }
 
-        void SplitNodeThenInsert(ulong key1, ulong key2, ulong value1, ulong value2, long firstNodeIndex)
+        unsafe void WriteToStream(byte* buffer, int length)
         {
+            int pos = 0;
+            while (pos + 8 <= length)
+            {
+                Stream.Write(*(long*)(buffer + pos));
+                pos += 8;
+            }
+            if (pos + 4 <= length)
+            {
+                Stream.Write(*(int*)(buffer + pos));
+                pos += 4;
+            }
+            if (pos + 2 <= length)
+            {
+                Stream.Write(*(short*)(buffer + pos));
+                pos += 2;
+            }
+            if (pos + 1 <= length)
+            {
+                Stream.Write(*(buffer + pos));
+            }
+        }
+
+        unsafe void SplitNodeThenInsert(ulong key1, ulong key2, ulong value1, ulong value2, long firstNodeIndex)
+        {
+            byte* buffer = stackalloc byte[64];
+
             m_cachedNodeIndex = -1;
             NodeHeader firstNodeHeader = new NodeHeader(Stream, BlockSize, firstNodeIndex);
             NodeHeader secondNodeHeader = default(NodeHeader);
@@ -366,19 +372,12 @@ namespace openHistorian.V2.Collections.KeyValue
             while (curPosition < midPoint)
             {
                 prevPosition = Stream.Position;
-                curKey1 = curKey1 ^ Stream.Read7BitUInt64();
-                curKey2 = curKey2 ^ Stream.Read7BitUInt64();
-                curValue1 = curValue1 ^ Stream.Read7BitUInt64();
-                curValue2 = curValue2 ^ Stream.Read7BitUInt64();
+                DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
                 curPosition = Stream.Position;
             }
 
             //Determine how many bytes it will take to store the new KVP since it will no longer be a delta
-            int storageSize = Compression.Get7BitSize(curKey1);
-            storageSize += Compression.Get7BitSize(curKey2);
-            storageSize += Compression.Get7BitSize(curValue1);
-            storageSize += Compression.Get7BitSize(curValue2);
-
+            int storageSize = EncodeRecord(buffer, curKey1, curKey2, curValue1, curValue2, 0, 0, 0, 0);
 
             long secondNodeIndex = GetNextNewNodeIndex();
             long sourceStartingAddress = curPosition;
@@ -390,10 +389,7 @@ namespace openHistorian.V2.Collections.KeyValue
             Stream.Copy(sourceStartingAddress, targetStartingAddress, copyLength);
 
             Stream.Position = targetStartingAddress - storageSize;
-            Stream.Write7Bit(curKey1);
-            Stream.Write7Bit(curKey2);
-            Stream.Write7Bit(curValue1);
-            Stream.Write7Bit(curValue2);
+            WriteToStream(buffer, storageSize);
 
             //update the node that was the old right sibling
             if (firstNodeHeader.RightSiblingNodeIndex != 0)
@@ -424,7 +420,6 @@ namespace openHistorian.V2.Collections.KeyValue
                 LeafNodeInsert(firstNodeIndex, key1, key2, value1, value2);
             }
         }
-
 
         #endregion
 

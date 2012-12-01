@@ -4,7 +4,7 @@ using System;
 using openHistorian.V2.IO;
 using openHistorian.V2.IO.Unmanaged;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.V2.Collections.KeyValue
 {
 
 
@@ -13,7 +13,7 @@ namespace openHistorian.V2.Test
     ///to contain all BasicTreeTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SortedTree256CodedTest
+    public class SortedTree256TSEncodedTest
     {
 
 
@@ -96,7 +96,7 @@ namespace openHistorian.V2.Test
             using (var stream = new MemoryStream())
             using (var binaryStream = stream.CreateBinaryStream())
             {
-                SortedTree256Coded tree = new SortedTree256Coded(binaryStream, 4096);
+                SortedTree256TSEncoded tree = new SortedTree256TSEncoded(binaryStream, 4096);
                 for (uint x = 0; x < 10000; x++)
                 {
                     ulong k1 = x;
@@ -136,7 +136,7 @@ namespace openHistorian.V2.Test
             using (var stream = new MemoryStream())
             using (var binaryStream = stream.CreateBinaryStream())
             {
-                SortedTree256Coded tree = new SortedTree256Coded(binaryStream, 4096);
+                SortedTree256TSEncoded tree = new SortedTree256TSEncoded(binaryStream, 4096);
                 for (uint x = 5000; x >= 1; x--)
                 {
                     ulong k1 = x;
@@ -173,7 +173,7 @@ namespace openHistorian.V2.Test
             using (var stream = new MemoryStream())
             using (var binaryStream = stream.CreateBinaryStream())
             {
-                SortedTree256Coded tree = new SortedTree256Coded(binaryStream, 4096);
+                SortedTree256TSEncoded tree = new SortedTree256TSEncoded(binaryStream, 4096);
                 for (uint x = 1; x < 5000; x++)
                 {
                     ulong k1 = 10000 + x;
@@ -226,7 +226,7 @@ namespace openHistorian.V2.Test
             using (var stream = new MemoryStream())
             using (var binaryStream = stream.CreateBinaryStream())
             {
-                SortedTree256Coded tree = new SortedTree256Coded(binaryStream, 4096);
+                SortedTree256TSEncoded tree = new SortedTree256TSEncoded(binaryStream, 4096);
                 for (uint x = 5000; x >= 1; x--)
                 {
                     ulong k1 = 10000 + x;
@@ -277,7 +277,7 @@ namespace openHistorian.V2.Test
                 using (var stream = new MemoryStream())
                 using (var binaryStream = stream.CreateBinaryStream())
                 {
-                    SortedTree256Coded tree = new SortedTree256Coded(binaryStream, blockSize);
+                    SortedTree256TSEncoded tree = new SortedTree256TSEncoded(binaryStream, blockSize);
 
                     Random r = new Random(seed);
                     for (int x = 0; x < maxItems; x++)
@@ -326,7 +326,7 @@ namespace openHistorian.V2.Test
                 using (var stream = new MemoryStream())
                 using (var binaryStream = stream.CreateBinaryStream())
                 {
-                    SortedTree256Coded tree = new SortedTree256Coded(binaryStream, blockSize);
+                    SortedTree256TSEncoded tree = new SortedTree256TSEncoded(binaryStream, blockSize);
 
                     Random r = new Random(seed);
                     for (int x = 0; x < maxItems; x++)
@@ -373,7 +373,7 @@ namespace openHistorian.V2.Test
                 using (var stream = new MemoryStream())
                 using (var binaryStream = stream.CreateBinaryStream())
                 {
-                    SortedTree256Coded tree = new SortedTree256Coded(binaryStream, blockSize);
+                    SortedTree256TSEncoded tree = new SortedTree256TSEncoded(binaryStream, blockSize);
 
                     Random r = new Random(seed);
                     for (int x = 0; x < maxItems; x++)

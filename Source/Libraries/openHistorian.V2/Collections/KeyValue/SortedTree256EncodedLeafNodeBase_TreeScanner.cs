@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTree256LeafNodeEncodedBase_TreeScanner.cs - Gbtc
+//  SortedTree256EncodedLeafNodeBase_TreeScanner.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,11 +23,11 @@
 
 namespace openHistorian.V2.Collections.KeyValue
 {
-    public partial class SortedTree256LeafNodeEncodedBase
+    public partial class SortedTree256EncodedLeafNodeBase
     {
         private class TreeScanner : ITreeScanner256
         {
-            SortedTree256LeafNodeEncodedBase m_tree;
+            SortedTree256EncodedLeafNodeBase m_tree;
             long m_positionOfCurrentKey;
             long m_rightSiblingNodeIndex;
             long m_nodeIndex;
@@ -38,7 +38,7 @@ namespace openHistorian.V2.Collections.KeyValue
             ulong m_lastValue2;
             long m_lastPosition;
 
-            public TreeScanner(SortedTree256LeafNodeEncodedBase tree)
+            public TreeScanner(SortedTree256EncodedLeafNodeBase tree)
             {
                 m_tree = tree;
             }
@@ -64,14 +64,16 @@ namespace openHistorian.V2.Collections.KeyValue
                     m_lastPosition = m_tree.BlockSize * m_nodeIndex + header.ValidBytes;
                     m_rightSiblingNodeIndex = header.RightSiblingNodeIndex;
                     m_positionOfCurrentKey = m_tree.BlockSize * m_nodeIndex + NodeHeader.Size;
+
+                    m_lastKey1 = 0;
+                    m_lastKey2 = 0;
+                    m_lastValue1 = 0;
+                    m_lastValue2 = 0;
                 }
 
                 m_tree.Stream.Position = m_positionOfCurrentKey;
 
-                m_lastKey1 ^= m_tree.Stream.ReadUInt64();
-                m_lastKey2 ^= m_tree.Stream.ReadUInt64();
-                m_lastValue1 ^= m_tree.Stream.ReadUInt64();
-                m_lastValue2 ^= m_tree.Stream.ReadUInt64();
+                m_tree.DecodeNextRecord(ref m_lastKey1, ref m_lastKey2, ref m_lastValue1, ref m_lastValue2);
 
                 key1 = m_lastKey1;
                 key2 = m_lastKey2;
@@ -100,10 +102,7 @@ namespace openHistorian.V2.Collections.KeyValue
 
                 while (m_tree.Stream.Position < m_lastPosition)
                 {
-                    curKey1 = curKey1 ^ m_tree.Stream.Read7BitUInt64();
-                    curKey2 = curKey2 ^ m_tree.Stream.Read7BitUInt64();
-                    curValue1 = curValue1 ^ m_tree.Stream.Read7BitUInt64();
-                    curValue2 = curValue2 ^ m_tree.Stream.Read7BitUInt64();
+                    m_tree.DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
 
                     int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
                     if (compareKeysResults >= 0)

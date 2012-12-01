@@ -85,10 +85,10 @@
     <Compile Include="Collections\ResourceQueue.cs" />
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="BitMath.cs" />
-    <Compile Include="OptimizeCompressionMethodTest.cs" />
-    <Compile Include="SortedTree256CodedTest.cs" />
-    <Compile Include="SortedTree256CompareTest.cs" />
-    <Compile Include="SortedTree256CompressedTest.cs" />
+    <Compile Include="Collections\KeyValue\OptimizeCompressionMethodTest.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256TSEncodedTest.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256CompareTest.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256DeltaEncodedTest.cs" />
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="IO\BinaryStreamWrapperTest.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />
@@ -103,7 +103,7 @@
     <Compile Include="Server\Database\ArchiveWriterTest.cs" />
     <Compile Include="Server\Database\ArchiveWriter_ArchiveFileTest.cs" />
     <Compile Include="Server\Database\ArchiveManagementTest.cs" />
-    <Compile Include="SortedTree256Test.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256Test.cs" />
     <Compile Include="IO\BufferedFileStreamTest.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBaseTest.cs" />
     <Compile Include="Collections\BitArray.cs" />
@@ -151,7 +151,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Collections\KeyValue\" />
     <Folder Include="OldCode\Specialized\" />
   </ItemGroup>
   <ItemGroup>
