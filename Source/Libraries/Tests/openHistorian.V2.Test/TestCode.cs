@@ -16,15 +16,10 @@ namespace openHistorian.V2.Test
         [STAThread]
         private static void Main()
         {
-            SortedTree256CompareTest.RunBenchmark();
             return;
-            OptimizeCompressionMethodTest.Run();
-            return;
-            openHistorian.V2.Unmanaged.BinaryStreamBenchmark.Run();
             return;
             GetEncodingValues();
             return;
-            ArchiveTest.Test();
             return;
 
             int cnt = 300000;

@@ -81,64 +81,17 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\ResourceQueueCollection.cs" />
-    <Compile Include="Collections\ResourceQueue.cs" />
-    <Compile Include="Collections\LargeArray.cs" />
-    <Compile Include="BitMath.cs" />
-    <Compile Include="Collections\KeyValue\OptimizeCompressionMethodTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256TSEncodedTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256CompareTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256DeltaEncodedTest.cs" />
-    <Compile Include="DebugStopwatch.cs" />
-    <Compile Include="IO\BinaryStreamWrapperTest.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
-    <Compile Include="Local\HistorianServer_Test2.cs" />
-    <Compile Include="Local\HistorianServer_Test1.cs" />
-    <Compile Include="Server\Configuration\XmlConfigTest.cs" />
-    <Compile Include="Server\Database\ArchiveDatabaseEngineTest.cs" />
-    <Compile Include="Server\Database\ArchiveListSnapshotTest.cs" />
-    <Compile Include="Server\Database\ArchiveInitializerTest.cs" />
-    <Compile Include="Collections\ISupportsReadonlyTest.cs" />
-    <Compile Include="Server\Database\ArchiveWriterTest.cs" />
-    <Compile Include="Server\Database\ArchiveWriter_ArchiveFileTest.cs" />
-    <Compile Include="Server\Database\ArchiveManagementTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256Test.cs" />
-    <Compile Include="IO\BufferedFileStreamTest.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBaseTest.cs" />
-    <Compile Include="Collections\BitArray.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
     <Compile Include="OldCode\Test\NodeTest.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBasicTests.cs" />
     <Compile Include="OldCode\Test\NodeTestHugeSequential.cs" />
     <Compile Include="OldCode\Test\NodeTestPageSize.cs" />
     <Compile Include="OldCode\Collections\UnmanagedArray.cs" />
-    <Compile Include="IO\BinaryStreamBenchmark.cs" />
-    <Compile Include="IO\BinaryStreamTest.cs" />
     <Compile Include="OldCode\BufferedStreamTest.cs" />
-    <Compile Include="IO\Unmanaged\PageMetaDataListTest.cs" />
-    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
-    <Compile Include="Server\Database\Archive\ArchiveFileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FileStructure\SubFileStreamTest.cs" />
     <Compile Include="OldCode\FileSystem\BenchmarkPageSizes.cs" />
-    <Compile Include="FileStructure\DiskIOEnhanced2Test.cs" />
-    <Compile Include="FileStructure\DiskIOEnhancedTest.cs" />
-    <Compile Include="FileStructure\FileHeaderBlockTest.cs" />
-    <Compile Include="FileStructure\SubFileMetaDataTest.cs" />
-    <Compile Include="FileStructure\TransactionServiceTest.cs" />
-    <Compile Include="FileStructure\IndexMapperTest.cs" />
-    <Compile Include="FileStructure\IndexParserTest.cs" />
-    <Compile Include="FileStructure\ShadowCopyAllocatorTest.cs" />
-    <Compile Include="FileStructure\TransactionalEditTest.cs" />
-    <Compile Include="Server\Database\ResourceEngineTest.cs" />
     <Compile Include="TestCode.cs" />
-    <Compile Include="Test\ArchiveTest.cs" />
-    <Compile Include="Test\CompressionTest.cs" />
     <Compile Include="OldCode\PooledMemoryStreamTest.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool.cs" />
-    <Compile Include="UnmanagedMemory\Memory.cs" />
-    <Compile Include="WinApiTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\openHistorian.V2\openHistorian.V2.csproj">
