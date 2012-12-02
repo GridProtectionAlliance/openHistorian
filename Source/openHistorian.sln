@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{9C3A3ABA-9618-49B0-9104-60678B4F3D71}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{08078FEC-378B-4585-85B2-E8B0B646D270}"
@@ -43,9 +43,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Historian2Demo", "Tools\His
 		{040E2AE7-021B-435A-ADBF-06D07EE0A67D} = {040E2AE7-021B-435A-ADBF-06D07EE0A67D}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.V2.PerformanceTests", "Libraries\Tests\openHistorian.V2.PerformanceTests\openHistorian.V2.PerformanceTests.csproj", "{B2DA9C7B-24C1-449B-816D-C72F4661983E}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 8
+		SccNumberOfProjects = 9
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -77,6 +79,10 @@ Global
 		SccProjectTopLevelParentUniqueName7 = openHistorian.sln
 		SccProjectName7 = Tools/Historian2Demo
 		SccLocalPath7 = Tools\\Historian2Demo
+		SccProjectUniqueName8 = Libraries\\Tests\\openHistorian.V2.PerformanceTests\\openHistorian.V2.PerformanceTests.csproj
+		SccProjectTopLevelParentUniqueName8 = openHistorian.sln
+		SccProjectName8 = Libraries/Tests/openHistorian.V2.PerformanceTests
+		SccLocalPath8 = Libraries\\Tests\\openHistorian.V2.PerformanceTests
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -162,6 +168,16 @@ Global
 		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Release|Mixed Platforms.Build.0 = Release|x86
 		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Release|x86.ActiveCfg = Release|x86
 		{C714C435-C963-4662-8AF2-2B32A54B1B8D}.Release|x86.Build.0 = Release|x86
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -177,5 +193,6 @@ Global
 		{2E9DA7CC-960A-40A6-BC90-1FBD7B7994F0} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{C714C435-C963-4662-8AF2-2B32A54B1B8D} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{4CF92B76-BD91-41C7-BB5B-D290B1730DEF} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
+		{B2DA9C7B-24C1-449B-816D-C72F4661983E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 	EndGlobalSection
 EndGlobal

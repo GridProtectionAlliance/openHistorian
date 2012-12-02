@@ -41,7 +41,7 @@ namespace openHistorian.V2.IO.Unmanaged
     /// </remarks>
     //ToDo: Consider allowing this class to scale horizontally like how the concurrent dictionary scales.
     //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
-    unsafe public partial class BufferedFileStream : ISupportsBinaryStreamSizing
+    unsafe public partial class BufferedFileStream : ISupportsBinaryStreamAdvanced
     {
 
         /// <summary>
@@ -69,6 +69,21 @@ namespace openHistorian.V2.IO.Unmanaged
 
         IoQueue m_queue;
 
+        /// <summary>
+        /// This event occurs any time new data is added to the BinaryStream's 
+        /// internal memory. It gives the consumer of this class an opportunity to 
+        /// properly initialize the data before it is handed to an IoSession.
+        /// </summary>
+        public event EventHandler<StreamBlockEventArgs> BlockLoadedFromDisk;
+
+        /// <summary>
+        /// This event occurs right before something is committed to the disk. 
+        /// This gives the opportunity to finalize the data, such as updating checksums.
+        /// After the block has been successfully written <see cref="ISupportsBinaryStreamAdvanced.BlockLoadedFromDisk"/>
+        /// is called if the block is to remain in memory.
+        /// </summary>
+        public event EventHandler<StreamBlockEventArgs> BlockAboutToBeWrittenToDisk;
+
         public BufferedFileStream(FileStream stream, bool ownsStream = false)
             : this(stream, Globals.BufferPool, 4096, ownsStream)
         {
@@ -86,7 +101,7 @@ namespace openHistorian.V2.IO.Unmanaged
             m_ownsStream = ownsStream;
             m_pool = pool;
             m_dirtyPageSize = dirtyPageSize;
-            m_queue = new IoQueue(stream, pool.PageSize, dirtyPageSize);
+            m_queue = new IoQueue(stream, pool.PageSize, dirtyPageSize, this);
 
             m_syncRoot = new object();
             m_syncFlush = new object();
@@ -221,7 +236,7 @@ namespace openHistorian.V2.IO.Unmanaged
             return new BinaryStream(this);
         }
 
-        long ISupportsBinaryStreamSizing.Length
+        long ISupportsBinaryStreamAdvanced.Length
         {
             get
             {
@@ -229,7 +244,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
-        long ISupportsBinaryStreamSizing.SetLength(long length)
+        long ISupportsBinaryStreamAdvanced.SetLength(long length)
         {
             lock (m_syncRoot)
             {
@@ -270,5 +285,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 return m_disposed;
             }
         }
+
+
     }
 }

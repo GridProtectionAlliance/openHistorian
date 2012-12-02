@@ -225,6 +225,8 @@ namespace openHistorian.V2.FileStructure
         /// <remarks>This function will increase the size of the file if the block excedes the current size of the file.</remarks>
         public void BeginWriteToNewBlock(int blockIndex)
         {
+            WriteCount++;
+            ReadCount++;
             CheckIsDisposed();
             if (m_diskIo.IsReadOnly)
                 throw new ReadOnlyException("File system is read only");
@@ -264,6 +266,8 @@ namespace openHistorian.V2.FileStructure
         /// <returns></returns>
         public void BeginWriteToExistingBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
+            WriteCount++;
+            ReadCount++;
             CheckIsDisposed();
 
             if (m_diskIo.IsReadOnly)
@@ -317,6 +321,7 @@ namespace openHistorian.V2.FileStructure
         /// <returns></returns>
         public void Read(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
+            ReadCount++;
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             if (m_diskIo.IsDisposed)
@@ -426,37 +431,11 @@ namespace openHistorian.V2.FileStructure
 
         #region [ Static ]
 
-        /// <summary>
-        /// Checks how many times the checksum was computed.  This is used to see IO amplification.
-        /// It is currently a debug term that will soon disappear.
-        /// </summary>
-        static internal long ChecksumCount;
 
+        static internal long ReadCount;
+        static internal long WriteCount;
 
-        /// <summary>
-        /// Computes the custom checksum of the data.
-        /// </summary>
-        /// <param name="data">the data to compute the checksum for.</param>
-        /// <param name="checksum1">the 64 bit component of this checksum</param>
-        /// <param name="checksum2">the 32 bit component of this checksum</param>
-        void ComputeChecksum(byte* data, out long checksum1, out int checksum2)
-        {
-            ChecksumCount += 1;
-            ulong* ptr = (ulong*)data;
-
-            ulong a = 1;
-            ulong b = 0;
-
-            int iterationCount = m_blockSize / 8 - 2;
-
-            for (int x = 0; x < iterationCount; x++)
-            {
-                a += ptr[x];
-                b += a;
-            }
-            checksum1 = (long)b;
-            checksum2 = (int)a ^ (int)(a >> 32);
-        }
+        
 
         ///// <summary>
         ///// Computes the custom checksum of the data.
@@ -493,13 +472,7 @@ namespace openHistorian.V2.FileStructure
         /// <returns>State information about the state of the footer data</returns>
         IoReadState IsFooterValid(byte* data, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
-            long checksum1;
-            int checksum2;
-            ComputeChecksum(data, out checksum1, out checksum2);
-            long checksumInData1 = *(long*)(data + m_blockSize - 16);
-            int checksumInData2 = *(int*)(data + m_blockSize - 8);
-
-            if (checksum1 == checksumInData1 && checksum2 == checksumInData2)
+            if (data[m_blockSize - 4] == 1)
             {
                 if (data[m_blockSize - 32] != (byte)blockType)
                     return IoReadState.BlockTypeMismatch;
@@ -528,16 +501,13 @@ namespace openHistorian.V2.FileStructure
             if (indexValue < 0 | fileIdNumber < 0 | snapshotSequenceNumber < 0)
                 throw new Exception();
 
+            data[m_blockSize - 4] = 1; //Write checksum is good
+            data[m_blockSize - 3] = 1; //Write checksum needs to be updated
+
             data[m_blockSize - 32] = (byte)blockType;
             *(int*)(data + m_blockSize - 28) = indexValue;
             *(int*)(data + m_blockSize - 24) = fileIdNumber;
             *(int*)(data + m_blockSize - 20) = snapshotSequenceNumber;
-
-            long checksum1;
-            int checksum2;
-            ComputeChecksum(data, out checksum1, out checksum2);
-            *(long*)(data + m_blockSize - 16) = checksum1;
-            *(int*)(data + m_blockSize - 8) = checksum2;
         }
 
         #endregion

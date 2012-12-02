@@ -241,7 +241,7 @@ namespace openHistorian.V2.IO.Unmanaged.Test
         {
             using (var fs = new MemoryFS())
             {
-                var io = new BufferedFileStream.IoQueue(fs, 65536, 4096);
+                var io = new BufferedFileStream.IoQueue(fs, 65536, 4096, null);
                 byte[] tmpForward = new byte[65536];
                 for (int x = 0; x < tmpForward.Length; x++)
                     tmpForward[x] = (byte)(x / 4096 + 1);

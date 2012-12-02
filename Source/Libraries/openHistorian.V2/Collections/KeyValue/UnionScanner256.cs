@@ -22,7 +22,6 @@ namespace openHistorian.V2.Collections.KeyValue
 
         public void SeekToKey(ulong key1, ulong key2)
         {
-            
             throw new NotImplementedException();
         }
     }

@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using System;
 using openHistorian.V2.IO;
 
 namespace openHistorian.V2.Collections.KeyValue
@@ -29,6 +30,11 @@ namespace openHistorian.V2.Collections.KeyValue
     {
 
         #region [ Members ]
+
+        long m_cachedNodeIndex;
+        ulong m_lastKey1;
+        ulong m_lastKey2;
+        int m_lastOffset;
 
         const int KeySize = sizeof(ulong) + sizeof(ulong);
         const int StructureSize = KeySize + sizeof(ulong) + sizeof(ulong);
@@ -41,6 +47,7 @@ namespace openHistorian.V2.Collections.KeyValue
         protected SortedTree256LeafNodeBase(BinaryStreamBase stream)
             : base(stream)
         {
+            m_cachedNodeIndex = -1;
             Initialize();
         }
 
@@ -48,6 +55,7 @@ namespace openHistorian.V2.Collections.KeyValue
         protected SortedTree256LeafNodeBase(BinaryStreamBase stream, int blockSize)
             : base(stream, blockSize)
         {
+            m_cachedNodeIndex = -1;
             Initialize();
         }
 
@@ -63,34 +71,50 @@ namespace openHistorian.V2.Collections.KeyValue
             NodeHeader.Save(Stream, 0, 0, 0);
         }
 
-        //protected override bool LeafNodeInsert(IDataScanner dataScanner, long nodeIndex, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid)
-        //{
-        //    //ulong firstKey1
-        //    //while (isValid)
-        //    //{
-                
-        //    //}
-           
-
-        //    //return true;
-        //}
-
         protected override bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            int offset;
+            int offset = 0;
             var header = new NodeHeader(Stream, BlockSize, nodeIndex);
 
             //Find the best location to insert
             //This is done before checking if a split is required to prevent splitting 
             //if a duplicate key is found
-            if (FindOffsetOfKey(nodeIndex, header.NodeRecordCount, key1, key2, out offset)) //If found
-                return false;
+
+            bool skipScan = false; //If using the cached values reveals that the current key is after the end of the stream. the sequential scan can be skipped.
+            //m_cachedNodeIndex = -1;
+            if (m_cachedNodeIndex == nodeIndex)
+            {
+                int compareKeysResults = (CompareKeys(key1, key2, m_lastKey1, m_lastKey2));
+                if (compareKeysResults == 0) //if keys match, result is found.
+                {
+                    return false;
+                }
+                if (compareKeysResults > 0) //if the key is greater than the test index, the insert will occur at the end of the stream.
+                {
+                    skipScan = true;
+                    offset = m_lastOffset;
+                }
+            }
+
+            if (!skipScan)
+            {
+                if (FindOffsetOfKey(nodeIndex, header.NodeRecordCount, key1, key2, out offset)) //If found
+                    return false;
+            }
 
             //Check if the node needs to be split
             if (header.NodeRecordCount >= m_maximumRecordsPerNode)
             {
-                SplitNodeThenInsert(key1, key2, value1, value2, nodeIndex);
-                return true;
+                if (header.RightSiblingNodeIndex == 0 && offset == NodeHeader.Size + StructureSize * m_maximumRecordsPerNode)
+                {
+                    NewNodeThenInsert(key1, key2, value1, value2, nodeIndex);
+                    return true;
+                }
+                else
+                {
+                    SplitNodeThenInsert(key1, key2, value1, value2, nodeIndex);
+                    return true;
+                }
             }
 
             //set the stream's position to the best insert location.
@@ -101,6 +125,14 @@ namespace openHistorian.V2.Collections.KeyValue
             if (bytesAfterInsertPositionToShift > 0)
             {
                 Stream.InsertBytes(StructureSize, bytesAfterInsertPositionToShift);
+                m_cachedNodeIndex = -1;
+            }
+            else
+            {
+                m_cachedNodeIndex = nodeIndex;
+                m_lastKey1 = key1;
+                m_lastKey2 = key2;
+                m_lastOffset = offset + StructureSize;
             }
 
             //Insert the data
@@ -193,8 +225,37 @@ namespace openHistorian.V2.Collections.KeyValue
             return false;
         }
 
+        void NewNodeThenInsert(ulong key1, ulong key2, ulong value1, ulong value2, long firstNodeIndex)
+        {
+            m_cachedNodeIndex = -1;
+            NodeHeader firstNodeHeader = new NodeHeader(Stream, BlockSize, firstNodeIndex);
+            NodeHeader secondNodeHeader = default(NodeHeader);
+
+            //Debug code.
+            if (firstNodeHeader.RightSiblingNodeIndex != 0)
+                throw new Exception();
+
+            long secondNodeIndex = GetNextNewNodeIndex();
+
+            firstNodeHeader.RightSiblingNodeIndex = secondNodeIndex;
+            firstNodeHeader.Save(Stream, BlockSize, firstNodeIndex);
+
+            secondNodeHeader.LeftSiblingNodeIndex = firstNodeIndex;
+
+            Stream.Position = secondNodeIndex * BlockSize + NodeHeader.Size;
+            Stream.Write(key1);
+            Stream.Write(key2);
+            Stream.Write(value1);
+            Stream.Write(value2);
+            secondNodeHeader.NodeRecordCount = 1;
+            secondNodeHeader.Save(Stream, BlockSize, secondNodeIndex);
+
+            NodeWasSplit(0, firstNodeIndex, key1, key2, secondNodeIndex);
+        }
+
         void SplitNodeThenInsert(ulong key1, ulong key2, ulong value1, ulong value2, long firstNodeIndex)
         {
+            m_cachedNodeIndex = -1;
             NodeHeader firstNodeHeader = new NodeHeader(Stream, BlockSize, firstNodeIndex);
             NodeHeader secondNodeHeader = default(NodeHeader);
 

@@ -53,7 +53,6 @@ namespace openHistorian.V2.Collections.KeyValue
             public bool IsValid;
             public bool Contains(ulong key1, ulong key2)
             {
-                //return false;
                 return IsValid &&
                     (IsLowerNull || (CompareKeys(LowerKey1, LowerKey2, key1, key2) <= 0)) &&
                     (IsUpperNull || (CompareKeys(key1, key2, UpperKey1, UpperKey2) < 0));
@@ -116,6 +115,17 @@ namespace openHistorian.V2.Collections.KeyValue
         #region [ Properties ]
 
         /// <summary>
+        /// Determines if the tree has any data in it.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                return m_firstKey > m_lastKey;
+            }
+        }
+
+        /// <summary>
         /// The first key in the tree.  
         /// If the first key is after the last key, 
         /// there is no data in the tree.
@@ -151,6 +161,7 @@ namespace openHistorian.V2.Collections.KeyValue
                 return m_stream;
             }
         }
+
         /// <summary>
         /// Contains the block size that the tree nodes will be alligned on.
         /// </summary>
@@ -162,6 +173,9 @@ namespace openHistorian.V2.Collections.KeyValue
             }
         }
 
+        /// <summary>
+        /// Gets the address of the root node.
+        /// </summary>
         protected long RootNodeIndexAddress
         {
             get
@@ -170,6 +184,9 @@ namespace openHistorian.V2.Collections.KeyValue
             }
         }
 
+        /// <summary>
+        /// Gets the level of the root node.
+        /// </summary>
         protected byte RootNodeLevel
         {
             get
@@ -182,36 +199,8 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Public Methods ]
 
-        //Old one that wasn't cached.
-        ///// <summary>
-        ///// Inserts the following data into the tree.
-        ///// </summary>
-        ///// <param name="key1">The unique key value.</param>
-        ///// <param name="key2">The unique key value.</param>
-        ///// <param name="value1">The value to insert.</param>
-        ///// <param name="value2">The value to insert.</param>
-        //public void Add(ulong key1, ulong key2, ulong value1, ulong value2)
-        //{
-        //    if (key1 < m_firstKey)
-        //        m_firstKey = key1;
-        //    if (key1 > m_lastKey)
-        //        m_lastKey = key1;
-
-        //    long nodeIndexAddress = m_rootNodeIndexAddress;
-        //    for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-        //    {
-        //        nodeIndexAddress = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndexAddress, key1, key2);
-        //    }
-        //    if (LeafNodeInsert(nodeIndexAddress, key1, key2, value1, value2))
-        //        return;
-        //    throw new Exception("Key already exists");
-        //}
-
-        //public static long ShortcutsTaken = 0;
-        //public static long PointsAdded = 0;
-
         /// <summary>
-        /// Inserts the following data into the tree.
+        /// Adds the following data to the tree.
         /// </summary>
         /// <param name="key1">The unique key value.</param>
         /// <param name="key2">The unique key value.</param>
@@ -227,11 +216,9 @@ namespace openHistorian.V2.Collections.KeyValue
             long nodeIndexAddress = m_rootNodeIndexAddress;
             for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
-                //PointsAdded++;
                 BucketInfo currentBucket = m_cache[nodeLevel - 1];
                 if (currentBucket.Contains(key1, key2))
                 {
-                    //ShortcutsTaken++;
                     nodeIndexAddress = currentBucket.NodeIndex;
                 }
                 else
@@ -246,7 +233,7 @@ namespace openHistorian.V2.Collections.KeyValue
                 return;
             throw new Exception("Key already exists");
         }
-
+        
         //public void AddRange(IDataScanner dataScanner)
         //{
         //    ulong key1, key2, value1, value2;
@@ -274,13 +261,12 @@ namespace openHistorian.V2.Collections.KeyValue
         //}
 
         /// <summary>
-        /// Returns the data for the following key. 
+        /// Gets the data for the following key. 
         /// </summary>
         /// <param name="key1">The key to look up.</param>
         /// <param name="key2">The key to look up.</param>
         /// <param name="value1">the value output</param>
         /// <param name="value2">the value output</param>
-        /// <returns>Null or the Default structure value if the key does not exist.</returns>
         public void Get(ulong key1, ulong key2, out ulong value1, out ulong value2)
         {
             long nodeIndex = m_rootNodeIndexAddress;
@@ -307,6 +293,10 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Abstract Methods ]
 
+        /// <summary>
+        /// Gets the type of tree that exists. 
+        /// Each encoding type should be unique.  
+        /// </summary>
         protected abstract Guid FileType { get; }
 
         #region [ Internal Node Methods ]
@@ -320,7 +310,6 @@ namespace openHistorian.V2.Collections.KeyValue
 
         #region [ Leaf Node Methods ]
 
-        //protected abstract bool LeafNodeInsert(IDataScanner dataScanner, long nodeIndex, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid);
         protected abstract bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2);
         protected abstract bool LeafNodeGetValue(long nodeIndex, ulong key1, ulong key2, out ulong value1, out ulong value2);
         protected abstract void LeafNodeCreateEmptyNode(long newNodeIndex);
@@ -432,6 +421,16 @@ namespace openHistorian.V2.Collections.KeyValue
             if (firstKey2 < secondKey2) return -1;
 
             return 0;
+        }
+
+        //ToDo: Implement these shortcuts
+        protected static bool IsGreaterThanOrEqualTo(ulong key1, ulong key2, ulong compareKey1, ulong compareKey2)
+        {
+            return (key1 > compareKey1) | ((key1 == compareKey1) & (key2 >= compareKey2));
+        }
+        protected static bool IsGreaterThan(ulong key1, ulong key2, ulong compareKey1, ulong compareKey2)
+        {
+            return (key1 > compareKey1) | ((key1 == compareKey1) & (key2 > compareKey2));
         }
 
         void ClearCache()

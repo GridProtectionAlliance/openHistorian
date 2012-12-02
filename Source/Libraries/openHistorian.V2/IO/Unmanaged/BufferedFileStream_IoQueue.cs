@@ -31,7 +31,8 @@ namespace openHistorian.V2.IO.Unmanaged
 {
     public partial class BufferedFileStream
     {
-        public static long BytesWritten=0;
+
+        public static long BytesWritten = 0;
         public static long BytesRead = 0;
 
         /// <summary>
@@ -42,6 +43,7 @@ namespace openHistorian.V2.IO.Unmanaged
         {
             int m_bufferPoolSize;
             int m_dirtyPageSize;
+            BufferedFileStream m_baseStream;
             FileStream m_stream;
             ResourceQueue<byte[]> m_bufferQueue;
             object m_syncRoot;
@@ -59,7 +61,7 @@ namespace openHistorian.V2.IO.Unmanaged
             /// <param name="stream">The filestream to use as the base stream</param>
             /// <param name="bufferPoolSize">The size of a buffer pool entry</param>
             /// <param name="dirtyPageSize">The size of an individual dirty page</param>
-            public IoQueue(FileStream stream, int bufferPoolSize, int dirtyPageSize)
+            public IoQueue(FileStream stream, int bufferPoolSize, int dirtyPageSize, BufferedFileStream baseStream)
             {
                 if (bufferPoolSize < 4096)
                     throw new ArgumentOutOfRangeException("Must be greater than 4096", "bufferPoolSize");
@@ -72,6 +74,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 if (dirtyPageSize * 64 < bufferPoolSize)
                     throw new ArgumentException("Cannot be greater than 64 * dirtyPageSize", "bufferPoolSize");
 
+                m_baseStream = baseStream;
                 m_bufferPoolSize = bufferPoolSize;
                 m_dirtyPageSize = dirtyPageSize;
 
@@ -100,6 +103,13 @@ namespace openHistorian.V2.IO.Unmanaged
                 BytesRead += bytesRead;
                 if (bytesRead < buffer.Length)
                     Array.Clear(buffer, bytesRead, buffer.Length - bytesRead);
+
+                fixed (byte* lp = buffer)
+                {
+                    if (m_baseStream.BlockLoadedFromDisk != null)
+                        m_baseStream.BlockLoadedFromDisk(m_baseStream, new StreamBlockEventArgs(position, (IntPtr)lp, buffer.Length));
+                }
+
                 callback(buffer);
                 m_bufferQueue.Enqueue(buffer);
             }
@@ -118,6 +128,8 @@ namespace openHistorian.V2.IO.Unmanaged
                 {
                     if (block.IsDirtyFlags == allPagesAreDirty) //if all pages need to be written, one can shortcut
                     {
+                        if (m_baseStream.BlockAboutToBeWrittenToDisk != null)
+                            m_baseStream.BlockAboutToBeWrittenToDisk(m_baseStream, new StreamBlockEventArgs(block.PositionIndex * (long)m_bufferPoolSize, (IntPtr)block.LocationOfPage, buffer.Length));
                         Marshal.Copy((IntPtr)block.LocationOfPage, buffer, 0, buffer.Length);
                         IAsyncResult results;
                         lock (m_syncRoot)
@@ -126,6 +138,10 @@ namespace openHistorian.V2.IO.Unmanaged
                             results = m_stream.BeginWrite(buffer, 0, buffer.Length, null, null);
                         }
                         m_stream.EndWrite(results);
+
+                        if (m_baseStream.BlockLoadedFromDisk != null)
+                            m_baseStream.BlockLoadedFromDisk(m_baseStream, new StreamBlockEventArgs(block.PositionIndex * (long)m_bufferPoolSize, (IntPtr)block.LocationOfPage, buffer.Length));
+
                         BytesWritten += buffer.Length;
                     }
                     else //otherwise, write each dirty page one at a time.
@@ -134,15 +150,23 @@ namespace openHistorian.V2.IO.Unmanaged
                         {
                             if (((block.IsDirtyFlags >> x) & 1) == 1) //if page is dirty
                             {
-                                Marshal.Copy((IntPtr)block.LocationOfPage + (x * m_dirtyPageSize), buffer, 0, m_dirtyPageSize);
+                                long position = block.PositionIndex * (long)m_bufferPoolSize + x * m_dirtyPageSize;
+                                IntPtr location = (IntPtr)block.LocationOfPage + (x * m_dirtyPageSize);
+                                if (m_baseStream.BlockAboutToBeWrittenToDisk != null)
+                                    m_baseStream.BlockAboutToBeWrittenToDisk(m_baseStream, new StreamBlockEventArgs(position, location, m_dirtyPageSize));
+
+                                Marshal.Copy(location, buffer, 0, m_dirtyPageSize);
                                 IAsyncResult results;
                                 lock (m_syncRoot)
                                 {
-                                    m_stream.Position = block.PositionIndex * (long)m_bufferPoolSize +
-                                                                     x * m_dirtyPageSize;
+                                    m_stream.Position = position;
                                     results = m_stream.BeginWrite(buffer, 0, m_dirtyPageSize, null, null);
                                 }
                                 m_stream.EndWrite(results);
+
+                                if (m_baseStream.BlockLoadedFromDisk != null)
+                                    m_baseStream.BlockLoadedFromDisk(m_baseStream, new StreamBlockEventArgs(position, location, m_dirtyPageSize));
+
                                 BytesWritten += m_dirtyPageSize;
                             }
                         }

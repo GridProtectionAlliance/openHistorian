@@ -147,6 +147,8 @@ namespace openHistorian.V2.Local
         [TestMethod]
         public void TestOnlyReaderFolder()
         {
+            Array.ForEach(Directory.GetFiles("c:\\temp\\", "*.d2"), File.Delete);
+
             string file1 = "c:\\temp\\archiveOne.d2";
             string file2 = "c:\\temp\\archiveTwo.d2";
             CreateFile(file1, 10, 100, 10);

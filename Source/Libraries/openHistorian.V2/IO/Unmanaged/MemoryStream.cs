@@ -32,7 +32,7 @@ namespace openHistorian.V2.IO.Unmanaged
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.
     /// </summary>
-    unsafe public partial class MemoryStream : ISupportsBinaryStreamSizing
+    unsafe public partial class MemoryStream : ISupportsBinaryStreamAdvanced
     {
 
         BufferPool m_pool;
@@ -68,6 +68,24 @@ namespace openHistorian.V2.IO.Unmanaged
         /// </summary>
         public long LookupCount = 0;
 
+        /// <summary>
+        /// This event occurs any time new data is added to the BinaryStream's 
+        /// internal memory. It gives the consumer of this class an opportunity to 
+        /// properly initialize the data before it is handed to an IoSession.
+        /// </summary>
+        public event EventHandler<StreamBlockEventArgs> BlockLoadedFromDisk;
+
+        /// <summary>
+        /// This event occurs right before something is committed to the disk. 
+        /// This gives the opportunity to finalize the data, such as updating checksums.
+        /// After the block has been successfully written <see cref="ISupportsBinaryStreamAdvanced.BlockLoadedFromDisk"/>
+        /// is called if the block is to remain in memory.
+        /// </summary>
+        public event EventHandler<StreamBlockEventArgs> BlockAboutToBeWrittenToDisk;
+
+        /// <summary>
+        /// Creates a new <see cref="MemoryStream"/> using the default <see cref="BufferPool"/>.
+        /// </summary>
         public MemoryStream()
             : this(Globals.BufferPool)
         {
@@ -116,6 +134,12 @@ namespace openHistorian.V2.IO.Unmanaged
                 IntPtr pagePointer;
                 m_pool.AllocatePage(out pageIndex, out pagePointer);
                 Memory.Clear((byte*)pagePointer, m_pool.PageSize);
+
+                if (BlockLoadedFromDisk != null)
+                {
+                    BlockLoadedFromDisk(this, new StreamBlockEventArgs(m_pageIndex.Count * (long)BlockSize, pagePointer, BlockSize));
+                }
+
                 m_pageIndex.Add(pageIndex);
                 m_pagePointer.Add(pagePointer.ToInt64());
             }
@@ -308,7 +332,7 @@ namespace openHistorian.V2.IO.Unmanaged
             return new BinaryStream(this);
         }
 
-        long ISupportsBinaryStreamSizing.Length
+        long ISupportsBinaryStreamAdvanced.Length
         {
             get
             {
@@ -316,7 +340,7 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
-        long ISupportsBinaryStreamSizing.SetLength(long length)
+        long ISupportsBinaryStreamAdvanced.SetLength(long length)
         {
             if (FileSize < length)
             {
@@ -336,6 +360,8 @@ namespace openHistorian.V2.IO.Unmanaged
             }
             return FileSize;
         }
+
+
 
         public int BlockSize
         {

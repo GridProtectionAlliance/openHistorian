@@ -47,7 +47,7 @@ namespace openHistorian.V2
 
                 fileEditor.Commit();
             }
-            long oldCount = FileStructure.DiskIoSession.ChecksumCount;
+            long oldCount = FileStructure.DiskIo.ChecksumCount;
 
             var reader1 = s_archiveFile.CreateSnapshot().OpenInstance().GetDataRange();
             reader1.SeekToKey(0,0);
@@ -75,7 +75,7 @@ namespace openHistorian.V2
             //MessageBox.Show(openHistorian.V2.Collections.KeyValue.BasicTreeBase.PointsAdded + " " +
             //                openHistorian.V2.Collections.KeyValue.BasicTreeBase.ShortcutsTaken);
             MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + oldCount);
-            MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt + " " + (FileStructure.DiskIoSession.ChecksumCount - oldCount));
+            MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt + " " + (FileStructure.DiskIo.ChecksumCount - oldCount));
         }
 
         unsafe static void ReaderNewPoint(OldHistorianReader.Points pt)

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ISupportsBinaryStreamResizing.cs - Gbtc
+//  ISupportsBinaryStreamAdvanced.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,13 +21,45 @@
 //
 //******************************************************************************************************
 
+using System;
+using openHistorian.V2.FileStructure;
+
 namespace openHistorian.V2.IO.Unmanaged
 {
-    /// <summary>
-    /// A ISupportsBinaryStream that is a definate size and can thus be resized.
-    /// </summary>
-    interface ISupportsBinaryStreamSizing : ISupportsBinaryStream
+    public class StreamBlockEventArgs
+        : EventArgs
     {
+        public long Position { get; private set; }
+        public IntPtr Data { get; private set; }
+        public int Length { get; private set; }
+        public StreamBlockEventArgs(long position, IntPtr data, int length)
+        {
+            Position = position;
+            Data = data;
+            Length = length;
+        }
+    }
+    /// <summary>
+    /// A <see cref="ISupportsBinaryStream"/> that has many advance functions 
+    /// that are needed for <see cref="DiskIo"/> to function properly.
+    /// </summary>
+    interface ISupportsBinaryStreamAdvanced : ISupportsBinaryStream
+    {
+        /// <summary>
+        /// This event occurs any time new data is added to the BinaryStream's 
+        /// internal memory. It gives the consumer of this class an opportunity to 
+        /// properly initialize the data before it is handed to an IoSession.
+        /// </summary>
+        event EventHandler<StreamBlockEventArgs> BlockLoadedFromDisk;
+        
+        /// <summary>
+        /// This event occurs right before something is committed to the disk. 
+        /// This gives the opportunity to finalize the data, such as updating checksums.
+        /// After the block has been successfully written <see cref="BlockLoadedFromDisk"/>
+        /// is called if the block is to remain in memory.
+        /// </summary>
+        event EventHandler<StreamBlockEventArgs> BlockAboutToBeWrittenToDisk;
+        
         /// <summary>
         /// Gets the unit size of an individual block
         /// </summary>

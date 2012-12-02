@@ -36,15 +36,16 @@ namespace openHistorian.V2.FileStructure
         /// The boundry which marks the last page that is read only.
         /// </summary>
         int m_lastReadOnlyBlock;
-        ISupportsBinaryStreamSizing m_stream;
-        
+
+        ISupportsBinaryStreamAdvanced m_stream;
+
         int m_blockSize;
 
         #endregion
 
         #region [ Constructors ]
 
-        public DiskIo(int blockSize, ISupportsBinaryStreamSizing stream, int lastReadOnlyBlock)
+        public DiskIo(int blockSize, ISupportsBinaryStreamAdvanced stream, int lastReadOnlyBlock)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream");
@@ -54,7 +55,12 @@ namespace openHistorian.V2.FileStructure
             m_blockSize = blockSize;
             m_stream = stream;
             m_lastReadOnlyBlock = lastReadOnlyBlock;
+
+            m_stream.BlockAboutToBeWrittenToDisk += m_stream_BlockAboutToBeWrittenToDisk;
+            m_stream.BlockLoadedFromDisk += m_stream_BlockLoadedFromDisk;
         }
+
+
 
         #endregion
 
@@ -115,9 +121,9 @@ namespace openHistorian.V2.FileStructure
             CheckIsDisposed();
             if (m_stream.IsReadOnly)
                 throw new ReadOnlyException();
-            m_stream.Flush();  
+            m_stream.Flush();
         }
-        
+
         //ToDo: Activate these functions.
         ///// <summary>
         ///// Flushes all edits to the underlying stream.
@@ -226,6 +232,97 @@ namespace openHistorian.V2.FileStructure
 
 
         #endregion
+
+        #region [ Event Processing ]
+
+        unsafe void m_stream_BlockLoadedFromDisk(object sender, StreamBlockEventArgs e)
+        {
+            if ((e.Position & (m_blockSize - 1)) != 0)
+                throw new Exception("Position not alligned on block boundary");
+            if ((e.Length & (m_blockSize - 1)) != 0)
+                throw new Exception("Length is not a multiple of the block size");
+
+            for (int offset = 0; offset < e.Length; offset += m_blockSize)
+            {
+                long checksum1;
+                int checksum2;
+                byte* data = (byte*)e.Data + offset;
+                ComputeChecksum(data, out checksum1, out checksum2);
+                long checksumInData1 = *(long*)(data + m_blockSize - 16);
+                int checksumInData2 = *(int*)(data + m_blockSize - 8);
+                if (checksum1 == checksumInData1 && checksum2 == checksumInData2)
+                {
+                    //Record checksum is valid and put zeroes in all other fields.
+                    *(int*)(data + m_blockSize - 4) = 1;
+                }
+                else
+                {
+                    //Record checksum is not valid and put zeroes in all other fields.
+                    *(int*)(data + m_blockSize - 4) = 2;
+                }
+            }
+        }
+
+        unsafe void m_stream_BlockAboutToBeWrittenToDisk(object sender, StreamBlockEventArgs e)
+        {
+            if ((e.Position & (m_blockSize - 1)) != 0)
+                throw new Exception("Position not alligned on block boundary");
+            if ((e.Length & (m_blockSize - 1)) != 0)
+                throw new Exception("Length is not a multiple of the block size");
+
+            for (int offset = 0; offset < e.Length; offset += m_blockSize)
+            {
+                byte* data = (byte*)e.Data + offset;
+                
+                //Determine if the checksum needs to be recomputed.
+                if (data[m_blockSize - 3] != 0)
+                {
+                    long checksum1;
+                    int checksum2;
+                    ComputeChecksum(data, out checksum1, out checksum2);
+                    *(long*)(data + m_blockSize - 16) = checksum1;
+                    *(int*)(data + m_blockSize - 8) = checksum2;
+                }
+                //reset value to null;
+                *(int*)(data + m_blockSize - 4) = 0;
+            }
+        }
+
+        /// <summary>
+        /// Computes the custom checksum of the data.
+        /// </summary>
+        /// <param name="data">the data to compute the checksum for.</param>
+        /// <param name="checksum1">the 64 bit component of this checksum</param>
+        /// <param name="checksum2">the 32 bit component of this checksum</param>
+        unsafe void ComputeChecksum(byte* data, out long checksum1, out int checksum2)
+        {
+            //checksum1 = 0;
+            //checksum2 = 0;
+            //return;
+            ChecksumCount += 1;
+            ulong* ptr = (ulong*)data;
+
+            ulong a = 1;
+            ulong b = 0;
+
+            int iterationCount = m_blockSize / 8 - 2;
+
+            for (int x = 0; x < iterationCount; x++)
+            {
+                a += ptr[x];
+                b += a;
+            }
+            checksum1 = (long)b;
+            checksum2 = (int)a ^ (int)(a >> 32);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Checks how many times the checksum was computed.  This is used to see IO amplification.
+        /// It is currently a debug term that will soon disappear.
+        /// </summary>
+        static internal long ChecksumCount;
 
     }
 }

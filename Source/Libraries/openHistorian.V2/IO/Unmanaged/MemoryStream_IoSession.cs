@@ -32,7 +32,7 @@ namespace openHistorian.V2.IO.Unmanaged
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.
     /// </summary>
-    unsafe public partial class MemoryStream : ISupportsBinaryStreamSizing
+    unsafe public partial class MemoryStream
     {
         // Nested Types
         class IoSession : IBinaryStreamIoSession

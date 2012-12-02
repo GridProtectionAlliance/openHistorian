@@ -83,11 +83,10 @@ namespace openHistorian.V2.Local
                 }
                 else
                 {
-                    if (!File.Exists(path) || !Directory.Exists(path))
+                    if (!(File.Exists(path) || Directory.Exists(path)))
                         throw new ArgumentException("Could not locate the specified path","path");
                 }
                 
-
                 m_paths.Add(path);
                 if (allowWritingToPath)
                     m_savePaths.Add(path);

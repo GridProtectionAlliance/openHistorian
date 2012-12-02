@@ -24,12 +24,31 @@
 namespace openHistorian.V2.Collections.KeyValue
 {
     /// <summary>
-    /// Assists in the parsing of data from the <see cref="SortedTree256"/>.
+    /// Assists in the parsing of data from a <see cref="SortedTree256Base"/>.
     /// </summary>
     public interface ITreeScanner256
     {
+        /// <summary>
+        /// Advances the tree to the next available entry.
+        /// </summary>
+        /// <param name="key1">an output parameter to store the first key</param>
+        /// <param name="key2">an output parameter to store the second key</param>
+        /// <param name="value1">an output parameter to store the first value</param>
+        /// <param name="value2">an output parameter to store the second value</param>
+        /// <returns>
+        /// Returns true if the next value was found. Returns false if the end of the tree has been encountered.
+        /// </returns>
         bool GetNextKey(out ulong key1, out ulong key2, out ulong value1, out ulong value2);
         
+        /// <summary>
+        /// Moves the current position to the location where the provided key should be located. 
+        /// </summary>
+        /// <param name="key1"></param>
+        /// <param name="key2"></param>
+        /// <remarks>
+        /// If the key does not exist in the database, the location will be at the next point in the list. 
+        /// To seek to the beginning of the tree. Seek to 0,0. 
+        /// </remarks>
         void SeekToKey(ulong key1, ulong key2);
     }
 }

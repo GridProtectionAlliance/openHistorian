@@ -116,7 +116,7 @@
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
-    <Compile Include="IO\Unmanaged\ISupportsBinaryStreamSizing.cs" />
+    <Compile Include="IO\Unmanaged\ISupportsBinaryStreamAdvanced.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
     <Compile Include="Local\ConfigHistorian.cs" />
     <Compile Include="Local\ConfigDatabase.cs" />
