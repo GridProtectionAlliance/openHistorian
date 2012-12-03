@@ -266,7 +266,7 @@ namespace openHistorian.V2.UnmanagedMemory
             {
                 if (CurrentAllocatedSize == CurrentCapacity)
                 {
-                 
+
                     m_collectionEngine.AllocateMoreFreeSpace();
                     //Grow the allocated pool
 
@@ -288,11 +288,14 @@ namespace openHistorian.V2.UnmanagedMemory
         /// </remarks>
         public void ReleasePage(int pageIndex)
         {
-            lock (m_syncRoot)
+            if (pageIndex >= 0)
             {
-                if (TryReleasePage(pageIndex))
+                lock (m_syncRoot)
                 {
-                    //ToDo: Consider calling the garbage collection routine and allow it to consider shrinking the pool.
+                    if (TryReleasePage(pageIndex))
+                    {
+                        //ToDo: Consider calling the garbage collection routine and allow it to consider shrinking the pool.
+                    }
                 }
             }
         }
@@ -303,7 +306,8 @@ namespace openHistorian.V2.UnmanagedMemory
             {
                 foreach (int x in pageIndexes)
                 {
-                    TryReleasePage(x);
+                    if (x >= 0)
+                        TryReleasePage(x);
                 }
             }
         }

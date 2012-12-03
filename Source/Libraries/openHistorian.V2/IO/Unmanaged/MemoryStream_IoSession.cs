@@ -23,9 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using openHistorian.V2.UnmanagedMemory;
 
 namespace openHistorian.V2.IO.Unmanaged
 {
@@ -37,20 +34,13 @@ namespace openHistorian.V2.IO.Unmanaged
         // Nested Types
         class IoSession : IBinaryStreamIoSession
         {
-            bool m_disposed;
             MemoryStream m_stream;
 
             public IoSession(MemoryStream stream)
             {
+                if (stream == null)
+                    throw new ArgumentNullException("stream");
                 m_stream = stream;
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
-            /// </summary>
-            ~IoSession()
-            {
-                Dispose(false);
             }
 
             /// <summary>
@@ -58,50 +48,41 @@ namespace openHistorian.V2.IO.Unmanaged
             /// </summary>
             public void Dispose()
             {
-                Dispose(true);
-                GC.SuppressFinalize(this);
+                m_stream = null;
             }
 
             /// <summary>
-            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
+            /// Gets a block for the following Io session.
             /// </summary>
-            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            protected virtual void Dispose(bool disposing)
-            {
-                if (!m_disposed)
-                {
-                    try
-                    {
-                        // This will be done regardless of whether the object is finalized or disposed.
-                        if (disposing)
-                        {
-                            // This will be done only when the object is disposed by calling Dispose().
-                        }
-                    }
-                    finally
-                    {
-                        m_disposed = true;  // Prevent duplicate dispose.
-                    }
-                }
-            }
-
+            /// <param name="position">the block returned must contain this position</param>
+            /// <param name="isWriting">indicates if the stream plans to write to this block</param>
+            /// <param name="firstPointer">the pointer for the first byte of the block</param>
+            /// <param name="firstPosition">the position that corresponds to <see cref="firstPointer"/></param>
+            /// <param name="length">the length of the block</param>
+            /// <param name="supportsWriting">notifies the calling class if this block supports 
+            /// writing without requiring this function to be called again if <see cref="isWriting"/> was set to false.</param>
             public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
             {
+                if (m_stream == null)
+                    throw new ObjectDisposedException(GetType().FullName);
                 m_stream.GetBlock(position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
             }
 
-
+            /// <summary>
+            /// Sets the current usage of the <see cref="IBinaryStreamIoSession"/> to null.
+            /// </summary>
             public void Clear()
             {
-
             }
 
-
+            /// <summary>
+            /// Gets if the object has been disposed
+            /// </summary>
             public bool IsDisposed
             {
                 get
                 {
-                    return m_disposed;
+                    return (m_stream == null);
                 }
             }
         }

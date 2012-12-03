@@ -16,9 +16,9 @@ namespace openHistorian.V2.IO
         {
             const int count = 1000;
             MemoryStream ms = new MemoryStream();
-            ms.Write(new byte[100000], 0, 100000);
-            ms.Write(new byte[100000], 0, 100000);
-            ms.Position = 0;
+            //ms.Write(new byte[100000], 0, 100000);
+            //ms.Write(new byte[100000], 0, 100000);
+            //ms.Position = 0;
             BinaryStream bs = new BinaryStream(ms);
             Stopwatch sw = new Stopwatch();
             //DateTime b = DateTime.UtcNow;
@@ -166,7 +166,7 @@ namespace openHistorian.V2.IO
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) bs.Write(*(Guid*)lp);
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) bs.Write(*(DateTime*)lp);
+                    while (rand.Next(4) < 2) bs.Write(NextDate(data, rand));
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) bs.Write(NextSingle(data, rand));
                     rand.NextBytes(data);
@@ -256,7 +256,7 @@ namespace openHistorian.V2.IO
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.ReadGuid() != (*(Guid*)lp)) throw new Exception();
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadDateTime() != (*(DateTime*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadDateTime() != NextDate(data, rand)) throw new Exception();
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.ReadSingle() != NextSingle(data, rand)) throw new Exception();
                     rand.NextBytes(data);
@@ -303,6 +303,20 @@ namespace openHistorian.V2.IO
                         }
                     }
                 }
+            }
+        }
+
+        unsafe static DateTime NextDate(byte[] data, Random rand)
+        {
+            fixed (byte* lp = data)
+            {
+                long value = *(long*)lp;
+                while (value < DateTime.MinValue.Ticks || value> DateTime.MaxValue.Ticks)
+                {
+                    rand.NextBytes(data);
+                    value = *(long*)lp;
+                }
+                return new DateTime(value);
             }
         }
 

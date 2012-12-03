@@ -24,7 +24,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.Threading;
 using openHistorian.V2.UnmanagedMemory;
 
 namespace openHistorian.V2.IO.Unmanaged
@@ -34,29 +34,115 @@ namespace openHistorian.V2.IO.Unmanaged
     /// </summary>
     unsafe public partial class MemoryStream : ISupportsBinaryStreamAdvanced
     {
+        /// <summary>
+        /// This class was created to allow settings update to be atomic.
+        /// </summary>
+        class Settings
+        {
+            const int Mask = 1023;
+            const int ElementsPerRow = 1024;
+            const int ShiftBits = 10;
 
+            public int PageCount { get; private set; }
+            int[][] m_pageIndex;
+            byte*[][] m_pagePointer;
+
+            public Settings()
+            {
+                m_pageIndex = new int[4][];
+                m_pagePointer = new byte*[4][];
+                PageCount = 0;
+            }
+
+            public byte* GetPointer(int page)
+            {
+                return m_pagePointer[page >> ShiftBits][page & Mask];
+            }
+            int GetIndex(int page)
+            {
+                return m_pageIndex[page >> ShiftBits][page & Mask];
+            }
+
+            public bool AddingRequiresClone
+            {
+                get
+                {
+                    return m_pagePointer.Length * ElementsPerRow == PageCount;
+                }
+            }
+
+            void EnsureCapacity()
+            {
+                if (AddingRequiresClone)
+                {
+                    var oldIndex = m_pageIndex;
+                    var oldPointer = m_pagePointer;
+
+                    m_pageIndex = new int[m_pageIndex.Length * 2][];
+                    m_pagePointer = new byte*[m_pagePointer.Length * 2][];
+                    oldIndex.CopyTo(m_pageIndex, 0);
+                    oldPointer.CopyTo(m_pagePointer, 0);
+                }
+
+                int bigIndex = PageCount >> ShiftBits;
+                if (m_pageIndex[bigIndex] == null)
+                {
+                    m_pageIndex[bigIndex] = new int[ElementsPerRow];
+                    m_pagePointer[bigIndex] = new byte*[ElementsPerRow];
+                }
+
+            }
+
+            public void AddNewPage(byte* pagePointer, int pageIndex)
+            {
+                EnsureCapacity();
+                int index = PageCount;
+                int bigIndex = index >> ShiftBits;
+                int smallIndex = index & Mask;
+                m_pageIndex[bigIndex][smallIndex] = pageIndex;
+                m_pagePointer[bigIndex][smallIndex] = pagePointer;
+                Thread.MemoryBarrier();
+                PageCount++;
+            }
+
+            public Settings Clone()
+            {
+                return (Settings)MemberwiseClone();
+            }
+
+            /// <summary>
+            /// Returns all of the buffer pool page indexes used by this class
+            /// </summary>
+            /// <returns></returns>
+            public IEnumerable<int> GetAllPageIndexes()
+            {
+                for (int x = 0; x < PageCount; x++)
+                {
+                    yield return GetIndex(x);
+                }
+            }
+
+
+        }
+
+        #region [ Members ]
+
+        object m_syncRoot;
+
+        Settings m_settings;
+
+        /// <summary>
+        /// The buffer pool to utilize
+        /// </summary>
         BufferPool m_pool;
         /// <summary>
         /// The number of bits in the page size.
         /// </summary>
-        int ShiftLength;
-        /// <summary>
-        /// The mask that can be used to Logical AND the position to get the relative position within the page.
-        /// </summary>
-        int OffsetMask;
+        int m_shiftLength;
         /// <summary>
         /// The size of each page.
         /// </summary>
-        int Length;
-
-        /// <summary>
-        /// The byte position in the stream
-        /// </summary>
-        long m_position;
-
-        List<int> m_pageIndex;
-
-        List<long> m_pagePointer;
+        int m_blockSize;
 
         /// <summary>
         /// Releases all the resources used by the <see cref="MemoryStream"/> object.
@@ -83,6 +169,10 @@ namespace openHistorian.V2.IO.Unmanaged
         /// </summary>
         public event EventHandler<StreamBlockEventArgs> BlockAboutToBeWrittenToDisk;
 
+        #endregion
+
+        #region [ Constructors ]
+
         /// <summary>
         /// Creates a new <see cref="MemoryStream"/> using the default <see cref="BufferPool"/>.
         /// </summary>
@@ -97,14 +187,10 @@ namespace openHistorian.V2.IO.Unmanaged
         public MemoryStream(BufferPool pool)
         {
             m_pool = pool;
-
-            ShiftLength = pool.PageShiftBits;
-            OffsetMask = pool.PageMask;
-            Length = pool.PageSize;
-
-            m_position = 0;
-            m_pageIndex = new List<int>(100);
-            m_pagePointer = new List<long>(100);
+            m_shiftLength = pool.PageShiftBits;
+            m_blockSize = pool.PageSize;
+            m_settings = new Settings();
+            m_syncRoot = new object();
         }
 
         /// <summary>
@@ -115,160 +201,59 @@ namespace openHistorian.V2.IO.Unmanaged
             Dispose(false);
         }
 
-        /// <summary>
-        /// Returns the page that corresponds to the absolute position.  
-        /// This function will also autogrow the stream.
-        /// </summary>
-        /// <param name="position">The position to use to calculate the page to retrieve</param>
-        /// <returns></returns>
-        byte* GetPage(long position)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException("MemoryStream");
+        #endregion
 
-            int page = (int)(position >> ShiftLength);
-            //If there are not enough pages in the stream, add enough.
-            while (page >= m_pageIndex.Count)
-            {
-                int pageIndex;
-                IntPtr pagePointer;
-                m_pool.AllocatePage(out pageIndex, out pagePointer);
-                Memory.Clear((byte*)pagePointer, m_pool.PageSize);
-
-                if (BlockLoadedFromDisk != null)
-                {
-                    BlockLoadedFromDisk(this, new StreamBlockEventArgs(m_pageIndex.Count * (long)BlockSize, pagePointer, BlockSize));
-                }
-
-                m_pageIndex.Add(pageIndex);
-                m_pagePointer.Add(pagePointer.ToInt64());
-            }
-            return (byte*)m_pagePointer[page];
-        }
+        #region [ Properties ]
 
         /// <summary>
-        /// This calculates the number of bytes remain at the end of the current page.
+        /// Gets the unit size of an individual block
         /// </summary>
-        /// <param name="position">The position to use to calculate the remaining bytes.</param>
-        /// <returns></returns>
-        int RemainingLenght(long position)
-        {
-            return Length - CalculateOffset(position);
-        }
-
-        /// <summary>
-        /// Returns the relative offset within the page where the start of the position exists.
-        /// </summary>
-        /// <param name="position">The position to use to calculate the offset.</param>
-        /// <returns></returns>
-        int CalculateOffset(long position)
-        {
-            return (int)(position & OffsetMask);
-        }
-
-        /// <summary>
-        /// Gets/Sets the cursor position within the stream
-        /// </summary>
-        public long Position
+        public int BlockSize
         {
             get
             {
-                return m_position;
-            }
-            set
-            {
-                m_position = value;
+                return m_blockSize;
             }
         }
 
-        public long FileSize
+        /// <summary>
+        /// Gets if the stream can be written to.
+        /// </summary>
+        public bool IsReadOnly
         {
             get
             {
-                return (long)m_pageIndex.Count * m_pool.PageSize;
+                return false;
             }
         }
 
         /// <summary>
-        /// Writes the following data to the stream at the current position, advancing the position.
+        /// Gets if the stream has been disposed.
         /// </summary>
-        /// <param name="data">The data to write</param>
-        /// <param name="offset">The position to start the write</param>
-        /// <param name="count">The number of bytes to write</param>
-        public void Write(byte[] data, int offset, int count)
+        public bool IsDisposed
         {
-            Write(Position, data, offset, count);
-            Position += count;
-        }
-
-        /// <summary>
-        /// Writes the following data to the stream at the provided postion. The internal position will remain uneffected.
-        /// </summary>
-        /// <param name="position">The position to reference</param>
-        /// <param name="data">The data to write</param>
-        /// <param name="offset">The position to start the write</param>
-        /// <param name="count">The number of bytes to write</param>
-        public void Write(long position, byte[] data, int offset, int count)
-        {
-            int availableLength = RemainingLenght(position);
-            int destOffset = CalculateOffset(position);
-            byte* block = GetPage(position);
-
-            if (availableLength >= count)
+            get
             {
-
-                Marshal.Copy(data, offset, (IntPtr)(block + destOffset), count);
-                //Array.Copy(data, offset, block, destOffset, count);
-            }
-            else
-            {
-                Marshal.Copy(data, offset, (IntPtr)(block + destOffset), availableLength);
-                //Array.Copy(data, offset, block, destOffset, availableLength);
-                Write(position + availableLength, data, offset + availableLength, count - availableLength);
+                return m_disposed;
             }
         }
 
         /// <summary>
-        /// Reads data from the stream at the current position, advancing the position.
+        /// Gets the length of the current stream.
         /// </summary>
-        /// <param name="data">The data to read</param>
-        /// <param name="offset">The position to start the read</param>
-        /// <param name="count">The number of bytes to read</param>
-        /// <returns>The number of bytes read from the stream. This will always be equal to count.</returns>
-        public int Read(byte[] data, int offset, int count)
+        public long Length
         {
-            int bytesRead = Read(Position, data, offset, count);
-            Position += count;
-            return bytesRead;
+            get
+            {
+                return (long)m_settings.PageCount * BlockSize;
+            }
         }
 
         /// <summary>
-        /// Reads data from the stream at the provided position, the stream's current position is not effected.
+        /// Gets the number of available simultaneous read/write sessions.
         /// </summary>
-        /// <param name="position">The position from the stream to read from.</param>
-        /// <param name="data">The data to read</param>
-        /// <param name="offset">The position to start the read</param>
-        /// <param name="count">The number of bytes to read</param>
-        /// <returns>The number of bytes read from the stream. This will always be equal to count.</returns>
-        public int Read(long position, byte[] data, int offset, int count)
-        {
-            int availableLength = RemainingLenght(position);
-            int destOffset = CalculateOffset(position);
-            byte* block = GetPage(position);
-
-            if (availableLength >= count)
-            {
-                Marshal.Copy((IntPtr)(block + destOffset), data, offset, count);
-            }
-            else
-            {
-                Marshal.Copy((IntPtr)(block + destOffset), data, offset, availableLength);
-                Read(position + availableLength, data, offset + availableLength, count - availableLength);
-            }
-            return count;
-        }
-
-
+        /// <remarks>This value is used to determine if a binary stream can be cloned
+        /// to improve read/write/copy performance.</remarks>
         int ISupportsBinaryStream.RemainingSupportedIoSessions
         {
             get
@@ -277,15 +262,14 @@ namespace openHistorian.V2.IO.Unmanaged
             }
         }
 
-        void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
-        {
-            LookupCount++;
-            length = Length;
-            firstPosition = position & ~(length - 1);
-            firstPointer = (IntPtr)GetPage(position);
-            supportsWriting = true;
-        }
+        #endregion
 
+        #region [ Methods ]
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
             Dispose(true);
@@ -302,100 +286,139 @@ namespace openHistorian.V2.IO.Unmanaged
             {
                 try
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
-                    foreach (int index in m_pageIndex)
-                    {
-                        m_pool.ReleasePage(index);
-                    }
-                    m_pageIndex = null;
-                    m_pagePointer = null;
-
-                    if (disposing)
-                    {
-                        // This will be done only when the object is disposed by calling Dispose().
-                    }
+                    m_pool.ReleasePages(m_settings.GetAllPageIndexes());
                 }
                 finally
                 {
-                    m_disposed = true;  // Prevent duplicate dispose.
+                    m_pool = null;
+                    m_settings = null;
+                    m_disposed = true;
                 }
             }
         }
 
+        /// <summary>
+        /// Aquire an IO Session.
+        /// </summary>
         public IBinaryStreamIoSession GetNextIoSession()
         {
             return new IoSession(this);
         }
 
+        /// <summary>
+        /// Creates a new binary from an IO session
+        /// </summary>
+        /// <returns></returns>
         public BinaryStreamBase CreateBinaryStream()
         {
             return new BinaryStream(this);
         }
 
-        long ISupportsBinaryStreamAdvanced.Length
+        /// <summary>
+        /// Sets the size of the stream.
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public long SetLength(long length)
         {
-            get
-            {
-                return FileSize;
-            }
-        }
-
-        long ISupportsBinaryStreamAdvanced.SetLength(long length)
-        {
-            if (FileSize < length)
+            if (Length < length)
             {
                 GetPage(length - 1);
             }
             else
             {
-                int page = (int)(length >> ShiftLength);
-                //While there are too many pages
-                while (page < m_pageIndex.Count - 1)
+                //ToDO: Figure out how to safely shrink a file. 
+            }
+            return Length;
+        }
+
+        /// <summary>
+        /// Writes all current data to the disk subsystem.
+        /// </summary>
+        void ISupportsBinaryStreamAdvanced.Flush()
+        {
+
+        }
+
+        /// <summary>
+        /// Equivalent to SetLength but my not change the size of the file.
+        /// </summary>
+        /// <param name="position">The start of the position that will be invalidated</param>
+        void ISupportsBinaryStreamAdvanced.TrimEditsAfterPosition(long position)
+        {
+            SetLength(position);
+        }
+
+        #endregion
+
+        #region [ Helper Methods ]
+
+        /// <summary>
+        /// Returns the page that corresponds to the absolute position.  
+        /// This function will also autogrow the stream.
+        /// </summary>
+        /// <param name="position">The position to use to calculate the page to retrieve</param>
+        /// <returns></returns>
+        byte* GetPage(long position)
+        {
+            Settings settings = m_settings;
+
+            int pageIndex = (int)(position >> m_shiftLength);
+
+            if (pageIndex >= settings.PageCount)
+                IncreasePageCount(pageIndex+1);
+
+            return m_settings.GetPointer(pageIndex);
+        }
+
+        void IncreasePageCount(int pageCount)
+        {
+            lock (m_syncRoot)
+            {
+                bool cloned = false;
+                Settings settings = m_settings;
+                if (settings.AddingRequiresClone)
                 {
-                    int index = m_pageIndex[m_pageIndex.Count - 1];
-                    m_pageIndex.RemoveAt(m_pageIndex.Count - 1);
-                    m_pagePointer.RemoveAt(m_pageIndex.Count - 1);
-                    m_pool.ReleasePage(index);
+                    cloned = true;
+                    settings = settings.Clone();
+                }
+
+                //If there are not enough pages in the stream, add enough.
+                while (pageCount > settings.PageCount)
+                {
+                    int pageIndex;
+                    IntPtr pagePointer;
+                    m_pool.AllocatePage(out pageIndex, out pagePointer);
+                    Memory.Clear((byte*)pagePointer, m_pool.PageSize);
+
+                    if (BlockLoadedFromDisk != null)
+                    {
+                        BlockLoadedFromDisk(this, new StreamBlockEventArgs(settings.PageCount * (long)BlockSize, pagePointer, BlockSize));
+                    }
+                    settings.AddNewPage((byte*)pagePointer, pageIndex);
+                }
+
+                if (cloned)
+                {
+                    Thread.MemoryBarrier();
+                    m_settings = settings;
                 }
             }
-            return FileSize;
         }
 
-
-
-        public int BlockSize
+        void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
         {
-            get
-            {
-                return m_pool.PageSize;
-            }
+            if (m_disposed)
+                throw new ObjectDisposedException("MemoryStream");
+
+            LookupCount++;
+            length = m_blockSize;
+            firstPosition = position & ~(length - 1);
+            firstPointer = (IntPtr)GetPage(position);
+            supportsWriting = true;
         }
 
-        public void Flush()
-        {
+        #endregion
 
-        }
-
-        public void TrimEditsAfterPosition(long position)
-        {
-
-        }
-
-
-        public bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public bool IsDisposed
-        {
-            get
-            {
-                return m_disposed;
-            }
-        }
     }
 }

@@ -43,7 +43,6 @@ namespace openHistorian.V2.IO.Unmanaged
     //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
     unsafe public partial class BufferedFileStream : ISupportsBinaryStreamAdvanced
     {
-
         /// <summary>
         /// To synchronize all calls to this class.
         /// </summary>

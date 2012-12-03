@@ -33,7 +33,7 @@ namespace openHistorian.V2.IO.Unmanaged.Test
         [Test()]
         public void RawTest()
         {
-            TestSize2(1000 * 1000); // 1 million elements
+            TestSize2(1000 * 10); // 1 million elements
         }
 
         /// <summary>
@@ -254,7 +254,6 @@ namespace openHistorian.V2.IO.Unmanaged.Test
             {
                 File.Delete(fileName);
             }
-            System.Threading.Thread.Sleep(100000);
         }
 
 

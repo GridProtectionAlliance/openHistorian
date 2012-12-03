@@ -46,10 +46,10 @@ namespace openHistorian.V2.Collections.KeyValue
                 tree3.Add(key1, key2, value1, value2);
             }
 
-            long size0 = ((MemoryStream)bs0.BaseStream).FileSize;
-            long size1 = ((MemoryStream)bs1.BaseStream).FileSize;
-            long size2 = ((MemoryStream)bs2.BaseStream).FileSize;
-            long size3 = ((MemoryStream)bs3.BaseStream).FileSize;
+            long size0 = ((MemoryStream)bs0.BaseStream).Length;
+            long size1 = ((MemoryStream)bs1.BaseStream).Length;
+            long size2 = ((MemoryStream)bs2.BaseStream).Length;
+            long size3 = ((MemoryStream)bs3.BaseStream).Length;
 
             float size0Mb = size0 / (float)ptCnt;
             float size1Mb = size1 / (float)ptCnt;
