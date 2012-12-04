@@ -79,6 +79,7 @@
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="FileStructure\SubFileStreamTest.cs" />
     <Compile Include="IO\BinaryStreamBenchmark.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

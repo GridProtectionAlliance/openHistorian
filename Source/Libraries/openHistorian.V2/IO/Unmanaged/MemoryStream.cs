@@ -101,7 +101,7 @@ namespace openHistorian.V2.IO.Unmanaged
                 int smallIndex = index & Mask;
                 m_pageIndex[bigIndex][smallIndex] = pageIndex;
                 m_pagePointer[bigIndex][smallIndex] = pagePointer;
-                Thread.MemoryBarrier();
+                Thread.MemoryBarrier(); //Incrementing the page count must occur after the data is correct.
                 PageCount++;
             }
 
@@ -129,7 +129,7 @@ namespace openHistorian.V2.IO.Unmanaged
 
         object m_syncRoot;
 
-        Settings m_settings;
+        volatile Settings m_settings;
 
         /// <summary>
         /// The buffer pool to utilize
@@ -366,11 +366,18 @@ namespace openHistorian.V2.IO.Unmanaged
             int pageIndex = (int)(position >> m_shiftLength);
 
             if (pageIndex >= settings.PageCount)
-                IncreasePageCount(pageIndex+1);
+            {
+                IncreasePageCount(pageIndex + 1);
+                settings = m_settings;
+            }
 
-            return m_settings.GetPointer(pageIndex);
+            return settings.GetPointer(pageIndex);
         }
 
+        /// <summary>
+        /// Increases the size of the Memory Stream and updated the settings if needed
+        /// </summary>
+        /// <param name="pageCount"></param>
         void IncreasePageCount(int pageCount)
         {
             lock (m_syncRoot)
@@ -400,7 +407,7 @@ namespace openHistorian.V2.IO.Unmanaged
 
                 if (cloned)
                 {
-                    Thread.MemoryBarrier();
+                    Thread.MemoryBarrier(); // make sure that all of the settings are saved before assigning
                     m_settings = settings;
                 }
             }
