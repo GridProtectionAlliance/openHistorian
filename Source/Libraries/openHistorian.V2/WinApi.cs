@@ -33,8 +33,9 @@ namespace openHistorian.V2
     /// <summary>
     /// Provides necessary Windows API functions.
     /// </summary>
-    static class WinApi
+    unsafe static partial class WinApi
     {
+        
         /// <summary>
         /// Flushes the buffers of a specified file and causes all buffered data to be written to a file.
         /// </summary>

@@ -52,6 +52,7 @@ namespace openHistorian.V2.UnmanagedMemory
         /// </summary>
         public int Size { get; private set; }
         bool m_disposed;
+        bool m_isLargePage;
 
         #endregion
 
@@ -65,6 +66,19 @@ namespace openHistorian.V2.UnmanagedMemory
         /// <returns>The allocated memory.</returns>
         public Memory(int requestedSize)
         {
+            if (requestedSize <= 0)
+                throw new ArgumentOutOfRangeException("requestedSize", "must be greater than zero");
+            if (UseLargePages && (requestedSize & (s_largePageMinimumSize - 1)) == 0)
+            {
+                Address = WinApi.LargePageSupport.VirtualAllocLargePages((uint)requestedSize);
+                if (Address != IntPtr.Zero)
+                {
+                    Size = requestedSize;
+                    m_isLargePage = true;
+                    return;
+                }
+            }
+
             Address = Marshal.AllocHGlobal(requestedSize);
             Size = requestedSize;
         }
@@ -112,7 +126,10 @@ namespace openHistorian.V2.UnmanagedMemory
                     // This will be done regardless of whether the object is finalized or disposed.
                     if (Address != IntPtr.Zero)
                     {
-                        Marshal.FreeHGlobal(Address);
+                        if (m_isLargePage)
+                            WinApi.LargePageSupport.VirtualFree(Address);
+                        else
+                            Marshal.FreeHGlobal(Address);
                     }
                 }
                 finally
@@ -127,6 +144,34 @@ namespace openHistorian.V2.UnmanagedMemory
         #endregion
 
         #region [ Static ]
+
+        #region [ Fields ]
+
+        static bool s_useLargePageSizes;
+        static uint s_largePageMinimumSize;
+        public static bool UseLargePages
+        {
+            get
+            {
+                return s_useLargePageSizes;
+            }
+            set
+            {
+                s_useLargePageSizes = value && WinApi.LargePageSupport.CanAllocateLargePage;
+            }
+        }
+
+        #endregion
+
+        #region [ Constructor ]
+        static Memory()
+        {
+            if (WinApi.LargePageSupport.CanAllocateLargePage)
+                s_largePageMinimumSize = WinApi.LargePageSupport.GetLargePageMinimum();
+            else
+                s_largePageMinimumSize = 0;
+        }
+        #endregion
 
         #region [ Methods ]
 
