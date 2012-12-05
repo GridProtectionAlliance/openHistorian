@@ -81,8 +81,8 @@ namespace openHistorian.V2.FileStructure
         bool m_blockSupportsWriting;
         int m_length;
         int m_blockIndex;
-        byte* m_pointer;
         int m_blockSize;
+        byte* m_pointer;
 
         #endregion
 
@@ -424,8 +424,6 @@ namespace openHistorian.V2.FileStructure
             m_length = m_blockSize;
             m_blockSupportsWriting = supportsWriting;
         }
-
-
 
         #endregion
 

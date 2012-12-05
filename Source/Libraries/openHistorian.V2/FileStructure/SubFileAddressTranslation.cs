@@ -29,7 +29,7 @@ namespace openHistorian.V2.FileStructure
     /// <summary>
     /// This class manages the necessary functions in order to convert physical addresses into virtual addresses.
     /// </summary>
-    internal class SubFileAddressTranslation
+    internal class SubFileAddressTranslation : IDisposable
     {
         #region [ Members ]
 
@@ -113,5 +113,20 @@ namespace openHistorian.V2.FileStructure
         }
 
         #endregion
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            if (m_parser!=null)
+                m_parser.Dispose();
+            m_parser = null;
+            if (m_pager != null)
+                m_pager.Dispose();
+            m_pager = null;
+
+        }
     }
 }

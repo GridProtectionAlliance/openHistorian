@@ -30,9 +30,8 @@ namespace openHistorian.V2.FileStructure
     /// This class provides passthrough properties for the <see cref="IndexMapper"/> class as well follows the directions
     /// of the Index Mapper to find the data cluster that contains the point in question.
     /// </summary>
-    unsafe internal class IndexParser
+    unsafe internal class IndexParser : IDisposable
     {
-
         #region [ Members ]
 
         /// <summary>
@@ -48,11 +47,8 @@ namespace openHistorian.V2.FileStructure
         /// The file that is being read by this parser.
         /// </summary>
         SubFileMetaData m_subFile;
-        /// <summary>
-        /// Access to the data reader.
-        /// </summary>
-        /// <remarks>Object is not owned by this class and will not be disposed of.</remarks>
-        DiskIo m_dataReader;
+       
+        DiskIoSession m_diskIo;
 
         int m_blockSize;
 
@@ -65,6 +61,7 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// Creates a new instance of this class.
         /// </summary>
+        /// <param name="blockSize">The number of bytes in an individual block</param>
         /// <param name="snapshotSequenceNumber">Contains the sequence number of the snapshot that is
         /// being read or the one that is currently being written to.</param>
         /// <param name="dataReader">The disk that will be read to parse the cluster addresses from the file</param>
@@ -73,11 +70,10 @@ namespace openHistorian.V2.FileStructure
         {
             m_blockSize = blockSize;
             m_blockDataLength = blockSize - FileStructureConstants.BlockFooterLength;
-
-            m_dataReader = dataReader;
             m_snapshotSequenceNumber = snapshotSequenceNumber;
             m_mapping = new IndexMapper(blockSize);
             m_subFile = subFile;
+            m_diskIo = dataReader.CreateDiskIoSession();
         }
         #endregion
 
@@ -265,47 +261,44 @@ namespace openHistorian.V2.FileStructure
         /// <returns></returns>
         void UpdateBlockInformation(int lowestChangeRequest)
         {
-            using (var diskIo = m_dataReader.CreateDiskIoSession())
+            if (IndirectNumber == 0) //Immediate
             {
-                if (IndirectNumber == 0) //Immediate
-                {
-                    FirstIndirectBlockAddress = 0;
-                    SecondIndirectBlockAddress = 0;
-                    ThirdIndirectBlockAddress = 0;
-                    DataClusterAddress = m_subFile.DirectBlock;
-                }
-                else if (IndirectNumber == 1) //Single Indirect
-                {
-                    FirstIndirectBlockAddress = m_subFile.SingleIndirectBlock;
-                    SecondIndirectBlockAddress = 0;
-                    ThirdIndirectBlockAddress = 0;
+                FirstIndirectBlockAddress = 0;
+                SecondIndirectBlockAddress = 0;
+                ThirdIndirectBlockAddress = 0;
+                DataClusterAddress = m_subFile.DirectBlock;
+            }
+            else if (IndirectNumber == 1) //Single Indirect
+            {
+                FirstIndirectBlockAddress = m_subFile.SingleIndirectBlock;
+                SecondIndirectBlockAddress = 0;
+                ThirdIndirectBlockAddress = 0;
 
-                    if (lowestChangeRequest <= 1) //if the single indirect offset did not change, there is no need to relookup the address
-                        DataClusterAddress = GetBlockIndexValue(diskIo, FirstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
-                }
-                else if (IndirectNumber == 2) //Double Indirect
-                {
-                    FirstIndirectBlockAddress = m_subFile.DoubleIndirectBlock;
-                    if (lowestChangeRequest <= 1)
-                        SecondIndirectBlockAddress = GetBlockIndexValue(diskIo, FirstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
-                    ThirdIndirectBlockAddress = 0;
-                    if (lowestChangeRequest <= 2)
-                        DataClusterAddress = GetBlockIndexValue(diskIo, SecondIndirectBlockAddress, m_mapping.SecondIndirectOffset, 2, m_mapping.SecondIndirectBaseIndex);
-                }
-                else if (IndirectNumber == 3) //Triple Indirect
-                {
-                    FirstIndirectBlockAddress = m_subFile.TripleIndirectBlock;
-                    if (lowestChangeRequest <= 1)
-                        SecondIndirectBlockAddress = GetBlockIndexValue(diskIo, FirstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
-                    if (lowestChangeRequest <= 2)
-                        ThirdIndirectBlockAddress = GetBlockIndexValue(diskIo, SecondIndirectBlockAddress, m_mapping.SecondIndirectOffset, 2, m_mapping.SecondIndirectBaseIndex);
-                    if (lowestChangeRequest <= 3)
-                        DataClusterAddress = GetBlockIndexValue(diskIo, ThirdIndirectBlockAddress, m_mapping.ThirdIndirectOffset, 3, m_mapping.ThirdIndirectBaseIndex);
-                }
-                else
-                {
-                    throw new Exception();
-                }
+                if (lowestChangeRequest <= 1) //if the single indirect offset did not change, there is no need to relookup the address
+                    DataClusterAddress = GetBlockIndexValue(FirstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
+            }
+            else if (IndirectNumber == 2) //Double Indirect
+            {
+                FirstIndirectBlockAddress = m_subFile.DoubleIndirectBlock;
+                if (lowestChangeRequest <= 1)
+                    SecondIndirectBlockAddress = GetBlockIndexValue(FirstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
+                ThirdIndirectBlockAddress = 0;
+                if (lowestChangeRequest <= 2)
+                    DataClusterAddress = GetBlockIndexValue(SecondIndirectBlockAddress, m_mapping.SecondIndirectOffset, 2, m_mapping.SecondIndirectBaseIndex);
+            }
+            else if (IndirectNumber == 3) //Triple Indirect
+            {
+                FirstIndirectBlockAddress = m_subFile.TripleIndirectBlock;
+                if (lowestChangeRequest <= 1)
+                    SecondIndirectBlockAddress = GetBlockIndexValue(FirstIndirectBlockAddress, m_mapping.FirstIndirectOffset, 1, m_mapping.FirstIndirectBaseIndex);
+                if (lowestChangeRequest <= 2)
+                    ThirdIndirectBlockAddress = GetBlockIndexValue(SecondIndirectBlockAddress, m_mapping.SecondIndirectOffset, 2, m_mapping.SecondIndirectBaseIndex);
+                if (lowestChangeRequest <= 3)
+                    DataClusterAddress = GetBlockIndexValue(ThirdIndirectBlockAddress, m_mapping.ThirdIndirectOffset, 3, m_mapping.ThirdIndirectBaseIndex);
+            }
+            else
+            {
+                throw new Exception();
             }
         }
 
@@ -313,14 +306,14 @@ namespace openHistorian.V2.FileStructure
         /// This uses the (blockIndex,offset) values to determine what the next block index is.
         /// This also has consistency checks to determine if the file is inconsistent (potentially corruption)
         /// </summary>
-        /// <param name="buffer"></param>
         /// <param name="blockIndex">the index of the block to read</param>
         /// <param name="offset">the offset inside the block to use to determine the next index block</param>
         /// <param name="indexIndirectNumber">the value 1-4 which tell what indirect block this is</param>
         /// <param name="blockBaseIndex">the lowest virtual address that can be referenced from this indirect block</param>
         /// <returns></returns>
-        int GetBlockIndexValue(DiskIoSession buffer, int blockIndex, int offset, byte indexIndirectNumber, int blockBaseIndex)
+        int GetBlockIndexValue(int blockIndex, int offset, byte indexIndirectNumber, int blockBaseIndex)
         {
+            var buffer = m_diskIo;
             if (blockIndex == 0)
                 return 0;
 
@@ -333,10 +326,25 @@ namespace openHistorian.V2.FileStructure
             if (buffer.Pointer[m_blockSize - 31] != indexIndirectNumber)
                 throw new Exception("The redirect value of this page is incorrect");
 
-            return *(int*)(buffer.Pointer + offset);
+            int value = *(int*)(buffer.Pointer + offset);
+            //ToDo: Figure out how to not have to clear this point every time.
+            buffer.Clear();
+            return value;
         }
 
         #endregion
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            if (m_diskIo != null)
+            {
+                m_diskIo.Dispose();
+                m_diskIo = null;
+            }
+        }
     }
 }

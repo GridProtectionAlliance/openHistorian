@@ -96,6 +96,9 @@ namespace openHistorian.V2.FileStructure
                             m_buffer.Dispose();
                             m_buffer = null;
                         }
+                        if (m_addressTranslation != null)
+                            m_addressTranslation .Dispose();
+                        m_addressTranslation = null;
                     }
                     finally
                     {

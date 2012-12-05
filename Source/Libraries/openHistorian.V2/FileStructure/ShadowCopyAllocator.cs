@@ -29,7 +29,7 @@ namespace openHistorian.V2.FileStructure
     /// <summary>
     /// This class will make shadow copies of blocks or, if the block has never been written to, prepare the block to be written to.
     /// </summary>
-    unsafe internal class ShadowCopyAllocator
+    unsafe internal class ShadowCopyAllocator : IDisposable
     {
         #region [ Members ]
 
@@ -45,7 +45,7 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// The disk to make the IO requests to.
         /// </summary>
-        DiskIo m_diskIo;
+        //DiskIo m_diskIo;
         /// <summary>
         /// The FileAllocationTable that can be used to allocate space.
         /// </summary>
@@ -56,6 +56,10 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         IndexParser m_parser;
 
+        DiskIoSession m_diskIo1;
+
+        DiskIoSession m_diskIo2;
+
         int m_blockSize;
 
         #endregion
@@ -65,6 +69,7 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// Creates a <see cref="ShadowCopyAllocator"/> that is used make shadow copies of blocks.
         /// </summary>
+        /// <param name="blockSize">The number of bytes in a block</param>
         /// <param name="dataReader">A DiskIO that allows writing to the file.</param>
         /// <param name="fileHeaderBlock">The file allocation table that is editable</param>
         /// <param name="subFileMetaData">The file that is used</param>
@@ -90,7 +95,9 @@ namespace openHistorian.V2.FileStructure
             m_lastReadOnlyBlock = fileHeaderBlock.LastAllocatedBlock;
             m_fileHeaderBlock = fileHeaderBlock;
             m_subFileMetaData = subFileMetaData;
-            m_diskIo = dataReader;
+            //m_diskIo = dataReader;
+            m_diskIo1 = dataReader.CreateDiskIoSession();
+            m_diskIo2 = dataReader.CreateDiskIoSession();
         }
         #endregion
 
@@ -169,16 +176,14 @@ namespace openHistorian.V2.FileStructure
             //if the block does not exist, create it.
             if (sourceBlockAddress == 0)
             {
-                using (var buffer = m_diskIo.CreateDiskIoSession())
-                {
-                    indexIndirectBlock = m_fileHeaderBlock.AllocateFreeBlocks(1);
-                    m_subFileMetaData.TotalBlockCount++;
+                var buffer = m_diskIo1;
+                indexIndirectBlock = m_fileHeaderBlock.AllocateFreeBlocks(1);
+                m_subFileMetaData.TotalBlockCount++;
 
-                    buffer.BeginWriteToNewBlock(indexIndirectBlock);
-                    Memory.Clear(buffer.Pointer, buffer.Length);
-                    WriteIndexIndirectBlock(buffer.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
-                    buffer.EndWrite(BlockType.IndexIndirect, indexValue, m_subFileMetaData.FileIdNumber, m_fileHeaderBlock.SnapshotSequenceNumber);
-                }
+                buffer.BeginWriteToNewBlock(indexIndirectBlock);
+                Memory.Clear(buffer.Pointer, buffer.Length);
+                WriteIndexIndirectBlock(buffer.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
+                buffer.EndWrite(BlockType.IndexIndirect, indexValue, m_subFileMetaData.FileIdNumber, m_fileHeaderBlock.SnapshotSequenceNumber);
             }
             //if the data page is an old page, allocate space to create a new copy
             else if (sourceBlockAddress <= m_lastReadOnlyBlock)
@@ -208,39 +213,35 @@ namespace openHistorian.V2.FileStructure
         /// <param name="remoteBlockAddress">the value of the remote address.</param>
         void ReadThenWriteIndexIndirectBlock(int sourceBlockAddress, int destinationBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
         {
-            using (var bufferSource = m_diskIo.CreateDiskIoSession())
+            var bufferSource = m_diskIo1;
+            int fileIdNumber = m_subFileMetaData.FileIdNumber;
+            int snapshotSequenceNumber = m_fileHeaderBlock.SnapshotSequenceNumber;
+
+            if (sourceBlockAddress == destinationBlockAddress)
+                bufferSource.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
+            else
+                bufferSource.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
+
+            if (bufferSource.Pointer[m_blockSize - 31] != indexIndirectNumber)
+                throw new Exception("The redirect value of this page is incorrect");
+
+
+            //we only need to update the base address if something has changed.
+            //Therefore, if the source and the destination are the same, and the remote block is the same
+            //everything else is going to be the same.
+            if (sourceBlockAddress != destinationBlockAddress)
             {
-                int fileIdNumber = m_subFileMetaData.FileIdNumber;
-                int snapshotSequenceNumber = m_fileHeaderBlock.SnapshotSequenceNumber;
-
-                if (sourceBlockAddress == destinationBlockAddress)
-                    bufferSource.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
-                else
-                    bufferSource.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
-
-                if (bufferSource.Pointer[m_blockSize - 31] != indexIndirectNumber)
-                    throw new Exception("The redirect value of this page is incorrect");
-
-
-                //we only need to update the base address if something has changed.
-                //Therefore, if the source and the destination are the same, and the remote block is the same
-                //everything else is going to be the same.
-                if (sourceBlockAddress != destinationBlockAddress)
-                {
-                    using (DiskIoSession destination = m_diskIo.CreateDiskIoSession())
-                    {
-                        destination.BeginWriteToNewBlock(destinationBlockAddress);
-                        Memory.Copy(bufferSource.Pointer, destination.Pointer, destination.Length);
-                        WriteIndexIndirectBlock(destination.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
-                        destination.EndWrite(BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
-                    }
-                }
-                else if (*(int*)(bufferSource.Pointer + remoteAddressOffset) != remoteBlockAddress)
-                {
-                    bufferSource.BeginWriteToExistingBlock(destinationBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
-                    WriteIndexIndirectBlock(bufferSource.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
-                    bufferSource.EndWrite(BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
-                }
+                var destination = m_diskIo2;
+                destination.BeginWriteToNewBlock(destinationBlockAddress);
+                Memory.Copy(bufferSource.Pointer, destination.Pointer, destination.Length);
+                WriteIndexIndirectBlock(destination.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
+                destination.EndWrite(BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
+            }
+            else if (*(int*)(bufferSource.Pointer + remoteAddressOffset) != remoteBlockAddress)
+            {
+                bufferSource.BeginWriteToExistingBlock(destinationBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
+                WriteIndexIndirectBlock(bufferSource.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
+                bufferSource.EndWrite(BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
             }
         }
 
@@ -271,7 +272,7 @@ namespace openHistorian.V2.FileStructure
                 dataBlockAddress = m_fileHeaderBlock.AllocateFreeBlocks(1);
                 if (m_parser.DataClusterAddress == 0)
                     m_subFileMetaData.DataBlockCount++;
-                
+
                 m_subFileMetaData.TotalBlockCount++;
                 ShadowCopyDataCluster(m_parser.DataClusterAddress, m_parser.BaseVirtualAddressIndexValue, dataBlockAddress);
             }
@@ -297,12 +298,17 @@ namespace openHistorian.V2.FileStructure
             //if source exist
             if (sourceClusterAddress != 0)
             {
-                m_diskIo.CopyBlock(sourceClusterAddress, destinationClusterAddress, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
+                DiskIoSession destinationData = m_diskIo1;
+                DiskIoSession sourceData = m_diskIo2;
+                sourceData.Read(sourceClusterAddress, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
+                destinationData.BeginWriteToNewBlock(destinationClusterAddress);
+                Memory.Copy(sourceData.Pointer, destinationData.Pointer, sourceData.Length);
+                destinationData.EndWrite(BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
             }
             //if source cluster does not exist.
             else
             {
-                m_diskIo.WriteZeroesToNewBlock(destinationClusterAddress, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber);
+                m_diskIo1.WriteZeroesToNewBlock(destinationClusterAddress, BlockType.DataBlock, indexValue, fileIdNumber, snapshotSequenceNumber);
             }
         }
 
@@ -310,5 +316,18 @@ namespace openHistorian.V2.FileStructure
 
         #endregion
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            if (m_diskIo1 != null)
+                m_diskIo1.Dispose();
+            m_diskIo1 = null;
+            if (m_diskIo2 != null)
+                m_diskIo2.Dispose();
+            m_diskIo2 = null;
+        }
     }
 }
