@@ -119,9 +119,16 @@ namespace openHistorian.V2.FileStructure
             int thirdIndirectAddress;
 
             //Make a copy of the data page referenced
-            ShadowCopyDataBlock(out dataBlockAddress);
-            ShadowCopyIndexIndirectBlocks(dataBlockAddress, out firstIndirectAddress, out secondIndirectAddress, out thirdIndirectAddress);
-
+            if (ShadowCopyDataBlock(out dataBlockAddress))
+            {
+                ShadowCopyIndexIndirectBlocks(dataBlockAddress, out firstIndirectAddress, out secondIndirectAddress, out thirdIndirectAddress);
+            }
+            else
+            {
+                firstIndirectAddress = m_parser.FirstIndirectBlockAddress;
+                secondIndirectAddress = m_parser.SecondIndirectBlockAddress;
+                thirdIndirectAddress = m_parser.ThirdIndirectBlockAddress;
+            }
             m_parser.UpdateAddressesFromShadowCopy(dataBlockAddress, firstIndirectAddress, secondIndirectAddress, thirdIndirectAddress);
         }
 
@@ -138,18 +145,29 @@ namespace openHistorian.V2.FileStructure
                     m_subFileMetaData.DirectBlock = dataBlockAddress;
                     break;
                 case 1:
-                    firstIndirectAddress = ShadowCopyIndexIndirect(m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, dataBlockAddress);
+                    ShadowCopyIndexIndirect(out firstIndirectAddress, m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, dataBlockAddress);
                     m_subFileMetaData.SingleIndirectBlock = firstIndirectAddress;
                     break;
                 case 2:
-                    secondIndirectAddress = ShadowCopyIndexIndirect(m_parser.SecondIndirectBlockAddress, m_parser.SecondIndirectBaseIndex, 2, m_parser.SecondIndirectOffset, dataBlockAddress);
-                    firstIndirectAddress = ShadowCopyIndexIndirect(m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, secondIndirectAddress);
+                    if (ShadowCopyIndexIndirect(out secondIndirectAddress, m_parser.SecondIndirectBlockAddress, m_parser.SecondIndirectBaseIndex, 2, m_parser.SecondIndirectOffset, dataBlockAddress))
+                        ShadowCopyIndexIndirect(out firstIndirectAddress, m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, secondIndirectAddress);
+                    else
+                        firstIndirectAddress = m_parser.FirstIndirectBlockAddress;
                     m_subFileMetaData.DoubleIndirectBlock = firstIndirectAddress;
                     break;
                 case 3:
-                    thirdIndirectAddress = ShadowCopyIndexIndirect(m_parser.ThirdIndirectBlockAddress, m_parser.ThirdIndirectBaseIndex, 3, m_parser.ThirdIndirectOffset, dataBlockAddress);
-                    secondIndirectAddress = ShadowCopyIndexIndirect(m_parser.SecondIndirectBlockAddress, m_parser.SecondIndirectBaseIndex, 2, m_parser.SecondIndirectOffset, thirdIndirectAddress);
-                    firstIndirectAddress = ShadowCopyIndexIndirect(m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, secondIndirectAddress);
+                    if (ShadowCopyIndexIndirect(out thirdIndirectAddress, m_parser.ThirdIndirectBlockAddress, m_parser.ThirdIndirectBaseIndex, 3, m_parser.ThirdIndirectOffset, dataBlockAddress))
+                    {
+                        if (ShadowCopyIndexIndirect(out secondIndirectAddress, m_parser.SecondIndirectBlockAddress, m_parser.SecondIndirectBaseIndex, 2, m_parser.SecondIndirectOffset, thirdIndirectAddress))
+                            ShadowCopyIndexIndirect(out firstIndirectAddress, m_parser.FirstIndirectBlockAddress, m_parser.FirstIndirectBaseIndex, 1, m_parser.FirstIndirectOffset, secondIndirectAddress);
+                        else
+                            firstIndirectAddress = m_parser.FirstIndirectBlockAddress;
+                    }
+                    else
+                    {
+                        secondIndirectAddress = m_parser.SecondIndirectBlockAddress;
+                        firstIndirectAddress = m_parser.FirstIndirectBlockAddress;
+                    }
                     m_subFileMetaData.TripleIndirectBlock = firstIndirectAddress;
                     break;
                 default:
@@ -161,16 +179,15 @@ namespace openHistorian.V2.FileStructure
         /// <summary>
         /// Makes a shadow copy of the indirect index passed to this function. If the block does not exists, it creates it.
         /// </summary>
+        /// <param name="indexIndirectBlock">address of the shadow copy</param>
         /// <param name="sourceBlockAddress">The block to be copied</param>
         /// <param name="indexValue">the index value that goes in the footer of the file.</param>
         /// <param name="indexIndirectNumber">the indirect number {1,2,3} that goes in the footer of the block.</param>
         /// <param name="remoteAddressOffset">the offset of the remote address that needs to be updated.</param>
         /// <param name="remoteBlockAddress">the value of the remote address.</param>
-        /// <returns>The address of the shadow copy.</returns>
-        int ShadowCopyIndexIndirect(int sourceBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
+        /// <returns>Returns true if the block had to be shadowed, false if it did not change</returns>
+        bool ShadowCopyIndexIndirect(out int indexIndirectBlock, int sourceBlockAddress, int indexValue, byte indexIndirectNumber, int remoteAddressOffset, int remoteBlockAddress)
         {
-            int indexIndirectBlock; //The address to the shadowed index block.
-
             //Make a copy of the index block referenced
 
             //if the block does not exist, create it.
@@ -184,6 +201,7 @@ namespace openHistorian.V2.FileStructure
                 Memory.Clear(buffer.Pointer, buffer.Length);
                 WriteIndexIndirectBlock(buffer.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
                 buffer.EndWrite(BlockType.IndexIndirect, indexValue, m_subFileMetaData.FileIdNumber, m_fileHeaderBlock.SnapshotSequenceNumber);
+                return true;
             }
             //if the data page is an old page, allocate space to create a new copy
             else if (sourceBlockAddress <= m_lastReadOnlyBlock)
@@ -192,14 +210,15 @@ namespace openHistorian.V2.FileStructure
                 m_subFileMetaData.TotalBlockCount++;
 
                 ReadThenWriteIndexIndirectBlock(sourceBlockAddress, indexIndirectBlock, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
+                return true;
             }
             //The page has already been copied, use the existing address.
             else
             {
                 indexIndirectBlock = sourceBlockAddress;
                 ReadThenWriteIndexIndirectBlock(sourceBlockAddress, sourceBlockAddress, indexValue, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
+                return false;
             }
-            return indexIndirectBlock;
         }
 
         /// <summary>
@@ -218,31 +237,35 @@ namespace openHistorian.V2.FileStructure
             int snapshotSequenceNumber = m_fileHeaderBlock.SnapshotSequenceNumber;
 
             if (sourceBlockAddress == destinationBlockAddress)
-                bufferSource.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
-            else
-                bufferSource.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
-
-            if (bufferSource.Pointer[m_blockSize - 31] != indexIndirectNumber)
-                throw new Exception("The redirect value of this page is incorrect");
-
-
-            //we only need to update the base address if something has changed.
-            //Therefore, if the source and the destination are the same, and the remote block is the same
-            //everything else is going to be the same.
-            if (sourceBlockAddress != destinationBlockAddress)
             {
+                //bufferSource.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
+                //if (bufferSource.Pointer[m_blockSize - 31] != indexIndirectNumber)
+                //    throw new Exception("The redirect value of this page is incorrect");
+
+                if (*(int*)(bufferSource.Pointer + remoteAddressOffset) != remoteBlockAddress)
+                {
+                    bufferSource.BeginWriteToExistingBlock(destinationBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
+
+                    if (bufferSource.Pointer[m_blockSize - 31] != indexIndirectNumber)
+                        throw new Exception("The redirect value of this page is incorrect");
+
+                    WriteIndexIndirectBlock(bufferSource.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
+                    bufferSource.EndWrite(BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
+                }
+            }
+            else
+            {
+                bufferSource.Read(sourceBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber - 1);
+                if (bufferSource.Pointer[m_blockSize - 31] != indexIndirectNumber)
+                    throw new Exception("The redirect value of this page is incorrect");
+
                 var destination = m_diskIo2;
                 destination.BeginWriteToNewBlock(destinationBlockAddress);
                 Memory.Copy(bufferSource.Pointer, destination.Pointer, destination.Length);
                 WriteIndexIndirectBlock(destination.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
                 destination.EndWrite(BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
             }
-            else if (*(int*)(bufferSource.Pointer + remoteAddressOffset) != remoteBlockAddress)
-            {
-                bufferSource.BeginWriteToExistingBlock(destinationBlockAddress, BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
-                WriteIndexIndirectBlock(bufferSource.Pointer, indexIndirectNumber, remoteAddressOffset, remoteBlockAddress);
-                bufferSource.EndWrite(BlockType.IndexIndirect, indexValue, fileIdNumber, snapshotSequenceNumber);
-            }
+
         }
 
         /// <summary>
@@ -262,7 +285,12 @@ namespace openHistorian.V2.FileStructure
 
         #region [ Data Block Shadow Copy ]
 
-        void ShadowCopyDataBlock(out int dataBlockAddress)
+        /// <summary>
+        /// Makes a copy of the data block. Returns true if a copy was made. False if no copy was made
+        /// </summary>
+        /// <param name="dataBlockAddress"></param>
+        /// <returns>True if the block's address was changed.</returns>
+        bool ShadowCopyDataBlock(out int dataBlockAddress)
         {
             //if the page does not exist -or-
             //if the data page is an old page, allocate space to create a new copy
@@ -275,11 +303,13 @@ namespace openHistorian.V2.FileStructure
 
                 m_subFileMetaData.TotalBlockCount++;
                 ShadowCopyDataCluster(m_parser.DataClusterAddress, m_parser.BaseVirtualAddressIndexValue, dataBlockAddress);
+                return true;
             }
             else
             {
                 //The page has already been copied, use the existing address.
                 dataBlockAddress = m_parser.DataClusterAddress;
+                return false;
             }
         }
 

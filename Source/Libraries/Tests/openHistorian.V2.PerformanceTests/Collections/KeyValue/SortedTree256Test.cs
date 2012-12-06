@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -12,6 +13,20 @@ namespace openHistorian.V2.Collections.KeyValue
     public class SortedTree256Test
     {
         const uint Count = 100000;
+
+        [Test]
+        public void SortedTree256ArchiveFile()
+        {
+            using (TransactionalFileStructure file = TransactionalFileStructure.CreateFile("c:\\temp\\ArchiveFileDelMe.d2",4096))
+            using (var edit = file.BeginEdit())
+            using (var stream = edit.CreateFile(Guid.NewGuid(), 12))
+            using (BinaryStream bs = new BinaryStream(stream))
+            {
+                SortedTree256BaseTest.BenchmarkTree(() => new SortedTree256(bs, 4096), Count);
+            }
+            File.Delete("c:\\temp\\ArchiveFileDelMe.d2");
+            Console.WriteLine((DiskIo.ChecksumCount / 11).ToString("N0"));
+        }
 
         [Test]
         public void SortedTree256Archive()

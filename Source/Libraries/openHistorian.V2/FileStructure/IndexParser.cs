@@ -47,7 +47,7 @@ namespace openHistorian.V2.FileStructure
         /// The file that is being read by this parser.
         /// </summary>
         SubFileMetaData m_subFile;
-       
+
         DiskIoSession m_diskIo;
 
         int m_blockSize;
@@ -246,6 +246,10 @@ namespace openHistorian.V2.FileStructure
         /// </summary>
         internal void UpdateAddressesFromShadowCopy(int dataClusterAddress, int firstIndirectBlockAddress, int secondIndirectBlockAddress, int thirdIndirectBlockAddress)
         {
+            if (FirstIndirectBlockAddress != firstIndirectBlockAddress
+                || SecondIndirectBlockAddress != secondIndirectBlockAddress
+                || ThirdIndirectBlockAddress != thirdIndirectBlockAddress)
+                m_diskIo.Clear();
             DataClusterAddress = dataClusterAddress;
             FirstIndirectBlockAddress = firstIndirectBlockAddress;
             SecondIndirectBlockAddress = secondIndirectBlockAddress;
@@ -327,8 +331,6 @@ namespace openHistorian.V2.FileStructure
                 throw new Exception("The redirect value of this page is incorrect");
 
             int value = *(int*)(buffer.Pointer + offset);
-            //ToDo: Figure out how to not have to clear this point every time.
-            buffer.Clear();
             return value;
         }
 
