@@ -30,6 +30,12 @@ using openHistorian.V2.IO.Unmanaged;
 
 namespace openHistorian.V2.Server.Database.Archive
 {
+    public enum CompressionMethod
+    {
+        None,
+        DeltaEncoded,
+        TimeSeriesEncoded
+    }
     /// <summary>
     /// Represents a individual self-contained archive file. 
     /// This is one of many files that are part of a given <see cref="ArchiveDatabaseEngine"/>.
@@ -67,25 +73,29 @@ namespace openHistorian.V2.Server.Database.Archive
         /// <summary>
         /// Creates a new in memory archive file.
         /// </summary>
-        public static ArchiveFile CreateInMemory(int blockSize = 4096)
+        /// <param name="compression">the compression method that will be used for the file.</param>
+        /// <param name="blockSize">The number of bytes per block in the file.</param>
+        public static ArchiveFile CreateInMemory(CompressionMethod compression = CompressionMethod.None, int blockSize = 4096)
         {
             var af = new ArchiveFile();
             af.m_fileName = string.Empty;
             af.m_fileStructure = TransactionalFileStructure.CreateInMemory(blockSize);
-            af.InitializeNewFile();
+            af.InitializeNewFile(compression);
             return af;
         }
 
         /// <summary>
         /// Creates an archive file.
         /// </summary>
-        /// <param name="file">the path for the file</param>
-        public static ArchiveFile CreateFile(string file, int blockSize = 4096)
+        /// <param name="file">the path for the file.</param>
+        /// <param name="compression">the compression method that will be used for the file.</param>
+        /// <param name="blockSize">The number of bytes per block in the file.</param>
+        public static ArchiveFile CreateFile(string file, CompressionMethod compression = CompressionMethod.None, int blockSize = 4096)
         {
             var af = new ArchiveFile();
             af.m_fileName = file;
             af.m_fileStructure = TransactionalFileStructure.CreateFile(file);
-            af.InitializeNewFile();
+            af.InitializeNewFile(compression);
             return af;
         }
 
@@ -182,16 +192,17 @@ namespace openHistorian.V2.Server.Database.Archive
         /// <summary>
         /// Called only by the constructor if a new archive file will be created.
         /// </summary>
-        void InitializeNewFile()
+        void InitializeNewFile(CompressionMethod compression)
         {
             using (var trans = m_fileStructure.BeginEdit())
             {
                 using (var fs = trans.CreateFile(s_pointDataFile, 1))
                 using (var bs = new BinaryStream(fs))
                 {
-                    var tree = new SortedTree256(bs, m_fileStructure.DataBlockSize);
+                    var tree = SortedTree256Initializer.Create(bs, m_fileStructure.DataBlockSize,compression);
                     m_firstKey = tree.FirstKey;
                     m_lastKey = tree.LastKey;
+
                 }
                 trans.ArchiveType = s_fileType;
                 trans.UserData = SaveUserData();

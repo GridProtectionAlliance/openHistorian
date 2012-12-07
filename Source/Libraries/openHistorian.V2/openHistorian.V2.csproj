@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\KeyValue\SortedTree256Initializer.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256TSEncoded.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256EncodedLeafNodeBase.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256EncodedLeafNodeBase_NodeHeader.cs" />
@@ -207,6 +208,14 @@
     <Compile Include="OldCode\Collections\BPlusTreeTypes\Long.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream.cs" />
     <Compile Include="OldCode\UnmanagedMemory\UnmanagedArray.cs" />
+    <Compile Include="Streaming\Client\ClientSocket.cs" />
+    <Compile Include="Streaming\Server\ProcessArchivePoints.cs" />
+    <Compile Include="Streaming\Server\ProcessAuthentication.cs" />
+    <Compile Include="Streaming\Server\ProcessClientStream.cs" />
+    <Compile Include="Streaming\Server\ProcessDatabaseInstance.cs" />
+    <Compile Include="Streaming\Server\ProcessDisconnect.cs" />
+    <Compile Include="Streaming\Server\ProcessKeepAlive.cs" />
+    <Compile Include="Streaming\Server\ServerSocket.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old2.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old.cs" />

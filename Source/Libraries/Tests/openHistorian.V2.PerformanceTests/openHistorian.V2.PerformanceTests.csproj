@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\BitArray.cs" />
+    <Compile Include="Collections\KeyValue\ArchiveFileTest.cs" />
     <Compile Include="Collections\KeyValue\OptimizeCompressionMethodTest.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256BaseTest.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256CompareTest.cs" />

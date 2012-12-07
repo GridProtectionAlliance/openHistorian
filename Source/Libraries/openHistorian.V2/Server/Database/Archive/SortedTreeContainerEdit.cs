@@ -38,7 +38,7 @@ namespace openHistorian.V2.Server.Database.Archive
 
         SubFileStream m_subStream;
         BinaryStream m_binaryStream;
-        SortedTree256 m_tree;
+        SortedTree256Base m_tree;
         bool m_disposed;
 
         #endregion
@@ -49,7 +49,7 @@ namespace openHistorian.V2.Server.Database.Archive
         {
             m_subStream = currentTransaction.OpenFile(fileNumber, flags);
             m_binaryStream = new BinaryStream(m_subStream);
-            m_tree = new SortedTree256(m_binaryStream);
+            m_tree = SortedTree256Initializer.Open(m_binaryStream);
         }
 
         #endregion

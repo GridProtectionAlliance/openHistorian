@@ -33,7 +33,12 @@ namespace openHistorian.V2.Collections.KeyValue
     /// </summary>
     public class SortedTree256 : SortedTree256LeafNodeBase
     {
-
+        // {C4BB5945-A6DA-4634-A8A9-F74C5FB4A052}
+        static Guid s_fileType = new Guid(0xc4bb5945, 0xa6da, 0x4634, 0xa8, 0xa9, 0xf7, 0x4c, 0x5f, 0xb4, 0xa0, 0x52);
+        public static Guid GetFileType()
+        {
+            return s_fileType;
+        }
         /// <summary>
         /// Loads an existing <see cref="SortedTree256"/>
         /// from the provided stream.
@@ -59,7 +64,7 @@ namespace openHistorian.V2.Collections.KeyValue
         {
             get
             {
-                return Guid.Empty;
+                return s_fileType;
             }
         }
     }

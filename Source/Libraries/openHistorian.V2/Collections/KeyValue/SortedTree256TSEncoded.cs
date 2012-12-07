@@ -35,7 +35,10 @@ namespace openHistorian.V2.Collections.KeyValue
     {
         // {88CC6EDA-7F05-449E-9943-97 38 BC FC CF 40}
         static Guid s_fileType = new Guid(0x88cc6eda, 0x7f05, 0x449e, 0x99, 0x43, 0x97, 0x38, 0xbc, 0xfc, 0xcf, 0x40);
-
+        public static Guid GetFileType()
+        {
+            return s_fileType;
+        }
         /// <summary>
         /// Loads an existing <see cref="SortedTree256"/>
         /// from the provided stream.
