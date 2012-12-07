@@ -3,7 +3,7 @@
 //using System.Linq;
 //using System.Text;
 
-//namespace openHistorian.V2.Streaming.Client
+//namespace openHistorian.Streaming.Client
 //{
 //    class ClientSocket
 //    {

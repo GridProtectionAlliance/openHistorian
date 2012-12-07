@@ -24,11 +24,35 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.IO;
-using openHistorian.Local;
 
 namespace openHistorian
 {
+    #region [ Enumerations ]
+
+    /// <summary>
+    /// Server commands
+    /// </summary>
+    public enum ServerCommand : byte
+    {
+        Connect,
+        Disconnect,
+        Read,
+        CancelRead,
+        Write
+    }
+
+    /// <summary>
+    /// Server response
+    /// </summary>
+    public enum ServerResponse : byte
+    {
+        Success,
+        Error,
+        DataPacket,
+        ProcessingComplete
+    }
+
+    #endregion
 
     public interface IPointStream
     {
@@ -38,7 +62,7 @@ namespace openHistorian
 
     public interface IHistorian : IDisposable
     {
-        IHistorianReadWrite ConnectToDatabase(string databaseName);
+        IHistorianReadWrite ConnectToDatabase(string connectionString);
         IManageHistorian Manage();
     }
 

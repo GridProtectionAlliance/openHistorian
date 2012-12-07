@@ -23,9 +23,9 @@
 ////******************************************************************************************************
 
 //using System;
-//using openHistorian.V2.Server.Database;
+//using openHistorian.Server.Database;
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    /// <summary>
 //    /// Handles the authentication of the client and grants/revokes permissions accordingly

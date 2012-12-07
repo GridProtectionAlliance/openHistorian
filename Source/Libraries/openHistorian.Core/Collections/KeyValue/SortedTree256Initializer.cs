@@ -23,10 +23,10 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.IO;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.IO;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     public static class SortedTree256Initializer
     {

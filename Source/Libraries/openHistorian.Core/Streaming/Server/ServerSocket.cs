@@ -5,10 +5,10 @@
 //using System.Text;
 //using System.Net.Sockets;
 //using System.Threading;
-//using openHistorian.V2.Local;
-//using openHistorian.V2.Server;
+//using openHistorian.Local;
+//using openHistorian.Server;
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    class ServerSocket
 //    {

@@ -110,9 +110,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\openHistorian.V2\openHistorian.csproj">
+    <ProjectReference Include="..\..\openHistorian.Core\openHistorian.Engine.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
-      <Name>openHistorian</Name>
+      <Name>openHistorian.Engine</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

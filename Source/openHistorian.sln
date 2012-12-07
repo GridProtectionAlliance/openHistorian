@@ -2,6 +2,14 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{9C3A3ABA-9618-49B0-9104-60678B4F3D71}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\GSF.Communication.dll = Dependencies\GSF.Communication.dll
+		Dependencies\GSF.Communication.xml = Dependencies\GSF.Communication.xml
+		Dependencies\GSF.Core.dll = Dependencies\GSF.Core.dll
+		Dependencies\GSF.Core.xml = Dependencies\GSF.Core.xml
+		Dependencies\GSF.TimeSeries.dll = Dependencies\GSF.TimeSeries.dll
+		Dependencies\GSF.TimeSeries.xml = Dependencies\GSF.TimeSeries.xml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{08078FEC-378B-4585-85B2-E8B0B646D270}"
 EndProject
@@ -17,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openHistorianExplorer", "op
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3A952272-B64C-48E0-9CB2-0130AC28D72E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "Libraries\openHistorian.V2\openHistorian.csproj", "{040E2AE7-021B-435A-ADBF-06D07EE0A67D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Engine", "Libraries\openHistorian.Core\openHistorian.Engine.csproj", "{040E2AE7-021B-435A-ADBF-06D07EE0A67D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C73F9DF6-4556-49B4-90D7-C28F87B310D6}"
 EndProject
@@ -28,28 +36,34 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.V2.PerformanceTests", "Libraries\Tests\openHistorian.V2.PerformanceTests\openHistorian.V2.PerformanceTests.csproj", "{B2DA9C7B-24C1-449B-816D-C72F4661983E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.PerformanceTests", "Libraries\Tests\openHistorian.V2.PerformanceTests\openHistorian.PerformanceTests.csproj", "{B2DA9C7B-24C1-449B-816D-C72F4661983E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.V2.UnitTests", "Libraries\Tests\openHistorian.V2.UnitTests\openHistorian.V2.UnitTests.csproj", "{9C6B4307-6E10-4E9D-88C9-3CED89B34270}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.UnitTests", "Libraries\Tests\openHistorian.V2.UnitTests\openHistorian.UnitTests.csproj", "{9C6B4307-6E10-4E9D-88C9-3CED89B34270}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "openHistorian\openHistorian.csproj", "{B253E828-964E-4037-B2E3-B91E8E7C1159}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = Libraries\\Tests\\openHistorian.V2.PerformanceTests\\openHistorian.V2.PerformanceTests.csproj
+		SccProjectUniqueName1 = Libraries\\Tests\\openHistorian.V2.PerformanceTests\\openHistorian.PerformanceTests.csproj
 		SccProjectTopLevelParentUniqueName1 = openHistorian.sln
 		SccProjectName1 = Libraries/Tests/openHistorian.V2.PerformanceTests
 		SccLocalPath1 = Libraries\\Tests\\openHistorian.V2.PerformanceTests
-		SccProjectUniqueName2 = Libraries\\Tests\\openHistorian.V2.UnitTests\\openHistorian.V2.UnitTests.csproj
+		SccProjectUniqueName2 = Libraries\\Tests\\openHistorian.V2.UnitTests\\openHistorian.UnitTests.csproj
 		SccProjectTopLevelParentUniqueName2 = openHistorian.sln
 		SccProjectName2 = Libraries/Tests/openHistorian.V2.UnitTests
 		SccLocalPath2 = Libraries\\Tests\\openHistorian.V2.UnitTests
-		SccProjectUniqueName3 = Libraries\\openHistorian.V2\\openHistorian.csproj
+		SccProjectUniqueName3 = openHistorian\\openHistorian.csproj
 		SccProjectTopLevelParentUniqueName3 = openHistorian.sln
-		SccProjectName3 = Libraries/openHistorian.V2
-		SccLocalPath3 = Libraries\\openHistorian.V2
+		SccProjectName3 = openHistorian
+		SccLocalPath3 = openHistorian
+		SccProjectUniqueName4 = Libraries\\openHistorian.Core\\openHistorian.Engine.csproj
+		SccProjectTopLevelParentUniqueName4 = openHistorian.sln
+		SccProjectName4 = Libraries/openHistorian.Core
+		SccLocalPath4 = Libraries\\openHistorian.Core
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -93,12 +107,23 @@ Global
 		{9C6B4307-6E10-4E9D-88C9-3CED89B34270}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{9C6B4307-6E10-4E9D-88C9-3CED89B34270}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{9C6B4307-6E10-4E9D-88C9-3CED89B34270}.Release|x86.ActiveCfg = Release|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B253E828-964E-4037-B2E3-B91E8E7C1159}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{040E2AE7-021B-435A-ADBF-06D07EE0A67D} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{B253E828-964E-4037-B2E3-B91E8E7C1159} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{460BEC91-29E7-4574-9E85-0FD62D43D683} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{4D912150-86EF-44C4-ABBC-C869FE82C829} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{DA2EF5C4-6C06-49F7-AFA7-FD5720E8DEBD} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}

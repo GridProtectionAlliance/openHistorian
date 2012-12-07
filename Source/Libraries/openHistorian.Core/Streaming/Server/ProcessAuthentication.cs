@@ -24,7 +24,7 @@
 
 //using System;
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    /// <summary>
 //    /// Handles the authentication of the client and grants/revokes permissions accordingly

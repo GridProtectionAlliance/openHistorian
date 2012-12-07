@@ -39,6 +39,7 @@ namespace openHistorian.Local
         {
             m_engine = new HistorianEngine();
         }
+
         public HistorianServer(string configFileName)
             : this()
         {

@@ -24,11 +24,11 @@
 
 //using System;
 //using System.Threading;
-//using openHistorian.V2.IO;
-//using openHistorian.V2.IO.Unmanaged;
-//using openHistorian.V2.Server;
+//using openHistorian.IO;
+//using openHistorian.IO.Unmanaged;
+//using openHistorian.Server;
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    class ProcessClientStream
 //    {

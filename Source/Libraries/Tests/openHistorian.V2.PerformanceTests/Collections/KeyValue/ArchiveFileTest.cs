@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using NUnit.Framework;
-using openHistorian.V2.IO.Unmanaged;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.IO.Unmanaged;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     [TestFixture]
     public class ArchiveFileTest
@@ -78,14 +78,14 @@ namespace openHistorian.V2.Collections.KeyValue
             using (var edit3 = file3.BeginEdit())
             {
                 //var hist = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1_archive_2012-07-26 15!35!36.166_to_2012-07-26 15!40!36.666.d");
-                var hist = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1.d");
+                var hist = new OldHistorianReader(@"D:\Projects\Applications\openPDC\Synchrophasor\Current Version\Build\Output\Debug\Applications\openPDC\Archive\ppa_archive_2012-11-06 16!00!51.233_to_2012-11-06 16!07!16.933.d");
                 Action<OldHistorianReader.Points> del = (x) =>
                     {
                         tree0.Add((ulong)x.Time.Ticks, (ulong)x.PointID, x.flags, *(uint*)&x.Value);
                     };
                 hist.Read(del);
 
-                tree0 = SortPoints(tree0);
+                //tree0 = SortPoints(tree0);
 
                 var scan0 = tree0.GetDataRange();
                 scan0.SeekToKey(0, 0);
