@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
-using openHistorian.V2.Server.Configuration;
+using openHistorian.Server.Configuration;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     [TestFixture()]
     public class ArchiveDatabaseEngineTest

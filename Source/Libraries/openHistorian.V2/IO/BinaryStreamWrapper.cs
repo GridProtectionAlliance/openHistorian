@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.V2.IO
+namespace openHistorian.IO
 {
     public class BinaryStreamWrapper : BinaryStreamBase
     {

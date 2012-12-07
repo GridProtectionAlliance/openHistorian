@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     public struct PositionData
     {

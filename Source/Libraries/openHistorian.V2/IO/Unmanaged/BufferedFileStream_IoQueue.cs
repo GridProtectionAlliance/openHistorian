@@ -25,9 +25,9 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using openHistorian.V2.Collections;
+using openHistorian.Collections;
 
-namespace openHistorian.V2.IO.Unmanaged
+namespace openHistorian.IO.Unmanaged
 {
     public partial class BufferedFileStream
     {

@@ -26,10 +26,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using openHistorian.V2.IO;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.IO;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.FileStructure.Test
+namespace openHistorian.FileStructure.Test
 {
     /// <summary>
     /// Provides a stream that converts the virtual addresses of the internal feature files to physical address

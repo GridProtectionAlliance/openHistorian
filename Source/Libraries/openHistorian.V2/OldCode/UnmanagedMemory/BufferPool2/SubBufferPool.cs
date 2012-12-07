@@ -25,7 +25,7 @@
 //using System;
 //using System.Collections.Generic;
 
-//namespace openHistorian.V2.UnmanagedMemory
+//namespace openHistorian.UnmanagedMemory
 //{
 //    /// <summary>
 //    /// This class allocates and pools unmanaged memory.

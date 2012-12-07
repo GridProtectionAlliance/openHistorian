@@ -5,7 +5,7 @@
 //using System.Diagnostics;
 //using System.Windows.Forms;
 
-//namespace openHistorian.V2.Unmanaged.GenericOld
+//namespace openHistorian.Unmanaged.GenericOld
 //{
 //    class NodeTestPageSize
 //    {

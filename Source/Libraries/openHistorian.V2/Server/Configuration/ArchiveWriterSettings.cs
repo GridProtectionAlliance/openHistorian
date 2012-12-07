@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.V2.Server.Configuration
+namespace openHistorian.Server.Configuration
 {
     /// <summary>
     /// Controls the initial write stages when writing in a stream-like fassion.

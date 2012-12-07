@@ -22,9 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     unsafe public partial class SubFileStream
     {

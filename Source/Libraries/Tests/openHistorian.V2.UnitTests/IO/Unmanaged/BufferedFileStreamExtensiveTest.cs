@@ -1,13 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using NUnit.Framework;
-using openHistorian.V2.Collections.KeyValue;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.Collections.KeyValue;
+using openHistorian.IO.Unmanaged;
 using System;
 using System.IO;
-using openHistorian.V2.UnmanagedMemory;
+using openHistorian.UnmanagedMemory;
 
-namespace openHistorian.V2.IO.Unmanaged.Test
+namespace openHistorian.IO.Unmanaged.Test
 {
 
     /// <summary>

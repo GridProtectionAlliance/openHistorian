@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using openHistorian.V2.Server;
-using openHistorian.V2.Server.Database;
+using openHistorian.Server;
+using openHistorian.Server.Database;
 using TVA.Media;
 
 namespace Historian2Demo

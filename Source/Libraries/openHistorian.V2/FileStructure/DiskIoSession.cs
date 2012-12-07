@@ -24,9 +24,9 @@
 using System;
 using System.Data;
 using System.IO;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// Provides a data IO session with the disk subsystem to perform basic read and write operations.

@@ -25,10 +25,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using openHistorian.V2.IO.Unmanaged;
-using MemoryStream = openHistorian.V2.IO.Unmanaged.MemoryStream;
+using openHistorian.IO.Unmanaged;
+using MemoryStream = openHistorian.IO.Unmanaged.MemoryStream;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// This class is responsible for managing the transactions that occur on the file system.

@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.V2.IO.Unmanaged
+namespace openHistorian.IO.Unmanaged
 {
     /// <summary>
     /// A page replacement algorithm that utilizes a quasi LRU algorithm.

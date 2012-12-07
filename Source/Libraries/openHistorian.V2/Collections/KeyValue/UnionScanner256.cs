@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     //ToDo: Implement a union scanner.
     public class UnionScanner256 : ITreeScanner256

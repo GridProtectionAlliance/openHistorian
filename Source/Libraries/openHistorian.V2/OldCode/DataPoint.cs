@@ -3,9 +3,9 @@
 //using System.Linq;
 //using System.Text;
 //using TVA;
-//using openHistorian.V2.Collections.BPlusTreeTypes;
+//using openHistorian.Collections.BPlusTreeTypes;
 
-//namespace openHistorian.V2
+//namespace openHistorian
 //{
 //    public class DataPoint : IDataPoint
 //    {

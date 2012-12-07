@@ -1,8 +1,8 @@
 ﻿//using Microsoft.VisualStudio.TestTools.UnitTesting;
 //using System;
-//using openHistorian.V2.Server.Database.Archive;
+//using openHistorian.Server.Database.Archive;
 
-//namespace openHistorian.V2.Server.Database
+//namespace openHistorian.Server.Database
 //{
     
     
@@ -119,7 +119,7 @@
 //        /////A test for CreateArchiveName
 //        /////</summary>
 //        //[TestMethod()]
-//        //[DeploymentItem("openHistorian.V2.dll")]
+//        //[DeploymentItem("openHistorian.dll")]
 //        //public void CreateArchiveNameTest()
 //        //{
 //        //    PrivateObject param0 = null; // TODO: Initialize to an appropriate value

@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.V2
+namespace openHistorian
 {
     /// <summary>
     /// Contains 7 bit encoding functions

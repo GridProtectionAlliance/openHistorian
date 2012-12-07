@@ -23,7 +23,7 @@
 //******************************************************************************************************
 
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// Each block of bytes in a file is one of these types.

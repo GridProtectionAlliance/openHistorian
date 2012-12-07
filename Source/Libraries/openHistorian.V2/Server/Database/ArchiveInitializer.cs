@@ -24,9 +24,9 @@
 
 using System;
 using System.IO;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     /// <summary>
     /// Creates new archive files based on user settings.

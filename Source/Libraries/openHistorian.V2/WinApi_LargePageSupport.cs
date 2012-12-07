@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace openHistorian.V2
+namespace openHistorian
 {
     static partial class WinApi
     {

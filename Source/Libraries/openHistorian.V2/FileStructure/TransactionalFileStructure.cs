@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     public sealed class TransactionalFileStructure : IDisposable
     {

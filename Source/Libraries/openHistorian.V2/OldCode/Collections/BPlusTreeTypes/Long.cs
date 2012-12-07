@@ -22,9 +22,9 @@
 ////
 ////******************************************************************************************************
 
-//using openHistorian.V2.IO;
+//using openHistorian.IO;
 
-//namespace openHistorian.V2.Collections.BPlusTreeTypes
+//namespace openHistorian.Collections.BPlusTreeTypes
 //{
 //    struct Long : IBPlusTreeType<Long>
 //    {

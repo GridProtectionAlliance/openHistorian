@@ -24,7 +24,7 @@
 
 using System.Collections.Generic;
 
-namespace openHistorian.V2.Server.Configuration
+namespace openHistorian.Server.Configuration
 {
     public class HistorianSettings
     {

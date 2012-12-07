@@ -25,9 +25,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using openHistorian.V2.UnmanagedMemory;
+using openHistorian.UnmanagedMemory;
 
-namespace openHistorian.V2.IO.Unmanaged
+namespace openHistorian.IO.Unmanaged
 {
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.

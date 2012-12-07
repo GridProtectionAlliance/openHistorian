@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.V2.Collections
+namespace openHistorian.Collections
 {
     /// <summary>
     /// Provides a high speed list that can have elements that can be null.

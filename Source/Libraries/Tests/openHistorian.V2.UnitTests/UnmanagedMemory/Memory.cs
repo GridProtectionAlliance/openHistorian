@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace openHistorian.V2.UnmanagedMemory
+namespace openHistorian.UnmanagedMemory
 {
     [TestFixture()]
     public class MemoryTest

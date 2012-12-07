@@ -23,9 +23,9 @@
 //using System;
 //using System.Linq;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using openHistorian.V2.IO.Unmanaged;
+//using openHistorian.IO.Unmanaged;
 
-//namespace openHistorian.V2.FileStructure
+//namespace openHistorian.FileStructure
 //{
 //    [TestClass()]
 //    public class FileHeaderBlockTest

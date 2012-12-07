@@ -23,9 +23,9 @@
 
 using System;
 using System.Data;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     internal sealed class DiskIo : IDisposable
     {

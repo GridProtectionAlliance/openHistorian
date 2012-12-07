@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using NUnit.Framework;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     [TestFixture]
     public class SortedTree256CompareTest

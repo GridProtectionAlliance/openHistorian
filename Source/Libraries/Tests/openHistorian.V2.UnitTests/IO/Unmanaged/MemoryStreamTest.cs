@@ -1,7 +1,7 @@
 ﻿//using System;
 //using NUnit.Framework;
 
-//namespace openHistorian.V2.IO.Unmanaged
+//namespace openHistorian.IO.Unmanaged
 //{
 //    [TestFixture()]
 //    public class MemoryStreamTest

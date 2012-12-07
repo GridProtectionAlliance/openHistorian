@@ -21,7 +21,7 @@
 //     
 //******************************************************************************************************
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     /// <summary>
     /// Represents an empty tree scanner. 

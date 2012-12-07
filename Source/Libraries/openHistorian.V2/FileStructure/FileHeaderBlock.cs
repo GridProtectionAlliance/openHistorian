@@ -25,9 +25,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using openHistorian.V2.Collections;
+using openHistorian.Collections;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// Contains the information that is in the header page of an archive file.  

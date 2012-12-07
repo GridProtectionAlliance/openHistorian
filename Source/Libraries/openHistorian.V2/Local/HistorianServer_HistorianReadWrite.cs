@@ -23,9 +23,9 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
-using openHistorian.V2.Server.Database;
+using openHistorian.Server.Database;
 
-namespace openHistorian.V2.Local
+namespace openHistorian.Local
 {
     public partial class HistorianServer
     {

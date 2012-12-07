@@ -23,9 +23,9 @@
 
 //using System;
 //using System.Collections.Generic;
-//using openHistorian.V2.IO;
+//using openHistorian.IO;
 
-//namespace openHistorian.V2.Collections
+//namespace openHistorian.Collections
 //{
 //    /// <summary>
 //    /// Represents a collection of key/values pairs that is very similiar to a <see cref="SortedList{TKey,TValue}"/> 

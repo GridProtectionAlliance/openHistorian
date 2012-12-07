@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
-using openHistorian.V2.Server.Configuration;
-using openHistorian.V2.Server.Database.Archive;
-using openHistorian.V2.Server.Database.ArchiveWriters;
+using openHistorian.Server.Configuration;
+using openHistorian.Server.Database.Archive;
+using openHistorian.Server.Database.ArchiveWriters;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     [TestFixture]
     public class ArchiveManagementTest

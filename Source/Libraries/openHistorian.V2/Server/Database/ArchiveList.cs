@@ -24,9 +24,9 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     /// <summary>
     /// Manages the complete list of archive resources and the 

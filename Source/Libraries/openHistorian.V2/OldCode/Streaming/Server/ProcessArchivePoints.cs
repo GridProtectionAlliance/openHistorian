@@ -25,7 +25,7 @@
 //using System;
 //using System.Collections.Generic;
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    class ProcessArchivePoints : ITransportCommand
 //    {

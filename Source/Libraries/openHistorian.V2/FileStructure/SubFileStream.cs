@@ -25,10 +25,10 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.IO;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.IO;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     ///Provides a file stream that can be used to open a file and does all of the background work 

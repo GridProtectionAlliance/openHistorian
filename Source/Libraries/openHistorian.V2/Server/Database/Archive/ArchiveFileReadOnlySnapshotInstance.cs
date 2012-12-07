@@ -22,10 +22,10 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.Collections.KeyValue;
-using openHistorian.V2.FileStructure;
+using openHistorian.Collections.KeyValue;
+using openHistorian.FileStructure;
 
-namespace openHistorian.V2.Server.Database.Archive
+namespace openHistorian.Server.Database.Archive
 {
     /// <summary>
     /// Provides a user with a read-only instance of an archive.

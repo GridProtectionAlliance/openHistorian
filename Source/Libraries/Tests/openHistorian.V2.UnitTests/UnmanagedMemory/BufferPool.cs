@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using NUnit.Framework;
-using openHistorian.V2.UnmanagedMemory;
+using openHistorian.UnmanagedMemory;
 
-namespace openHistorian.V2.UnmanagedMemory
+namespace openHistorian.UnmanagedMemory
 {
 
     [TestFixture()]

@@ -24,10 +24,10 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.Server.Configuration;
-using openHistorian.V2.Server.Database;
+using openHistorian.Server.Configuration;
+using openHistorian.Server.Database;
 
-namespace openHistorian.V2.Server
+namespace openHistorian.Server
 {
     /// <summary>
     /// The main engine of the openHistorian. Instance this class to host a historian.

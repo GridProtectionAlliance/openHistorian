@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// This class provides passthrough properties for the <see cref="IndexMapper"/> class as well follows the directions

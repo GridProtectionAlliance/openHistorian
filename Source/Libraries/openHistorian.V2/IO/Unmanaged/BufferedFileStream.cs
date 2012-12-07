@@ -25,9 +25,9 @@
 using System;
 using System.IO;
 using System.Linq;
-using openHistorian.V2.UnmanagedMemory;
+using openHistorian.UnmanagedMemory;
 
-namespace openHistorian.V2.IO.Unmanaged
+namespace openHistorian.IO.Unmanaged
 {
     /// <summary>
     /// A buffered file stream utilizes the buffer pool to intellectually cache

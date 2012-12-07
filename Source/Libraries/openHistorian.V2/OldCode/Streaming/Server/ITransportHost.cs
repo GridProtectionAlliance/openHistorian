@@ -1,6 +1,6 @@
-//using openHistorian.V2.Server;
+//using openHistorian.Server;
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    interface ITransportHost
 //    {

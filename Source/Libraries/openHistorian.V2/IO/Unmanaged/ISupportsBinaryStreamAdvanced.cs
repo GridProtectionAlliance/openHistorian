@@ -22,9 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.FileStructure;
+using openHistorian.FileStructure;
 
-namespace openHistorian.V2.IO.Unmanaged
+namespace openHistorian.IO.Unmanaged
 {
     public class StreamBlockEventArgs
         : EventArgs

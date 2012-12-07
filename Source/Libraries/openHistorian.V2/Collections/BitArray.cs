@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.V2.Collections
+namespace openHistorian.Collections
 {
     /// <summary>
     /// Provides an array of bits.  Much like the native .NET implementation, 

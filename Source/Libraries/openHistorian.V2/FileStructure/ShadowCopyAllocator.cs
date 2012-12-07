@@ -22,9 +22,9 @@
 //
 //******************************************************************************************************
 using System;
-using openHistorian.V2.UnmanagedMemory;
+using openHistorian.UnmanagedMemory;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// This class will make shadow copies of blocks or, if the block has never been written to, prepare the block to be written to.

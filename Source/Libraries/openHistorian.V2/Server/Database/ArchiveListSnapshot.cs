@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     /// <summary>
     /// Provides a list of resources that each system transaction could be using.

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using NUnit.Framework;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.IO
+namespace openHistorian.IO
 {
     [TestFixture()]
     public class BinaryStreamTest

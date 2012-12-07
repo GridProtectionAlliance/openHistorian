@@ -25,9 +25,9 @@
 ////******************************************************************************************************
 
 //using System;
-//using openHistorian.V2.Collections;
+//using openHistorian.Collections;
 
-//namespace openHistorian.V2.UnmanagedMemory
+//namespace openHistorian.UnmanagedMemory
 //{
 //    public enum BufferPoolCollectionMode
 //    {

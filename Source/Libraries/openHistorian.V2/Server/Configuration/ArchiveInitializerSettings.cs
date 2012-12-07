@@ -23,7 +23,7 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     public class ArchiveInitializerSettings
     {

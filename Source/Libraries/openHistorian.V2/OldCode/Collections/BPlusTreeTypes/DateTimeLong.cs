@@ -24,9 +24,9 @@
 
 //using System;
 //using System.Runtime.InteropServices;
-//using openHistorian.V2.IO;
+//using openHistorian.IO;
 
-//namespace openHistorian.V2.Collections.BPlusTreeTypes
+//namespace openHistorian.Collections.BPlusTreeTypes
 //{
 //    [StructLayout(LayoutKind.Explicit)]
 //    public struct DateTimeLong : IBPlusTreeType<DateTimeLong>

@@ -6,7 +6,7 @@ using System.IO;
 using System.Diagnostics;
 using NUnit.Framework;
 
-namespace openHistorian.V2
+namespace openHistorian
 {
     [TestFixture()]
     public class CompressionTest

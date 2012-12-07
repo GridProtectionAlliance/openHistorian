@@ -22,7 +22,7 @@
 //
 //******************************************************************************************************
 
-namespace openHistorian.V2
+namespace openHistorian
 {
     /// <summary>
     /// Specifies if an object will be opened as readonly or readwrite.

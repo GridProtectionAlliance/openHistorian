@@ -28,7 +28,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.V2.Collections
+namespace openHistorian.Collections
 {
     /// <summary>
     /// Represents an object that can be configured as read only and thus made immutable.  

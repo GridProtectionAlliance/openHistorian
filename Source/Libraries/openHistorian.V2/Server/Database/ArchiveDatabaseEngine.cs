@@ -24,11 +24,11 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.Server.Configuration;
-using openHistorian.V2.Server.Database.Archive;
-using openHistorian.V2.Server.Database.ArchiveWriters;
+using openHistorian.Server.Configuration;
+using openHistorian.Server.Database.Archive;
+using openHistorian.Server.Database.ArchiveWriters;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 

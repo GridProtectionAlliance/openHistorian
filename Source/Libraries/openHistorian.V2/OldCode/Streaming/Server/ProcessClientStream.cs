@@ -24,9 +24,9 @@
 
 //using System;
 //using System.Threading;
-//using openHistorian.V2.Server;
+//using openHistorian.Server;
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    class ProcessClientStream : ITransportHost
 //    {

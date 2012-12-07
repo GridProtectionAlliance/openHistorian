@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Local
+namespace openHistorian.Local
 {
     [TestFixture]
     public class HistorianServer_Test2

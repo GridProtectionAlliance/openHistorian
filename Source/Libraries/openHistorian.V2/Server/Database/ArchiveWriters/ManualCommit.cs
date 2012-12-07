@@ -26,10 +26,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using openHistorian.V2.Server.Configuration;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Server.Configuration;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database.ArchiveWriters
+namespace openHistorian.Server.Database.ArchiveWriters
 {
     /// <summary>
     /// A manual commit is faster since there is no threading.

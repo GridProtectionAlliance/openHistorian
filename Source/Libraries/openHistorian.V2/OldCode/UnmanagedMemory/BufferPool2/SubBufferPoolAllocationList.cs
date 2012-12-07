@@ -23,9 +23,9 @@
 ////******************************************************************************************************
 
 //using System;
-//using openHistorian.V2.Collections;
+//using openHistorian.Collections;
 
-//namespace openHistorian.V2.UnmanagedMemory
+//namespace openHistorian.UnmanagedMemory
 //{
 //    /// <summary>
 //    /// Maintains a list of all of the memory allocations for the buffer pool.

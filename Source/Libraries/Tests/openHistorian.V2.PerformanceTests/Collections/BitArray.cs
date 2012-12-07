@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using openHistorian.V2.Collections;
+using openHistorian.Collections;
 
-namespace openHistorian.V2.UnmanagedMemory.Test
+namespace openHistorian.UnmanagedMemory.Test
 {
     [TestFixture()]
     public class BitArrayTest

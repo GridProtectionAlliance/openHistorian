@@ -1,6 +1,6 @@
 ﻿//using System;
 
-//namespace openHistorian.V2
+//namespace openHistorian
 //{
 //    class PooledMemoryStreamTest
 //    {
@@ -8,7 +8,7 @@
 //        {
 //            SelfTest();
 //            PooledMemoryStream ms = new PooledMemoryStream();
-//            openHistorian.V2.StorageSystem.BinaryStreamTest.Test(ms);
+//            openHistorian.StorageSystem.BinaryStreamTest.Test(ms);
 //        }
 //        static void SelfTest()
 //        {

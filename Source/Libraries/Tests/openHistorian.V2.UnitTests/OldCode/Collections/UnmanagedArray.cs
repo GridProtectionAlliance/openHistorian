@@ -5,7 +5,7 @@
 //using System.Diagnostics;
 //using System.Windows.Forms;
 
-//namespace openHistorian.V2.Unmanaged
+//namespace openHistorian.Unmanaged
 //{
 //    unsafe static class UnmanagedArrayTest
 //    {

@@ -26,12 +26,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using openHistorian.V2.IO.Unmanaged;
-using openHistorian.V2.Server.Configuration;
-using openHistorian.V2.Server.Database;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.IO.Unmanaged;
+using openHistorian.Server.Configuration;
+using openHistorian.Server.Database;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database.ArchiveWriters
+namespace openHistorian.Server.Database.ArchiveWriters
 {
     /// <summary>
     /// Responsible for getting data into the database. This class will prebuffer

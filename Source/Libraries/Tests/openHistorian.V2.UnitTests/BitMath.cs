@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using openHistorian.V2;
+using openHistorian;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.Test
 {
     [TestFixture()]
     public class BitMathTest

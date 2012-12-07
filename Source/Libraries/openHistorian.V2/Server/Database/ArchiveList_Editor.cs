@@ -25,9 +25,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     public partial class ArchiveList
     {

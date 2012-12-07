@@ -1,8 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
-using openHistorian.V2.Collections;
+using openHistorian.Collections;
 
-namespace openHistorian.V2.Collections.Test
+namespace openHistorian.Collections.Test
 {
     [TestFixture]
     public class LargeArray

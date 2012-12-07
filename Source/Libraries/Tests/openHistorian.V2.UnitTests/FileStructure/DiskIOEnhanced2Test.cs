@@ -28,7 +28,7 @@
 //using System.IO;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-//namespace openHistorian.V2.FileStructure
+//namespace openHistorian.FileStructure
 //{
 //    [TestClass()]
 //    public class DiskIOEnhanced2Test2

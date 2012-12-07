@@ -5,11 +5,11 @@ using System.Runtime;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
-using openHistorian.V2.IO.Unmanaged;
-using openHistorian.V2.Server.Database.Archive;
-using openHistorian.V2.Server.Database.ArchiveWriters;
+using openHistorian.IO.Unmanaged;
+using openHistorian.Server.Database.Archive;
+using openHistorian.Server.Database.ArchiveWriters;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     [TestFixture]
     public class ArchiveWriterArchiveFileTest

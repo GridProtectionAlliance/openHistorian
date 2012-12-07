@@ -3,7 +3,7 @@
 //using System.Linq;
 //using System.Text;
 
-//namespace openHistorian.V2.FileStructure
+//namespace openHistorian.FileStructure
 //{
 //    /// <summary>
 //    /// Provides a way to recover from a corrupt file allocation table.

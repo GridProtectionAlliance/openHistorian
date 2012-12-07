@@ -22,9 +22,9 @@
 //******************************************************************************************************
 
 using System.Runtime.InteropServices;
-using openHistorian.V2.UnmanagedMemory;
+using openHistorian.UnmanagedMemory;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     unsafe internal static class DiskIoSessionExtension
     {

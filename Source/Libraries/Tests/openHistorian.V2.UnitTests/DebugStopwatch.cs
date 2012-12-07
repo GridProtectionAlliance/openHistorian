@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime;
 using System.Text;
 
-namespace openHistorian.V2
+namespace openHistorian
 {
     public class DebugStopwatch
     {

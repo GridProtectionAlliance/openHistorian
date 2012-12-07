@@ -24,9 +24,9 @@
 //using System;
 //using System.Collections;
 //using System.Collections.Generic;
-//using openHistorian.V2.IO;
+//using openHistorian.IO;
 
-//namespace openHistorian.V2.Collections
+//namespace openHistorian.Collections
 //{
 
 //    /// <summary>

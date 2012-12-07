@@ -5,7 +5,7 @@
 //using System.Runtime.CompilerServices;
 //using System.Runtime.InteropServices;
 
-//namespace openHistorian.V2.IO
+//namespace openHistorian.IO
 //{
 //    public unsafe class BinaryStream : IBinaryStream
 //    {

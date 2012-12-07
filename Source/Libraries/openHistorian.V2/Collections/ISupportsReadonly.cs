@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.V2.Collections
+namespace openHistorian.Collections
 {
     public interface ISupportsReadonly
     {

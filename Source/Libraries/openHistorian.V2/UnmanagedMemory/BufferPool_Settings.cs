@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.V2.UnmanagedMemory
+namespace openHistorian.UnmanagedMemory
 {
     /// <summary>
     /// Maintains the core settings for the buffer pool and the methods for how they are calculated.

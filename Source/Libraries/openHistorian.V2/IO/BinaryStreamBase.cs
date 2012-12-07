@@ -26,7 +26,7 @@
 
 using System;
 
-namespace openHistorian.V2.IO
+namespace openHistorian.IO
 {
     unsafe public abstract class BinaryStreamBase : IDisposable
     {

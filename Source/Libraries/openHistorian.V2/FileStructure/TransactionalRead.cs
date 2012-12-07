@@ -21,9 +21,9 @@
 //
 //******************************************************************************************************
 using System;
-using openHistorian.V2.Collections;
+using openHistorian.Collections;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// Aquires a snapshot of the file system to browse in an isolated mannor.  

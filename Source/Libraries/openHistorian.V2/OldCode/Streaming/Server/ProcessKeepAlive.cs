@@ -22,7 +22,7 @@
 ////
 ////******************************************************************************************************
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    class ProcessKeepAlive : ITransportCommand
 //    {

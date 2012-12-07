@@ -23,9 +23,9 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.IO;
+using openHistorian.IO;
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     /// <summary>
     /// Represents a collection of 128-bit key/128-bit values pairs that is very similiar to a <see cref="SortedList{int128,int128}"/> 

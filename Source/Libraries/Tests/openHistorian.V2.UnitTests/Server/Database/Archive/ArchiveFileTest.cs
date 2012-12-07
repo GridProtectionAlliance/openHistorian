@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Server.Database.Archive;
 using System;
-using openHistorian.V2;
+using openHistorian;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.Test
 {
     /// <summary>
     ///This is a test class for PartitionFileTest and is intended

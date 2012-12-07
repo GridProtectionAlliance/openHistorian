@@ -21,7 +21,7 @@
 //     
 //******************************************************************************************************
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     /// <summary>
     /// Assists in the parsing of data from a <see cref="SortedTree256Base"/>.

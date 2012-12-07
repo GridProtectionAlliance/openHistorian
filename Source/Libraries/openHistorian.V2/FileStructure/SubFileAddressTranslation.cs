@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// This class manages the necessary functions in order to convert physical addresses into virtual addresses.

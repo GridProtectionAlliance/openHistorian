@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian.V2.UnmanagedMemory
+namespace openHistorian.UnmanagedMemory
 {
     /// <summary>
     /// Does the garbage collection and manages the actual size of the buffer pool.

@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using Microsoft.Win32.SafeHandles;
 
-namespace openHistorian.V2
+namespace openHistorian
 {
     /// <summary>
     /// Provides necessary Windows API functions.

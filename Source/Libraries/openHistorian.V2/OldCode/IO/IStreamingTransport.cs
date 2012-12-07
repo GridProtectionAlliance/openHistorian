@@ -3,7 +3,7 @@
 //using System.Linq;
 //using System.Text;
 
-//namespace openHistorian.V2.IO
+//namespace openHistorian.IO
 //{
 //    interface IStreamingTransport
 //    {

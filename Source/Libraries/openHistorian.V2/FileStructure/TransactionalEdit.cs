@@ -22,9 +22,9 @@
 //******************************************************************************************************
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.Collections;
+using openHistorian.Collections;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// Provides the state information for a transaction on the file system.

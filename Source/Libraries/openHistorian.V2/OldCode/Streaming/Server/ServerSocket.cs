@@ -6,7 +6,7 @@
 //using System.Net.Sockets;
 //using System.Threading;
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    class ServerSocket
 //    {

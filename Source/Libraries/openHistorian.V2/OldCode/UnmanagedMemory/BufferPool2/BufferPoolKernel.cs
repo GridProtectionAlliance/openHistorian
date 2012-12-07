@@ -25,7 +25,7 @@
 //using System;
 //using System.Collections.Generic;
 
-//namespace openHistorian.V2.UnmanagedMemory
+//namespace openHistorian.UnmanagedMemory
 //{
 //    /// <summary>
 //    /// Provides the fundamental functionality of many different <see cref="BufferPool"/> classes.

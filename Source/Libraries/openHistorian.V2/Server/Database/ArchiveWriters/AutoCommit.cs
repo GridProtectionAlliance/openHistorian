@@ -25,10 +25,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using openHistorian.V2.Server.Configuration;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Server.Configuration;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database.ArchiveWriters
+namespace openHistorian.Server.Database.ArchiveWriters
 {
     public class AutoCommit : IArchiveWriter
     {

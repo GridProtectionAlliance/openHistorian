@@ -24,10 +24,10 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.V2.IO;
-using openHistorian.V2.Local;
+using openHistorian.IO;
+using openHistorian.Local;
 
-namespace openHistorian.V2
+namespace openHistorian
 {
 
     public interface IPointStream

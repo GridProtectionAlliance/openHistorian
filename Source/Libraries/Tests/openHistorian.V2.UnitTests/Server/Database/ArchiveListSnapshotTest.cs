@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
-using openHistorian.V2.Server.Database;
+using openHistorian.Server.Database;
 using System;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
 
 

@@ -24,9 +24,9 @@
 
 using System;
 using System.Runtime.InteropServices;
-using openHistorian.V2.UnmanagedMemory;
+using openHistorian.UnmanagedMemory;
 
-namespace openHistorian.V2.IO.Unmanaged
+namespace openHistorian.IO.Unmanaged
 {
     public unsafe class BinaryStream : BinaryStreamBase
     {

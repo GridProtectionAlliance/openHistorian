@@ -24,10 +24,10 @@
 
 using System;
 using System.Diagnostics;
-using openHistorian.V2.IO.Unmanaged;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.IO.Unmanaged;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database.ArchiveWriters
+namespace openHistorian.Server.Database.ArchiveWriters
 {
     /// <summary>
     /// Responsible for getting data into the database. This class will prebuffer

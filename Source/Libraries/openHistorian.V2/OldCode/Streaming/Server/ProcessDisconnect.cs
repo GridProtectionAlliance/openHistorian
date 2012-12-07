@@ -22,7 +22,7 @@
 ////
 ////******************************************************************************************************
 
-//namespace openHistorian.V2.Streaming.Server
+//namespace openHistorian.Streaming.Server
 //{
 //    /// <summary>
 //    /// A command that terminates the connection

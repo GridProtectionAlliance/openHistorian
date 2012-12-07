@@ -2,9 +2,9 @@
 //using System.Collections.Generic;
 //using System.Linq;
 //using System.Text;
-//using openHistorian.V2.IO;
+//using openHistorian.IO;
 
-//namespace openHistorian.V2.Streaming
+//namespace openHistorian.Streaming
 //{
 //    interface IOutboundBuffer
 //    {

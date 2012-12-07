@@ -26,7 +26,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace openHistorian.V2.UnmanagedMemory
+namespace openHistorian.UnmanagedMemory
 {
 
     /// <summary>

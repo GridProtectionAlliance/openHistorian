@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// This class is used to convert the position of a file into a set of directions 

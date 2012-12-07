@@ -7,8 +7,8 @@
     <ProjectGuid>{B2DA9C7B-24C1-449B-816D-C72F4661983E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>openHistorian.V2.PerformanceTests</RootNamespace>
-    <AssemblyName>openHistorian.V2.PerformanceTests</AssemblyName>
+    <RootNamespace>openHistorian.PerformanceTests</RootNamespace>
+    <AssemblyName>openHistorian.PerformanceTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -53,7 +53,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>openHistorian.V2.PerformanceTests.Program</StartupObject>
+    <StartupObject>openHistorian.PerformanceTests.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
@@ -110,9 +110,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\openHistorian.V2\openHistorian.V2.csproj">
+    <ProjectReference Include="..\..\openHistorian.V2\openHistorian.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
-      <Name>openHistorian.V2</Name>
+      <Name>openHistorian</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -23,9 +23,10 @@
 //******************************************************************************************************
 
 using System.IO;
-using openHistorian.V2.Server;
+using openHistorian;
+using openHistorian.Server;
 
-namespace openHistorian.V2.Local
+namespace openHistorian.Local
 {
     public partial class HistorianServer : IHistorian
     {

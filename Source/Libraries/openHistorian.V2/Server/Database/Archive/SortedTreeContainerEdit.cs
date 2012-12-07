@@ -22,11 +22,11 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.Collections.KeyValue;
-using openHistorian.V2.FileStructure;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.Collections.KeyValue;
+using openHistorian.FileStructure;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.Server.Database.Archive
+namespace openHistorian.Server.Database.Archive
 {
     /// <summary>
     /// Encapsolates the ArchiveFileStream, BinaryStream, and BasicTree for a certain tree.

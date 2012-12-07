@@ -26,7 +26,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 
-namespace openHistorian.V2.FileStructure.Test
+namespace openHistorian.FileStructure.Test
 {
     [TestFixture()]
     public class SubFileMetaDataTest

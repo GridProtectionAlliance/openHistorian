@@ -21,7 +21,7 @@
 //     
 //******************************************************************************************************
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     public partial class SortedTree256LeafNodeBase
     {

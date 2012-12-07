@@ -1,8 +1,8 @@
-﻿//using openHistorian.V2.Server.Database;
+﻿//using openHistorian.Server.Database;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 //using System;
 
-//namespace openHistorian.V2.Test
+//namespace openHistorian.Test
 //{
 
 

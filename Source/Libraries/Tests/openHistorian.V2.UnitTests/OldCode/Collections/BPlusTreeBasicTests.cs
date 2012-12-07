@@ -2,11 +2,11 @@
 //using System.Diagnostics;
 //using System.Windows.Forms;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using openHistorian.V2.Collections.BPlusTreeTypes;
-//using openHistorian.V2.Collections.Specialized;
-//using openHistorian.V2.IO.Unmanaged;
+//using openHistorian.Collections.BPlusTreeTypes;
+//using openHistorian.Collections.Specialized;
+//using openHistorian.IO.Unmanaged;
 
-//namespace openHistorian.V2.Collections
+//namespace openHistorian.Collections
 //{
 //    //[TestClass()]
 //    public class BPlusTreeBasicTests

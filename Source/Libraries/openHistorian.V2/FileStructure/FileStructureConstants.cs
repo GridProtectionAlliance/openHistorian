@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// Maintains some global constants for the archive file.

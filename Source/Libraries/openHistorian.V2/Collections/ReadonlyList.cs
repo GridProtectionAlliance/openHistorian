@@ -25,12 +25,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace openHistorian.V2.Collections
+namespace openHistorian.Collections
 {
     /// <summary>
     /// A list that can be modified until <see cref="IsReadOnly"/> is set to true. Once this occurs,
     /// the list itself can no longer be modified.  Remember, this does not cause objects contained in this class to be Immutable 
-    /// unless they implement <see cref="T:openHistorian.V2.Collections.ISupportsReadonly`1"/>.
+    /// unless they implement <see cref="T:openHistorian.Collections.ISupportsReadonly`1"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class ReadonlyList<T> : SupportsReadonlyBase<ReadonlyList<T>>, IList<T>

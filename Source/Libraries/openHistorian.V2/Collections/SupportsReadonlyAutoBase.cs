@@ -25,11 +25,11 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace openHistorian.V2.Collections
+namespace openHistorian.Collections
 {
     /// <summary>
     /// Represents an object that can be configured as read only and thus made immutable.  
-    /// This class will automatically clone any field that implements <see cref="T:openHistorian.V2.Collections.ISupportsReadonly`1"/>
+    /// This class will automatically clone any field that implements <see cref="T:openHistorian.Collections.ISupportsReadonly`1"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class SupportsReadonlyAutoBase<T> : SupportsReadonlyBase<T>

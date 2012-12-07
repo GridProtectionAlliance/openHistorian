@@ -26,7 +26,7 @@
 
 //using System;
 
-//namespace openHistorian.V2.UnmanagedMemory
+//namespace openHistorian.UnmanagedMemory
 //{
 
 //    /// <summary>

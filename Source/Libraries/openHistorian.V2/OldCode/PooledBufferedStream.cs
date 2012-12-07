@@ -28,7 +28,7 @@
 //using System.Runtime.CompilerServices;
 //using System.IO;
 
-//namespace openHistorian.V2
+//namespace openHistorian
 //{
 //    public unsafe class PooledBufferStream
 //    {

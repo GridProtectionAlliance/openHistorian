@@ -23,10 +23,10 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.Collections;
-using openHistorian.V2.Server.Database;
+using openHistorian.Collections;
+using openHistorian.Server.Database;
 
-namespace openHistorian.V2.Server.Configuration
+namespace openHistorian.Server.Configuration
 {
     public class ArchiveRolloverSettings
     {

@@ -22,7 +22,7 @@
 //
 //******************************************************************************************************
 
-namespace openHistorian.V2
+namespace openHistorian
 {
     /// <summary>
     /// Specifies during the open process whether something will be created or opened.

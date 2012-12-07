@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.V2.Collections
+namespace openHistorian.Collections
 {
     public interface ILargeArray<T> : IDisposable
     {

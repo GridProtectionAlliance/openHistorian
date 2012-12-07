@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using openHistorian.V2.FileStructure;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.FileStructure;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     [TestFixture]
     public class SortedTree256Test

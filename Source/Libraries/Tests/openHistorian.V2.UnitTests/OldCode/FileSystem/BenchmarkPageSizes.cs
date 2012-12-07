@@ -4,7 +4,7 @@
 //using System.Text;
 //using System.Diagnostics;
 
-//namespace openHistorian.V2.FileSystem
+//namespace openHistorian.FileSystem
 //{
 //    public class BenchmarkPageSizes
 //    {

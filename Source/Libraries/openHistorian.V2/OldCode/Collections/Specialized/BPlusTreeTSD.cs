@@ -23,10 +23,10 @@
 ////******************************************************************************************************
 
 //using System;
-//using openHistorian.V2.Collections.BPlusTreeTypes;
-//using openHistorian.V2.IO;
+//using openHistorian.Collections.BPlusTreeTypes;
+//using openHistorian.IO;
 
-//namespace openHistorian.V2.Collections.Specialized
+//namespace openHistorian.Collections.Specialized
 //{
 //    public class BPlusTreeTSD : BPlusTreeLeafNodeBase<DateTimeLong, IntegerFloat>
 //    {

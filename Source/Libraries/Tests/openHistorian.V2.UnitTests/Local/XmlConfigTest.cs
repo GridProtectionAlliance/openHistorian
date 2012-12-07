@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using openHistorian.V2.Local;
+using openHistorian.Local;
 
 //ToDo: More comprehensive tests
-namespace openHistorian.V2.Server.Configuration
+namespace openHistorian.Server.Configuration
 {
     [TestFixture()]
     public class XmlConfigTest

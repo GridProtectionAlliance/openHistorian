@@ -22,9 +22,9 @@
 //
 //******************************************************************************************************
 
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     /// <summary>
     /// The return value of <see cref="ArchiveList.Editor.Remove"/> provided to the calling

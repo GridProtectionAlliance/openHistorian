@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using openHistorian.V2.Collections.KeyValue;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.Collections.KeyValue;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     [TestFixture]
     public class SubFileStreamTest

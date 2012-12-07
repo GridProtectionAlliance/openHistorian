@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using NUnit.Framework;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2
+namespace openHistorian
 {
     
     [TestFixture()]
@@ -71,8 +71,8 @@ namespace openHistorian.V2
             s_archiveFile.Dispose();
             s_archiveFile = null;
 
-            //MessageBox.Show(openHistorian.V2.Collections.KeyValue.BasicTreeBase.PointsAdded + " " +
-            //                openHistorian.V2.Collections.KeyValue.BasicTreeBase.ShortcutsTaken);
+            //MessageBox.Show(openHistorian.Collections.KeyValue.BasicTreeBase.PointsAdded + " " +
+            //                openHistorian.Collections.KeyValue.BasicTreeBase.ShortcutsTaken);
             //MessageBox.Show(s_points + "points " + sw.Elapsed.TotalSeconds + "sec " + s_points / sw.Elapsed.TotalSeconds + " " + oldCount);
             //MessageBox.Show(s_points + "points " + sw2.Elapsed.TotalSeconds + "sec " + s_points / sw2.Elapsed.TotalSeconds + " cnt:" + cnt + " " + (FileStructure.DiskIo.ChecksumCount - oldCount));
         }

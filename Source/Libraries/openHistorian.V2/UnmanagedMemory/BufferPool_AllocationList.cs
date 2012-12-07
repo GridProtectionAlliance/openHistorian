@@ -23,9 +23,9 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.Collections;
+using openHistorian.Collections;
 
-namespace openHistorian.V2.UnmanagedMemory
+namespace openHistorian.UnmanagedMemory
 {
     //Bug: I cannot use m_isPageAllocated to determine how many pages are allocated. 
     //bug: This is because it will not be valid if a block is freed. The bits are not

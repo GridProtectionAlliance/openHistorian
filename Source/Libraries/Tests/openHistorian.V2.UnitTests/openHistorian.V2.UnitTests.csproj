@@ -7,8 +7,8 @@
     <ProjectGuid>{9C6B4307-6E10-4E9D-88C9-3CED89B34270}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>openHistorian.V2.UnitTests</RootNamespace>
-    <AssemblyName>openHistorian.V2.UnitTests</AssemblyName>
+    <RootNamespace>openHistorian.UnitTests</RootNamespace>
+    <AssemblyName>openHistorian.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -36,6 +36,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>openHistorian.UnitTests.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
@@ -108,9 +111,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\openHistorian.V2\openHistorian.V2.csproj">
+    <ProjectReference Include="..\..\openHistorian.V2\openHistorian.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
-      <Name>openHistorian.V2</Name>
+      <Name>openHistorian</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

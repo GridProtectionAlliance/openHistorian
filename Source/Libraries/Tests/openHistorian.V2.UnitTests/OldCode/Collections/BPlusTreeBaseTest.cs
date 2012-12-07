@@ -1,13 +1,13 @@
 ﻿//using System.Diagnostics;
-//using openHistorian.V2.Collections;
+//using openHistorian.Collections;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 //using System;
-//using openHistorian.V2.Collections.Specialized;
-//using openHistorian.V2.IO;
-//using openHistorian.V2.IO.Unmanaged;
+//using openHistorian.Collections.Specialized;
+//using openHistorian.IO;
+//using openHistorian.IO.Unmanaged;
 //using System.Linq;
 
-//namespace openHistorian.V2.Test
+//namespace openHistorian.Test
 //{
 
 

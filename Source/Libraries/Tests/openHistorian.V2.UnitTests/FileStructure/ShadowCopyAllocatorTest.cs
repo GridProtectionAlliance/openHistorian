@@ -27,9 +27,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.FileStructure.Test
+namespace openHistorian.FileStructure.Test
 {
     [TestFixture()]
     public class ShadowCopyAllocatorTest

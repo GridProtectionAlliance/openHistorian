@@ -26,11 +26,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using openHistorian.V2.Collections;
-using openHistorian.V2.Collections.KeyValue;
-using openHistorian.V2.Server.Database.Archive;
+using openHistorian.Collections;
+using openHistorian.Collections.KeyValue;
+using openHistorian.Server.Database.Archive;
 
-namespace openHistorian.V2.Server.Database
+namespace openHistorian.Server.Database
 {
     public class ArchiveReader : IDisposable
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace openHistorian.V2.Collections
+namespace openHistorian.Collections
 {
     /// <summary>
     ///This is a test class for ISupportsReadonlyTest and is intended

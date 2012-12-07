@@ -26,9 +26,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using openHistorian.V2.Collections.KeyValue;
+using openHistorian.Collections.KeyValue;
 
-namespace openHistorian.V2.Local
+namespace openHistorian.Local
 {
     public partial class Historian
     {

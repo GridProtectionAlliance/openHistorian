@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
-using openHistorian.V2;
+using openHistorian;
 using System;
 
-namespace openHistorian.V2.Test
+namespace openHistorian.Test
 {
     
     

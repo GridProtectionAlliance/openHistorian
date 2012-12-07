@@ -24,9 +24,9 @@
 
 using System;
 using System.IO;
-using openHistorian.V2.Collections;
+using openHistorian.Collections;
 
-namespace openHistorian.V2.FileStructure
+namespace openHistorian.FileStructure
 {
     /// <summary>
     /// This contains the meta data of the file along with index information to map all of the blocks of the file.

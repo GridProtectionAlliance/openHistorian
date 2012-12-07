@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using openHistorian.V2.Collections.KeyValue;
+using openHistorian.Collections.KeyValue;
 
-namespace openHistorian.V2.PerformanceTests
+namespace openHistorian.PerformanceTests
 {
     static class Program
     {

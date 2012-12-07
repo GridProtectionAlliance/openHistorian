@@ -6,7 +6,7 @@
 //using System.Text;
 //using System.Windows.Forms;
 
-//namespace openHistorian.V2.Unmanaged
+//namespace openHistorian.Unmanaged
 //{
 //    class BufferedStreamTest
 //    {

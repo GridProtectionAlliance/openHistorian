@@ -22,9 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.V2.IO;
+using openHistorian.IO;
 
-namespace openHistorian.V2.Collections.KeyValue
+namespace openHistorian.Collections.KeyValue
 {
     public abstract partial class SortedTree256EncodedLeafNodeBase
     {

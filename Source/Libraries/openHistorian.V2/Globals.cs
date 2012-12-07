@@ -22,9 +22,9 @@
 //
 //******************************************************************************************************
 
-using openHistorian.V2.UnmanagedMemory;
+using openHistorian.UnmanagedMemory;
 
-namespace openHistorian.V2
+namespace openHistorian
 {
     /// <summary>
     /// Maintains the static global classes for the historian.

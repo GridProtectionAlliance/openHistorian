@@ -24,11 +24,11 @@
 using System;
 using System.Data;
 using System.IO;
-using openHistorian.V2.Collections.KeyValue;
-using openHistorian.V2.FileStructure;
-using openHistorian.V2.IO.Unmanaged;
+using openHistorian.Collections.KeyValue;
+using openHistorian.FileStructure;
+using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.V2.Server.Database.Archive
+namespace openHistorian.Server.Database.Archive
 {
     public enum CompressionMethod
     {

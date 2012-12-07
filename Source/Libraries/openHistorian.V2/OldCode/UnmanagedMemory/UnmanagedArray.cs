@@ -1,7 +1,7 @@
 ﻿//using System;
-//using openHistorian.V2.UnmanagedMemory;
+//using openHistorian.UnmanagedMemory;
 
-//namespace openHistorian.V2.Unmanaged
+//namespace openHistorian.Unmanaged
 //{
 //    /// <summary>
 //    /// Creates a fixed size array of unmanaged bytes.

@@ -26,7 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace openHistorian.V2.Server.Configuration
+namespace openHistorian.Server.Configuration
 {
     public class DatabaseSettings
     {
