@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{9C3A3ABA-9618-49B0-9104-60678B4F3D71}"
@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openHistorianExplorer", "op
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{3A952272-B64C-48E0-9CB2-0130AC28D72E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Engine", "Libraries\openHistorian.Core\openHistorian.Engine.csproj", "{040E2AE7-021B-435A-ADBF-06D07EE0A67D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Engine", "Libraries\openHistorian.Engine\openHistorian.Engine.csproj", "{040E2AE7-021B-435A-ADBF-06D07EE0A67D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C73F9DF6-4556-49B4-90D7-C28F87B310D6}"
 EndProject
@@ -36,11 +36,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.PerformanceTests", "Libraries\Tests\openHistorian.V2.PerformanceTests\openHistorian.PerformanceTests.csproj", "{B2DA9C7B-24C1-449B-816D-C72F4661983E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.PerformanceTests", "Libraries\Tests\openHistorian.PerformanceTests\openHistorian.PerformanceTests.csproj", "{B2DA9C7B-24C1-449B-816D-C72F4661983E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.UnitTests", "Libraries\Tests\openHistorian.V2.UnitTests\openHistorian.UnitTests.csproj", "{9C6B4307-6E10-4E9D-88C9-3CED89B34270}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.UnitTests", "Libraries\Tests\openHistorian.UnitTests\openHistorian.UnitTests.csproj", "{9C6B4307-6E10-4E9D-88C9-3CED89B34270}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "openHistorian\openHistorian.csproj", "{B253E828-964E-4037-B2E3-B91E8E7C1159}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "Libraries\openHistorian\openHistorian.csproj", "{B253E828-964E-4037-B2E3-B91E8E7C1159}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -48,22 +48,22 @@ Global
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = Libraries\\Tests\\openHistorian.V2.PerformanceTests\\openHistorian.PerformanceTests.csproj
+		SccProjectUniqueName1 = Libraries\\Tests\\openHistorian.PerformanceTests\\openHistorian.PerformanceTests.csproj
 		SccProjectTopLevelParentUniqueName1 = openHistorian.sln
-		SccProjectName1 = Libraries/Tests/openHistorian.V2.PerformanceTests
-		SccLocalPath1 = Libraries\\Tests\\openHistorian.V2.PerformanceTests
-		SccProjectUniqueName2 = Libraries\\Tests\\openHistorian.V2.UnitTests\\openHistorian.UnitTests.csproj
+		SccProjectName1 = Libraries/Tests/openHistorian.PerformanceTests
+		SccLocalPath1 = Libraries\\Tests\\openHistorian.PerformanceTests
+		SccProjectUniqueName2 = Libraries\\Tests\\openHistorian.UnitTests\\openHistorian.UnitTests.csproj
 		SccProjectTopLevelParentUniqueName2 = openHistorian.sln
-		SccProjectName2 = Libraries/Tests/openHistorian.V2.UnitTests
-		SccLocalPath2 = Libraries\\Tests\\openHistorian.V2.UnitTests
-		SccProjectUniqueName3 = openHistorian\\openHistorian.csproj
+		SccProjectName2 = Libraries/Tests/openHistorian.UnitTests
+		SccLocalPath2 = Libraries\\Tests\\openHistorian.UnitTests
+		SccProjectUniqueName3 = Libraries\\openHistorian\\openHistorian.csproj
 		SccProjectTopLevelParentUniqueName3 = openHistorian.sln
-		SccProjectName3 = openHistorian
-		SccLocalPath3 = openHistorian
-		SccProjectUniqueName4 = Libraries\\openHistorian.Core\\openHistorian.Engine.csproj
+		SccProjectName3 = Libraries/openHistorian
+		SccLocalPath3 = Libraries\\openHistorian
+		SccProjectUniqueName4 = Libraries\\openHistorian.Engine\\openHistorian.Engine.csproj
 		SccProjectTopLevelParentUniqueName4 = openHistorian.sln
-		SccProjectName4 = Libraries/openHistorian.Core
-		SccLocalPath4 = Libraries\\openHistorian.Core
+		SccProjectName4 = Libraries/openHistorian.Engine
+		SccLocalPath4 = Libraries\\openHistorian.Engine
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi

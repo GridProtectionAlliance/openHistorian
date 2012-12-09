@@ -338,7 +338,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\openHistorian\openHistorian.csproj">
+    <ProjectReference Include="..\openHistorian\openHistorian.csproj">
       <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
       <Name>openHistorian</Name>
     </ProjectReference>
