@@ -204,7 +204,13 @@
     <Compile Include="OldCode\Collections\BPlusTreeTypes\Long.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream.cs" />
     <Compile Include="OldCode\UnmanagedMemory\UnmanagedArray.cs" />
+    <Compile Include="Streaming\Server\ProcessClient.cs" />
     <Compile Include="Streaming\Client\ClientSocket.cs" />
+    <Compile Include="Streaming\CircularBuffer.cs" />
+    <Compile Include="Streaming\Client\RemoteHistorian.cs" />
+    <Compile Include="Streaming\LinearBuffer.cs" />
+    <Compile Include="Streaming\NetworkBinaryStream.cs" />
+    <Compile Include="Streaming\Server\SocketHistorian.cs" />
     <Compile Include="Streaming\Server\ProcessArchivePoints.cs" />
     <Compile Include="Streaming\Server\ProcessAuthentication.cs" />
     <Compile Include="Streaming\Server\ProcessClientStream.cs" />
@@ -212,6 +218,7 @@
     <Compile Include="Streaming\Server\ProcessDisconnect.cs" />
     <Compile Include="Streaming\Server\ProcessKeepAlive.cs" />
     <Compile Include="Streaming\Server\ServerSocket.cs" />
+    <Compile Include="Streaming\StreamMux.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old2.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old.cs" />

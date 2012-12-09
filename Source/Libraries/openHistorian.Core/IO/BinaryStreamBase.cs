@@ -25,6 +25,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Text;
 
 namespace openHistorian.IO
 {
@@ -75,7 +76,7 @@ namespace openHistorian.IO
         /// <param name="isWriting">hints to the stream if write access is desired.</param>
         public virtual void UpdateLocalBuffer(bool isWriting)
         {
-            
+
         }
 
         /// <summary>
@@ -240,6 +241,22 @@ namespace openHistorian.IO
             Compression.Write7Bit(Write, value);
         }
 
+        public virtual void Write(string value)
+        {
+            WriteWithLength(Encoding.ASCII.GetBytes(value));
+        }
+
+        public virtual void Write(byte[] value)
+        {
+            Write(value, 0, value.Length);
+        }
+
+        public virtual void WriteWithLength(byte[] value)
+        {
+            Write7Bit((uint)value.Length);
+            Write(value);
+        }
+
         public virtual sbyte ReadSByte()
         {
             return (sbyte)ReadByte();
@@ -388,6 +405,22 @@ namespace openHistorian.IO
         {
             return Compression.Read7BitUInt64(ReadByte);
         }
+
+        public virtual byte[] ReadBytes(int count)
+        {
+            byte[] value = new byte[count];
+            Read(value, 0, count);
+            return value;
+        }
+        public virtual byte[] ReadBytes()
+        {
+            return ReadBytes((int)Read7BitUInt32());
+        }
+        public virtual string ReadString()
+        {
+            return Encoding.ASCII.GetString(ReadBytes());
+        }
+        
 
     }
 }
