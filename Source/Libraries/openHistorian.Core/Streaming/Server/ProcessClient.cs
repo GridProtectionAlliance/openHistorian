@@ -60,8 +60,9 @@ namespace openHistorian.Streaming.Server
                 long code = m_stream.ReadInt64();
                 if (code != 1122334455667788990L)
                 {
-                    m_stream.Write((byte)ServerResponse.Error);
-                    m_stream.Write("Wrong Username Or Password");
+                    //m_stream.Write((byte)ServerResponse.Error);
+                    //m_stream.Write("Wrong Username Or Password");
+                    //m_netStream.Flush();
                     return;
                 }
                 ProcessRequests();
@@ -102,8 +103,9 @@ namespace openHistorian.Streaming.Server
                     case ServerCommand.Connect:
                         if (m_historianRW != null)
                         {
-                            m_stream.Write((byte)ServerResponse.Error);
-                            m_stream.Write("Already connected to a database.");
+                            //m_stream.Write((byte)ServerResponse.Error);
+                            //m_stream.Write("Already connected to a database.");
+                            //m_netStream.Flush();
                             return;
                         }
                         string databaseName = m_stream.ReadString();
@@ -112,34 +114,41 @@ namespace openHistorian.Streaming.Server
                     case ServerCommand.Disconnect:
                         if (m_historianRW == null)
                         {
-                            m_stream.Write((byte)ServerResponse.Success);
-                            m_stream.Write("Good Bye");
+                            //m_stream.Write((byte)ServerResponse.Success);
+                            //m_stream.Write("Good Bye");
+                            //m_netStream.Flush();
                             return;
                         }
                         else
                         {
-                            m_stream.Write((byte)ServerResponse.Success);
-                            m_stream.Write("Disconnected from database");
+                            m_historianRW.Disconnect();
+                            m_historianRW = null;
+                            //m_stream.Write((byte)ServerResponse.Success);
+                            //m_stream.Write("Disconnected from database");
+                            //m_netStream.Flush();
                         }
                         break;
                     case ServerCommand.Read:
                         if (m_historianRW == null)
                         {
-                            m_stream.Write((byte)ServerResponse.Error);
-                            m_stream.Write("Not connected to a database");
+                            //m_stream.Write((byte)ServerResponse.Error);
+                            //m_stream.Write("Not connected to a database");
+                            //m_netStream.Flush();
                             return;
                         }
                         ProcessRead();
                         break;
                     case ServerCommand.CancelRead:
-                        m_stream.Write((byte)ServerResponse.Success);
-                        m_stream.Write("Read has been canceled");
+                        //m_stream.Write((byte)ServerResponse.Success);
+                        //m_stream.Write("Read has been canceled");
+                        //m_netStream.Flush();
                         break;
                     case ServerCommand.Write:
                         if (m_historianRW == null)
                         {
-                            m_stream.Write((byte)ServerResponse.Error);
-                            m_stream.Write("Not connected to a database");
+                            //m_stream.Write((byte)ServerResponse.Error);
+                            //m_stream.Write("Not connected to a database");
+                            //m_netStream.Flush();
                             return;
                         }
                         ProcessWrite();
@@ -183,11 +192,13 @@ namespace openHistorian.Streaming.Server
                 m_stream.Write(true);
                 m_stream.Write7Bit(oldKey1 ^ key1);
                 m_stream.Write7Bit(oldKey2 ^ key2);
-                m_stream.Write7Bit(oldValue1 ^ value2);
+                m_stream.Write7Bit(oldValue1 ^ value1);
                 m_stream.Write7Bit(oldValue2 ^ value2);
 
                 if (m_netStream.AvailableReadBytes > 0)
                 {
+                    m_stream.Write(false);
+                    m_netStream.Flush();
                     return;
                 }
 
@@ -197,6 +208,7 @@ namespace openHistorian.Streaming.Server
                 oldValue2 = value2;
             }
             m_stream.Write(false);
+            m_netStream.Flush();
         }
 
         void ProcessWrite()

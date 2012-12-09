@@ -44,7 +44,9 @@ namespace openHistorian.Streaming.Server
             {
                 m_ownsHistorian = true;
                 m_historian = new HistorianServer();
-                m_historian.Manage().Add("Default");
+                var manage = m_historian.Manage();
+                var settings = manage.CreateConfig(WriterOptions.IsMemoryOnly());
+                m_historian.Manage().Add("Default",settings);
             }
             else
             {

@@ -28,7 +28,6 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Net;
 using openHistorian.IO;
-using openHistorian.Local;
 
 namespace openHistorian.Streaming.Client
 {
@@ -70,6 +69,12 @@ namespace openHistorian.Streaming.Client
             throw new NotSupportedException();
         }
 
+        public void Disconnect()
+        {
+            m_stream.Write((byte)ServerCommand.Disconnect);
+            m_netStream.Flush();
+        }
+
         class HistorianReadWrite : IHistorianReadWrite
         {
             RemoteHistorian m_client;
@@ -80,7 +85,6 @@ namespace openHistorian.Streaming.Client
             public HistorianReadWrite(RemoteHistorian client)
             {
                 m_client = client;
-
             }
 
 
@@ -121,12 +125,30 @@ namespace openHistorian.Streaming.Client
 
             public void Write(IPointStream points)
             {
-                throw new NotImplementedException();
+                ulong oldKey1 = 0, oldKey2 = 0, oldValue1 = 0, oldValue2 = 0;
+                ulong key1, key2, value1, value2;
+                m_client.m_stream.Write((byte)ServerCommand.Write);
+                while (points.Read(out key1, out key2, out value1, out value2))
+                {
+                    m_client.m_stream.Write(true);
+                    m_client.m_stream.Write7Bit(oldKey1 ^ key1);
+                    m_client.m_stream.Write7Bit(oldKey2 ^ key2);
+                    m_client.m_stream.Write7Bit(oldValue1 ^ value1);
+                    m_client.m_stream.Write7Bit(oldValue2 ^ value2);
+                    
+                    oldKey1 = key1;
+                    oldKey2 = key2;
+                    oldValue1 = value1;
+                    oldValue2 = value2;
+                }
+                m_client.m_stream.Write(false);
+                m_client.m_netStream.Flush();
             }
 
             public void Write(ulong key1, ulong key2, ulong value1, ulong value2)
             {
                 m_client.m_stream.Write((byte)ServerCommand.Write);
+                m_client.m_stream.Write(true);
                 m_client.m_stream.Write7Bit(key1);
                 m_client.m_stream.Write7Bit(key2);
                 m_client.m_stream.Write7Bit(value1);
@@ -196,6 +218,8 @@ namespace openHistorian.Streaming.Client
 
             public void Disconnect()
             {
+                m_client.m_stream.Write((byte)ServerCommand.Disconnect);
+                m_client.m_netStream.Flush();
             }
 
             class PointReader : IPointStream

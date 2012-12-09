@@ -95,7 +95,7 @@ namespace openHistorian.Streaming
             }
         }
 
-        public override long Seek(long offset, System.IO.SeekOrigin origin)
+        public override long Seek(long offset, SeekOrigin origin)
         {
             throw new NotSupportedException();
         }
@@ -115,18 +115,21 @@ namespace openHistorian.Streaming
         {
             if (count <= 0)
                 return 0;
-            int remainingLength = count;
 
-            if (m_receiveBuffer.DataAvailable < count)
-            {
-                return m_receiveBuffer.Read(buffer, offset, m_receiveBuffer.DataAvailable);
-            }
+            int length = m_receiveBuffer.Read(buffer, offset, count);
+            if (length == count)
+                return count;
+
+            int origionalCount = count;
+
+            count -= length;
+            offset += length;
 
             if (count > 100)
             {
                 while (count > 0)
                 {
-                    int length = Receive(buffer, offset, count);
+                    length = Receive(buffer, offset, count);
                     offset += length;
                     count -= length;
                 }
@@ -135,13 +138,13 @@ namespace openHistorian.Streaming
             {
                 while (m_receiveBuffer.DataAvailable < count)
                 {
-                    int length = Receive(m_tmpBuffer, 0, 1500);
+                    length = Receive(m_tmpBuffer, 0, 1500);
                     m_receiveBuffer.Write(m_tmpBuffer, 0, length);
                 }
                 m_receiveBuffer.Read(buffer, offset, count);
             }
 
-            return count;
+            return origionalCount;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
