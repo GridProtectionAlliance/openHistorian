@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using openHistorian.Server.Database.Archive;
+﻿using NUnit.Framework;
+using openHistorian.Server;
+using openHistorian.Server.Database;
 
 namespace openHistorian.Local
 {
@@ -15,31 +11,26 @@ namespace openHistorian.Local
         [Test]
         public void TestConstructor()
         {
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                engine.Manage();
             }
         }
 
         [Test]
         public void TestConfigMemory()
         {
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig(WriterOptions.IsMemoryOnly());
-                engine.Manage().Add("default", cfg);
+                engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsMemoryOnly()));
             }
         }
 
         [Test]
         public void TestMemoryAddPoints()
         {
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig(WriterOptions.IsMemoryOnly());
-                engine.Manage().Add("default", cfg);
+                engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsMemoryOnly()));
 
                 using (var db = engine.ConnectToDatabase("dEfAuLt"))
                 {
@@ -48,19 +39,25 @@ namespace openHistorian.Local
                         db.Write(x, 0, 0, 0);
                     }
                     db.Commit();
-                    Assert.IsTrue(db.Read(0, 1000).Count() == 1000);
-                    Assert.IsTrue(db.Read(5, 25).Count() == 21);
-
-                    var rdr = db.Read(900, 2000);
-
-                    for (uint x = 1000; x < 2001; x++)
+                    using (var dbr = db.OpenDataReader())
                     {
-                        db.Write(x, 0, 0, 0);
-                    }
-                    db.Commit();
+                        Assert.IsTrue(dbr.Read(0, 1000).Count() == 1000);
+                        Assert.IsTrue(dbr.Read(5, 25).Count() == 21);
+                        var rdr = dbr.Read(900, 2000);
 
-                    Assert.IsTrue(rdr.Count() == 100);
-                    Assert.IsTrue(db.Read(900, 2000).Count() == 1101);
+                        for (uint x = 1000; x < 2001; x++)
+                        {
+                            db.Write(x, 0, 0, 0);
+                        }
+                        db.Commit();
+
+                        Assert.IsTrue(rdr.Count() == 100);
+                    }
+                    using (var dbr = db.OpenDataReader())
+                    {
+
+                        Assert.IsTrue(dbr.Read(900, 2000).Count() == 1101);
+                    }
                 }
             }
         }
@@ -68,19 +65,20 @@ namespace openHistorian.Local
         [Test]
         public void TestOnlyReader()
         {
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig();
-                engine.Manage().Add("default", cfg);
+                engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsMemoryOnly()));
 
                 using (var db = engine.ConnectToDatabase("dEfAuLt"))
                 {
-                    Assert.IsTrue(db.Read(0, 1000).Count() == 0);
+                    using (var dbr = db.OpenDataReader())
+                    {
+                        Assert.IsTrue(dbr.Read(0, 1000).Count() == 0);
+                    }
                 }
             }
         }
-       
+
     }
 
     static class Extensions

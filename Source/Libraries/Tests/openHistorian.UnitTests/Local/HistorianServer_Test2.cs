@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using openHistorian.Server;
+using openHistorian.Server.Database;
 using openHistorian.Server.Database.Archive;
 
 namespace openHistorian.Local
@@ -15,20 +17,17 @@ namespace openHistorian.Local
         [Test]
         public void TestConstructor()
         {
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                engine.Manage();
             }
         }
 
         [Test]
         public void TestConfigMemory()
         {
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig(WriterOptions.IsFileBased());
-                engine.Manage().Add("default", cfg);
+                engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsFileBased()));
             }
         }
 
@@ -38,13 +37,9 @@ namespace openHistorian.Local
             foreach (var file in Directory.GetFiles("C:\\temp\\", "*.d2"))
                 File.Delete(file);
 
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig(WriterOptions.IsFileBased());
-                cfg.Paths.AddPath("C:\\temp\\", true);
-
-                engine.Manage().Add("default", cfg);
+                engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsFileBased(),"c:\\temp\\"));
 
                 using (var db = engine.ConnectToDatabase("dEfAuLt"))
                 {
@@ -52,35 +47,37 @@ namespace openHistorian.Local
                     {
                         db.Write(x, 0, 0, 0);
                     }
-                    db.CommitToDisk();
-
-                    Assert.IsTrue(db.Read(0, 1000).Count() == 1000);
-                    Assert.IsTrue(db.Read(5, 25).Count() == 21);
-
-                    var rdr = db.Read(900, 2000);
-
-                    for (uint x = 1000; x < 2001; x++)
+                    db.Commit();
+                    using (var dbr = db.OpenDataReader())
                     {
-                        db.Write(x, 0, 0, 0);
-                    }
-                    db.CommitToDisk();
+                        Assert.IsTrue(dbr.Read(0, 1000).Count() == 1000);
+                        Assert.IsTrue(dbr.Read(5, 25).Count() == 21);
+                        var rdr = dbr.Read(900, 2000);
 
-                    Assert.IsTrue(rdr.Count() == 100);
-                    Assert.IsTrue(db.Read(900, 2000).Count() == 1101);
+                        for (uint x = 1000; x < 2001; x++)
+                        {
+                            db.Write(x, 0, 0, 0);
+                        }
+                        db.Commit();
+
+                        Assert.IsTrue(rdr.Count() == 100);
+                    }
+                    using (var dbr = db.OpenDataReader())
+                    {
+
+                        Assert.IsTrue(dbr.Read(900, 2000).Count() == 1101);
+                    }
                 }
             }
 
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig(WriterOptions.IsFileBased());
-                cfg.Paths.AddPath("C:\\temp\\", true);
-
-                engine.Manage().Add("default", cfg);
+                engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsFileBased(), "c:\\temp\\"));
 
                 using (var db = engine.ConnectToDatabase("dEfAuLt"))
+                using (var dbr = db.OpenDataReader())
                 {
-                    Assert.IsTrue(db.Read(900, 2000).Count() == 1101);
+                    Assert.IsTrue(dbr.Read(900, 2000).Count() == 1101);
                 }
             }
         }
@@ -88,15 +85,16 @@ namespace openHistorian.Local
         [Test]
         public void TestOnlyReader()
         {
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig();
-                engine.Manage().Add("default", cfg);
-
+                engine.Add("default", new ArchiveDatabaseEngine((WriterOptions?)null));
+       
                 using (var db = engine.ConnectToDatabase("dEfAuLt"))
                 {
-                    Assert.IsTrue(db.Read(0, 1000).Count() == 0);
+                    using (var dbr = db.OpenDataReader())
+                    {
+                        Assert.IsTrue(dbr.Read(0, 1000).Count() == 0);
+                    }
                 }
             }
         }
@@ -107,16 +105,14 @@ namespace openHistorian.Local
             string file = "c:\\temp\\archiveOne.d2";
             CreateFile(file, 10, 100, 10);
 
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig();
-                cfg.Paths.AddPath(file, false);
-                engine.Manage().Add("default", cfg);
-
+                engine.Add("default", new ArchiveDatabaseEngine(null,file));
+                
                 using (var db = engine.ConnectToDatabase("dEfAuLt"))
+                using (var dbr = db.OpenDataReader())
                 {
-                    Assert.AreEqual(10, db.Read(0, 1000).Count());
+                    Assert.AreEqual(10, dbr.Read(0, 1000).Count());
                 }
             }
         }
@@ -129,17 +125,14 @@ namespace openHistorian.Local
             CreateFile(file1, 10, 100, 10);
             CreateFile(file2, 11, 101, 10);
 
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig();
-                cfg.Paths.AddPath(file1, false);
-                cfg.Paths.AddPath(file2, false);
-                engine.Manage().Add("default", cfg);
-
+                engine.Add("default", new ArchiveDatabaseEngine(null, file1,file2));
+                
                 using (var db = engine.ConnectToDatabase("dEfAuLt"))
+                using (var dbr = db.OpenDataReader())
                 {
-                    Assert.AreEqual(20, db.Read(0, 1000).Count());
+                    Assert.AreEqual(20, dbr.Read(0, 1000).Count());
                 }
             }
         }
@@ -154,16 +147,14 @@ namespace openHistorian.Local
             CreateFile(file1, 10, 100, 10);
             CreateFile(file2, 11, 101, 10);
 
-            using (IHistorian engine = new HistorianServer())
+            using (var engine = new HistorianServer())
             {
-                var manage = engine.Manage();
-                IDatabaseConfig cfg = manage.CreateConfig();
-                cfg.Paths.AddPath("c:\\temp\\", false);
-                engine.Manage().Add("default", cfg);
+                engine.Add("default", new ArchiveDatabaseEngine(null, "c:\\temp\\"));
 
                 using (var db = engine.ConnectToDatabase("dEfAuLt"))
+                using (var dbr = db.OpenDataReader())
                 {
-                    Assert.AreEqual(20, db.Read(0, 1000).Count());
+                    Assert.AreEqual(20, dbr.Read(0, 1000).Count());
                 }
             }
         }

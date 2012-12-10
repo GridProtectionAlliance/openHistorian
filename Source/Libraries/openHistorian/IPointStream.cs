@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ConfigDatabase.cs - Gbtc
+//  IPointStream.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,40 +16,33 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  10/25/2012 - Steven E. Chisholm
+//  12/8/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace openHistorian.Local
+namespace openHistorian
 {
-    public class ConfigDatabase
+
+    /// <summary>
+    /// Represents a fundamental way to stream points.
+    /// </summary>
+    public interface IPointStream
     {
-        public ConfigDatabase()
-        {
-            
-        }
-        public ConfigDatabase(ConfigNode node)
-        {
-            
-        }
-
-        public string DatabaseName;
-        public bool IsOnline;
-        public bool IsReadOnly;
-        public bool IsInMemoryOnly;
-        public List<string> ReadPath;
-        public List<string> SavePath;
-        public TimeSpan MemoryCommitInterval;
-        public TimeSpan DiskCommitInterval;
-        public float OptimalPointsPerSecond;
-
-
+        /// <summary>
+        /// Gets the next point in the stream.
+        /// </summary>
+        /// <param name="key1"></param>
+        /// <param name="key2"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
+        /// <returns>True if the data is valid. False if the end of the stream has been encountered.</returns>
+        bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2);
+        /// <summary>
+        /// Prematurely stops the execution of the stream.
+        /// Once canceled, no more points will be returned.
+        /// </summary>
+        void Cancel();
     }
 }

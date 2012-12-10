@@ -29,14 +29,14 @@ using System.Net.Sockets;
 using System.Net;
 using openHistorian.IO;
 
-namespace openHistorian.Streaming.Client
+namespace openHistorian.Communications
 {
-    public class RemoteHistorian : IHistorian
+    public class RemoteHistorian
     {
         TcpClient m_client;
         NetworkBinaryStream m_netStream;
         BinaryStreamWrapper m_stream;
-        IHistorianReadWrite m_historianRW;
+        IHistorianDatabase m_historianDatabase;
 
         public RemoteHistorian(IPEndPoint server)
         {
@@ -55,41 +55,180 @@ namespace openHistorian.Streaming.Client
             m_client = null;
         }
 
-        public IHistorianReadWrite ConnectToDatabase(string connectionString)
+        public IHistorianDatabase ConnectToDatabase(string connectionString)
         {
             m_stream.Write((byte)ServerCommand.Connect);
             m_stream.Write(connectionString);
             m_netStream.Flush();
-            m_historianRW = new HistorianReadWrite(this);
-            return m_historianRW;
+            m_historianDatabase = new HistorianDatabase(this);
+            return m_historianDatabase;
         }
-
-        public IManageHistorian Manage()
-        {
-            throw new NotSupportedException();
-        }
-
+        
         public void Disconnect()
         {
             m_stream.Write((byte)ServerCommand.Disconnect);
             m_netStream.Flush();
         }
 
-        class HistorianReadWrite : IHistorianReadWrite
+        class HistorianDatabase : IHistorianDatabase
         {
             RemoteHistorian m_client;
-            //long m_lastCommittedTransactionId;
-            //long m_lastDiskCommittedTransactionId;
-            //long m_currentTransactionId;
+            IHistorianDataReader m_historianReader;
 
-            public HistorianReadWrite(RemoteHistorian client)
+            public HistorianDatabase(RemoteHistorian client)
             {
                 m_client = client;
             }
 
+            
 
+            /// <summary>
+            /// Determines if this database is currently online.
+            /// </summary>
+            public bool IsOnline { get; private set; }
+
+            /// <summary>
+            /// The most recent transaction that is available to be queried.
+            /// </summary>
+            public long LastCommittedTransactionId { get; private set; }
+
+            /// <summary>
+            /// The most recent transaction id that has been committed to a perminent storage system.
+            /// </summary>
+            public long LastDiskCommittedTransactionId { get; private set; }
+
+            /// <summary>
+            /// The transaction of the most recently inserted data.
+            /// </summary>
+            public long CurrentTransactionId { get; private set; }
+
+            /// <summary>
+            /// Opens a stream connection that can be used to read 
+            /// and write data to the current historian database.
+            /// </summary>
+            /// <returns></returns>
+            public IHistorianDataReader OpenDataReader()
+            {
+                return new HistorianDataReader(m_client);
+            }
+
+            /// <summary>
+            /// Talks the historian database offline
+            /// </summary>
+            /// <param name="waitTimeSeconds">the maximum number of seconds to wait before terminating all client connections.</param>
+            public void TakeOffline(float waitTimeSeconds = 0)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            /// Brings this database online.
+            /// </summary>
+            public void BringOnline()
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            /// Shuts down this database.
+            /// </summary>
+            /// <param name="waitTimeSeconds"></param>
+            public void Shutdown(float waitTimeSeconds)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Write(IPointStream points)
+            {
+                ulong oldKey1 = 0, oldKey2 = 0, oldValue1 = 0, oldValue2 = 0;
+                ulong key1, key2, value1, value2;
+                m_client.m_stream.Write((byte)ServerCommand.Write);
+                while (points.Read(out key1, out key2, out value1, out value2))
+                {
+                    m_client.m_stream.Write(true);
+                    m_client.m_stream.Write7Bit(oldKey1 ^ key1);
+                    m_client.m_stream.Write7Bit(oldKey2 ^ key2);
+                    m_client.m_stream.Write7Bit(oldValue1 ^ value1);
+                    m_client.m_stream.Write7Bit(oldValue2 ^ value2);
+
+                    oldKey1 = key1;
+                    oldKey2 = key2;
+                    oldValue1 = value1;
+                    oldValue2 = value2;
+                }
+                m_client.m_stream.Write(false);
+                m_client.m_netStream.Flush();
+            }
+
+            public void Write(ulong key1, ulong key2, ulong value1, ulong value2)
+            {
+                m_client.m_stream.Write((byte)ServerCommand.Write);
+                m_client.m_stream.Write(true);
+                m_client.m_stream.Write7Bit(key1);
+                m_client.m_stream.Write7Bit(key2);
+                m_client.m_stream.Write7Bit(value1);
+                m_client.m_stream.Write7Bit(value2);
+                m_client.m_stream.Write(false);
+                m_client.m_netStream.Flush();
+            }
+
+            public long WriteBulk(IPointStream points)
+            {
+                throw new NotSupportedException();
+            }
+
+            public bool IsCommitted(long transactionId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool IsDiskCommitted(long transactionId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool WaitForCommitted(long transactionId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool WaitForDiskCommitted(long transactionId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Commit()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void CommitToDisk()
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
+            /// <filterpriority>2</filterpriority>
             public void Dispose()
             {
+                throw new NotImplementedException();
+            }
+        }
+
+        class HistorianDataReader : IHistorianDataReader
+        {
+            RemoteHistorian m_client;
+
+            public HistorianDataReader(RemoteHistorian client)
+            {
+                m_client = client;
+            }
+            
+            public void Dispose()
+            {
+                Close();
             }
 
             public IPointStream Read(ulong key)
@@ -122,101 +261,8 @@ namespace openHistorian.Streaming.Client
                 m_client.m_netStream.Flush();
                 return new PointReader(m_client);
             }
-
-            public void Write(IPointStream points)
-            {
-                ulong oldKey1 = 0, oldKey2 = 0, oldValue1 = 0, oldValue2 = 0;
-                ulong key1, key2, value1, value2;
-                m_client.m_stream.Write((byte)ServerCommand.Write);
-                while (points.Read(out key1, out key2, out value1, out value2))
-                {
-                    m_client.m_stream.Write(true);
-                    m_client.m_stream.Write7Bit(oldKey1 ^ key1);
-                    m_client.m_stream.Write7Bit(oldKey2 ^ key2);
-                    m_client.m_stream.Write7Bit(oldValue1 ^ value1);
-                    m_client.m_stream.Write7Bit(oldValue2 ^ value2);
-                    
-                    oldKey1 = key1;
-                    oldKey2 = key2;
-                    oldValue1 = value1;
-                    oldValue2 = value2;
-                }
-                m_client.m_stream.Write(false);
-                m_client.m_netStream.Flush();
-            }
-
-            public void Write(ulong key1, ulong key2, ulong value1, ulong value2)
-            {
-                m_client.m_stream.Write((byte)ServerCommand.Write);
-                m_client.m_stream.Write(true);
-                m_client.m_stream.Write7Bit(key1);
-                m_client.m_stream.Write7Bit(key2);
-                m_client.m_stream.Write7Bit(value1);
-                m_client.m_stream.Write7Bit(value2);
-                m_client.m_stream.Write(false);
-                m_client.m_netStream.Flush();
-            }
-
-            public long WriteBulk(IPointStream points)
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool IsCommitted(long transactionId)
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool IsDiskCommitted(long transactionId)
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool WaitForCommitted(long transactionId)
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool WaitForDiskCommitted(long transactionId)
-            {
-                throw new NotSupportedException();
-            }
-
-            public void Commit()
-            {
-                throw new NotSupportedException();
-            }
-
-            public void CommitToDisk()
-            {
-                throw new NotSupportedException();
-            }
-
-            public long LastCommittedTransactionId
-            {
-                get
-                {
-                    throw new NotSupportedException();
-                }
-            }
-
-            public long LastDiskCommittedTransactionId
-            {
-                get
-                {
-                    throw new NotSupportedException();
-                }
-            }
-
-            public long CurrentTransactionId
-            {
-                get
-                {
-                    throw new NotSupportedException();
-                }
-            }
-
-            public void Disconnect()
+            
+            public void Close()
             {
                 m_client.m_stream.Write((byte)ServerCommand.Disconnect);
                 m_client.m_netStream.Flush();

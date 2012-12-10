@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 
-namespace openHistorian.Streaming
+namespace openHistorian.Communications
 {
 
     public class NetworkBinaryStream : Stream

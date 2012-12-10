@@ -25,7 +25,7 @@
 using System;
 using System.IO;
 
-namespace openHistorian.Streaming
+namespace openHistorian.Communications
 {
     /// <summary>
     /// Provides a fixed size circular byte buffer

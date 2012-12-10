@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using openHistorian.Communications;
 using openHistorian.IO;
 
 namespace openHistorian.Streaming.Server
@@ -36,10 +37,11 @@ namespace openHistorian.Streaming.Server
 
         NetworkBinaryStream m_netStream;
         BinaryStreamWrapper m_stream;
-        IHistorian m_historian;
-        IHistorianReadWrite m_historianRW;
+        HistorianServer m_historian;
+        IHistorianDatabase m_historianDatabase;
+        IHistorianDataReader m_historianRW;
 
-        public ProcessClient(NetworkBinaryStream netStream, IHistorian historian)
+        public ProcessClient(NetworkBinaryStream netStream, HistorianServer historian)
         {
             m_netStream = netStream;
             m_stream = new BinaryStreamWrapper(m_netStream);
@@ -109,7 +111,8 @@ namespace openHistorian.Streaming.Server
                             return;
                         }
                         string databaseName = m_stream.ReadString();
-                        m_historianRW = m_historian.ConnectToDatabase(databaseName);
+                        m_historianDatabase = m_historian.ConnectToDatabase(databaseName);
+                        m_historianRW = m_historianDatabase.OpenDataReader();
                         break;
                     case ServerCommand.Disconnect:
                         if (m_historianRW == null)
@@ -121,7 +124,7 @@ namespace openHistorian.Streaming.Server
                         }
                         else
                         {
-                            m_historianRW.Disconnect();
+                            m_historianRW.Close();
                             m_historianRW = null;
                             //m_stream.Write((byte)ServerResponse.Success);
                             //m_stream.Write("Disconnected from database");
@@ -220,7 +223,7 @@ namespace openHistorian.Streaming.Server
                 key2 = m_stream.Read7BitUInt64() ^ key2;
                 value1 = m_stream.Read7BitUInt64() ^ value1;
                 value2 = m_stream.Read7BitUInt64() ^ value2;
-                m_historianRW.Write(key1, key2, value1, value2);
+                m_historianDatabase.Write(key1, key2, value1, value2);
             }
         }
 

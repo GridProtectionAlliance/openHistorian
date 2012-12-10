@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianEngine.cs - Gbtc
+//  HistorianServer.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/19/2012 - Steven E. Chisholm
+//  12/9/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -24,46 +24,40 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.Server.Configuration;
-using openHistorian.Server.Database;
 
-namespace openHistorian.Server
+namespace openHistorian
 {
-    /// <summary>
-    /// The main engine of the openHistorian. Instance this class to host a historian.
-    /// </summary>
-    public class HistorianEngine : IDisposable
+    public class HistorianServer : IDisposable
     {
         bool m_disposed;
         object m_syncRoot = new object();
-        SortedList<string, ArchiveDatabaseEngine> m_databases;
+        
+        SortedList<string, IHistorianDatabase> m_databases;
 
-        public HistorianEngine()
+        public HistorianServer()
         {
-            m_databases = new SortedList<string, ArchiveDatabaseEngine>();
+            m_databases = new SortedList<string, IHistorianDatabase>();
         }
-        public HistorianEngine(HistorianSettings settings)
+
+        public HistorianServer(string configFileName)
             : this()
         {
-            foreach (var database in settings.Databases)
-            {
-                m_databases.Add(database.Key.ToUpper(), new ArchiveDatabaseEngine(database.Value));
-            }
+            throw new NotImplementedException();
         }
 
-        public void CreateDatabase(string databaseName, IDatabaseConfig config)
-        {
-            lock (m_syncRoot)
-            {
-                m_databases.Add(databaseName.ToUpper(), new ArchiveDatabaseEngine(new DatabaseSettings(config)));
-            }
-        }
-
-        public ArchiveDatabaseEngine Get(string databaseName)
+        public IHistorianDatabase ConnectToDatabase(string databaseName)
         {
             lock (m_syncRoot)
             {
                 return m_databases[databaseName.ToUpper()];
+            }
+        }
+
+        public void Add(string databaseName, IHistorianDatabase database)
+        {
+            lock (m_syncRoot)
+            {
+                m_databases.Add(databaseName.ToUpper(), database);
             }
         }
 
@@ -81,6 +75,28 @@ namespace openHistorian.Server
             {
                 return new List<string>(m_databases.Keys);
             }
+        }
+
+        /// <summary>
+        /// Detaches the provided database from the server. 
+        /// </summary>
+        /// <param name="databaseName"></param>
+        /// <param name="waitTimeSeconds"></param>
+        public void Detach(string databaseName, float waitTimeSeconds = 0)
+        {
+            lock (m_syncRoot)
+            {
+                m_databases.Remove(databaseName.ToUpper());
+            }
+        }
+
+        /// <summary>
+        /// Shuts down the entire server.
+        /// </summary>
+        /// <param name="waitTimeSeconds"></param>
+        public void Shutdown(float waitTimeSeconds)
+        {
+            Dispose();
         }
 
         /// <summary>

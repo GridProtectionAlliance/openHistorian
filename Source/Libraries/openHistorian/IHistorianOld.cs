@@ -24,11 +24,35 @@
 
 //using System;
 //using System.Collections.Generic;
-//using openHistorian.IO;
-//using openHistorian.Local;
 
-//namespace openHistorian.New
+//namespace openHistorian
 //{
+//    #region [ Enumerations ]
+
+//    /// <summary>
+//    /// Server commands
+//    /// </summary>
+//    public enum ServerCommand : byte
+//    {
+//        Connect,
+//        Disconnect,
+//        Read,
+//        CancelRead,
+//        Write
+//    }
+
+//    /// <summary>
+//    /// Server response
+//    /// </summary>
+//    public enum ServerResponse : byte
+//    {
+//        Success,
+//        Error,
+//        DataPacket,
+//        ProcessingComplete
+//    }
+
+//    #endregion
 
 //    public interface IPointStream
 //    {
@@ -36,48 +60,21 @@
 //        void Cancel();
 //    }
 
-//    public interface IHistorianServer : IDisposable
-//    {
-//        IHistorian ConnectToDatabase(string databaseName);
-//        bool Contains(string databaseName);
-//        void Add(string databaseName, IDatabaseConfig config = null);
-//        void Drop(string databaseName, float waitTimeSeconds = 0);
-//        void Shutdown(float waitTimeSeconds);
-//    }
-
 //    public interface IHistorian : IDisposable
 //    {
-//        bool IsOnline { get; }
-
-//        IHistorianWriter OpenWriter();
-//        IHistorianReader OpenReader();
-//        IDatabaseConfig GetConfig();
-//        void SetConfig(IDatabaseConfig config);
-//        void TakeOffline(float waitTimeSeconds = 0);
-//        void BringOnline();
-//        void Shutdown(float waitTimeSeconds);
-
+//        IHistorianReadWrite ConnectToDatabase(string connectionString);
+//        IManageHistorian Manage();
 //    }
 
-//    public interface IHistorianReader : IDisposable
+//    public interface IHistorianReadWrite : IDisposable
 //    {
-//        long LastCommittedTransactionId { get; }
-//        long LastDiskCommittedTransactionId { get; }
-//        long CurrentTransactionId { get; }
-
 //        IPointStream Read(ulong key);
 //        IPointStream Read(ulong startKey, ulong endKey);
 //        IPointStream Read(ulong startKey, ulong endKey, IEnumerable<ulong> points);
-
-//        void Disconnect();
-//    }
-
-//    public interface IHistorianWriter : IDisposable
-//    {
 //        void Write(IPointStream points);
 //        void Write(ulong key1, ulong key2, ulong value1, ulong value2);
 //        long WriteBulk(IPointStream points);
-
+        
 //        bool IsCommitted(long transactionId);
 //        bool IsDiskCommitted(long transactionId);
 
@@ -92,6 +89,21 @@
 //        long CurrentTransactionId { get; }
 
 //        void Disconnect();
+//    }
+
+
+//    public interface IManageHistorian
+//    {
+//        bool Contains(string databaseName);
+//        IDatabaseConfig GetConfig(string databaseName);
+//        void SetConfig(string databaseName, IDatabaseConfig config);
+//        void Add(string databaseName, IDatabaseConfig config = null);
+//        void Drop(string databaseName, float waitTimeSeconds);
+//        void TakeOffline(string databaseName, float waitTimeSeconds);
+//        void BringOnline(string databaseName);
+//        void Shutdown(float waitTimeSeconds);
+//        IDatabaseConfig CreateConfig();
+//        IDatabaseConfig CreateConfig(WriterOptions writerOptions);
 //    }
 
 //    public struct WriterOptions

@@ -40,7 +40,7 @@ namespace openHistorian.Server.Configuration
             AttachedFiles = new List<string>();
         }
 
-        public DatabaseSettings(IDatabaseConfig config)
+        public DatabaseSettings(DatabaseConfig config)
             : this()
         {
             if (config == null)
@@ -50,7 +50,7 @@ namespace openHistorian.Server.Configuration
         }
 
 
-        void LoadFiles(IDatabaseConfig config)
+        void LoadFiles(DatabaseConfig config)
         {
             foreach (string path in config.Paths.GetPaths())
             {
@@ -78,7 +78,7 @@ namespace openHistorian.Server.Configuration
             //}
         }
 
-        void SetupWriters(IDatabaseConfig config)
+        void SetupWriters(DatabaseConfig config)
         {
             if (!config.Writer.HasValue)
                 return;

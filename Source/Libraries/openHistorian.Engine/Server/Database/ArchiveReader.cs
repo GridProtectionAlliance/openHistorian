@@ -32,7 +32,7 @@ using openHistorian.Server.Database.Archive;
 
 namespace openHistorian.Server.Database
 {
-    public class ArchiveReader : IDisposable
+    public class ArchiveReader : IHistorianDataReader
     {
         ArchiveList m_list;
         ArchiveListSnapshot m_snapshot;
@@ -43,31 +43,39 @@ namespace openHistorian.Server.Database
             m_snapshot = m_list.CreateNewClientResources();
         }
 
-        public IPointStream Read(ulong key)
+        public IPointStream Read(ulong key1)
         {
-            return new ReadStream(key, key, m_snapshot);
+            return new ReadStream(key1, key1, m_snapshot);
         }
 
-        public IPointStream Read(ulong startKey, ulong endKey)
+        public IPointStream Read(ulong startKey1, ulong endKey1)
         {
-            return new ReadStream(startKey, endKey, m_snapshot);
+            return new ReadStream(startKey1, endKey1, m_snapshot);
         }
 
-        public IPointStream Read(ulong startKey, ulong endKey, IEnumerable<ulong> points)
+        public IPointStream Read(ulong startKey1, ulong endKey1, IEnumerable<ulong> listOfKey2)
         {
-            ulong maxValue = points.Max();
+            ulong maxValue = listOfKey2.Max();
             if (maxValue < 8 * 1024 * 64) //524288
             {
-                return new ReadStreamFilteredBitArray(startKey, endKey, m_snapshot, points, (int)maxValue);
+                return new ReadStreamFilteredBitArray(startKey1, endKey1, m_snapshot, listOfKey2, (int)maxValue);
             }
             else if (maxValue <= uint.MaxValue)
             {
-                return new ReadStreamFilteredIntDictionary(startKey, endKey, m_snapshot, points);
+                return new ReadStreamFilteredIntDictionary(startKey1, endKey1, m_snapshot, listOfKey2);
             }
             else
             {
-                return new ReadStreamFilteredLongDictionary(startKey, endKey, m_snapshot, points);
+                return new ReadStreamFilteredLongDictionary(startKey1, endKey1, m_snapshot, listOfKey2);
             }
+        }
+
+        /// <summary>
+        /// Closes the current reader.
+        /// </summary>
+        public void Close()
+        {
+            Dispose();
         }
 
 

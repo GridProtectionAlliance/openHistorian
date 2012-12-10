@@ -108,27 +108,27 @@
     <Compile Include="FileStructure\DiskIoSessionExtension.cs" />
     <Compile Include="FileStructure\FileHeaderBlockRecovery.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStreamAdvanced.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
-    <Compile Include="Local\ConfigHistorian.cs" />
-    <Compile Include="Local\ConfigDatabase.cs" />
-    <Compile Include="Local\HistorianFile.cs" />
-    <Compile Include="Local\HistorianListener.cs" />
-    <Compile Include="Local\HistorianServer_DatabaseConfig.cs" />
-    <Compile Include="Local\HistorianServer_HistorianManage.cs" />
-    <Compile Include="Local\HistorianServer_HistorianReadWrite.cs" />
-    <Compile Include="Local\Historian.cs" />
-    <Compile Include="Local\HistorianServer.cs" />
-    <Compile Include="Local\Historian_HistorianReadWrite.cs" />
+    <Compile Include="OldCode\Local\ConfigHistorian.cs" />
+    <Compile Include="OldCode\Local\ConfigDatabase.cs" />
+    <Compile Include="OldCode\Local\HistorianServer_HistorianDatabase.cs" />
+    <Compile Include="Databases\HistorianFile.cs" />
+    <Compile Include="Communications\HistorianListener.cs" />
+    <Compile Include="OldCode\Local\HistorianServer_DatabaseConfig.cs" />
+    <Compile Include="OldCode\Local\HistorianServer_HistorianManage.cs" />
+    <Compile Include="OldCode\Local\HistorianDataReader.cs" />
+    <Compile Include="OldCode\Local\Historian.cs" />
+    <Compile Include="HistorianServer.cs" />
+    <Compile Include="OldCode\Local\Historian_HistorianReadWrite.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="OpenMode.cs" />
-    <Compile Include="Local\ConfigNode.cs" />
-    <Compile Include="Local\XmlConfig.cs" />
+    <Compile Include="OldCode\Local\ConfigNode.cs" />
+    <Compile Include="OldCode\Local\XmlConfig.cs" />
     <Compile Include="Server\Database\ArchiveList.cs" />
     <Compile Include="Server\Database\ArchiveList_Editor.cs" />
     <Compile Include="Server\Database\ArchiveListRemovalStatus.cs" />
@@ -154,7 +154,6 @@
     <Compile Include="Collections\KeyValue\SortedTree256Base.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase.cs" />
-    <Compile Include="Compression.cs" />
     <Compile Include="OldCode\ContinuousBuffer.cs" />
     <Compile Include="OldCode\DataPoint.cs" />
     <Compile Include="HelperFunctions.cs" />
@@ -162,7 +161,6 @@
     <Compile Include="Server\Database\ArchiveWriters\ConcurrentWriterAutoCommit_ActiveFile.cs" />
     <Compile Include="Server\Database\IArchiveWriter.cs" />
     <Compile Include="Server\Database\ArchiveWriters\ConcurrentPointQueue.cs" />
-    <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="FileStructure\DiskIo.cs" />
     <Compile Include="OldCode\IO\IStreamingTransport.cs" />
     <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />
@@ -170,7 +168,6 @@
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
     <Compile Include="Server\Configuration\ArchiveWriterSettings.cs" />
-    <Compile Include="Server\HistorianEngine.cs" />
     <Compile Include="Server\Database\ArchiveListSnapshot.cs" />
     <Compile Include="Server\Database\ArchiveWriters\ConcurrentWriterAutoCommit.cs" />
     <Compile Include="Server\Configuration\HistorianSettings.cs" />
@@ -204,12 +201,9 @@
     <Compile Include="OldCode\Collections\BPlusTreeTypes\Long.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream.cs" />
     <Compile Include="OldCode\UnmanagedMemory\UnmanagedArray.cs" />
-    <Compile Include="Streaming\Server\ProcessClient.cs" />
+    <Compile Include="Server\DatabaseConfig.cs" />
     <Compile Include="Streaming\Client\ClientSocket.cs" />
-    <Compile Include="Streaming\CircularBuffer.cs" />
-    <Compile Include="Streaming\Client\RemoteHistorian.cs" />
-    <Compile Include="Streaming\LinearBuffer.cs" />
-    <Compile Include="Streaming\NetworkBinaryStream.cs" />
+    <Compile Include="Streaming\Server\ProcessClient.cs" />
     <Compile Include="Streaming\Server\SocketHistorian.cs" />
     <Compile Include="Streaming\Server\ProcessArchivePoints.cs" />
     <Compile Include="Streaming\Server\ProcessAuthentication.cs" />
@@ -342,6 +336,9 @@
       <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
       <Name>openHistorian</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Local\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

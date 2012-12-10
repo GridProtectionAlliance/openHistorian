@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using openHistorian.Server.Configuration;
-using openHistorian.Server.Database.Archive;
 using openHistorian.Server.Database.ArchiveWriters;
 
 namespace openHistorian.Server.Database
@@ -33,12 +32,24 @@ namespace openHistorian.Server.Database
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
-    public class ArchiveDatabaseEngine
+    public class ArchiveDatabaseEngine : IHistorianDatabase
     {
         List<ArchiveListRemovalStatus> m_pendingDispose;
         IArchiveWriter m_archiveWriter;
         ArchiveList m_archiveList;
         volatile bool m_disposed;
+
+        public ArchiveDatabaseEngine(WriterOptions? writer, params string[] paths)
+            : this(new DatabaseConfig(writer, paths))
+        {
+
+        }
+
+        public ArchiveDatabaseEngine(DatabaseConfig settings)
+            : this(new DatabaseSettings(settings))
+        {
+
+        }
 
         public ArchiveDatabaseEngine(DatabaseSettings settings)
         {
@@ -54,7 +65,51 @@ namespace openHistorian.Server.Database
             }
         }
 
-        public void WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
+        /// <summary>
+        /// The most recent transaction that is available to be queried.
+        /// </summary>
+        public long LastCommittedTransactionId
+        {
+            get
+            {
+                return m_archiveWriter.LastCommittedTransactionId;
+            }
+        }
+
+        /// <summary>
+        /// The most recent transaction id that has been committed to a perminent storage system.
+        /// </summary>
+        public long LastDiskCommittedTransactionId
+        {
+            get
+            {
+                return m_archiveWriter.LastDiskCommittedTransactionId;
+            }
+        }
+
+        /// <summary>
+        /// The transaction of the most recently inserted data.
+        /// </summary>
+        public long CurrentTransactionId
+        {
+            get
+            {
+                return m_archiveWriter.CurrentTransactionId;
+            }
+        }
+
+        /// <summary>
+        /// Determines if this database is currently online.
+        /// </summary>
+        public bool IsOnline
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public void Write(ulong key1, ulong key2, ulong value1, ulong value2)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -63,34 +118,17 @@ namespace openHistorian.Server.Database
             m_archiveWriter.WriteData(key1, key2, value1, value2);
         }
 
-        /// <summary>
-        /// Creates a reader that supports queires where only one
-        /// can be executed at a time. To support concurrent queries, simply
-        /// call this class again. Be sure to call Dispose() when finished with this class.
-        /// </summary>
-        /// <returns></returns>
-        public ArchiveReader CreateReader()
+        public void Write(IPointStream points)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            return new ArchiveReader(m_archiveList);
+            ulong key1, key2, value1, value2;
+            while (points.Read(out key1, out key2, out value1, out value2))
+                Write(key1, key2, value1, value2);
         }
 
-        public void Dispose()
+        public long WriteBulk(IPointStream points)
         {
-            if (!m_disposed)
-            {
-                m_disposed = true;
-                if (m_archiveWriter != null)
-                    m_archiveWriter.Dispose();
-
-                m_archiveList.Dispose();
-
-                foreach (var status in m_pendingDispose)
-                {
-                    status.Archive.Dispose();
-                }
-            }
+            Write(points);
+            return CurrentTransactionId;
         }
 
         public bool IsCommitted(long transactionId)
@@ -123,25 +161,62 @@ namespace openHistorian.Server.Database
             m_archiveWriter.CommitToDisk();
         }
 
-        public long LastCommittedTransactionId
+        /// <summary>
+        /// Opens a stream connection that can be used to read 
+        /// and write data to the current historian database.
+        /// </summary>
+        /// <returns></returns>
+        public IHistorianDataReader OpenDataReader()
         {
-            get
-            {
-                return m_archiveWriter.LastCommittedTransactionId;
-            }
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            return new ArchiveReader(m_archiveList);
         }
-        public long LastDiskCommittedTransactionId
+
+        /// <summary>
+        /// Talks the historian database offline
+        /// </summary>
+        /// <param name="waitTimeSeconds">the maximum number of seconds to wait before terminating all client connections.</param>
+        public void TakeOffline(float waitTimeSeconds = 0)
         {
-            get
-            {
-                return m_archiveWriter.LastDiskCommittedTransactionId;
-            }
+            throw new NotImplementedException();
         }
-        public long CurrentTransactionId
+
+        /// <summary>
+        /// Brings this database online.
+        /// </summary>
+        public void BringOnline()
         {
-            get
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Shuts down this database.
+        /// </summary>
+        /// <param name="waitTimeSeconds"></param>
+        public void Shutdown(float waitTimeSeconds = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            if (!m_disposed)
             {
-                return m_archiveWriter.CurrentTransactionId;
+                m_disposed = true;
+                if (m_archiveWriter != null)
+                    m_archiveWriter.Dispose();
+
+                m_archiveList.Dispose();
+
+                foreach (var status in m_pendingDispose)
+                {
+                    status.Archive.Dispose();
+                }
             }
         }
 

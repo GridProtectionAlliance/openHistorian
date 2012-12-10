@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
-using openHistorian.Streaming.Client;
+using openHistorian.Communications;
 using openHistorian.Streaming.Server;
 using System.Net;
 namespace openHistorian.UnitTests.Streaming
@@ -20,7 +20,8 @@ namespace openHistorian.UnitTests.Streaming
             var rw = client.ConnectToDatabase("Default");
             rw.Write(1, 1, 1, 1);
             Thread.Sleep(1000);
-            var reader = rw.Read(1);
+            var rw2 = rw.OpenDataReader();
+            var reader = rw2.Read(1);
             {
                 ulong key1, key2, value1, value2;
                 Assert.AreEqual(true, reader.Read(out key1, out key2, out value1, out value2));
@@ -29,7 +30,7 @@ namespace openHistorian.UnitTests.Streaming
                 Assert.AreEqual(1ul, value1);
                 Assert.AreEqual(1ul, value2);
             }
-            rw.Disconnect();
+            rw2.Close();
             client.Disconnect();
             client.Dispose();
             server.Dispose();
@@ -48,7 +49,8 @@ namespace openHistorian.UnitTests.Streaming
             }
 
             Thread.Sleep(1000);
-            var reader = rw.Read(0, 10000);
+            var rw2 = rw.OpenDataReader();
+            var reader = rw2.Read(0,10000);
             {
                 ulong key1, key2, value1, value2;
                 for (ulong x = 0; x < 10000; x++)
@@ -61,7 +63,7 @@ namespace openHistorian.UnitTests.Streaming
                 }
                 Assert.AreEqual(false, reader.Read(out key1, out key2, out value1, out value2));
             }
-            rw.Disconnect();
+            rw2.Close();
             client.Disconnect();
             client.Dispose();
             server.Dispose();
@@ -104,7 +106,8 @@ namespace openHistorian.UnitTests.Streaming
             rw.Write(new WriteSomePoints());
 
             Thread.Sleep(1000);
-            var reader = rw.Read(0, 10000);
+            var rw2 = rw.OpenDataReader();
+            var reader = rw2.Read(0, 10000);
             {
                 ulong key1, key2, value1, value2;
                 for (ulong x = 0; x < 10000; x++)
@@ -117,7 +120,7 @@ namespace openHistorian.UnitTests.Streaming
                 }
                 Assert.AreEqual(false, reader.Read(out key1, out key2, out value1, out value2));
             }
-            rw.Disconnect();
+            rw2.Close();
             client.Disconnect();
             client.Dispose();
             server.Dispose();

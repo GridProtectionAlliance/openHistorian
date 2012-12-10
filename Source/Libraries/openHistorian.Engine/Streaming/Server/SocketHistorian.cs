@@ -26,27 +26,27 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
-using openHistorian.Local;
+using openHistorian.Communications;
+using openHistorian.Server;
+using openHistorian.Server.Database;
 
 namespace openHistorian.Streaming.Server
 {
-    public class SocketHistorian : IDisposable   
+    public class SocketHistorian : IDisposable
     {
         volatile bool m_isRunning = true;
         TcpListener m_listener;
-        IHistorian m_historian;
+        HistorianServer m_historian;
         bool m_ownsHistorian;
         bool m_disposed;
 
-        public SocketHistorian(int port, IHistorian historian=null)
+        public SocketHistorian(int port, HistorianServer historian = null)
         {
             if (historian == null)
             {
                 m_ownsHistorian = true;
                 m_historian = new HistorianServer();
-                var manage = m_historian.Manage();
-                var settings = manage.CreateConfig(WriterOptions.IsMemoryOnly());
-                m_historian.Manage().Add("Default",settings);
+                m_historian.Add("Default",new ArchiveDatabaseEngine(WriterOptions.IsMemoryOnly()));
             }
             else
             {
@@ -74,7 +74,7 @@ namespace openHistorian.Streaming.Server
 
             ThreadPool.QueueUserWorkItem(ProcessDataRequests);
 
-            ProcessClient clientProcessing = new ProcessClient(netStream,m_historian);
+            ProcessClient clientProcessing = new ProcessClient(netStream, m_historian);
             lock (m_clients)
             {
                 if (m_isRunning)
@@ -108,7 +108,7 @@ namespace openHistorian.Streaming.Server
                         client.Dispose();
                     m_clients.Clear();
                 }
-                m_historian.Manage().Shutdown(1);
+                m_historian.Shutdown(1);
             }
         }
     }

@@ -17,11 +17,11 @@ namespace openHistorian.Server.Database
             for (uint x = 0; x < 1000; x++)
             {
                 Thread.Sleep(1);
-                DB.WriteData(x, x, x, x);
+                DB.Write(x, x, x, x);
             }
             Thread.Sleep(1000);
 
-            using (var qry = DB.CreateReader())
+            using (var qry = DB.OpenDataReader())
             {
                 var rdr = qry.Read(0, 1000);
                 ulong cnt = 0;
@@ -45,7 +45,7 @@ namespace openHistorian.Server.Database
 
             for (uint x = 0; x < 10000; x++)
             {
-                DB.WriteData(x, x, x, x);
+                DB.Write(x, x, x, x);
             }
             Thread.Sleep(2000);
 
@@ -86,12 +86,12 @@ namespace openHistorian.Server.Database
             for (ulong x = 0; x < 5000; x++)
             {
                 Thread.Sleep(rand.Next(2));
-                DB.WriteData(x, x * x, x * x * x, x * x * x * x);
+                DB.Write(x, x * x, x * x * x, x * x * x * x);
             }
-            DB.WriteData(BigValue, 2 * BigValue, 3 * BigValue, 4 * BigValue);
+            DB.Write(BigValue, 2 * BigValue, 3 * BigValue, 4 * BigValue);
             Thread.Sleep(1000);
 
-            using (var qry = DB.CreateReader())
+            using (var qry = DB.OpenDataReader())
             {
                 var rdr = qry.Read(0, 4999);
                 ulong cnt = 0;
