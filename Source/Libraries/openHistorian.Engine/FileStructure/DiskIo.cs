@@ -176,11 +176,11 @@ namespace openHistorian.FileStructure
         public long SetFileLength(long size, int nextUnallocatedBlock)
         {
             CheckIsDisposed();
-            if (nextUnallocatedBlock * m_blockSize > size)
+            if (nextUnallocatedBlock * (long)m_blockSize > size)
             {
                 //if shrinking beyond the allocated space, 
                 //adjust the size exactly to the allocated space.
-                size = nextUnallocatedBlock * m_blockSize;
+                size = nextUnallocatedBlock * (long)m_blockSize;
             }
             else
             {
@@ -193,7 +193,7 @@ namespace openHistorian.FileStructure
                     size = size + m_blockSize - remainder;
                 }
             }
-            return m_stream.SetLength(size);
+            return m_stream.SetLength(size + size / 16);//Always increase the file size by at least 6.25%
         }
 
         /// <summary>
