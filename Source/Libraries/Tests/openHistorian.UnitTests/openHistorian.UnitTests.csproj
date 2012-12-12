@@ -60,6 +60,7 @@
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\ISupportsReadonlyTest.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256Test.cs" />
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="Collections\ResourceQueue.cs" />
     <Compile Include="Collections\ResourceQueueCollection.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Server\Database\ArchiveManagementTest.cs" />
     <Compile Include="Server\Database\ArchiveWriterTest.cs" />
     <Compile Include="Server\Database\ArchiveWriter_ArchiveFileTest.cs" />
+    <Compile Include="Server\Database\Archive\ArchiveFileSampleConvert.cs" />
     <Compile Include="Server\Database\Archive\ArchiveFileTest.cs" />
     <Compile Include="Server\Database\Archive\ArchiveTest.cs" />
     <Compile Include="Server\Database\ResourceEngineTest.cs" />
@@ -126,7 +128,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Collections\KeyValue\" />
     <Folder Include="OldCode\Specialized\" />
     <Folder Include="Streaming\Client\" />
     <Folder Include="Streaming\Server\" />

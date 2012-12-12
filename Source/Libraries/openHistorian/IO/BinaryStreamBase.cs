@@ -232,6 +232,61 @@ namespace openHistorian.IO
             Write(m_buffer, 0, 16);
         }
 
+        public virtual void WriteUInt24(uint value)
+        {
+            Write((ushort)value);
+            Write((byte)(value >> 16));
+        }
+        public virtual void WriteUInt40(ulong value)
+        {
+            Write((uint)value);
+            Write((byte)(value >> 32));
+        }
+        public virtual void WriteUInt48(ulong value)
+        {
+            Write((uint)value);
+            Write((ushort)(value >> 32));
+        }
+        public virtual void WriteUInt56(ulong value)
+        {
+            Write((uint)value);
+            WriteUInt24((uint)(value >> 32));
+        }
+    
+        public virtual void WriteUInt(ulong value, int bytes)
+        {
+            switch (bytes)
+            {
+                case 0:
+                    return;
+                case 1:
+                    Write((byte)value);
+                    return;
+                case 2:
+                    Write((ushort)value);
+                    return;
+                case 3:
+                    WriteUInt24((uint)value);
+                    return;
+                case 4:
+                    Write((uint)value);
+                    return;
+                case 5:
+                    WriteUInt40(value);
+                    return;
+                case 6:
+                    WriteUInt48(value);
+                    return;
+                case 7:
+                    WriteUInt56(value);
+                    return;
+                case 8:
+                    Write(value);
+                    return;
+            }
+            throw new ArgumentOutOfRangeException("bytes", "must be between 0 and 8 inclusive.");
+        }
+
         public virtual void Write7Bit(uint value)
         {
             Compression.Write7Bit(Write, value);
@@ -420,7 +475,9 @@ namespace openHistorian.IO
         {
             return Encoding.ASCII.GetString(ReadBytes());
         }
-        
+
+
+
 
     }
 }

@@ -75,7 +75,7 @@ namespace openHistorian.FileStructure
             if (archiveFile == null)
                 throw new ArgumentNullException("archiveFile");
             if (!System.IO.File.Exists(archiveFile))
-                throw new Exception("ArchiveFile Already Exists");
+                throw new Exception("ArchiveFile Does Not Exists");
 
             var fs = new TransactionalFileStructure();
             fs.m_file = TransactionService.OpenFile(archiveFile, accessMode);

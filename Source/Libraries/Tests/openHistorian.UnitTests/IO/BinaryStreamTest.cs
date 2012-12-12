@@ -161,6 +161,13 @@ namespace openHistorian.IO
                     while (rand.Next(4) < 2) bs.Write(*(uint*)lp);
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) bs.Write(*(ulong*)lp);
+
+                    for (int i = 0; i < 9; i++)
+                    {
+                        rand.NextBytes(data);
+                        while (rand.Next(4) < 2) bs.WriteUInt(*(ulong*)lp, i);
+                    }
+
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) bs.Write(*(decimal*)lp);
                     rand.NextBytes(data);
@@ -251,6 +258,13 @@ namespace openHistorian.IO
                     while (rand.Next(4) < 2) if (bs.ReadUInt32() != (*(uint*)lp)) throw new Exception();
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.ReadUInt64() != (*(ulong*)lp)) throw new Exception();
+
+                    for (int i = 0; i < 9; i++)
+                    {
+                        rand.NextBytes(data);
+                        while (rand.Next(4) < 2) if (bs.ReadUInt(i) != ( mask(i) & *(ulong*)lp)) throw new Exception();
+                    }
+
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.ReadDecimal() != (*(decimal*)lp)) throw new Exception();
                     rand.NextBytes(data);
@@ -306,12 +320,38 @@ namespace openHistorian.IO
             }
         }
 
+        static ulong mask(int bytes)
+        {
+            switch (bytes)
+            {
+                case 0:
+                    return 0x00;
+                case 1:
+                    return 0xFF;
+                case 2:
+                    return 0xFFFF;
+                case 3:
+                    return 0xFFFFFF;
+                case 4:
+                    return 0xFFFFFFFF;
+                case 5:
+                    return 0xFFFFFFFFFF;
+                case 6:
+                    return 0xFFFFFFFFFFFF;
+                case 7:
+                    return 0xFFFFFFFFFFFFFF;
+                case 8:
+                    return 0xFFFFFFFFFFFFFFFF;
+            }
+            throw new Exception();
+        }
+
         unsafe static DateTime NextDate(byte[] data, Random rand)
         {
             fixed (byte* lp = data)
             {
                 long value = *(long*)lp;
-                while (value < DateTime.MinValue.Ticks || value> DateTime.MaxValue.Ticks)
+                while (value < DateTime.MinValue.Ticks || value > DateTime.MaxValue.Ticks)
                 {
                     rand.NextBytes(data);
                     value = *(long*)lp;

@@ -145,30 +145,30 @@ namespace openHistorian.Collections.KeyValue
                     switch (code >> 3)
                     {
                         case 0:
-                            curValue2 = curValue2 + code;
+                            curValue2 = curValue2 + (code & 7u);
                             return;
                         case 1:
-                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadByte() << 3));
+                            curValue2 = curValue2 + ((code & 7u) | ((ulong)Stream.ReadByte() << 3));
                             return;
                         case 2:
-                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt16() << 3));
+                            curValue2 = curValue2 + ((code & 7u) | ((ulong)Stream.ReadUInt16() << 3));
                             return;
                         case 3:
-                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt24() << 3));
+                            curValue2 = curValue2 + ((code & 7u) | ((ulong)Stream.ReadUInt24() << 3));
                             return;
                         case 4:
-                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt32() << 3));
+                            curValue2 = curValue2 + ((code & 7u) | ((ulong)Stream.ReadUInt32() << 3));
                             return;
                         case 5:
-                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt40() << 3));
+                            curValue2 = curValue2 + ((code & 7u) | ((ulong)Stream.ReadUInt40() << 3));
                             return;
                         case 6:
-                            curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt48() << 3));
+                            curValue2 = curValue2 + ((code & 7u) | ((ulong)Stream.ReadUInt48() << 3));
                             return;
                     }
                     if ((code & 4) == 0)
                     {
-                        curValue2 = curValue2 + (code | ((ulong)Stream.ReadUInt56() << 2));
+                        curValue2 = curValue2 + ((code & 3u) | ((ulong)Stream.ReadUInt56() << 2));
                         return;
                     }
                     else
@@ -184,30 +184,30 @@ namespace openHistorian.Collections.KeyValue
                     switch (code >> 3)
                     {
                         case 0:
-                            curValue2 = curValue2 - code;
+                            curValue2 = curValue2 - (code & 7u);
                             return;
                         case 1:
-                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadByte() << 3));
+                            curValue2 = curValue2 - ((code & 7u) | ((ulong)Stream.ReadByte() << 3));
                             return;
                         case 2:
-                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt16() << 3));
+                            curValue2 = curValue2 - ((code & 7u) | ((ulong)Stream.ReadUInt16() << 3));
                             return;
                         case 3:
-                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt24() << 3));
+                            curValue2 = curValue2 - ((code & 7u) | ((ulong)Stream.ReadUInt24() << 3));
                             return;
                         case 4:
-                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt32() << 3));
+                            curValue2 = curValue2 - ((code & 7u) | ((ulong)Stream.ReadUInt32() << 3));
                             return;
                         case 5:
-                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt40() << 3));
+                            curValue2 = curValue2 - ((code & 7u) | ((ulong)Stream.ReadUInt40() << 3));
                             return;
                         case 6:
-                            curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt48() << 3));
+                            curValue2 = curValue2 - ((code & 7u) | ((ulong)Stream.ReadUInt48() << 3));
                             return;
                     }
                     if ((code & 4) == 0)
                     {
-                        curValue2 = curValue2 - (code | ((ulong)Stream.ReadUInt56() << 2));
+                        curValue2 = curValue2 - ((code & 3u) | ((ulong)Stream.ReadUInt56() << 2));
                         return;
                     }
                     else

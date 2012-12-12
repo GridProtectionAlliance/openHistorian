@@ -21,6 +21,8 @@
 //     
 //******************************************************************************************************
 
+using System;
+
 namespace openHistorian.Collections.KeyValue
 {
     public partial class SortedTree256EncodedLeafNodeBase
@@ -95,6 +97,14 @@ namespace openHistorian.Collections.KeyValue
                 m_lastPosition = m_nodeIndex * m_tree.BlockSize + header.ValidBytes;
                 m_rightSiblingNodeIndex = header.RightSiblingNodeIndex;
 
+                m_tree.Stream.Position = m_nodeIndex * m_tree.BlockSize + NodeHeader.Size;
+
+                ulong prevKey1 = 0;
+                ulong prevKey2 = 0;
+                ulong prevValue1 = 0;
+                ulong prevValue2 = 0;
+                long prevPos = m_tree.Stream.Position;
+
                 ulong curKey1 = 0;
                 ulong curKey2 = 0;
                 ulong curValue1 = 0;
@@ -104,17 +114,49 @@ namespace openHistorian.Collections.KeyValue
                 {
                     m_tree.DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
 
-                    int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
+                    int compareKeysResults = CompareKeys(curKey1, curKey2, key1, key2);
+                    //if (compareKeysResults >= 0)
+                    //{
+                    //    m_lastKey1 = curKey1;
+                    //    m_lastKey2 = curKey2;
+                    //    m_lastValue1 = curValue1;
+                    //    m_lastValue2 = curValue2;
+                    //    m_positionOfCurrentKey = m_tree.Stream.Position;
+                    //    break;
+                    //}
                     if (compareKeysResults >= 0)
                     {
-                        break;
+                        m_lastKey1 = prevKey1;
+                        m_lastKey2 = prevKey2;
+                        m_lastValue1 = prevValue1;
+                        m_lastValue2 = prevValue2;
+                        m_positionOfCurrentKey = prevPos;
+                        return;
                     }
+
+                    prevKey1 = curKey1;
+                    prevKey2 = curKey2;
+                    prevValue1 = curValue1;
+                    prevValue2 = curValue2;
+                    prevPos = m_tree.Stream.Position;
                 }
-                m_lastKey1 = curKey1;
-                m_lastKey2 = curKey2;
-                m_lastValue1 = curValue1;
-                m_lastValue2 = curValue2;
-                m_positionOfCurrentKey = m_tree.Stream.Position;
+                //read past the end of the stream, the next valid position is the first entry in the sibling
+
+                if (m_rightSiblingNodeIndex == 0)
+                {
+                    m_lastPosition = 0;
+                    m_positionOfCurrentKey = 0;
+                }
+                else
+                {
+                    //ToDo: Consider recursion
+                    m_nodeIndex = m_rightSiblingNodeIndex;
+                    var headerRight = new NodeHeader(m_tree.Stream, m_tree.BlockSize, m_nodeIndex);
+                    m_lastPosition = m_nodeIndex * m_tree.BlockSize + headerRight.ValidBytes;
+                    m_rightSiblingNodeIndex = headerRight.RightSiblingNodeIndex;
+                    m_positionOfCurrentKey = m_nodeIndex * m_tree.BlockSize + NodeHeader.Size;
+                }
+
             }
         }
     }

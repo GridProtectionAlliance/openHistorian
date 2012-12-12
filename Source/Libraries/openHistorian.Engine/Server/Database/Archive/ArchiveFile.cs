@@ -112,7 +112,7 @@ namespace openHistorian.Server.Database.Archive
             af.m_fileStructure = TransactionalFileStructure.OpenFile(file, accessMode);
             if (af.m_fileStructure.ArchiveType != s_fileType)
                 throw new Exception("Archive type is unknown");
-            
+
             if (!af.LoadUserData(af.m_fileStructure.UserData))
             {
                 using (var snapshot = af.CreateSnapshot().OpenInstance())
@@ -199,7 +199,7 @@ namespace openHistorian.Server.Database.Archive
                 using (var fs = trans.CreateFile(s_pointDataFile, 1))
                 using (var bs = new BinaryStream(fs))
                 {
-                    var tree = SortedTree256Initializer.Create(bs, m_fileStructure.DataBlockSize,compression);
+                    var tree = SortedTree256Initializer.Create(bs, m_fileStructure.DataBlockSize - FileStructureConstants.BlockFooterLength, compression);
                     m_firstKey = tree.FirstKey;
                     m_lastKey = tree.LastKey;
 

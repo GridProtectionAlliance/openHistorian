@@ -21,14 +21,14 @@ namespace openHistorian.Collections.KeyValue
             string path2 = "c:\\temp\\ArchiveFileTest2.d2";
             string path3 = "c:\\temp\\ArchiveFileTest3.d2";
 
-            using (ArchiveFile file1 = ArchiveFile.OpenFile(path1,AccessMode.ReadOnly))
-            using (ArchiveFile file2 = ArchiveFile.OpenFile(path2,AccessMode.ReadOnly))
-            using (ArchiveFile file3 = ArchiveFile.OpenFile(path3,AccessMode.ReadOnly))
+            using (ArchiveFile file1 = ArchiveFile.OpenFile(path1, AccessMode.ReadOnly))
+            using (ArchiveFile file2 = ArchiveFile.OpenFile(path2, AccessMode.ReadOnly))
+            using (ArchiveFile file3 = ArchiveFile.OpenFile(path3, AccessMode.ReadOnly))
             {
 
                 var scan1 = file1.CreateSnapshot().OpenInstance().GetDataRange();
-                var scan2 = file1.CreateSnapshot().OpenInstance().GetDataRange();
-                var scan3 = file1.CreateSnapshot().OpenInstance().GetDataRange();
+                var scan2 = file2.CreateSnapshot().OpenInstance().GetDataRange();
+                var scan3 = file3.CreateSnapshot().OpenInstance().GetDataRange();
                 scan1.SeekToKey(0, 0);
                 scan2.SeekToKey(0, 0);
                 scan3.SeekToKey(0, 0);
@@ -49,10 +49,10 @@ namespace openHistorian.Collections.KeyValue
                 }
                 Assert.IsFalse(scan2.GetNextKey(out key1, out key2, out value1, out value2));
                 Assert.IsFalse(scan3.GetNextKey(out key1, out key2, out value1, out value2));
-                
+
             }
         }
-      
+
         [Test]
         public static unsafe void RunBenchmark()
         {
@@ -70,15 +70,15 @@ namespace openHistorian.Collections.KeyValue
             if (File.Exists(path3))
                 File.Delete(path3);
 
-            using (ArchiveFile file1 = ArchiveFile.CreateFile(path1,CompressionMethod.None))
-            using (ArchiveFile file2 = ArchiveFile.CreateFile(path2,CompressionMethod.DeltaEncoded))
-            using (ArchiveFile file3 = ArchiveFile.CreateFile(path3,CompressionMethod.TimeSeriesEncoded))
+            using (ArchiveFile file1 = ArchiveFile.CreateFile(path1, CompressionMethod.None))
+            using (ArchiveFile file2 = ArchiveFile.CreateFile(path2, CompressionMethod.DeltaEncoded))
+            using (ArchiveFile file3 = ArchiveFile.CreateFile(path3, CompressionMethod.TimeSeriesEncoded))
             using (var edit1 = file1.BeginEdit())
             using (var edit2 = file2.BeginEdit())
             using (var edit3 = file3.BeginEdit())
             {
-                //var hist = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1_archive_2012-07-26 15!35!36.166_to_2012-07-26 15!40!36.666.d");
-                var hist = new OldHistorianReader(@"D:\Projects\Applications\openPDC\Synchrophasor\Current Version\Build\Output\Debug\Applications\openPDC\Archive\ppa_archive_2012-11-06 16!00!51.233_to_2012-11-06 16!07!16.933.d");
+                var hist = new OldHistorianReader("C:\\Unison\\GPA\\ArchiveFiles\\archive1_archive_2012-07-26 15!35!36.166_to_2012-07-26 15!40!36.666.d");
+                //var hist = new OldHistorianReader(@"D:\Projects\Applications\openPDC\Synchrophasor\Current Version\Build\Output\Debug\Applications\openPDC\Archive\ppa_archive_2012-11-06 16!00!51.233_to_2012-11-06 16!07!16.933.d");
                 Action<OldHistorianReader.Points> del = (x) =>
                     {
                         tree0.Add((ulong)x.Time.Ticks, (ulong)x.PointID, x.flags, *(uint*)&x.Value);
