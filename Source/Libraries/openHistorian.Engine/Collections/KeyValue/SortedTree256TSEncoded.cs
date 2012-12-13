@@ -107,14 +107,14 @@ namespace openHistorian.Collections.KeyValue
                 }
                 else if (bitCount <= 7 * 8 + 2)
                 {
-                    buffer[0] = (byte)((14 << 2) | code);
+                    buffer[0] = (byte)(code | (delta & 3) | (14 << 2));
                     *(ulong*)(buffer + 1) = delta >> 2;
                     return 8;
                 }
                 else
                 {
                     buffer[0] = (byte)((15 << 2) | code);
-                    *(ulong*)(buffer + 1) = delta;
+                    *(ulong*)(buffer + 1) = value2;
                     return 9;
                 }
 
@@ -173,7 +173,7 @@ namespace openHistorian.Collections.KeyValue
                     }
                     else
                     {
-                        curValue2 = curValue2 + (ulong)Stream.ReadUInt64();
+                        curValue2 = (ulong)Stream.ReadUInt64();
                         return;
                     }
                 }
@@ -212,7 +212,7 @@ namespace openHistorian.Collections.KeyValue
                     }
                     else
                     {
-                        curValue2 = curValue2 - (ulong)Stream.ReadUInt64();
+                        curValue2 = (ulong)Stream.ReadUInt64();
                         return;
                     }
                 }

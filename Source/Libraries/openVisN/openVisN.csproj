@@ -44,10 +44,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HistorianQuery.cs" />
+    <Compile Include="IMeasurement.cs" />
     <Compile Include="QueryResults.cs" />
     <Compile Include="TerminalPoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TerminalUnits.cs" />
+    <Compile Include="TimeSingleMeasurement.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\openHistorian\openHistorian.csproj">
