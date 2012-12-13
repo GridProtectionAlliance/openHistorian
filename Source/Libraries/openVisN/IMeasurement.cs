@@ -9,8 +9,7 @@ namespace openVisN
     public interface IMeasurement
     {
         int PointCounts { get; }
-        int[] PointBreaks { get; }
+        int[] LineBreaks { get; }
         KeyValuePair<double, double> this[int index] { get; }
-
     }
 }

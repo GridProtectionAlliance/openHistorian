@@ -16,8 +16,8 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/07/2012 - Ritchie
-//       Generated original version of source code.
+//  12/12/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
 //
 //******************************************************************************************************
 
@@ -26,12 +26,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using openHistorian;
 
 namespace openVisN
 {
     public class QueryResults
     {
         Dictionary<ulong, List<KeyValuePair<ulong, ulong>>> m_results;
+        
+        public QueryResults(IHistorianDatabase database, ulong startKey1, ulong endKey1, IEnumerable<ulong> points)
+            : this()
+        {
+            foreach (var pt in points)
+            {
+                AddPointIfNotExists(pt);
+            }
+
+            using (var reader = database.OpenDataReader())
+            {
+                var stream = reader.Read(startKey1, endKey1, points);
+                ulong time, point, quality, value;
+                while (stream.Read(out time, out point, out quality, out value))
+                {
+                    AddPoint(time, point, value);
+                }
+            }
+        }
+
         public QueryResults()
         {
             m_results = new Dictionary<ulong, List<KeyValuePair<ulong, ulong>>>();
@@ -57,7 +78,7 @@ namespace openVisN
         {
             return m_results.Keys;
         }
-
+        
     }
 
 }

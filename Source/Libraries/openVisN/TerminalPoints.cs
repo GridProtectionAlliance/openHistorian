@@ -16,8 +16,8 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/07/2012 - Ritchie
-//       Generated original version of source code.
+//  12/12/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
 //
 //******************************************************************************************************
 

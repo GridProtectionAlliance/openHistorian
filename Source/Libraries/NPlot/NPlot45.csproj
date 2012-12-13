@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{368F463D-9F80-4822-AFF6-727D0643494A}</ProjectGuid>
+    <ProjectGuid>{7141C894-6346-41C2-B497-DBA4BEBA71D6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>openVisN</RootNamespace>
-    <AssemblyName>openVisN</AssemblyName>
+    <RootNamespace>NPlot</RootNamespace>
+    <AssemblyName>NPlot</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -19,12 +19,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,11 +32,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,19 +45,43 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HistorianQuery.cs" />
-    <Compile Include="IMeasurement.cs" />
-    <Compile Include="QueryResults.cs" />
-    <Compile Include="TerminalPoints.cs" />
+    <Compile Include="AdapterUtils.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AxesConstraint.cs" />
+    <Compile Include="Axis.cs" />
+    <Compile Include="BasePlot.cs" />
+    <Compile Include="BaseSequencePlot.cs" />
+    <Compile Include="Bitmap.PlotSurface2D.cs" />
+    <Compile Include="DateTimeAxis.cs" />
+    <Compile Include="Grid.cs" />
+    <Compile Include="HorizontalLine.cs" />
+    <Compile Include="IDrawable.cs" />
+    <Compile Include="IPlot.cs" />
+    <Compile Include="IPlotSurface2D.cs" />
+    <Compile Include="ISequencePlot.cs" />
+    <Compile Include="ISurface.cs" />
+    <Compile Include="ITransform2D.cs" />
+    <Compile Include="Legend.cs" />
+    <Compile Include="LegendBase.cs" />
+    <Compile Include="LinearAxis.cs" />
+    <Compile Include="LinePlot.cs" />
+    <Compile Include="LogAxis.cs" />
+    <Compile Include="NPlotException.cs" />
+    <Compile Include="PageAlignedPhysicalAxis.cs" />
+    <Compile Include="PhysicalAxis.cs" />
+    <Compile Include="PiAxis.cs" />
+    <Compile Include="PlotSurface2D.cs" />
+    <Compile Include="PointD.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TerminalUnits.cs" />
-    <Compile Include="TimeSingleMeasurement.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\openHistorian\openHistorian.csproj">
-      <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
-      <Name>openHistorian</Name>
-    </ProjectReference>
+    <Compile Include="RectangleD.cs" />
+    <Compile Include="SequenceAdapter.cs" />
+    <Compile Include="TextItem.cs" />
+    <Compile Include="Transform2D.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="VerticalLine.cs" />
+    <Compile Include="Windows.PlotSurface2D.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
