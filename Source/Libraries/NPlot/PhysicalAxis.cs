@@ -100,7 +100,7 @@ namespace NPlot
 		/// <param name="g">The graphics surface on which to draw.</param>
 		/// <param name="boundingBox">out: the axis bounding box - the smallest rectangle that
 		/// completely contains all parts of the axis [including ticks and label].</param>
-		public virtual void Draw( System.Drawing.Graphics g, out Rectangle boundingBox )
+		public virtual void Draw( Graphics g, out Rectangle boundingBox )
 		{
 			this.Axis.Draw( g, PhysicalMin, PhysicalMax, out boundingBox );
 		}

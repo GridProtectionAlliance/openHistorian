@@ -110,9 +110,9 @@ namespace simpleVisN
                     x.Add(new DateTime((long)value.Key));
                     y.Add(BitMath.ConvertToSingle(value.Value));
                 }
-                LinePlot lines = new LinePlot(y, x);
+                //LinePlot lines = new LinePlot(y, x);
 
-                plot.Add(lines);
+                //plot.Add(lines);
             }
 
             plot.Refresh();

@@ -30,6 +30,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 
 namespace NPlot
 {
@@ -43,12 +44,12 @@ namespace NPlot
 		/// <summary>
 		/// Gets or sets the data, or column name for the abscissa [x] axis.
 		/// </summary>
-		object XData { get; set; }
+		IList<double> XData { get; set; }
 
 		/// <summary>
 		/// Gets or sets the data, or column name for the ordinate [y] axis.
 		/// </summary>
-		object YData { get; set; }
+        IList<double> YData { get; set; }
 
 	}
 

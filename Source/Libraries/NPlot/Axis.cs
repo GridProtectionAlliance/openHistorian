@@ -45,7 +45,7 @@ namespace NPlot
 	/// This class encapsulates no physical information about where the axes
 	/// are drawn. 
 	/// </summary>
-	public class Axis : System.ICloneable
+	public class Axis : ICloneable
 	{
 	
 		/// <summary>
@@ -327,7 +327,7 @@ namespace NPlot
 		/// <summary>
 		/// The color of the pen used to draw the ticks and the axis line.
 		/// </summary>
-		public System.Drawing.Color AxisColor
+		public Color AxisColor
 		{
 			get
 			{
@@ -636,9 +636,9 @@ namespace NPlot
 			FontFamily fontFamily = new FontFamily( "Arial" );
 			this.TickTextFont = new Font( fontFamily, 10, FontStyle.Regular, GraphicsUnit.Pixel );
 			this.LabelFont = new Font( fontFamily, 12, FontStyle.Regular, GraphicsUnit.Pixel );
-			this.LabelColor = System.Drawing.Color.Black;
-			this.TickTextColor = System.Drawing.Color.Black;
-			this.linePen_ = new Pen( System.Drawing.Color.Black );
+			this.LabelColor = Color.Black;
+			this.TickTextColor = Color.Black;
+			this.linePen_ = new Pen( Color.Black );
 			this.linePen_.Width = 1.0f;
 			this.FontScale = 1.0f;
 
