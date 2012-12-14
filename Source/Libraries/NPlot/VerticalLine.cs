@@ -74,53 +74,7 @@ namespace NPlot
 			this.pen_ = pen;
 		}
 
-		/// <summary>
-		/// Draws a representation of the line in the legend
-		/// </summary>
-		/// <param name="g">The graphics surface on which to draw.</param>
-		/// <param name="startEnd">A rectangle specifying the bounds of the area in the legend set aside for drawing.</param>
-		public void DrawInLegend(System.Drawing.Graphics g, System.Drawing.Rectangle startEnd)
-		{
-			g.DrawLine( pen_, startEnd.Left, (startEnd.Top + startEnd.Bottom)/2, 
-				startEnd.Right, (startEnd.Top + startEnd.Bottom)/2 );
-		}
-
-
-		/// <summary>
-		/// A label to associate with the plot - used in the legend.
-		/// </summary>
-		public string Label
-		{
-			get
-			{
-				return label_;
-			}
-			set
-			{
-				this.label_ = value;
-			}
-		}
-		
-		private string label_ = "";
-
-
-		/// <summary>
-		/// Whether or not to include an entry for this plot in the legend if it exists.
-		/// </summary>
-		public bool ShowInLegend
-		{
-			get
-			{
-				return showInLegend_;
-			}
-			set
-			{
-				this.showInLegend_ = value;
-			}
-		}
-		private bool showInLegend_ = false;
-
-		/// <summary>
+	    /// <summary>
 		/// Returns an x-axis that is suitable for drawing this plot.
 		/// </summary>
 		/// <returns>A suitable x-axis.</returns>
@@ -138,36 +92,6 @@ namespace NPlot
 		{
 			return null;
 		}
-
-		
-		/// <summary>
-		/// Writes text data describing the vertical line object to the supplied string builder. It is 
-		/// possible to specify that the data will be written only if the line is in the specified 
-		/// region.
-		/// </summary>
-		/// <param name="sb">the StringBuilder object to write to.</param>
-		/// <param name="region">a region used if onlyInRegion is true.</param>
-		/// <param name="onlyInRegion">If true, data will be written only if the line is in the specified region.</param>
-		public void WriteData(System.Text.StringBuilder sb, RectangleD region, bool onlyInRegion)
-		{
-
-			// return if line is not in plot region and 
-			if (value_ > region.X+region.Width || value_ < region.X)
-			{
-				if (onlyInRegion)
-				{
-					return;
-				}
-			}
-
-			sb.Append( "Label: " );
-			sb.Append( this.Label );
-			sb.Append( "\r\n" );
-			sb.Append( value_.ToString() );
-			sb.Append( "\r\n" );
-
-		}
-
 
 		/// <summary>
 		/// Draws the vertical line plot on a GDI+ surface against the provided x and y axes.

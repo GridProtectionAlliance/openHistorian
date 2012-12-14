@@ -48,7 +48,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AxesConstraint.cs" />
     <Compile Include="Axis.cs" />
-    <Compile Include="BasePlot.cs" />
     <Compile Include="Bitmap.PlotSurface2D.cs" />
     <Compile Include="DateTimeAxis.cs" />
     <Compile Include="Grid.cs" />
@@ -56,19 +55,13 @@
     <Compile Include="IDrawable.cs" />
     <Compile Include="IPlot.cs" />
     <Compile Include="IPlotSurface2D.cs" />
-    <Compile Include="ISequencePlot.cs" />
     <Compile Include="ISurface.cs" />
     <Compile Include="ITransform2D.cs" />
-    <Compile Include="Legend.cs" />
-    <Compile Include="LegendBase.cs" />
     <Compile Include="LinearAxis.cs" />
     <Compile Include="LineData.cs" />
     <Compile Include="LinePlot.cs" />
-    <Compile Include="LogAxis.cs" />
     <Compile Include="NPlotException.cs" />
-    <Compile Include="PageAlignedPhysicalAxis.cs" />
     <Compile Include="PhysicalAxis.cs" />
-    <Compile Include="PiAxis.cs" />
     <Compile Include="PlotSurface2D.cs" />
     <Compile Include="PointD.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -33,14 +33,13 @@ using System.Drawing;
 using System.Collections;
 using System;
 using System.Text;
-using System.Diagnostics;
 
 namespace NPlot
 {
 	/// <summary>
 	/// Provides functionality for drawing axes with a linear numeric scale.
 	/// </summary>
-	public class LinearAxis : Axis, System.ICloneable
+	public class LinearAxis : Axis, ICloneable
 	{
 
 		/// <summary>
@@ -621,8 +620,7 @@ namespace NPlot
 		/// NumberOfSmallTicks specified.
 		/// </summary>
 		public int[] SmallTickCounts = {4, 1, 4};
-
-
+        
 		private double offset_ = 0.0;
 
 		private double scale_ = 1.0;

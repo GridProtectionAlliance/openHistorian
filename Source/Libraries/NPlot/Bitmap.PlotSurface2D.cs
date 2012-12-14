@@ -30,6 +30,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Collections;
@@ -250,37 +251,6 @@ namespace NPlot
 				}
 			}
 
-
-			/// <summary>
-			/// Gets or Sets the legend to use with this plot surface.
-			/// </summary>
-			public NPlot.Legend Legend
-			{
-				get
-				{
-					return ps_.Legend;
-				}
-				set
-				{
-					ps_.Legend = value;
-				}
-			}
-
-			/// <summary>
-			/// Gets or Sets the legend z-order.
-			/// </summary>
-			public int LegendZOrder
-			{
-				get
-				{
-					return ps_.LegendZOrder;
-				}
-				set
-				{
-					ps_.LegendZOrder = value;
-				}
-			}
-
 			/// <summary>
 			/// A color used to paint the plot background. Mutually exclusive with PlotBackImage and PlotBackBrush
 			/// </summary>
@@ -484,7 +454,7 @@ namespace NPlot
 			/// <summary>
 			/// Gets an array list containing all drawables currently added to the PlotSurface2D.
 			/// </summary>
-			public ArrayList Drawables
+			public List<IDrawable> Drawables
 			{
 				get
 				{

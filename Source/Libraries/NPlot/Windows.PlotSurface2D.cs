@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -291,50 +292,6 @@ namespace NPlot.Windows
 		{
 			ps_.Add( p, xp, yp , zOrder);
 		}
-
-
-		/// <summary>
-		/// Gets or Sets the legend to use with this plot surface.
-		/// </summary>
-		[
-		Browsable(false),
-		Bindable(false)
-		]
-		public NPlot.Legend Legend
-		{
-			get
-			{
-				return ps_.Legend;
-			}
-			set
-			{
-				ps_.Legend = value;
-			}
-		}
-
-
-		/// <summary>
-		/// Gets or Sets the legend z-order.
-		/// </summary>
-		[
-		Browsable(true),
-		Bindable(true),
-		Category("PlotSurface2D"),
-		Description("Determines the order with respect to other IDrawables on the plot surface in which the legend is drawn. " +
-			"The higher this value, the higher the position in the draw order." )
-		]
-		public int LegendZOrder
-		{
-			get
-			{
-				return ps_.LegendZOrder;
-			}
-			set
-			{
-				ps_.LegendZOrder = value;
-			}
-		}
-
 
 		/// <summary>
 		/// Whether or not the title will be scaled according to size of the plot 
@@ -1005,44 +962,11 @@ namespace NPlot.Windows
 		public void CopyToClipboard()
 		{
 			System.Drawing.Bitmap b = new System.Drawing.Bitmap( this.Width, this.Height );
-			System.Drawing.Graphics g = Graphics.FromImage( b );
+			Graphics g = Graphics.FromImage( b );
 			g.Clear(Color.White);
 			this.Draw( g, new Rectangle( 0, 0, b.Width-1, b.Height-1 ) );
 			Clipboard.SetDataObject( b, true );
 		}
-
-
-		/// <summary>
-		/// Coppies data in the current plot surface view window to the clipboard
-		/// as text.
-		/// </summary>
-		public void CopyDataToClipboard()
-		{
-
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-
-			for (int i=0; i<ps_.Drawables.Count; ++i)
-			{
-				IPlot plot = ps_.Drawables[i] as IPlot;
-				if (plot != null)
-				{
-					Axis xAxis = ps_.WhichXAxis( plot );
-					Axis yAxis = ps_.WhichYAxis( plot );
-
-					RectangleD region = new RectangleD( 
-						xAxis.WorldMin, 
-						yAxis.WorldMin,
-						xAxis.WorldMax - xAxis.WorldMin,
-						yAxis.WorldMax - yAxis.WorldMin );
-
-					plot.WriteData( sb, region, true );
-				}
-			}
-
-			Clipboard.SetDataObject( sb.ToString(), true );
-
-		}
-
 
         /// <summary>
         /// Remove a drawable object from the plot surface.
@@ -1062,7 +986,7 @@ namespace NPlot.Windows
 		Browsable(false),
 		Bindable(false)
 		]
-		public ArrayList Drawables
+		public List<IDrawable> Drawables
 		{
 			get
 			{
@@ -2811,7 +2735,6 @@ namespace NPlot.Windows
 				menuItems.Add( new PlotMenuItem( "Print", 3, new EventHandler(this.mnuPrint_Click )) );
 				menuItems.Add( new PlotMenuItem( "Print Preview", 4, new EventHandler(this.mnuPrintPreview_Click) ) );
 				menuItems.Add( new PlotMenuItem( "Copy To Clipboard", 5, new EventHandler(this.mnuCopyToClipboard_Click) ) );
-				menuItems.Add( new PlotMenuItem( "Copy Data To Clipboard", 6, new EventHandler(this.mnuCopyDataToClipboard_Click) ) );
 
 				this.SetMenuItems( menuItems );
 			}
@@ -2825,11 +2748,6 @@ namespace NPlot.Windows
 			private void mnuCopyToClipboard_Click(object sender, System.EventArgs e) 
 			{
 				plotSurface2D_.CopyToClipboard();
-			}
-
-			private void mnuCopyDataToClipboard_Click(object sender, System.EventArgs e) 
-			{
-				plotSurface2D_.CopyDataToClipboard();
 			}
 
 			private void mnuPrint_Click(object sender, System.EventArgs e) 

@@ -103,16 +103,16 @@ namespace simpleVisN
                 query.GetPointList(point);
 
                 List<double> y = new List<double>();
-                List<DateTime> x = new List<DateTime>();
+                List<double> x = new List<double>();
 
                 foreach (var value in query.GetPointList(point))
                 {
-                    x.Add(new DateTime((long)value.Key));
+                    x.Add((long)value.Key);
                     y.Add(BitMath.ConvertToSingle(value.Value));
                 }
-                //LinePlot lines = new LinePlot(y, x);
+                LinePlot lines = new LinePlot(y, x);
 
-                //plot.Add(lines);
+                plot.Add(lines);
             }
 
             plot.Refresh();

@@ -124,7 +124,6 @@ namespace NPlot
 			}
 		}
 
-
 		/// <summary>
 		/// Defines an AxisConstraint that forces the world length corresponding
 		/// to one pixel on the left y-axis to be a certain value. 
@@ -205,7 +204,6 @@ namespace NPlot
 
 			}
 		}
-
 
 		/// <summary>
 		/// Defines an AxisConstraint that forces the specified axis to be placed at a 
@@ -303,8 +301,7 @@ namespace NPlot
 			}
 
 		}
-
-
+        
 		/// <summary>
 		/// Defines an axes constraint that forces the world width and height pixel lengths
 		/// to be at the provided ratio. For example, an aspect ratio of 3:2 or
@@ -482,7 +479,6 @@ namespace NPlot
 
 		}
 		
-
 		/// <summary>
 		/// Applies the constraint to the axes. Must be overriden.
 		/// </summary>

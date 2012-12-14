@@ -19,7 +19,7 @@ namespace NPlot
             m_x = x;
             m_y = y;
             Count = x.Count;
-            if (x.Count>0)
+            if (x.Count > 0)
             {
                 MaxValueX = x.Max();
                 MinValueX = x.Min();
@@ -27,7 +27,7 @@ namespace NPlot
             if (y.Count > 0)
             {
                 MaxValueY = y.Max();
-                MinValueY = y.Min(); 
+                MinValueY = y.Min();
             }
         }
 
@@ -46,9 +46,14 @@ namespace NPlot
             return new LinearAxis(0.0, 1.0);
         }
 
-        public PointD Get(int x)
+        public PointD Get(int i)
         {
-            return new PointD(m_x[x], m_y[x]);
+            return new PointD(m_x[i], m_y[i]);
+        }
+        public void Get(int i, out double x, out double y)
+        {
+            x = m_x[i];
+            y = m_y[i];
         }
 
         /// <summary>

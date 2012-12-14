@@ -80,8 +80,6 @@
             this.plot.AutoScaleTitle = false;
             this.plot.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.plot.DateTimeToolTip = true;
-            this.plot.Legend = null;
-            this.plot.LegendZOrder = -1;
             this.plot.Location = new System.Drawing.Point(285, 12);
             this.plot.Name = "plot";
             this.plot.RightMenu = null;

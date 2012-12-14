@@ -29,7 +29,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Windows.Forms;
 
 namespace NPlot
@@ -56,7 +55,7 @@ namespace NPlot
 		/// </summary>
 		/// <param name="e">mouse event args</param>
 		/// <param name="ctr">the control</param>
-		void DoMouseUp( MouseEventArgs e, System.Windows.Forms.Control ctr );
+		void DoMouseUp( MouseEventArgs e, Control ctr );
 		
 		
 		/// <summary>
@@ -64,7 +63,7 @@ namespace NPlot
 		/// </summary>
 		/// <param name="e">mouse event args</param>
 		/// <param name="ctr">the control</param>
-		void DoMouseMove( MouseEventArgs e, System.Windows.Forms.Control ctr );
+		void DoMouseMove( MouseEventArgs e, Control ctr );
 		
 		
 		/// <summary>

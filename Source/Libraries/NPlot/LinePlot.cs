@@ -32,6 +32,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace NPlot
 {
@@ -39,11 +40,11 @@ namespace NPlot
     /// <summary>
     /// Encapsulates functionality for plotting data as a line chart.
     /// </summary>
-    public class LinePlot : BasePlot, IPlot
+    public class LinePlot : IPlot
     {
-        
+
         LineData m_lineData;
-        
+
         /// <summary>
         /// Gets or sets the data, or column name for the ordinate [y] axis.
         /// </summary>
@@ -53,7 +54,7 @@ namespace NPlot
         /// Gets or sets the data, or column name for the abscissa [x] axis.
         /// </summary>
         IList<double> XData { get; set; }
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -61,122 +62,10 @@ namespace NPlot
         /// <param name="xData">the abscissa data to associate with this plot.</param>
         public LinePlot(IList<double> yData, IList<double> xData)
         {
-            this.YData = yData;
-            this.XData = xData;
+            YData = yData;
+            XData = xData;
             m_lineData = new LineData(xData, yData);
         }
-
-        /// <summary>
-        /// Writes text data of the plot object to the supplied string builder. It is 
-        /// possible to specify that only data in the specified range be written.
-        /// </summary>
-        /// <param name="sb">the StringBuilder object to write to.</param>
-        /// <param name="region">a region used if onlyInRegion is true.</param>
-        /// <param name="onlyInRegion">If true, only data enclosed in the provided region will be written.</param>
-        public void WriteData(System.Text.StringBuilder sb, RectangleD region, bool onlyInRegion)
-        {
-            sb.Append("Label: ");
-            sb.Append(this.Label);
-            sb.Append("\r\n");
-            m_lineData.WriteData(sb, region, onlyInRegion);
-        }
-
-
-        /// <summary>
-        /// Draws the line plot on a GDI+ surface against the provided x and y axes.
-        /// </summary>
-        /// <param name="g">The GDI+ surface on which to draw.</param>
-        /// <param name="xAxis">The X-Axis to draw against.</param>
-        /// <param name="yAxis">The Y-Axis to draw against.</param>
-        public void DrawLine(Graphics g, PhysicalAxis xAxis, PhysicalAxis yAxis)
-        {
-            ITransform2D t = Transform2D.GetTransformer(xAxis, yAxis);
-
-            int numberPoints = m_lineData.Count;
-
-            if (m_lineData.Count == 0)
-            {
-                return;
-            }
-
-            // clipping is now handled assigning a clip region in the
-            // graphic object before this call
-            if (numberPoints == 1)
-            {
-                PointF physical = t.Transform(m_lineData.Get(0));
-
-                g.DrawLine(Pen, physical.X - 0.5f, physical.Y, physical.X + 0.5f, physical.Y);
-            }
-            else
-            {
-
-                List<PointF> points = new List<PointF>();
-                PointF lastPoint = new PointF(Single.NaN, Single.NaN);
-                for (int i = 0; i < numberPoints; ++i)
-                {
-                    // check to see if any values null. If so, then continue.
-                    PointD pt = m_lineData.Get(i);
-                    if (Double.IsNaN(pt.X) || Double.IsNaN(pt.Y))
-                    {
-                        continue;
-                    }
-
-                    PointF p1 = t.Transform(pt);
-
-                    if (p1.Equals(lastPoint))
-                        continue;
-
-                    points.Add(p1);
-
-                }
-                System.Drawing.Drawing2D.GraphicsPath graphicsPath = new System.Drawing.Drawing2D.GraphicsPath();
-                graphicsPath.AddLines(points.ToArray());
-                g.DrawPath(Pen, graphicsPath);
-
-                //// prepare for clipping
-                //double leftCutoff = xAxis.PhysicalToWorld(xAxis.PhysicalMin, false);
-                //double rightCutoff = xAxis.PhysicalToWorld(xAxis.PhysicalMax, false);
-                //if (leftCutoff > rightCutoff)
-                //{
-                //    Utils.Swap(ref leftCutoff, ref rightCutoff);
-                //}
-
-                //for (int i = 1; i < numberPoints; ++i)
-                //{
-                //    // check to see if any values null. If so, then continue.
-                //    double dx1 = data[i - 1].X;
-                //    double dx2 = data[i].X;
-                //    double dy1 = data[i - 1].Y;
-                //    double dy2 = data[i].Y;
-                //    if (Double.IsNaN(dx1) || Double.IsNaN(dy1) ||
-                //        Double.IsNaN(dx2) || Double.IsNaN(dy2))
-                //    {
-                //        continue;
-                //    }
-
-                //    // do horizontal clipping here, to speed up
-                //    if ((dx1 < leftCutoff || rightCutoff < dx1) &&
-                //        (dx2 < leftCutoff || rightCutoff < dx2))
-                //    {
-                //        continue;
-                //    }
-
-                //    // else draw line.
-                //    PointF p1 = t.Transform(data[i - 1]);
-                //    PointF p2 = t.Transform(data[i]);
-
-                //    // when very far zoomed in, points can fall ontop of each other,
-                //    // and g.DrawLine throws an overflow exception
-                //    if (p1.Equals(p2))
-                //        continue;
-
-
-                //    g.DrawLine(Pen, p1.X, p1.Y, p2.X, p2.Y);
-                //}
-            }
-
-        }
-
 
         /// <summary>
         /// Draws the line plot on a GDI+ surface against the provided x and y axes.
@@ -186,9 +75,70 @@ namespace NPlot
         /// <param name="yAxis">The Y-Axis to draw against.</param>
         public void Draw(Graphics g, PhysicalAxis xAxis, PhysicalAxis yAxis)
         {
-            this.DrawLine(g, xAxis, yAxis);
-        }
+            double xVal, yVal;
+            
+            int pointCount = m_lineData.Count;
+            if (pointCount == 0)
+                return;
 
+            ITransform2D t = Transform2D.GetTransformer(xAxis, yAxis);
+
+            // clipping is now handled assigning a clip region in the
+            // graphic object before this call
+            if (pointCount == 1)
+            {
+                m_lineData.Get(0, out xVal, out yVal);
+                PointF physical = t.Transform(xVal, yVal);
+                g.DrawLine(Pen, physical.X - 0.5f, physical.Y, physical.X + 0.5f, physical.Y);
+            }
+            else
+            {
+                int index = 0;
+                PointF[] points = new PointF[pointCount];
+                PointF lastPoint = new PointF(Single.NaN, Single.NaN);
+                for (int i = 0; i < pointCount; ++i)
+                {
+                    // check to see if any values null. If so, then continue.
+                    m_lineData.Get(i, out xVal, out yVal);
+
+                    if (!Double.IsNaN(xVal + yVal)) //Adding a NaN with anything yeilds NaN
+                    {
+                        PointF p1 = t.Transform(xVal, yVal);
+                        if (p1 != lastPoint)
+                        {
+                            lastPoint = p1;
+                            points[index] = p1;
+                            index++;
+                        }
+                    }
+                }
+                //System.Drawing.Drawing2D.GraphicsPath graphicsPath = new System.Drawing.Drawing2D.GraphicsPath();
+                //graphicsPath.AddLines(points.ToArray());
+                //g.DrawPath(Pen, graphicsPath);
+                //g.CompositingQuality = CompositingQuality.HighQuality;
+                //g.SmoothingMode = SmoothingMode.HighQuality;
+
+                if (index == 0)
+                    return;
+                else if (index == 1)
+                {
+                    PointF physical = points[0];
+                    g.DrawLine(Pen, physical.X - 0.5f, physical.Y, physical.X + 0.5f, physical.Y);
+                    return;
+                }
+                if (index == points.Length)
+                {
+                    g.DrawLines(Pen, points);
+                }
+                else
+                {
+                    PointF[] newArray = new PointF[index];
+                    Array.Copy(points, 0, newArray, 0, index);
+                    g.DrawLines(Pen, newArray);
+
+                }
+            }
+        }
 
         /// <summary>
         /// Returns an x-axis that is suitable for drawing this plot.
@@ -206,20 +156,10 @@ namespace NPlot
         /// <returns>A suitable y-axis.</returns>
         public Axis SuggestYAxis()
         {
-            return m_lineData.GetY();
+            var a =  m_lineData.GetY();
+            a.IncreaseRange(0.08);
+            return a;
         }
-
-        /// <summary>
-        /// Draws a representation of this plot in the legend.
-        /// </summary>
-        /// <param name="g">The graphics surface on which to draw.</param>
-        /// <param name="startEnd">A rectangle specifying the bounds of the area in the legend set aside for drawing.</param>
-        public virtual void DrawInLegend(Graphics g, Rectangle startEnd)
-        {
-            g.DrawLine(pen_, startEnd.Left, (startEnd.Top + startEnd.Bottom) / 2,
-                startEnd.Right, (startEnd.Top + startEnd.Bottom) / 2);
-        }
-
 
         /// <summary>
         /// The pen used to draw the plot
