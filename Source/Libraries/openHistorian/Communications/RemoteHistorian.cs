@@ -31,7 +31,7 @@ using openHistorian.IO;
 
 namespace openHistorian.Communications
 {
-    public class RemoteHistorian
+    public class RemoteHistorian : IHistorianDatabaseCollection
     {
         TcpClient m_client;
         NetworkBinaryStream m_netStream;

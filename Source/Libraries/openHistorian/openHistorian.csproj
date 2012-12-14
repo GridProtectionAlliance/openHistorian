@@ -58,6 +58,7 @@
     <Compile Include="Communications\LinearBuffer.cs" />
     <Compile Include="Communications\NetworkBinaryStream.cs" />
     <Compile Include="Compression.cs" />
+    <Compile Include="IHistorianDatabaseCollection.cs" />
     <Compile Include="IHistorianDataReader.cs" />
     <Compile Include="IHistorianDatabase.cs" />
     <Compile Include="HistorianClient.cs" />
