@@ -96,7 +96,7 @@ namespace simpleVisN
             if (keys.Count == 0)
                 return;
 
-            QueryResults query = new QueryResults(m_archiveFile, 0, ulong.MaxValue, keys);
+            QueryResults query = new QueryResults(m_archiveFile, 0, ulong.MaxValue, null);
 
             foreach (var point in keys)
             {
@@ -105,11 +105,11 @@ namespace simpleVisN
                 List<double> y = new List<double>();
                 List<double> x = new List<double>();
 
-                foreach (var value in query.GetPointList(point))
-                {
-                    x.Add((long)value.Key);
-                    y.Add(BitMath.ConvertToSingle(value.Value));
-                }
+                //foreach (var value in query.GetPointList(point))
+                //{
+                //    x.Add((long)value.Key);
+                //    y.Add(BitMath.ConvertToSingle(value.Value));
+                //}
                 LinePlot lines = new LinePlot(y, x);
 
                 plot.Add(lines);

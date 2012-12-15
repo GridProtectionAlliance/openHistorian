@@ -43,7 +43,7 @@ namespace openVisN
             m_historian = historian;
         }
 
-        public QueryResults GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, List<SignalDefinition> signals)
+        public QueryResults GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, List<MetadataBase> signals)
         {
             ulong startKey = (ulong)startTime.Ticks;
             ulong endKey = (ulong)endTime.Ticks;
@@ -53,10 +53,10 @@ namespace openVisN
 
             foreach (var terminal in signals)
             {
-                foreach (var point in terminal.GetRequiredPoints())
-                {
-                    results.AddPointIfNotExists(point);
-                }
+                //foreach (var point in terminal.GetRequiredPoints())
+                //{
+                //    //results.AddPointIfNotExists(point);
+                //}
             }
 
             points.AddRange(results.GetAllPoints());

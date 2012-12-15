@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TerminalUnits.cs - Gbtc
+//  PointResults.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/12/2012 - Steven E. Chisholm
+//  12/14/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
@@ -29,19 +29,44 @@ using System.Threading.Tasks;
 
 namespace openVisN
 {
-    public class TerminalUnits
+    public class PointResults
     {
-        public DateTime Time;
-        public short Status;
-        public float VoltageMagnitude;
-        public float VoltageAngle;
-        public float CurrentMagnitude;
-        public float CurrentAngle;
-        public float Dfdt;
-        public float Frequency;
-        public float MW;
-        public float MVAR;
-        public float MVA;
-        public float PF;
+        bool m_calculated;
+        List<ulong> m_dateTime = new List<ulong>();
+        List<ulong> m_values = new List<ulong>();
+
+        MetadataBase m_metaData;
+        public PointResults(MetadataBase metaData)
+        {
+            m_metaData = metaData;
+        }
+
+        public int Count
+        {
+            get
+            {
+                return m_values.Count;
+            }
+        }
+
+        public KeyValuePair<ulong, double> GetDouble(int index)
+        {
+            return new KeyValuePair<ulong, double>(m_dateTime[index], m_metaData.ToDouble(m_values[index]));
+        }
+
+        public void AddPoint(ulong time, ulong value)
+        {
+            m_dateTime.Add(time);
+            m_values.Add(value);
+        }
+
+        public void Calculate()
+        {
+            if (!m_calculated)
+            {
+                m_calculated = true;
+            }
+        }
     }
+
 }

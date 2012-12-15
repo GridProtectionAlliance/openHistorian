@@ -24,15 +24,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using openVisN.Library;
 
 namespace openVisN
 {
     public class SubscriptionFramework
     {
-
         public enum ExecutionMode
         {
             Automatic,
@@ -50,9 +48,11 @@ namespace openVisN
         TimeSpan m_automaticDuration;
         TimeSpan m_refreshInterval;
 
-        List<TerminalSignals> m_allTerminals;
-        List<SignalDefinition> m_activeSignals;
- 
+        HashSet<SignalGroup> m_allSignalGroups;
+        HashSet<SignalGroup> m_activeSignalGroups;
+        HashSet<MetadataBase> m_activeSignals;
+        HashSet<MetadataBase> m_allSignals;
+
         public event EventHandler UpdateModeChanged;
         public event EventHandler PointsChanged;
         public event EventHandler StateUpdated;
@@ -62,12 +62,52 @@ namespace openVisN
 
         public SubscriptionFramework()
         {
-            
+            m_subscribers=new List<ISubscriber>();
+
+            m_allSignalGroups = new HashSet<SignalGroup>();
+            m_allSignals = new HashSet<MetadataBase>();
+            m_activeSignalGroups = new HashSet<SignalGroup>();
+            m_activeSignals = new HashSet<MetadataBase>();
+
+            LoadSignalsAndSignalGroups();
+        }
+
+        public IEnumerable<MetadataBase> AllSignals
+        {
+            get
+            {
+                return m_allSignals;
+            }
+        }
+
+        public IEnumerable<SignalGroup> AllSignalGroups
+        {
+            get
+            {
+                return m_allSignalGroups;
+            }
+        }
+
+        void LoadSignalsAndSignalGroups()
+        {
+            var allSignals = new AllSignals();
+            var allSignalGroups = new AllSignalGroups();
+
+            allSignals.Signals.ForEach(x => m_allSignals.Add(x.MakeSignal()));
+            Dictionary<ulong, MetadataBase> allPoints = m_allSignals.ToDictionary(signal => signal.HistorianId);
+
+            allSignalGroups.SignalGroups.ForEach(x =>
+                {
+                    var group = x.CreateGroup(allPoints);
+                    group.GetAllSignals().ForEach(y => m_allSignals.Add(y));
+                    m_allSignalGroups.Add(group);
+                });
         }
 
         public void AddSubscriber(ISubscriber subscriber)
         {
             m_subscribers.Add(subscriber);
+            subscriber.Initialize(this);
         }
 
         public void RemoveSubscriber(ISubscriber subscriber)
@@ -82,12 +122,8 @@ namespace openVisN
 
         public void RefreshQuery()
         {
-            
+
         }
-
-
-
-
 
     }
 }

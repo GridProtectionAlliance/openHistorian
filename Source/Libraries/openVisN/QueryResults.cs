@@ -23,28 +23,34 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using openHistorian;
 
 namespace openVisN
 {
     public class QueryResults
     {
-        Dictionary<ulong, List<KeyValuePair<ulong, ulong>>> m_results;
-        
-        public QueryResults(IHistorianDatabase database, ulong startKey1, ulong endKey1, IEnumerable<ulong> points)
+        Dictionary<ulong, PointResults> m_results;
+        Dictionary<Guid, PointResults> m_resultsCalculated;
+
+        public QueryResults()
+        {
+            m_results = new Dictionary<ulong, PointResults>();
+            m_resultsCalculated = new Dictionary<Guid, PointResults>();
+        }
+
+        public QueryResults(IHistorianDatabase database, ulong startKey1, ulong endKey1, IEnumerable<MetadataBase> points)
             : this()
         {
+            List<ulong> ids = new List<ulong>();
             foreach (var pt in points)
             {
                 AddPointIfNotExists(pt);
+                ids.Add(pt.HistorianId);
             }
 
             using (var reader = database.OpenDataReader())
             {
-                var stream = reader.Read(startKey1, endKey1, points);
+                var stream = reader.Read(startKey1, endKey1, ids);
                 ulong time, point, quality, value;
                 while (stream.Read(out time, out point, out quality, out value))
                 {
@@ -53,32 +59,31 @@ namespace openVisN
             }
         }
 
-        public QueryResults()
+        public void AddPointIfNotExists(MetadataBase point)
         {
-            m_results = new Dictionary<ulong, List<KeyValuePair<ulong, ulong>>>();
+            if (!m_results.ContainsKey(point.HistorianId))
+                m_results.Add(point.HistorianId, new PointResults(point));
         }
 
-        public void AddPointIfNotExists(ulong pointId)
-        {
-            if (!m_results.ContainsKey(pointId))
-                m_results.Add(pointId, new List<KeyValuePair<ulong, ulong>>());
-        }
-
-        public List<KeyValuePair<ulong, ulong>> GetPointList(ulong pointId)
+        public PointResults GetPointList(ulong pointId)
         {
             return m_results[pointId];
+        }
+        public PointResults GetPointList(Guid pointId)
+        {
+            return m_resultsCalculated[pointId];
         }
 
         public void AddPoint(ulong time, ulong point, ulong value)
         {
-            m_results[point].Add(new KeyValuePair<ulong, ulong>(time, value));
+            m_results[point].AddPoint(time, value);
         }
 
         public IEnumerable<ulong> GetAllPoints()
         {
             return m_results.Keys;
         }
-        
+
     }
 
 }
