@@ -67,9 +67,9 @@
     <Compile Include="ValueTypeConversionBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\openHistorian.Engine\openHistorian.Engine.csproj">
+    <ProjectReference Include="..\openHistorian.Archive\openHistorian.Archive.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
-      <Name>openHistorian.Engine</Name>
+      <Name>openHistorian.Archive</Name>
     </ProjectReference>
     <ProjectReference Include="..\openHistorian\openHistorian.csproj">
       <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
