@@ -34,11 +34,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Windows.Forms;
 using System.Drawing.Printing;
-
-using NPlot;
 
 namespace NPlot.Windows
 {

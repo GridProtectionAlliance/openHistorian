@@ -94,7 +94,7 @@
       <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
       <Name>openHistorian</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\openVisN.WF\openVisN.WinForms.csproj">
+    <ProjectReference Include="..\..\Libraries\openVisN.WinForms\openVisN.WinForms.csproj">
       <Project>{5a519a7e-db9f-4b7b-bc3c-de18b85401bc}</Project>
       <Name>openVisN.WinForms</Name>
     </ProjectReference>

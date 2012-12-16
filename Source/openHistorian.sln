@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleVisN", "Tools\simpleV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frameworkVisN", "Tools\frameworkVisN\frameworkVisN.csproj", "{66E5837B-B40F-4D42-A83A-2DA281FDADA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WinForms", "Libraries\openVisN.WF\openVisN.WinForms.csproj", "{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WinForms", "Libraries\openVisN.WinForms\openVisN.WinForms.csproj", "{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WPF", "Libraries\openVisN.WPF\openVisN.WPF.csproj", "{79039E79-FB86-42B8-B1EA-A215295E1371}"
 EndProject
@@ -103,8 +103,8 @@ Global
 		SccLocalPath10 = Libraries\\Tests\\openVisN.Framework.UnitTest
 		SccProjectUniqueName11 = Libraries\\openVisN.WF\\openVisN.WinForms.csproj
 		SccProjectTopLevelParentUniqueName11 = openHistorian.sln
-		SccProjectName11 = Libraries/openVisN.WF
-		SccLocalPath11 = Libraries\\openVisN.WF
+		SccProjectName11 = Libraries/openVisN.WinForms
+		SccLocalPath11 = Libraries\\openVisN.WinForms
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
