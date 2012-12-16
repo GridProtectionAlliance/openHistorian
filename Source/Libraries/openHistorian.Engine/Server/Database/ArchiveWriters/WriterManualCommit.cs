@@ -29,9 +29,9 @@ using System.Threading;
 using openHistorian.IO.Unmanaged;
 using openHistorian.Server.Configuration;
 using openHistorian.Server.Database;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
-namespace openHistorian.Server.Database.ArchiveWriters
+namespace openHistorian.ArchiveWriters
 {
     /// <summary>
     /// Responsible for getting data into the database. This class will prebuffer

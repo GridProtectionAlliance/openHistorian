@@ -29,7 +29,7 @@ using System.Text;
 using System.Threading.Tasks;
 using openHistorian.Collections.KeyValue;
 using openHistorian.IO.Unmanaged;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
 namespace openHistorian.Utility
 {

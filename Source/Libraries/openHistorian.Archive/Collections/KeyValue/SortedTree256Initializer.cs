@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 using openHistorian.IO;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
 namespace openHistorian.Collections.KeyValue
 {

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeContainerEdit.cs - Gbtc
+//  SortedTreeContainer.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,14 +26,13 @@ using openHistorian.Collections.KeyValue;
 using openHistorian.FileStructure;
 using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.Server.Database.Archive
+namespace openHistorian.Archive
 {
     /// <summary>
     /// Encapsolates the ArchiveFileStream, BinaryStream, and BasicTree for a certain tree.
     /// </summary>
-    internal class SortedTreeContainerEdit : IDisposable
+    internal class SortedTreeContainer : IDisposable
     {
-
         #region [ Members ]
 
         SubFileStream m_subStream;
@@ -45,7 +44,7 @@ namespace openHistorian.Server.Database.Archive
 
         #region [ Constructors ]
 
-        public SortedTreeContainerEdit(TransactionalEdit currentTransaction, Guid fileNumber, int flags)
+        public SortedTreeContainer(TransactionalRead currentTransaction, Guid fileNumber, int flags)
         {
             m_subStream = currentTransaction.OpenFile(fileNumber, flags);
             m_binaryStream = new BinaryStream(m_subStream);
@@ -63,7 +62,7 @@ namespace openHistorian.Server.Database.Archive
                 return m_disposed;
             }
         }
-
+        
         public ulong FirstKey
         {
             get
@@ -84,17 +83,8 @@ namespace openHistorian.Server.Database.Archive
 
         #region [ Methods ]
 
-        public void AddPoint(ulong date, ulong pointId, ulong value1, ulong value2)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            m_tree.Add(date, pointId, value1, value2);
-        }
-
         public ITreeScanner256 GetDataRange()
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
             return m_tree.GetDataRange();
         }
 
@@ -104,24 +94,19 @@ namespace openHistorian.Server.Database.Archive
             {
                 try
                 {
-                    if(m_tree != null)
-                    {
-                        m_tree.Save();
-                        m_tree = null;
-                    }
                     if (m_binaryStream != null)
                     {
                         m_binaryStream.Dispose();
-                        m_binaryStream = null;
                     }
                     if (m_subStream != null)
                     {
                         m_subStream.Dispose();
-                        m_subStream = null;
                     }
                 }
                 finally
                 {
+                    m_subStream = null;
+                    m_binaryStream = null;
                     m_tree = null;
                     m_disposed = true;
                 }

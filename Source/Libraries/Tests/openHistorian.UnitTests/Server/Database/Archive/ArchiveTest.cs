@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using NUnit.Framework;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
 namespace openHistorian
 {

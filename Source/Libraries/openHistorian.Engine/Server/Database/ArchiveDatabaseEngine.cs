@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 using openHistorian.Server.Configuration;
-using openHistorian.Server.Database.ArchiveWriters;
+using openHistorian.ArchiveWriters;
 
 namespace openHistorian.Server.Database
 {

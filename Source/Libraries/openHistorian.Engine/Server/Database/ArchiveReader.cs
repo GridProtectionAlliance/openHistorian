@@ -28,7 +28,7 @@ using System.Linq;
 using System.Text;
 using openHistorian.Collections;
 using openHistorian.Collections.KeyValue;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
 namespace openHistorian.Server.Database
 {

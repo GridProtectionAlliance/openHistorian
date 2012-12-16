@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading;
 using NUnit.Framework;
 using openHistorian.IO.Unmanaged;
-using openHistorian.Server.Database.Archive;
-using openHistorian.Server.Database.ArchiveWriters;
+using openHistorian.Archive;
+using openHistorian.ArchiveWriters;
 
 namespace openHistorian.Server.Database
 {

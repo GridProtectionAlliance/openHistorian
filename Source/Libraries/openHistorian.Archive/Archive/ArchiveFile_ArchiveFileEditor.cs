@@ -27,7 +27,7 @@ using System.Linq;
 using System.Text;
 using openHistorian.FileStructure;
 
-namespace openHistorian.Server.Database.Archive
+namespace openHistorian.Archive
 {
     public partial class ArchiveFile
     {

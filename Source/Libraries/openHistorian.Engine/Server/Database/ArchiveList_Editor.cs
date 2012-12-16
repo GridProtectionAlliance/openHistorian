@@ -25,7 +25,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
 namespace openHistorian.Server.Database
 {

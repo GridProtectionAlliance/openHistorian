@@ -28,7 +28,7 @@
 //using System.Threading;
 //using openHistorian.IO.Unmanaged;
 //using openHistorian.Server.Configuration;
-//using openHistorian.Server.Database.Archive;
+//using openHistorian.Archive;
 
 //namespace openHistorian.Server.Database
 //{

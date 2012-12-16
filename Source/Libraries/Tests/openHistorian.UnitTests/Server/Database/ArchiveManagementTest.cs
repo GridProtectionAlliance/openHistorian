@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading;
 using NUnit.Framework;
 using openHistorian.Server.Configuration;
-using openHistorian.Server.Database.Archive;
-using openHistorian.Server.Database.ArchiveWriters;
+using openHistorian.Archive;
+using openHistorian.ArchiveWriters;
 
 namespace openHistorian.Server.Database
 {

@@ -24,7 +24,7 @@
 
 using System;
 using System.IO;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
 namespace openHistorian.Server.Database
 {

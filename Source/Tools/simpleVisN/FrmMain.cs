@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using NPlot;
 using openHistorian;
 using openHistorian.Server.Database;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 using openVisN;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 

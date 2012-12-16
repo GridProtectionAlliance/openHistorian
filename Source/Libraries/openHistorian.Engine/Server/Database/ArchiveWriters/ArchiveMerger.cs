@@ -28,9 +28,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using openHistorian.Server.Configuration;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
+using openHistorian.Server.Database;
 
-namespace openHistorian.Server.Database.ArchiveWriters
+namespace openHistorian.ArchiveWriters
 {
     /// <summary>
     /// Performs the required rollovers by reading partitions from the data list

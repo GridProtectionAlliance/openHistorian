@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using NUnit.Framework;
 using openHistorian.IO.Unmanaged;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
 namespace openHistorian.Collections.KeyValue
 {

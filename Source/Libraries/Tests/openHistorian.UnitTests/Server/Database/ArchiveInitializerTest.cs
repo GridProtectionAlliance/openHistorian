@@ -1,6 +1,6 @@
 ﻿//using Microsoft.VisualStudio.TestTools.UnitTesting;
 //using System;
-//using openHistorian.Server.Database.Archive;
+//using openHistorian.Archive;
 
 //namespace openHistorian.Server.Database
 //{

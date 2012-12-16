@@ -73,6 +73,12 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Archive\ArchiveFile.cs" />
+    <Compile Include="Archive\ArchiveFileReadOnlySnapshotInstance.cs" />
+    <Compile Include="Archive\ArchiveFileSnapshot.cs" />
+    <Compile Include="Archive\ArchiveFile_ArchiveFileEditor.cs" />
+    <Compile Include="Archive\SortedTreeContainer.cs" />
+    <Compile Include="Archive\SortedTreeContainerEdit.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Initializer.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256TSEncoded.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256EncodedLeafNodeBase.cs" />
@@ -112,40 +118,16 @@
     <Compile Include="OldCode\Local\ConfigHistorian.cs" />
     <Compile Include="OldCode\Local\ConfigDatabase.cs" />
     <Compile Include="OldCode\Local\HistorianServer_HistorianDatabase.cs" />
-    <Compile Include="Databases\HistorianFile.cs" />
-    <Compile Include="Communications\HistorianListener.cs" />
     <Compile Include="OldCode\Local\HistorianServer_DatabaseConfig.cs" />
     <Compile Include="OldCode\Local\HistorianServer_HistorianManage.cs" />
     <Compile Include="OldCode\Local\HistorianDataReader.cs" />
     <Compile Include="OldCode\Local\Historian.cs" />
-    <Compile Include="HistorianServer.cs" />
     <Compile Include="OldCode\Local\Historian_HistorianReadWrite.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
     <Compile Include="OpenMode.cs" />
     <Compile Include="OldCode\Local\ConfigNode.cs" />
     <Compile Include="OldCode\Local\XmlConfig.cs" />
-    <Compile Include="Server\Database\ArchiveList.cs" />
-    <Compile Include="Server\Database\ArchiveList_Editor.cs" />
-    <Compile Include="Server\Database\ArchiveListRemovalStatus.cs" />
-    <Compile Include="Server\Database\ArchiveWriters\ConcurrentArchiveMerger.cs" />
-    <Compile Include="Server\Database\ArchiveReader.cs" />
-    <Compile Include="Server\Database\ArchiveWriters\AutoCommit.cs" />
-    <Compile Include="Server\Database\ArchiveWriters\ArchiveMerger.cs" />
-    <Compile Include="Server\Database\ArchiveWriters\WriterManualCommit.cs" />
-    <Compile Include="Server\Database\ArchiveWriters\WriterManualCommit_ActiveFile.cs" />
-    <Compile Include="Server\Database\ArchiveWriters\ManualCommit.cs" />
-    <Compile Include="Server\Database\Archive\ArchiveFile_ArchiveFileEditor.cs" />
-    <Compile Include="Server\Configuration\DatabaseSettings.cs" />
-    <Compile Include="Server\Configuration\ArchiveInitializerSettings.cs" />
-    <Compile Include="Server\Configuration\ArchiveRolloverSettings.cs" />
-    <Compile Include="Server\Database\ArchiveInitializer.cs" />
-    <Compile Include="Server\Database\Archive\ArchiveFile.cs" />
-    <Compile Include="Server\Database\ArchiveDatabaseEngine.cs" />
-    <Compile Include="Server\Database\Archive\ArchiveFileSnapshot.cs" />
-    <Compile Include="Server\Database\Archive\ArchiveFileReadOnlySnapshotInstance.cs" />
-    <Compile Include="Server\Database\Archive\SortedTreeContainer.cs" />
-    <Compile Include="Server\Database\Archive\SortedTreeContainerEdit.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Base.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase.cs" />
@@ -154,19 +136,12 @@
     <Compile Include="OldCode\DataPoint.cs" />
     <Compile Include="HelperFunctions.cs" />
     <Compile Include="OldCode\ArchiveWriter_Old.cs" />
-    <Compile Include="Server\Database\ArchiveWriters\ConcurrentWriterAutoCommit_ActiveFile.cs" />
-    <Compile Include="Server\Database\IArchiveWriter.cs" />
-    <Compile Include="Server\Database\ArchiveWriters\ConcurrentPointQueue.cs" />
     <Compile Include="FileStructure\DiskIo.cs" />
     <Compile Include="OldCode\IO\IStreamingTransport.cs" />
     <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
-    <Compile Include="Server\Configuration\ArchiveWriterSettings.cs" />
-    <Compile Include="Server\Database\ArchiveListSnapshot.cs" />
-    <Compile Include="Server\Database\ArchiveWriters\ConcurrentWriterAutoCommit.cs" />
-    <Compile Include="Server\Configuration\HistorianSettings.cs" />
     <Compile Include="OldCode\Streaming\Client\ClientSocket.cs" />
     <Compile Include="OldCode\Streaming\IInboundBuffer.cs" />
     <Compile Include="OldCode\Streaming\ITransportStreaming.cs" />
@@ -180,7 +155,6 @@
     <Compile Include="OldCode\Streaming\Server\ProcessClientStream.cs" />
     <Compile Include="OldCode\Streaming\Server\ProcessKeepAlive.cs" />
     <Compile Include="OldCode\Streaming\Server\ServerSocket.cs" />
-    <Compile Include="Server\Database\ArchiveFileSummary.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
     <Compile Include="OldCode\Collections\BPlusTree.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBase.cs" />
@@ -197,18 +171,6 @@
     <Compile Include="OldCode\Collections\BPlusTreeTypes\Long.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream.cs" />
     <Compile Include="OldCode\UnmanagedMemory\UnmanagedArray.cs" />
-    <Compile Include="Server\DatabaseConfig.cs" />
-    <Compile Include="Streaming\Client\ClientSocket.cs" />
-    <Compile Include="Streaming\Server\ProcessClient.cs" />
-    <Compile Include="Streaming\Server\SocketHistorian.cs" />
-    <Compile Include="Streaming\Server\ProcessArchivePoints.cs" />
-    <Compile Include="Streaming\Server\ProcessAuthentication.cs" />
-    <Compile Include="Streaming\Server\ProcessClientStream.cs" />
-    <Compile Include="Streaming\Server\ProcessDatabaseInstance.cs" />
-    <Compile Include="Streaming\Server\ProcessDisconnect.cs" />
-    <Compile Include="Streaming\Server\ProcessKeepAlive.cs" />
-    <Compile Include="Streaming\Server\ServerSocket.cs" />
-    <Compile Include="Streaming\StreamMux.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old2.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old.cs" />
@@ -334,9 +296,7 @@
       <Name>openHistorian</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Local\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

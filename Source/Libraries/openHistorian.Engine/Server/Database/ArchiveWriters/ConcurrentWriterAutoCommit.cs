@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ConcurrentArchiveMerger.cs - Gbtc
+//  ConcurrentWriterAutoCommit.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,28 +16,30 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/18/2012 - Steven E. Chisholm
+//  5/29/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using openHistorian.IO.Unmanaged;
 using openHistorian.Server.Configuration;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Server.Database;
+using openHistorian.Archive;
 
-namespace openHistorian.Server.Database.ArchiveWriters
+namespace openHistorian.ArchiveWriters
 {
     /// <summary>
-    /// Performs the required rollovers by reading partitions from the data list
-    /// and combining them into a file of a later generation.
+    /// Responsible for getting data into the database. This class will prebuffer
+    /// points and commit them in bulk operations.
     /// </summary>
-    public class ConcurrentArchiveMerger : IDisposable
+    public partial class ConcurrentWriterAutoCommit : IDisposable
     {
+
         /// <summary>
         /// Provides a way to block a thread until data has been committed to the archive writer.
         /// </summary>
@@ -70,39 +72,40 @@ namespace openHistorian.Server.Database.ArchiveWriters
             }
         }
 
-        ArchiveRolloverSettings m_settings;
+        //ToDo: In the event that gobs of points are added, it might be quicker to presort the values.
+        //ToDo: Build in some kind of auto slowdown method if the disk is getting bogged down.
 
-        ArchiveInitializer m_archiveInitializer;
+        ArchiveWriterSettings m_settings;
 
+        long m_lastCommitedSequenceNumber;
+        long m_lastRolloverSequenceNumber;
         bool m_disposed;
+        bool m_forceNewFile;
+        bool m_forceQuit;
+        bool m_forceCommit;
+        bool m_threadHasQuit;
 
         ArchiveList m_archiveList;
+
+        ConcurrentPointQueue m_concurrentPointQueue;
 
         Thread m_insertThread;
 
         ManualResetEvent m_waitTimer;
 
-        ConcurrentQueue<KeyValuePair<ArchiveFile, long>> m_filesToProcess;
-        Action<ArchiveFile, long> m_callbackFileComplete;
+        Action<ArchiveFile,long> m_callbackFileComplete;
 
-        bool m_forceNewFile;
-        bool m_forceQuit;
         object m_syncRoot;
-        long m_lastCommitedSequenceNumber;
-        long m_lastRolloverSequenceNumber;
+
         List<WaitingForCommit> m_pendingCommitRequests;
-        bool m_threadHasQuit;
-        Action<ArchiveListRemovalStatus> m_archivesPendingDeletion;
-        long m_latestSequenceId;
 
         /// <summary>
-        /// Creates a new <see cref="ConcurrentArchiveMerger"/>.
+        /// Creates a new <see cref="ConcurrentWriterAutoCommit"/>.
         /// </summary>
-        /// <param name="settings"></param>
+        /// <param name="settings">The settings for this class.</param>
         /// <param name="archiveList">The list used to attach newly created file.</param>
         /// <param name="callbackFileComplete">Once a file is complete with this layer, this callback is invoked</param>
-        /// <param name="archivesPendingDeletion">Where to pass archive files that are pending deletion</param>
-        public ConcurrentArchiveMerger(ArchiveRolloverSettings settings, ArchiveList archiveList, Action<ArchiveFile, long> callbackFileComplete, Action<ArchiveListRemovalStatus> archivesPendingDeletion)
+        public ConcurrentWriterAutoCommit(ArchiveWriterSettings settings, ArchiveList archiveList, Action<ArchiveFile,long> callbackFileComplete)
         {
             if (settings == null)
                 throw new ArgumentNullException("settings");
@@ -110,23 +113,19 @@ namespace openHistorian.Server.Database.ArchiveWriters
                 throw new ArgumentNullException("archiveList");
             if (callbackFileComplete == null)
                 throw new ArgumentNullException("callbackFileComplete");
-            if (archivesPendingDeletion == null)
-                throw new ArgumentNullException("archivesPendingDeletion");
 
-            m_archivesPendingDeletion = archivesPendingDeletion;
             m_pendingCommitRequests = new List<WaitingForCommit>();
             m_syncRoot = new object();
             m_lastCommitedSequenceNumber = -1;
             m_lastRolloverSequenceNumber = -1;
-            m_latestSequenceId = -1;
 
-
-            m_filesToProcess = new ConcurrentQueue<KeyValuePair<ArchiveFile, long>>();
             m_callbackFileComplete = callbackFileComplete;
+
             m_settings = settings;
 
             m_archiveList = archiveList;
-            m_archiveInitializer = new ArchiveInitializer(settings.Initializer);
+
+            m_concurrentPointQueue = new ConcurrentPointQueue();
 
             m_waitTimer = new ManualResetEvent(false);
             m_insertThread = new Thread(ProcessInsertingData);
@@ -138,116 +137,85 @@ namespace openHistorian.Server.Database.ArchiveWriters
         /// </summary>
         void ProcessInsertingData()
         {
-            Stopwatch fileAge = new Stopwatch();
-            ArchiveFile activeFile = null;
-
+            ActiveFile activeFile = new ActiveFile(m_archiveList, m_callbackFileComplete);
             bool forcedQuit = false;
             while (!forcedQuit)
             {
-                if (m_filesToProcess.Count == 0)
-                {
-                    if (m_waitTimer.WaitOne(10))
-                        m_waitTimer.Reset();
-                }
-
-                bool shouldRollOver;
+                BinaryStream stream;
+                int pointCount;
+                long pendingSequenceNumber;
                 bool forcedNewFile = false;
-                if (m_forceQuit || m_forceNewFile) //reduces the lock contention.
+                bool forcedCommit = false;
+                bool shouldCommit;
+                bool shouldRollOver;
+
+                if (m_waitTimer.WaitOne(1)) //implied memory barrior
+                    m_waitTimer.Reset();
+
+
+                if (m_forceCommit || m_forceQuit || m_forceNewFile) //reduces the lock contention.
                 {
                     lock (m_syncRoot)
                     {
                         forcedNewFile = m_forceNewFile;
                         forcedQuit = m_forceQuit;
+                        forcedCommit = m_forceCommit;
+
+                        m_forceCommit = false;
                         m_forceNewFile = false;
                     }
                 }
 
-                KeyValuePair<ArchiveFile, long> nextJob;
-                if (m_filesToProcess.TryDequeue(out nextJob))
+                m_concurrentPointQueue.GetPointBlock(out stream, out pointCount, out pendingSequenceNumber, forcedQuit);
+
+                double waitForNewFile = (m_settings.NewFileOnInterval - activeFile.FileAge).TotalMilliseconds;
+                double waitForNextCommitWindow = (m_settings.CommitOnInterval - activeFile.CommitAge).TotalMilliseconds;
+
+                //If there is data to write then write it to the current archive.
+                if (pointCount > 0)
                 {
-                    ArchiveFile fileToCombine = nextJob.Key;
-                    long pendingSequenceNumber = nextJob.Value;
-
-                    //Create a new file if need be
-                    if (activeFile == null)
-                    {
-                        fileAge.Start();
-                        var newFile = m_archiveInitializer.CreateArchiveFile();
-                        using (var edit = m_archiveList.AcquireEditLock())
-                        {
-                            //Create a new file.
-                            edit.Add(newFile, true);
-                        }
-                        activeFile = newFile;
-                    }
-
-                    ArchiveFileSummary summary = new ArchiveFileSummary(fileToCombine);
-                    ArchiveListRemovalStatus oldArchiveRemovalStatus;
-
-                    using (var src = summary.ActiveSnapshot.OpenInstance())
-                    {
-                        using (var fileEditor = activeFile.BeginEdit())
-                        {
-                            var reader = src.GetDataRange();
-                            reader.SeekToKey(0, 0);
-
-                            ulong value1, value2, key1, key2;
-                            while (reader.GetNextKey(out key1, out key2, out value1, out value2))
-                            {
-                                fileEditor.AddPoint(key1, key2, value1, value2);
-                            }
-
-                            fileEditor.Commit();
-                            using (var editor = m_archiveList.AcquireEditLock())
-                            {
-                                editor.RenewSnapshot(activeFile);
-                                editor.Remove(fileToCombine, out oldArchiveRemovalStatus);
-                            }
-                        }
-                    }
-                    m_archivesPendingDeletion(oldArchiveRemovalStatus);
-                    lock (m_syncRoot)
-                    {
-                        m_lastCommitedSequenceNumber = pendingSequenceNumber;
-                    }
+                    activeFile.CreateIfNotExists();
+                    activeFile.Append(stream, pointCount);
                 }
 
-
-                bool fileTooBig = activeFile != null && (activeFile.FileSize >= m_settings.NewFileOnSize);
-                double waitForNewFile = (m_settings.NewFileOnInterval - fileAge.Elapsed).TotalMilliseconds;
-
-                shouldRollOver = waitForNewFile < 0 || forcedNewFile || forcedQuit || fileTooBig;
+                shouldRollOver = waitForNewFile < 0 || forcedNewFile || forcedQuit;
+                shouldCommit = waitForNextCommitWindow < 0 || forcedCommit || shouldRollOver;
 
                 if (shouldRollOver)
                 {
-                    //Create a new file if need be
-                    if (fileTooBig)
+                    activeFile.RefreshAndRolloverFile(pendingSequenceNumber);
+                }
+                else
+                {
+                    if (shouldCommit)
                     {
-                        fileAge.Reset();
-                        if (activeFile != null)
-                            m_callbackFileComplete(activeFile, m_lastCommitedSequenceNumber);
-                        activeFile = null;
+                        activeFile.RefreshSnapshot();
                     }
                 }
 
                 //Release any pending wait locks
-                lock (m_syncRoot)
+                if (shouldRollOver || shouldCommit)
                 {
-                    if (shouldRollOver)
-                        m_lastRolloverSequenceNumber = m_lastCommitedSequenceNumber;
-
-                    ReleasePendingWaitLocks();
-
-                    //If we need to quit, then signal all remaining waits as unsuccessful.
-                    if (forcedQuit)
+                    lock (m_syncRoot)
                     {
-                        m_threadHasQuit = forcedQuit;
-                        foreach (var pending in m_pendingCommitRequests)
+                        if (shouldRollOver)
+                            m_lastRolloverSequenceNumber = pendingSequenceNumber;
+                        if (shouldCommit)
+                            m_lastCommitedSequenceNumber = pendingSequenceNumber;
+
+                        ReleasePendingWaitLocks();
+
+                        //If we need to quit, then signal all remaining waits as unsuccessful.
+                        if (forcedQuit)
                         {
-                            pending.Successful = false;
-                            pending.Wait.Set();
+                            m_threadHasQuit = forcedQuit;
+                            foreach (var pending in m_pendingCommitRequests)
+                            {
+                                pending.Successful = false;
+                                pending.Wait.Set();
+                            }
+                            m_pendingCommitRequests = null;
                         }
-                        m_pendingCommitRequests = null;
                     }
                 }
             }
@@ -285,6 +253,13 @@ namespace openHistorian.Server.Database.ArchiveWriters
             }
         }
 
+        public long CurrentSequenceNumber
+        {
+            get
+            {
+                return m_concurrentPointQueue.SequenceId;
+            }
+        }
         public long LastCommittedSequenceNumber
         {
             get
@@ -306,20 +281,22 @@ namespace openHistorian.Server.Database.ArchiveWriters
             }
         }
 
-        public void ProcessArchive(ArchiveFile archiveFile, long sequenceId)
+        /// <summary>
+        /// Adds data to the input queue that will be committed at the user defined interval
+        /// </summary>
+        /// <param name="key1"></param>
+        /// <param name="key2"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
+        public long WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            m_filesToProcess.Enqueue(new KeyValuePair<ArchiveFile, long>(archiveFile, sequenceId));
-            lock (m_syncRoot)
-            {
-                m_latestSequenceId = sequenceId;
-            }
-            SignalProcessRollover();
+            return m_concurrentPointQueue.WriteData(key1, key2, value1, value2);
         }
 
         /// <summary>
-        /// Moves data from the queue and inserts it into Generation 0's Archive.
+        /// Moves data from the queue and inserts it into the current archive
         /// </summary>
-        public void SignalProcessRollover()
+        void SignalInitialInsert()
         {
             m_waitTimer.Set();
         }
@@ -329,6 +306,7 @@ namespace openHistorian.Server.Database.ArchiveWriters
             if (!m_disposed)
             {
                 StopExecution();
+                m_concurrentPointQueue.Dispose();
                 m_disposed = true;
             }
         }
@@ -352,9 +330,11 @@ namespace openHistorian.Server.Database.ArchiveWriters
                     return false;
                 waiting = new WaitingForCommit(sequenceId, false);
                 m_pendingCommitRequests.Add(waiting);
+                if (startImediately)
+                    m_forceCommit = true;
             }
             if (startImediately)
-                SignalProcessRollover();
+                SignalInitialInsert();
             waiting.Wait.WaitOne();
             return waiting.Successful;
         }
@@ -373,33 +353,24 @@ namespace openHistorian.Server.Database.ArchiveWriters
                 if (startImediately)
                 {
                     m_forceNewFile = true;
+                    m_forceCommit = true;
                 }
             }
             if (startImediately)
-                SignalProcessRollover();
+                SignalInitialInsert();
             waiting.Wait.WaitOne();
             return waiting.Successful;
         }
 
         public void Commit()
         {
-            long sequenceId;
-            lock (m_syncRoot)
-            {
-                sequenceId = m_latestSequenceId;
-            }
-
+            long sequenceId = m_concurrentPointQueue.SequenceId;
             WaitForCommit(sequenceId, true);
         }
 
         public void CommitAndRollover()
         {
-            long sequenceId;
-            lock (m_syncRoot)
-            {
-                sequenceId = m_latestSequenceId;
-            }
-
+            long sequenceId = m_concurrentPointQueue.SequenceId;
             WaitForRollover(sequenceId, true);
         }
 
@@ -409,22 +380,28 @@ namespace openHistorian.Server.Database.ArchiveWriters
             {
                 m_forceQuit = true;
             }
-            SignalProcessRollover();
+            SignalInitialInsert();
             m_insertThread.Join();
         }
 
         public void CommitNoWait()
         {
-            SignalProcessRollover();
+            lock (m_syncRoot)
+            {
+                m_forceCommit = true;
+            }
+            SignalInitialInsert();
         }
 
         public void CommitAndRolloverNoWait()
         {
             lock (m_syncRoot)
             {
+                m_forceCommit = true;
                 m_forceNewFile = true;
             }
-            SignalProcessRollover();
+            SignalInitialInsert();
         }
+
     }
 }

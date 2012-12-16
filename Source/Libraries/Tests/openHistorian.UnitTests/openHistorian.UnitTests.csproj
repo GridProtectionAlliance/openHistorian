@@ -120,6 +120,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\openHistorian.Engine\openHistorian.Engine.csproj">
+      <Project>{90942a72-2538-41a0-aff4-8c338b4a5edd}</Project>
+      <Name>openHistorian.Engine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\openHistorian\openHistorian.csproj">
       <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
       <Name>openHistorian</Name>

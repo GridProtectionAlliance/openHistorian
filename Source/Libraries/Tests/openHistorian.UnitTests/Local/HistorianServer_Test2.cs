@@ -6,7 +6,7 @@ using System.Text;
 using NUnit.Framework;
 using openHistorian.Server;
 using openHistorian.Server.Database;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
 namespace openHistorian.Local
 {

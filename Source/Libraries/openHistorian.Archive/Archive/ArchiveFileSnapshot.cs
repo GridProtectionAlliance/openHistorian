@@ -24,7 +24,7 @@
 using System;
 using openHistorian.FileStructure;
 
-namespace openHistorian.Server.Database.Archive
+namespace openHistorian.Archive
 {
     /// <summary>
     /// Aquires a read transaction on the current archive partition. This will allow all user created

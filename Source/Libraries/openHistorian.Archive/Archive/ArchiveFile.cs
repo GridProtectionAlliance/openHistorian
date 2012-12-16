@@ -28,7 +28,7 @@ using openHistorian.Collections.KeyValue;
 using openHistorian.FileStructure;
 using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.Server.Database.Archive
+namespace openHistorian.Archive
 {
     public enum CompressionMethod
     {

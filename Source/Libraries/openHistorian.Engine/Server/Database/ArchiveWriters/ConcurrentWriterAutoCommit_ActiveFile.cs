@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  WriterManualCommit_ActiveFile.cs - Gbtc
+//  ConcurrentWriterAutoCommit_ActiveFile.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -25,27 +25,48 @@
 using System;
 using System.Diagnostics;
 using openHistorian.IO.Unmanaged;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
+using openHistorian.Server.Database;
 
-namespace openHistorian.Server.Database.ArchiveWriters
+namespace openHistorian.ArchiveWriters
 {
     /// <summary>
     /// Responsible for getting data into the database. This class will prebuffer
     /// points and commit them in bulk operations.
     /// </summary>
-    public partial class WriterManualCommit
+    public partial class ConcurrentWriterAutoCommit 
     {
         internal class ActiveFile
         {
+            Stopwatch m_fileAge;
+            Stopwatch m_commitAge;
             ArchiveList m_archiveList;
             ArchiveFile m_archiveFile;
             ArchiveFile.ArchiveFileEditor m_editor;
-            Action<ArchiveFile, long> m_callbackFileComplete;
+            Action<ArchiveFile,long> m_callbackFileComplete;
 
-            public ActiveFile(ArchiveList archiveList, Action<ArchiveFile, long> callbackFileComplete)
+            public ActiveFile(ArchiveList archiveList, Action<ArchiveFile,long> callbackFileComplete)
             {
+                m_fileAge = new Stopwatch();
+                m_commitAge = new Stopwatch();
                 m_archiveList = archiveList;
                 m_callbackFileComplete = callbackFileComplete;
+            }
+
+            public TimeSpan FileAge
+            {
+                get
+                {
+                    return m_fileAge.Elapsed;
+                }
+            }
+
+            public TimeSpan CommitAge
+            {
+                get
+                {
+                    return m_commitAge.Elapsed;
+                }
             }
 
             public void CreateIfNotExists()
@@ -59,14 +80,23 @@ namespace openHistorian.Server.Database.ArchiveWriters
                         edit.Add(m_archiveFile, true);
                     }
                     m_editor = m_archiveFile.BeginEdit();
+                    m_fileAge.Start();
+                    m_commitAge.Start();
                 }
             }
 
-            public void Append(ulong key1, ulong key2, ulong value1, ulong value2)
+            public void Append(BinaryStream stream, int pointCount)
             {
-                m_editor.AddPoint(key1, key2, value1, value2);
+                while (pointCount > 0)
+                {
+                    pointCount--;
+                    ulong time = stream.ReadUInt64();
+                    ulong id = stream.ReadUInt64();
+                    ulong flags = stream.ReadUInt64();
+                    ulong value = stream.ReadUInt64();
+                    m_editor.AddPoint(time, id, flags, value);
+                }
             }
-
             public void RefreshSnapshot()
             {
                 if (m_archiveFile == null)
@@ -77,6 +107,7 @@ namespace openHistorian.Server.Database.ArchiveWriters
                 {
                     edit.RenewSnapshot(m_archiveFile);
                 }
+                m_commitAge.Restart();
                 m_editor = m_archiveFile.BeginEdit();
 
             }
@@ -91,9 +122,11 @@ namespace openHistorian.Server.Database.ArchiveWriters
                 {
                     edit.RenewSnapshot(m_archiveFile);
                 }
-                m_callbackFileComplete(m_archiveFile, sequenceId);
+                m_callbackFileComplete(m_archiveFile,sequenceId);
                 m_archiveFile = null;
                 m_editor = null;
+                m_commitAge.Reset();
+                m_fileAge.Reset();
             }
         }
     }

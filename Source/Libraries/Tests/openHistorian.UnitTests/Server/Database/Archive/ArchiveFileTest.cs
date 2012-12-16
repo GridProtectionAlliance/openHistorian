@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 using System;
 using openHistorian;
 

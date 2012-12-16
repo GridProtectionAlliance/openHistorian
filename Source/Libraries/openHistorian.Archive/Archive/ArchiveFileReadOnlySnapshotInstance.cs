@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeContainer.cs - Gbtc
+//  ArchiveFileReadOnlySnapshotInstance.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,31 +24,31 @@
 using System;
 using openHistorian.Collections.KeyValue;
 using openHistorian.FileStructure;
-using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.Server.Database.Archive
+namespace openHistorian.Archive
 {
     /// <summary>
-    /// Encapsolates the ArchiveFileStream, BinaryStream, and BasicTree for a certain tree.
+    /// Provides a user with a read-only instance of an archive.
+    /// This class is not thread safe.
     /// </summary>
-    internal class SortedTreeContainer : IDisposable
+    public class ArchiveFileReadOnlySnapshotInstance : IDisposable
     {
-        #region [ Members ]
 
-        SubFileStream m_subStream;
-        BinaryStream m_binaryStream;
-        SortedTree256Base m_tree;
+        //Since there is currently only one BasicTree per partition, this is basically a pass through class.
+        
+        #region [ Members ]
+        
+
         bool m_disposed;
+        SortedTreeContainer m_dataTree;
 
         #endregion
 
         #region [ Constructors ]
 
-        public SortedTreeContainer(TransactionalRead currentTransaction, Guid fileNumber, int flags)
+        public ArchiveFileReadOnlySnapshotInstance(TransactionalRead currentTransaction)
         {
-            m_subStream = currentTransaction.OpenFile(fileNumber, flags);
-            m_binaryStream = new BinaryStream(m_subStream);
-            m_tree = SortedTree256Initializer.Open(m_binaryStream);
+            m_dataTree = new SortedTreeContainer(currentTransaction, ArchiveFile.s_pointDataFile, 1);
         }
 
         #endregion
@@ -62,12 +62,15 @@ namespace openHistorian.Server.Database.Archive
                 return m_disposed;
             }
         }
-        
+        #endregion
+
+        #region [ Methods ]
+
         public ulong FirstKey
         {
             get
             {
-                return m_tree.FirstKey;
+                return m_dataTree.FirstKey;
             }
         }
 
@@ -75,17 +78,13 @@ namespace openHistorian.Server.Database.Archive
         {
             get
             {
-                return m_tree.LastKey;
+                return m_dataTree.LastKey;
             }
         }
 
-        #endregion
-
-        #region [ Methods ]
-
         public ITreeScanner256 GetDataRange()
         {
-            return m_tree.GetDataRange();
+            return m_dataTree.GetDataRange();
         }
 
         public void Dispose()
@@ -94,26 +93,19 @@ namespace openHistorian.Server.Database.Archive
             {
                 try
                 {
-                    if (m_binaryStream != null)
+                    if (m_dataTree != null)
                     {
-                        m_binaryStream.Dispose();
-                    }
-                    if (m_subStream != null)
-                    {
-                        m_subStream.Dispose();
+                        m_dataTree.Dispose();
+                        m_dataTree = null;
                     }
                 }
                 finally
                 {
-                    m_subStream = null;
-                    m_binaryStream = null;
-                    m_tree = null;
                     m_disposed = true;
                 }
             }
         }
-
         #endregion
-
+    
     }
 }

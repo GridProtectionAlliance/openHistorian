@@ -25,7 +25,7 @@
 using System;
 using openHistorian.IO.Unmanaged;
 
-namespace openHistorian.Server.Database.ArchiveWriters
+namespace openHistorian.ArchiveWriters
 {
     /// <summary>
     /// Provides a way for points to be synchronously queued and processed in bulk.

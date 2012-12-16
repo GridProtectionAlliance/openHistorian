@@ -22,7 +22,7 @@
 //
 //******************************************************************************************************
 
-using openHistorian.Server.Database.Archive;
+using openHistorian.Archive;
 
 namespace openHistorian.Server.Database
 {
