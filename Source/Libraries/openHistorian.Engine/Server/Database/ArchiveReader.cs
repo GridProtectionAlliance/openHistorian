@@ -55,7 +55,7 @@ namespace openHistorian.Server.Database
 
         public IPointStream Read(ulong startKey1, ulong endKey1, IEnumerable<ulong> listOfKey2)
         {
-            ulong maxValue = listOfKey2.Max();
+            ulong maxValue = listOfKey2.Union(new ulong[]{0}).Max();
             if (maxValue < 8 * 1024 * 64) //524288
             {
                 return new ReadStreamFilteredBitArray(startKey1, endKey1, m_snapshot, listOfKey2, (int)maxValue);

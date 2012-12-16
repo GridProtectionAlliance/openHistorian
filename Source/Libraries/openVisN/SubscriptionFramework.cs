@@ -25,7 +25,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using openHistorian;
+using openHistorian.Server.Database;
 using openVisN.Library;
+using openVisN.Query;
 
 namespace openVisN
 {
@@ -37,16 +40,20 @@ namespace openVisN
             Manual
         }
 
+        public event EventHandler<QueryResultsEventArgs> NewQueryResults
+        {
+            add
+            {
+                m_updateFramework.NewQueryResults += value;
+            }
+            remove
+            {
+                m_updateFramework.NewQueryResults -= value;
+            }
+        }
+
+        UpdateFramework m_updateFramework;
         object m_syncRoot;
-        Thread m_queryProcessingThread;
-        DateTime m_lowerBounds;
-        DateTime m_upperBounds;
-        DateTime m_focusedDate;
-        ManualResetEvent m_executeUpdate;
-        TimeSpan m_automaticExecutionTimeLag;
-        ExecutionMode m_mode;
-        TimeSpan m_automaticDuration;
-        TimeSpan m_refreshInterval;
 
         HashSet<SignalGroup> m_allSignalGroups;
         HashSet<SignalGroup> m_activeSignalGroups;
@@ -60,9 +67,16 @@ namespace openVisN
 
         List<ISubscriber> m_subscribers;
 
-        public SubscriptionFramework()
+        public SubscriptionFramework(string[] paths)
         {
-            m_subscribers=new List<ISubscriber>();
+            HistorianServer server = new HistorianServer();
+            server.Add("Full Resolution Synchrophasor", new ArchiveDatabaseEngine(null, paths));
+            HistorianQuery query = new HistorianQuery(server);
+            m_updateFramework = new UpdateFramework(query);
+            m_updateFramework.Mode = openVisN.ExecutionMode.Manual;
+            m_updateFramework.Enabled = true;
+
+            m_subscribers = new List<ISubscriber>();
 
             m_allSignalGroups = new HashSet<SignalGroup>();
             m_allSignals = new HashSet<MetadataBase>();
@@ -94,7 +108,7 @@ namespace openVisN
             var allSignalGroups = new AllSignalGroups();
 
             allSignals.Signals.ForEach(x => m_allSignals.Add(x.MakeSignal()));
-            Dictionary<ulong, MetadataBase> allPoints = m_allSignals.ToDictionary(signal => signal.HistorianId);
+            Dictionary<long, MetadataBase> allPoints = m_allSignals.ToDictionary(signal => signal.HistorianId);
 
             allSignalGroups.SignalGroups.ForEach(x =>
                 {
@@ -113,17 +127,59 @@ namespace openVisN
         public void RemoveSubscriber(ISubscriber subscriber)
         {
             m_subscribers.Remove(subscriber);
+            RefreshActivePoints();
+        }
+
+        public void ActivateSignalGroup(SignalGroup signalGroup)
+        {
+            m_activeSignalGroups.Add(signalGroup);
+            RefreshActivePoints();
+        }
+
+        public void DeactivateSignalGroup(SignalGroup signalGroup)
+        {
+            m_activeSignalGroups.Remove(signalGroup);
+            RefreshActivePoints();
+        }
+
+        public void ActivateSignal(MetadataBase signal)
+        {
+            m_activeSignals.Add(signal);
+            RefreshActivePoints();
+        }
+
+        public void DeactivateSignal(MetadataBase signal)
+        {
+            m_activeSignals.Remove(signal);
+            RefreshActivePoints();
+        }
+
+        void RefreshActivePoints()
+        {
+            HashSet<MetadataBase> currentSignals = new HashSet<MetadataBase>();
+            foreach (var signal in m_activeSignals)
+                currentSignals.Add(signal);
+            foreach (var subscriber in m_subscribers)
+                subscriber.GetAllDesiredSignals(currentSignals,m_activeSignalGroups);
+
+            foreach (var signal in currentSignals.ToArray())
+            {
+                signal.Calculations.AddDependentPoints(currentSignals);
+            }
+            m_updateFramework.UpdateSignals(currentSignals.ToList());
         }
 
         public void ChangeDateRange(DateTime lowerBounds, DateTime upperBounds)
         {
-
+            m_updateFramework.Execute(lowerBounds,upperBounds);
         }
 
         public void RefreshQuery()
         {
-
+            m_updateFramework.Execute();
         }
+
+
 
     }
 }

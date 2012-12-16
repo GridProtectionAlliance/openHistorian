@@ -27,7 +27,7 @@ using System.Collections.Generic;
 
 namespace openHistorian
 {
-    public class HistorianServer : IDisposable
+    public class HistorianServer : IDisposable, IHistorianDatabaseCollection
     {
         bool m_disposed;
         object m_syncRoot = new object();

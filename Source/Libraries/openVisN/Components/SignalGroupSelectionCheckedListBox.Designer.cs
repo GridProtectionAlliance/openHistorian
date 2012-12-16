@@ -39,6 +39,7 @@
             this.chkAllSignals.Name = "chkAllSignals";
             this.chkAllSignals.Size = new System.Drawing.Size(304, 306);
             this.chkAllSignals.TabIndex = 0;
+            this.chkAllSignals.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.chkAllSignals_ItemCheck);
             // 
             // SignalGroupSelectionCheckedListBox
             // 

@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
+using openVisN.Calculations;
 using openVisN.Library;
 
 namespace openVisN

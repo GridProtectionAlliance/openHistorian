@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CalculationMethod.cs - Gbtc
+//  SinglePhasorPowerSignals.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,42 +21,16 @@
 //
 //******************************************************************************************************
 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using openVisN.Query;
 
-namespace openVisN
+namespace openVisN.Calculations
 {
-    public class CalculationMethod
-    {
-        public static CalculationMethod Empty { get; private set; }
-        static CalculationMethod()
-        {
-            Empty = new CalculationMethod();
-        }
-
-        protected MetadataBase[] Dependencies;
-
-        protected CalculationMethod(params MetadataBase[] dependencies)
-        {
-            Dependencies = dependencies;
-        }
-        public virtual void Calculate(QueryResults query)
-        {
-
-        }
-        public void AddDependentPoints(HashSet<Guid> dependencies)
-        {
-            foreach (var point in Dependencies)
-            {
-                dependencies.Add(point.UniqueId);
-                point.Calculations.AddDependentPoints(dependencies);
-            }
-        }
-    }
-
     public class SinglePhasorPowerSignals : CalculationMethod
     {
         const double TwoPieOver360 = 2.0 * Math.PI / 360.0;
@@ -83,69 +57,85 @@ namespace openVisN
             voltAmpreReactive = VoltAmpreReactive;
         }
 
-        public override void Calculate(QueryResults resuls)
+        public override void Calculate(QueryResultsCalculation resuls)
         {
-            var pointListVM = resuls.GetPointList(Dependencies[0].UniqueId);
-            var pointListVA = resuls.GetPointList(Dependencies[1].UniqueId);
-            var pointListIM = resuls.GetPointList(Dependencies[2].UniqueId);
-            var pointListIA = resuls.GetPointList(Dependencies[3].UniqueId);
+            var pointListVM = resuls.GetSignal(Dependencies[0].UniqueId);
+            var pointListVA = resuls.GetSignal(Dependencies[1].UniqueId);
+            var pointListIM = resuls.GetSignal(Dependencies[2].UniqueId);
+            var pointListIA = resuls.GetSignal(Dependencies[3].UniqueId);
 
-            pointListVA.Calculate();
-            pointListVM.Calculate();
-            pointListIA.Calculate();
-            pointListIM.Calculate();
+            pointListVA.Calculate(resuls);
+            pointListVM.Calculate(resuls);
+            pointListIA.Calculate(resuls);
+            pointListIM.Calculate(resuls);
 
-            var pointListW = resuls.GetPointList(Watt.UniqueId);
-            var pointListPF = resuls.GetPointList(PowerFactor.UniqueId);
-            var pointListVAmp = resuls.GetPointList(VoltAmpre.UniqueId);
-            var pointListVAR = resuls.GetPointList(VoltAmpreReactive.UniqueId);
+            var pointListW = resuls.TryGetSignal(Watt.UniqueId);
+            var pointListPF = resuls.TryGetSignal(PowerFactor.UniqueId);
+            var pointListVAmp = resuls.TryGetSignal(VoltAmpre.UniqueId);
+            var pointListVAR = resuls.TryGetSignal(VoltAmpreReactive.UniqueId);
+
+            if (pointListW != null)
+                pointListW.HasBeenCalculated();
+            if (pointListPF != null)
+                pointListPF.HasBeenCalculated();
+            if (pointListVAmp != null)
+                pointListVAmp.HasBeenCalculated();
+            if (pointListVAR != null)
+                pointListVAR.HasBeenCalculated();
 
             int posVM = 0;
             int posVA = 0;
             int posIM = 0;
             int posIA = 0;
 
-            while (posVM < pointListVM.Count && posVA < pointListVA.Count && posIM < pointListIM.Count &&
-                   posIA < pointListIA.Count)
+            while (posVM < pointListVM.Data.Count && posVA < pointListVA.Data.Count && posIM < pointListIM.Data.Count &&
+                   posIA < pointListIA.Data.Count)
             {
-                var ptVM = pointListVM.GetDouble(posVM);
-                var ptVA = pointListVA.GetDouble(posVA);
-                var ptIM = pointListIM.GetDouble(posIM);
-                var ptIA = pointListIA.GetDouble(posIA);
+                ulong timeVM, timeVA, timeIM, timeIA;
+                double vm, va, im, ia;
 
-                var time = ptVM.Key;
+                pointListVM.Data.GetData(posVM, out timeVM, out vm);
+                pointListVA.Data.GetData(posVA, out timeVA, out va);
+                pointListIM.Data.GetData(posIM, out timeIM, out im);
+                pointListIA.Data.GetData(posIA, out timeIA, out ia);
 
-                if (ptVM.Key == ptVA.Key && ptVM.Key == ptIM.Key && ptVM.Key == ptIA.Key)
+                var time = timeVM;
+
+                if (timeVM == timeVA && timeVM == timeIM && timeVM == timeIA)
                 {
                     posVM++;
                     posVA++;
                     posIM++;
                     posIA++;
 
-                    double angleDiffRadians = (ptVA.Value - ptIA.Value) * TwoPieOver360;
-                    double mva = ptVM.Value * ptIM.Value;
+                    double angleDiffRadians = (va - ia) * TwoPieOver360;
+                    double mva = vm * im;
                     double pf = Math.Cos(angleDiffRadians);
                     double mw = (mva * pf);
                     double mvar = mva * Math.Sin(angleDiffRadians);
 
-                    pointListW.AddPoint(time, Watt.ToNative(mw));
-                    pointListVAR.AddPoint(time, VoltAmpreReactive.ToNative(mvar));
-                    pointListVAmp.AddPoint(time, VoltAmpre.ToNative(mva));
-                    pointListPF.AddPoint(time, PowerFactor.ToNative(pf));
+                    if (pointListW != null)
+                        pointListW.Data.AddData(time, mw);
+                    if (pointListVAR != null)
+                        pointListVAR.Data.AddData(time, mvar);
+                    if (pointListVAmp != null)
+                        pointListVAmp.Data.AddData(time, mva);
+                    if (pointListPF != null)
+                        pointListPF.Data.AddData(time, pf);
                 }
                 else
                 {
-                    ulong maxTime = Math.Max(ptVM.Key, ptVA.Key);
-                    maxTime = Math.Max(maxTime, ptIM.Key);
-                    maxTime = Math.Max(maxTime, ptIA.Key);
+                    ulong maxTime = Math.Max(timeVM, timeVA);
+                    maxTime = Math.Max(maxTime, timeIM);
+                    maxTime = Math.Max(maxTime, timeIA);
 
-                    if (ptVM.Key < maxTime)
+                    if (timeVM < maxTime)
                         posVM++;
-                    if (ptVA.Key < maxTime)
+                    if (timeVA < maxTime)
                         posVA++;
-                    if (ptIM.Key < maxTime)
+                    if (timeIM < maxTime)
                         posIM++;
-                    if (ptIA.Key < maxTime)
+                    if (timeIA < maxTime)
                         posIA++;
                 }
             }

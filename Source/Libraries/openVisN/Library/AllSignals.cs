@@ -49,7 +49,7 @@ namespace openVisN.Library
 
         public MetadataBase MakeSignal()
         {
-            return new MetadataSingle(SignalId,(ulong)PointId,DeviceName,Description);
+            return new MetadataSingle(SignalId,PointId,DeviceName,Description);
         }
     }
 

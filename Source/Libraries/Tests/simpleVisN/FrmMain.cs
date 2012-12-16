@@ -96,11 +96,11 @@ namespace simpleVisN
             if (keys.Count == 0)
                 return;
 
-            QueryResults query = new QueryResults(m_archiveFile, 0, ulong.MaxValue, null);
+            //QueryResultsMetaData query = new QueryResultsMetaData(m_archiveFile, 0, ulong.MaxValue, null);
 
             foreach (var point in keys)
             {
-                query.GetPointList(point);
+                //query.GetPointList(point);
 
                 List<double> y = new List<double>();
                 List<double> x = new List<double>();

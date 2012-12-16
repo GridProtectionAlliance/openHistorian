@@ -27,9 +27,8 @@ using System.Net;
 using openHistorian;
 using openHistorian.Communications;
 
-namespace openVisN
+namespace openVisN.Query
 {
- 
     public class HistorianQuery
     {
         IHistorianDatabaseCollection m_historian;
@@ -43,35 +42,11 @@ namespace openVisN
             m_historian = historian;
         }
 
-        public QueryResults GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, List<MetadataBase> signals)
+        public QueryResultsCalculation GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, List<MetadataBase> signals)
         {
-            ulong startKey = (ulong)startTime.Ticks;
-            ulong endKey = (ulong)endTime.Ticks;
-            List<ulong> points = new List<ulong>(signals.Count * 10);
-
-            var results = new QueryResults();
-
-            foreach (var terminal in signals)
-            {
-                //foreach (var point in terminal.GetRequiredPoints())
-                //{
-                //    //results.AddPointIfNotExists(point);
-                //}
-            }
-
-            points.AddRange(results.GetAllPoints());
-
-            using (var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor"))
-            using (var reader = db.OpenDataReader())
-            {
-                var stream = reader.Read(startKey, endKey, points);
-                ulong time, point, quality, value;
-                while (stream.Read(out time, out point, out quality, out value))
-                {
-                    results.AddPoint(time, point, value);
-                }
-            }
-            return results;
+            //ToDo: Modify the query base on the zoom level
+            var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
+            return new QueryResultsCalculation(db, (ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
         }
 
     }

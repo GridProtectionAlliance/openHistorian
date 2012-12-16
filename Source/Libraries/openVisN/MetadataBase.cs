@@ -22,20 +22,21 @@
 //******************************************************************************************************
 
 using System;
+using openVisN.Calculations;
 
 namespace openVisN
 {
-
     public abstract class MetadataBase
+        : ValueTypeConversionBase
     {
         public Guid UniqueId { get; private set; }
-        public ulong HistorianId { get; private set; }
+        public long HistorianId { get; private set; }
         public abstract EnumValueType ValueType { get; }
         public string Name { get; private set; }
         public string Description { get; private set; }
         public CalculationMethod Calculations { get; private set; }
 
-        protected MetadataBase(Guid uniqueId, ulong historianId, string name, string description, CalculationMethod calculations)
+        protected MetadataBase(Guid uniqueId, long historianId, string name, string description, CalculationMethod calculations)
         {
             if (calculations == null)
             {
@@ -47,36 +48,6 @@ namespace openVisN
             Name = name;
             Description = description;
         }
-
-        public virtual double ToDouble(ulong value)
-        {
-            return GetValue(value).ToDouble(null);
-        }
-        public virtual long ToInt64(ulong value)
-        {
-            return GetValue(value).ToInt64(null);
-        }
-        public virtual ulong ToUInt64(ulong value)
-        {
-            return GetValue(value).ToUInt64(null);
-        }
-
-        public virtual ulong ToNative(ulong value)
-        {
-            return ToNative((IConvertible)value);
-
-        }
-        public virtual ulong ToNative(long value)
-        {
-            return ToNative((IConvertible)value);
-        }
-        public virtual ulong ToNative(double value)
-        {
-            return ToNative((IConvertible)value);
-        }
-
-        protected abstract ulong ToNative(IConvertible value);
-        protected abstract IConvertible GetValue(ulong value);
 
         public override bool Equals(object obj)
         {
@@ -93,7 +64,7 @@ namespace openVisN
 
     public unsafe class MetadataSingle : MetadataBase
     {
-        public MetadataSingle(Guid uniqueId, ulong historianId, string name, string description, CalculationMethod calculations = null)
+        public MetadataSingle(Guid uniqueId, long historianId, string name, string description, CalculationMethod calculations = null)
             : base(uniqueId, historianId, name, description, calculations)
         {
         }
@@ -106,22 +77,7 @@ namespace openVisN
             }
         }
 
-        public override ulong ToUInt64(ulong value)
-        {
-            return (ulong)*(float*)&value;
-        }
-
-        public override long ToInt64(ulong value)
-        {
-            return (long)*(float*)&value;
-        }
-
-        public override double ToDouble(ulong value)
-        {
-            return *(float*)&value;
-        }
-
-        protected override ulong ToNative(IConvertible value)
+        protected override ulong ToRaw(IConvertible value)
         {
             float tmp = value.ToSingle(null);
             return *(uint*)&tmp;
@@ -135,7 +91,7 @@ namespace openVisN
 
     public unsafe class MetadataDouble : MetadataBase
     {
-        public MetadataDouble(Guid uniqueId, ulong historianId, string name, string description, CalculationMethod calculations = null)
+        public MetadataDouble(Guid uniqueId, long historianId, string name, string description, CalculationMethod calculations = null)
             : base(uniqueId, historianId, name, description, calculations)
         {
         }
@@ -148,27 +104,12 @@ namespace openVisN
             }
         }
 
-        public override ulong ToUInt64(ulong value)
-        {
-            return (ulong)*(double*)&value;
-        }
-
-        public override long ToInt64(ulong value)
-        {
-            return (long)*(double*)&value;
-        }
-
-        public override double ToDouble(ulong value)
-        {
-            return *(double*)&value;
-        }
-
         protected override IConvertible GetValue(ulong value)
         {
             return *(double*)&value;
         }
 
-        protected override ulong ToNative(IConvertible value)
+        protected override ulong ToRaw(IConvertible value)
         {
             double tmp = value.ToDouble(null);
             return *(ulong*)&tmp;

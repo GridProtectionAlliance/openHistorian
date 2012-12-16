@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PointResults.cs - Gbtc
+//  CalculationMethod.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,50 +23,37 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using openVisN.Query;
 
-namespace openVisN
+namespace openVisN.Calculations
 {
-    public class PointResults
+    public class CalculationMethod
     {
-        bool m_calculated;
-        List<ulong> m_dateTime = new List<ulong>();
-        List<ulong> m_values = new List<ulong>();
-
-        MetadataBase m_metaData;
-        public PointResults(MetadataBase metaData)
+        public static CalculationMethod Empty { get; private set; }
+        static CalculationMethod()
         {
-            m_metaData = metaData;
+            Empty = new CalculationMethod();
         }
 
-        public int Count
+        protected MetadataBase[] Dependencies;
+
+        protected CalculationMethod(params MetadataBase[] dependencies)
         {
-            get
+            Dependencies = dependencies;
+        }
+        public virtual void Calculate(QueryResultsCalculation query)
+        {
+
+        }
+        public void AddDependentPoints(HashSet<MetadataBase> dependencies)
+        {
+            foreach (var point in Dependencies)
             {
-                return m_values.Count;
-            }
-        }
-
-        public KeyValuePair<ulong, double> GetDouble(int index)
-        {
-            return new KeyValuePair<ulong, double>(m_dateTime[index], m_metaData.ToDouble(m_values[index]));
-        }
-
-        public void AddPoint(ulong time, ulong value)
-        {
-            m_dateTime.Add(time);
-            m_values.Add(value);
-        }
-
-        public void Calculate()
-        {
-            if (!m_calculated)
-            {
-                m_calculated = true;
+                dependencies.Add(point);
+                point.Calculations.AddDependentPoints(dependencies);
             }
         }
     }
 
+    
 }
