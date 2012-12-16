@@ -41,17 +41,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.UnitTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "Libraries\openHistorian\openHistorian.csproj", "{B253E828-964E-4037-B2E3-B91E8E7C1159}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN", "Libraries\openVisN\openVisN.csproj", "{368F463D-9F80-4822-AFF6-727D0643494A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.Framework", "Libraries\openVisN.Framework\openVisN.Framework.csproj", "{368F463D-9F80-4822-AFF6-727D0643494A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPlot45", "Libraries\NPlot\NPlot45.csproj", "{7141C894-6346-41C2-B497-DBA4BEBA71D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleVisN", "Libraries\Tests\simpleVisN\simpleVisN.csproj", "{6CDA00B2-DFAE-4FDA-A4C0-074B6F3EB2B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simpleVisN", "Tools\simpleVisN\simpleVisN.csproj", "{6CDA00B2-DFAE-4FDA-A4C0-074B6F3EB2B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frameworkVisN", "Libraries\Tests\frameworkVisN\frameworkVisN.csproj", "{66E5837B-B40F-4D42-A83A-2DA281FDADA4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "frameworkVisN", "Tools\frameworkVisN\frameworkVisN.csproj", "{66E5837B-B40F-4D42-A83A-2DA281FDADA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WinForms", "Libraries\openVisN.WF\openVisN.WinForms.csproj", "{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WPF", "Libraries\openVisN.WPF\openVisN.WPF.csproj", "{79039E79-FB86-42B8-B1EA-A215295E1371}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.Framework.UnitTest", "Libraries\Tests\openVisN.Framework.UnitTest\openVisN.Framework.UnitTest.csproj", "{E2483910-5890-4F88-AF06-BE6C76EB5A9E}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 9
+		SccNumberOfProjects = 12
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -71,22 +77,34 @@ Global
 		SccProjectTopLevelParentUniqueName4 = openHistorian.sln
 		SccProjectName4 = Libraries/openHistorian.Engine
 		SccLocalPath4 = Libraries\\openHistorian.Engine
-		SccProjectUniqueName5 = Libraries\\openVisN\\openVisN.csproj
+		SccProjectUniqueName5 = Libraries\\NPlot\\NPlot45.csproj
 		SccProjectTopLevelParentUniqueName5 = openHistorian.sln
-		SccProjectName5 = Libraries/openVisN
-		SccLocalPath5 = Libraries\\openVisN
-		SccProjectUniqueName6 = Libraries\\NPlot\\NPlot45.csproj
+		SccProjectName5 = Libraries/NPlot
+		SccLocalPath5 = Libraries\\NPlot
+		SccProjectUniqueName6 = Tools\\simpleVisN\\simpleVisN.csproj
 		SccProjectTopLevelParentUniqueName6 = openHistorian.sln
-		SccProjectName6 = Libraries/NPlot
-		SccLocalPath6 = Libraries\\NPlot
-		SccProjectUniqueName7 = Libraries\\Tests\\simpleVisN\\simpleVisN.csproj
+		SccProjectName6 = Tools/simpleVisN
+		SccLocalPath6 = Tools\\simpleVisN
+		SccProjectUniqueName7 = Tools\\frameworkVisN\\frameworkVisN.csproj
 		SccProjectTopLevelParentUniqueName7 = openHistorian.sln
-		SccProjectName7 = Libraries/Tests/simpleVisN
-		SccLocalPath7 = Libraries\\Tests\\simpleVisN
-		SccProjectUniqueName8 = Libraries\\Tests\\frameworkVisN\\frameworkVisN.csproj
+		SccProjectName7 = Tools/frameworkVisN
+		SccLocalPath7 = Tools\\frameworkVisN
+		SccProjectUniqueName8 = Libraries\\openVisN.Framework\\openVisN.Framework.csproj
 		SccProjectTopLevelParentUniqueName8 = openHistorian.sln
-		SccProjectName8 = Libraries/Tests/frameworkVisN
-		SccLocalPath8 = Libraries\\Tests\\frameworkVisN
+		SccProjectName8 = Libraries/openVisN.Framework
+		SccLocalPath8 = Libraries\\openVisN.Framework
+		SccProjectUniqueName9 = Libraries\\openVisN.WPF\\openVisN.WPF.csproj
+		SccProjectTopLevelParentUniqueName9 = openHistorian.sln
+		SccProjectName9 = Libraries/openVisN.WPF
+		SccLocalPath9 = Libraries\\openVisN.WPF
+		SccProjectUniqueName10 = Libraries\\Tests\\openVisN.Framework.UnitTest\\openVisN.Framework.UnitTest.csproj
+		SccProjectTopLevelParentUniqueName10 = openHistorian.sln
+		SccProjectName10 = Libraries/Tests/openVisN.Framework.UnitTest
+		SccLocalPath10 = Libraries\\Tests\\openVisN.Framework.UnitTest
+		SccProjectUniqueName11 = Libraries\\openVisN.WF\\openVisN.WinForms.csproj
+		SccProjectTopLevelParentUniqueName11 = openHistorian.sln
+		SccProjectName11 = Libraries/openVisN.WF
+		SccLocalPath11 = Libraries\\openVisN.WF
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -180,6 +198,36 @@ Global
 		{66E5837B-B40F-4D42-A83A-2DA281FDADA4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{66E5837B-B40F-4D42-A83A-2DA281FDADA4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{66E5837B-B40F-4D42-A83A-2DA281FDADA4}.Release|x86.ActiveCfg = Release|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC}.Release|x86.ActiveCfg = Release|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{79039E79-FB86-42B8-B1EA-A215295E1371}.Release|x86.ActiveCfg = Release|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -189,12 +237,15 @@ Global
 		{B253E828-964E-4037-B2E3-B91E8E7C1159} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{368F463D-9F80-4822-AFF6-727D0643494A} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{7141C894-6346-41C2-B497-DBA4BEBA71D6} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{5A519A7E-DB9F-4B7B-BC3C-DE18B85401BC} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{79039E79-FB86-42B8-B1EA-A215295E1371} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{460BEC91-29E7-4574-9E85-0FD62D43D683} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{4D912150-86EF-44C4-ABBC-C869FE82C829} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{DA2EF5C4-6C06-49F7-AFA7-FD5720E8DEBD} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
+		{6CDA00B2-DFAE-4FDA-A4C0-074B6F3EB2B1} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
+		{66E5837B-B40F-4D42-A83A-2DA281FDADA4} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{B2DA9C7B-24C1-449B-816D-C72F4661983E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{9C6B4307-6E10-4E9D-88C9-3CED89B34270} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
-		{6CDA00B2-DFAE-4FDA-A4C0-074B6F3EB2B1} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
-		{66E5837B-B40F-4D42-A83A-2DA281FDADA4} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
+		{E2483910-5890-4F88-AF06-BE6C76EB5A9E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 	EndGlobalSection
 EndGlobal
