@@ -73,7 +73,7 @@ namespace openVisN.Library
             D4 = long.Parse(parts[19]);
         }
 
-        public SignalGroup CreateGroup(Dictionary<long, MetadataBase> points)
+        public SignalGroup CreateGroup(Dictionary<ulong, MetadataBase> points)
         {
             var signal = new SinglePhasorTerminal();
             signal.SignalGroupName = GroupName;
@@ -92,10 +92,10 @@ namespace openVisN.Library
             return signal;
         }
 
-        void AssignIfFound(long id, ref MetadataBase category, Dictionary<long, MetadataBase> points)
+        void AssignIfFound(long id, ref MetadataBase category, Dictionary<ulong, MetadataBase> points)
         {
-            if (id >= 0 && points.ContainsKey(id))
-                category = points[id];
+            if (id >= 0 && points.ContainsKey((ulong)id))
+                category = points[(ulong)id];
         }
     }
 

@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Threading;
 using openVisN.Query;
 
-namespace openVisN
+namespace openVisN.Framework
 {
 
     public enum ExecutionMode
@@ -37,8 +37,8 @@ namespace openVisN
 
     public class QueryResultsEventArgs : EventArgs
     {
-        public QueryResultsCalculation Results { get; private set; }
-        public QueryResultsEventArgs(QueryResultsCalculation results)
+        public IDictionary<Guid,SignalDataBase> Results { get; private set; }
+        public QueryResultsEventArgs(IDictionary<Guid, SignalDataBase> results)
         {
             Results = results;
         }
@@ -96,6 +96,7 @@ namespace openVisN
                 {
                     m_enabled = true;
                     m_queryProcessingThread = new Thread(ProcessUpdates);
+                    m_queryProcessingThread.IsBackground = true;
                     m_queryProcessingThread.Start();
                 }
                 m_enabled = value;

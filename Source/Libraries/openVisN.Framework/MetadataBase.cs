@@ -21,22 +21,32 @@
 //
 //******************************************************************************************************
 
+using System.Collections.Generic;
+using openVisN.Query;
 using System;
 using openVisN.Calculations;
+using openVisN.TypeConversion;
 
 namespace openVisN
 {
     public abstract class MetadataBase
-        : ValueTypeConversionBase
+        : ValueTypeConversionBase, ISignalCalculation
     {
         public Guid UniqueId { get; private set; }
-        public long HistorianId { get; private set; }
+        public ulong? HistorianId { get; private set; }
+        public ValueTypeConversionBase ConversionFunctions
+        {
+            get
+            {
+                return this;
+            }
+        }
         public abstract EnumValueType ValueType { get; }
         public string Name { get; private set; }
         public string Description { get; private set; }
         public CalculationMethod Calculations { get; private set; }
 
-        protected MetadataBase(Guid uniqueId, long historianId, string name, string description, CalculationMethod calculations)
+        protected MetadataBase(Guid uniqueId, ulong? historianId, string name, string description, CalculationMethod calculations)
         {
             if (calculations == null)
             {
@@ -60,11 +70,23 @@ namespace openVisN
         {
             return UniqueId.GetHashCode();
         }
+
+        public Guid SignalId
+        {
+            get
+            {
+                return UniqueId;
+            }
+        }
+        public void Calculate(IDictionary<Guid, SignalDataBase> signals)
+        {
+            Calculations.Calculate(signals);
+        }
     }
 
     public unsafe class MetadataSingle : MetadataBase
     {
-        public MetadataSingle(Guid uniqueId, long historianId, string name, string description, CalculationMethod calculations = null)
+        public MetadataSingle(Guid uniqueId, ulong? historianId, string name, string description, CalculationMethod calculations = null)
             : base(uniqueId, historianId, name, description, calculations)
         {
         }
@@ -91,7 +113,7 @@ namespace openVisN
 
     public unsafe class MetadataDouble : MetadataBase
     {
-        public MetadataDouble(Guid uniqueId, long historianId, string name, string description, CalculationMethod calculations = null)
+        public MetadataDouble(Guid uniqueId, ulong? historianId, string name, string description, CalculationMethod calculations = null)
             : base(uniqueId, historianId, name, description, calculations)
         {
         }

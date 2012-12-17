@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SignalData.cs - Gbtc
+//  SignalDataSingle.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,19 +29,19 @@ namespace openVisN.Query
 {
     /// <summary>
     /// Contains a series of Times and Values for an individual signal.
-    /// If using this class, you must specify a <see cref="ValueTypeConversionBase"/>. 
+    /// This class will store the value as a <see cref="Single"/>.
     /// </summary>
-    public class SignalData
+    public class SignalDataSingle
         : SignalDataBase
     {
         List<ulong> m_dateTime = new List<ulong>();
-        List<ulong> m_values = new List<ulong>();
+        List<float> m_values = new List<float>();
 
         ValueTypeConversionBase m_typeConversion;
 
-        public SignalData(ValueTypeConversionBase typeConversion)
+        public SignalDataSingle()
         {
-            m_typeConversion = typeConversion;
+            m_typeConversion = ValueTypeConversionSingle.Instance;
         }
 
         /// <summary>
@@ -67,16 +67,43 @@ namespace openVisN.Query
         }
 
         /// <summary>
-        /// Adds a value to the signal in its raw 64-bit format.
+        /// Adds a value to the signal and converts it from a <see cref="Single"/>
+        /// into its native format.
         /// </summary>
         /// <param name="time">the time value to consider</param>
-        /// <param name="value">the 64-bit value</param>
-        public override void AddDataRaw(ulong time, ulong value)
+        /// <param name="value">the value to convert</param>
+        public override void AddData(ulong time, float value)
         {
             if (IsComplete)
                 throw new Exception("Signal has already been marked as complete");
             m_dateTime.Add(time);
             m_values.Add(value);
+        }
+
+        /// <summary>
+        /// Gets a value from the signal with the provided index and automatically 
+        /// converts it to a <see cref="Single"/>.
+        /// </summary>
+        /// <param name="index">The zero based index of the position</param>
+        /// <param name="time">an output field for the time</param>
+        /// <param name="value">an output field for the converted value</param>
+        public override void GetData(int index, out ulong time, out float value)
+        {
+            time = m_dateTime[index];
+            value = m_values[index];
+        }
+
+        /// <summary>
+        /// Adds a value to the signal in its raw 64-bit format.
+        /// </summary>
+        /// <param name="time">the time value to consider</param>
+        /// <param name="value">the 64-bit value</param>
+        public unsafe override void AddDataRaw(ulong time, ulong value)
+        {
+            if (IsComplete)
+                throw new Exception("Signal has already been marked as complete");
+            uint tmp = (uint)value;
+            AddData(time, *(float*)&tmp);
         }
 
         /// <summary>
@@ -86,11 +113,13 @@ namespace openVisN.Query
         /// <param name="index">The zero based index of the position</param>
         /// <param name="time">an output field for the time</param>
         /// <param name="value">an output field for the raw 64-bit value</param>
-        public override void GetDataRaw(int index, out ulong time, out ulong value)
+        public unsafe override void GetDataRaw(int index, out ulong time, out ulong value)
         {
-            time = m_dateTime[index];
-            value = m_values[index];
+            float tmp;
+            GetData(index, out time, out tmp);
+            value = *(uint*)&tmp;
         }
     }
+
 
 }

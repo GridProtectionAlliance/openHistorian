@@ -11,7 +11,9 @@ using NPlot;
 using openHistorian;
 using openHistorian.Server.Database;
 using openHistorian.Archive;
+using openVisN.Query;
 using openVisN;
+using openVisN.TypeConversion;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
 namespace simpleVisN
@@ -88,7 +90,7 @@ namespace simpleVisN
             var keys = new List<ulong>(chkAllPoints.CheckedItems.OfType<ulong>());
 
             plot.Clear();
-            
+
             plot.AddInteraction(new PlotSurface2D.Interactions.HorizontalDrag());
             plot.AddInteraction(new PlotSurface2D.Interactions.VerticalDrag());
             plot.AddInteraction(new PlotSurface2D.Interactions.AxisDrag(false));
@@ -96,20 +98,24 @@ namespace simpleVisN
             if (keys.Count == 0)
                 return;
 
-            //QueryResultsMetaData query = new QueryResultsMetaData(m_archiveFile, 0, ulong.MaxValue, null);
+            var results = m_archiveFile.ExecuteQuery(0, ulong.MaxValue, keys, ValueTypeConversionSingle.Instance);
 
             foreach (var point in keys)
             {
-                //query.GetPointList(point);
-
                 List<double> y = new List<double>();
                 List<double> x = new List<double>();
+                var data = results[point];
 
-                //foreach (var value in query.GetPointList(point))
-                //{
-                //    x.Add((long)value.Key);
-                //    y.Add(BitMath.ConvertToSingle(value.Value));
-                //}
+                for (int i = 0; i < data.Count; i++)
+                {
+                    ulong time;
+                    double value;
+                    data.GetData(i, out time, out value);
+
+                    x.Add(time);
+                    y.Add(value);
+                }
+
                 LinePlot lines = new LinePlot(y, x);
 
                 plot.Add(lines);

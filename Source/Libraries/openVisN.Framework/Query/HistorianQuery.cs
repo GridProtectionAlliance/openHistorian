@@ -42,11 +42,11 @@ namespace openVisN.Query
             m_historian = historian;
         }
 
-        public QueryResultsCalculation GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, List<MetadataBase> signals)
+        public IDictionary<Guid, SignalDataBase> GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, IEnumerable<MetadataBase> signals)
         {
             //ToDo: Modify the query base on the zoom level
             var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
-            return new QueryResultsCalculation(db, (ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
+            return db.ExecuteQueryWithCalculations((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
         }
 
     }

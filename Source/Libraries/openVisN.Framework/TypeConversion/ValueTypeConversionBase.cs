@@ -23,12 +23,14 @@
 
 using System;
 
-namespace openVisN
+namespace openVisN.TypeConversion
 {
     /// <summary>
     /// This base class supports proper conversion of 
     /// each primitive type into a native format.
-    /// The native format is specified
+    /// The native format is specified.
+    /// If not overloading individual properties, boxing will
+    /// occur each time that value is called.
     /// </summary>
     public abstract class ValueTypeConversionBase
     {

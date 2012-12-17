@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ValueTypeConversion_Types.cs - Gbtc
+//  ISubscriber.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,31 +16,22 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/15/2012 - Steven E. Chisholm
+//  12/14/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace openVisN
+namespace openVisN.Framework
 {
-    
-
-    public unsafe class ValueTypeConversionSingle
-        : ValueTypeConversionBase
+    public interface ISubscriber
     {
-        public static readonly ValueTypeConversionSingle Instance = new ValueTypeConversionSingle();
-
-        protected override ulong ToRaw(IConvertible value)
-        {
-            float tmp = value.ToSingle(null);
-            return *(uint*)&tmp;
-        }
-        protected override IConvertible GetValue(ulong value)
-        {
-            uint tmp = (uint)value;
-            return *(float*)&tmp;
-        }
+        void Initialize(SubscriptionFramework framework);
+        void GetAllDesiredSignals(HashSet<MetadataBase> activeSignals, HashSet<SignalGroup> currentlyActiveGroups);
     }
 }

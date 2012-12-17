@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TimeSingleMeasurement.cs - Gbtc
+//  DatabaseCalculationMethods.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,45 +23,42 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using openHistorian;
 
-namespace openVisN
+namespace openVisN.Query
 {
-    public class TimeSingleMeasurement : IMeasurement
+    public interface ISignalCalculation
+        : ISignalWithTypeConversion
     {
-        List<KeyValuePair<ulong, ulong>> m_data;
+        Guid SignalId { get; }
+        void Calculate(IDictionary<Guid, SignalDataBase> signals);
+    }
 
-        public TimeSingleMeasurement(List<KeyValuePair<ulong, ulong>> data)
+    public static class DatabaseCalculationMethods
+    {
+        public static IDictionary<Guid, SignalDataBase> ExecuteQueryWithCalculations(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ISignalCalculation> signals)
         {
-            m_data = data;
-        }
+            var queryResults = database.ExecuteQuery(startTime, endTime, signals);
 
-        public int PointCounts
-        {
-            get
+            var calculatedResults = new Dictionary<Guid, SignalDataBase>();
+            foreach (var signal in signals)
             {
-                return m_data.Count;
+                if (signal.HistorianId.HasValue)
+                {
+                    calculatedResults.Add(signal.SignalId, queryResults[signal.HistorianId.Value]);
+                }
+                else
+                {
+                    calculatedResults.Add(signal.SignalId, new SignalData(signal.ConversionFunctions));
+                }
             }
-        }
 
-        public int[] LineBreaks
-        {
-            get
+            foreach (var signal in signals)
             {
-                return new int[0];
+                signal.Calculate(calculatedResults);
             }
-        }
-
-        public unsafe KeyValuePair<double, double> this[int index]
-        {
-            get
-            {
-                var kvp = m_data[index];
-                ulong yvalue = kvp.Value;
-                return new KeyValuePair<double, double>((double)kvp.Key, (double)*(float*)&yvalue);
-            }
+            return calculatedResults;
         }
     }
+
 }

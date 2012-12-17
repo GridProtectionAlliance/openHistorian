@@ -41,7 +41,7 @@ namespace openVisN.Calculations
         {
             Dependencies = dependencies;
         }
-        public virtual void Calculate(QueryResultsCalculation query)
+        public virtual void Calculate(IDictionary<Guid, SignalDataBase> signals)
         {
 
         }

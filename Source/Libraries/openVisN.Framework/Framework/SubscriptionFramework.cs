@@ -30,16 +30,11 @@ using openHistorian.Server.Database;
 using openVisN.Library;
 using openVisN.Query;
 
-namespace openVisN
+namespace openVisN.Framework
 {
     public class SubscriptionFramework
     {
-        public enum ExecutionMode
-        {
-            Automatic,
-            Manual
-        }
-
+        
         public event EventHandler<QueryResultsEventArgs> NewQueryResults
         {
             add
@@ -73,7 +68,7 @@ namespace openVisN
             server.Add("Full Resolution Synchrophasor", new ArchiveDatabaseEngine(null, paths));
             HistorianQuery query = new HistorianQuery(server);
             m_updateFramework = new UpdateFramework(query);
-            m_updateFramework.Mode = openVisN.ExecutionMode.Manual;
+            m_updateFramework.Mode = ExecutionMode.Manual;
             m_updateFramework.Enabled = true;
 
             m_subscribers = new List<ISubscriber>();
@@ -108,7 +103,7 @@ namespace openVisN
             var allSignalGroups = new AllSignalGroups();
 
             allSignals.Signals.ForEach(x => m_allSignals.Add(x.MakeSignal()));
-            Dictionary<long, MetadataBase> allPoints = m_allSignals.ToDictionary(signal => signal.HistorianId);
+            Dictionary<ulong, MetadataBase> allPoints = m_allSignals.ToDictionary(signal => signal.HistorianId.Value);
 
             allSignalGroups.SignalGroups.ForEach(x =>
                 {

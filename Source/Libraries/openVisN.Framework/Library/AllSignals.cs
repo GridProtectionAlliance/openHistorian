@@ -49,7 +49,10 @@ namespace openVisN.Library
 
         public MetadataBase MakeSignal()
         {
-            return new MetadataSingle(SignalId,PointId,DeviceName,Description);
+            if (PointId < 0)
+                return new MetadataSingle(SignalId, null, DeviceName, Description);
+            else
+                return new MetadataSingle(SignalId, (ulong)PointId, DeviceName, Description);
         }
     }
 
@@ -63,7 +66,7 @@ namespace openVisN.Library
         }
         public AllSignals(string config)
         {
-            Signals=new List<SignalBook>();
+            Signals = new List<SignalBook>();
 
             bool firstLine = true;
             foreach (var line in File.ReadAllLines(config))

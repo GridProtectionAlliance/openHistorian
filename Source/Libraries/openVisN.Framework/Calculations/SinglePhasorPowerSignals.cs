@@ -57,47 +57,47 @@ namespace openVisN.Calculations
             voltAmpreReactive = VoltAmpreReactive;
         }
 
-        public override void Calculate(QueryResultsCalculation resuls)
+        public override void Calculate(IDictionary<Guid, SignalDataBase> signals)
         {
-            var pointListVM = resuls.GetSignal(Dependencies[0].UniqueId);
-            var pointListVA = resuls.GetSignal(Dependencies[1].UniqueId);
-            var pointListIM = resuls.GetSignal(Dependencies[2].UniqueId);
-            var pointListIA = resuls.GetSignal(Dependencies[3].UniqueId);
+            Dependencies[0].Calculate(signals);
+            Dependencies[1].Calculate(signals);
+            Dependencies[2].Calculate(signals);
+            Dependencies[3].Calculate(signals);
 
-            pointListVA.Calculate(resuls);
-            pointListVM.Calculate(resuls);
-            pointListIA.Calculate(resuls);
-            pointListIM.Calculate(resuls);
+            var pointListVM = signals[Dependencies[0].UniqueId];
+            var pointListVA = signals[Dependencies[1].UniqueId];
+            var pointListIM = signals[Dependencies[2].UniqueId];
+            var pointListIA = signals[Dependencies[3].UniqueId];
 
-            var pointListW = resuls.TryGetSignal(Watt.UniqueId);
-            var pointListPF = resuls.TryGetSignal(PowerFactor.UniqueId);
-            var pointListVAmp = resuls.TryGetSignal(VoltAmpre.UniqueId);
-            var pointListVAR = resuls.TryGetSignal(VoltAmpreReactive.UniqueId);
+            var pointListW = TryGetSignal(Watt, signals);
+            var pointListPF = TryGetSignal(PowerFactor, signals);
+            var pointListVAmp = TryGetSignal(VoltAmpre, signals);
+            var pointListVAR = TryGetSignal(VoltAmpreReactive, signals);
 
-            if (pointListW != null)
-                pointListW.HasBeenCalculated();
-            if (pointListPF != null)
-                pointListPF.HasBeenCalculated();
-            if (pointListVAmp != null)
-                pointListVAmp.HasBeenCalculated();
-            if (pointListVAR != null)
-                pointListVAR.HasBeenCalculated();
+            if (pointListW != null && pointListW.IsComplete)
+                return;
+            if (pointListPF != null && pointListPF.IsComplete)
+                return;
+            if (pointListVAmp != null && pointListVAmp.IsComplete)
+                return;
+            if (pointListVAR != null && pointListVAR.IsComplete)
+                return;
 
             int posVM = 0;
             int posVA = 0;
             int posIM = 0;
             int posIA = 0;
 
-            while (posVM < pointListVM.Data.Count && posVA < pointListVA.Data.Count && posIM < pointListIM.Data.Count &&
-                   posIA < pointListIA.Data.Count)
+            while (posVM < pointListVM.Count && posVA < pointListVA.Count && posIM < pointListIM.Count &&
+                   posIA < pointListIA.Count)
             {
                 ulong timeVM, timeVA, timeIM, timeIA;
                 double vm, va, im, ia;
 
-                pointListVM.Data.GetData(posVM, out timeVM, out vm);
-                pointListVA.Data.GetData(posVA, out timeVA, out va);
-                pointListIM.Data.GetData(posIM, out timeIM, out im);
-                pointListIA.Data.GetData(posIA, out timeIA, out ia);
+                pointListVM.GetData(posVM, out timeVM, out vm);
+                pointListVA.GetData(posVA, out timeVA, out va);
+                pointListIM.GetData(posIM, out timeIM, out im);
+                pointListIA.GetData(posIA, out timeIA, out ia);
 
                 var time = timeVM;
 
@@ -115,13 +115,13 @@ namespace openVisN.Calculations
                     double mvar = mva * Math.Sin(angleDiffRadians);
 
                     if (pointListW != null)
-                        pointListW.Data.AddData(time, mw);
+                        pointListW.AddData(time, mw);
                     if (pointListVAR != null)
-                        pointListVAR.Data.AddData(time, mvar);
+                        pointListVAR.AddData(time, mvar);
                     if (pointListVAmp != null)
-                        pointListVAmp.Data.AddData(time, mva);
+                        pointListVAmp.AddData(time, mva);
                     if (pointListPF != null)
-                        pointListPF.Data.AddData(time, pf);
+                        pointListPF.AddData(time, pf);
                 }
                 else
                 {
@@ -139,6 +139,25 @@ namespace openVisN.Calculations
                         posIA++;
                 }
             }
+
+
+            if (pointListW != null)
+                pointListW.Completed();
+            if (pointListPF != null)
+                pointListPF.Completed();
+            if (pointListVAmp != null)
+                pointListVAmp.Completed();
+            if (pointListVAR != null)
+                pointListVAR.Completed();
         }
+
+        SignalDataBase TryGetSignal(MetadataBase signal, IDictionary<Guid, SignalDataBase> results)
+        {
+            SignalDataBase data;
+            if (results.TryGetValue(signal.UniqueId, out data))
+                return data;
+            return null;
+        }
+
     }
 }
