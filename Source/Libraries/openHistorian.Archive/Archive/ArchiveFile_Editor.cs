@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveFile_ArchiveFileEditor.cs - Gbtc
+//  ArchiveFile_Editor.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,35 +22,32 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using openHistorian.FileStructure;
 
 namespace openHistorian.Archive
 {
     public partial class ArchiveFile
     {
-        public class ArchiveFileEditor : IDisposable
+        /// <summary>
+        /// A single instance editor that is used
+        /// to modifiy an archive file.
+        /// </summary>
+        public class Editor : IDisposable
         {
             bool m_disposed;
             ArchiveFile m_archiveFile;
             TransactionalEdit m_currentTransaction;
             SortedTreeContainerEdit m_dataTree;
 
-            /// <summary>
-            /// To only be called by <see cref="ArchiveFileEditor"/>
-            /// </summary>
-            /// <param name="archiveFile"></param>
-            public ArchiveFileEditor(ArchiveFile archiveFile)
+            internal Editor(ArchiveFile archiveFile)
             {
                 m_archiveFile = archiveFile;
                 m_currentTransaction = m_archiveFile.m_fileStructure.BeginEdit();
-                m_dataTree = new SortedTreeContainerEdit(m_currentTransaction, s_pointDataFile, 1);
+                m_dataTree = new SortedTreeContainerEdit(m_currentTransaction, PointDataFile, 1);
             }
 
             /// <summary>
-            /// Commits the edits to the current archive file.
+            /// Commits the edits to the current archive file and disposes of this class.
             /// </summary>
             public void Commit()
             {
@@ -65,7 +62,7 @@ namespace openHistorian.Archive
             }
 
             /// <summary>
-            /// Rolls back all edits that are made to the archive file.
+            /// Rolls back all edits that are made to the archive file and disposes of this class.
             /// </summary>
             public void Rollback()
             {
@@ -76,15 +73,22 @@ namespace openHistorian.Archive
                 InternalDispose();
             }
 
-            public void AddPoint(ulong date, ulong pointId, ulong value1, ulong value2)
+            /// <summary>
+            /// Adds a single point to the archive file.
+            /// </summary>
+            /// <param name="key1">the first 64 bits of the key</param>
+            /// <param name="key2">the last 64 bits of the key</param>
+            /// <param name="value1">the first 64 bits of the value</param>
+            /// <param name="value2">the last 64 bits of the value</param>
+            public void AddPoint(ulong key1, ulong key2, ulong value1, ulong value2)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                m_dataTree.AddPoint(date, pointId, value1, value2);
+                m_dataTree.AddPoint(key1, key2, value1, value2);
             }
 
             /// <summary>
-            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// Rollsback edits to the file.
             /// </summary>
             /// <filterpriority>2</filterpriority>
             public void Dispose()

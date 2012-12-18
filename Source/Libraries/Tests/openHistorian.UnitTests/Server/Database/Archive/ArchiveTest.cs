@@ -15,7 +15,7 @@ namespace openHistorian
             Test();
         }
 
-        static ArchiveFile.ArchiveFileEditor s_fileEditor;
+        static ArchiveFile.Editor s_fileEditor;
         static int s_points;
 
         public static void Test()

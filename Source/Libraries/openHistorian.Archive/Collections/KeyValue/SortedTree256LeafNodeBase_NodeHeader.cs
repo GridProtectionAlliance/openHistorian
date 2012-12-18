@@ -26,7 +26,7 @@ using openHistorian.IO;
 
 namespace openHistorian.Collections.KeyValue
 {
-    public abstract partial class SortedTree256LeafNodeBase
+    internal abstract partial class SortedTree256LeafNodeBase
     {
 
         /// <summary>

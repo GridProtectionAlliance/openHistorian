@@ -39,19 +39,17 @@ namespace openHistorian.Archive
 
     /// <summary>
     /// Represents a individual self-contained archive file. 
-    /// This is one of many files that are part of a given <see cref="ArchiveDatabaseEngine"/>.
     /// </summary>
     /// <remarks>
-    /// 
     /// </remarks>
     public partial class ArchiveFile : IDisposable
     {
         #region [ Members ]
 
         // {644FF6C8-ED70-4966-9E5D-E43B51FF4801}
-        public static readonly Guid s_fileType = new Guid(0x644ff6c8, 0xed70, 0x4966, 0x9e, 0x5d, 0xe4, 0x3b, 0x51, 0xff, 0x48, 0x1);
+        internal static readonly Guid FileType = new Guid(0x644ff6c8, 0xed70, 0x4966, 0x9e, 0x5d, 0xe4, 0x3b, 0x51, 0xff, 0x48, 0x1);
         // {BABDB82D-7457-46D9-899C-D76036F0312E}
-        public static readonly Guid s_pointDataFile = new Guid(0xbabdb82d, 0x7457, 0x46d9, 0x89, 0x9c, 0xd7, 0x60, 0x36, 0xf0, 0x31, 0x2e);
+        internal static readonly Guid PointDataFile = new Guid(0xbabdb82d, 0x7457, 0x46d9, 0x89, 0x9c, 0xd7, 0x60, 0x36, 0xf0, 0x31, 0x2e);
 
         string m_fileName;
         ulong m_firstKey;
@@ -60,7 +58,7 @@ namespace openHistorian.Archive
 
         TransactionalFileStructure m_fileStructure;
 
-        ArchiveFileEditor m_activeEditor;
+        Editor m_activeEditor;
 
         #endregion
 
@@ -69,7 +67,6 @@ namespace openHistorian.Archive
         ArchiveFile()
         {
         }
-
 
         /// <summary>
         /// Creates a new in memory archive file.
@@ -111,7 +108,7 @@ namespace openHistorian.Archive
             var af = new ArchiveFile();
             af.m_fileName = file;
             af.m_fileStructure = TransactionalFileStructure.OpenFile(file, accessMode);
-            if (af.m_fileStructure.ArchiveType != s_fileType)
+            if (af.m_fileStructure.ArchiveType != FileType)
                 throw new Exception("Archive type is unknown");
 
             if (!af.LoadUserData(af.m_fileStructure.UserData))
@@ -129,6 +126,9 @@ namespace openHistorian.Archive
 
         #region [ Properties ]
 
+        /// <summary>
+        /// Determines if the archive file has been disposed. 
+        /// </summary>
         public bool IsDisposed
         {
             get
@@ -185,6 +185,13 @@ namespace openHistorian.Archive
 
         #region [ Methods ]
 
+        /// <summary>
+        /// Sets parameters controlling how this file responds to file resizing requests.
+        /// Currently does nothing.
+        /// </summary>
+        /// <param name="initialFileSize"></param>
+        /// <param name="autoGrowthSize"></param>
+        /// <param name="requiredFreeSpaceForAutoGrowth"></param>
         public void SetFileSize(long initialFileSize, long autoGrowthSize, long requiredFreeSpaceForAutoGrowth)
         {
 
@@ -197,7 +204,7 @@ namespace openHistorian.Archive
         {
             using (var trans = m_fileStructure.BeginEdit())
             {
-                using (var fs = trans.CreateFile(s_pointDataFile, 1))
+                using (var fs = trans.CreateFile(PointDataFile, 1))
                 using (var bs = new BinaryStream(fs))
                 {
                     var tree = SortedTree256Initializer.Create(bs, m_fileStructure.DataBlockSize - FileStructureConstants.BlockFooterLength, compression);
@@ -205,16 +212,21 @@ namespace openHistorian.Archive
                     m_lastKey = tree.LastKey;
 
                 }
-                trans.ArchiveType = s_fileType;
+                trans.ArchiveType = FileType;
                 trans.UserData = SaveUserData();
                 trans.CommitAndDispose();
             }
         }
 
         /// <summary>
-        /// Aquires a snapshot of the current file system.
+        /// Acquires a read snapshot of the current archive file.
         /// </summary>
         /// <returns></returns>
+        /// <remarks>
+        /// Once the snapshot has been acquired, any future commits
+        /// will not effect this snapshot. The snapshot has a tiny footprint
+        /// and allows an unlimited number of reads that can be created.
+        /// </remarks>
         public ArchiveFileSnapshot CreateSnapshot()
         {
             if (m_disposed)
@@ -225,16 +237,35 @@ namespace openHistorian.Archive
         /// <summary>
         /// Begins an edit of the current archive file.
         /// </summary>
-        public ArchiveFileEditor BeginEdit()
+        /// <remarks>
+        /// Concurrent editing of a file is not supported. Subsequent calls will
+        /// throw an exception rather than blocking. This is to encourage
+        /// proper synchronization at a higher layer. 
+        /// Wrap the return value of this function in a Using block so the dispose
+        /// method is always called. 
+        /// </remarks>
+        /// <example>
+        /// using (ArchiveFile.ArchiveFileEditor editor = archiveFile.BeginEdit())
+        /// {
+        ///     editor.AddPoint(0, 0, 0, 0);
+        ///     editor.AddPoint(1, 1, 1, 1);
+        ///     editor.Commit();
+        /// }
+        /// </example>
+        public Editor BeginEdit()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             if (m_activeEditor != null)
                 throw new Exception("Only one concurrent edit is supported");
-            m_activeEditor = new ArchiveFileEditor(this);
+            m_activeEditor = new Editor(this);
             return m_activeEditor;
         }
 
+        /// <summary>
+        /// Closes the archive file. If there is a current transaction, 
+        /// that transaction is immediately rolled back and disposed.
+        /// </summary>
         public void Dispose()
         {
             if (!m_disposed)
@@ -247,7 +278,7 @@ namespace openHistorian.Archive
         }
 
         /// <summary>
-        /// Closes and deletes the partition. Also calls dispose.
+        /// Closes and deletes the Archive File. Also calls dispose.
         /// If this is a memory archive, it will release the memory space to the buffer pool.
         /// </summary>
         public void Delete()

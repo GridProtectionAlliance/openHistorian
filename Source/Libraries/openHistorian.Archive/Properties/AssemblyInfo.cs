@@ -37,4 +37,3 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("openHistorian.Test")]
 [assembly: InternalsVisibleTo("openHistorian.PerformanceTests")]
 [assembly: InternalsVisibleTo("openHistorian.UnitTests")]
-[assembly: InternalsVisibleTo("openHistorian.Engine")]

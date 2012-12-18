@@ -28,7 +28,7 @@ namespace openHistorian.FileStructure
     /// <summary>
     /// Each block of bytes in a file is one of these types.
     /// </summary>
-    public enum BlockType : byte
+    internal enum BlockType : byte
     {
         FileAllocationTable = 1,
         IndexIndirect = 2,

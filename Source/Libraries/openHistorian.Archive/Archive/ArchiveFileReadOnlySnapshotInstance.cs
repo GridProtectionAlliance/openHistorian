@@ -33,11 +33,7 @@ namespace openHistorian.Archive
     /// </summary>
     public class ArchiveFileReadOnlySnapshotInstance : IDisposable
     {
-
-        //Since there is currently only one BasicTree per partition, this is basically a pass through class.
-        
         #region [ Members ]
-        
 
         bool m_disposed;
         SortedTreeContainer m_dataTree;
@@ -46,15 +42,18 @@ namespace openHistorian.Archive
 
         #region [ Constructors ]
 
-        public ArchiveFileReadOnlySnapshotInstance(TransactionalRead currentTransaction)
+        internal ArchiveFileReadOnlySnapshotInstance(TransactionalRead currentTransaction)
         {
-            m_dataTree = new SortedTreeContainer(currentTransaction, ArchiveFile.s_pointDataFile, 1);
+            m_dataTree = new SortedTreeContainer(currentTransaction, ArchiveFile.PointDataFile, 1);
         }
 
         #endregion
 
         #region [ Properties ]
 
+        /// <summary>
+        /// Determines if this read snapshot has been disposed.
+        /// </summary>
         public bool IsDisposed
         {
             get
@@ -66,6 +65,9 @@ namespace openHistorian.Archive
 
         #region [ Methods ]
 
+        /// <summary>
+        /// Gets the first key stored in the archive file.
+        /// </summary>
         public ulong FirstKey
         {
             get
@@ -73,7 +75,9 @@ namespace openHistorian.Archive
                 return m_dataTree.FirstKey;
             }
         }
-
+        /// <summary>
+        /// Gets the last key stored in the archive file
+        /// </summary>
         public ulong LastKey
         {
             get
@@ -81,7 +85,10 @@ namespace openHistorian.Archive
                 return m_dataTree.LastKey;
             }
         }
-
+        /// <summary>
+        /// Gets a reader that can be used to parse an archive file.
+        /// </summary>
+        /// <returns></returns>
         public ITreeScanner256 GetDataRange()
         {
             return m_dataTree.GetDataRange();

@@ -26,7 +26,7 @@ using openHistorian.IO.Unmanaged;
 
 namespace openHistorian.FileStructure
 {
-    unsafe public partial class SubFileStream
+    unsafe partial class SubFileStream
     {
         class IoSession : IBinaryStreamIoSession
         {

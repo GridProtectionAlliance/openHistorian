@@ -79,7 +79,6 @@ namespace openHistorian.UnmanagedMemory
         }
 
         #endregion
-
         
         #region [ Methods ]
 

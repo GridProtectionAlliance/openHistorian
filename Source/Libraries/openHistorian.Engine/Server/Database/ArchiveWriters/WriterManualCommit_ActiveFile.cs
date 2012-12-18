@@ -40,7 +40,7 @@ namespace openHistorian.ArchiveWriters
         {
             ArchiveList m_archiveList;
             ArchiveFile m_archiveFile;
-            ArchiveFile.ArchiveFileEditor m_editor;
+            ArchiveFile.Editor m_editor;
             Action<ArchiveFile, long> m_callbackFileComplete;
 
             public ActiveFile(ArchiveList archiveList, Action<ArchiveFile, long> callbackFileComplete)

@@ -26,7 +26,7 @@ using openHistorian.IO;
 
 namespace openHistorian.Collections.KeyValue
 {
-    public abstract partial class SortedTree256LeafNodeBase : SortedTree256InternalNodeBase
+    internal abstract partial class SortedTree256LeafNodeBase : SortedTree256InternalNodeBase
     {
 
         #region [ Members ]

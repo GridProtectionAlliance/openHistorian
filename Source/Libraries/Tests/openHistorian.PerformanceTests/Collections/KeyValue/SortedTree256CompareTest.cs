@@ -67,7 +67,7 @@ namespace openHistorian.Collections.KeyValue
             Clipboard.SetText(SB.ToString());
         }
 
-        public static SortedTree256 SortPoints(SortedTree256 tree)
+        internal static SortedTree256 SortPoints(SortedTree256 tree)
         {
             ulong maxPointId = 0;
             var scan = tree.GetDataRange();

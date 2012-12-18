@@ -30,7 +30,7 @@ namespace openHistorian.FileStructure
     /// This is read only and will also block the main file from being deleted. 
     /// Therefore it is important to release this lock so the file can be deleted after a rollover.
     /// </summary>
-    public sealed class TransactionalRead
+    internal sealed class TransactionalRead
     {
         #region [ Members ]
 

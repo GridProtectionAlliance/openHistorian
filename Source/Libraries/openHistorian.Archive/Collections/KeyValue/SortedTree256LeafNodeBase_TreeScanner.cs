@@ -23,7 +23,7 @@
 
 namespace openHistorian.Collections.KeyValue
 {
-    public partial class SortedTree256LeafNodeBase
+    internal partial class SortedTree256LeafNodeBase
     {
         private class TreeScanner : ITreeScanner256
         {

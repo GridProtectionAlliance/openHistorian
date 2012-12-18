@@ -28,7 +28,7 @@ namespace openHistorian.FileStructure
     /// <summary>
     /// Maintains some global constants for the archive file.
     /// </summary>
-    public class FileStructureConstants
+    internal class FileStructureConstants
     {
         
         /// <summary>

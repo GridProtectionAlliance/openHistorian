@@ -33,7 +33,7 @@ namespace openHistorian.UnmanagedMemory
     /// </summary>
     public partial class BufferPool
     {
-        public class CollectionEngine
+        internal class CollectionEngine
         {
             /// <summary>
             /// Delegates are placed in a List because

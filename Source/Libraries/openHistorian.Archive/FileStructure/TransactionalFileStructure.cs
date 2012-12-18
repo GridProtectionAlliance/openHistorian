@@ -25,7 +25,7 @@ using System;
 
 namespace openHistorian.FileStructure
 {
-    public sealed class TransactionalFileStructure : IDisposable
+    internal sealed class TransactionalFileStructure : IDisposable
     {
         #region [ Members ]
 
@@ -164,7 +164,7 @@ namespace openHistorian.FileStructure
         #endregion
         #region [ Methods ]
 
-        public TransactionalEdit BeginEdit()
+        internal TransactionalEdit BeginEdit()
         {
             return m_file.BeginEditTransaction();
         }

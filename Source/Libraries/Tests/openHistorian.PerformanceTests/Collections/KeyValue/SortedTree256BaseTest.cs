@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace openHistorian.Collections.KeyValue
 {
-    public static class SortedTree256BaseTest
+    internal static class SortedTree256BaseTest
     {
         public static void BenchmarkTree(Func<SortedTree256Base> initializer, uint pointCount)
         {

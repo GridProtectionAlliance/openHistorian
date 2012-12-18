@@ -25,7 +25,7 @@ using System;
 
 namespace openHistorian.Collections.KeyValue
 {
-    public partial class SortedTree256EncodedLeafNodeBase
+    internal partial class SortedTree256EncodedLeafNodeBase
     {
         private class TreeScanner : ITreeScanner256
         {

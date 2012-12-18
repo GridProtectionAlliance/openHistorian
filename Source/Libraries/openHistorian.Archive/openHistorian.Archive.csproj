@@ -62,7 +62,6 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
   </ItemGroup>
@@ -70,7 +69,7 @@
     <Compile Include="Archive\ArchiveFile.cs" />
     <Compile Include="Archive\ArchiveFileReadOnlySnapshotInstance.cs" />
     <Compile Include="Archive\ArchiveFileSnapshot.cs" />
-    <Compile Include="Archive\ArchiveFile_ArchiveFileEditor.cs" />
+    <Compile Include="Archive\ArchiveFile_Editor.cs" />
     <Compile Include="Archive\SortedTreeContainer.cs" />
     <Compile Include="Archive\SortedTreeContainerEdit.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Initializer.cs" />
@@ -254,10 +253,6 @@
     <ProjectReference Include="..\GSF.Unmanaged\GSF.Unmanaged.csproj">
       <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
       <Name>GSF.Unmanaged</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\openHistorian\openHistorian.csproj">
-      <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
-      <Name>openHistorian</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

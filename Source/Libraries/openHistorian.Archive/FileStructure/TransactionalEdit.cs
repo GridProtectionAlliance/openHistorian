@@ -30,7 +30,7 @@ namespace openHistorian.FileStructure
     /// Provides the state information for a transaction on the file system.
     /// </summary>
     /// <remarks>Failing to call Commit or Rollback will inhibit additional transactions to be aquired</remarks>
-    public sealed class TransactionalEdit : IDisposable
+    internal sealed class TransactionalEdit : IDisposable
     {
         #region [ Members ]
 

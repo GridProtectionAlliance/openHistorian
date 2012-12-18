@@ -10,7 +10,7 @@ using openHistorian.IO.Unmanaged;
 namespace openHistorian.Collections.KeyValue
 {
     [TestFixture]
-    public class SortedTree256Test
+    internal class SortedTree256Test
     {
         const uint Count = 10000;
         

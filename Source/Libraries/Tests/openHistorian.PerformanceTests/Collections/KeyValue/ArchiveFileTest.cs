@@ -11,7 +11,7 @@ using openHistorian.Archive;
 namespace openHistorian.Collections.KeyValue
 {
     [TestFixture]
-    public class ArchiveFileTest
+    internal class ArchiveFileTest
     {
 
         [Test]

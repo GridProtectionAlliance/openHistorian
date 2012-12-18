@@ -41,7 +41,7 @@ namespace openHistorian.Archive
 
         #region [ Constructors ]
 
-        public ArchiveFileSnapshot(TransactionalFileStructure fileStructure)
+        internal ArchiveFileSnapshot(TransactionalFileStructure fileStructure)
         {
             m_fileStructure = fileStructure;
             m_currentTransaction = m_fileStructure.BeginRead();

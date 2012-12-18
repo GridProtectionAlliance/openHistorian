@@ -31,7 +31,7 @@ namespace openHistorian.FileStructure
     /// <summary>
     /// This contains the meta data of the file along with index information to map all of the blocks of the file.
     /// </summary>
-    public class SubFileMetaData : SupportsReadonlyAutoBase<SubFileMetaData>
+    internal class SubFileMetaData : SupportsReadonlyAutoBase<SubFileMetaData>
     {
         #region [ Members ]
 

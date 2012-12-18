@@ -31,7 +31,7 @@ namespace openHistorian.Collections.KeyValue
     /// Represents a collection of 128-bit key/128-bit values pairs that is very similiar to a <see cref="SortedList{int128,int128}"/> 
     /// except it is optimal for storing millions to billions of entries and doing sequential scan of the data.
     /// </summary>
-    public class SortedTree256 : SortedTree256LeafNodeBase
+    internal class SortedTree256 : SortedTree256LeafNodeBase
     {
         // {C4BB5945-A6DA-4634-A8A9-F74C5FB4A052}
         static Guid s_fileType = new Guid(0xc4bb5945, 0xa6da, 0x4634, 0xa8, 0xa9, 0xf7, 0x4c, 0x5f, 0xb4, 0xa0, 0x52);
