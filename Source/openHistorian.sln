@@ -59,9 +59,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Server", "Lib
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.Unmanaged", "Libraries\GSF.Unmanaged\GSF.Unmanaged.csproj", "{B2504A65-9432-4691-A417-267FDB1A95A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.ClientTest", "Libraries\Tests\openHistorian.ClientTest\openHistorian.ClientTest.csproj", "{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 14
+		SccNumberOfProjects = 15
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -117,6 +119,10 @@ Global
 		SccProjectTopLevelParentUniqueName13 = openHistorian.sln
 		SccProjectName13 = Libraries/openHistorian.Client
 		SccLocalPath13 = Libraries\\openHistorian.Client
+		SccProjectUniqueName14 = Libraries\\Tests\\openHistorian.ClientTest\\openHistorian.ClientTest.csproj
+		SccProjectTopLevelParentUniqueName14 = openHistorian.sln
+		SccProjectName14 = Libraries/Tests/openHistorian.ClientTest
+		SccLocalPath14 = Libraries\\Tests\\openHistorian.ClientTest
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -260,6 +266,16 @@ Global
 		{B2504A65-9432-4691-A417-267FDB1A95A3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B2504A65-9432-4691-A417-267FDB1A95A3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B2504A65-9432-4691-A417-267FDB1A95A3}.Release|x86.ActiveCfg = Release|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -281,5 +297,6 @@ Global
 		{B2DA9C7B-24C1-449B-816D-C72F4661983E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{9C6B4307-6E10-4E9D-88C9-3CED89B34270} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{E2483910-5890-4F88-AF06-BE6C76EB5A9E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
+		{D85525B8-CC0F-4039-AB6C-A5A43EAF6202} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 	EndGlobalSection
 EndGlobal

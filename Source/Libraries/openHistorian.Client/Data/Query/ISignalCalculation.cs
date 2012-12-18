@@ -1,7 +1,7 @@
-﻿//******************************************************************************************************
-//  CalculationMethod.cs - Gbtc
+//******************************************************************************************************
+//  ISignalCalculation.cs - Gbtc
 //
-//  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright � 2010, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,44 +16,20 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/14/2012 - Steven E. Chisholm
+//  12/12/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
 
 using System;
 using System.Collections.Generic;
-using openHistorian.Data.Query;
 
-namespace openVisN.Calculations
+namespace openHistorian.Data.Query
 {
-    public class CalculationMethod
+    public interface ISignalCalculation
+        : ISignalWithType
     {
-        public static CalculationMethod Empty { get; private set; }
-        static CalculationMethod()
-        {
-            Empty = new CalculationMethod();
-        }
-
-        protected MetadataBase[] Dependencies;
-
-        protected CalculationMethod(params MetadataBase[] dependencies)
-        {
-            Dependencies = dependencies;
-        }
-        public virtual void Calculate(IDictionary<Guid, SignalDataBase> signals)
-        {
-
-        }
-        public void AddDependentPoints(HashSet<MetadataBase> dependencies)
-        {
-            foreach (var point in Dependencies)
-            {
-                dependencies.Add(point);
-                point.Calculations.AddDependentPoints(dependencies);
-            }
-        }
+        Guid SignalId { get; }
+        void Calculate(IDictionary<Guid, SignalDataBase> signals);
     }
-
-    
 }

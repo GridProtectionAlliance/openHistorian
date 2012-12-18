@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CalculationMethod.cs - Gbtc
+//  TypeDouble.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,44 +16,38 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/14/2012 - Steven E. Chisholm
+//  12/15/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using openHistorian.Data.Query;
 
-namespace openVisN.Calculations
+namespace openHistorian.Data.Types
 {
-    public class CalculationMethod
+    /// <summary>
+    /// Method for converting data to and from a <see cref="Single"/>.
+    /// </summary>
+    public unsafe class TypeDouble
+        : TypeBase
     {
-        public static CalculationMethod Empty { get; private set; }
-        static CalculationMethod()
+        public static readonly TypeDouble Instance = new TypeDouble();
+        
+        /// <summary>
+        /// Must use the static instance
+        /// </summary>
+        TypeDouble()
         {
-            Empty = new CalculationMethod();
         }
 
-        protected MetadataBase[] Dependencies;
-
-        protected CalculationMethod(params MetadataBase[] dependencies)
+        protected override ulong ToRaw(IConvertible value)
         {
-            Dependencies = dependencies;
+            double tmp = value.ToDouble(null);
+            return *(ulong*)&tmp;
         }
-        public virtual void Calculate(IDictionary<Guid, SignalDataBase> signals)
+        protected override IConvertible GetValue(ulong value)
         {
-
-        }
-        public void AddDependentPoints(HashSet<MetadataBase> dependencies)
-        {
-            foreach (var point in Dependencies)
-            {
-                dependencies.Add(point);
-                point.Calculations.AddDependentPoints(dependencies);
-            }
+            return *(double*)&value;
         }
     }
-
-    
 }

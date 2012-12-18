@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DatabaseMethods.cs - Gbtc
+//  GetSignalMethods.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,32 +24,14 @@
 using System.Linq;
 using System.Collections.Generic;
 using openHistorian;
-using openVisN.TypeConversion;
+using openHistorian.Data.Types;
 
-namespace openVisN.Query
+namespace openHistorian.Data.Query
 {
-    /// <summary>
-    /// An interface that allows the results of DatabaseMethods.ExecuteQuery
-    /// to be strong typed.
-    /// </summary>
-    public interface ISignalWithTypeConversion
-    {
-        /// <summary>
-        /// The Id value of the historian point.
-        /// Null means that the point is not in the historian
-        /// </summary>
-        ulong? HistorianId { get; }
-        /// <summary>
-        /// A set of functions that will properly convert the value type
-        /// from its native format
-        /// </summary>
-        ValueTypeConversionBase ConversionFunctions { get; }
-    }
-
     /// <summary>
     /// Queries a historian database for a set of signals. 
     /// </summary>
-    public static class DatabaseMethods
+    public static class GetSignalMethods
     {
         /// <summary>
         /// Queries all of the signals at the given time.
@@ -57,9 +39,9 @@ namespace openVisN.Query
         /// <param name="database"></param>
         /// <param name="time">the time to query</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> ExecuteQuery(this IHistorianDatabase database, ulong time)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong time)
         {
-            return database.ExecuteQuery(time, time);
+            return database.GetSignals(time, time);
         }
 
         /// <summary>
@@ -69,7 +51,7 @@ namespace openVisN.Query
         /// <param name="startTime">the lower bound of the time</param>
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> ExecuteQuery(this IHistorianDatabase database, ulong startTime, ulong endTime)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime)
         {
             var results = new Dictionary<ulong, SignalDataBase>();
 
@@ -95,7 +77,7 @@ namespace openVisN.Query
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> ExecuteQuery(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ulong> signals)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ulong> signals)
         {
             var results = signals.ToDictionary((x) => x, (x) => (SignalDataBase)new SignalDataUnknown());
 
@@ -123,7 +105,7 @@ namespace openVisN.Query
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <param name="conversion">a single conversion method to use for all signals</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> ExecuteQuery(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ulong> signals, ValueTypeConversionBase conversion)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ulong> signals, TypeBase conversion)
         {
             var results = signals.ToDictionary((x) => x, (x) => (SignalDataBase)new SignalData(conversion));
 
@@ -150,7 +132,7 @@ namespace openVisN.Query
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> ExecuteQuery(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ISignalWithTypeConversion> signals)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ISignalWithType> signals)
         {
             var results = new Dictionary<ulong, SignalDataBase>();
 
@@ -160,7 +142,7 @@ namespace openVisN.Query
                 {
                     if (!results.ContainsKey(point.HistorianId.Value))
                     {
-                        results.Add(point.HistorianId.Value, new SignalData(point.ConversionFunctions));
+                        results.Add(point.HistorianId.Value, new SignalData(point.Functions));
                     }
                 }
             }

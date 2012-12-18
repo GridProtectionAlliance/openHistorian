@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SignalDataUnknown.cs - Gbtc
+//  SignalData.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,33 +23,35 @@
 
 using System;
 using System.Collections.Generic;
-using openVisN.TypeConversion;
+using openHistorian.Data.Types;
 
-namespace openVisN.Query
+namespace openHistorian.Data.Query
 {
     /// <summary>
-    /// This type of signal only supports reading and writing data via 
-    /// its raw type. Type conversions are not supported since its origional
-    /// type is unknown.
+    /// Contains a series of Times and Values for an individual signal.
+    /// If using this class, you must specify a <see cref="TypeBase"/>. 
     /// </summary>
-    public class SignalDataUnknown
+    public class SignalData
         : SignalDataBase
     {
         List<ulong> m_dateTime = new List<ulong>();
         List<ulong> m_values = new List<ulong>();
 
-        public SignalDataUnknown()
+        TypeBase m_type;
+
+        public SignalData(TypeBase type)
         {
+            m_type = type;
         }
 
         /// <summary>
         /// Provides the type conversion method for the base class to use
         /// </summary>
-        protected override ValueTypeConversionBase ConversionMethod
+        protected override TypeBase Method
         {
             get
             {
-                throw new Exception("SignalDataRaw only supports raw formats and will not convert any values.");
+                return m_type;
             }
         }
 
@@ -88,6 +90,11 @@ namespace openVisN.Query
         {
             time = m_dateTime[index];
             value = m_values[index];
+        }
+
+        public override ulong GetDate(int index)
+        {
+            return m_dateTime[index];
         }
     }
 

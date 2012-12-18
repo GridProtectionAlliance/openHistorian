@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ValueTypeConversionBase.cs - Gbtc
+//  TypeBase.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openVisN.TypeConversion
+namespace openHistorian.Data.Types
 {
     /// <summary>
     /// This base class supports proper conversion of 
@@ -32,7 +32,7 @@ namespace openVisN.TypeConversion
     /// If not overloading individual properties, boxing will
     /// occur each time that value is called.
     /// </summary>
-    public abstract class ValueTypeConversionBase
+    public abstract class TypeBase
     {
         public virtual void ToValue(ulong raw, out double value)
         {

@@ -11,9 +11,9 @@ using NPlot;
 using openHistorian;
 using openHistorian.Archive;
 using openHistorian.Engine;
-using openVisN.Query;
+using openHistorian.Data.Query;
 using openVisN;
-using openVisN.TypeConversion;
+using openHistorian.Data.Types;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
 namespace simpleVisN
@@ -98,7 +98,7 @@ namespace simpleVisN
             if (keys.Count == 0)
                 return;
 
-            var results = m_archiveFile.ExecuteQuery(0, ulong.MaxValue, keys, ValueTypeConversionSingle.Instance);
+            var results = m_archiveFile.GetSignals(0, ulong.MaxValue, keys, TypeSingle.Instance);
 
             foreach (var point in keys)
             {

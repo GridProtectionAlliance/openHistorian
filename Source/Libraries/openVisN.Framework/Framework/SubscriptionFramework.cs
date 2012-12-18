@@ -28,7 +28,7 @@ using System.Threading;
 using openHistorian;
 using openHistorian.Engine;
 using openVisN.Library;
-using openVisN.Query;
+using openHistorian.Data.Query;
 
 namespace openVisN.Framework
 {

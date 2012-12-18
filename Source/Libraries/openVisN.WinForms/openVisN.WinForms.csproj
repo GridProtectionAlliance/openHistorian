@@ -79,6 +79,10 @@
       <Project>{7141c894-6346-41c2-b497-dba4beba71d6}</Project>
       <Name>NPlot45</Name>
     </ProjectReference>
+    <ProjectReference Include="..\openHistorian.Client\openHistorian.Client.csproj">
+      <Project>{B253E828-964E-4037-B2E3-B91E8E7C1159}</Project>
+      <Name>openHistorian.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\openVisN.Framework\openVisN.Framework.csproj">
       <Project>{368f463d-9f80-4822-aff6-727d0643494a}</Project>
       <Name>openVisN.Framework</Name>

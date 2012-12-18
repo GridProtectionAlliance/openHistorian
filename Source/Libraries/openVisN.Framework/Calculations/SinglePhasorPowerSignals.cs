@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using openVisN.Query;
+using openHistorian.Data.Query;
 
 namespace openVisN.Calculations
 {

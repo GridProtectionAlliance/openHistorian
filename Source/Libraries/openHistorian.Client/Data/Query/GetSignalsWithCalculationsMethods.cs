@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DatabaseCalculationMethods.cs - Gbtc
+//  GetSignalsWithCalculationsMethods.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,22 +23,14 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian;
 
-namespace openVisN.Query
+namespace openHistorian.Data.Query
 {
-    public interface ISignalCalculation
-        : ISignalWithTypeConversion
+    public static class GetSignalsWithCalculationsMethods
     {
-        Guid SignalId { get; }
-        void Calculate(IDictionary<Guid, SignalDataBase> signals);
-    }
-
-    public static class DatabaseCalculationMethods
-    {
-        public static IDictionary<Guid, SignalDataBase> ExecuteQueryWithCalculations(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ISignalCalculation> signals)
+        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ISignalCalculation> signals)
         {
-            var queryResults = database.ExecuteQuery(startTime, endTime, signals);
+            var queryResults = database.GetSignals(startTime, endTime, signals);
 
             var calculatedResults = new Dictionary<Guid, SignalDataBase>();
             foreach (var signal in signals)
@@ -49,7 +41,7 @@ namespace openVisN.Query
                 }
                 else
                 {
-                    calculatedResults.Add(signal.SignalId, new SignalData(signal.ConversionFunctions));
+                    calculatedResults.Add(signal.SignalId, new SignalData(signal.Functions));
                 }
             }
 

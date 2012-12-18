@@ -22,9 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using openVisN.TypeConversion;
+using openHistorian.Data.Types;
 
-namespace openVisN.Query
+namespace openHistorian.Data.Query
 {
     /// <summary>
     /// Contains a series of Times and Values for an individual signal.
@@ -58,7 +58,7 @@ namespace openVisN.Query
         /// <summary>
         /// Provides the type conversion method for the base class to use
         /// </summary>
-        protected abstract ValueTypeConversionBase ConversionMethod { get; }
+        protected abstract TypeBase Method { get; }
         /// <summary>
         /// Gets the number of values that are in the signal
         /// </summary>
@@ -79,6 +79,9 @@ namespace openVisN.Query
         /// <param name="value">an output field for the raw 64-bit value</param>
         public abstract void GetDataRaw(int index, out ulong time, out ulong value);
 
+
+        public abstract ulong GetDate(int index);
+
         /// <summary>
         /// Gets a value from the signal with the provided index and automatically 
         /// converts it to a <see cref="Double"/>.
@@ -90,7 +93,7 @@ namespace openVisN.Query
         {
             ulong raw;
             GetDataRaw(index, out time, out raw);
-            ConversionMethod.ToValue(raw, out value);
+            Method.ToValue(raw, out value);
         }
         /// <summary>
         /// Gets a value from the signal with the provided index and automatically 
@@ -103,7 +106,7 @@ namespace openVisN.Query
         {
             ulong raw;
             GetDataRaw(index, out time, out raw);
-            ConversionMethod.ToValue(raw, out value);
+            Method.ToValue(raw, out value);
         }
         /// <summary>
         /// Gets a value from the signal with the provided index and automatically 
@@ -116,7 +119,7 @@ namespace openVisN.Query
         {
             ulong raw;
             GetDataRaw(index, out time, out raw);
-            ConversionMethod.ToValue(raw, out value);
+            Method.ToValue(raw, out value);
         }
         /// <summary>
         /// Gets a value from the signal with the provided index and automatically 
@@ -129,7 +132,7 @@ namespace openVisN.Query
         {
             ulong raw;
             GetDataRaw(index, out time, out raw);
-            ConversionMethod.ToValue(raw, out value);
+            Method.ToValue(raw, out value);
         }
 
         /// <summary>
@@ -142,7 +145,7 @@ namespace openVisN.Query
         {
             if (IsComplete)
                 throw new Exception("Signal has already been marked as complete");
-            AddDataRaw(time, ConversionMethod.ToRaw(value));
+            AddDataRaw(time, Method.ToRaw(value));
         }
         /// <summary>
         /// Adds a value to the signal and converts it from a <see cref="Single"/>
@@ -154,7 +157,7 @@ namespace openVisN.Query
         {
             if (IsComplete)
                 throw new Exception("Signal has already been marked as complete"); 
-            AddDataRaw(time, ConversionMethod.ToRaw(value));
+            AddDataRaw(time, Method.ToRaw(value));
         }
         /// <summary>
         /// Adds a value to the signal and converts it from a <see cref="UInt64"/>
@@ -166,7 +169,7 @@ namespace openVisN.Query
         {
             if (IsComplete)
                 throw new Exception("Signal has already been marked as complete"); 
-            AddDataRaw(time, ConversionMethod.ToRaw(value));
+            AddDataRaw(time, Method.ToRaw(value));
         }
         /// <summary>
         /// Adds a value to the signal and converts it from a <see cref="Int64"/>
@@ -178,7 +181,7 @@ namespace openVisN.Query
         {
             if (IsComplete)
                 throw new Exception("Signal has already been marked as complete"); 
-            AddDataRaw(time, ConversionMethod.ToRaw(value));
+            AddDataRaw(time, Method.ToRaw(value));
         }
 
     }

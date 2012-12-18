@@ -22,19 +22,19 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
-using openVisN.Query;
+using openHistorian.Data.Query;
 using System;
 using openVisN.Calculations;
-using openVisN.TypeConversion;
+using openHistorian.Data.Types;
 
 namespace openVisN
 {
     public abstract class MetadataBase
-        : ValueTypeConversionBase, ISignalCalculation
+        : TypeBase, ISignalCalculation
     {
         public Guid UniqueId { get; private set; }
         public ulong? HistorianId { get; private set; }
-        public ValueTypeConversionBase ConversionFunctions
+        public TypeBase Functions
         {
             get
             {

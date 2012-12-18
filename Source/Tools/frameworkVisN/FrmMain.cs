@@ -11,7 +11,7 @@ using NPlot;
 using openVisN;
 using openVisN.Calculations;
 using openVisN.Framework;
-using openVisN.TypeConversion;
+using openHistorian.Data.Types;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
 namespace frameworkVisN

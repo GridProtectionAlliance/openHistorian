@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ValueTypeConversionSingle.cs - Gbtc
+//  HistorianQuery.cs - Gbtc
 //
 //  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,32 +16,38 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/15/2012 - Steven E. Chisholm
+//  12/12/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Net;
+using openHistorian.Communications;
 
-namespace openVisN.TypeConversion
+namespace openHistorian.Data.Query
 {
-    /// <summary>
-    /// Method for converting data to and from a <see cref="Single"/>.
-    /// </summary>
-    public unsafe class ValueTypeConversionSingle
-        : ValueTypeConversionBase
+    public class HistorianQuery
     {
-        public static readonly ValueTypeConversionSingle Instance = new ValueTypeConversionSingle();
+        IHistorianDatabaseCollection m_historian;
+        public HistorianQuery(string server, int port)
+        {
+            var ip = Dns.GetHostAddresses(server)[0];
+            m_historian = new RemoteHistorian(new IPEndPoint(ip, port));
+        }
+        public HistorianQuery(IHistorianDatabaseCollection historian)
+        {
+            m_historian = historian;
+        }
 
-        protected override ulong ToRaw(IConvertible value)
+        public IDictionary<Guid, SignalDataBase> GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, IEnumerable<ISignalCalculation> signals)
         {
-            float tmp = value.ToSingle(null);
-            return *(uint*)&tmp;
+            //ToDo: Modify the query base on the zoom level
+            var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
+            return db.GetSignalsWithCalculations((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
         }
-        protected override IConvertible GetValue(ulong value)
-        {
-            uint tmp = (uint)value;
-            return *(float*)&tmp;
-        }
+
     }
+
 }
