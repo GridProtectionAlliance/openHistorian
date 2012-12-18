@@ -55,6 +55,9 @@
     <Compile Include="Collections\ResourceQueueCollection.cs" />
     <Compile Include="Collections\SupportsReadonlyAutoBase.cs" />
     <Compile Include="Collections\SupportsReadonlyBase.cs" />
+    <Compile Include="Communications\CircularBuffer.cs" />
+    <Compile Include="Communications\LinearBuffer.cs" />
+    <Compile Include="Communications\NetworkBinaryStream.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />

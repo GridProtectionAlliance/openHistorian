@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using openHistorian.Engine;
 using openHistorian.Server.Database;
 using System;
 

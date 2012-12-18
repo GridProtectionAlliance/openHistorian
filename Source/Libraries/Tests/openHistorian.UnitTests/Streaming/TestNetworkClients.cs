@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading;
 using NUnit.Framework;
 using openHistorian.Communications;
-using openHistorian.Streaming.Server;
 using System.Net;
 namespace openHistorian.UnitTests.Streaming
 {

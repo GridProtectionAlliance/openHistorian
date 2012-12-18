@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using openHistorian;
-using openHistorian.Server.Database;
+using openHistorian.Engine;
 using openVisN.Library;
 using openVisN.Query;
 
@@ -64,9 +64,9 @@ namespace openVisN.Framework
 
         public SubscriptionFramework(string[] paths)
         {
-            HistorianServer server = new HistorianServer();
-            server.Add("Full Resolution Synchrophasor", new ArchiveDatabaseEngine(null, paths));
-            HistorianQuery query = new HistorianQuery(server);
+            HistorianDatabaseCollection databaseCollection = new HistorianDatabaseCollection();
+            databaseCollection.Add("Full Resolution Synchrophasor", new ArchiveDatabaseEngine(null, paths));
+            HistorianQuery query = new HistorianQuery(databaseCollection);
             m_updateFramework = new UpdateFramework(query);
             m_updateFramework.Mode = ExecutionMode.Manual;
             m_updateFramework.Enabled = true;

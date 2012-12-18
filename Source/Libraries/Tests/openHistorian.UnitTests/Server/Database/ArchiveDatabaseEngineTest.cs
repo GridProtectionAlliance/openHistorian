@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
-using openHistorian.Server.Configuration;
+using openHistorian.Engine;
+using openHistorian.Engine.Configuration;
 
 namespace openHistorian.Server.Database
 {

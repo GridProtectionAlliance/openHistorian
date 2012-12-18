@@ -90,9 +90,9 @@
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>openHistorian.Archive</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\openHistorian\openHistorian.csproj">
+    <ProjectReference Include="..\..\Libraries\openHistorian.Client\openHistorian.Client.csproj">
       <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
-      <Name>openHistorian</Name>
+      <Name>openHistorian.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\openVisN.Framework\openVisN.Framework.csproj">
       <Project>{368f463d-9f80-4822-aff6-727d0643494a}</Project>

@@ -4,26 +4,28 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{368F463D-9F80-4822-AFF6-727D0643494A}</ProjectGuid>
+    <ProjectGuid>{B253E828-964E-4037-B2E3-B91E8E7C1159}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>openVisN</RootNamespace>
-    <AssemblyName>openVisN.Framework</AssemblyName>
+    <RootNamespace>openHistorian</RootNamespace>
+    <AssemblyName>openHistorian.Client</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -33,55 +35,30 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Calculations\CalculationMethod.cs" />
-    <Compile Include="Calculations\SinglePhasorPowerSignals.cs" />
-    <Compile Include="EnumValueType.cs" />
-    <Compile Include="Query\SignalDataSingle.cs" />
-    <Compile Include="Query\SignalDataBase.cs" />
-    <Compile Include="Query\SignalDataUnknown.cs" />
-    <Compile Include="TypeConversion\ValueTypeConversionSingle.cs" />
-    <Compile Include="Query\DatabaseMethods.cs" />
-    <Compile Include="Query\SignalData.cs" />
-    <Compile Include="Query\HistorianQuery.cs" />
-    <Compile Include="Library\AllSignalGroups.cs" />
-    <Compile Include="Library\AllSignals.cs" />
-    <Compile Include="MetadataBase.cs" />
-    <Compile Include="SignalDefinition.cs" />
-    <Compile Include="Framework\ISubscriber.cs" />
-    <Compile Include="Query\DatabaseCalculationMethods.cs" />
-    <Compile Include="Framework\SubscriptionFramework.cs" />
-    <Compile Include="SignalGroup.cs" />
+    <Compile Include="HistorianDatabaseCollection.cs" />
+    <Compile Include="IHistorianDatabaseCollection.cs" />
+    <Compile Include="IHistorianDataReader.cs" />
+    <Compile Include="IHistorianDatabase.cs" />
+    <Compile Include="IHistorian.cs" />
+    <Compile Include="IPointStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Framework\UpdateFramework.cs" />
-    <Compile Include="TypeConversion\ValueTypeConversionBase.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\openHistorian.Archive\openHistorian.Archive.csproj">
-      <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
-      <Name>openHistorian.Archive</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\openHistorian.Server\openHistorian.Server.csproj">
-      <Project>{90942a72-2538-41a0-aff4-8c338b4a5edd}</Project>
-      <Name>openHistorian.Server</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\openHistorian.Client\openHistorian.Client.csproj">
-      <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
-      <Name>openHistorian.Client</Name>
-    </ProjectReference>
+    <Compile Include="Communications\RemoteHistorian.cs" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\GSF.Unmanaged\GSF.Unmanaged.csproj">
+      <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
+      <Name>GSF.Unmanaged</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

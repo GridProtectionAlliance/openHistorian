@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using openHistorian.Engine;
 using openHistorian.Server;
 using openHistorian.Server.Database;
 
@@ -11,7 +12,7 @@ namespace openHistorian.Local
         [Test]
         public void TestConstructor()
         {
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
             }
         }
@@ -19,7 +20,7 @@ namespace openHistorian.Local
         [Test]
         public void TestConfigMemory()
         {
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsMemoryOnly()));
             }
@@ -28,7 +29,7 @@ namespace openHistorian.Local
         [Test]
         public void TestMemoryAddPoints()
         {
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsMemoryOnly()));
 
@@ -65,7 +66,7 @@ namespace openHistorian.Local
         [Test]
         public void TestOnlyReader()
         {
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsMemoryOnly()));
 

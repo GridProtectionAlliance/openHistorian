@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.PerformanceTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.UnitTests", "Libraries\Tests\openHistorian.UnitTests\openHistorian.UnitTests.csproj", "{9C6B4307-6E10-4E9D-88C9-3CED89B34270}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "Libraries\openHistorian\openHistorian.csproj", "{B253E828-964E-4037-B2E3-B91E8E7C1159}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Client", "Libraries\openHistorian.Client\openHistorian.Client.csproj", "{B253E828-964E-4037-B2E3-B91E8E7C1159}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.Framework", "Libraries\openVisN.Framework\openVisN.Framework.csproj", "{368F463D-9F80-4822-AFF6-727D0643494A}"
 EndProject
@@ -55,7 +55,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.WPF", "Libraries\o
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN.Framework.UnitTest", "Libraries\Tests\openVisN.Framework.UnitTest\openVisN.Framework.UnitTest.csproj", "{E2483910-5890-4F88-AF06-BE6C76EB5A9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Engine", "Libraries\openHistorian.Engine\openHistorian.Engine.csproj", "{90942A72-2538-41A0-AFF4-8C338B4A5EDD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Server", "Libraries\openHistorian.Server\openHistorian.Server.csproj", "{90942A72-2538-41A0-AFF4-8C338B4A5EDD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.Unmanaged", "Libraries\GSF.Unmanaged\GSF.Unmanaged.csproj", "{B2504A65-9432-4691-A417-267FDB1A95A3}"
 EndProject
@@ -73,50 +73,50 @@ Global
 		SccProjectTopLevelParentUniqueName2 = openHistorian.sln
 		SccProjectName2 = Libraries/Tests/openHistorian.UnitTests
 		SccLocalPath2 = Libraries\\Tests\\openHistorian.UnitTests
-		SccProjectUniqueName3 = Libraries\\openHistorian\\openHistorian.csproj
+		SccProjectUniqueName3 = Libraries\\NPlot\\NPlot45.csproj
 		SccProjectTopLevelParentUniqueName3 = openHistorian.sln
-		SccProjectName3 = Libraries/openHistorian
-		SccLocalPath3 = Libraries\\openHistorian
-		SccProjectUniqueName4 = Libraries\\NPlot\\NPlot45.csproj
+		SccProjectName3 = Libraries/NPlot
+		SccLocalPath3 = Libraries\\NPlot
+		SccProjectUniqueName4 = Tools\\simpleVisN\\simpleVisN.csproj
 		SccProjectTopLevelParentUniqueName4 = openHistorian.sln
-		SccProjectName4 = Libraries/NPlot
-		SccLocalPath4 = Libraries\\NPlot
-		SccProjectUniqueName5 = Tools\\simpleVisN\\simpleVisN.csproj
+		SccProjectName4 = Tools/simpleVisN
+		SccLocalPath4 = Tools\\simpleVisN
+		SccProjectUniqueName5 = Tools\\frameworkVisN\\frameworkVisN.csproj
 		SccProjectTopLevelParentUniqueName5 = openHistorian.sln
-		SccProjectName5 = Tools/simpleVisN
-		SccLocalPath5 = Tools\\simpleVisN
-		SccProjectUniqueName6 = Tools\\frameworkVisN\\frameworkVisN.csproj
+		SccProjectName5 = Tools/frameworkVisN
+		SccLocalPath5 = Tools\\frameworkVisN
+		SccProjectUniqueName6 = Libraries\\openVisN.Framework\\openVisN.Framework.csproj
 		SccProjectTopLevelParentUniqueName6 = openHistorian.sln
-		SccProjectName6 = Tools/frameworkVisN
-		SccLocalPath6 = Tools\\frameworkVisN
-		SccProjectUniqueName7 = Libraries\\openVisN.Framework\\openVisN.Framework.csproj
+		SccProjectName6 = Libraries/openVisN.Framework
+		SccLocalPath6 = Libraries\\openVisN.Framework
+		SccProjectUniqueName7 = Libraries\\openVisN.WPF\\openVisN.WPF.csproj
 		SccProjectTopLevelParentUniqueName7 = openHistorian.sln
-		SccProjectName7 = Libraries/openVisN.Framework
-		SccLocalPath7 = Libraries\\openVisN.Framework
-		SccProjectUniqueName8 = Libraries\\openVisN.WPF\\openVisN.WPF.csproj
+		SccProjectName7 = Libraries/openVisN.WPF
+		SccLocalPath7 = Libraries\\openVisN.WPF
+		SccProjectUniqueName8 = Libraries\\Tests\\openVisN.Framework.UnitTest\\openVisN.Framework.UnitTest.csproj
 		SccProjectTopLevelParentUniqueName8 = openHistorian.sln
-		SccProjectName8 = Libraries/openVisN.WPF
-		SccLocalPath8 = Libraries\\openVisN.WPF
-		SccProjectUniqueName9 = Libraries\\Tests\\openVisN.Framework.UnitTest\\openVisN.Framework.UnitTest.csproj
+		SccProjectName8 = Libraries/Tests/openVisN.Framework.UnitTest
+		SccLocalPath8 = Libraries\\Tests\\openVisN.Framework.UnitTest
+		SccProjectUniqueName9 = Libraries\\openVisN.WinForms\\openVisN.WinForms.csproj
 		SccProjectTopLevelParentUniqueName9 = openHistorian.sln
-		SccProjectName9 = Libraries/Tests/openVisN.Framework.UnitTest
-		SccLocalPath9 = Libraries\\Tests\\openVisN.Framework.UnitTest
-		SccProjectUniqueName10 = Libraries\\openVisN.WinForms\\openVisN.WinForms.csproj
+		SccProjectName9 = Libraries/openVisN.WinForms
+		SccLocalPath9 = Libraries\\openVisN.WinForms
+		SccProjectUniqueName10 = Libraries\\openHistorian.Archive\\openHistorian.Archive.csproj
 		SccProjectTopLevelParentUniqueName10 = openHistorian.sln
-		SccProjectName10 = Libraries/openVisN.WinForms
-		SccLocalPath10 = Libraries\\openVisN.WinForms
-		SccProjectUniqueName11 = Libraries\\openHistorian.Archive\\openHistorian.Archive.csproj
+		SccProjectName10 = Libraries/openHistorian.Archive
+		SccLocalPath10 = Libraries\\openHistorian.Archive
+		SccProjectUniqueName11 = Libraries\\GSF.Unmanaged\\GSF.Unmanaged.csproj
 		SccProjectTopLevelParentUniqueName11 = openHistorian.sln
-		SccProjectName11 = Libraries/openHistorian.Archive
-		SccLocalPath11 = Libraries\\openHistorian.Archive
-		SccProjectUniqueName12 = Libraries\\openHistorian.Engine\\openHistorian.Engine.csproj
+		SccProjectName11 = Libraries/GSF.Unmanaged
+		SccLocalPath11 = Libraries\\GSF.Unmanaged
+		SccProjectUniqueName12 = Libraries\\openHistorian.Server\\openHistorian.Server.csproj
 		SccProjectTopLevelParentUniqueName12 = openHistorian.sln
-		SccProjectName12 = Libraries/openHistorian.Engine
-		SccLocalPath12 = Libraries\\openHistorian.Engine
-		SccProjectUniqueName13 = Libraries\\GSF.Unmanaged\\GSF.Unmanaged.csproj
+		SccProjectName12 = Libraries/openHistorian.Server
+		SccLocalPath12 = Libraries\\openHistorian.Server
+		SccProjectUniqueName13 = Libraries\\openHistorian.Client\\openHistorian.Client.csproj
 		SccProjectTopLevelParentUniqueName13 = openHistorian.sln
-		SccProjectName13 = Libraries/GSF.Unmanaged
-		SccLocalPath13 = Libraries\\GSF.Unmanaged
+		SccProjectName13 = Libraries/openHistorian.Client
+		SccLocalPath13 = Libraries\\openHistorian.Client
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi

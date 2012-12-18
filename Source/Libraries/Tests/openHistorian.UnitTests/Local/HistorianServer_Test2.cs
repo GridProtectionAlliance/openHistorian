@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using openHistorian.Engine;
 using openHistorian.Server;
 using openHistorian.Server.Database;
 using openHistorian.Archive;
@@ -17,7 +18,7 @@ namespace openHistorian.Local
         [Test]
         public void TestConstructor()
         {
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
             }
         }
@@ -25,7 +26,7 @@ namespace openHistorian.Local
         [Test]
         public void TestConfigMemory()
         {
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsFileBased()));
             }
@@ -37,7 +38,7 @@ namespace openHistorian.Local
             foreach (var file in Directory.GetFiles("C:\\temp\\", "*.d2"))
                 File.Delete(file);
 
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsFileBased(),"c:\\temp\\"));
 
@@ -70,7 +71,7 @@ namespace openHistorian.Local
                 }
             }
 
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsFileBased(), "c:\\temp\\"));
 
@@ -85,7 +86,7 @@ namespace openHistorian.Local
         [Test]
         public void TestOnlyReader()
         {
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine((WriterOptions?)null));
        
@@ -105,7 +106,7 @@ namespace openHistorian.Local
             string file = "c:\\temp\\archiveOne.d2";
             CreateFile(file, 10, 100, 10);
 
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine(null,file));
                 
@@ -125,7 +126,7 @@ namespace openHistorian.Local
             CreateFile(file1, 10, 100, 10);
             CreateFile(file2, 11, 101, 10);
 
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine(null, file1,file2));
                 
@@ -147,7 +148,7 @@ namespace openHistorian.Local
             CreateFile(file1, 10, 100, 10);
             CreateFile(file2, 11, 101, 10);
 
-            using (var engine = new HistorianServer())
+            using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine(null, "c:\\temp\\"));
 
