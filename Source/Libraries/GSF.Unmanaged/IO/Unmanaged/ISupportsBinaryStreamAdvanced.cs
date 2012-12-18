@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.FileStructure;
 
 namespace openHistorian.IO.Unmanaged
 {
@@ -43,7 +42,7 @@ namespace openHistorian.IO.Unmanaged
     /// A <see cref="ISupportsBinaryStream"/> that has many advance functions 
     /// that are needed for <see cref="DiskIo"/> to function properly.
     /// </summary>
-    interface ISupportsBinaryStreamAdvanced : ISupportsBinaryStream
+    public interface ISupportsBinaryStreamAdvanced : ISupportsBinaryStream
     {
         /// <summary>
         /// This event occurs any time new data is added to the BinaryStream's 

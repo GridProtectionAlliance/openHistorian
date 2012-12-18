@@ -120,6 +120,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\GSF.Unmanaged\GSF.Unmanaged.csproj">
+      <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
+      <Name>GSF.Unmanaged</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\openHistorian.Engine\openHistorian.Engine.csproj">
       <Project>{90942a72-2538-41a0-aff4-8c338b4a5edd}</Project>
       <Name>openHistorian.Engine</Name>

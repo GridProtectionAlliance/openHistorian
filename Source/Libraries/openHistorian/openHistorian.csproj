@@ -57,18 +57,24 @@
     <Compile Include="Communications\CircularBuffer.cs" />
     <Compile Include="Communications\LinearBuffer.cs" />
     <Compile Include="Communications\NetworkBinaryStream.cs" />
-    <Compile Include="Compression.cs" />
     <Compile Include="IHistorianDatabaseCollection.cs" />
     <Compile Include="IHistorianDataReader.cs" />
     <Compile Include="IHistorianDatabase.cs" />
     <Compile Include="HistorianClient.cs" />
     <Compile Include="IHistorianOld.cs" />
     <Compile Include="IHistorian.cs" />
-    <Compile Include="IO\BinaryStreamBase.cs" />
-    <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="IPointStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Communications\RemoteHistorian.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GSF.Unmanaged\GSF.Unmanaged.csproj">
+      <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
+      <Name>GSF.Unmanaged</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

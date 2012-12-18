@@ -210,7 +210,7 @@ namespace openHistorian.UnmanagedMemory
             targetMemoryBlockSize = Math.Min(targetMemoryBlockSize, 1024 * 1024 * 1024);
             targetMemoryBlockSize = targetMemoryBlockSize - (targetMemoryBlockSize % pageSize);
             targetMemoryBlockSize = (int)Math.Max(targetMemoryBlockSize, pageSize);
-            targetMemoryBlockSize = (int)HelperFunctions.RoundUpToNearestPowerOfTwo(targetMemoryBlockSize);
+            targetMemoryBlockSize = (int)BitMath.RoundUpToNearestPowerOfTwo((ulong)targetMemoryBlockSize);
             return (int)targetMemoryBlockSize;
         }
 

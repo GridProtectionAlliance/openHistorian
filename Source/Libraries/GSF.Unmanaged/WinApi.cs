@@ -33,7 +33,7 @@ namespace openHistorian
     /// <summary>
     /// Provides necessary Windows API functions.
     /// </summary>
-    unsafe static partial class WinApi
+    public unsafe static partial class WinApi
     {
         
         /// <summary>

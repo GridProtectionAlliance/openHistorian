@@ -36,6 +36,7 @@ namespace openHistorian.Archive
         DeltaEncoded,
         TimeSeriesEncoded
     }
+
     /// <summary>
     /// Represents a individual self-contained archive file. 
     /// This is one of many files that are part of a given <see cref="ArchiveDatabaseEngine"/>.

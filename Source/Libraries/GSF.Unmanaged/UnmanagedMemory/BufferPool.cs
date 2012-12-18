@@ -140,7 +140,8 @@ namespace openHistorian.UnmanagedMemory
         {
             if (pageSize < 4096 || pageSize > 256 * 1024)
                 throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
-            if (!HelperFunctions.IsPowerOfTwo((uint)pageSize))
+            
+            if (!BitMath.IsPowerOfTwo((uint)pageSize))
                 throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
 
             m_syncRoot = new object();

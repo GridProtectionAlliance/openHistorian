@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("openHistorian")]
+[assembly: AssemblyTitle("GSF.Unmanaged")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("openHistorian")]
+[assembly: AssemblyProduct("GSF.Unmanaged")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b0b2b0ab-ffc6-40ab-9669-51a192f8420d")]
+[assembly: Guid("f0d614dd-3575-4986-be78-ae48ff6e315c")]
 
 // Version information for an assembly consists of the following four values:
 //

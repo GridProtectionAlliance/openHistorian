@@ -62,12 +62,6 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GSF.Communication">
-      <HintPath>..\..\Dependencies\GSF.Communication.dll</HintPath>
-    </Reference>
-    <Reference Include="GSF.Core">
-      <HintPath>..\..\Dependencies\GSF.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -87,34 +81,16 @@
     <Compile Include="Collections\KeyValue\SortedTree256DeltaEncoded.cs" />
     <Compile Include="Collections\KeyValue\NullTreeScanner256.cs" />
     <Compile Include="Collections\KeyValue\UnionScanner256.cs" />
-    <Compile Include="Collections\ReadonlySortedList.cs" />
-    <Compile Include="Collections\ILargeArray.cs" />
-    <Compile Include="Collections\LargeArray.cs" />
-    <Compile Include="Collections\LargeUnmanagedArray.cs" />
-    <Compile Include="Collections\NullableLargeArray.cs" />
-    <Compile Include="Collections\ResourceQueue.cs" />
-    <Compile Include="Collections\ResourceQueueCollection.cs" />
-    <Compile Include="Collections\SupportsReadonlyAutoBase.cs" />
-    <Compile Include="Collections\SupportsReadonlyBase.cs" />
-    <Compile Include="Collections\ISupportsReadonly.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_TreeScanner.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase_NodeHeader.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_NodeHeader.cs" />
     <Compile Include="Collections\KeyValue\ITreeScanner256.cs" />
     <Compile Include="AccessMode.cs" />
-    <Compile Include="Collections\ReadonlyList.cs" />
-    <Compile Include="BitMath.cs" />
     <Compile Include="FileStructure\SubFileStream_IoSession.cs" />
     <Compile Include="FileStructure\DiskIoExtensions.cs" />
     <Compile Include="FileStructure\DiskIoSession.cs" />
     <Compile Include="FileStructure\DiskIoSessionExtension.cs" />
     <Compile Include="FileStructure\FileHeaderBlockRecovery.cs" />
-    <Compile Include="Globals.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
-    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
-    <Compile Include="IO\Unmanaged\ISupportsBinaryStreamAdvanced.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
     <Compile Include="OldCode\Local\ConfigHistorian.cs" />
     <Compile Include="OldCode\Local\ConfigDatabase.cs" />
     <Compile Include="OldCode\Local\HistorianServer_HistorianDatabase.cs" />
@@ -138,10 +114,6 @@
     <Compile Include="OldCode\ArchiveWriter_Old.cs" />
     <Compile Include="FileStructure\DiskIo.cs" />
     <Compile Include="OldCode\IO\IStreamingTransport.cs" />
-    <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />
-    <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
-    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
-    <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
     <Compile Include="OldCode\Streaming\Client\ClientSocket.cs" />
     <Compile Include="OldCode\Streaming\IInboundBuffer.cs" />
     <Compile Include="OldCode\Streaming\ITransportStreaming.cs" />
@@ -155,23 +127,18 @@
     <Compile Include="OldCode\Streaming\Server\ProcessClientStream.cs" />
     <Compile Include="OldCode\Streaming\Server\ProcessKeepAlive.cs" />
     <Compile Include="OldCode\Streaming\Server\ServerSocket.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
     <Compile Include="OldCode\Collections\BPlusTree.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeBase.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeInternalNodeBase.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeLeafNodeBase.cs" />
     <Compile Include="OldCode\Collections\IBPlusTreeType.cs" />
     <Compile Include="OldCode\UnmanagedMemory\MemoryMethod.cs" />
-    <Compile Include="Collections\BitArray.cs" />
-    <Compile Include="IO\Unmanaged\BinaryStream.cs" />
     <Compile Include="OldCode\Collections\Specialized\BPlusTreeLongLong.cs" />
     <Compile Include="OldCode\Collections\Specialized\BPlusTreeTSD.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeTypes\DateTimeLong.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeTypes\IntegerFloat.cs" />
     <Compile Include="OldCode\Collections\BPlusTreeTypes\Long.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStream.cs" />
     <Compile Include="OldCode\UnmanagedMemory\UnmanagedArray.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old2.cs" />
     <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old.cs" />
     <Compile Include="OldCode\OldCompressionCode\Compression_old.cs" />
@@ -203,10 +170,6 @@
     <Compile Include="OldCode\PointTypes\DateTimeType.cs" />
     <Compile Include="OldCode\PooledMemoryStream.cs" />
     <Compile Include="OldCode\IO\BinaryStream.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool_AllocationList.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool_CollectionEngine.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool_Settings.cs" />
-    <Compile Include="UnmanagedMemory\CollectionEventArgs.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool2\BufferPoolKernel.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool2\BufferPoolKernel_Settings.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool2\BufferPoolKernel_List.cs" />
@@ -214,7 +177,6 @@
     <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPoolAllocationList.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPoolCollectionEngine.cs" />
     <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPoolSettings.cs" />
-    <Compile Include="UnmanagedMemory\Memory.cs" />
     <Compile Include="OldCode\UnmanagedMemory\WinApi.cs" />
     <Compile Include="OldCode\FileSystem\Test\DiskIOUnbufferedTest.cs" />
     <Compile Include="OldCode\FileSystem\Test\DiskIOMemoryStreamTest.cs" />
@@ -245,8 +207,6 @@
     <Compile Include="OldCode\IO\ISupportsBinaryStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\ConvertArchiveFile.cs" />
-    <Compile Include="WinApi.cs" />
-    <Compile Include="WinApi_LargePageSupport.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -291,6 +251,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GSF.Unmanaged\GSF.Unmanaged.csproj">
+      <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
+      <Name>GSF.Unmanaged</Name>
+    </ProjectReference>
     <ProjectReference Include="..\openHistorian\openHistorian.csproj">
       <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
       <Name>openHistorian</Name>

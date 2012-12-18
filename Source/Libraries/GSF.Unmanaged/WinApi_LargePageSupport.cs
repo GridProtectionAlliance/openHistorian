@@ -6,7 +6,7 @@ using System.Text;
 
 namespace openHistorian
 {
-    static partial class WinApi
+    public static partial class WinApi
     {
         public static class LargePageSupport
         {
