@@ -26,9 +26,9 @@ namespace openHistorian.Collections.KeyValue
             using (ArchiveFile file3 = ArchiveFile.OpenFile(path3, AccessMode.ReadOnly))
             {
 
-                var scan1 = file1.CreateSnapshot().OpenInstance().GetDataRange();
-                var scan2 = file2.CreateSnapshot().OpenInstance().GetDataRange();
-                var scan3 = file3.CreateSnapshot().OpenInstance().GetDataRange();
+                var scan1 = file1.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
+                var scan2 = file2.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
+                var scan3 = file3.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
                 scan1.SeekToKey(0, 0);
                 scan2.SeekToKey(0, 0);
                 scan3.SeekToKey(0, 0);

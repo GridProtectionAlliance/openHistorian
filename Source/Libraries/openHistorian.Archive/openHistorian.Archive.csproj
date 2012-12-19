@@ -67,8 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Archive\ArchiveFile.cs" />
-    <Compile Include="Archive\ArchiveFileReadOnlySnapshotInstance.cs" />
-    <Compile Include="Archive\ArchiveFileSnapshot.cs" />
+    <Compile Include="Archive\ArchiveFileReadSnapshot.cs" />
+    <Compile Include="Archive\ArchiveFileSnapshotInfo.cs" />
     <Compile Include="Archive\ArchiveFile_Editor.cs" />
     <Compile Include="Archive\SortedTreeContainer.cs" />
     <Compile Include="Archive\SortedTreeContainerEdit.cs" />

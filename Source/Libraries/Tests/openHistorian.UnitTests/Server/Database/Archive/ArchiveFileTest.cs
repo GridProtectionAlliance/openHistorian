@@ -81,25 +81,25 @@ namespace openHistorian.Test
                 ulong pointId = 2;
                 ulong value1 = 3;
                 ulong value2 = 4;
-                ArchiveFileSnapshot snap1;
+                ArchiveFileSnapshotInfo snap1;
                 using (var fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(date, pointId, value1, value2);
                     fileEditor.AddPoint(date + 1, pointId, value1, value2);
-                    snap1 = target.CreateSnapshot();
+                    snap1 = target.AcquireReadSnapshot();
                     fileEditor.Commit();
                 }
-                var snap2 = target.CreateSnapshot();
+                var snap2 = target.AcquireReadSnapshot();
 
-                using (var instance = snap1.OpenInstance())
+                using (var instance = snap1.CreateReadSnapshot())
                 {
-                    var scanner = instance.GetDataRange();
+                    var scanner = instance.GetTreeScanner();
                     scanner.SeekToKey(0, 0);
                     Assert.AreEqual(false, scanner.GetNextKey(out date, out pointId, out value1, out value2));
                 }
-                using (var instance = snap2.OpenInstance())
+                using (var instance = snap2.CreateReadSnapshot())
                 {
-                    var scanner = instance.GetDataRange();
+                    var scanner = instance.GetTreeScanner();
                     scanner.SeekToKey(0, 0);
                     Assert.AreEqual(true, scanner.GetNextKey(out date, out pointId, out value1, out value2));
                     Assert.AreEqual(1uL, date);
@@ -125,24 +125,24 @@ namespace openHistorian.Test
                 ulong pointId = 2;
                 ulong value1 = 3;
                 ulong value2 = 4;
-                ArchiveFileSnapshot snap1;
+                ArchiveFileSnapshotInfo snap1;
                 using (var fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(date, pointId, value1, value2);
-                    snap1 = target.CreateSnapshot();
+                    snap1 = target.AcquireReadSnapshot();
                     fileEditor.Rollback();
                 }
-                var snap2 = target.CreateSnapshot();
+                var snap2 = target.AcquireReadSnapshot();
 
-                using (var instance = snap1.OpenInstance())
+                using (var instance = snap1.CreateReadSnapshot())
                 {
-                    var scanner = instance.GetDataRange();
+                    var scanner = instance.GetTreeScanner();
                     scanner.SeekToKey(0, 0);
                     Assert.AreEqual(false, scanner.GetNextKey(out date, out pointId, out value1, out value2));
                 }
-                using (var instance = snap2.OpenInstance())
+                using (var instance = snap2.CreateReadSnapshot())
                 {
-                    var scanner = instance.GetDataRange();
+                    var scanner = instance.GetTreeScanner();
                     scanner.SeekToKey(0, 0);
                     Assert.AreEqual(false, scanner.GetNextKey(out date, out pointId, out value1, out value2));
                 }

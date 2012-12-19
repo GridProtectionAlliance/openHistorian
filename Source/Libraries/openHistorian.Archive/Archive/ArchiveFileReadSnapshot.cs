@@ -31,7 +31,7 @@ namespace openHistorian.Archive
     /// Provides a user with a read-only instance of an archive.
     /// This class is not thread safe.
     /// </summary>
-    public class ArchiveFileReadOnlySnapshotInstance : IDisposable
+    public class ArchiveFileReadSnapshot : IDisposable
     {
         #region [ Members ]
 
@@ -42,7 +42,7 @@ namespace openHistorian.Archive
 
         #region [ Constructors ]
 
-        internal ArchiveFileReadOnlySnapshotInstance(TransactionalRead currentTransaction)
+        internal ArchiveFileReadSnapshot(TransactionalRead currentTransaction)
         {
             m_dataTree = new SortedTreeContainer(currentTransaction, ArchiveFile.PointDataFile, 1);
         }
@@ -89,7 +89,7 @@ namespace openHistorian.Archive
         /// Gets a reader that can be used to parse an archive file.
         /// </summary>
         /// <returns></returns>
-        public ITreeScanner256 GetDataRange()
+        public ITreeScanner256 GetTreeScanner()
         {
             return m_dataTree.GetDataRange();
         }

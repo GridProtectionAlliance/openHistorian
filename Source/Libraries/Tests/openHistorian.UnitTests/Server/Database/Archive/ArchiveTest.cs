@@ -48,7 +48,7 @@ namespace openHistorian
             }
             long oldCount = FileStructure.DiskIo.ChecksumCount;
 
-            var reader1 = s_archiveFile.CreateSnapshot().OpenInstance().GetDataRange();
+            var reader1 = s_archiveFile.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
             reader1.SeekToKey(0,0);
 
             ulong value1, value2, key1, key2;

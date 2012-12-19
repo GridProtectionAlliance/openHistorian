@@ -97,7 +97,7 @@ namespace openHistorian.Engine
 
             int m_currentIndex;
             ArchiveFileSummary m_currentSummary;
-            ArchiveFileReadOnlySnapshotInstance m_currentInstance;
+            ArchiveFileReadSnapshot m_currentInstance;
             ITreeScanner256 m_currentScanner;
 
             public ReadStream(ulong startKey, ulong stopKey, ArchiveListSnapshot snapshot)
@@ -152,8 +152,8 @@ namespace openHistorian.Engine
                 {
                     var kvp = m_tables.Dequeue();
                     m_currentIndex = kvp.Key;
-                    m_currentInstance = kvp.Value.ActiveSnapshot.OpenInstance();
-                    m_currentScanner = m_currentInstance.GetDataRange();
+                    m_currentInstance = kvp.Value.ActiveSnapshotInfo.CreateReadSnapshot();
+                    m_currentScanner = m_currentInstance.GetTreeScanner();
                     m_currentScanner.SeekToKey(m_startKey, 0);
                 }
                 else

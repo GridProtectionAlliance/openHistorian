@@ -113,7 +113,7 @@ namespace openHistorian.Archive
 
             if (!af.LoadUserData(af.m_fileStructure.UserData))
             {
-                using (var snapshot = af.CreateSnapshot().OpenInstance())
+                using (var snapshot = af.AcquireReadSnapshot().CreateReadSnapshot())
                 {
                     af.m_firstKey = snapshot.FirstKey;
                     af.m_lastKey = snapshot.LastKey;
@@ -227,11 +227,20 @@ namespace openHistorian.Archive
         /// will not effect this snapshot. The snapshot has a tiny footprint
         /// and allows an unlimited number of reads that can be created.
         /// </remarks>
-        public ArchiveFileSnapshot CreateSnapshot()
+        public ArchiveFileSnapshotInfo AcquireReadSnapshot()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            return new ArchiveFileSnapshot(m_fileStructure);
+            return new ArchiveFileSnapshotInfo(m_fileStructure);
+        }
+
+        /// <summary>
+        /// Allows the user to get a read snapshot on the database.
+        /// </summary>
+        /// <returns></returns>
+        public ArchiveFileReadSnapshot BeginRead()
+        {
+            return AcquireReadSnapshot().CreateReadSnapshot();
         }
 
         /// <summary>

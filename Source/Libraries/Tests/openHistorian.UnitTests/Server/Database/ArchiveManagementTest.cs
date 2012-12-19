@@ -153,7 +153,7 @@ namespace openHistorian.Server.Database
                 writer.Commit();
                 using (var edit = list.AcquireEditLock())
                 {
-                    using (var rdr = edit.ArchiveFiles.Last().ActiveSnapshot.OpenInstance())
+                    using (var rdr = edit.ArchiveFiles.Last().ActiveSnapshotInfo.CreateReadSnapshot())
                     {
                         Assert.IsTrue(rdr.FirstKey == 2);
                         Assert.IsTrue(rdr.LastKey == 100);
@@ -163,7 +163,7 @@ namespace openHistorian.Server.Database
                 writer.Commit();
                 using (var edit = list.AcquireEditLock())
                 {
-                    using (var rdr = edit.ArchiveFiles.Last().ActiveSnapshot.OpenInstance())
+                    using (var rdr = edit.ArchiveFiles.Last().ActiveSnapshotInfo.CreateReadSnapshot())
                     {
                         Assert.IsTrue(rdr.FirstKey == 1);
                         Assert.IsTrue(rdr.LastKey == 100);
@@ -173,12 +173,12 @@ namespace openHistorian.Server.Database
                 writer.Commit();
                 using (var edit = list.AcquireEditLock())
                 {
-                    using (var rdr = edit.ArchiveFiles.Last().ActiveSnapshot.OpenInstance())
+                    using (var rdr = edit.ArchiveFiles.Last().ActiveSnapshotInfo.CreateReadSnapshot())
                     {
                         Assert.IsTrue(rdr.FirstKey == 1);
                         Assert.IsTrue(rdr.LastKey == 101);
 
-                        var scan = rdr.GetDataRange();
+                        var scan = rdr.GetTreeScanner();
                         scan.SeekToKey(0, 0);
 
                         ulong value1, value2, value3, value4;

@@ -30,7 +30,7 @@ namespace openHistorian.Archive
     /// Aquires a read transaction on the current archive partition. This will allow all user created
     /// transactions to have snapshot isolation of the entire data set.
     /// </summary>
-    public class ArchiveFileSnapshot
+    public class ArchiveFileSnapshotInfo
     {
         #region [ Members ]
 
@@ -41,7 +41,7 @@ namespace openHistorian.Archive
 
         #region [ Constructors ]
 
-        internal ArchiveFileSnapshot(TransactionalFileStructure fileStructure)
+        internal ArchiveFileSnapshotInfo(TransactionalFileStructure fileStructure)
         {
             m_fileStructure = fileStructure;
             m_currentTransaction = m_fileStructure.BeginRead();
@@ -55,9 +55,9 @@ namespace openHistorian.Archive
         /// Opens an instance of the archive file to allow for concurrent reading of a snapshot.
         /// </summary>
         /// <returns></returns>
-        public ArchiveFileReadOnlySnapshotInstance OpenInstance()
+        public ArchiveFileReadSnapshot CreateReadSnapshot()
         {
-            return new ArchiveFileReadOnlySnapshotInstance(m_currentTransaction);
+            return new ArchiveFileReadSnapshot(m_currentTransaction);
         }
 
         #endregion

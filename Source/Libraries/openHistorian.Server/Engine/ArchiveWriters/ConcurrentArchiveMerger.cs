@@ -184,11 +184,11 @@ namespace openHistorian.Engine.ArchiveWriters
                     ArchiveFileSummary summary = new ArchiveFileSummary(fileToCombine);
                     ArchiveListRemovalStatus oldArchiveRemovalStatus;
 
-                    using (var src = summary.ActiveSnapshot.OpenInstance())
+                    using (var src = summary.ActiveSnapshotInfo.CreateReadSnapshot())
                     {
                         using (var fileEditor = activeFile.BeginEdit())
                         {
-                            var reader = src.GetDataRange();
+                            var reader = src.GetTreeScanner();
                             reader.SeekToKey(0, 0);
 
                             ulong value1, value2, key1, key2;

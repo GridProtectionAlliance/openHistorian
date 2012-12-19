@@ -37,7 +37,7 @@ namespace openHistorian.Engine
         ulong m_firstKeyValue;
         ulong m_lastKeyValue;
         ArchiveFile m_archiveFileFile;
-        ArchiveFileSnapshot m_activeSnapshot;
+        ArchiveFileSnapshotInfo m_activeSnapshotInfo;
 
         #endregion
 
@@ -46,7 +46,7 @@ namespace openHistorian.Engine
         public ArchiveFileSummary(ArchiveFile file)
         {
             m_archiveFileFile = file;
-            m_activeSnapshot = file.CreateSnapshot();
+            m_activeSnapshotInfo = file.AcquireReadSnapshot();
             m_firstKeyValue = file.FirstKey;
             m_lastKeyValue = file.LastKey;
         }
@@ -89,13 +89,13 @@ namespace openHistorian.Engine
         }
 
         /// <summary>
-        /// Gets the most recent <see cref="ArchiveFileSnapshot"/> of this class when it was instanced.
+        /// Gets the most recent <see cref="ArchiveFileSnapshotInfo"/> of this class when it was instanced.
         /// </summary>
-        public ArchiveFileSnapshot ActiveSnapshot
+        public ArchiveFileSnapshotInfo ActiveSnapshotInfo
         {
             get
             {
-                return m_activeSnapshot;
+                return m_activeSnapshotInfo;
             }
         }
 

@@ -68,7 +68,7 @@ namespace openHistorian.UnitTests.Server.Database.Archive
                 Random r = new Random(3);
 
                 ulong key1, key2, value1, value2;
-                var scanner = af.CreateSnapshot().OpenInstance().GetDataRange();
+                var scanner = af.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
                 scanner.SeekToKey(0, 0);
                 for (ulong v1 = 1; v1 < 36; v1++)
                 {
