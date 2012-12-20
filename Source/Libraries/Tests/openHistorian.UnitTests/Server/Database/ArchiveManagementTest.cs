@@ -49,8 +49,9 @@ namespace openHistorian.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new MergerPair(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
+
                 Thread.Sleep(150);
                 var archive = MakeArchive(0, 20, 1);
                 using (var edit = list.AcquireEditLock())
@@ -58,10 +59,10 @@ namespace openHistorian.Server.Database
                     edit.Add(archive, false);
                 }
                 sw.Start();
-                writer.ProcessArchive(archive, 60);
-                writer.WaitForCommit(60, false);
+                writer.ArchiveMerger.ProcessArchive(archive, 60);
+                writer.WaitHandles.WaitForCommit(60, false);
             }
-            sw.Stop(3);
+            sw.Stop(4);
             using (var editor = list.AcquireEditLock())
             {
                 Assert.AreEqual(editor.ArchiveFiles.Count, 1);
@@ -80,7 +81,7 @@ namespace openHistorian.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new MergerPair(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 Thread.Sleep(150);
                 var archive = MakeArchive(0, 20, 1);
@@ -89,8 +90,8 @@ namespace openHistorian.Server.Database
                     edit.Add(archive, false);
                 }
                 sw.Start();
-                writer.ProcessArchive(archive, 60);
-                writer.WaitForRollover(60, false);
+                writer.ArchiveMerger.ProcessArchive(archive, 60);
+                writer.WaitHandles.WaitForRollover(60, false);
             }
             sw.Stop(88, 112);
             using (var editor = list.AcquireEditLock())
@@ -110,7 +111,7 @@ namespace openHistorian.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new MergerPair(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 Thread.Sleep(150);
                 var archive = MakeArchive(0, 20, 1);
@@ -119,8 +120,8 @@ namespace openHistorian.Server.Database
                     edit.Add(archive, false);
                 }
                 sw.Start();
-                writer.ProcessArchive(archive, 60);
-                writer.WaitForRollover(60, true);
+                writer.ArchiveMerger.ProcessArchive(archive, 60);
+                writer.WaitHandles.WaitForRollover(60, true);
             }
             sw.Stop(3);
             using (var editor = list.AcquireEditLock())
@@ -138,7 +139,7 @@ namespace openHistorian.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new MergerPair(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 var archive1 = MakeArchive(2, 100, 2);
                 var archive2 = MakeArchive(1, 81, 2);
@@ -149,8 +150,8 @@ namespace openHistorian.Server.Database
                     edit.Add(archive2, false);
                     edit.Add(archive3, false);
                 }
-                writer.ProcessArchive(archive1, 1);
-                writer.Commit();
+                writer.ArchiveMerger.ProcessArchive(archive1, 1);
+                writer.WaitHandles.Commit();
                 using (var edit = list.AcquireEditLock())
                 {
                     using (var rdr = edit.ArchiveFiles.Last().ActiveSnapshotInfo.CreateReadSnapshot())
@@ -159,8 +160,8 @@ namespace openHistorian.Server.Database
                         Assert.IsTrue(rdr.LastKey == 100);
                     }
                 }
-                writer.ProcessArchive(archive2, 2);
-                writer.Commit();
+                writer.ArchiveMerger.ProcessArchive(archive2, 2);
+                writer.WaitHandles.Commit();
                 using (var edit = list.AcquireEditLock())
                 {
                     using (var rdr = edit.ArchiveFiles.Last().ActiveSnapshotInfo.CreateReadSnapshot())
@@ -169,8 +170,8 @@ namespace openHistorian.Server.Database
                         Assert.IsTrue(rdr.LastKey == 100);
                     }
                 }
-                writer.ProcessArchive(archive3, 3);
-                writer.Commit();
+                writer.ArchiveMerger.ProcessArchive(archive3, 3);
+                writer.WaitHandles.Commit();
                 using (var edit = list.AcquireEditLock())
                 {
                     using (var rdr = edit.ArchiveFiles.Last().ActiveSnapshotInfo.CreateReadSnapshot())
@@ -214,7 +215,7 @@ namespace openHistorian.Server.Database
             settings.NewFileOnSize = long.MaxValue;
 
             var list = new ArchiveList();
-            using (var writer = new ConcurrentArchiveMerger(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
+            using (var writer = new MergerPair(settings, list, (file, x) => FinishArchive(list, file), x => x.Archive.Dispose()))
             {
                 Thread.Sleep(150);
                 var archive = MakeArchive(0, 200, 1);
@@ -222,8 +223,8 @@ namespace openHistorian.Server.Database
                 {
                     edit.Add(archive, false);
                 }
-                writer.ProcessArchive(archive, 60);
-                writer.WaitForCommit(60, false);
+                writer.ArchiveMerger.ProcessArchive(archive, 60);
+                writer.WaitHandles.WaitForCommit(60, false);
             }
             using (var editor = list.AcquireEditLock())
             {

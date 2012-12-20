@@ -30,12 +30,34 @@ using openHistorian.Engine.Configuration;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
-    internal class AutoCommit : IArchiveWriter
+
+    internal class MergerPair : IDisposable
+    {
+        public MergerPair(ArchiveRolloverSettings settings, ArchiveList archiveList, Action<ArchiveFile, long> callbackFileComplete, Action<ArchiveListRemovalStatus> archivesPendingDeletion)
+        {
+            ArchiveMerger = new ConcurrentArchiveMerger(settings, archiveList, callbackFileComplete, archivesPendingDeletion);
+            WaitHandles = new CommitWaitHandles(ArchiveMerger);
+        }
+        public CommitWaitHandles WaitHandles { get; private set; }
+        public ConcurrentArchiveMerger ArchiveMerger { get; private set; }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            ArchiveMerger.Dispose();
+
+        }
+    }
+
+    internal class AutoCommit
     {
         List<ArchiveListRemovalStatus> m_pendingDispose;
         object m_syncRoot;
-        ConcurrentWriterAutoCommit m_concurrentWriterAutoCommit;
-        ConcurrentArchiveMerger[] m_concurrentArchiveMerger;
+        ArchiveWriter m_archiveWriter;
+        MergerPair[] m_concurrentArchiveMerger;
         ArchiveList m_archiveList;
         bool m_disposed;
 
@@ -44,7 +66,7 @@ namespace openHistorian.Engine.ArchiveWriters
             m_archiveList = archiveList;
             m_syncRoot = new object();
             m_pendingDispose = new List<ArchiveListRemovalStatus>();
-            m_concurrentArchiveMerger = new ConcurrentArchiveMerger[settings.ArchiveRollovers.Count];
+            m_concurrentArchiveMerger = new MergerPair[settings.ArchiveRollovers.Count];
 
             ConcurrentArchiveMerger previousMerger = null;
             for (int x = settings.ArchiveRollovers.Count - 1; x >= 0; x--) //Go in reverse order since there is chaining that occurs
@@ -52,22 +74,22 @@ namespace openHistorian.Engine.ArchiveWriters
                 var managementSettings = settings.ArchiveRollovers[x];
                 if (previousMerger == null)
                 {
-                    m_concurrentArchiveMerger[x] = new ConcurrentArchiveMerger(managementSettings, m_archiveList, FinalizeArchiveFile, ProcessRemoval);
-                    previousMerger = m_concurrentArchiveMerger[x];
+                    m_concurrentArchiveMerger[x] = new MergerPair(managementSettings, m_archiveList, FinalizeArchiveFile, ProcessRemoval);
+                    previousMerger = m_concurrentArchiveMerger[x].ArchiveMerger;
                 }
                 else
                 {
-                    m_concurrentArchiveMerger[x] = new ConcurrentArchiveMerger(managementSettings, m_archiveList, previousMerger.ProcessArchive, ProcessRemoval);
-                    previousMerger = m_concurrentArchiveMerger[x];
+                    m_concurrentArchiveMerger[x] = new MergerPair(managementSettings, m_archiveList, previousMerger.ProcessArchive, ProcessRemoval);
+                    previousMerger = m_concurrentArchiveMerger[x].ArchiveMerger;
                 }
             }
             if (previousMerger == null)
             {
-                m_concurrentWriterAutoCommit = new ConcurrentWriterAutoCommit(settings.ArchiveWriter, m_archiveList, FinalizeArchiveFile);
+                m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, FinalizeArchiveFile);
             }
             else
             {
-                m_concurrentWriterAutoCommit = new ConcurrentWriterAutoCommit(settings.ArchiveWriter, m_archiveList, previousMerger.ProcessArchive);
+                m_archiveWriter = new ArchiveWriter(settings.ArchiveWriter, m_archiveList, previousMerger.ProcessArchive);
             }
         }
 
@@ -80,8 +102,8 @@ namespace openHistorian.Engine.ArchiveWriters
             if (!m_disposed)
             {
                 m_disposed = true;
-                if (m_concurrentWriterAutoCommit != null)
-                    m_concurrentWriterAutoCommit.Dispose();
+                if (m_archiveWriter != null)
+                    m_archiveWriter.Dispose();
                 foreach (var management in m_concurrentArchiveMerger)
                 {
                     management.Dispose();
@@ -91,7 +113,7 @@ namespace openHistorian.Engine.ArchiveWriters
 
         public long WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            return m_concurrentWriterAutoCommit.WriteData(key1, key2, value1, value2);
+            return m_archiveWriter.WriteData(key1, key2, value1, value2);
         }
 
         void FinalizeArchiveFile(ArchiveFile archive, long sequenceId)
@@ -127,41 +149,41 @@ namespace openHistorian.Engine.ArchiveWriters
 
         public bool IsCommitted(long transactionId)
         {
-            return m_concurrentWriterAutoCommit.IsCommitted(transactionId);
+            return m_archiveWriter.IsCommitted(transactionId);
         }
 
         public bool IsDiskCommitted(long transactionId)
         {
-            return m_concurrentArchiveMerger.Last().IsCommitted(transactionId);
+            return m_concurrentArchiveMerger.Last().WaitHandles.IsCommitted(transactionId);
         }
 
         public bool WaitForCommitted(long transactionId)
         {
-            return m_concurrentWriterAutoCommit.WaitForCommit(transactionId, false);
+            return m_archiveWriter.WaitForCommit(transactionId, false);
         }
 
         public bool WaitForDiskCommitted(long transactionId)
         {
-            return m_concurrentArchiveMerger.Last().WaitForCommit(transactionId, false);
+            return m_concurrentArchiveMerger.Last().WaitHandles.WaitForCommit(transactionId, false);
         }
 
         public void Commit()
         {
-            m_concurrentWriterAutoCommit.Commit();
+            m_archiveWriter.Commit();
         }
 
         public void CommitToDisk()
         {
-            m_concurrentWriterAutoCommit.CommitAndRollover();
+            m_archiveWriter.CommitAndRollover();
             for (int x = 0; x < m_concurrentArchiveMerger.Length; x++)
             {
                 if (x == m_concurrentArchiveMerger.Length - 1)
                 {
-                    m_concurrentArchiveMerger[x].Commit();
+                    m_concurrentArchiveMerger[x].WaitHandles.Commit();
                 }
                 else
                 {
-                    m_concurrentArchiveMerger[x].CommitAndRollover();
+                    m_concurrentArchiveMerger[x].WaitHandles.CommitAndRollover();
                 }
             }
         }
@@ -170,21 +192,21 @@ namespace openHistorian.Engine.ArchiveWriters
         {
             get
             {
-                return m_concurrentWriterAutoCommit.LastCommittedSequenceNumber;
+                return m_archiveWriter.LastCommittedSequenceNumber;
             }
         }
         public long LastDiskCommittedTransactionId
         {
             get
             {
-                return m_concurrentArchiveMerger.Last().LastCommittedSequenceNumber;
+                return m_concurrentArchiveMerger.Last().WaitHandles.LastCommittedSequenceNumber;
             }
         }
         public long CurrentTransactionId
         {
             get
             {
-                return m_concurrentWriterAutoCommit.CurrentSequenceNumber;
+                return m_archiveWriter.CurrentSequenceNumber;
             }
         }
 

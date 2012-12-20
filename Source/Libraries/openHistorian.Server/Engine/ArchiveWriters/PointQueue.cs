@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ConcurrentPointQueue.cs - Gbtc
+//  PointQueue.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,7 +30,7 @@ namespace openHistorian.Engine.ArchiveWriters
     /// <summary>
     /// Provides a way for points to be synchronously queued and processed in bulk.
     /// </summary>
-    internal class ConcurrentPointQueue : IDisposable
+    internal class PointQueue : IDisposable
     {
         const int SizeOfData = 32;
 
@@ -46,7 +46,7 @@ namespace openHistorian.Engine.ArchiveWriters
         /// <summary>
         /// Creates a new inbound queue to buffer points.
         /// </summary>
-        public ConcurrentPointQueue()
+        public PointQueue()
         {
             m_sequenceId = 0;
             m_syncRoot = new object();

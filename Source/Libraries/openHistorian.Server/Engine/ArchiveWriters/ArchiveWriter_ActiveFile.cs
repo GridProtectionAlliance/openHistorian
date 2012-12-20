@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ConcurrentWriterAutoCommit_ActiveFile.cs - Gbtc
+//  ArchiveWriter_ActiveFile.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -33,7 +33,7 @@ namespace openHistorian.Engine.ArchiveWriters
     /// Responsible for getting data into the database. This class will prebuffer
     /// points and commit them in bulk operations.
     /// </summary>
-    internal partial class ConcurrentWriterAutoCommit 
+    internal partial class ArchiveWriter 
     {
         internal class ActiveFile
         {

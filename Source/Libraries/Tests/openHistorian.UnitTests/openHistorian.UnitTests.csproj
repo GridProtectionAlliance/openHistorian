@@ -68,6 +68,8 @@
     <Compile Include="Collections\ResourceQueueCollection.cs" />
     <Compile Include="CompressionTest.cs" />
     <Compile Include="DebugStopwatch.cs" />
+    <Compile Include="Engine\ArchiveWriters\AsyncProcessTest.cs" />
+    <Compile Include="Engine\ArchiveWriters\CommitWaitHandlesTest.cs" />
     <Compile Include="FileStructure\DiskIOEnhanced2Test.cs" />
     <Compile Include="FileStructure\DiskIOEnhancedTest.cs" />
     <Compile Include="FileStructure\FileHeaderBlockTest.cs" />
