@@ -30,7 +30,7 @@ using openHistorian.Engine.Configuration;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
-    internal class AutoCommit : IArchiveWriter
+    internal class AutoCommit : IDisposable
     {
         List<ArchiveListRemovalStatus> m_pendingDispose;
         object m_syncRoot;

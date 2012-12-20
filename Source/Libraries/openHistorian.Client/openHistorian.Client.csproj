@@ -48,6 +48,7 @@
     <Compile Include="Data\Query\GetTableMethods.cs" />
     <Compile Include="Data\Query\ISignalCalculation.cs" />
     <Compile Include="Data\Query\ISignalWithType.cs" />
+    <Compile Include="HistorianClient.cs" />
     <Compile Include="HistorianDatabaseCollection.cs" />
     <Compile Include="IHistorianDatabaseCollection.cs" />
     <Compile Include="IHistorianDataReader.cs" />

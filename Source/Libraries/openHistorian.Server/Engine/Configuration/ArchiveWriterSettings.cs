@@ -31,16 +31,6 @@ namespace openHistorian.Engine.Configuration
     /// </summary>
     internal class ArchiveWriterSettings
     {
-        public ArchiveWriterSettings()
-        {
-            AutoCommit = true;
-        }
-        /// <summary>
-        /// Setting to false removes all threading features to make inserting much quicker.
-        /// This is optimal for bulk operations. However, all writes must be synchronized 
-        /// as write operations will not be thread safe.
-        /// </summary>
-        public bool AutoCommit { get; set; }
         /// <summary>
         /// On this interval, new data that is added to the stream will be written
         /// so it can be referenced by the end user. This is typically the 

@@ -38,6 +38,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HistorianServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Engine\Configuration\ArchiveInitializerSettings.cs" />
     <Compile Include="Engine\Configuration\ArchiveRolloverSettings.cs" />
@@ -53,16 +54,11 @@
     <Compile Include="Engine\ArchiveListSnapshot.cs" />
     <Compile Include="Engine\ArchiveList_Editor.cs" />
     <Compile Include="Engine\ArchiveReader.cs" />
-    <Compile Include="Engine\ArchiveWriters\ArchiveMerger.cs" />
     <Compile Include="Engine\ArchiveWriters\AutoCommit.cs" />
     <Compile Include="Engine\ArchiveWriters\ConcurrentArchiveMerger.cs" />
     <Compile Include="Engine\ArchiveWriters\ConcurrentPointQueue.cs" />
     <Compile Include="Engine\ArchiveWriters\ConcurrentWriterAutoCommit.cs" />
     <Compile Include="Engine\ArchiveWriters\ConcurrentWriterAutoCommit_ActiveFile.cs" />
-    <Compile Include="Engine\ArchiveWriters\ManualCommit.cs" />
-    <Compile Include="Engine\ArchiveWriters\WriterManualCommit.cs" />
-    <Compile Include="Engine\ArchiveWriters\WriterManualCommit_ActiveFile.cs" />
-    <Compile Include="Engine\IArchiveWriter.cs" />
     <Compile Include="Communications\ProcessClient.cs" />
     <Compile Include="Communications\SocketHistorian.cs" />
     <Compile Include="Streaming\StreamMux.cs" />

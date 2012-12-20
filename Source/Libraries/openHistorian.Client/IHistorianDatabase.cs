@@ -32,55 +32,15 @@ namespace openHistorian
     public interface IHistorianDatabase : IDisposable
     {
         /// <summary>
-        /// Determines if this database is currently online.
-        /// </summary>
-        bool IsOnline { get; }
-
-        /// <summary>
-        /// The most recent transaction that is available to be queried.
-        /// </summary>
-        long LastCommittedTransactionId { get; }
-        /// <summary>
-        /// The most recent transaction id that has been committed to a perminent storage system.
-        /// </summary>
-        long LastDiskCommittedTransactionId { get; }
-        /// <summary>
-        /// The transaction of the most recently inserted data.
-        /// </summary>
-        long CurrentTransactionId { get; }
-        
-        /// <summary>
         /// Opens a stream connection that can be used to read 
         /// and write data to the current historian database.
         /// </summary>
         /// <returns></returns>
         IHistorianDataReader OpenDataReader();
-
-        /// <summary>
-        /// Takes the historian database offline
-        /// </summary>
-        /// <param name="waitTimeSeconds">the maximum number of seconds to wait before terminating all client connections.</param>
-        void TakeOffline(float waitTimeSeconds = 0);
-        /// <summary>
-        /// Brings this database online.
-        /// </summary>
-        void BringOnline();
-        /// <summary>
-        /// Shuts down this database.
-        /// </summary>
-        /// <param name="waitTimeSeconds">the maximum number of seconds to wait before terminating all client connections.</param>
-        void Shutdown(float waitTimeSeconds = 0);
         
         void Write(IPointStream points);
         void Write(ulong key1, ulong key2, ulong value1, ulong value2);
-        long WriteBulk(IPointStream points);
-
-        bool IsCommitted(long transactionId);
-        bool IsDiskCommitted(long transactionId);
-
-        bool WaitForCommitted(long transactionId);
-        bool WaitForDiskCommitted(long transactionId);
-
+        
         void Commit();
         void CommitToDisk();
     }
