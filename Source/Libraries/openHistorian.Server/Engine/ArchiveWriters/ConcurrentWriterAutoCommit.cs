@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveWriter.cs - Gbtc
+//  ConcurrentWriterAutoCommit.cs - Gbtc
 //
 //  Copyright © 2012, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -36,7 +36,7 @@ namespace openHistorian.Engine.ArchiveWriters
     /// Responsible for getting data into the database. This class will prebuffer
     /// points and commit them in bulk operations.
     /// </summary>
-    internal partial class ArchiveWriter : IDisposable
+    internal partial class ConcurrentWriterAutoCommit : IDisposable
     {
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace openHistorian.Engine.ArchiveWriters
 
         ArchiveList m_archiveList;
 
-        PointQueue m_pointQueue;
+        ConcurrentPointQueue m_concurrentPointQueue;
 
         Thread m_insertThread;
 
@@ -99,12 +99,12 @@ namespace openHistorian.Engine.ArchiveWriters
         List<WaitingForCommit> m_pendingCommitRequests;
 
         /// <summary>
-        /// Creates a new <see cref="ArchiveWriter"/>.
+        /// Creates a new <see cref="ConcurrentWriterAutoCommit"/>.
         /// </summary>
         /// <param name="settings">The settings for this class.</param>
         /// <param name="archiveList">The list used to attach newly created file.</param>
         /// <param name="callbackFileComplete">Once a file is complete with this layer, this callback is invoked</param>
-        public ArchiveWriter(ArchiveWriterSettings settings, ArchiveList archiveList, Action<ArchiveFile,long> callbackFileComplete)
+        public ConcurrentWriterAutoCommit(ArchiveWriterSettings settings, ArchiveList archiveList, Action<ArchiveFile,long> callbackFileComplete)
         {
             if (settings == null)
                 throw new ArgumentNullException("settings");
@@ -124,7 +124,7 @@ namespace openHistorian.Engine.ArchiveWriters
 
             m_archiveList = archiveList;
 
-            m_pointQueue = new PointQueue();
+            m_concurrentPointQueue = new ConcurrentPointQueue();
 
             m_waitTimer = new ManualResetEvent(false);
             m_insertThread = new Thread(ProcessInsertingData);
@@ -165,7 +165,7 @@ namespace openHistorian.Engine.ArchiveWriters
                     }
                 }
 
-                m_pointQueue.GetPointBlock(out stream, out pointCount, out pendingSequenceNumber, forcedQuit);
+                m_concurrentPointQueue.GetPointBlock(out stream, out pointCount, out pendingSequenceNumber, forcedQuit);
 
                 double waitForNewFile = (m_settings.NewFileOnInterval - activeFile.FileAge).TotalMilliseconds;
                 double waitForNextCommitWindow = (m_settings.CommitOnInterval - activeFile.CommitAge).TotalMilliseconds;
@@ -256,7 +256,7 @@ namespace openHistorian.Engine.ArchiveWriters
         {
             get
             {
-                return m_pointQueue.SequenceId;
+                return m_concurrentPointQueue.SequenceId;
             }
         }
         public long LastCommittedSequenceNumber
@@ -289,7 +289,7 @@ namespace openHistorian.Engine.ArchiveWriters
         /// <param name="value2"></param>
         public long WriteData(ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            return m_pointQueue.WriteData(key1, key2, value1, value2);
+            return m_concurrentPointQueue.WriteData(key1, key2, value1, value2);
         }
 
         /// <summary>
@@ -305,7 +305,7 @@ namespace openHistorian.Engine.ArchiveWriters
             if (!m_disposed)
             {
                 StopExecution();
-                m_pointQueue.Dispose();
+                m_concurrentPointQueue.Dispose();
                 m_disposed = true;
             }
         }
@@ -363,13 +363,13 @@ namespace openHistorian.Engine.ArchiveWriters
 
         public void Commit()
         {
-            long sequenceId = m_pointQueue.SequenceId;
+            long sequenceId = m_concurrentPointQueue.SequenceId;
             WaitForCommit(sequenceId, true);
         }
 
         public void CommitAndRollover()
         {
-            long sequenceId = m_pointQueue.SequenceId;
+            long sequenceId = m_concurrentPointQueue.SequenceId;
             WaitForRollover(sequenceId, true);
         }
 

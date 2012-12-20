@@ -35,7 +35,7 @@ namespace openHistorian.Engine
     public class ArchiveDatabaseEngine : IHistorianDatabase
     {
         List<ArchiveListRemovalStatus> m_pendingDispose;
-        AutoCommit m_archiveWriter;
+        IArchiveWriter m_archiveWriter;
         ArchiveList m_archiveList;
         volatile bool m_disposed;
 
@@ -58,7 +58,10 @@ namespace openHistorian.Engine
 
             if (settings.ArchiveWriter != null)
             {
-                m_archiveWriter = new AutoCommit(settings, m_archiveList);
+                if (settings.ArchiveWriter.AutoCommit)
+                    m_archiveWriter = new AutoCommit(settings, m_archiveList);
+                else
+                    m_archiveWriter = new ManualCommit(settings, m_archiveList);
             }
         }
 
