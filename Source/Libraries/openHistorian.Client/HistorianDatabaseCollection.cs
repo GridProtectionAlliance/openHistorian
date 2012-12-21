@@ -114,7 +114,9 @@ namespace openHistorian
                 m_disposed = true;
                 foreach (var db in m_databases.Values)
                 {
-                    db.Dispose();
+                    IDisposable dbDisposable = db as IDisposable;
+                    if (dbDisposable != null)
+                        dbDisposable.Dispose();
                 }
             }
         }

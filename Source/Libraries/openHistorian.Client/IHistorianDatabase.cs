@@ -29,7 +29,7 @@ namespace openHistorian
     /// <summary>
     /// Represents a single historian database.
     /// </summary>
-    public interface IHistorianDatabase : IDisposable
+    public interface IHistorianDatabase
     {
         /// <summary>
         /// Opens a stream connection that can be used to read 
@@ -38,10 +38,39 @@ namespace openHistorian
         /// <returns></returns>
         IHistorianDataReader OpenDataReader();
         
+        /// <summary>
+        /// Writes the point stream to the database. 
+        /// </summary>
+        /// <param name="points"></param>
         void Write(IPointStream points);
+        /// <summary>
+        /// Writes an individual point to the database.
+        /// </summary>
+        /// <param name="key1"></param>
+        /// <param name="key2"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
         void Write(ulong key1, ulong key2, ulong value1, ulong value2);
-        
-        void Commit();
-        void CommitToDisk();
+        /// <summary>
+        /// Forces a soft commit on the database. A soft commit 
+        /// only commits data to memory. This allows other clients to read the data.
+        /// While soft committed, this data could be lost during an unexpected shutdown.
+        /// Soft commits usually occur within microseconds. 
+        /// </summary>
+        void SoftCommit();
+
+        /// <summary>
+        /// Forces a commit to the disk subsystem. Once this returns, the data will not
+        /// be lost due to an application crash or unexpected shutdown.
+        /// Hard commits can take 100ms or longer depending on how much data has to be committed. 
+        /// This requires two consecutive hardware cache flushes.
+        ///  </summary>
+        void HardCommit();
+
+        /// <summary>
+        /// Disconnects from the current database. 
+        /// </summary>
+        void Disconnect();
+
     }
 }

@@ -33,7 +33,10 @@ namespace openHistorian
     /// </summary>
     public enum ServerCommand : byte
     {
-        Connect,
+        ConnectToDatabase,
+        OpenReader,
+        DisconnectDatabase,
+        DisconnectReader,
         Disconnect,
         Read,
         CancelRead,

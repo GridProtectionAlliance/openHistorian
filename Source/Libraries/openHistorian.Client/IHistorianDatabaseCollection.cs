@@ -31,6 +31,11 @@ namespace openHistorian
 {
     public interface IHistorianDatabaseCollection
     {
+        /// <summary>
+        /// Connects to the following database. 
+        /// </summary>
+        /// <param name="databaseName"></param>
+        /// <returns></returns>
         IHistorianDatabase ConnectToDatabase(string databaseName);
     }
 }

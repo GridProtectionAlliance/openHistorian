@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communications\RemoteHistorian_Database.cs" />
+    <Compile Include="Communications\RemoteHistorian_DataReader.cs" />
     <Compile Include="Data\Query\GetTableMethods.cs" />
     <Compile Include="Data\Query\ISignalCalculation.cs" />
     <Compile Include="Data\Query\ISignalWithType.cs" />

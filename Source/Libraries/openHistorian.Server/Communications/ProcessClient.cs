@@ -38,7 +38,7 @@ namespace openHistorian.Communications
         BinaryStreamWrapper m_stream;
         IHistorianDatabaseCollection m_historian;
         IHistorianDatabase m_historianDatabase;
-        IHistorianDataReader m_historianRW;
+        IHistorianDataReader m_historianReader;
 
         public ProcessClient(NetworkBinaryStream netStream, IHistorianDatabaseCollection historian)
         {
@@ -66,7 +66,7 @@ namespace openHistorian.Communications
                     //m_netStream.Flush();
                     return;
                 }
-                ProcessRequests();
+                ProcessRequestsLevel1();
             }
             catch (Exception ex)
             {
@@ -95,14 +95,15 @@ namespace openHistorian.Communications
         /// This will cause the calling function to close the connection.
         /// </summary>
         /// <remarks></remarks>
-        void ProcessRequests()
+        void ProcessRequestsLevel1()
         {
             while (true)
             {
-                switch ((ServerCommand)m_stream.ReadByte())
+                ServerCommand command = (ServerCommand)m_stream.ReadByte();
+                switch (command)
                 {
-                    case ServerCommand.Connect:
-                        if (m_historianRW != null)
+                    case ServerCommand.ConnectToDatabase:
+                        if (m_historianDatabase != null)
                         {
                             //m_stream.Write((byte)ServerResponse.Error);
                             //m_stream.Write("Already connected to a database.");
@@ -111,48 +112,34 @@ namespace openHistorian.Communications
                         }
                         string databaseName = m_stream.ReadString();
                         m_historianDatabase = m_historian.ConnectToDatabase(databaseName);
-                        m_historianRW = m_historianDatabase.OpenDataReader();
+                        ProcessRequestsLevel2();
                         break;
                     case ServerCommand.Disconnect:
-                        if (m_historianRW == null)
-                        {
-                            //m_stream.Write((byte)ServerResponse.Success);
-                            //m_stream.Write("Good Bye");
-                            //m_netStream.Flush();
-                            return;
-                        }
-                        else
-                        {
-                            m_historianRW.Close();
-                            m_historianRW = null;
-                            //m_stream.Write((byte)ServerResponse.Success);
-                            //m_stream.Write("Disconnected from database");
-                            //m_netStream.Flush();
-                        }
+                        return;
                         break;
-                    case ServerCommand.Read:
-                        if (m_historianRW == null)
-                        {
-                            //m_stream.Write((byte)ServerResponse.Error);
-                            //m_stream.Write("Not connected to a database");
-                            //m_netStream.Flush();
-                            return;
-                        }
-                        ProcessRead();
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        /// <remarks></remarks>
+        void ProcessRequestsLevel2()
+        {
+            while (true)
+            {
+                switch ((ServerCommand)m_stream.ReadByte())
+                {
+                    case ServerCommand.OpenReader:
+                        m_historianReader = m_historianDatabase.OpenDataReader();
+                        ProcessRequestsLevel3();
                         break;
-                    case ServerCommand.CancelRead:
-                        //m_stream.Write((byte)ServerResponse.Success);
-                        //m_stream.Write("Read has been canceled");
-                        //m_netStream.Flush();
+                    case ServerCommand.DisconnectDatabase:
+                        m_historianDatabase.Disconnect();
+                        m_historianDatabase = null;
+                        return;
                         break;
                     case ServerCommand.Write:
-                        if (m_historianRW == null)
-                        {
-                            //m_stream.Write((byte)ServerResponse.Error);
-                            //m_stream.Write("Not connected to a database");
-                            //m_netStream.Flush();
-                            return;
-                        }
                         ProcessWrite();
                         break;
                     default:
@@ -162,6 +149,32 @@ namespace openHistorian.Communications
 
         }
 
+        void ProcessRequestsLevel3()
+        {
+            while (true)
+            {
+                switch ((ServerCommand)m_stream.ReadByte())
+                {
+                    case ServerCommand.DisconnectReader:
+                        m_historianReader.Close();
+                        m_historianReader = null;
+                        return;
+                        break;
+                    case ServerCommand.Read:
+                        ProcessRead();
+                        break;
+                    case ServerCommand.CancelRead:
+                        //m_stream.Write((byte)ServerResponse.Success);
+                        //m_stream.Write("Read has been canceled");
+                        //m_netStream.Flush();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+        }
+        
         void ProcessRead()
         {
             ulong startKey1 = m_stream.ReadUInt64();
@@ -177,14 +190,14 @@ namespace openHistorian.Communications
             IPointStream scanner;
             if (countOfKey2 > 0)
             {
-                scanner = m_historianRW.Read(startKey1, endKey1, keys);
+                scanner = m_historianReader.Read(startKey1, endKey1, keys);
             }
             else
             {
                 if (startKey1 == endKey1)
-                    scanner = m_historianRW.Read(startKey1);
+                    scanner = m_historianReader.Read(startKey1);
                 else
-                    scanner = m_historianRW.Read(startKey1, endKey1);
+                    scanner = m_historianReader.Read(startKey1, endKey1);
             }
 
             ulong oldKey1 = 0, oldKey2 = 0, oldValue1 = 0, oldValue2 = 0;

@@ -57,6 +57,10 @@ namespace openHistorian.Communications
             m_isRunning = true;
             m_listener = new TcpListener(port);
             m_listener.Start();
+
+            //var socket = m_listener.AcceptSocketAsync();
+            //socket.ContinueWith(ProcessDataRequests);
+            //socket.Start();
             ThreadPool.QueueUserWorkItem(ProcessDataRequests);
         }
 
@@ -96,7 +100,6 @@ namespace openHistorian.Communications
         {
             if (m_disposed)
             {
-
                 m_disposed = true;
                 if (m_ownsHistorian && m_historian != null)
                     ((HistorianDatabaseCollection)m_historian).Dispose();

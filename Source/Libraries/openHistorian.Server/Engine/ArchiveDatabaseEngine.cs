@@ -148,14 +148,22 @@ namespace openHistorian.Engine
             return m_archiveWriter.WaitForDiskCommitted(transactionId);
         }
 
-        public void Commit()
+        public void SoftCommit()
         {
             m_archiveWriter.Commit();
         }
 
-        public void CommitToDisk()
+        public void HardCommit()
         {
             m_archiveWriter.CommitToDisk();
+        }
+
+        /// <summary>
+        /// Disconnects from the current database. 
+        /// </summary>
+        public void Disconnect()
+        {
+            //Does nothing
         }
 
         /// <summary>

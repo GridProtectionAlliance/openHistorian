@@ -40,34 +40,32 @@ namespace openHistorian.Local
 
             using (var engine = new HistorianDatabaseCollection())
             {
-                engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsFileBased(),"c:\\temp\\"));
+                engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsFileBased(), "c:\\temp\\"));
 
-                using (var db = engine.ConnectToDatabase("dEfAuLt"))
+                var db = engine.ConnectToDatabase("dEfAuLt");
+                for (uint x = 0; x < 1000; x++)
                 {
-                    for (uint x = 0; x < 1000; x++)
+                    db.Write(x, 0, 0, 0);
+                }
+                db.SoftCommit();
+                using (var dbr = db.OpenDataReader())
+                {
+                    Assert.IsTrue(dbr.Read(0, 1000).Count() == 1000);
+                    Assert.IsTrue(dbr.Read(5, 25).Count() == 21);
+                    var rdr = dbr.Read(900, 2000);
+
+                    for (uint x = 1000; x < 2001; x++)
                     {
                         db.Write(x, 0, 0, 0);
                     }
-                    db.Commit();
-                    using (var dbr = db.OpenDataReader())
-                    {
-                        Assert.IsTrue(dbr.Read(0, 1000).Count() == 1000);
-                        Assert.IsTrue(dbr.Read(5, 25).Count() == 21);
-                        var rdr = dbr.Read(900, 2000);
+                    db.SoftCommit();
 
-                        for (uint x = 1000; x < 2001; x++)
-                        {
-                            db.Write(x, 0, 0, 0);
-                        }
-                        db.Commit();
+                    Assert.IsTrue(rdr.Count() == 100);
+                }
+                using (var dbr = db.OpenDataReader())
+                {
 
-                        Assert.IsTrue(rdr.Count() == 100);
-                    }
-                    using (var dbr = db.OpenDataReader())
-                    {
-
-                        Assert.IsTrue(dbr.Read(900, 2000).Count() == 1101);
-                    }
+                    Assert.IsTrue(dbr.Read(900, 2000).Count() == 1101);
                 }
             }
 
@@ -75,7 +73,7 @@ namespace openHistorian.Local
             {
                 engine.Add("default", new ArchiveDatabaseEngine(WriterOptions.IsFileBased(), "c:\\temp\\"));
 
-                using (var db = engine.ConnectToDatabase("dEfAuLt"))
+                var db = engine.ConnectToDatabase("dEfAuLt");
                 using (var dbr = db.OpenDataReader())
                 {
                     Assert.IsTrue(dbr.Read(900, 2000).Count() == 1101);
@@ -89,8 +87,8 @@ namespace openHistorian.Local
             using (var engine = new HistorianDatabaseCollection())
             {
                 engine.Add("default", new ArchiveDatabaseEngine((WriterOptions?)null));
-       
-                using (var db = engine.ConnectToDatabase("dEfAuLt"))
+
+                var db = engine.ConnectToDatabase("dEfAuLt");
                 {
                     using (var dbr = db.OpenDataReader())
                     {
@@ -108,9 +106,9 @@ namespace openHistorian.Local
 
             using (var engine = new HistorianDatabaseCollection())
             {
-                engine.Add("default", new ArchiveDatabaseEngine(null,file));
-                
-                using (var db = engine.ConnectToDatabase("dEfAuLt"))
+                engine.Add("default", new ArchiveDatabaseEngine(null, file));
+
+                var db = engine.ConnectToDatabase("dEfAuLt");
                 using (var dbr = db.OpenDataReader())
                 {
                     Assert.AreEqual(10, dbr.Read(0, 1000).Count());
@@ -128,9 +126,9 @@ namespace openHistorian.Local
 
             using (var engine = new HistorianDatabaseCollection())
             {
-                engine.Add("default", new ArchiveDatabaseEngine(null, file1,file2));
-                
-                using (var db = engine.ConnectToDatabase("dEfAuLt"))
+                engine.Add("default", new ArchiveDatabaseEngine(null, file1, file2));
+
+                var db = engine.ConnectToDatabase("dEfAuLt");
                 using (var dbr = db.OpenDataReader())
                 {
                     Assert.AreEqual(20, dbr.Read(0, 1000).Count());
@@ -152,7 +150,7 @@ namespace openHistorian.Local
             {
                 engine.Add("default", new ArchiveDatabaseEngine(null, "c:\\temp\\"));
 
-                using (var db = engine.ConnectToDatabase("dEfAuLt"))
+                var db = engine.ConnectToDatabase("dEfAuLt");
                 using (var dbr = db.OpenDataReader())
                 {
                     Assert.AreEqual(20, dbr.Read(0, 1000).Count());

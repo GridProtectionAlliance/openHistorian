@@ -47,7 +47,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="openHistorian.Archive.dll\Sample 1 - Write Archive Points.cs" />
-    <Compile Include="openHistorian.Server.dll\Sample1.cs" />
+    <Compile Include="openHistorian.Server.dll\Sample4 - Single Database Client.cs" />
+    <Compile Include="openHistorian.Server.dll\Sample3 - Single Database Client.cs" />
+    <Compile Include="openHistorian.Server.dll\Sample2 - Multi Database Server.cs" />
+    <Compile Include="openHistorian.Server.dll\Sample1 - Single Database Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
