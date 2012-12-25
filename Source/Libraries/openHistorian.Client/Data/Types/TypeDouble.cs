@@ -26,7 +26,7 @@ using System;
 namespace openHistorian.Data.Types
 {
     /// <summary>
-    /// Method for converting data to and from a <see cref="Single"/>.
+    /// Method for converting data to and from a <see cref="Double"/>.
     /// </summary>
     public unsafe class TypeDouble
         : TypeBase

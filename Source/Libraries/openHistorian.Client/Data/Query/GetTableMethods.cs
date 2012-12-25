@@ -38,6 +38,11 @@ namespace openHistorian.Data.Query
         KeyValuePair<object, IList<ISignalWithType>> ColumnGroups { get; }
     }
 
+    public interface ISignalWithName : ISignalWithType
+    {
+        string TagName { get; }
+    }
+
     public static class GetTableMethods
     {
 
@@ -46,14 +51,12 @@ namespace openHistorian.Data.Query
             return null;
         }
 
-        public static DataTable GetTable(this IHistorianDatabase database, ulong start, ulong stop, IList<ISignalWithType> columns)
+        public static DataTable GetTable(this IHistorianDatabase database, ulong start, ulong stop, IList<ISignalWithName> columns)
         {
             if (columns.Any((x) => !x.HistorianId.HasValue))
             {
                 throw new Exception("All columns must be contained in the historian for this function to work.");
             }
-
-            //ToDO: Consider requiring a name with the signal for the column header
 
             var results = database.GetSignals(start, stop, columns);
             int[] columnPosition = new int[columns.Count];
@@ -64,14 +67,13 @@ namespace openHistorian.Data.Query
             table.Columns.Add("Time", typeof(DateTime));
             foreach (var signal in columns)
             {
-                table.Columns.Add("", typeof(double));
+                table.Columns.Add(signal.TagName, typeof(double));
             }
-
+            
             for (int x = 0; x < columns.Count; x++)
             {
                 signals[x] = results[columns[x].HistorianId.Value];
             }
-
 
             while (true)
             {
