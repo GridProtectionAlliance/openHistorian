@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using openVisN.Calculations;
 using openVisN.Library;
@@ -60,10 +61,20 @@ namespace openVisN
         public MetadataBase VoltAmpre;
         public MetadataBase VoltAmpreHour;
 
-        public void CreateCalculatedSignals()
+        public MetadataBase VoltageMagnitudePu;
+
+        public MetadataBase VoltageAngleReference;
+
+        public void CreateCalculatedSignals(MetadataBase angleReference)
         {
+            var calcPu = new SignalScaling(Math.Sqrt(3) / ExtraData.NominalVoltage, VoltageMagnitude);
+            calcPu.GetPoints(out VoltageMagnitudePu);
+
             var calc = new SinglePhasorPowerSignals(VoltageMagnitude, VoltageAngle, CurrentMagnitude, CurrentAngle);
             calc.GetPoints(out Watt, out PowerFactor, out VoltAmpre, out VoltAmpreHour);
+
+            var calcRef = new SignalAngleDifference(VoltageAngle,angleReference);
+            calcRef.GetPoints(out VoltageAngleReference);
         }
 
 
@@ -82,7 +93,11 @@ namespace openVisN
                     Watt,
                     PowerFactor,
                     VoltAmpre,
-                    VoltAmpreHour
+                    VoltAmpreHour,
+
+                    VoltageMagnitudePu,
+
+                    VoltageAngleReference
                 };
             return lst;
 

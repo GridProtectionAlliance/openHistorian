@@ -27,6 +27,7 @@ using System.Linq;
 using System.Threading;
 using openHistorian;
 using openHistorian.Engine;
+using openVisN.Calculations;
 using openVisN.Library;
 using openHistorian.Data.Query;
 
@@ -34,7 +35,7 @@ namespace openVisN.Framework
 {
     public class SubscriptionFramework
     {
-        
+
         public event EventHandler<QueryResultsEventArgs> NewQueryResults
         {
             add
@@ -47,6 +48,19 @@ namespace openVisN.Framework
             }
         }
 
+        public event EventHandler<QueryResultsEventArgs> SynchronousNewQueryResults
+        {
+            add
+            {
+                m_updateFramework.SynchronousNewQueryResults += value;
+            }
+            remove
+            {
+                m_updateFramework.SynchronousNewQueryResults -= value;
+            }
+        }
+
+        SignalAssignment m_angleReference;
         UpdateFramework m_updateFramework;
         object m_syncRoot;
 
@@ -64,6 +78,8 @@ namespace openVisN.Framework
 
         public SubscriptionFramework(string[] paths)
         {
+            m_angleReference = new SignalAssignment();
+
             HistorianDatabaseCollection databaseCollection = new HistorianDatabaseCollection();
             databaseCollection.Add("Full Resolution Synchrophasor", new ArchiveDatabaseEngine(null, paths));
             HistorianQuery query = new HistorianQuery(databaseCollection);
@@ -99,6 +115,9 @@ namespace openVisN.Framework
 
         void LoadSignalsAndSignalGroups()
         {
+            MetadataBase angleReference;
+            m_angleReference.GetPoints(out angleReference);
+
             var allSignals = new AllSignals();
             var allSignalGroups = new AllSignalGroups();
 
@@ -107,7 +126,7 @@ namespace openVisN.Framework
 
             allSignalGroups.SignalGroups.ForEach(x =>
                 {
-                    var group = x.CreateGroup(allPoints);
+                    var group = x.CreateGroup(allPoints, angleReference);
                     group.GetAllSignals().ForEach(y => m_allSignals.Add(y));
                     m_allSignalGroups.Add(group);
                 });
@@ -149,13 +168,18 @@ namespace openVisN.Framework
             RefreshActivePoints();
         }
 
+        public void SetAngleReference(MetadataBase signal)
+        {
+            m_angleReference.SetNewBaseSignal(signal);
+        }
+
         void RefreshActivePoints()
         {
             HashSet<MetadataBase> currentSignals = new HashSet<MetadataBase>();
             foreach (var signal in m_activeSignals)
                 currentSignals.Add(signal);
             foreach (var subscriber in m_subscribers)
-                subscriber.GetAllDesiredSignals(currentSignals,m_activeSignalGroups);
+                subscriber.GetAllDesiredSignals(currentSignals, m_activeSignalGroups);
 
             foreach (var signal in currentSignals.ToArray())
             {
@@ -166,7 +190,7 @@ namespace openVisN.Framework
 
         public void ChangeDateRange(DateTime lowerBounds, DateTime upperBounds)
         {
-            m_updateFramework.Execute(lowerBounds,upperBounds);
+            m_updateFramework.Execute(lowerBounds, upperBounds);
         }
 
         public void RefreshQuery()

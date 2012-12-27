@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using openHistorian.Data.Query;
+using GSF.Threading;
 
 namespace openVisN.Framework
 {
@@ -37,25 +38,28 @@ namespace openVisN.Framework
 
     public class QueryResultsEventArgs : EventArgs
     {
-        public IDictionary<Guid,SignalDataBase> Results { get; private set; }
+        public IDictionary<Guid, SignalDataBase> Results { get; private set; }
         public QueryResultsEventArgs(IDictionary<Guid, SignalDataBase> results)
         {
             Results = results;
         }
     }
 
-    public class UpdateFramework
+    public class UpdateFramework : IDisposable
     {
+        AsyncRunner m_async;
+
         public event EventHandler<QueryResultsEventArgs> NewQueryResults;
+        public event EventHandler<QueryResultsEventArgs> SynchronousNewQueryResults;
+
+        SynchronousEvent<QueryResultsEventArgs> m_syncEvent;
 
         HistorianQuery m_query;
         object m_syncRoot;
         volatile bool m_enabled;
-        Thread m_queryProcessingThread;
         DateTime m_lowerBounds;
         DateTime m_upperBounds;
         DateTime m_focusedDate;
-        ManualResetEvent m_executeUpdate;
         ExecutionMode m_mode = ExecutionMode.Manual;
 
         TimeSpan m_automaticExecutionTimeLag;
@@ -66,87 +70,23 @@ namespace openVisN.Framework
 
         public UpdateFramework(HistorianQuery query)
         {
-            m_activeSignals=new List<MetadataBase>();
+            m_enabled = true;
+            m_syncEvent = new SynchronousEvent<QueryResultsEventArgs>();
+            m_syncEvent.CustomEvent += m_syncEvent_CustomEvent;
+            m_async = new AsyncRunner();
+            m_async.Running += m_async_Running;
+            m_activeSignals = new List<MetadataBase>();
             m_query = query;
             m_syncRoot = new object();
-            m_executeUpdate=new ManualResetEvent(false);
         }
 
-        public ExecutionMode Mode
+        void m_syncEvent_CustomEvent(object sender, QueryResultsEventArgs e)
         {
-            get
-            {
-                return m_mode;
-            }
-            set
-            {
-                m_mode = value;
-            }
+            if (SynchronousNewQueryResults != null)
+                SynchronousNewQueryResults(this, e);
         }
 
-        public bool Enabled
-        {
-            get
-            {
-                return m_enabled;
-            }
-            set
-            {
-                if (!m_enabled && value)
-                {
-                    m_enabled = true;
-                    m_queryProcessingThread = new Thread(ProcessUpdates);
-                    m_queryProcessingThread.IsBackground = true;
-                    m_queryProcessingThread.Start();
-                }
-                m_enabled = value;
-            }
-        }
-
-        public void Execute()
-        {
-            m_executeUpdate.Set();
-        }
-
-        public void Execute(DateTime startTime, DateTime endTime)
-        {
-            lock(m_syncRoot)
-            {
-                m_lowerBounds = startTime;
-                m_upperBounds = endTime;
-            }
-            m_executeUpdate.Set();
-        }
-
-        public void UpdateSignals(List<MetadataBase> activeSignals)
-        {
-            lock(m_syncRoot)
-            {
-                m_activeSignals = activeSignals;
-            }
-            m_executeUpdate.Set();
-        }
-
-        void ProcessUpdates()
-        {
-            while (m_enabled)
-            {
-                if (Mode == ExecutionMode.Manual)
-                {
-                    m_executeUpdate.WaitOne();
-                    m_executeUpdate.Reset();
-                    ExecuteQuery();
-                }
-                else
-                {
-                    m_executeUpdate.WaitOne(m_refreshInterval);
-                    m_executeUpdate.Reset();
-                    ExecuteQuery();
-                }
-            }
-        }
-
-        void ExecuteQuery()
+        void m_async_Running(object sender, EventArgs e)
         {
             DateTime startTime;
             DateTime stopTime;
@@ -172,10 +112,79 @@ namespace openVisN.Framework
             }
 
             var results = m_query.GetQueryResult(startTime, stopTime, 0, activeSignals);
-            NewQueryResults(this, new QueryResultsEventArgs(results));
+
+            if (NewQueryResults != null)
+                NewQueryResults(this, new QueryResultsEventArgs(results));
+            if (SynchronousNewQueryResults != null)
+                m_syncEvent.RaiseEvent(new QueryResultsEventArgs(results));
+
+            lock (m_syncRoot)
+            {
+                if (Mode == ExecutionMode.Automatic)
+                {
+                    m_async.RunAfterDelay(m_refreshInterval);
+                }
+            }
         }
 
+        public ExecutionMode Mode
+        {
+            get
+            {
+                return m_mode;
+            }
+            set
+            {
+                m_mode = value;
+                m_async.Run();
+            }
+        }
 
+        public bool Enabled
+        {
+            get
+            {
+                return m_enabled;
+            }
+            set
+            {
+                if (!m_enabled && value)
+                {
+                    throw new Exception("Cannot be restarted");
+                }
+                if (!value)
+                    m_async.StopExecuting();
+                m_enabled = value;
+            }
+        }
 
+        public void Execute()
+        {
+            m_async.Run();
+        }
+
+        public void Execute(DateTime startTime, DateTime endTime)
+        {
+            lock (m_syncRoot)
+            {
+                m_lowerBounds = startTime;
+                m_upperBounds = endTime;
+            }
+            m_async.Run();
+        }
+
+        public void UpdateSignals(List<MetadataBase> activeSignals)
+        {
+            lock (m_syncRoot)
+            {
+                m_activeSignals = activeSignals;
+            }
+            m_async.Run();
+        }
+
+        public void Dispose()
+        {
+            m_async.StopExecuting();
+        }
     }
 }

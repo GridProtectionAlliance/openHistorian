@@ -74,9 +74,9 @@ namespace frameworkVisN
         public FrmMain()
         {
             InitializeComponent();
-            m_framework = new SubscriptionFramework(new string[] { @"P:\August 2012.d2" });
+            m_framework = new SubscriptionFramework(new string[] { @"H:\August 2012.d2" });
             m_framework.AddSubscriber(this);
-            m_framework.NewQueryResults += m_framework_NewQueryResults;
+            m_framework.SynchronousNewQueryResults += m_framework_NewQueryResults;
             ChkAllSignals.DisplayMember = "DisplayName";
         }
 
@@ -197,16 +197,28 @@ namespace frameworkVisN
 
         public void GetAllDesiredSignals(HashSet<MetadataBase> activeSignals, HashSet<SignalGroup> currentlyActiveGroups)
         {
+            MetadataBase signalReference = null;
             m_frequencySignals.Clear();
+            m_voltageAngleSignals.Clear();
             foreach (var group in currentlyActiveGroups)
             {
                 SinglePhasorTerminal calc = group as SinglePhasorTerminal;
                 if (calc != null)
                 {
-                    m_frequencySignals.Add(calc.Frequency.SignalId);
-                    activeSignals.Add(calc.Frequency);
-                    m_voltageAngleSignals.Add(calc.VoltageAngle.SignalId);
-                    activeSignals.Add(calc.VoltageAngle);
+                    if (signalReference == null)
+                    {
+                        signalReference = calc.VoltageAngle;
+                        m_framework.SetAngleReference(signalReference);
+                    }
+
+                    m_frequencySignals.Add(calc.VoltageAngleReference.SignalId);
+                    activeSignals.Add(calc.VoltageAngleReference);
+                    //m_frequencySignals.Add(calc.Frequency.SignalId);
+                    //activeSignals.Add(calc.Frequency);
+                    m_voltageAngleSignals.Add(calc.VoltageMagnitudePu.SignalId);
+                    activeSignals.Add(calc.VoltageMagnitudePu);
+                    //m_voltageAngleSignals.Add(calc.VoltageAngle.SignalId);
+                    //activeSignals.Add(calc.VoltageAngle);
                 }
             }
 

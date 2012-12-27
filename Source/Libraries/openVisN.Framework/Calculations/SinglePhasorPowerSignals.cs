@@ -43,10 +43,10 @@ namespace openVisN.Calculations
                                        MetadataBase currentMagnitudePointId, MetadataBase currentAnglePointId)
             : base(voltageMagnitudePointId, voltageAnglePointId, currentMagnitudePointId, currentAnglePointId)
         {
-            Watt = new MetadataDouble(Guid.NewGuid(), 0, "", "", this);
-            PowerFactor = new MetadataDouble(Guid.NewGuid(), 0, "", "", this);
-            VoltAmpre = new MetadataDouble(Guid.NewGuid(), 0, "", "", this);
-            VoltAmpreReactive = new MetadataDouble(Guid.NewGuid(), 0, "", "", this);
+            Watt = new MetadataDouble(Guid.NewGuid(), null, "", "", this);
+            PowerFactor = new MetadataDouble(Guid.NewGuid(), null, "", "", this);
+            VoltAmpre = new MetadataDouble(Guid.NewGuid(), null, "", "", this);
+            VoltAmpreReactive = new MetadataDouble(Guid.NewGuid(), null, "", "", this);
         }
 
         public void GetPoints(out MetadataBase watt, out MetadataBase powerFactor, out MetadataBase voltAmpre, out MetadataBase voltAmpreReactive)

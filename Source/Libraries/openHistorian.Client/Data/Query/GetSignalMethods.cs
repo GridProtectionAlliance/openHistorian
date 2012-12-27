@@ -156,8 +156,11 @@ namespace openHistorian.Data.Query
                     results.AddSignalIfExists(time, point, value);
                 }
             }
+
             foreach (var signal in results.Values)
+            {
                 signal.Completed();
+            }
             return results;
         }
 

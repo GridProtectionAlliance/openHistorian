@@ -75,6 +75,8 @@
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Threading\AsyncRunner.cs" />
+    <Compile Include="Threading\SynchronousEvent.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="UnmanagedMemory\BufferPool_AllocationList.cs" />
     <Compile Include="UnmanagedMemory\BufferPool_CollectionEngine.cs" />

@@ -73,7 +73,7 @@ namespace openVisN.Library
             D4 = long.Parse(parts[19]);
         }
 
-        public SignalGroup CreateGroup(Dictionary<ulong, MetadataBase> points)
+        public SignalGroup CreateGroup(Dictionary<ulong, MetadataBase> points, MetadataBase signalReference)
         {
             var signal = new SinglePhasorTerminal();
             signal.SignalGroupName = GroupName;
@@ -88,7 +88,9 @@ namespace openVisN.Library
             //AssignIfFound(D2, ref signal.CurrentMagnitude, points);
             //AssignIfFound(D3, ref signal.CurrentMagnitude, points);
             //AssignIfFound(D4, ref signal.CurrentMagnitude, points);
-            signal.CreateCalculatedSignals();
+            signal.ExtraData = this;
+
+            signal.CreateCalculatedSignals(signalReference);
             return signal;
         }
 
