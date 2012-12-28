@@ -39,12 +39,16 @@ namespace openVisN.Components
         int m_port = 0;
         bool m_useNetworkHistorian;
         bool m_enabled;
+        List<ISubscriber> m_pendingSubscribers=new List<ISubscriber>();
 
         string[] m_localDirectories = new string[0];
 
         public VisualizationFramework()
         {
             InitializeComponent();
+
+            m_framework = new SubscriptionFramework();
+
         }
 
         public VisualizationFramework(IContainer container)
@@ -52,47 +56,14 @@ namespace openVisN.Components
             container.Add(this);
 
             InitializeComponent();
-        }
 
-        public event EventHandler UpdateModeChanged
-        {
-            add
-            {
-                m_framework.UpdateModeChanged += value;
-            }
-            remove
-            {
-                m_framework.UpdateModeChanged -= value;
-            }
-        }
+            m_framework = new SubscriptionFramework();
 
-        public event EventHandler PointsChanged
-        {
-            add
-            {
-                m_framework.PointsChanged += value;
-            }
-            remove
-            {
-                m_framework.PointsChanged -= value;
-            }
-        }
-
-        public event EventHandler StateUpdated
-        {
-            add
-            {
-                m_framework.StateUpdated += value;
-            }
-            remove
-            {
-                m_framework.StateUpdated -= value;
-            }
         }
 
         public void Start()
         {
-            m_framework=new SubscriptionFramework(Paths);
+            m_framework.Start(Paths);
         }
 
         public void Stop()
@@ -100,34 +71,12 @@ namespace openVisN.Components
 
         }
 
-        public void ActivateSignalGroup(SignalGroup signalGroup)
+        public SubscriptionFramework Framework
         {
-            m_framework.ActivateSignalGroup(signalGroup);
-        }
-
-        public void DeactivateSignalGroup(SignalGroup signalGroup)
-        {
-            m_framework.DeactivateSignalGroup(signalGroup);
-        }
-
-        public void ActivateSignal(MetadataBase signal)
-        {
-            m_framework.ActivateSignal(signal);
-        }
-
-        public void DeactivateSignal(MetadataBase signal)
-        {
-            m_framework.DeactivateSignal(signal);
-        }
-
-        public void AddSubscriber(ISubscriber subscriber)
-        {
-            m_framework.AddSubscriber(subscriber);
-        }
-
-        public void RemoveSubscriber(ISubscriber subscriber)
-        {
-            m_framework.RemoveSubscriber(subscriber);
+            get
+            {
+                return m_framework;
+            }
         }
 
         [

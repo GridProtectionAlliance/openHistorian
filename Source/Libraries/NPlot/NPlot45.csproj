@@ -43,7 +43,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AxesConstraint.cs" />
     <Compile Include="Axis.cs" />
-    <Compile Include="Bitmap.PlotSurface2D.cs" />
+    <Compile Include="Bitmap\PlotSurface2D.cs" />
     <Compile Include="DateTimeAxis.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="HorizontalLine.cs" />
@@ -58,6 +58,9 @@
     <Compile Include="NPlotException.cs" />
     <Compile Include="PhysicalAxis.cs" />
     <Compile Include="PlotSurface2D.cs" />
+    <Compile Include="Windows\PlotSurface2D_Interactions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PointD.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleD.cs" />
@@ -65,7 +68,7 @@
     <Compile Include="Transform2D.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VerticalLine.cs" />
-    <Compile Include="Windows.PlotSurface2D.cs">
+    <Compile Include="Windows\PlotSurface2D.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

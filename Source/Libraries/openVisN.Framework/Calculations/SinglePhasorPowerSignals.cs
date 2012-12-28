@@ -109,7 +109,7 @@ namespace openVisN.Calculations
                     posIA++;
 
                     double angleDiffRadians = (va - ia) * TwoPieOver360;
-                    double mva = vm * im;
+                    double mva = vm * im * 3;
                     double pf = Math.Cos(angleDiffRadians);
                     double mw = (mva * pf);
                     double mvar = mva * Math.Sin(angleDiffRadians);

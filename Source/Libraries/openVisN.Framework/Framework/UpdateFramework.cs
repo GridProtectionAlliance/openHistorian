@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using openHistorian.Data.Query;
 using GSF.Threading;
 
@@ -38,9 +37,15 @@ namespace openVisN.Framework
 
     public class QueryResultsEventArgs : EventArgs
     {
+        public DateTime StartTime { get; private set; }
+        public DateTime EndTime { get; private set; }
+        public object RequestedToken { get; private set; }
         public IDictionary<Guid, SignalDataBase> Results { get; private set; }
-        public QueryResultsEventArgs(IDictionary<Guid, SignalDataBase> results)
+        public QueryResultsEventArgs(IDictionary<Guid, SignalDataBase> results, object requestToken, DateTime startTime, DateTime endTime)
         {
+            StartTime = startTime;
+            EndTime = endTime;
+            RequestedToken = requestToken;
             Results = results;
         }
     }
@@ -54,6 +59,7 @@ namespace openVisN.Framework
 
         SynchronousEvent<QueryResultsEventArgs> m_syncEvent;
 
+        object m_RequestToken;
         HistorianQuery m_query;
         object m_syncRoot;
         volatile bool m_enabled;
@@ -68,7 +74,7 @@ namespace openVisN.Framework
 
         List<MetadataBase> m_activeSignals;
 
-        public UpdateFramework(HistorianQuery query)
+        public UpdateFramework()
         {
             m_enabled = true;
             m_syncEvent = new SynchronousEvent<QueryResultsEventArgs>();
@@ -76,8 +82,12 @@ namespace openVisN.Framework
             m_async = new AsyncRunner();
             m_async.Running += m_async_Running;
             m_activeSignals = new List<MetadataBase>();
-            m_query = query;
             m_syncRoot = new object();
+        }
+
+        public void Start(HistorianQuery query)
+        {
+            m_query = query;
         }
 
         void m_syncEvent_CustomEvent(object sender, QueryResultsEventArgs e)
@@ -91,10 +101,12 @@ namespace openVisN.Framework
             DateTime startTime;
             DateTime stopTime;
             DateTime currentTime;
+            object token;
             List<MetadataBase> activeSignals;
 
             lock (m_syncRoot)
             {
+                token = m_RequestToken;
                 if (Mode == ExecutionMode.Manual)
                 {
                     startTime = m_lowerBounds;
@@ -114,9 +126,9 @@ namespace openVisN.Framework
             var results = m_query.GetQueryResult(startTime, stopTime, 0, activeSignals);
 
             if (NewQueryResults != null)
-                NewQueryResults(this, new QueryResultsEventArgs(results));
+                NewQueryResults(this, new QueryResultsEventArgs(results, token, startTime, stopTime));
             if (SynchronousNewQueryResults != null)
-                m_syncEvent.RaiseEvent(new QueryResultsEventArgs(results));
+                m_syncEvent.RaiseEvent(new QueryResultsEventArgs(results, token, startTime, stopTime));
 
             lock (m_syncRoot)
             {
@@ -160,13 +172,16 @@ namespace openVisN.Framework
 
         public void Execute()
         {
+            lock (m_syncRoot)
+                m_RequestToken = null;
             m_async.Run();
         }
 
-        public void Execute(DateTime startTime, DateTime endTime)
+        public void Execute(DateTime startTime, DateTime endTime, object token)
         {
             lock (m_syncRoot)
             {
+                m_RequestToken = token;
                 m_lowerBounds = startTime;
                 m_upperBounds = endTime;
             }
@@ -177,6 +192,7 @@ namespace openVisN.Framework
         {
             lock (m_syncRoot)
             {
+                m_RequestToken = null;
                 m_activeSignals = activeSignals;
             }
             m_async.Run();

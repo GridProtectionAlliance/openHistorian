@@ -20,7 +20,7 @@
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
-
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using openVisN.Calculations;
@@ -31,8 +31,30 @@ namespace openVisN
 
     public abstract class SignalGroup
     {
+        SortedList<string, MetadataBase> m_signals;
         public string SignalGroupName { get; set; }
-        public abstract List<MetadataBase> GetAllSignals();
+
+        SortedList<string, MetadataBase> Signals
+        {
+            get
+            {
+                if (m_signals == null)
+                {
+                    var allSignals = GetAllSignalsNew();
+                    var signals = new SortedList<string, MetadataBase>(allSignals.Count);
+                    allSignals.ForEach((x) => signals.Add(x.Key, x.Value));
+                    m_signals = signals;
+                }
+                return m_signals;
+            }
+        }
+
+        public IList<MetadataBase> GetAllSignals()
+        {
+            return Signals.Values;
+        }
+
+        protected abstract List<KeyValuePair<string, MetadataBase>> GetAllSignalsNew();
 
         public override bool Equals(object obj)
         {
@@ -41,6 +63,14 @@ namespace openVisN
         public override int GetHashCode()
         {
             return SignalGroupName.GetHashCode();
+        }
+
+        public MetadataBase TryGetSignal(string signalType)
+        {
+            MetadataBase rv;
+            if (Signals.TryGetValue(signalType, out rv))
+                return rv;
+            return null;
         }
 
     }
@@ -59,7 +89,7 @@ namespace openVisN
         public MetadataBase Watt;
         public MetadataBase PowerFactor;
         public MetadataBase VoltAmpre;
-        public MetadataBase VoltAmpreHour;
+        public MetadataBase VoltAmpreReactive;
 
         public MetadataBase VoltageMagnitudePu;
 
@@ -71,35 +101,29 @@ namespace openVisN
             calcPu.GetPoints(out VoltageMagnitudePu);
 
             var calc = new SinglePhasorPowerSignals(VoltageMagnitude, VoltageAngle, CurrentMagnitude, CurrentAngle);
-            calc.GetPoints(out Watt, out PowerFactor, out VoltAmpre, out VoltAmpreHour);
+            calc.GetPoints(out Watt, out PowerFactor, out VoltAmpre, out VoltAmpreReactive);
 
-            var calcRef = new SignalAngleDifference(VoltageAngle,angleReference);
+            var calcRef = new SignalAngleDifference(VoltageAngle, angleReference);
             calcRef.GetPoints(out VoltageAngleReference);
         }
 
-
-        public override List<MetadataBase> GetAllSignals()
+        protected override List<KeyValuePair<string, MetadataBase>> GetAllSignalsNew()
         {
-            var lst = new List<MetadataBase>()
-                {
-                    VoltageMagnitude,
-                    VoltageAngle,
-                    CurrentMagnitude,
-                    CurrentAngle,
-                    Dfdt,
-                    Frequency,
-                    Status,
-
-                    Watt,
-                    PowerFactor,
-                    VoltAmpre,
-                    VoltAmpreHour,
-
-                    VoltageMagnitudePu,
-
-                    VoltageAngleReference
-                };
-            return lst;
+            var list = new List<KeyValuePair<string, MetadataBase>>();
+            list.Add(new KeyValuePair<string, MetadataBase>("Voltage Magnitude", VoltageMagnitude));
+            list.Add(new KeyValuePair<string, MetadataBase>("Voltage Angle", VoltageAngle));
+            list.Add(new KeyValuePair<string, MetadataBase>("Current Magnitude", CurrentMagnitude));
+            list.Add(new KeyValuePair<string, MetadataBase>("Current Angle", CurrentAngle));
+            list.Add(new KeyValuePair<string, MetadataBase>("DFDT", Dfdt));
+            list.Add(new KeyValuePair<string, MetadataBase>("Frequency", Frequency));
+            list.Add(new KeyValuePair<string, MetadataBase>("Status", Status));
+            list.Add(new KeyValuePair<string, MetadataBase>("Watt", Watt));
+            list.Add(new KeyValuePair<string, MetadataBase>("Power Factor", PowerFactor));
+            list.Add(new KeyValuePair<string, MetadataBase>("Volt Ampre", VoltAmpre));
+            list.Add(new KeyValuePair<string, MetadataBase>("Volt Ampre Reactive", VoltAmpreReactive));
+            list.Add(new KeyValuePair<string, MetadataBase>("Voltage Magnitude Per Unit", VoltageMagnitudePu));
+            list.Add(new KeyValuePair<string, MetadataBase>("Voltage Angle Reference", VoltageAngleReference));
+            return list;
 
         }
     }

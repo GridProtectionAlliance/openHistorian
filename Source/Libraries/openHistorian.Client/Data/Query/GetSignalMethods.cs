@@ -50,12 +50,14 @@ namespace openHistorian.Data.Query
         /// <param name="database"></param>
         /// <param name="startTime">the lower bound of the time</param>
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
+        /// <param name="timeout">the duration in milliseconds to wait before prematurely canceling the read.
+        /// A value of zero means there is no timeout.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, long timeout = 0)
         {
             var results = new Dictionary<ulong, SignalDataBase>();
 
-            using (var reader = database.OpenDataReader())
+            using (var reader = database.OpenDataReader(timeout))
             {
                 var stream = reader.Read(startTime, endTime);
                 ulong time, point, quality, value;
@@ -76,12 +78,14 @@ namespace openHistorian.Data.Query
         /// <param name="startTime">the lower bound of the time</param>
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
+        /// <param name="timeout">the duration in milliseconds to wait before prematurely canceling the read.
+        /// A value of zero means there is no timeout.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ulong> signals)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ulong> signals, long timeout = 0)
         {
             var results = signals.ToDictionary((x) => x, (x) => (SignalDataBase)new SignalDataUnknown());
 
-            using (var reader = database.OpenDataReader())
+            using (var reader = database.OpenDataReader(timeout))
             {
                 var stream = reader.Read(startTime, endTime, signals);
                 ulong time, point, quality, value;
@@ -104,12 +108,14 @@ namespace openHistorian.Data.Query
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <param name="conversion">a single conversion method to use for all signals</param>
+        /// <param name="timeout">the duration in milliseconds to wait before prematurely canceling the read.
+        /// A value of zero means there is no timeout.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ulong> signals, TypeBase conversion)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ulong> signals, TypeBase conversion, long timeout=0)
         {
             var results = signals.ToDictionary((x) => x, (x) => (SignalDataBase)new SignalData(conversion));
 
-            using (var reader = database.OpenDataReader())
+            using (var reader = database.OpenDataReader(timeout))
             {
                 var stream = reader.Read(startTime, endTime, signals);
                 ulong time, point, quality, value;
@@ -131,8 +137,10 @@ namespace openHistorian.Data.Query
         /// <param name="startTime">the lower bound of the time</param>
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
+        /// <param name="timeout">the duration in milliseconds to wait before prematurely canceling the read.
+        /// A value of zero means there is no timeout.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ISignalWithType> signals)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this IHistorianDatabase database, ulong startTime, ulong endTime, IEnumerable<ISignalWithType> signals, long timeout=0)
         {
             var results = new Dictionary<ulong, SignalDataBase>();
 
@@ -147,7 +155,7 @@ namespace openHistorian.Data.Query
                 }
             }
 
-            using (var reader = database.OpenDataReader())
+            using (var reader = database.OpenDataReader(timeout))
             {
                 var stream = reader.Read(startTime, endTime, signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
                 ulong time, point, quality, value;

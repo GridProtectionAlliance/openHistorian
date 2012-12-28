@@ -67,11 +67,13 @@ namespace openHistorian
         /// Opens a stream connection that can be used to read 
         /// and write data to the current historian database.
         /// </summary>
+        /// <param name="timeout">the duration in milliseconds to wait before prematurely canceling the read.
+        /// A value of zero means there is no timeout.</param>
         /// <returns></returns>
-        IHistorianDataReader IHistorianDatabase.OpenDataReader()
+        IHistorianDataReader IHistorianDatabase.OpenDataReader(long timeout = 0)
         {
             ConnectIfNotConnected();
-            return m_currentDatabase.OpenDataReader();
+            return m_currentDatabase.OpenDataReader(timeout);
         }
 
         void IHistorianDatabase.Write(IPointStream points)

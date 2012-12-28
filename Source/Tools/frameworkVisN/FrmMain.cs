@@ -175,7 +175,6 @@ namespace frameworkVisN
                 }
                 plot.Refresh();
             }
-
         }
 
         private void BtnGo_Click(object sender, EventArgs e)

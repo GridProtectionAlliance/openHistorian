@@ -170,12 +170,14 @@ namespace openHistorian.Engine
         /// Opens a stream connection that can be used to read 
         /// and write data to the current historian database.
         /// </summary>
+        /// <param name="timeout">the duration in milliseconds to wait before prematurely canceling the read.
+        /// A value of zero means there is no timeout.</param>
         /// <returns></returns>
-        public IHistorianDataReader OpenDataReader()
+        public IHistorianDataReader OpenDataReader(long timeout = 0)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            return new ArchiveReader(m_archiveList);
+            return new ArchiveReader(m_archiveList, timeout);
         }
 
         /// <summary>

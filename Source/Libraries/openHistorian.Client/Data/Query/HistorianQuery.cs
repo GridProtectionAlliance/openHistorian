@@ -45,7 +45,7 @@ namespace openHistorian.Data.Query
         {
             //ToDo: Modify the query base on the zoom level
             var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
-            return db.GetSignalsWithCalculations((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
+            return db.GetSignalsWithCalculations((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals,1000);
         }
 
     }

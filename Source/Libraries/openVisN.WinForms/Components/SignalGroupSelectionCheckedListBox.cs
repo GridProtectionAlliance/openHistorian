@@ -37,7 +37,7 @@ namespace openVisN.Components
 {
     public partial class SignalGroupSelectionCheckedListBox : UserControl, ISubscriber
     {
-        SubscriptionFramework m_frameworkCtrl;
+        VisualizationFramework m_frameworkCtrl;
         
         class SignalWrapper
         {
@@ -66,7 +66,7 @@ namespace openVisN.Components
 
         public void Initialize(SubscriptionFramework framework)
         {
-            m_frameworkCtrl = framework;
+            //m_frameworkCtrl = framework;
             chkAllSignals.Items.Clear();
             foreach (var signal in framework.AllSignalGroups)
             {
@@ -81,46 +81,46 @@ namespace openVisN.Components
         }
 
 
-        //[
-        //Bindable(true),
-        //Browsable(true),
-        //Category("Framework"),
-        //Description("The framework component that this control will use."),
-        //DefaultValue(null)
-        //]
-        //public VisualizationFramework Framework
-        //{
-        //    get
-        //    {
-        //        return m_frameworkCtrl;
-        //    }
-        //    set
-        //    {
-        //        if (!DesignMode)
-        //        {
-        //            if (!object.ReferenceEquals(m_frameworkCtrl, value))
-        //            {
-        //                if (m_frameworkCtrl != null)
-        //                {
-        //                    m_frameworkCtrl.RemoveSubscriber(this);
-        //                }
-        //                value.AddSubscriber(this);
-        //            }
-        //        }
-        //        m_frameworkCtrl = value;
-        //    }
-        //}
+        [
+        Bindable(true),
+        Browsable(true),
+        Category("Framework"),
+        Description("The framework component that this control will use."),
+        DefaultValue(null)
+        ]
+        public VisualizationFramework Framework
+        {
+            get
+            {
+                return m_frameworkCtrl;
+            }
+            set
+            {
+                if (!DesignMode)
+                {
+                    if (!object.ReferenceEquals(m_frameworkCtrl, value))
+                    {
+                        if (m_frameworkCtrl != null)
+                        {
+                            m_frameworkCtrl.Framework.AddSubscriber(this);
+                        }
+                        value.Framework.AddSubscriber(this);
+                    }
+                }
+                m_frameworkCtrl = value;
+            }
+        }
 
         private void chkAllSignals_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             SignalWrapper item = (SignalWrapper)chkAllSignals.Items[e.Index];
             if (e.NewValue == CheckState.Checked)
             {
-                m_frameworkCtrl.ActivateSignalGroup(item.Signal);
+                m_frameworkCtrl.Framework.ActivateSignalGroup(item.Signal);
             }
             else
             {
-                m_frameworkCtrl.DeactivateSignalGroup(item.Signal);
+                m_frameworkCtrl.Framework.DeactivateSignalGroup(item.Signal);
                 
             }
         }

@@ -63,7 +63,7 @@ namespace openVisN.Calculations
                 ulong time, timeRef;
                 double ang, angRef;
                 signal.GetData(pos, out time, out ang);
-                signalReference.GetData(pos, out timeRef, out angRef);
+                signalReference.GetData(posRef, out timeRef, out angRef);
 
                 if (time == timeRef)
                 {

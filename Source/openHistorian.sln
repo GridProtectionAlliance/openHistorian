@@ -63,9 +63,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.ClientTest", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleCode", "Documentation\SampleCode\SampleCode.csproj", "{8B758F73-B0A7-4921-A9D6-C9875BC86927}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winformsVisN", "Tools\winformsVisN\winformsVisN.csproj", "{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 16
+		SccNumberOfProjects = 17
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -129,6 +131,10 @@ Global
 		SccProjectTopLevelParentUniqueName15 = openHistorian.sln
 		SccProjectName15 = Documentation/SampleCode
 		SccLocalPath15 = Documentation\\SampleCode
+		SccProjectUniqueName16 = Tools\\winformsVisN\\winformsVisN.csproj
+		SccProjectTopLevelParentUniqueName16 = openHistorian.sln
+		SccProjectName16 = Tools/winformsVisN
+		SccLocalPath16 = Tools\\winformsVisN
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -292,6 +298,16 @@ Global
 		{8B758F73-B0A7-4921-A9D6-C9875BC86927}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{8B758F73-B0A7-4921-A9D6-C9875BC86927}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8B758F73-B0A7-4921-A9D6-C9875BC86927}.Release|x86.ActiveCfg = Release|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -311,6 +327,7 @@ Global
 		{DA2EF5C4-6C06-49F7-AFA7-FD5720E8DEBD} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{6CDA00B2-DFAE-4FDA-A4C0-074B6F3EB2B1} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{66E5837B-B40F-4D42-A83A-2DA281FDADA4} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
+		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{B2DA9C7B-24C1-449B-816D-C72F4661983E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{9C6B4307-6E10-4E9D-88C9-3CED89B34270} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{E2483910-5890-4F88-AF06-BE6C76EB5A9E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}

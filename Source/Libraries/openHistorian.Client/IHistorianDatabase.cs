@@ -35,14 +35,17 @@ namespace openHistorian
         /// Opens a stream connection that can be used to read 
         /// and write data to the current historian database.
         /// </summary>
+        /// <param name="timeout">the duration in milliseconds to wait before prematurely canceling the read.
+        /// A value of zero means there is no timeout.</param>
         /// <returns></returns>
-        IHistorianDataReader OpenDataReader();
-        
+        IHistorianDataReader OpenDataReader(long timeout = 0);
+
         /// <summary>
         /// Writes the point stream to the database. 
         /// </summary>
         /// <param name="points"></param>
         void Write(IPointStream points);
+        
         /// <summary>
         /// Writes an individual point to the database.
         /// </summary>
@@ -51,6 +54,7 @@ namespace openHistorian
         /// <param name="value1"></param>
         /// <param name="value2"></param>
         void Write(ulong key1, ulong key2, ulong value1, ulong value2);
+        
         /// <summary>
         /// Forces a soft commit on the database. A soft commit 
         /// only commits data to memory. This allows other clients to read the data.

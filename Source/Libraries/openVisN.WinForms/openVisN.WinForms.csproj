@@ -45,12 +45,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Components\ColorWheel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\ColorWheel.Designer.cs">
+      <DependentUpon>ColorWheel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ReferenceSignalSelectionComboBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ReferenceSignalSelectionComboBox.Designer.cs">
+      <DependentUpon>ReferenceSignalSelectionComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SetTimeWindowCalendarControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\SetTimeWindowCalendarControl.Designer.cs">
+      <DependentUpon>SetTimeWindowCalendarControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\SignalGroupSelectionCheckedListBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Components\SignalGroupSelectionCheckedListBox.Designer.cs">
       <DependentUpon>SignalGroupSelectionCheckedListBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SignalGroupTextLegend.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\SignalGroupTextLegend.Designer.cs">
+      <DependentUpon>SignalGroupTextLegend.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\SignalPlots.cs">
       <SubType>UserControl</SubType>
@@ -67,8 +90,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Components\ReferenceSignalSelectionComboBox.resx">
+      <DependentUpon>ReferenceSignalSelectionComboBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\SetTimeWindowCalendarControl.resx">
+      <DependentUpon>SetTimeWindowCalendarControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\SignalGroupSelectionCheckedListBox.resx">
       <DependentUpon>SignalGroupSelectionCheckedListBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\SignalGroupTextLegend.resx">
+      <DependentUpon>SignalGroupTextLegend.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\SignalPlots.resx">
       <DependentUpon>SignalPlots.cs</DependentUpon>
