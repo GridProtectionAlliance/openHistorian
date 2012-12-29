@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using openHistorian.Data;
 
 namespace openHistorian
 {
@@ -58,7 +59,15 @@ namespace openHistorian
         /// <param name="listOfKey2"></param>
         /// <returns></returns>
         IPointStream Read(ulong startKey1, ulong endKey1, IEnumerable<ulong> listOfKey2);
-        
+
+        /// <summary>
+        /// Reads all of the data where key1 exists in <see cref="KeyParser"/> and key2 is contained within <see cref="listOfKey2"/>.
+        /// </summary>
+        /// <param name="key1"></param>
+        /// <param name="listOfKey2"></param>
+        /// <returns></returns>
+        IPointStream Read(KeyParser key1, IEnumerable<ulong> listOfKey2);
+
         /// <summary>
         /// Closes the current reader.
         /// </summary>

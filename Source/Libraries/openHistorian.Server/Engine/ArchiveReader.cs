@@ -31,6 +31,7 @@ using GSF.Threading;
 using openHistorian.Collections;
 using openHistorian.Collections.KeyValue;
 using openHistorian.Archive;
+using openHistorian.Data;
 
 namespace openHistorian.Engine
 {
@@ -59,18 +60,23 @@ namespace openHistorian.Engine
 
         public IPointStream Read(ulong startKey1, ulong endKey1, IEnumerable<ulong> listOfKey2)
         {
+            return Read(new KeyParser(startKey1, endKey1), listOfKey2);
+        }
+
+        public IPointStream Read(KeyParser key1, IEnumerable<ulong> listOfKey2)
+        {
             ulong maxValue = listOfKey2.Union(new ulong[] { 0 }).Max();
             if (maxValue < 8 * 1024 * 64) //524288
             {
-                return new ReadStreamFilteredBitArray(startKey1, endKey1, m_snapshot, listOfKey2, (int)maxValue, m_timeout);
+                return new ReadStreamFilteredBitArray(key1, m_snapshot, listOfKey2, (int)maxValue, m_timeout);
             }
             else if (maxValue <= uint.MaxValue)
             {
-                return new ReadStreamFilteredIntDictionary(startKey1, endKey1, m_snapshot, listOfKey2, m_timeout);
+                return new ReadStreamFilteredIntDictionary(key1, m_snapshot, listOfKey2, m_timeout);
             }
             else
             {
-                return new ReadStreamFilteredLongDictionary(startKey1, endKey1, m_snapshot, listOfKey2, m_timeout);
+                return new ReadStreamFilteredLongDictionary(key1, m_snapshot, listOfKey2, m_timeout);
             }
         }
 
@@ -97,6 +103,7 @@ namespace openHistorian.Engine
             ArchiveListSnapshot m_snapshot;
             ulong m_startKey;
             ulong m_stopKey;
+            KeyParser m_keys;
             bool m_timedOut;
             long m_pointCount;
 
@@ -108,16 +115,16 @@ namespace openHistorian.Engine
             ArchiveFileReadSnapshot m_currentInstance;
             ITreeScanner256 m_currentScanner;
 
-            public ReadStream(ulong startKey, ulong stopKey, ArchiveListSnapshot snapshot, long timeout)
+            public ReadStream(KeyParser keys, ArchiveListSnapshot snapshot, long timeout)
             {
                 if (timeout > 0)
                 {
                     m_timeout = new TimeoutOperation();
                     m_timeout.RegisterTimeout(new TimeSpan(timeout * TimeSpan.TicksPerMillisecond), () => m_timedOut = true);
                 }
-
-                m_startKey = startKey;
-                m_stopKey = stopKey;
+                m_keys = keys;
+                m_startKey = keys.Start;
+                m_stopKey = keys.Stop;
                 m_snapshot = snapshot;
                 m_snapshot.UpdateSnapshot();
 
@@ -128,7 +135,7 @@ namespace openHistorian.Engine
                     var table = m_snapshot.Tables[x];
                     if (table != null)
                     {
-                        if (table.Contains(startKey, stopKey))
+                        if (table.Contains(keys.Start, keys.Stop))
                         {
                             m_tables.Enqueue(new KeyValuePair<int, ArchiveFileSummary>(x, table));
                         }
@@ -141,14 +148,27 @@ namespace openHistorian.Engine
                 prepareNextFile();
             }
 
+            public ReadStream(ulong startKey, ulong stopKey, ArchiveListSnapshot snapshot, long timeout)
+                : this(new KeyParser(startKey, stopKey), snapshot, timeout)
+            {
+
+            }
+
             public bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
             {
+            TryAgain:
                 if (m_timedOut)
                     Cancel();
                 if (m_currentScanner.GetNextKey(out key1, out key2, out value1, out value2))
                 {
                     if (key1 <= m_stopKey)
                         return true;
+
+                    if (m_keys.GetNextWindow(out m_startKey, out m_stopKey))
+                    {
+                        m_currentScanner.SeekToKey(m_startKey, 0);
+                        goto TryAgain;
+                    }
                 }
                 if (!prepareNextFile())
                 {
@@ -172,6 +192,12 @@ namespace openHistorian.Engine
                 }
                 if (m_tables.Count > 0)
                 {
+                    m_keys.Reset();
+                    if (!m_keys.GetNextWindow(out m_startKey, out m_stopKey))
+                    {
+                        throw new Exception("No keys in the list");
+                    }
+
                     var kvp = m_tables.Dequeue();
                     m_currentIndex = kvp.Key;
                     m_currentInstance = kvp.Value.ActiveSnapshotInfo.CreateReadSnapshot();
@@ -214,7 +240,7 @@ namespace openHistorian.Engine
             BitArray m_points;
             ulong m_maxValue;
 
-            public ReadStreamFilteredBitArray(ulong startKey, ulong stopKey, ArchiveListSnapshot snapshot, IEnumerable<ulong> points, int maxValue, long timeout)
+            public ReadStreamFilteredBitArray(KeyParser key1, ArchiveListSnapshot snapshot, IEnumerable<ulong> points, int maxValue, long timeout)
             {
                 m_maxValue = (ulong)maxValue;
                 m_points = new BitArray(maxValue + 1, false);
@@ -222,7 +248,7 @@ namespace openHistorian.Engine
                 {
                     m_points.SetBit((int)pt);
                 }
-                m_stream = new ReadStream(startKey, stopKey, snapshot, timeout);
+                m_stream = new ReadStream(key1, snapshot, timeout);
             }
 
             public bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
@@ -246,14 +272,14 @@ namespace openHistorian.Engine
             ReadStream m_stream;
             Dictionary<ulong, byte> m_points;
 
-            public ReadStreamFilteredLongDictionary(ulong startKey, ulong stopKey, ArchiveListSnapshot snapshot, IEnumerable<ulong> points, long timeout)
+            public ReadStreamFilteredLongDictionary(KeyParser key1, ArchiveListSnapshot snapshot, IEnumerable<ulong> points, long timeout)
             {
                 m_points = new Dictionary<ulong, byte>(points.Count() * 5);
                 foreach (ulong pt in points)
                 {
                     m_points.Add(pt, 0);
                 }
-                m_stream = new ReadStream(startKey, stopKey, snapshot, timeout);
+                m_stream = new ReadStream(key1, snapshot, timeout);
             }
 
             public bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
@@ -277,14 +303,14 @@ namespace openHistorian.Engine
             ReadStream m_stream;
             Dictionary<uint, byte> m_points;
 
-            public ReadStreamFilteredIntDictionary(ulong startKey, ulong stopKey, ArchiveListSnapshot snapshot, IEnumerable<ulong> points, long timeout)
+            public ReadStreamFilteredIntDictionary(KeyParser key1, ArchiveListSnapshot snapshot, IEnumerable<ulong> points, long timeout)
             {
                 m_points = new Dictionary<uint, byte>(points.Count() * 5);
                 foreach (ulong pt in points)
                 {
                     m_points.Add((uint)pt, 0);
                 }
-                m_stream = new ReadStream(startKey, stopKey, snapshot, timeout);
+                m_stream = new ReadStream(key1, snapshot, timeout);
             }
 
             public bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2)

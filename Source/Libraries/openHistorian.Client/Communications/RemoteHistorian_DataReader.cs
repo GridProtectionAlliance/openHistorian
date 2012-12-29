@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Net;
+using openHistorian.Data;
 using openHistorian.IO;
 
 namespace openHistorian.Communications
@@ -82,6 +83,11 @@ namespace openHistorian.Communications
                 }
                 m_client.m_netStream.Flush();
                 return new PointReader(m_client, () => m_reader = null);
+            }
+
+            public IPointStream Read(KeyParser key1, IEnumerable<ulong> listOfKey2)
+            {
+                throw new NotImplementedException();
             }
 
             public void Close()

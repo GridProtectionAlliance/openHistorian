@@ -88,6 +88,17 @@ namespace openHistorian.Collections.KeyValue
 
             public void SeekToKey(ulong key1, ulong key2)
             {
+                m_positionOfCurrentKey = 0;
+                m_rightSiblingNodeIndex = 0;
+                m_nodeIndex = 0;
+
+                m_lastKey1 = 0;
+                m_lastKey2 = 0;
+                m_lastValue1 = 0;
+                m_lastValue2 = 0;
+                m_lastPosition = 0;
+
+
                 m_nodeIndex = m_tree.RootNodeIndexAddress;
                 for (byte nodeLevel = m_tree.RootNodeLevel; nodeLevel > 0; nodeLevel--)
                 {
