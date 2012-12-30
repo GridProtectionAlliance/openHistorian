@@ -36,12 +36,12 @@ namespace openHistorian.Data
             return sampleRate;
         }
 
-        public KeyParser GetParser(DateTime startTime, DateTime endTime, uint sampleCount)
+        public KeyParserPrimary GetParser(DateTime startTime, DateTime endTime, uint sampleCount)
         {
             return GetParser(startTime, endTime, SuggestSamplesPerDay(startTime, endTime, sampleCount));
         }
 
-        public KeyParser GetParser(DateTime startTime, DateTime endTime, ulong samplesPerDay)
+        public KeyParserPrimary GetParser(DateTime startTime, DateTime endTime, ulong samplesPerDay)
         {
             startTime = RoundDownToNearestSample(startTime, samplesPerDay);
             endTime = RoundUpToNearestSample(endTime, samplesPerDay);
@@ -62,8 +62,7 @@ namespace openHistorian.Data
                 }
                 count++;
             }
-
-            return new KeyParser((ulong)startTime.Ticks, (ulong)endTime.Ticks, bigInterval, interval, (ulong)m_windowTolerance.Ticks);
+            return KeyParserPrimary.CreateFromIntervalData((ulong)startTime.Ticks, (ulong)endTime.Ticks, bigInterval, interval, (ulong)m_windowTolerance.Ticks);
         }
 
         DateTime RoundDownToNearestSample(DateTime startTime, ulong samplesPerDay)

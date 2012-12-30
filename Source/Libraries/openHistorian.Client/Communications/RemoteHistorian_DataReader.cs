@@ -23,18 +23,12 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Net;
-using openHistorian.Data;
-using openHistorian.IO;
 
 namespace openHistorian.Communications
 {
     public partial class RemoteHistorian
     {
-        class HistorianDataReader : IHistorianDataReader
+        class HistorianDataReader : HistorianDataReaderBase
         {
             Action m_onDispose;
             RemoteHistorian m_client;
@@ -46,51 +40,25 @@ namespace openHistorian.Communications
                 m_client = client;
             }
 
-            public void Dispose()
+            public override void Dispose()
             {
                 Close();
             }
 
-            public IPointStream Read(ulong key)
-            {
-                return Read(key, key, null);
-            }
-
-            public IPointStream Read(ulong startKey, ulong endKey)
-            {
-                return Read(startKey, endKey, null);
-            }
-
-            public IPointStream Read(ulong startKey, ulong endKey, IEnumerable<ulong> points)
+            public override IPointStream Read(KeyParserPrimary key1, KeyParserSecondary key2, DataReaderOptions readerOptions)
             {
                 if (m_reader != null)
                     throw new Exception("Sockets do not support concurrent readers.");
 
                 m_client.m_stream.Write((byte)ServerCommand.Read);
-                m_client.m_stream.Write(startKey);
-                m_client.m_stream.Write(endKey);
-                if (points == null)
-                {
-                    m_client.m_stream.Write(0);
-                }
-                else
-                {
-                    m_client.m_stream.Write(points.Count());
-                    foreach (var pt in points)
-                    {
-                        m_client.m_stream.Write(pt);
-                    }
-                }
+                key1.Save(m_client.m_stream);
+                key2.Save(m_client.m_stream);
+                readerOptions.Save(m_client.m_stream);
                 m_client.m_netStream.Flush();
                 return new PointReader(m_client, () => m_reader = null);
             }
 
-            public IPointStream Read(KeyParser key1, IEnumerable<ulong> listOfKey2)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Close()
+            public override void Close()
             {
                 if (!m_closed)
                 {

@@ -47,7 +47,9 @@
   <ItemGroup>
     <Compile Include="Communications\RemoteHistorian_Database.cs" />
     <Compile Include="Communications\RemoteHistorian_DataReader.cs" />
-    <Compile Include="Data\KeyParser.cs" />
+    <Compile Include="DataReaderOptions.cs" />
+    <Compile Include="HistorianDataReaderBase.cs" />
+    <Compile Include="KeyParserPrimary.cs" />
     <Compile Include="Data\PeriodicScanner.cs" />
     <Compile Include="Data\Query\GetTableMethods.cs" />
     <Compile Include="Data\Query\ISignalCalculation.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="Data\Types\TypeDouble.cs" />
     <Compile Include="Data\Types\TypeBase.cs" />
     <Compile Include="Data\Types\TypeSingle.cs" />
+    <Compile Include="KeyParserSecondary.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

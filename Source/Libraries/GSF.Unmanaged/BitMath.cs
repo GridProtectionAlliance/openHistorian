@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 
 namespace openHistorian
 {
@@ -446,6 +447,58 @@ namespace openHistorian
         {
             uint tmpValue = (uint)value;
             return *(float*)&tmpValue;
+        }
+
+        /// <summary>
+        /// Returns the bit position for every bit that is set in the provided value.
+        /// Bit positions are defined as 0-63;
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static IEnumerable<int> GetSetBitPositions(ulong value)
+        {
+            //Once value becomes zero, the remainder of the loop can be shortcutted
+            for (int x = 0; value != 0; x++, value >>= 1)
+            {
+                if ((value & 1) == 1)
+                    yield return x;
+            }
+        }
+
+        /// <summary>
+        /// Returns the bit position for every bit that is set in the provided value.
+        /// Bit positions are defined as 0-31;
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static IEnumerable<int> GetSetBitPositions(uint value)
+        {
+            //Once value becomes zero, the remainder of the loop can be shortcutted
+            for (int x = 0; value != 0; x++, value >>= 1)
+            {
+                if ((value & 1) == 1)
+                    yield return x;
+            }
+        }
+        /// <summary>
+        /// Returns the bit position for every bit that is cleared in the provided value.
+        /// Bit positions are defined as 0-31;
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static IEnumerable<int> GetClearedBitPositions(uint value)
+        {
+            return GetSetBitPositions(~value);
+        }
+        /// <summary>
+        /// Returns the bit position for every bit that is cleared in the provided value.
+        /// Bit positions are defined as 0-31;
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static IEnumerable<int> GetClearedBitPositions(ulong value)
+        {
+            return GetSetBitPositions(~value);
         }
 
     }

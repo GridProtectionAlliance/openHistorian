@@ -61,13 +61,22 @@ namespace openHistorian
         IPointStream Read(ulong startKey1, ulong endKey1, IEnumerable<ulong> listOfKey2);
 
         /// <summary>
-        /// Reads all of the data where key1 exists in <see cref="KeyParser"/> and key2 is contained within <see cref="listOfKey2"/>.
+        /// Reads all of the data where key1 exists in <see cref="KeyParserPrimary"/> and key2 is contained within <see cref="listOfKey2"/>.
         /// </summary>
         /// <param name="key1"></param>
         /// <param name="listOfKey2"></param>
         /// <returns></returns>
-        IPointStream Read(KeyParser key1, IEnumerable<ulong> listOfKey2);
+        IPointStream Read(KeyParserPrimary key1, IEnumerable<ulong> listOfKey2);
 
+        /// <summary>
+        /// Reads all of the data where key1 exists in <see cref="KeyParserPrimary"/> and key2 is contained within <see cref="key2"/>.
+        /// </summary>
+        /// <param name="key1"></param>
+        /// <param name="key2"></param>
+        /// <param name="readerOptions"></param>
+        /// <returns></returns>
+        IPointStream Read(KeyParserPrimary key1, KeyParserSecondary key2, DataReaderOptions readerOptions);
+        
         /// <summary>
         /// Closes the current reader.
         /// </summary>

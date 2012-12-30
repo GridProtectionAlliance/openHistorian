@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 
 namespace openHistorian.Collections
 {
@@ -381,6 +382,42 @@ namespace openHistorian.Collections
             otherArray.m_lastFoundClearedIndex = m_lastFoundClearedIndex;
             otherArray.m_lastFoundSetIndex = m_lastFoundSetIndex;
             otherArray.m_setCount = m_setCount;
+        }
+
+        public IEnumerable<int> GetAllSetBits()
+        {
+            int count = m_array.Length;
+            for (int x = 0; x < count; x++)
+            {
+                //if all bits are cleared, this entire section can be skipped
+                if (m_array[x] != 0)
+                {
+                    foreach (int bitPos in BitMath.GetSetBitPositions((ulong)m_array[x]))
+                    {
+                        int absolutePosition = bitPos + (x << BitsPerElementShift);
+                        if (absolutePosition <= count)
+                            yield return absolutePosition;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<int> GetAllClearedBits()
+        {
+            int count = m_array.Length;
+            for (int x = 0; x < count; x++)
+            {
+                //if all bits are set, this entire section can be skipped
+                if (m_array[x] != -1)
+                {
+                    foreach (int bitPos in BitMath.GetClearedBitPositions((ulong)m_array[x]))
+                    {
+                        int absolutePosition = bitPos + (x << BitsPerElementShift);
+                        if (absolutePosition <= count)
+                            yield return absolutePosition;
+                    }
+                }
+            }
         }
 
         #endregion

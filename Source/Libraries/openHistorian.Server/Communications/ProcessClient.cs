@@ -174,31 +174,14 @@ namespace openHistorian.Communications
             }
 
         }
-        
+
         void ProcessRead()
         {
-            ulong startKey1 = m_stream.ReadUInt64();
-            ulong endKey1 = m_stream.ReadUInt64();
-            int countOfKey2 = m_stream.ReadInt32();
+            var key1Parser = KeyParserPrimary.CreateFromStream(m_stream);
+            var key2Parser = KeyParserSecondary.CreateFromStream(m_stream);
+            var readerOptions = new DataReaderOptions(m_stream);
 
-            List<ulong> keys = new List<ulong>(countOfKey2);
-            while (countOfKey2 > 0)
-            {
-                countOfKey2--;
-                keys.Add(m_stream.ReadUInt64());
-            }
-            IPointStream scanner;
-            if (countOfKey2 > 0)
-            {
-                scanner = m_historianReader.Read(startKey1, endKey1, keys);
-            }
-            else
-            {
-                if (startKey1 == endKey1)
-                    scanner = m_historianReader.Read(startKey1);
-                else
-                    scanner = m_historianReader.Read(startKey1, endKey1);
-            }
+            IPointStream scanner = m_historianReader.Read(key1Parser, key2Parser, readerOptions);
 
             ulong oldKey1 = 0, oldKey2 = 0, oldValue1 = 0, oldValue2 = 0;
             ulong key1, key2, value1, value2;
