@@ -31,7 +31,7 @@ namespace openHistorian.Data.Query
     public class HistorianQuery
     {
         IHistorianDatabaseCollection m_historian;
-        int m_samplesPerSecond = 1;
+        int m_samplesPerSecond = 30;
         public HistorianQuery(string server, int port)
         {
             var ip = Dns.GetHostAddresses(server)[0];
@@ -48,7 +48,7 @@ namespace openHistorian.Data.Query
             var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
 
             var scanner = new PeriodicScanner(m_samplesPerSecond);
-            var timestamps = scanner.GetParser(startTime, endTime, 300u);
+            var timestamps = scanner.GetParser(startTime, endTime, 900u);
             var options = new DataReaderOptions(TimeSpan.FromSeconds(1));
             return db.GetSignalsWithCalculations(timestamps, signals, options);
         }

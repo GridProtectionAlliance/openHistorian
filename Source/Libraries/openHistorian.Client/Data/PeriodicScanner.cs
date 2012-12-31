@@ -68,13 +68,51 @@ namespace openHistorian.Data
         DateTime RoundDownToNearestSample(DateTime startTime, ulong samplesPerDay)
         {
             long interval = (long)(TimeSpan.TicksPerDay / samplesPerDay);
-            return new DateTime(startTime.Ticks - startTime.Ticks % interval);
+            if (interval * (long)samplesPerDay == TimeSpan.TicksPerDay)
+            {
+                return new DateTime(startTime.Ticks - startTime.Ticks % interval);
+            }
+            else
+            {
+                //Not exact, but close enough. 
+                decimal interval2 = (decimal)TimeSpan.TicksPerDay / (decimal)samplesPerDay;
+                
+                long dateTicks = startTime.Ticks - startTime.Ticks % TimeSpan.TicksPerDay;
+                long timeTicks = startTime.Ticks - dateTicks;  //timeticks cannot be more than 864 billion.
+
+                decimal overBy = timeTicks % interval2;
+
+                long timeTicks2 = timeTicks - (long)overBy;
+
+                var rv =  new DateTime(dateTicks + timeTicks2);
+                return rv;
+            }
+
         }
         DateTime RoundUpToNearestSample(DateTime startTime, ulong samplesPerDay)
         {
             //ToDo: actually round up
             long interval = (long)(TimeSpan.TicksPerDay / samplesPerDay);
-            return new DateTime(startTime.Ticks - startTime.Ticks % interval);
+            if (interval * (long)samplesPerDay == TimeSpan.TicksPerDay)
+            {
+                return new DateTime(startTime.Ticks - startTime.Ticks % interval);
+            }
+            else
+            {
+                //Not exact, but close enough. 
+                decimal interval2 = (decimal)TimeSpan.TicksPerDay / (decimal)samplesPerDay;
+
+                long dateTicks = startTime.Ticks - startTime.Ticks % TimeSpan.TicksPerDay;
+                long timeTicks = startTime.Ticks - dateTicks;  //timeticks cannot be more than 864 billion.
+
+                decimal overBy = timeTicks % interval2;
+
+                long timeTicks2 = timeTicks - (long)overBy;
+
+                var rv = new DateTime(dateTicks + timeTicks2);
+                return rv;
+
+            }
         }
 
         List<int> FactorNumber(int number)

@@ -61,7 +61,7 @@ namespace openVisN.Library
         public List<SignalBook> Signals;
 
         public AllSignals()
-            : this(@"C:\Unison\GPA\ArchiveFiles\SignalMetadata.txt")
+            : this(@"C:\Unison\GPA\Demo\SignalMetadata.txt")
         {
         }
         public AllSignals(string config)

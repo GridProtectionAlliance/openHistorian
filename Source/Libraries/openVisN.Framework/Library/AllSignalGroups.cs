@@ -106,7 +106,7 @@ namespace openVisN.Library
         public List<SignalGroupBook> SignalGroups;
 
         public AllSignalGroups()
-            : this(@"C:\Unison\GPA\ArchiveFiles\SignalGroups.txt")
+            : this(@"C:\Unison\GPA\Demo\SignalGroups.txt")
         {
         }
         public AllSignalGroups(string config)

@@ -23,6 +23,12 @@ namespace winformsVisN
             visualizationFramework1.Framework.ChangeDateRange(new DateTime(2012, 8, 2), new DateTime(2012, 8, 2, 1, 0, 0));
 
         }
-        
+
+        private void BtnEvents_Click(object sender, EventArgs e)
+        {
+            var win = new FrmEvents(visualizationFramework1);
+            win.Show();
+        }
+
     }
 }
