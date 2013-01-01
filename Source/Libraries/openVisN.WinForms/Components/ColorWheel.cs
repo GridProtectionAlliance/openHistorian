@@ -15,17 +15,17 @@ namespace openVisN.Components
         static ColorWheel()
         {
             m_pens = new List<Pen>();
-            m_pens.Add(new Pen(Color.Red, 2));
-            m_pens.Add(new Pen(Color.LimeGreen, 2));
-            m_pens.Add(new Pen(Color.Cyan, 2));
-            m_pens.Add(new Pen(Color.Purple, 2));
-            m_pens.Add(new Pen(Color.Brown, 2));
-            m_pens.Add(new Pen(Color.Orange, 2));
-            m_pens.Add(new Pen(Color.Magenta, 2));
-            m_pens.Add(new Pen(Color.Blue, 2));
-            m_pens.Add(new Pen(Color.Black, 2));
-            m_pens.Add(new Pen(Color.Gray, 2));
-            m_pens.Add(new Pen(Color.DarkGreen, 2));
+            m_pens.Add(new Pen(Color.Red, 1));
+            m_pens.Add(new Pen(Color.LimeGreen, 1));
+            m_pens.Add(new Pen(Color.Cyan, 1));
+            m_pens.Add(new Pen(Color.Purple, 1));
+            m_pens.Add(new Pen(Color.Brown, 1));
+            m_pens.Add(new Pen(Color.Orange, 1));
+            m_pens.Add(new Pen(Color.Magenta, 1));
+            m_pens.Add(new Pen(Color.Blue, 1));
+            m_pens.Add(new Pen(Color.Black, 1));
+            m_pens.Add(new Pen(Color.Gray, 1));
+            m_pens.Add(new Pen(Color.DarkGreen, 1));
         }
 
         public ColorWheel()

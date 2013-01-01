@@ -544,12 +544,12 @@ namespace NPlot
             for (int i = position; i < m_drawables.Count; ++i)
             {
                 // only update axes if this drawable is an IPlot.
-                if (!(m_drawables[position] is IPlot))
+                if (!(m_drawables[i] is IPlot))
                     continue;
 
-                IPlot p = (IPlot)m_drawables[position];
-                XAxisPosition xap = m_xAxisPositions[position];
-                YAxisPosition yap = m_yAxisPositions[position];
+                IPlot p = (IPlot)m_drawables[i];
+                XAxisPosition xap = m_xAxisPositions[i];
+                YAxisPosition yap = m_yAxisPositions[i];
 
                 if (xap == XAxisPosition.Bottom)
                 {
@@ -858,6 +858,8 @@ namespace NPlot
                 return;
             }
 
+            var sw = StepTimer.Start("Determine Axis");
+
             // determine the [non physical] axes to draw based on the axis properties set.
             Axis xAxis1, xAxis2, yAxis1, yAxis2;
             DetermineAxesToDraw(out xAxis1, out xAxis2, out yAxis1, out yAxis2);
@@ -884,6 +886,8 @@ namespace NPlot
             PhysicalAxis pXAxis1, pYAxis1, pXAxis2, pYAxis2;
             DeterminePhysicalAxesToDraw(bounds, xAxis1, xAxis2, yAxis1, yAxis2, out pXAxis1, out pXAxis2, out pYAxis1, out pYAxis2);
 
+            StepTimer.Stop(sw);
+
             float oldXAxis2Height = pXAxis2.PhysicalMin.Y;
 
             // Apply axes constraints
@@ -895,6 +899,8 @@ namespace NPlot
             float newXAxis2Height = pXAxis2.PhysicalMin.Y;
 
             float titleExtraOffset = oldXAxis2Height - newXAxis2Height;
+
+            sw = StepTimer.Start("Draw Axis");
 
             // now we are ready to define the bounding box for the plot area (to use in clipping
             // operations.
@@ -936,6 +942,10 @@ namespace NPlot
 
             SizeF s = g.MeasureString(m_title, scaledFont);
             m_bbTitleCache = new Rectangle((int)(xt - s.Width / 2), (int)(yt), (int)(s.Width), (int)(s.Height) * (nlCount + 1));
+
+            StepTimer.Stop(sw);
+
+            //sw = StepTimer.Start("Draw IDrawables");
 
             // draw drawables..
             System.Drawing.Drawing2D.SmoothingMode smoothSave = g.SmoothingMode;
@@ -979,6 +989,8 @@ namespace NPlot
                 g.ResetClip();
             }
 
+            //StepTimer.Stop(sw);
+
             // cache the physical axes we used on this draw;
             m_pXAxis1Cache = pXAxis1;
             m_pYAxis1Cache = pYAxis1;
@@ -987,12 +999,15 @@ namespace NPlot
 
             g.SmoothingMode = smoothSave;
 
+            sw = StepTimer.Start("Draw Axis Final");
             // now draw axes.
             Rectangle axisBounds;
             pXAxis1.Draw(g, out axisBounds);
             pXAxis2.Draw(g, out axisBounds);
             pYAxis1.Draw(g, out axisBounds);
             pYAxis2.Draw(g, out axisBounds);
+
+            StepTimer.Stop(sw);
 
         }
 
@@ -1108,7 +1123,6 @@ namespace NPlot
                 return m_drawables;
             }
         }
-
     }
 }
 

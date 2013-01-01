@@ -30,5 +30,12 @@ namespace winformsVisN
             win.Show();
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(NPlot.StepTimer.GetResultsPercent());
+            NPlot.StepTimer.Reset();
+
+        }
+
     }
 }

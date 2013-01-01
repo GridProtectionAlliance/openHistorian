@@ -76,10 +76,12 @@ namespace NPlot
         public void Draw(Graphics g, PhysicalAxis xAxis, PhysicalAxis yAxis)
         {
             double xVal, yVal;
-            
+
             int pointCount = m_lineData.Count;
             if (pointCount == 0)
                 return;
+
+            var sw = StepTimer.Start("Transform");
 
             ITransform2D t = Transform2D.GetTransformer(xAxis, yAxis);
 
@@ -117,7 +119,9 @@ namespace NPlot
                 //g.DrawPath(Pen, graphicsPath);
                 //g.CompositingQuality = CompositingQuality.HighQuality;
                 //g.SmoothingMode = SmoothingMode.HighQuality;
+                StepTimer.Stop(sw);
 
+                sw = StepTimer.Start("GDI+");
                 if (index == 0)
                     return;
                 else if (index == 1)
@@ -137,6 +141,7 @@ namespace NPlot
                     g.DrawLines(Pen, newArray);
 
                 }
+                StepTimer.Stop(sw);
             }
         }
 
@@ -156,7 +161,7 @@ namespace NPlot
         /// <returns>A suitable y-axis.</returns>
         public Axis SuggestYAxis()
         {
-            var a =  m_lineData.GetY();
+            var a = m_lineData.GetY();
             a.IncreaseRange(0.08);
             return a;
         }

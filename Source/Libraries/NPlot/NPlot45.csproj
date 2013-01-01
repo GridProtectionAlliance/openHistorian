@@ -40,7 +40,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AxesConstraint.cs" />
     <Compile Include="Axis.cs" />
     <Compile Include="Bitmap\PlotSurface2D.cs" />
@@ -58,6 +57,7 @@
     <Compile Include="NPlotException.cs" />
     <Compile Include="PhysicalAxis.cs" />
     <Compile Include="PlotSurface2D.cs" />
+    <Compile Include="StepTimer.cs" />
     <Compile Include="Windows\PlotSurface2D_Interactions.cs">
       <SubType>Component</SubType>
     </Compile>

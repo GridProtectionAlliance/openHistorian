@@ -33,6 +33,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing;
 using System;
 using System.Collections;
+using System.Windows.Forms;
 
 namespace NPlot
 {
@@ -1087,7 +1088,8 @@ namespace NPlot
 
 			if (text != "" && !HideTickText && g != null )
 			{
-				SizeF textSize = g.MeasureString( text, tickTextFontScaled_ );
+			    //SizeF textSize = TextRenderer.MeasureText(g, text, tickTextFontScaled_);
+                SizeF textSize = g.MeasureString( text, tickTextFontScaled_ );
 
 				// determine the center point of the tick text.
 				float textCenterX;
@@ -1264,7 +1266,7 @@ namespace NPlot
 				if (!this.HideTickText)
 				{
 					labelBounds = this.DrawLabel( g, (Point)labelOffset, physicalMin, physicalMax );
-				}
+                }
 
 				// (4) merge bounds and return.
 				if (labelBounds != null)
