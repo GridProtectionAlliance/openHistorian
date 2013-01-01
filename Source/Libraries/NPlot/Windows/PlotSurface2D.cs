@@ -47,17 +47,17 @@ namespace NPlot.Windows
     /// Unfortunately it's not possible to derive from both Control and NPlot.PlotSurface2D.
     /// </remarks>
     [ToolboxBitmapAttribute(typeof(NPlot.Windows.PlotSurface2D), "PlotSurface2D.ico")]
-    public partial class PlotSurface2D : System.Windows.Forms.Control, IPlotSurface2D, ISurface
+    public partial class PlotSurface2D : System.Windows.Forms.Control
     {
         private ToolTip coordinates_;
 
         private ArrayList selectedObjects_;
         private NPlot.PlotSurface2D ps_;
 
-        private Axis xAxis1ZoomCache_;
-        private Axis yAxis1ZoomCache_;
-        private Axis xAxis2ZoomCache_;
-        private Axis yAxis2ZoomCache_;
+        private DateTimeAxis xAxis1ZoomCache_;
+        private LinearAxis yAxis1ZoomCache_;
+        private DateTimeAxis xAxis2ZoomCache_;
+        private LinearAxis yAxis2ZoomCache_;
 
         /// <summary>
         /// Flag to display a coordinates in a tooltip.
@@ -249,20 +249,6 @@ namespace NPlot.Windows
             ps_.Add(p);
         }
 
-
-        /// <summary>
-        /// Adds a drawable object to the plot surface against the specified axes. If
-        /// the object is an IPlot, the PlotSurface2D axes will also be updated.
-        /// </summary>
-        /// <param name="p">the IDrawable object to add to the plot surface</param>
-        /// <param name="xp">the x-axis to add the plot against.</param>
-        /// <param name="yp">the y-axis to add the plot against.</param>
-        public void Add(IDrawable p, NPlot.PlotSurface2D.XAxisPosition xp, NPlot.PlotSurface2D.YAxisPosition yp)
-        {
-            ps_.Add(p, xp, yp);
-        }
-
-
         /// <summary>
         /// Adds a drawable object to the plot surface. If the object is an IPlot, 
         /// the PlotSurface2D axes will also be updated.
@@ -272,21 +258,6 @@ namespace NPlot.Windows
         public void Add(IDrawable p, int zOrder)
         {
             ps_.Add(p, zOrder);
-        }
-
-
-        /// <summary>
-        /// Adds a drawable object to the plot surface against the specified axes. If
-        /// the object is an IPlot, the PlotSurface2D axes will also be updated.
-        /// </summary>
-        /// <param name="p">the IDrawable object to add to the plot surface</param>
-        /// <param name="xp">the x-axis to add the plot against.</param>
-        /// <param name="yp">the y-axis to add the plot against.</param>
-        /// <param name="zOrder">The z-ordering when drawing (objects with lower numbers are drawn first)</param>
-        public void Add(IDrawable p, NPlot.PlotSurface2D.XAxisPosition xp,
-            NPlot.PlotSurface2D.YAxisPosition yp, int zOrder)
-        {
-            ps_.Add(p, xp, yp, zOrder);
         }
 
         /// <summary>
@@ -417,7 +388,7 @@ namespace NPlot.Windows
         [
         Browsable(false)
         ]
-        public Axis XAxis1
+        public DateTimeAxis XAxis1
         {
             get
             {
@@ -436,7 +407,7 @@ namespace NPlot.Windows
         [
         Browsable(false)
         ]
-        public Axis YAxis1
+        public LinearAxis YAxis1
         {
             get
             {
@@ -455,7 +426,7 @@ namespace NPlot.Windows
         [
         Browsable(false)
         ]
-        public Axis XAxis2
+        public DateTimeAxis XAxis2
         {
             get
             {
@@ -474,7 +445,7 @@ namespace NPlot.Windows
         [
         Browsable(false)
         ]
-        public Axis YAxis2
+        public LinearAxis YAxis2
         {
             get
             {
@@ -831,15 +802,6 @@ namespace NPlot.Windows
             {
                 Refresh();
             }
-
-            if (e.Button == MouseButtons.Right)
-            {
-                Point here = new Point(e.X, e.Y);
-                selectedObjects_ = ps_.HitTest(here);
-                if (rightMenu_ != null)
-                    rightMenu_.Menu.Show(ctr, here);
-            }
-
         }
 
 
@@ -988,46 +950,6 @@ namespace NPlot.Windows
             }
         }
 
-
-        /// <summary>
-        /// Sets the right context menu. Custom menus can be designed by overriding
-        /// NPlot.Windows.PlotSurface2D.ContextMenu.
-        /// </summary>
-        [
-        Browsable(false),
-        Bindable(false)
-        ]
-        public NPlot.Windows.PlotSurface2D.PlotContextMenu RightMenu
-        {
-            get
-            {
-                return rightMenu_;
-            }
-            set
-            {
-                rightMenu_ = value;
-                if (rightMenu_ != null)
-                {
-                    rightMenu_.PlotSurface2D = this;
-                }
-            }
-        }
-        private NPlot.Windows.PlotSurface2D.PlotContextMenu rightMenu_ = null;
-
-
-        /// <summary>
-        /// Gets an instance of a NPlot.Windows.PlotSurface2D.ContextMenu that
-        /// is useful in typical situations.
-        /// </summary>
-        public static PlotContextMenu DefaultContextMenu
-        {
-            get
-            {
-                return new NPlot.Windows.PlotSurface2D.PlotContextMenu();
-            }
-        }
-
-
         /// <summary>
         /// Allows access to the PlotSurface2D.
         /// </summary>
@@ -1054,19 +976,19 @@ namespace NPlot.Windows
             {
                 if (this.XAxis1 != null)
                 {
-                    xAxis1ZoomCache_ = (Axis)this.XAxis1.Clone();
+                    xAxis1ZoomCache_ = (DateTimeAxis)this.XAxis1.Clone();
                 }
                 if (this.XAxis2 != null)
                 {
-                    xAxis2ZoomCache_ = (Axis)this.XAxis2.Clone();
+                    xAxis2ZoomCache_ = (DateTimeAxis)this.XAxis2.Clone();
                 }
                 if (this.YAxis1 != null)
                 {
-                    yAxis1ZoomCache_ = (Axis)this.YAxis1.Clone();
+                    yAxis1ZoomCache_ = (LinearAxis)this.YAxis1.Clone();
                 }
                 if (this.YAxis2 != null)
                 {
-                    yAxis2ZoomCache_ = (Axis)this.YAxis2.Clone();
+                    yAxis2ZoomCache_ = (LinearAxis)this.YAxis2.Clone();
                 }
             }
         }
@@ -1159,361 +1081,6 @@ namespace NPlot.Windows
             }
             
         }
-
-
-        #region class PlotContextMenu
-        /// <summary>
-        /// Summary description for ContextMenu.
-        /// </summary>
-        public class PlotContextMenu
-        {
-
-            #region IPlotMenuItem
-            /// <summary>
-            /// elements of the MenuItems array list must implement this interface.
-            /// </summary>
-            public interface IPlotMenuItem
-            {
-                /// <summary>
-                /// Gets the Windows.Forms.MenuItem associated with the PlotMenuItem
-                /// </summary>
-                System.Windows.Forms.MenuItem MenuItem { get; }
-
-                /// <summary>
-                /// This method is called for each menu item before the menu is 
-                /// displayed. It is useful for implementing check marks, disabling
-                /// etc.
-                /// </summary>
-                /// <param name="plotContextMenu"></param>
-                void OnPopup(PlotContextMenu plotContextMenu);
-            }
-            #endregion
-            #region PlotMenuSeparator
-            /// <summary>
-            /// A plot menu item for separators.
-            /// </summary>
-            public class PlotMenuSeparator : IPlotMenuItem
-            {
-
-                /// <summary>
-                /// Constructor
-                /// </summary>
-                /// <param name="index"></param>
-                public PlotMenuSeparator(int index)
-                {
-                    menuItem_ = new System.Windows.Forms.MenuItem();
-                    index_ = index;
-
-                    menuItem_.Index = index_;
-                    menuItem_.Text = "-";
-                }
-
-                private int index_;
-
-                /// <summary>
-                /// Index of this menu item in the menu.
-                /// </summary>
-                public int Index
-                {
-                    get
-                    {
-                        return index_;
-                    }
-                }
-
-                private System.Windows.Forms.MenuItem menuItem_;
-                /// <summary>
-                /// The Windows.Forms.MenuItem associated with this IPlotMenuItem
-                /// </summary>
-                public System.Windows.Forms.MenuItem MenuItem
-                {
-                    get
-                    {
-                        return menuItem_;
-                    }
-                }
-
-                /// <summary>
-                /// 
-                /// </summary>
-                /// <param name="plotContextMenu"></param>
-                public void OnPopup(PlotContextMenu plotContextMenu)
-                {
-                    // do nothing.
-                }
-
-            }
-            #endregion
-            #region PlotMenuItem
-            /// <summary>
-            /// A Plot menu item suitable for specifying basic menu items
-            /// </summary>
-            public class PlotMenuItem : IPlotMenuItem
-            {
-
-                /// <summary>
-                /// Constructor
-                /// </summary>
-                /// <param name="text">Menu item text</param>
-                /// <param name="index">Index in the manu</param>
-                /// <param name="callback">EventHandler to call if menu selected.</param>
-                public PlotMenuItem(string text, int index, EventHandler callback)
-                {
-                    text_ = text;
-                    index_ = index;
-                    callback_ = callback;
-
-                    menuItem_ = new System.Windows.Forms.MenuItem();
-
-                    menuItem_.Index = index;
-                    menuItem_.Text = text;
-                    menuItem_.Click += new System.EventHandler(callback);
-
-                }
-
-                private string text_;
-                /// <summary>
-                /// The text to put in the menu for this menu item.
-                /// </summary>
-                public string Text
-                {
-                    get
-                    {
-                        return text_;
-                    }
-                }
-
-                private int index_;
-                /// <summary>
-                /// Index of this menu item in the menu.
-                /// </summary>
-                public int Index
-                {
-                    get
-                    {
-                        return index_;
-                    }
-                }
-
-                private EventHandler callback_;
-                /// <summary>
-                /// EventHandler to call if menu selected.
-                /// </summary>
-                public EventHandler Callback
-                {
-                    get
-                    {
-                        return callback_;
-                    }
-                }
-
-                private System.Windows.Forms.MenuItem menuItem_;
-                /// <summary>
-                /// The Windows.Forms.MenuItem associated with this IPlotMenuItem
-                /// </summary>
-                public System.Windows.Forms.MenuItem MenuItem
-                {
-                    get
-                    {
-                        return menuItem_;
-                    }
-                }
-
-                /// <summary>
-                /// Called before menu drawn.
-                /// </summary>
-                /// <param name="plotContextMenu">The plot menu this item is a member of.</param>
-                public virtual void OnPopup(PlotContextMenu plotContextMenu)
-                {
-                    // do nothing.
-                }
-
-            }
-            #endregion
-            #region PlotZoomBackMenuItem
-            /// <summary>
-            /// A Plot Menu Item that provides necessary functionality for the
-            /// zoom back menu item (graying out if zoomed right out in addition
-            /// to basic functionality).
-            /// </summary>
-            public class PlotZoomBackMenuItem : PlotMenuItem
-            {
-
-                /// <summary>
-                /// Constructor
-                /// </summary>
-                /// <param name="text">Text associated with this item in the menu.</param>
-                /// <param name="index">Index of this item in the menu.</param>
-                /// <param name="callback">EventHandler to call when menu item is selected.</param>
-                public PlotZoomBackMenuItem(string text, int index, EventHandler callback)
-                    : base(text, index, callback)
-                {
-                }
-
-                /// <summary>
-                /// Called before menu drawn.
-                /// </summary>
-                /// <param name="plotContextMenu">The plot menu this item is a member of.</param>
-                public override void OnPopup(PlotContextMenu plotContextMenu)
-                {
-                    this.MenuItem.Enabled = plotContextMenu.plotSurface2D_.xAxis1ZoomCache_ != null;
-                }
-
-            }
-            #endregion
-            #region PlotShowCoordinatesMenuItem
-            /// <summary>
-            /// A Plot Menu Item that provides necessary functionality for the
-            /// show coordinates menu item (tick mark toggle in addition to basic
-            /// functionality).
-            /// </summary>
-            public class PlotShowCoordinatesMenuItem : PlotMenuItem
-            {
-
-                /// <summary>
-                /// Constructor
-                /// </summary>
-                /// <param name="text">Text associated with this item in the menu.</param>
-                /// <param name="index">Index of this item in the menu.</param>
-                /// <param name="callback">EventHandler to call when menu item is selected.</param>
-                public PlotShowCoordinatesMenuItem(string text, int index, EventHandler callback)
-                    : base(text, index, callback)
-                {
-                }
-
-                /// <summary>
-                /// Called before menu drawn.
-                /// </summary>
-                /// <param name="plotContextMenu">The plot menu this item is a member of.</param>
-                public override void OnPopup(PlotContextMenu plotContextMenu)
-                {
-                    this.MenuItem.Checked = plotContextMenu.plotSurface2D_.ShowCoordinates;
-                }
-            }
-            #endregion
-
-            private System.Windows.Forms.ContextMenu rightMenu_ = null;
-            private ArrayList menuItems_ = null;
-
-
-            /// <summary>
-            /// Gets an arraylist of all PlotMenuItems that comprise the
-            /// menu. If this list is changed, this class must be told to
-            /// update using the Update method.
-            /// </summary>
-            public ArrayList MenuItems
-            {
-                get
-                {
-                    return menuItems_;
-                }
-            }
-
-            /// <summary>
-            /// The PlotSurface2D associated with the context menu. Generally, the user
-            /// should not set this. It is used internally by PlotSurface2D.
-            /// </summary>
-            public Windows.PlotSurface2D PlotSurface2D
-            {
-                set
-                {
-                    this.plotSurface2D_ = value;
-                }
-            }
-
-            /// <summary>
-            /// The PlotSurface2D associated with the context menu. Classes inherited
-            /// from PlotContextMenu will likely use this to implement their functionality.
-            /// </summary>
-            protected Windows.PlotSurface2D plotSurface2D_;
-
-
-            /// <summary>
-            /// Sets the context menu according to the IPlotMenuItem's in the provided
-            /// ArrayList. The current menu items can be obtained using the MenuItems
-            /// property and extended if desired.
-            /// </summary>
-            /// <param name="menuItems"></param>
-            public void SetMenuItems(ArrayList menuItems)
-            {
-                this.menuItems_ = menuItems;
-
-                this.rightMenu_ = new System.Windows.Forms.ContextMenu();
-
-                foreach (IPlotMenuItem item in menuItems_)
-                {
-                    this.rightMenu_.MenuItems.Add(item.MenuItem);
-                }
-
-                this.rightMenu_.Popup += new System.EventHandler(this.rightMenu__Popup);
-            }
-
-
-            /// <summary>
-            /// Constructor creates
-            /// </summary>
-            public PlotContextMenu()
-            {
-                ArrayList menuItems = new ArrayList();
-
-                menuItems = new ArrayList();
-                menuItems.Add(new PlotZoomBackMenuItem("Original Dimensions", 0, new EventHandler(this.mnuOriginalDimensions_Click)));
-                menuItems.Add(new PlotShowCoordinatesMenuItem("Show World Coordinates", 1, new EventHandler(this.mnuDisplayCoordinates_Click)));
-                menuItems.Add(new PlotMenuSeparator(2));
-                menuItems.Add(new PlotMenuItem("Print", 3, new EventHandler(this.mnuPrint_Click)));
-                menuItems.Add(new PlotMenuItem("Print Preview", 4, new EventHandler(this.mnuPrintPreview_Click)));
-                menuItems.Add(new PlotMenuItem("Copy To Clipboard", 5, new EventHandler(this.mnuCopyToClipboard_Click)));
-
-                this.SetMenuItems(menuItems);
-            }
-
-
-            private void mnuOriginalDimensions_Click(object sender, System.EventArgs e)
-            {
-                plotSurface2D_.OriginalDimensions();
-            }
-
-            private void mnuCopyToClipboard_Click(object sender, System.EventArgs e)
-            {
-                plotSurface2D_.CopyToClipboard();
-            }
-
-            private void mnuPrint_Click(object sender, System.EventArgs e)
-            {
-                plotSurface2D_.Print(false);
-            }
-
-            private void mnuPrintPreview_Click(object sender, System.EventArgs e)
-            {
-                plotSurface2D_.Print(true);
-            }
-
-            private void mnuDisplayCoordinates_Click(object sender, System.EventArgs e)
-            {
-                plotSurface2D_.ShowCoordinates = !plotSurface2D_.ShowCoordinates;
-            }
-
-            private void rightMenu__Popup(object sender, System.EventArgs e)
-            {
-                foreach (IPlotMenuItem item in menuItems_)
-                {
-                    item.OnPopup(this);
-                }
-            }
-
-            /// <summary>
-            /// Gets the Windows.Forms context menu managed by this object.
-            /// </summary>
-            public System.Windows.Forms.ContextMenu Menu
-            {
-                get
-                {
-                    return rightMenu_;
-                }
-            }
-
-        }
-        #endregion
 
         /// <summary>
         /// Clean up any resources being used.

@@ -48,9 +48,6 @@
     <Compile Include="HorizontalLine.cs" />
     <Compile Include="IDrawable.cs" />
     <Compile Include="IPlot.cs" />
-    <Compile Include="IPlotSurface2D.cs" />
-    <Compile Include="ISurface.cs" />
-    <Compile Include="ITransform2D.cs" />
     <Compile Include="LinearAxis.cs" />
     <Compile Include="LineData.cs" />
     <Compile Include="LinePlot.cs" />

@@ -30,6 +30,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Collections;
@@ -160,7 +161,7 @@ namespace NPlot
 		/// <param name="p">the pen to use to draw the grid lines.</param>
 		private void DrawGridLines( 
 			Graphics g, PhysicalAxis axis, PhysicalAxis orthogonalAxis,
-			System.Collections.ArrayList a, bool horizontal, Pen p )
+            List<double> a, bool horizontal, Pen p)
 		{
 			for (int i=0; i<a.Count; ++i)
 			{
@@ -191,11 +192,10 @@ namespace NPlot
 		/// <param name="yAxis">The physical y axis to draw vertical lines parallel to.</param>
 		public void Draw( Graphics g, PhysicalAxis xAxis, PhysicalAxis yAxis )
 		{
-
-			ArrayList xLargePositions = null;
-			ArrayList yLargePositions = null;
-			ArrayList xSmallPositions = null;
-			ArrayList ySmallPositions = null;
+            List<double> xLargePositions = null;
+            List<double> yLargePositions = null;
+            List<double> xSmallPositions = null;
+            List<double> ySmallPositions = null;
 
 			if (this.horizontalGridType_ != GridType.None)
 			{

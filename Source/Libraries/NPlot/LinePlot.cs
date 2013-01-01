@@ -83,7 +83,7 @@ namespace NPlot
 
             var sw = StepTimer.Start("Transform");
 
-            ITransform2D t = Transform2D.GetTransformer(xAxis, yAxis);
+            Transform2D t = new Transform2D(xAxis, yAxis);
 
             // clipping is now handled assigning a clip region in the
             // graphic object before this call
@@ -149,7 +149,7 @@ namespace NPlot
         /// Returns an x-axis that is suitable for drawing this plot.
         /// </summary>
         /// <returns>A suitable x-axis.</returns>
-        public Axis SuggestXAxis()
+        public DateTimeAxis SuggestXAxis()
         {
             return m_lineData.GetX();
         }
@@ -159,7 +159,7 @@ namespace NPlot
         /// Returns a y-axis that is suitable for drawing this plot.
         /// </summary>
         /// <returns>A suitable y-axis.</returns>
-        public Axis SuggestYAxis()
+        public LinearAxis SuggestYAxis()
         {
             var a = m_lineData.GetY();
             a.IncreaseRange(0.08);

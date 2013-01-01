@@ -30,6 +30,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Collections;
 using System.Globalization;
@@ -161,9 +162,9 @@ namespace NPlot
 
 			labelOffset = this.getDefaultLabelOffset( physicalMin, physicalMax );
 			boundingBox = null;
-		
-			ArrayList largeTicks;
-			ArrayList smallTicks;
+
+            List<double> largeTicks;
+            List<double> smallTicks;
 			this.WorldTickPositions( physicalMin, physicalMax, out largeTicks, out smallTicks );
 
 			// draw small ticks.
@@ -312,13 +313,13 @@ namespace NPlot
 		internal override void WorldTickPositions_FirstPass(
 			Point physicalMin, 
 			Point physicalMax,
-			out ArrayList largeTickPositions,
-			out ArrayList smallTickPositions
+			out List<double> largeTickPositions,
+            out List<double> smallTickPositions
 			)
 		{
 			smallTickPositions = null;
 
-			largeTickPositions = new ArrayList();
+            largeTickPositions = new List<double>();
 
 			const int daysInMonth = 30;
 
@@ -631,17 +632,17 @@ namespace NPlot
         internal override void WorldTickPositions_SecondPass(
             Point physicalMin,
             Point physicalMax,
-            ArrayList largeTickPositions,
-            ref ArrayList smallTickPositions
+            List<double> largeTickPositions,
+            ref List<double> smallTickPositions
           )
         {
             if (largeTickPositions.Count < 2 || !(LargeTickLabelType_.Equals(LargeTickLabelType.year)))
             {
-                smallTickPositions = new ArrayList(); ;
+                smallTickPositions = new List<double>(); ;
             }
             else
             {
-                smallTickPositions = new ArrayList();
+                smallTickPositions = new List<double>();
                 double diff = 0.5 * (((double)largeTickPositions[1]) - ((double)largeTickPositions[0]));
                 if (((double)largeTickPositions[0] - diff) > this.WorldMin)
                 {

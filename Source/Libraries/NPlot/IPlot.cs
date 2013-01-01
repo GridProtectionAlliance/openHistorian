@@ -45,13 +45,13 @@ namespace NPlot
 		/// <summary>
 		/// The method used to set the default abscissa axis.
 		/// </summary>
-		Axis SuggestXAxis();
+		DateTimeAxis SuggestXAxis();
 
 		
 		/// <summary>
 		/// The method used to set the default ordinate axis.
 		/// </summary>
-		Axis SuggestYAxis();
+		LinearAxis SuggestYAxis();
 
 	}
 }

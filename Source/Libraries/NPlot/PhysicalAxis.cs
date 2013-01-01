@@ -142,18 +142,9 @@ namespace NPlot
             {
                 minc = Axis.WorldMin;
                 maxc = Axis.WorldMax;
-                if (!Axis.Reversed)
-                {
                     double tmp = PhysicalToWorld(min, true);
                     Axis.WorldMax = PhysicalToWorld(max, true);
                     Axis.WorldMin = tmp;
-                }
-                else
-                {
-                    double tmp = PhysicalToWorld(min, true);
-                    Axis.WorldMin = PhysicalToWorld(max, true);
-                    Axis.WorldMax = tmp;
-                }
                 // need to trap somehow if the user selects an 
                 // arbitrarily small range. Otherwise the GDI+ 
                 // drawing routines lead to an overflow in painting 

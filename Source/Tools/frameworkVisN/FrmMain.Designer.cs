@@ -62,7 +62,6 @@
             this.PlotFrequency.DateTimeToolTip = false;
             this.PlotFrequency.Location = new System.Drawing.Point(296, 26);
             this.PlotFrequency.Name = "PlotFrequency";
-            this.PlotFrequency.RightMenu = null;
             this.PlotFrequency.ShowCoordinates = true;
             this.PlotFrequency.Size = new System.Drawing.Size(700, 278);
             this.PlotFrequency.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
@@ -84,7 +83,6 @@
             this.PlotVoltageAngle.DateTimeToolTip = false;
             this.PlotVoltageAngle.Location = new System.Drawing.Point(296, 322);
             this.PlotVoltageAngle.Name = "PlotVoltageAngle";
-            this.PlotVoltageAngle.RightMenu = null;
             this.PlotVoltageAngle.ShowCoordinates = true;
             this.PlotVoltageAngle.Size = new System.Drawing.Size(700, 278);
             this.PlotVoltageAngle.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;

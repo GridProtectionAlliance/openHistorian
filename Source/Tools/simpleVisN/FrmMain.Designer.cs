@@ -82,7 +82,6 @@
             this.plot.DateTimeToolTip = true;
             this.plot.Location = new System.Drawing.Point(285, 12);
             this.plot.Name = "plot";
-            this.plot.RightMenu = null;
             this.plot.ShowCoordinates = true;
             this.plot.Size = new System.Drawing.Size(820, 513);
             this.plot.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;

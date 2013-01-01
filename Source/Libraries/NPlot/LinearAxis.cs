@@ -29,6 +29,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Collections.Generic;
 using System.Drawing;
 using System.Collections;
 using System;
@@ -136,8 +137,8 @@ namespace NPlot
 			labelOffset = this.getDefaultLabelOffset( physicalMin, physicalMax );
 			boundingBox = null;
 
-			ArrayList largeTickPositions;
-			ArrayList smallTickPositions;
+            List<double> largeTickPositions;
+            List<double> smallTickPositions;
 			this.WorldTickPositions( physicalMin, physicalMax, out largeTickPositions, out smallTickPositions );
 
 			labelOffset = new Point( 0, 0 );
@@ -194,8 +195,8 @@ namespace NPlot
 		internal override void WorldTickPositions_SecondPass( 
 			Point physicalMin,
 			Point physicalMax,
-			ArrayList largeTickPositions, 
-			ref ArrayList smallTickPositions )
+            List<double> largeTickPositions,
+            ref List<double> smallTickPositions)
 		{
 
 			// return if already generated.
@@ -207,7 +208,7 @@ namespace NPlot
 			double adjustedMax = this.AdjustedWorldValue( WorldMax );
 			double adjustedMin = this.AdjustedWorldValue( WorldMin );
 
-			smallTickPositions = new ArrayList();
+            smallTickPositions = new List<double>();
 
 			// TODO: Can optimize this now.
 			bool shouldCullMiddle;
@@ -269,8 +270,8 @@ namespace NPlot
 		internal override void WorldTickPositions_FirstPass(
 			Point physicalMin, 
 			Point physicalMax,
-			out ArrayList largeTickPositions,
-			out ArrayList smallTickPositions
+            out List<double> largeTickPositions,
+            out List<double> smallTickPositions
 			)
 		{
 
@@ -322,8 +323,8 @@ namespace NPlot
 
 
 			// (4) now make list of large tick positions.
-			
-			largeTickPositions = new ArrayList();
+
+            largeTickPositions = new List<double>();
 
 			if (tickDist < 0.0) // some sanity checking. TODO: remove this.
 				throw new NPlotException( "Tick dist is negative" );
@@ -343,7 +344,7 @@ namespace NPlot
 			smallTickPositions = null;
 			if (shouldCullMiddle)
 			{
-				smallTickPositions = new ArrayList();
+                smallTickPositions = new List<double>();
 
 				if (largeTickPositions.Count > 2)
 				{
@@ -353,7 +354,7 @@ namespace NPlot
 					}
 				}
 
-				ArrayList culledPositions = new ArrayList();
+                List<double> culledPositions = new List<double>();
 				culledPositions.Add( largeTickPositions[0] );
 				culledPositions.Add( largeTickPositions[largeTickPositions.Count-1] );
 				largeTickPositions = culledPositions;

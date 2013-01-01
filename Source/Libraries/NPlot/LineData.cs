@@ -31,7 +31,7 @@ namespace NPlot
             }
         }
 
-        public Axis GetX()
+        public DateTimeAxis GetX()
         {
             if (Count > 0)
                 return new DateTimeAxis(MinValueX, MaxValueX);
@@ -39,7 +39,7 @@ namespace NPlot
             return new DateTimeAxis(d, d.AddDays(1));
         }
 
-        public Axis GetY()
+        public LinearAxis GetY()
         {
             if (Count > 0)
                 return new LinearAxis(MinValueY, MaxValueY);

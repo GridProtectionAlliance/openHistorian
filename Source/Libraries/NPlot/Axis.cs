@@ -29,6 +29,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Drawing;
 using System;
@@ -213,25 +214,6 @@ namespace NPlot
 		}
 		private bool hidden_;
 
-
-		/// <summary>
-		/// If set true, the axis will behave as though the WorldMin and WorldMax values
-		/// have been swapped.
-		/// </summary>
-		public bool Reversed
-		{
-			get
-			{
-				return reversed_;
-			}
-			set
-			{
-				reversed_ = value;
-			}
-		}
-		private bool reversed_;
-
-
 		/// <summary>
 		/// If true, no text will be drawn next to any axis tick marks.
 		/// </summary>
@@ -344,7 +326,7 @@ namespace NPlot
 		/// <summary>
 		/// The pen used to draw the ticks and the axis line.
 		/// </summary>
-		public System.Drawing.Pen AxisPen
+		public Pen AxisPen
 		{
 			get
 			{
@@ -355,7 +337,7 @@ namespace NPlot
 				linePen_ = value;
 			}
 		}
-		private System.Drawing.Pen linePen_;
+		private Pen linePen_;
 
 
 		/// <summary>
@@ -572,7 +554,6 @@ namespace NPlot
 			a.tickTextNextToAxis_ = b.tickTextNextToAxis_;
 			a.hidden_ = b.hidden_;
 			a.hideTickText_ = b.hideTickText_;
-			a.reversed_ = b.reversed_;
 			a.ticksAngle_ = b.ticksAngle_;
 			a.ticksLabelAngle_ = b.ticksLabelAngle_;
 			a.minPhysicalLargeTickStep_ = b.minPhysicalLargeTickStep_;
@@ -632,7 +613,6 @@ namespace NPlot
 
 			this.Label = "" ;
 			this.NumberFormat = null;
-			this.Reversed = false;
 
 			FontFamily fontFamily = new FontFamily( "Arial" );
 			this.TickTextFont = new Font( fontFamily, 10, FontStyle.Regular, GraphicsUnit.Pixel );
@@ -776,16 +756,9 @@ namespace NPlot
 			PointF _physicalMin;
 			PointF _physicalMax;
 
-			if ( this.Reversed )
-			{
-				_physicalMin = physicalMax;
-				_physicalMax = physicalMin;
-			}
-			else
-			{
+			
 				_physicalMin = physicalMin;
 				_physicalMax = physicalMax;
-			}
 
 
 			// (2) if want clipped value, return extrema if outside range.
@@ -871,16 +844,8 @@ namespace NPlot
 			PointF _physicalMin;
 			PointF _physicalMax;
 
-			if ( this.Reversed )
-			{
-				_physicalMin = physicalMax;
-				_physicalMax = physicalMin;
-			}
-			else
-			{
 				_physicalMin = physicalMin;
 				_physicalMax = physicalMax;
-			}
 
 			// normalised axis dir vector
 			float axis_X = _physicalMax.X - _physicalMin.X;
@@ -1367,11 +1332,11 @@ namespace NPlot
 		internal virtual void WorldTickPositions_FirstPass(
 			Point physicalMin, 
 			Point physicalMax,
-			out ArrayList largeTickPositions,
-			out ArrayList smallTickPositions
+            out List<double> largeTickPositions,
+            out List<double> smallTickPositions
 			)
 		{
-			largeTickPositions = new ArrayList();
+            largeTickPositions = new List<double>();
 			smallTickPositions = null;
 		}
 
@@ -1390,11 +1355,11 @@ namespace NPlot
 		internal virtual void WorldTickPositions_SecondPass( 
 			Point physicalMin,
 			Point physicalMax,
-			ArrayList largeTickPositions, 
-			ref ArrayList smallTickPositions )
+            List<double> largeTickPositions,
+            ref List<double> smallTickPositions)
 		{
 			if (smallTickPositions == null)
-				smallTickPositions = new ArrayList();
+                smallTickPositions = new List<double>();
 		}
 
 
@@ -1408,8 +1373,8 @@ namespace NPlot
 		public void WorldTickPositions(
 			Point physicalMin,
 			Point physicalMax,
-			out ArrayList largeTickPositions,
-			out ArrayList smallTickPositions
+            out List<double> largeTickPositions,
+            out List<double> smallTickPositions
 			)
 		{
 			WorldTickPositions_FirstPass( physicalMin, physicalMax, out largeTickPositions, out smallTickPositions );

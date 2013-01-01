@@ -78,9 +78,9 @@ namespace NPlot
 		/// Returns an x-axis that is suitable for drawing this plot.
 		/// </summary>
 		/// <returns>A suitable x-axis.</returns>
-		public Axis SuggestXAxis()
+		public DateTimeAxis SuggestXAxis()
 		{
-			return new LinearAxis( value_, value_ );
+            return new DateTimeAxis(value_, value_);
 		}
 
 
@@ -88,7 +88,7 @@ namespace NPlot
 		/// Returns null indicating that y extremities of the line are variable.
 		/// </summary>
 		/// <returns>null</returns>
-		public Axis SuggestYAxis()
+		public LinearAxis SuggestYAxis()
 		{
 			return null;
 		}

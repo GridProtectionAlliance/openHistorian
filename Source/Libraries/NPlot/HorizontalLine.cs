@@ -77,7 +77,7 @@ namespace NPlot
 		/// Returns null indicating that x extremities of the line are variable.
 		/// </summary>
 		/// <returns>null</returns>
-		public Axis SuggestXAxis()
+		public DateTimeAxis SuggestXAxis()
 		{
 			return null;
 		}
@@ -87,7 +87,7 @@ namespace NPlot
 		/// Returns a y-axis that is suitable for drawing this plot.
 		/// </summary>
 		/// <returns>A suitable y-axis.</returns>
-		public Axis SuggestYAxis()
+		public LinearAxis SuggestYAxis()
 		{
 			return new LinearAxis( this.value_, this.value_ );
 		}

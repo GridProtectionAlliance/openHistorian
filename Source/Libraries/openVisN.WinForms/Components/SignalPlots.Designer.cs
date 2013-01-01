@@ -40,7 +40,6 @@
             this.plotSurface2D1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.plotSurface2D1.Location = new System.Drawing.Point(0, 0);
             this.plotSurface2D1.Name = "plotSurface2D1";
-            this.plotSurface2D1.RightMenu = null;
             this.plotSurface2D1.ShowCoordinates = true;
             this.plotSurface2D1.Size = new System.Drawing.Size(608, 417);
             this.plotSurface2D1.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
