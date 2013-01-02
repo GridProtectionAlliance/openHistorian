@@ -58,10 +58,12 @@ namespace openVisN.Library
 
     public class AllSignals
     {
+        public static string DefaultPath=@"C:\Unison\GPA\Demo\SignalMetadata.txt";
+
         public List<SignalBook> Signals;
 
         public AllSignals()
-            : this(@"C:\Unison\GPA\Demo\SignalMetadata.txt")
+            : this(DefaultPath)
         {
         }
         public AllSignals(string config)

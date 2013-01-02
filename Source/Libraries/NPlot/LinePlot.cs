@@ -178,6 +178,7 @@ namespace NPlot
             set
             {
                 pen_ = value;
+
             }
         }
         private Pen pen_ = new Pen(Color.Black);

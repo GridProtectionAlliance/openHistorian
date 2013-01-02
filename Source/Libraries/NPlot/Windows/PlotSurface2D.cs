@@ -194,6 +194,25 @@ namespace NPlot.Windows
             this.Draw(g, border);
         }
 
+        System.Drawing.Bitmap m_asyncImage;
+        bool m_drawAsyncImage;
+        
+        public override void Refresh()
+        {
+            if (!InvokeRequired)
+            {
+                base.Refresh();
+            }
+            else
+            {
+                m_asyncImage = new System.Drawing.Bitmap(this.Width, this.Height);
+                Graphics g = Graphics.FromImage(m_asyncImage);
+                g.Clear(Color.White);
+                ps_.Draw(g, new Rectangle(0, 0, m_asyncImage.Width - 1, m_asyncImage.Height - 1));
+                m_drawAsyncImage = true;
+                BeginInvoke(new Action(base.Refresh));
+            }
+        }
 
         /// <summary>
         /// Draws the plot surface on the supplied graphics surface [not the control surface].
@@ -209,8 +228,17 @@ namespace NPlot.Windows
             {
                 this.drawDesignMode(g, bounds);
             }
-
-            ps_.Draw(g, bounds);
+            if (m_drawAsyncImage)
+            {
+                
+                g.DrawImageUnscaled(m_asyncImage,0,0);
+                m_drawAsyncImage = false;
+            }
+            else
+            {
+                ps_.Draw(g, bounds);
+                
+            }
 
         }
 
@@ -803,7 +831,7 @@ namespace NPlot.Windows
                 Refresh();
             }
         }
-
+        
 
         /// <summary>
         /// mouse up event handler.
@@ -910,8 +938,7 @@ namespace NPlot.Windows
             this.Draw(ev.Graphics, r);
             ev.HasMorePages = false;
         }
-
-
+        
         /// <summary>
         /// Coppies the chart currently shown in the control to the clipboard as an image.
         /// </summary>
@@ -993,9 +1020,6 @@ namespace NPlot.Windows
             }
         }
 
-
-
-
         private List<Interactions.Interaction> interactions_ = new List<Interactions.Interaction>();
 
 
@@ -1067,20 +1091,11 @@ namespace NPlot.Windows
             // do nothing.
         }
 
-        /// <summary>
-        /// Preforms an asynchronous refresh and invalidates the form when complete. This
-        /// must be called from the control's main thread.
-        /// </summary>
-        public void RefreshAsync()
-        {
-            if (!InvokeRequired)
-            {
-                throw new ArgumentException("This must be called from the control's constructing thread.");
+        
+
+       
 
 
-            }
-            
-        }
 
         /// <summary>
         /// Clean up any resources being used.

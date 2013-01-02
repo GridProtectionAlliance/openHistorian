@@ -24,55 +24,41 @@
 
 using System;
 using System.ComponentModel;
+using System.Threading;
 
 namespace GSF.Threading
 {
-
-    public class SynchronousEvent
-    {
-        public event EventHandler CustomEvent;
-
-        AsyncOperation m_asyncEventHelper;
-
-        public SynchronousEvent()
-        {
-            m_asyncEventHelper = AsyncOperationManager.CreateOperation(null);
-        }
-
-        public void RaiseEvent()
-        {
-            if (CustomEvent != null)
-                m_asyncEventHelper.Post(Callback, null);
-        }
-
-        void Callback(object sender)
-        {
-            if (CustomEvent != null)
-                CustomEvent(this, EventArgs.Empty);
-        }
-    }
-
     public class SynchronousEvent<T>
     {
+        ManualResetEvent m_waiting;
         public event EventHandler<T> CustomEvent;
 
         AsyncOperation m_asyncEventHelper;
 
         public SynchronousEvent()
         {
+            m_waiting = new ManualResetEvent(false);
             m_asyncEventHelper = AsyncOperationManager.CreateOperation(null);
         }
 
         public void RaiseEvent(T args)
         {
             if (CustomEvent != null)
+            {
+                m_waiting.Reset();
                 m_asyncEventHelper.Post(Callback, args);
+                m_waiting.WaitOne();
+            }
+
         }
 
         void Callback(object sender)
         {
             if (CustomEvent != null)
+            {
                 CustomEvent(this, (T)sender);
+            }
+            m_waiting.Set();
         }
     }
 }

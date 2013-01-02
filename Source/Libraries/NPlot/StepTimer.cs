@@ -18,13 +18,16 @@ namespace NPlot
 
         public static Stopwatch Start(string name)
         {
-            if (!AllStopwatches.ContainsKey(name))
+            lock (AllStopwatches)
             {
-                AllStopwatches.Add(name, new Stopwatch());
+                if (!AllStopwatches.ContainsKey(name))
+                {
+                    AllStopwatches.Add(name, new Stopwatch());
+                }
+                var sw = AllStopwatches[name];
+                sw.Start();
+                return sw;
             }
-            var sw = AllStopwatches[name];
-            sw.Start();
-            return sw;
         }
 
         public static void Stop(Stopwatch sw)

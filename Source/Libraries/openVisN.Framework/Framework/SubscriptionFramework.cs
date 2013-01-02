@@ -36,30 +36,6 @@ namespace openVisN.Framework
     public class SubscriptionFramework
     {
 
-        public event EventHandler<QueryResultsEventArgs> NewQueryResults
-        {
-            add
-            {
-                m_updateFramework.NewQueryResults += value;
-            }
-            remove
-            {
-                m_updateFramework.NewQueryResults -= value;
-            }
-        }
-
-        public event EventHandler<QueryResultsEventArgs> SynchronousNewQueryResults
-        {
-            add
-            {
-                m_updateFramework.SynchronousNewQueryResults += value;
-            }
-            remove
-            {
-                m_updateFramework.SynchronousNewQueryResults -= value;
-            }
-        }
-
         SignalAssignment m_angleReference;
         UpdateFramework m_updateFramework;
         object m_syncRoot;
@@ -102,10 +78,9 @@ namespace openVisN.Framework
             HistorianDatabaseCollection databaseCollection = new HistorianDatabaseCollection();
             databaseCollection.Add("Full Resolution Synchrophasor", new ArchiveDatabaseEngine(null, paths));
             HistorianQuery query = new HistorianQuery(databaseCollection);
-           m_updateFramework.Start(query);
+            m_updateFramework.Start(query);
             m_updateFramework.Mode = ExecutionMode.Manual;
             m_updateFramework.Enabled = true;
-
         }
 
         public IEnumerable<MetadataBase> AllSignals
@@ -205,9 +180,18 @@ namespace openVisN.Framework
             m_updateFramework.Execute(lowerBounds, upperBounds, token);
         }
 
+       
         public void RefreshQuery()
         {
             m_updateFramework.Execute();
+        }
+
+        public UpdateFramework Updater
+        {
+            get
+            {
+                return m_updateFramework;
+            }
         }
 
 

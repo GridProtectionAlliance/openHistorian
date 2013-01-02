@@ -1222,7 +1222,15 @@ namespace NPlot.Windows
                 public AxisDragX(bool enableDragWithCtr)
                 {
                     enableDragWithCtr_ = enableDragWithCtr;
+                    ZoomLocation = Location.MouseLocation;
                 }
+
+                public enum Location
+                {
+                    MouseLocation,
+                    FrontOfGraph
+                }
+                public Location ZoomLocation { get; set; }
 
                 private bool enableDragWithCtr_ = false;
 
@@ -1231,6 +1239,7 @@ namespace NPlot.Windows
                 private Point lastPoint_ = new Point();
                 private PhysicalAxis physicalAxis_ = null;
                 private Point startPoint_ = new Point();
+
 
                 /// <summary>
                 /// 
@@ -1287,11 +1296,30 @@ namespace NPlot.Windows
                 /// <param name="lastKeyEventArgs"></param>
                 public override bool DoMouseMove(MouseEventArgs e, Control ctr, KeyEventArgs lastKeyEventArgs)
                 {
-                    NPlot.PlotSurface2D ps = ((Windows.PlotSurface2D)ctr).Inner;
-
                     // if dragging on axis to zoom.
                     if ((e.Button == MouseButtons.Left) && doing_ && physicalAxis_ != null)
                     {
+
+                        NPlot.PlotSurface2D ps = ((Windows.PlotSurface2D)ctr).Inner;
+
+                        // see if hit with axis.
+                        ArrayList objects = ps.HitTest(new Point(e.X, e.Y));
+
+                        foreach (object o in objects)
+                        {
+                            if (o is NPlot.Axis)
+                            {
+                                PhysicalAxis[] physicalAxisList = new PhysicalAxis[] { ps.PhysicalXAxis1Cache, ps.PhysicalXAxis2Cache };
+
+                                if (ps.PhysicalXAxis1Cache.Axis == axis_)
+                                    physicalAxis_ = ps.PhysicalXAxis1Cache;
+                                else if (ps.PhysicalXAxis2Cache.Axis == axis_)
+                                    physicalAxis_ = ps.PhysicalXAxis2Cache;
+
+                                axis_ = (Axis)o;
+                            }
+                        }
+
                         if (enableDragWithCtr_ && lastKeyEventArgs != null && lastKeyEventArgs.Control)
                         {
                         }
@@ -1323,8 +1351,15 @@ namespace NPlot.Windows
                             PointF physicalWorldMin = pMin;
                             PointF physicalWorldMax = pMax;
 
-                            physicalWorldMin.X += relativePosX * prop;
-                            physicalWorldMax.X -= (1 - relativePosX) * prop;
+                            if (ZoomLocation == Location.MouseLocation)
+                            {
+                                physicalWorldMin.X += relativePosX * prop;
+                                physicalWorldMax.X -= (1 - relativePosX) * prop;
+                            }
+                            else
+                            {
+                                physicalWorldMin.X += prop;
+                            }
 
                             double newWorldMin = axis_.PhysicalToWorld(physicalWorldMin, pMin, pMax, false);
                             double newWorldMax = axis_.PhysicalToWorld(physicalWorldMax, pMin, pMax, false);
@@ -1554,6 +1589,11 @@ namespace NPlot.Windows
                 private Point point_ = new Point(-1, -1);
                 //private bool mouseDown_ = false;
 
+                public MouseWheelZoom()
+                {
+                    ZoomLocation = Location.MouseLocation;
+                }
+
                 /// <summary>
                 /// 
                 /// </summary>
@@ -1585,6 +1625,13 @@ namespace NPlot.Windows
                         return GetParentForm(parent);
                     return null;
                 }
+
+                public enum Location
+                {
+                    MouseLocation,
+                    FrontOfGraph
+                }
+                public Location ZoomLocation { get; set; }
 
                 /// <summary>
                 /// 
@@ -1618,7 +1665,7 @@ namespace NPlot.Windows
                         PlotSurface2D plot = ctr as PlotSurface2D;
                         if (plot == null)
                             return false;
-                        
+
                         Point point = ctr.PointToScreen(e.Location);
                         point = plot.PointToClient(point);
 
@@ -1651,46 +1698,24 @@ namespace NPlot.Windows
                             {
                                 sizeXAxis /= zoom;
                             }
-                            plot.Inner.XAxis1.WorldMin = x - sizeXAxis * xPercent;
-                            plot.Inner.XAxis1.WorldMax = plot.Inner.XAxis1.WorldMin + sizeXAxis;
-                            
+
+                            if (ZoomLocation == Location.MouseLocation)
+                            {
+                                plot.Inner.XAxis1.WorldMin = x - sizeXAxis * xPercent;
+                                plot.Inner.XAxis1.WorldMax = plot.Inner.XAxis1.WorldMin + sizeXAxis;
+                            }
+                            else
+                            {
+                                plot.Inner.XAxis1.WorldMin = plot.Inner.XAxis1.WorldMax - sizeXAxis;
+                                //plot.Inner.XAxis1.WorldMax = plot.Inner.XAxis1.WorldMin + sizeXAxis;
+                            }
+
                             plot.InteractionOccured(this);
                         }
                     }
                     catch
                     {
                     }
-                    return true;
-                    NPlot.PlotSurface2D ps = ((Windows.PlotSurface2D)ctr).Inner;
-
-                    ((Windows.PlotSurface2D)ctr).CacheAxes();
-
-                    float delta = (float)e.Delta / Math.Abs(e.Delta);
-                    delta *= sensitivity_;
-
-                    Axis axis = null;
-                    PointF pMin = PointF.Empty;
-                    PointF pMax = PointF.Empty;
-                    KeyEventArgs keyArgs = ((Windows.PlotSurface2D)ctr).lastKeyEventArgs_;
-
-                    axis = ps.XAxis1;
-                    pMin = ps.PhysicalXAxis1Cache.PhysicalMin;
-                    pMax = ps.PhysicalXAxis1Cache.PhysicalMax;
-                    if (axis == null) return false;
-
-                    PointF physicalWorldMin = pMin;
-                    PointF physicalWorldMax = pMax;
-                    physicalWorldMin.X -= delta;
-                    physicalWorldMax.X -= -delta;
-                    physicalWorldMin.Y += delta;
-                    physicalWorldMax.Y += -delta;
-                    double newWorldMin = axis.PhysicalToWorld(physicalWorldMin, pMin, pMax, false);
-                    double newWorldMax = axis.PhysicalToWorld(physicalWorldMax, pMin, pMax, false);
-                    axis.WorldMin = newWorldMin;
-                    axis.WorldMax = newWorldMax;
-
-                    ((Windows.PlotSurface2D)ctr).InteractionOccured(this);
-
                     return true;
                 }
 

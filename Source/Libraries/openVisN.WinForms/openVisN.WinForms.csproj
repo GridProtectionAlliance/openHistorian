@@ -51,6 +51,12 @@
     <Compile Include="Components\ColorWheel.Designer.cs">
       <DependentUpon>ColorWheel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\ManualAutomaticModeSelectorButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ManualAutomaticModeSelectorButton.Designer.cs">
+      <DependentUpon>ManualAutomaticModeSelectorButton.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\ReferenceSignalSelectionComboBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -90,6 +96,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Components\ManualAutomaticModeSelectorButton.resx">
+      <DependentUpon>ManualAutomaticModeSelectorButton.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\ReferenceSignalSelectionComboBox.resx">
       <DependentUpon>ReferenceSignalSelectionComboBox.cs</DependentUpon>
     </EmbeddedResource>

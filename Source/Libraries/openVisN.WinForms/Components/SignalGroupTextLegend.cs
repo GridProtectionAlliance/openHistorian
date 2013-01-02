@@ -66,7 +66,7 @@ namespace openVisN.Components
                         {
                             m_frameworkCtrl.Framework.RemoveSubscriber(this);
                         }
-                        value.Framework.SynchronousNewQueryResults += m_framework_SynchronousNewQueryResults;
+                        value.Framework.Updater.SynchronousNewQueryResults += m_framework_SynchronousNewQueryResults;
 
                         value.Framework.AddSubscriber(this);
                     }

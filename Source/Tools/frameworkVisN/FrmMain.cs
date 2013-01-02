@@ -76,7 +76,7 @@ namespace frameworkVisN
             InitializeComponent();
             m_framework = new SubscriptionFramework(new string[] { @"H:\August 2012.d2" });
             m_framework.AddSubscriber(this);
-            m_framework.SynchronousNewQueryResults += m_framework_NewQueryResults;
+            m_framework.Updater.SynchronousNewQueryResults += m_framework_NewQueryResults;
             ChkAllSignals.DisplayMember = "DisplayName";
         }
 

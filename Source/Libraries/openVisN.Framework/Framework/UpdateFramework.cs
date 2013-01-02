@@ -23,8 +23,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Windows.Forms;
 using openHistorian.Data.Query;
 using GSF.Threading;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Linq;
 
 namespace openVisN.Framework
 {
@@ -56,6 +61,8 @@ namespace openVisN.Framework
 
         public event EventHandler<QueryResultsEventArgs> NewQueryResults;
         public event EventHandler<QueryResultsEventArgs> SynchronousNewQueryResults;
+        public event EventHandler<QueryResultsEventArgs> ParallelWithControlLockNewQueryResults;
+        public event EventHandler<ExecutionMode> ExecutionModeChanged;
 
         SynchronousEvent<QueryResultsEventArgs> m_syncEvent;
 
@@ -76,6 +83,10 @@ namespace openVisN.Framework
 
         public UpdateFramework()
         {
+            m_automaticExecutionTimeLag = new TimeSpan(0);
+            m_automaticDurationWindow = new TimeSpan(5 * TimeSpan.TicksPerMinute);
+            m_refreshInterval = new TimeSpan(1 * TimeSpan.TicksPerSecond);
+
             m_enabled = true;
             m_syncEvent = new SynchronousEvent<QueryResultsEventArgs>();
             m_syncEvent.CustomEvent += m_syncEvent_CustomEvent;
@@ -93,7 +104,13 @@ namespace openVisN.Framework
         void m_syncEvent_CustomEvent(object sender, QueryResultsEventArgs e)
         {
             if (SynchronousNewQueryResults != null)
+            {
                 SynchronousNewQueryResults(this, e);
+            }
+            if (ParallelWithControlLockNewQueryResults != null)
+            {
+                ParallelWithControlLockNewQueryResults.ParallelRunAndWait(sender, e);
+            }
         }
 
         void m_async_Running(object sender, EventArgs e)
@@ -107,6 +124,7 @@ namespace openVisN.Framework
             lock (m_syncRoot)
             {
                 token = m_RequestToken;
+                m_RequestToken = null;
                 if (Mode == ExecutionMode.Manual)
                 {
                     startTime = m_lowerBounds;
@@ -116,18 +134,20 @@ namespace openVisN.Framework
                 }
                 else
                 {
-                    startTime = DateTime.UtcNow.Subtract(m_automaticExecutionTimeLag);
-                    stopTime = startTime.Add(m_automaticDurationWindow);
-                    currentTime = startTime;
+                    stopTime = DateTime.UtcNow.Subtract(m_automaticExecutionTimeLag);
+                    startTime = stopTime.Subtract(m_automaticDurationWindow);
+                    currentTime = stopTime;
                     activeSignals = m_activeSignals;
                 }
             }
 
             var results = m_query.GetQueryResult(startTime, stopTime, 0, activeSignals);
 
+            var queryResults = new QueryResultsEventArgs(results, token, startTime, stopTime);
+
             if (NewQueryResults != null)
-                NewQueryResults(this, new QueryResultsEventArgs(results, token, startTime, stopTime));
-            if (SynchronousNewQueryResults != null)
+                NewQueryResults.ParallelRunAndWait(this, queryResults);
+            if (SynchronousNewQueryResults != null || ParallelWithControlLockNewQueryResults != null)
                 m_syncEvent.RaiseEvent(new QueryResultsEventArgs(results, token, startTime, stopTime));
 
             lock (m_syncRoot)
@@ -135,6 +155,51 @@ namespace openVisN.Framework
                 if (Mode == ExecutionMode.Automatic)
                 {
                     m_async.RunAfterDelay(m_refreshInterval);
+                }
+            }
+        }
+
+        public TimeSpan RefreshInterval
+        {
+            get
+            {
+                return m_refreshInterval;
+            }
+            set
+            {
+                lock (m_syncRoot)
+                {
+                    m_refreshInterval = value;
+                }
+            }
+        }
+
+        public TimeSpan AutomaticExecutionTimeLag
+        {
+            get
+            {
+                return m_automaticDurationWindow;
+            }
+            set
+            {
+                lock (m_syncRoot)
+                {
+                    m_automaticExecutionTimeLag = value;
+                }
+            }
+
+        }
+        public TimeSpan AutomaticDurationWindow
+        {
+            get
+            {
+                return m_automaticDurationWindow;
+            }
+            set
+            {
+                lock (m_syncRoot)
+                {
+                    m_automaticDurationWindow = value;
                 }
             }
         }
@@ -147,7 +212,11 @@ namespace openVisN.Framework
             }
             set
             {
+                bool updated = m_mode != value;
+                m_RequestToken = null;
                 m_mode = value;
+                if (updated && ExecutionModeChanged != null)
+                    ExecutionModeChanged(this, value);
                 m_async.Run();
             }
         }
@@ -177,10 +246,76 @@ namespace openVisN.Framework
             m_async.Run();
         }
 
+        public void SwitchToAutomatic(bool useCurrentWindow)
+        {
+            if (useCurrentWindow)
+            {
+                lock (m_syncRoot)
+                {
+                    DateTime startTime = m_lowerBounds;
+                    DateTime endTime = m_upperBounds;
+                    TimeSpan duration = endTime - startTime;
+                    TimeSpan timeLag = DateTime.UtcNow - endTime;
+
+                    m_refreshInterval = new TimeSpan(1 * TimeSpan.TicksPerMillisecond);
+                    m_automaticDurationWindow = duration;
+                    m_automaticExecutionTimeLag = timeLag;
+                    Mode = ExecutionMode.Automatic;
+                }
+            }
+            else
+            {
+
+            }
+        }
+
+        public void SwitchToManual(bool useCurrentWindow)
+        {
+            if (useCurrentWindow)
+            {
+                lock (m_syncRoot)
+                {
+
+                    m_upperBounds = DateTime.UtcNow.Subtract(m_automaticExecutionTimeLag);
+                    m_lowerBounds = m_upperBounds.Subtract(m_automaticDurationWindow);
+                    Mode = ExecutionMode.Manual;
+                }
+            }
+            else
+            {
+
+            }
+        }
+
+
+        public void GetTimeWindow(out DateTime startTime, out DateTime endTime)
+        {
+            lock (m_syncRoot)
+            {
+                startTime = m_lowerBounds;
+                endTime = m_upperBounds;
+            }
+        }
+
+        public void SetWindowDuration(TimeSpan duration, object token)
+        {
+            lock (m_syncRoot)
+            {
+                m_automaticDurationWindow = duration;
+                m_RequestToken = token;
+            }
+        }
+
+
         public void Execute(DateTime startTime, DateTime endTime, object token)
         {
             lock (m_syncRoot)
             {
+                if (Mode == ExecutionMode.Automatic)
+                {
+                    return;
+                }
+
                 m_RequestToken = token;
                 m_lowerBounds = startTime;
                 m_upperBounds = endTime;

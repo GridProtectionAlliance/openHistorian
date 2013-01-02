@@ -17,6 +17,7 @@ namespace openHistorian.PerformanceTests.NPlot
     [TestFixture]
     public class PlotSpeed
     {
+        
         [Test]
         public void RefreshSpeed()
         {

@@ -35,6 +35,7 @@ namespace openVisN.Components
 {
     public partial class SignalPlots : UserControl, ISubscriber
     {
+        bool m_ignoreNextUpdate;
         object m_token = new object();
         double m_scalingFactor = 1;
         string m_signalTypeToPlot = "";
@@ -45,6 +46,12 @@ namespace openVisN.Components
 
         VisualizationFramework m_frameworkCtrl;
 
+        PlotSurface2D.Interactions.HorizontalDrag HorizontalDrag = new PlotSurface2D.Interactions.HorizontalDrag();
+        PlotSurface2D.Interactions.VerticalDrag VerticalDrag = new PlotSurface2D.Interactions.VerticalDrag();
+        PlotSurface2D.Interactions.AxisDragX AxisDragX = new PlotSurface2D.Interactions.AxisDragX(true);
+        PlotSurface2D.Interactions.AxisDragY AxisDragY = new PlotSurface2D.Interactions.AxisDragY(true);
+        PlotSurface2D.Interactions.MouseWheelZoom MouseWheelZoom = new PlotSurface2D.Interactions.MouseWheelZoom();
+
         public SignalPlots()
         {
             InitializeComponent();
@@ -54,6 +61,7 @@ namespace openVisN.Components
 
         public void Initialize(SubscriptionFramework framework)
         {
+
             //chkAllSignals.Items.Clear();
             //foreach (var signal in framework.AllSignalGroups)
             //{
@@ -81,22 +89,37 @@ namespace openVisN.Components
 
         private void PlotSurface2D1_InteractionOccured(object sender)
         {
-            if (!((sender is PlotSurface2D.Interactions.HorizontalDrag) || (sender is PlotSurface2D.Interactions.AxisDragX) || (sender is PlotSurface2D.Interactions.MouseWheelZoom)))
-                return;
-            DateTime minDate, maxDate;
-            minDate = new DateTime((long)plotSurface2D1.XAxis1.WorldMin);
-            maxDate = new DateTime((long)plotSurface2D1.XAxis1.WorldMax);
-            m_frameworkCtrl.Framework.ChangeDateRange(minDate, maxDate, m_token);
+            if (m_frameworkCtrl.Framework.Updater.Mode == ExecutionMode.Automatic)
+            {
+                if (!((sender is PlotSurface2D.Interactions.AxisDragX) || (sender is PlotSurface2D.Interactions.MouseWheelZoom)))
+                    return;
+                DateTime minDate, maxDate;
+                minDate = new DateTime((long)plotSurface2D1.XAxis1.WorldMin);
+                maxDate = new DateTime((long)plotSurface2D1.XAxis1.WorldMax);
+                m_ignoreNextUpdate = true;
+                m_frameworkCtrl.Framework.Updater.SetWindowDuration(maxDate - minDate, m_token);
+            }
+            else
+            {
+                if (!((sender is PlotSurface2D.Interactions.HorizontalDrag) || (sender is PlotSurface2D.Interactions.AxisDragX) || (sender is PlotSurface2D.Interactions.MouseWheelZoom)))
+                    return;
+                DateTime minDate, maxDate;
+                minDate = new DateTime((long)plotSurface2D1.XAxis1.WorldMin);
+                maxDate = new DateTime((long)plotSurface2D1.XAxis1.WorldMax);
+                m_frameworkCtrl.Framework.ChangeDateRange(minDate, maxDate, m_token);
+            }
+
         }
 
 
-        void m_framework_SynchronousNewQueryResults(object sender, QueryResultsEventArgs e)
+        void m_framework_ParallelWithControlLockNewQueryResults(object sender, QueryResultsEventArgs e)
         {
             //Debug Code
-            if (InvokeRequired)
-                throw new Exception();
+            //if (InvokeRequired)
+            //    throw new Exception();
 
-            PlotChart(e, plotSurface2D1, m_signals, ReferenceEquals(m_token, e.RequestedToken));
+            PlotChart(e, plotSurface2D1, m_signals, m_ignoreNextUpdate |= ReferenceEquals(m_token, e.RequestedToken));
+            m_ignoreNextUpdate = false;
         }
 
         void PlotChart(QueryResultsEventArgs e, PlotSurface2D plot, List<KeyValuePair<int, Guid>> signals, bool cacheAxis)
@@ -182,13 +205,15 @@ namespace openVisN.Components
             }
         }
 
+
+
         void AddInteractions()
         {
-            plotSurface2D1.AddInteraction(new PlotSurface2D.Interactions.HorizontalDrag());
-            plotSurface2D1.AddInteraction(new PlotSurface2D.Interactions.VerticalDrag());
-            plotSurface2D1.AddInteraction(new PlotSurface2D.Interactions.AxisDragX(true));
-            plotSurface2D1.AddInteraction(new PlotSurface2D.Interactions.AxisDragY(true));
-            plotSurface2D1.AddInteraction(new PlotSurface2D.Interactions.MouseWheelZoom());
+            plotSurface2D1.AddInteraction(HorizontalDrag);
+            plotSurface2D1.AddInteraction(VerticalDrag);
+            plotSurface2D1.AddInteraction(AxisDragX);
+            plotSurface2D1.AddInteraction(AxisDragY);
+            plotSurface2D1.AddInteraction(MouseWheelZoom);
         }
 
         [
@@ -214,12 +239,27 @@ namespace openVisN.Components
                         {
                             m_frameworkCtrl.Framework.RemoveSubscriber(this);
                         }
-                        value.Framework.SynchronousNewQueryResults += m_framework_SynchronousNewQueryResults;
+                        value.Framework.Updater.ParallelWithControlLockNewQueryResults += m_framework_ParallelWithControlLockNewQueryResults;
+                        value.Framework.Updater.ExecutionModeChanged += UpdaterOnExecutionModeChanged;
 
                         value.Framework.AddSubscriber(this);
                     }
                 }
                 m_frameworkCtrl = value;
+            }
+        }
+
+        void UpdaterOnExecutionModeChanged(object sender, ExecutionMode executionMode)
+        {
+            if (executionMode == ExecutionMode.Manual)
+            {
+                MouseWheelZoom.ZoomLocation = PlotSurface2D.Interactions.MouseWheelZoom.Location.MouseLocation;
+                AxisDragX.ZoomLocation = PlotSurface2D.Interactions.AxisDragX.Location.MouseLocation;
+            }
+            else
+            {
+                MouseWheelZoom.ZoomLocation = PlotSurface2D.Interactions.MouseWheelZoom.Location.FrontOfGraph;
+                AxisDragX.ZoomLocation = PlotSurface2D.Interactions.AxisDragX.Location.FrontOfGraph;
             }
         }
 

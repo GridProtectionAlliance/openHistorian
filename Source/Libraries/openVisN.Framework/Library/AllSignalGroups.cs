@@ -103,10 +103,11 @@ namespace openVisN.Library
 
     public class AllSignalGroups
     {
+        public static string DefaultPath = @"C:\Unison\GPA\Demo\SignalGroups.txt";
         public List<SignalGroupBook> SignalGroups;
 
         public AllSignalGroups()
-            : this(@"C:\Unison\GPA\Demo\SignalGroups.txt")
+            : this(DefaultPath)
         {
         }
         public AllSignalGroups(string config)

@@ -15,6 +15,8 @@ namespace winformsVisN
 {
     public partial class FrmEvents : Form
     {
+        public static string DefaultFile=@"C:\Unison\GPA\Demo\Events.txt";
+
         VisualizationFramework m_framework;
 
         public FrmEvents(VisualizationFramework framework)
@@ -30,7 +32,7 @@ namespace winformsVisN
             DT.Columns.Add("Location", typeof(string));
             DT.Columns.Add("Cause", typeof(string));
 
-            var lines = File.ReadAllLines(@"C:\Unison\GPA\Demo\Events.txt");
+            var lines = File.ReadAllLines(DefaultFile);
             for (int x = 1; x < lines.Length; x++)
             {
                 DT.Rows.Add(lines[x].Split('\t'));
@@ -53,7 +55,6 @@ namespace winformsVisN
             if (e.RowIndex >= 0)
             {
                 DateTime date = (DateTime)dataGridView1[0, e.RowIndex].Value;
-                date = date.ToUniversalTime();
                 m_framework.Framework.ChangeDateRange(date.AddMinutes(-2), date.AddMinutes(2));
             }
         }
