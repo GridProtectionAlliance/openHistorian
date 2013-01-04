@@ -31,7 +31,7 @@ namespace openHistorian.Engine.ArchiveWriters
 {
 
     internal abstract class CommitWaitBase<T> : IDisposable
-        where T : new()
+        where T : EventArgs, new()
     {
         
         protected AsyncProcess<T> AsyncProcess;

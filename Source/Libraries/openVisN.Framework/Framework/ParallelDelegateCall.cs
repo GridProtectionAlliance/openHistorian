@@ -11,10 +11,12 @@ namespace openVisN.Framework
     public static class ParallelDelegateCall
     {
         public static void ParallelRunAndWait<T>(this EventHandler<T> eventToRun, object sender, T variable)
+            where T : EventArgs
         {
             var type = new ParallelRun<T>(eventToRun, sender, variable);
         }
         class ParallelRun<T>
+            where T : EventArgs
         {
             int m_numberOfDelegates;
             int m_delegatesExecuted;

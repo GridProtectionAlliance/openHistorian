@@ -32,6 +32,7 @@ namespace openHistorian.Engine.ArchiveWriters
     /// Class assists in the asynchronous processing that goes on in the archive writer.
     /// </summary>
     internal class AsyncProcess<T>
+        where T : EventArgs
     {
         public event EventHandler<T> BeforeRun;
         public event EventHandler<T> Running;

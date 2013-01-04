@@ -198,6 +198,7 @@ namespace GSF.Threading
         }
     }
     public class AsyncRunner<T>
+        where T : EventArgs
     {
         public event EventHandler<T> BeforeRun;
         public event EventHandler<T> Running;

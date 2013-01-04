@@ -40,6 +40,15 @@ namespace openVisN.Framework
         Manual
     }
 
+    public class ExecutionModeEventArgs : EventArgs
+    {
+        public ExecutionMode Mode { get; private set; }
+        public ExecutionModeEventArgs(ExecutionMode mode)
+        {
+            Mode = mode;
+        }
+    }
+
     public class QueryResultsEventArgs : EventArgs
     {
         public DateTime StartTime { get; private set; }
@@ -62,7 +71,7 @@ namespace openVisN.Framework
         public event EventHandler<QueryResultsEventArgs> NewQueryResults;
         public event EventHandler<QueryResultsEventArgs> SynchronousNewQueryResults;
         public event EventHandler<QueryResultsEventArgs> ParallelWithControlLockNewQueryResults;
-        public event EventHandler<ExecutionMode> ExecutionModeChanged;
+        public event EventHandler<ExecutionModeEventArgs> ExecutionModeChanged;
 
         SynchronousEvent<QueryResultsEventArgs> m_syncEvent;
 
@@ -216,7 +225,7 @@ namespace openVisN.Framework
                 m_RequestToken = null;
                 m_mode = value;
                 if (updated && ExecutionModeChanged != null)
-                    ExecutionModeChanged(this, value);
+                    ExecutionModeChanged(this, new ExecutionModeEventArgs(value));
                 m_async.Run();
             }
         }

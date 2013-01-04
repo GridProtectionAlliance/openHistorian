@@ -44,6 +44,7 @@ namespace openHistorian.Engine
 
         public override IPointStream Read(KeyParserPrimary key1, KeyParserSecondary key2, DataReaderOptions readerOptions)
         {
+            Stats.QueriesExecuted++;
             return new ReadStream(key1, key2, m_snapshot, readerOptions);
         }
 
@@ -126,13 +127,18 @@ namespace openHistorian.Engine
                 {
                     if (key1 <= m_stopKey)
                     {
+                        Stats.PointsScanned++;
                         if (m_key2.ContainsKey(key2))
+                        {
+                            Stats.PointsReturned++;
                             return true;
+                        }
                         goto TryAgain;
                     }
 
                     if (m_key1.GetNextWindow(out m_startKey, out m_stopKey))
                     {
+                        Stats.SeeksRequested++;
                         m_currentScanner.SeekToKey(m_startKey, 0);
                         goto TryAgain;
                     }
@@ -170,6 +176,7 @@ namespace openHistorian.Engine
                     m_currentInstance = kvp.Value.ActiveSnapshotInfo.CreateReadSnapshot();
                     m_currentScanner = m_currentInstance.GetTreeScanner();
                     m_currentScanner.SeekToKey(m_startKey, 0);
+                    Stats.SeeksRequested++;
                 }
                 else
                 {

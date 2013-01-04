@@ -29,6 +29,7 @@ using System.Threading;
 namespace GSF.Threading
 {
     public class SynchronousEvent<T>
+        where T : EventArgs
     {
         ManualResetEvent m_waiting;
         public event EventHandler<T> CustomEvent;

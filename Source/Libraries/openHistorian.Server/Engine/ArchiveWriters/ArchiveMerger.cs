@@ -54,7 +54,7 @@ namespace openHistorian.Engine.ArchiveWriters
 
         Action<ArchiveListRemovalStatus> m_archivesPendingDeletion;
 
-        internal class StateVariables
+        internal class StateVariables : EventArgs
         {
             public Stopwatch FileAge = new Stopwatch();
             public long LastCommittedSequenceNumber = -1;

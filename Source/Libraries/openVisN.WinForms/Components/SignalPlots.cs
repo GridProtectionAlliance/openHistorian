@@ -249,9 +249,9 @@ namespace openVisN.Components
             }
         }
 
-        void UpdaterOnExecutionModeChanged(object sender, ExecutionMode executionMode)
+        void UpdaterOnExecutionModeChanged(object sender, ExecutionModeEventArgs executionMode)
         {
-            if (executionMode == ExecutionMode.Manual)
+            if (executionMode.Mode == ExecutionMode.Manual)
             {
                 MouseWheelZoom.ZoomLocation = PlotSurface2D.Interactions.MouseWheelZoom.Location.MouseLocation;
                 AxisDragX.ZoomLocation = PlotSurface2D.Interactions.AxisDragX.Location.MouseLocation;
