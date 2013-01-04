@@ -34,7 +34,8 @@ namespace openHistorian.Archive
     {
         None,
         DeltaEncoded,
-        TimeSeriesEncoded
+        TimeSeriesEncoded,
+        TimeSeriesEncoded2
     }
 
     /// <summary>

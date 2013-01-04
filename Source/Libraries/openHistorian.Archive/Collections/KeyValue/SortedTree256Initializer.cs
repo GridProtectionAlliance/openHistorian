@@ -40,6 +40,8 @@ namespace openHistorian.Collections.KeyValue
                     return new SortedTree256DeltaEncoded(stream, blockSize);
                 case CompressionMethod.TimeSeriesEncoded:
                     return new SortedTree256TSEncoded(stream, blockSize);
+                case CompressionMethod.TimeSeriesEncoded2:
+                    return new SortedTree256TS32Encoded(stream, blockSize);
                 default:
                     throw new ArgumentOutOfRangeException("method");
             }
@@ -54,6 +56,8 @@ namespace openHistorian.Collections.KeyValue
                 return new SortedTree256DeltaEncoded(stream);
             if (type == SortedTree256TSEncoded.GetFileType())
                 return new SortedTree256TSEncoded(stream);
+            if (type == SortedTree256TS32Encoded.GetFileType())
+                return new SortedTree256TS32Encoded(stream);
             throw new ArgumentOutOfRangeException("method");
         }
 
