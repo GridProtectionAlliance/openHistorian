@@ -8,6 +8,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 		Dependencies\GSF.Core.xml = Dependencies\GSF.Core.xml
 		Dependencies\GSF.TimeSeries.dll = Dependencies\GSF.TimeSeries.dll
 		Dependencies\GSF.TimeSeries.xml = Dependencies\GSF.TimeSeries.xml
+		Dependencies\TimeSeriesFramework.dll = Dependencies\TimeSeriesFramework.dll
+		Dependencies\TimeSeriesFramework.XML = Dependencies\TimeSeriesFramework.XML
+		Dependencies\TVA.Core.dll = Dependencies\TVA.Core.dll
+		Dependencies\TVA.Core.XML = Dependencies\TVA.Core.XML
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{08078FEC-378B-4585-85B2-E8B0B646D270}"
@@ -65,9 +69,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleCode", "Documentation
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winformsVisN", "Tools\winformsVisN\winformsVisN.csproj", "{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianAdapters", "Libraries\openHistorianAdapters\openHistorianAdapters.csproj", "{D170A1D6-834B-47BD-B05F-67DD4BC12F97}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 17
+		SccNumberOfProjects = 18
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -135,6 +141,10 @@ Global
 		SccProjectTopLevelParentUniqueName16 = openHistorian.sln
 		SccProjectName16 = Tools/winformsVisN
 		SccLocalPath16 = Tools\\winformsVisN
+		SccProjectUniqueName17 = Libraries\\openHistorianAdapters\\openHistorianAdapters.csproj
+		SccProjectTopLevelParentUniqueName17 = openHistorian.sln
+		SccProjectName17 = Libraries/openHistorianAdapters
+		SccLocalPath17 = Libraries\\openHistorianAdapters
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -308,6 +318,16 @@ Global
 		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EA68EB38-C7F6-4987-80C7-AEA4E8748CA2}.Release|x86.ActiveCfg = Release|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -322,6 +342,7 @@ Global
 		{79039E79-FB86-42B8-B1EA-A215295E1371} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{90942A72-2538-41A0-AFF4-8C338B4A5EDD} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{B2504A65-9432-4691-A417-267FDB1A95A3} = {71B86842-3055-4797-AA46-AB35B706354C}
+		{D170A1D6-834B-47BD-B05F-67DD4BC12F97} = {71B86842-3055-4797-AA46-AB35B706354C}
 		{460BEC91-29E7-4574-9E85-0FD62D43D683} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{4D912150-86EF-44C4-ABBC-C869FE82C829} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
 		{DA2EF5C4-6C06-49F7-AFA7-FD5720E8DEBD} = {5C9DD205-EA5C-4654-97EC-55A3C922BC3C}
