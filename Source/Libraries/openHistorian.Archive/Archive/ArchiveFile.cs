@@ -93,7 +93,7 @@ namespace openHistorian.Archive
         {
             var af = new ArchiveFile();
             af.m_fileName = file;
-            af.m_fileStructure = TransactionalFileStructure.CreateFile(file);
+            af.m_fileStructure = TransactionalFileStructure.CreateFile(file, blockSize);
             af.InitializeNewFile(compression);
             return af;
         }
@@ -208,7 +208,13 @@ namespace openHistorian.Archive
                 using (var fs = trans.CreateFile(PointDataFile, 1))
                 using (var bs = new BinaryStream(fs))
                 {
-                    var tree = SortedTree256Initializer.Create(bs, m_fileStructure.DataBlockSize - FileStructureConstants.BlockFooterLength, compression);
+                    var blockSize = m_fileStructure.DataBlockSize;
+                    while (blockSize > 4096)
+                    {
+                        blockSize /= 2;
+                    }
+
+                    var tree = SortedTree256Initializer.Create(bs, blockSize, compression);
                     m_firstKey = tree.FirstKey;
                     m_lastKey = tree.LastKey;
 

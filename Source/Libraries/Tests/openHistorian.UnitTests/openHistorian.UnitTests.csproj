@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Archive\TestPageSizes.cs" />
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\ISupportsReadonlyTest.cs" />

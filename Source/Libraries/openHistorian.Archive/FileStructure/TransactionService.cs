@@ -84,12 +84,12 @@ namespace openHistorian.FileStructure
 
         /// <summary>
         /// Creates a new archive file that is completely in memory
-        ///  </summary>
+        /// </summary>
         public static TransactionService CreateFile(string fileName, int blockSize)
         {
             var ts = new TransactionService();
             FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
-            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream, true);
+            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream, Globals.BufferPool, blockSize, true);
             ts.m_blockSize = blockSize;
             ts.m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
             ts.m_fileHeaderBlock = new FileHeaderBlock(blockSize, ts.m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
@@ -98,14 +98,14 @@ namespace openHistorian.FileStructure
 
         /// <summary>
         /// Creates a new archive file that is completely in memory
-        ///  </summary>
+        /// </summary>
         public static TransactionService OpenFile(string fileName, AccessMode accessMode)
         {
             var ts = new TransactionService();
             FileStream fileStream = new FileStream(fileName, FileMode.Open, (accessMode == AccessMode.ReadOnly) ? FileAccess.Read : FileAccess.ReadWrite);
             int blockSize = FileHeaderBlock.SearchForBlockSize(fileStream);
 
-            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream, true);
+            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream, Globals.BufferPool, blockSize, true);
 
             ts.m_blockSize = blockSize;
             ts.m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);

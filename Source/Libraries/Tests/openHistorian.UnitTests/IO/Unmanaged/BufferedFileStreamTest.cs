@@ -14,7 +14,7 @@ namespace openHistorian.IO.Unmanaged.Test
     [TestFixture()]
     public class BufferedFileStreamTest
     {
-        
+        const int BlockSize = 4096 << 2;
         /// <summary>
         ///A test for BufferedFileStream Constructor
         ///</summary>
@@ -124,7 +124,7 @@ namespace openHistorian.IO.Unmanaged.Test
                     using (BufferPool pool = new BufferPool(65536))
                     {
                         pool.SetMaximumBufferSize(10 * 1024 * 1024);
-                        using (BufferedFileStream bfs = new BufferedFileStream(fs, pool, 4096))
+                        using (BufferedFileStream bfs = new BufferedFileStream(fs, pool, BlockSize))
                         {
                             BinaryStream bs = new BinaryStream(bfs);
                             for (long x = 0; x < 1000 * 1000 * 10; x++) //80 MB written
@@ -146,7 +146,7 @@ namespace openHistorian.IO.Unmanaged.Test
                     using (BufferPool pool = new BufferPool(65536))
                     {
                         pool.SetMaximumBufferSize(10 * 1024 * 1024);
-                        using (BufferedFileStream bfs = new BufferedFileStream(fs, pool, 4096))
+                        using (BufferedFileStream bfs = new BufferedFileStream(fs, pool, BlockSize))
                         {
                             BinaryStream bs = new BinaryStream(bfs);
                             for (long x = 0; x < 1000 * 1000 * 10; x++) //80 MB written

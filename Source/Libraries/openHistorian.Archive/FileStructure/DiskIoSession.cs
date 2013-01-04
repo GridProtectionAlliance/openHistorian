@@ -23,6 +23,7 @@
 
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using openHistorian.IO.Unmanaged;
 
@@ -225,6 +226,8 @@ namespace openHistorian.FileStructure
         /// <remarks>This function will increase the size of the file if the block excedes the current size of the file.</remarks>
         public void BeginWriteToNewBlock(int blockIndex)
         {
+            if (BreakOnIO)
+                Debugger.Break();
             WriteCount++;
             ReadCount++;
             CheckIsDisposed();
@@ -266,6 +269,8 @@ namespace openHistorian.FileStructure
         /// <returns></returns>
         public void BeginWriteToExistingBlock(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
+            if (BreakOnIO)
+                Debugger.Break();
             WriteCount++;
             ReadCount++;
             CheckIsDisposed();
@@ -300,6 +305,8 @@ namespace openHistorian.FileStructure
         /// <param name="snapshotSequenceNumber">the file system sequence number of this write</param>
         public void EndWrite(BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
+            if (BreakOnIO)
+                Debugger.Break();
             CheckIsDisposed();
 
             if (!m_pendingWriteComplete)
@@ -321,6 +328,8 @@ namespace openHistorian.FileStructure
         /// <returns></returns>
         public void Read(int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
         {
+            if (BreakOnIO)
+                Debugger.Break();
             ReadCount++;
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -432,7 +441,7 @@ namespace openHistorian.FileStructure
 
         static internal long ReadCount;
         static internal long WriteCount;
-
+        internal static bool BreakOnIO=false;
         
 
         ///// <summary>
