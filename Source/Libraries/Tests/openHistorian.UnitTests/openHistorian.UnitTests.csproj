@@ -60,6 +60,7 @@
     <Compile Include="Archive\TestPageSizes.cs" />
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
+    <Compile Include="Collections\IsolatedQueueTest.cs" />
     <Compile Include="Collections\ISupportsReadonlyTest.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256TS32EncodedTest.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256DeltaEncodedTest.cs" />

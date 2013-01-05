@@ -43,6 +43,7 @@ using TimeSeriesFramework.Adapters;
 using TVA;
 using TVA.Parsing;
 using openHistorian;
+using openHistorian.Queues;
 
 namespace OpenHistorianAdapters
 {
@@ -66,6 +67,7 @@ namespace OpenHistorianAdapters
         private int m_port;
         private bool m_outputIsForArchive;
         HistorianClient m_client;
+        HistorianInputQueue m_inputQueue;
         private long m_measurementsPublished;
         private bool m_disposed;
 
@@ -262,6 +264,7 @@ namespace OpenHistorianAdapters
             clientOptions.NetworkPort = Port;
             clientOptions.IsReadOnly = false;
             m_client = new HistorianClient(clientOptions);
+            m_inputQueue = new HistorianInputQueue(() => m_client.GetDatabase());
         }
 
         /// <summary>
@@ -279,7 +282,7 @@ namespace OpenHistorianAdapters
         /// <exception cref="OperationCanceledException">Acknowledgement is not received from historian for published data.</exception>
         protected override void ProcessMeasurements(IMeasurement[] measurements)
         {
-            m_client.GetDatabase().Write(new StreamPoints(measurements));
+            m_inputQueue.Enqueue(new StreamPoints(measurements));
             m_measurementsPublished += measurements.Length;
         }
 

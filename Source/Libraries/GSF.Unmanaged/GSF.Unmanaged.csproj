@@ -46,6 +46,7 @@
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\ILargeArray.cs" />
+    <Compile Include="Collections\IsolatedQueue.cs" />
     <Compile Include="Collections\ISupportsReadonly.cs" />
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="Collections\LargeUnmanagedArray.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Globals.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
+    <Compile Include="Collections\ContinuousQueue.cs" />
     <Compile Include="IO\Unmanaged\BinaryStream.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />

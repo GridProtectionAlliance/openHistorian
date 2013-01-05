@@ -74,6 +74,7 @@
     <Compile Include="Data\Types\TypeBase.cs" />
     <Compile Include="Data\Types\TypeSingle.cs" />
     <Compile Include="KeyParserSecondary.cs" />
+    <Compile Include="Queues\HistorianInputQueue.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
