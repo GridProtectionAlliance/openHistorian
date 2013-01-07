@@ -28,7 +28,7 @@ using openHistorian.Archive;
 
 namespace openHistorian.Collections.KeyValue
 {
-    internal static class SortedTree256Initializer
+    public static class SortedTree256Initializer
     {
         public static SortedTree256Base Create(BinaryStreamBase stream, int blockSize, CompressionMethod method)
         {

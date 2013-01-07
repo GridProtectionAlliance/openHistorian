@@ -12,5 +12,13 @@ namespace openHistorian
         public static long PointsScanned;
         public static long QueriesExecuted;
         public static long SeeksRequested;
+        public static void Clear()
+        {
+            PointsReturned = 0;
+            PointsScanned = 0;
+            QueriesExecuted = 0;
+            SeeksRequested = 0;
+        }
+
     }
 }

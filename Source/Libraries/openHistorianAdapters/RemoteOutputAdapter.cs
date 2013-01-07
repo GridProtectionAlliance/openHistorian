@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  RemoteOutputAdapter.cs - Gbtc
+//  HistorianInputQueue.cs - Gbtc
 //
-//  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,20 +16,8 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  06/01/2009 - J. Ritchie Carroll
-//       Generated original version of source code.
-//  09/15/2009 - Stephen C. Will
-//       Added new header and license agreement.
-//  09/22/2009 - Pinal C. Patel
-//       Re-wrote the adapter to utilize new components.
-//  09/23/2009 - Pinal C. Patel
-//       Fixed the handling of socket disconnect.
-//  03/04/2010 - Pinal C. Patel
-//       Added outputIsForArchive and throttleTransmission setting parameters for more control over 
-//       the adapter.
-//       Switched to ManualResetEvent for waiting on historian acknowledgement for efficiency.
-//  01/20/2011 - Pinal C. Patel
-//       Modified to use Settings for the ConnectionString property of historian socket.
+//  1/5/2013 - Steven E. Chisholm
+//       Generated original version of source code. 
 //
 //******************************************************************************************************
 

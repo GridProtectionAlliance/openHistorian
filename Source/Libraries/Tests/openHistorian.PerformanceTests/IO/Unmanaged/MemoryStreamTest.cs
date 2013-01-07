@@ -13,7 +13,7 @@ namespace openHistorian.IO.Unmanaged
         [Test]
         public void TestBlocksPerSecond()
         {
-            UnmanagedMemory.Memory.UseLargePages = true;
+            //UnmanagedMemory.Memory.UseLargePages = true;
             DebugStopwatch sw = new DebugStopwatch();
             using (MemoryStream ms = new MemoryStream())
             {

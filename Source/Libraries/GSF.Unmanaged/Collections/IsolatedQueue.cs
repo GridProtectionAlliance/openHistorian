@@ -43,7 +43,7 @@ namespace openHistorian.Collections
     public class IsolatedQueue<T>
         where T : struct
     {
-        ConcurrentQueue<InternalNode> m_blocks;
+        ContinuousQueue<InternalNode> m_blocks;
 
         InternalNode m_currentHead;
         InternalNode m_currentTail;
@@ -54,7 +54,7 @@ namespace openHistorian.Collections
         public IsolatedQueue()
         {
             m_unitCount = 1024;
-            m_blocks = new ConcurrentQueue<InternalNode>();
+            m_blocks = new ContinuousQueue<InternalNode>();
         }
 
         public void Enqueue(T item)
@@ -71,7 +71,10 @@ namespace openHistorian.Collections
                     m_currentHead.Reset();
                 }
                 m_pooledNode = null;
-                m_blocks.Enqueue(m_currentHead);
+                lock (m_blocks)
+                {
+                    m_blocks.Enqueue(m_currentHead);
+                }
             }
             m_currentHead.Enqueue(item);
         }
@@ -84,7 +87,22 @@ namespace openHistorian.Collections
                 {
                     Interlocked.Exchange(ref m_pooledNode, m_currentTail);
                 }
-                if (!m_blocks.TryDequeue(out m_currentTail))
+
+                bool success;
+                lock (m_blocks)
+                {
+                    if (m_blocks.Count > 0)
+                    {
+                        m_currentTail = m_blocks.Dequeue();
+                        success = true;
+                    }
+                    else
+                    {
+                        success = false;
+                    }
+                }
+
+                if (!success)
                 {
                     m_currentTail = null;
                     item = default(T);

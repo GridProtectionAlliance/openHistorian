@@ -117,8 +117,14 @@ namespace openVisN.Components
             //Debug Code
             //if (InvokeRequired)
             //    throw new Exception();
-
-            PlotChart(e, plotSurface2D1, m_signals, m_ignoreNextUpdate |= ReferenceEquals(m_token, e.RequestedToken));
+            try
+            {
+                PlotChart(e, plotSurface2D1, m_signals, m_ignoreNextUpdate |= ReferenceEquals(m_token, e.RequestedToken));
+            }
+            catch (Exception)
+            {
+                
+            }
             m_ignoreNextUpdate = false;
         }
 

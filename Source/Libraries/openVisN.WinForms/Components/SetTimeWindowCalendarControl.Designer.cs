@@ -35,9 +35,10 @@
             // 
             this.monthCalendar1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.monthCalendar1.Location = new System.Drawing.Point(0, 0);
+            this.monthCalendar1.MaxSelectionCount = 70;
             this.monthCalendar1.Name = "monthCalendar1";
             this.monthCalendar1.TabIndex = 0;
-            this.monthCalendar1.DateChanged += new System.Windows.Forms.DateRangeEventHandler(this.monthCalendar1_DateChanged);
+            this.monthCalendar1.DateSelected += new System.Windows.Forms.DateRangeEventHandler(this.monthCalendar1_DateSelected);
             // 
             // SetTimeWindowCalendarControl
             // 
@@ -46,7 +47,7 @@
             this.AutoSize = true;
             this.Controls.Add(this.monthCalendar1);
             this.Name = "SetTimeWindowCalendarControl";
-            this.Size = new System.Drawing.Size(247, 180);
+            this.Size = new System.Drawing.Size(242, 174);
             this.ResumeLayout(false);
 
         }

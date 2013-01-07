@@ -21,14 +21,6 @@ namespace openVisN.Components
 
         bool m_suspendEvent;
 
-        private void monthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
-        {
-            if (m_suspendEvent)
-                return;
-            m_frameworkCtrl.Framework.ChangeDateRange(e.Start, e.End);
-
-        }
-
         [
         Bindable(true),
         Browsable(true),
@@ -73,6 +65,13 @@ namespace openVisN.Components
             m_suspendEvent = true;
             monthCalendar1.SetSelectionRange(e.StartTime.Date, e.EndTime.Date);
             m_suspendEvent = false;
+        }
+
+        private void monthCalendar1_DateSelected(object sender, DateRangeEventArgs e)
+        {
+            if (m_suspendEvent)
+                return;
+            m_frameworkCtrl.Framework.ChangeDateRange(e.Start, e.End.Date.AddDays(1));
         }
     }
 }

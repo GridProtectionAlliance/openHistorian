@@ -68,6 +68,10 @@ namespace openVisN.Framework
     {
         AsyncRunner m_async;
 
+        
+        public event EventHandler BeforeExecuteQuery;
+        public event EventHandler AfterQuery;
+        public event EventHandler AfterExecuteQuery;
         public event EventHandler<QueryResultsEventArgs> NewQueryResults;
         public event EventHandler<QueryResultsEventArgs> SynchronousNewQueryResults;
         public event EventHandler<QueryResultsEventArgs> ParallelWithControlLockNewQueryResults;
@@ -124,6 +128,8 @@ namespace openVisN.Framework
 
         void m_async_Running(object sender, EventArgs e)
         {
+            if (BeforeExecuteQuery != null)
+                BeforeExecuteQuery(this, EventArgs.Empty);
             DateTime startTime;
             DateTime stopTime;
             DateTime currentTime;
@@ -154,6 +160,9 @@ namespace openVisN.Framework
 
             var queryResults = new QueryResultsEventArgs(results, token, startTime, stopTime);
 
+            if (AfterQuery != null)
+                AfterQuery(this, EventArgs.Empty);
+
             if (NewQueryResults != null)
                 NewQueryResults.ParallelRunAndWait(this, queryResults);
             if (SynchronousNewQueryResults != null || ParallelWithControlLockNewQueryResults != null)
@@ -166,6 +175,11 @@ namespace openVisN.Framework
                     m_async.RunAfterDelay(m_refreshInterval);
                 }
             }
+
+            if (AfterExecuteQuery != null)
+                AfterExecuteQuery(this, EventArgs.Empty);
+
+
         }
 
         public TimeSpan RefreshInterval

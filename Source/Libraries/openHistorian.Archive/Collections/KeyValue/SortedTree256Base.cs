@@ -37,7 +37,7 @@ namespace openHistorian.Collections.KeyValue
     /// If concurrent read operations are desired, clone the tree.  
     /// Trees cannot be cloned if the user plans to write to the tree.
     /// </remarks>
-    internal abstract class SortedTree256Base
+    public abstract class SortedTree256Base
     {
         BucketInfo[] m_cache;
 
