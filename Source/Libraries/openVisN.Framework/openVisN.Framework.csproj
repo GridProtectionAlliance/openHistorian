@@ -53,6 +53,7 @@
     <Compile Include="Calculations\SignalScaling.cs" />
     <Compile Include="Calculations\SinglePhasorPowerSignals.cs" />
     <Compile Include="EnumValueType.cs" />
+    <Compile Include="Framework\AutomaticPlayback.cs" />
     <Compile Include="Framework\ParallelDelegateCall.cs" />
     <Compile Include="Library\AllSignalGroups.cs" />
     <Compile Include="Library\AllSignals.cs" />

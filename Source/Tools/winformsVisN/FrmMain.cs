@@ -243,8 +243,9 @@ namespace winformsVisN
                     }
                     fs.Flush();
                     fs.Close();
+                    Process.Start(dlg.FileName);
                 }
-                Process.Start(dlg.FileName);
+                
             }
         }
 

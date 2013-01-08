@@ -68,7 +68,6 @@ namespace openVisN.Framework
     {
         AsyncRunner m_async;
 
-        
         public event EventHandler BeforeExecuteQuery;
         public event EventHandler AfterQuery;
         public event EventHandler AfterExecuteQuery;
@@ -79,6 +78,8 @@ namespace openVisN.Framework
 
         SynchronousEvent<QueryResultsEventArgs> m_syncEvent;
 
+        TimeSpan m_refreshInterval;
+        AutomaticPlayback m_playback;
         object m_RequestToken;
         HistorianQuery m_query;
         object m_syncRoot;
@@ -88,18 +89,12 @@ namespace openVisN.Framework
         DateTime m_focusedDate;
         ExecutionMode m_mode = ExecutionMode.Manual;
 
-        TimeSpan m_automaticExecutionTimeLag;
-        TimeSpan m_automaticDurationWindow;
-        TimeSpan m_refreshInterval;
-
         List<MetadataBase> m_activeSignals;
 
         public UpdateFramework()
         {
-            m_automaticExecutionTimeLag = new TimeSpan(0);
-            m_automaticDurationWindow = new TimeSpan(5 * TimeSpan.TicksPerMinute);
             m_refreshInterval = new TimeSpan(1 * TimeSpan.TicksPerSecond);
-
+            m_playback = new AutomaticPlayback();
             m_enabled = true;
             m_syncEvent = new SynchronousEvent<QueryResultsEventArgs>();
             m_syncEvent.CustomEvent += m_syncEvent_CustomEvent;
@@ -149,8 +144,7 @@ namespace openVisN.Framework
                 }
                 else
                 {
-                    stopTime = DateTime.UtcNow.Subtract(m_automaticExecutionTimeLag);
-                    startTime = stopTime.Subtract(m_automaticDurationWindow);
+                    m_playback.GetTimes(out startTime, out stopTime);
                     currentTime = stopTime;
                     activeSignals = m_activeSignals;
                 }
@@ -182,50 +176,7 @@ namespace openVisN.Framework
 
         }
 
-        public TimeSpan RefreshInterval
-        {
-            get
-            {
-                return m_refreshInterval;
-            }
-            set
-            {
-                lock (m_syncRoot)
-                {
-                    m_refreshInterval = value;
-                }
-            }
-        }
 
-        public TimeSpan AutomaticExecutionTimeLag
-        {
-            get
-            {
-                return m_automaticDurationWindow;
-            }
-            set
-            {
-                lock (m_syncRoot)
-                {
-                    m_automaticExecutionTimeLag = value;
-                }
-            }
-
-        }
-        public TimeSpan AutomaticDurationWindow
-        {
-            get
-            {
-                return m_automaticDurationWindow;
-            }
-            set
-            {
-                lock (m_syncRoot)
-                {
-                    m_automaticDurationWindow = value;
-                }
-            }
-        }
 
         public ExecutionMode Mode
         {
@@ -235,12 +186,17 @@ namespace openVisN.Framework
             }
             set
             {
-                bool updated = m_mode != value;
-                m_RequestToken = null;
-                m_mode = value;
-                if (updated && ExecutionModeChanged != null)
-                    ExecutionModeChanged(this, new ExecutionModeEventArgs(value));
-                m_async.Run();
+                lock (m_syncRoot)
+                {
+                    bool updated = m_mode != value;
+                    m_RequestToken = null;
+                    m_mode = value;
+                    if (updated && ExecutionModeChanged != null)
+                        ExecutionModeChanged(this, new ExecutionModeEventArgs(value));
+                    m_playback.LiveModeSelected();
+                    m_async.Run();
+                }
+
             }
         }
 
@@ -276,13 +232,12 @@ namespace openVisN.Framework
                 lock (m_syncRoot)
                 {
                     DateTime startTime = m_lowerBounds;
-                    DateTime endTime = m_upperBounds;
-                    TimeSpan duration = endTime - startTime;
-                    TimeSpan timeLag = DateTime.UtcNow - endTime;
-
+                    DateTime stoptime = m_upperBounds;
+                    TimeSpan windowSize = stoptime - startTime;
                     m_refreshInterval = new TimeSpan(1 * TimeSpan.TicksPerMillisecond);
-                    m_automaticDurationWindow = duration;
-                    m_automaticExecutionTimeLag = timeLag;
+
+                    m_playback.ChangeWindowSize(windowSize);
+                    m_playback.StartPlaybackFrom(stoptime);
                     Mode = ExecutionMode.Automatic;
                 }
             }
@@ -298,9 +253,7 @@ namespace openVisN.Framework
             {
                 lock (m_syncRoot)
                 {
-
-                    m_upperBounds = DateTime.UtcNow.Subtract(m_automaticExecutionTimeLag);
-                    m_lowerBounds = m_upperBounds.Subtract(m_automaticDurationWindow);
+                    m_playback.GetTimes(out m_lowerBounds, out m_upperBounds);
                     Mode = ExecutionMode.Manual;
                 }
             }
@@ -324,9 +277,25 @@ namespace openVisN.Framework
         {
             lock (m_syncRoot)
             {
-                m_automaticDurationWindow = duration;
+                m_playback.ChangeWindowSize(duration);
                 m_RequestToken = token;
             }
+        }
+
+        public double PlaybackSpeed
+        {
+            get
+            {
+                return m_playback.PlaybackSpeed;
+            }
+            set
+            {
+                lock (m_syncRoot)
+                {
+                    m_playback.PlaybackSpeed = value;
+                }
+            }
+
         }
 
 
