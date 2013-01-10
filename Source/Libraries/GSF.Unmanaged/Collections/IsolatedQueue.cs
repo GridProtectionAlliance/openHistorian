@@ -43,34 +43,27 @@ namespace openHistorian.Collections
     public class IsolatedQueue<T>
         where T : struct
     {
-        ContinuousQueue<InternalNode> m_blocks;
+        ContinuousQueue<IsolatedNode<T>> m_blocks;
+        ResourceQueue<IsolatedNode<T>> m_pooledNodes;
 
-        InternalNode m_currentHead;
-        InternalNode m_currentTail;
-        InternalNode m_pooledNode;
+        IsolatedNode<T> m_currentHead;
+        IsolatedNode<T> m_currentTail;
 
         int m_unitCount;
 
         public IsolatedQueue()
         {
             m_unitCount = 1024;
-            m_blocks = new ContinuousQueue<InternalNode>();
+            m_pooledNodes = new ResourceQueue<IsolatedNode<T>>(() => new IsolatedNode<T>(m_unitCount), 2, 10);
+            m_blocks = new ContinuousQueue<IsolatedNode<T>>();
         }
 
         public void Enqueue(T item)
         {
             if (m_currentHead == null || m_currentHead.IsHeadFull)
             {
-                m_currentHead = Interlocked.Exchange(ref m_pooledNode, null);
-                if (m_currentHead == null)
-                {
-                    m_currentHead = new InternalNode(m_unitCount);
-                }
-                else
-                {
-                    m_currentHead.Reset();
-                }
-                m_pooledNode = null;
+                m_currentHead = m_pooledNodes.Dequeue();
+                m_currentHead.Reset();
                 lock (m_blocks)
                 {
                     m_blocks.Enqueue(m_currentHead);
@@ -85,7 +78,11 @@ namespace openHistorian.Collections
             {
                 if (m_currentTail != null)
                 {
-                    Interlocked.Exchange(ref m_pooledNode, m_currentTail);
+                    //Don't reset the node on return since it is still
+                    //possible for the enqueue thread to be using it. 
+                    //Note: If the enqueue thread pulls it off the queue
+                    //immediately, this is ok since it will be coordinated at that point.
+                    m_pooledNodes.Enqueue(m_currentTail);
                 }
 
                 bool success;
@@ -122,82 +119,6 @@ namespace openHistorian.Collections
             {
                 return m_blocks.Count * (long)m_unitCount;
             }
-        }
-
-        class InternalNode
-        {
-            volatile int m_tail = 0;
-            volatile int m_head = 0;
-            T[] m_blocks;
-            public InternalNode(int count)
-            {
-                m_blocks = new T[count];
-            }
-
-            /// <summary>
-            /// Determines if this queue cannot have anything else written to it.
-            /// </summary>
-            public bool IsHeadFull
-            {
-                get
-                {
-                    return m_head >= m_blocks.Length;
-                }
-            }
-
-            /// <summary>
-            /// Determines if this queue cannot have anything else read from it.
-            /// </summary>
-            public bool IsTailFull
-            {
-                get
-                {
-                    return m_tail >= m_blocks.Length;
-                }
-            }
-
-            /// <summary>
-            /// Resets the queue. This operation must be synchronized external 
-            /// from this class with the read and write operations. Therefore it 
-            /// is only recommended to call this once the item has been returned to a 
-            /// buffer pool of some sorts.
-            /// </summary>
-            public void Reset()
-            {
-                m_tail = 0;
-                m_head = 0;
-            }
-
-            /// <summary>
-            /// Adds the following item to the queue. Be sure to check if it is full first.
-            /// </summary>
-            /// <param name="item"></param>
-            public void Enqueue(T item)
-            {
-                m_blocks[m_head] = item;
-                Thread.MemoryBarrier();
-                m_head++;
-            }
-
-            /// <summary>
-            /// Attempts to dequeue from the list.
-            /// </summary>
-            /// <param name="item"></param>
-            /// <returns></returns>
-            public bool TryDequeue(out T item)
-            {
-                if (m_tail == m_head)
-                {
-                    item = default(T);
-                    return false;
-                }
-                Thread.MemoryBarrier();
-                item = m_blocks[m_tail];
-                m_tail++;
-                return true;
-            }
-
-
         }
     }
 

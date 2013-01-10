@@ -66,7 +66,7 @@ namespace openVisN.Framework
 
     public class UpdateFramework : IDisposable
     {
-        AsyncRunner m_async;
+        AsyncRunner<EventArgs> m_async;
 
         public event EventHandler BeforeExecuteQuery;
         public event EventHandler AfterQuery;
@@ -98,7 +98,7 @@ namespace openVisN.Framework
             m_enabled = true;
             m_syncEvent = new SynchronousEvent<QueryResultsEventArgs>();
             m_syncEvent.CustomEvent += m_syncEvent_CustomEvent;
-            m_async = new AsyncRunner();
+            m_async = new AsyncRunner<EventArgs>(EventArgs.Empty);
             m_async.Running += m_async_Running;
             m_activeSignals = new List<MetadataBase>();
             m_syncRoot = new object();

@@ -310,7 +310,7 @@ namespace openHistorian.Archive
         {
             try
             {
-                var ms = new System.IO.MemoryStream();
+                var ms = new System.IO.MemoryStream(userData);
                 var rd = new BinaryReader(ms);
                 switch (rd.ReadByte())
                 {

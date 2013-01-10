@@ -46,8 +46,10 @@
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\ILargeArray.cs" />
+    <Compile Include="Collections\IsolatedNode.cs" />
     <Compile Include="Collections\IsolatedQueue.cs" />
     <Compile Include="Collections\IsolatedQueueFileBacked.cs" />
+    <Compile Include="Collections\IsolatedQueueFileBacked_FileIO.cs" />
     <Compile Include="Collections\ISupportsReadonly.cs" />
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="Collections\LargeUnmanagedArray.cs" />

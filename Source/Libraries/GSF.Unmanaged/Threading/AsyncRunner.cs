@@ -27,177 +27,178 @@ using System.Threading;
 
 namespace GSF.Threading
 {
-    public class AsyncRunner
-    {
-        public event EventHandler BeforeRun;
-        public event EventHandler Running;
-        public event EventHandler AfterRun;
-        public event EventHandler HasQuit;
+    //public class AsyncRunner
+    //{
+    //    public event EventHandler BeforeRun;
+    //    public event EventHandler Running;
+    //    public event EventHandler AfterRun;
+    //    public event EventHandler HasQuit;
 
-        bool m_stopExecuting;
-        ManualResetEvent m_resetEvent;
-        CurrentState m_state;
-        bool m_runAgain;
-        object m_syncRoot;
-        RegisteredWaitHandle m_registeredHandle;
+    //    bool m_stopExecuting;
+    //    ManualResetEvent m_resetEvent;
+    //    CurrentState m_state;
+    //    bool m_runAgain;
+    //    object m_syncRoot;
+    //    RegisteredWaitHandle m_registeredHandle;
 
-        bool m_delayRequested;
-        TimeSpan m_timeDelay;
+    //    bool m_delayRequested;
+    //    TimeSpan m_timeDelay;
 
-        enum CurrentState
-        {
-            /// <summary>
-            /// Means that there is a thread that is actively running the process.
-            /// </summary>
-            IsRunning,
-            /// <summary>
-            /// Means that there has been a thread assigned to execute this process, however, it is waiting 
-            /// on the thread pool for a signal or a timeout.
-            /// </summary>
-            IsWaiting,
-            /// <summary>
-            /// Means that no threads are currently processing the user's request.
-            /// </summary>
-            HasExited
-        }
+    //    enum CurrentState
+    //    {
+    //        /// <summary>
+    //        /// Means that there is a thread that is actively running the process.
+    //        /// </summary>
+    //        IsRunning,
+    //        /// <summary>
+    //        /// Means that there has been a thread assigned to execute this process, however, it is waiting 
+    //        /// on the thread pool for a signal or a timeout.
+    //        /// </summary>
+    //        IsWaiting,
+    //        /// <summary>
+    //        /// Means that no threads are currently processing the user's request.
+    //        /// </summary>
+    //        HasExited
+    //    }
 
-        public AsyncRunner()
-        {
-            m_runAgain = false;
-            m_state = CurrentState.HasExited;
-            m_syncRoot = new object();
-            m_resetEvent = new ManualResetEvent(false);
-        }
+    //    public AsyncRunner()
+    //    {
+    //        m_runAgain = false;
+    //        m_state = CurrentState.HasExited;
+    //        m_syncRoot = new object();
+    //        m_resetEvent = new ManualResetEvent(false);
+    //    }
 
-        /// <summary>
-        /// Makes sure that the process begins immediately if it is currently not running.
-        /// If it is running, it tells the process to run at least one more time. 
-        /// </summary>
-        public void Run()
-        {
-            lock (m_syncRoot)
-            {
-                switch (m_state)
-                {
-                    case CurrentState.HasExited:
-                        ThreadPool.QueueUserWorkItem(BeginRun, null);
-                        m_state = CurrentState.IsRunning;
-                        break;
-                    case CurrentState.IsRunning:
-                        m_runAgain = true;
-                        break;
-                    case CurrentState.IsWaiting:
-                        m_resetEvent.Set();
-                        m_state = CurrentState.IsRunning;
-                        break;
-                }
-            }
-        }
+    //    /// <summary>
+    //    /// Makes sure that the process begins immediately if it is currently not running.
+    //    /// If it is running, it tells the process to run at least one more time. 
+    //    /// </summary>
+    //    public void Run()
+    //    {
+    //        lock (m_syncRoot)
+    //        {
+    //            switch (m_state)
+    //            {
+    //                case CurrentState.HasExited:
+    //                    ThreadPool.QueueUserWorkItem(BeginRun, null);
+    //                    m_state = CurrentState.IsRunning;
+    //                    break;
+    //                case CurrentState.IsRunning:
+    //                    m_runAgain = true;
+    //                    break;
+    //                case CurrentState.IsWaiting:
+    //                    m_resetEvent.Set();
+    //                    m_state = CurrentState.IsRunning;
+    //                    break;
+    //            }
+    //        }
+    //    }
 
-        /// <summary>
-        /// Makes sure that the process begins after the specified delay unless 
-        /// it is signaled early. If it is currently waiting, this will not
-        /// modify the wait time. Instead it will do nothing.
-        /// </summary>
-        public void RunAfterDelay(TimeSpan delay)
-        {
-            lock (m_syncRoot)
-            {
-                switch (m_state)
-                {
-                    case CurrentState.HasExited:
-                        m_resetEvent.Reset();
-                        m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_resetEvent, BeginRun, null, delay, true);
-                        m_state = CurrentState.IsWaiting;
-                        break;
-                    case CurrentState.IsRunning:
-                        m_delayRequested = true;
-                        m_timeDelay = delay;
-                        break;
-                    case CurrentState.IsWaiting:
-                        break;
-                }
-            }
-        }
+    //    /// <summary>
+    //    /// Makes sure that the process begins after the specified delay unless 
+    //    /// it is signaled early. If it is currently waiting, this will not
+    //    /// modify the wait time. Instead it will do nothing.
+    //    /// </summary>
+    //    public void RunAfterDelay(TimeSpan delay)
+    //    {
+    //        lock (m_syncRoot)
+    //        {
+    //            switch (m_state)
+    //            {
+    //                case CurrentState.HasExited:
+    //                    m_resetEvent.Reset();
+    //                    m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_resetEvent, BeginRun, null, delay, true);
+    //                    m_state = CurrentState.IsWaiting;
+    //                    break;
+    //                case CurrentState.IsRunning:
+    //                    m_delayRequested = true;
+    //                    m_timeDelay = delay;
+    //                    break;
+    //                case CurrentState.IsWaiting:
+    //                    break;
+    //            }
+    //        }
+    //    }
 
-        public void StopExecuting()
-        {
-            lock (m_syncRoot)
-            {
-                m_stopExecuting = true;
-            }
-        }
+    //    public void StopExecuting()
+    //    {
+    //        lock (m_syncRoot)
+    //        {
+    //            m_stopExecuting = true;
+    //        }
+    //    }
 
-        void BeginRun(object state, bool isTimeout)
-        {
-            lock (m_syncRoot)
-            {
-                m_registeredHandle.Unregister(null);
-            }
-            BeginRunInternal();
-        }
+    //    void BeginRun(object state, bool isTimeout)
+    //    {
+    //        lock (m_syncRoot)
+    //        {
+    //            m_registeredHandle.Unregister(null);
+    //        }
+    //        BeginRunInternal();
+    //    }
 
-        void BeginRun(object state)
-        {
-            BeginRunInternal();
-        }
+    //    void BeginRun(object state)
+    //    {
+    //        BeginRunInternal();
+    //    }
 
-        void BeginRunInternal()
-        {
-            while (true)
-            {
-                bool shouldExit = false;
-                lock (m_syncRoot)
-                {
-                    if (m_stopExecuting)
-                    {
-                        m_state = CurrentState.HasExited;
-                        shouldExit = true;
-                    }
-                    else
-                    {
-                        m_state = CurrentState.IsRunning;
-                        m_runAgain = false;
-                        m_delayRequested = false;
-                    }
-                }
-                if (shouldExit)
-                {
-                    if (HasQuit != null)
-                        HasQuit(this, EventArgs.Empty);
-                    return;
-                }
+    //    void BeginRunInternal()
+    //    {
+    //        while (true)
+    //        {
+    //            bool shouldExit = false;
+    //            lock (m_syncRoot)
+    //            {
+    //                if (m_stopExecuting)
+    //                {
+    //                    m_state = CurrentState.HasExited;
+    //                    shouldExit = true;
+    //                }
+    //                else
+    //                {
+    //                    m_state = CurrentState.IsRunning;
+    //                    m_runAgain = false;
+    //                    m_delayRequested = false;
+    //                }
+    //            }
+    //            if (shouldExit)
+    //            {
+    //                if (HasQuit != null)
+    //                    HasQuit(this, EventArgs.Empty);
+    //                return;
+    //            }
 
-                if (BeforeRun != null)
-                    BeforeRun(this, EventArgs.Empty);
+    //            if (BeforeRun != null)
+    //                BeforeRun(this, EventArgs.Empty);
 
-                if (Running != null)
-                    Running(this, EventArgs.Empty);
+    //            if (Running != null)
+    //                Running(this, EventArgs.Empty);
 
-                if (AfterRun != null)
-                    AfterRun(this, EventArgs.Empty);
-                lock (m_syncRoot)
-                {
-                    if (!m_runAgain)
-                    {
-                        if (m_delayRequested && !m_stopExecuting)
-                        {
-                            m_resetEvent.Reset();
-                            m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_resetEvent, BeginRun, null, m_timeDelay, true);
-                            m_state = CurrentState.IsWaiting;
-                            return;
-                        }
-                        else
-                        {
-                            m_state = CurrentState.HasExited;
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    public class AsyncRunner<T>
+    //            if (AfterRun != null)
+    //                AfterRun(this, EventArgs.Empty);
+    //            lock (m_syncRoot)
+    //            {
+    //                if (!m_runAgain)
+    //                {
+    //                    if (m_delayRequested && !m_stopExecuting)
+    //                    {
+    //                        m_resetEvent.Reset();
+    //                        m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_resetEvent, BeginRun, null, m_timeDelay, true);
+    //                        m_state = CurrentState.IsWaiting;
+    //                        return;
+    //                    }
+    //                    else
+    //                    {
+    //                        m_state = CurrentState.HasExited;
+    //                        return;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
+    
+    public class AsyncRunner<T> : IDisposable
         where T : EventArgs
     {
         public event EventHandler<T> BeforeRun;
@@ -300,6 +301,12 @@ namespace GSF.Threading
                 m_stopExecuting = true;
             }
         }
+        public void StopExecutingAndWait()
+        {
+            StopExecuting();
+            while (m_state != CurrentState.HasExited)
+                Thread.Sleep(1);
+        }
 
         void BeginRun(object state, bool isTimeout)
         {
@@ -368,6 +375,11 @@ namespace GSF.Threading
                     }
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            StopExecutingAndWait();
         }
     }
 }

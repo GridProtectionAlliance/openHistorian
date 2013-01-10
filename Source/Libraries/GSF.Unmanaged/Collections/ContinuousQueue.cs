@@ -21,6 +21,8 @@
 //     
 //*****************************************************************************************************
 
+using System.Collections;
+using System.Collections.Generic;
 using System;
 
 namespace openHistorian.Collections
@@ -32,7 +34,7 @@ namespace openHistorian.Collections
     /// This class behaves much like a circular buffer that can be indexed.
     /// </summary>
     /// <typeparam name="T">The type to make the elements.</typeparam>
-    public class ContinuousQueue<T>
+    public class ContinuousQueue<T> : IEnumerable<T>
     {
         /// <summary>
         /// Contains the array of objects
@@ -54,17 +56,17 @@ namespace openHistorian.Collections
         /// <summary>
         /// The first index that exists in the buffer.
         /// </summary>
-        long m_beginningIndex;
+        long m_tailIndex;
 
         /// <summary>
         /// Gets the first index that exists in the buffer.  
         /// Trying to retrieve any index lower than this will throw an out of bounds exception.
         /// </summary>
-        public long BeginningIndex
+        public long TailIndex
         {
             get
             {
-                return m_beginningIndex;
+                return m_tailIndex;
             }
         }
 
@@ -81,11 +83,11 @@ namespace openHistorian.Collections
         /// <summary>
         /// Represents the last item that can be indexed in this buffer.
         /// </summary>
-        public long EndIndex
+        public long HeadIndex
         {
             get
             {
-                return m_count + m_beginningIndex - 1;
+                return m_count + m_tailIndex - 1;
             }
         }
 
@@ -109,97 +111,97 @@ namespace openHistorian.Collections
             m_head = 0;
             m_tail = 0;
             m_count = 0;
-            m_beginningIndex = 0;
+            m_tailIndex = 0;
             SetCapacity(capacity);
         }
 
         /// <summary>
-        /// Adds an item to the beginning of the queue.
+        /// Adds an item to the head of the queue.
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         public long Enqueue(T item)
         {
-            return AddToBeginning(item);
+            return AddToHead(item);
         }
 
         /// <summary>
-        /// Adds an item to the beginning of the queue.
+        /// Adds an item to the head of the queue.
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         public long Push(T item)
         {
-            return AddToBeginning(item);
+            return AddToHead(item);
         }
 
         /// <summary>
-        /// Removes an item from the end of the queue.
+        /// Removes an item from the tail of the queue.
         /// </summary>
         /// <returns></returns>
         public T Dequeue()
         {
-            return RemoveFromEnd();
+            return RemoveFromTail();
         }
 
         /// <summary>
-        /// Removes an item from the beginning of the queue.
+        /// Removes an item from the head of the queue.
         /// </summary>
         /// <returns></returns>
         public T Pop()
         {
-            return RemoveFromBeginning();
+            return RemoveFromHead();
         }
 
-        public T PeekAtEnd()
+        public T PeekAtHead()
         {
-            return this[EndIndex];
+            return this[HeadIndex];
         }
 
-        public T PeekAtBeginning()
+        public T PeekAtTail()
         {
-            return this[BeginningIndex];
+            return this[TailIndex];
         }
 
         /// <summary>
-        /// Adds an item to the beginning of the queue. 
+        /// Adds an item to the head of the queue. 
         /// </summary>
         /// <param name="item">The item to add.</param>
         /// <returns>The index of the item</returns>
-        public long AddToBeginning(T item)
+        public long AddToHead(T item)
         {
             if (Count == Capacity)
                 SetCapacity(Count * 2);
             m_items[m_head] = item;
-            DecrementHead();
-            return BeginningIndex;
+            IncrementHead();
+            return HeadIndex;
         }
 
         /// <summary>
-        /// Adds an item to the end of the queue. 
+        /// Adds an item to the tail of the queue. 
         /// </summary>
         /// <param name="item">The item to add.</param>
         /// <returns>The index of the item</returns>
-        public long AddToEnd(T item)
+        public long AddToTail(T item)
         {
             if (Count == Capacity)
                 SetCapacity(Count * 2);
+            DecrementTail();
             m_items[m_tail] = item;
-            IncrementTail();
-            return EndIndex;
+            return TailIndex;
         }
 
         /// <summary>
         /// Removes an item from the beginning of the buffer.
         /// </summary>
         /// <returns></returns>
-        public T RemoveFromBeginning()
+        public T RemoveFromHead()
         {
             if (Count == 0)
                 throw new Exception("Queue is empty");
+            DecrementHead();
             T rv = m_items[m_head];
             m_items[m_head] = default(T);
-            IncrementHead();
             return rv;
         }
 
@@ -207,13 +209,13 @@ namespace openHistorian.Collections
         /// Removes an item from the end of the buffer.
         /// </summary>
         /// <returns></returns>
-        public T RemoveFromEnd()
+        public T RemoveFromTail()
         {
             if (Count == 0)
                 throw new Exception("Queue is empty");
             T rv = m_items[m_tail];
             m_items[m_tail] = default(T);
-            DecrementTail();
+            IncrementTail();
             return rv;
         }
 
@@ -224,12 +226,12 @@ namespace openHistorian.Collections
         /// <returns></returns>
         public T GetItem(long index)
         {
-            if (index <= BeginningIndex || index >= EndIndex)
+            if (index < TailIndex || index > HeadIndex)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be between the BeginningIndex and EndIndex of the queue.");
+                throw new ArgumentOutOfRangeException("index", "index must be between the HeadIndex and TailIndex of the queue.");
             }
-            int relativeIndex = (int)(index - BeginningIndex);
-            relativeIndex += m_head;
+            int relativeIndex = (int)(index - TailIndex);
+            relativeIndex += m_tail;
             if (relativeIndex >= Capacity)
                 relativeIndex -= Capacity;
             return m_items[relativeIndex];
@@ -240,15 +242,16 @@ namespace openHistorian.Collections
         /// The index for the item must already exist in the list
         /// </summary>
         /// <param name="index">the index of the position</param>
+        /// <param name="item"></param>
         /// <returns></returns>
         public void SetItem(long index, T item)
         {
-            if (index <= BeginningIndex || index >= EndIndex)
+            if (index < TailIndex || index > HeadIndex)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be between the BeginningIndex and EndIndex of the queue.");
+                throw new ArgumentOutOfRangeException("index", "index must be between the HeadIndex and TailIndex of the queue.");
             }
-            int relativeIndex = (int)(index - BeginningIndex);
-            relativeIndex += m_head;
+            int relativeIndex = (int)(index - TailIndex);
+            relativeIndex += m_tail;
             if (relativeIndex >= Capacity)
                 relativeIndex -= Capacity;
             m_items[relativeIndex] = item;
@@ -278,62 +281,91 @@ namespace openHistorian.Collections
         /// </summary>
         /// <param name="capacity"></param>
         /// <returns></returns>
-        public int SetCapacity(int capacity)
+        int SetCapacity(int capacity)
         {
             capacity = Math.Max(capacity, Count);
             T[] items = new T[capacity];
             if (Count > 0)
             {
-                if (m_head < m_tail)
+                if (m_head > m_tail)
                 {
-                    Array.Copy(m_items, m_head, items, 0, Count);
+                    Array.Copy(m_items, m_tail, items, 0, Count);
                 }
                 else
                 {
-                    int remainingAtEnd = m_items.Length - m_head;
-                    Array.Copy(m_items, m_head, items, 0, remainingAtEnd);
-                    Array.Copy(m_items, 0, items, remainingAtEnd, m_tail);
+                    int remainingAtEnd = m_items.Length - m_tail;
+                    Array.Copy(m_items, m_tail, items, 0, remainingAtEnd);
+                    Array.Copy(m_items, 0, items, remainingAtEnd, m_head);
                 }
             }
             m_items = items;
-            m_head = 0;
-            m_tail = Count;
-            if (m_tail >= capacity)
-                m_tail -= capacity;
+            m_tail = 0;
+            m_head = Count;
+            if (m_head >= capacity)
+                m_head -= capacity;
 
             return capacity;
         }
 
         void IncrementTail()
         {
-            m_count++;
+            m_tailIndex++;
+            m_count--;
             m_tail++;
             if (m_tail == Capacity)
                 m_tail -= Capacity;
         }
         void DecrementTail()
         {
-            m_count--;
+            m_tailIndex--;
+            m_count++;
             m_tail--;
             if (m_tail < 0)
                 m_tail += Capacity;
         }
         void IncrementHead()
         {
-            m_beginningIndex++;
-            m_count--;
+
+            m_count++;
             m_head++;
             if (m_head == Capacity)
                 m_head -= Capacity;
         }
         void DecrementHead()
         {
-            m_beginningIndex--;
-            m_count++;
+            m_count--;
             m_head--;
             if (m_head < 0)
                 m_head += Capacity;
 
+        }
+        public T[] ToArray()
+        {
+            T[] items = new T[Count];
+            if (Count > 0)
+            {
+                if (m_head > m_tail)
+                {
+                    Array.Copy(m_items, m_tail, items, 0, Count);
+                }
+                else
+                {
+                    int remainingAtEnd = m_items.Length - m_tail;
+                    Array.Copy(m_items, m_tail, items, 0, remainingAtEnd);
+                    Array.Copy(m_items, 0, items, remainingAtEnd, m_head);
+                }
+            }
+            return items;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return ((IEnumerable<T>)ToArray()).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
