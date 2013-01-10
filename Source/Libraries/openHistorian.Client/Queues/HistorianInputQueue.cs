@@ -61,7 +61,7 @@ namespace openHistorian.Queues
 
         IsolatedQueue<PointData> m_blocks;
 
-        AsyncRunner<EventArgs> m_runner;
+        AsyncWorker m_worker;
 
         Func<IHistorianDatabase> m_getDatabase;
 
@@ -71,8 +71,8 @@ namespace openHistorian.Queues
             m_blocks = new IsolatedQueue<PointData>();
             m_pointStream = new StreamPoints(m_blocks, 1000);
             m_getDatabase = getDatabase;
-            m_runner = new AsyncRunner<EventArgs>(null);
-            m_runner.Running += m_runner_Running;
+            m_worker = new AsyncWorker();
+            m_worker.DoWork += WorkerDoWork;
         }
 
         /// <summary>
@@ -91,10 +91,10 @@ namespace openHistorian.Queues
                     m_blocks.Enqueue(data);
                 }
             }
-            m_runner.Run();
+            m_worker.RunWorker();
         }
 
-        void m_runner_Running(object sender, EventArgs e)
+        void WorkerDoWork(object sender, EventArgs e)
         {
             m_pointStream.Reset();
 
@@ -107,14 +107,14 @@ namespace openHistorian.Queues
             catch (Exception)
             {
                 m_database = null;
-                m_runner.RunAfterDelay(new TimeSpan(TimeSpan.TicksPerSecond * 1));
+                m_worker.RunWorkerAfterDelay(new TimeSpan(TimeSpan.TicksPerSecond * 1));
                 return;
             }
 
             if (m_pointStream.QuitOnPointCount)
-                m_runner.Run();
+                m_worker.RunWorker();
             else
-                m_runner.RunAfterDelay(new TimeSpan(TimeSpan.TicksPerSecond * 1));
+                m_worker.RunWorkerAfterDelay(new TimeSpan(TimeSpan.TicksPerSecond * 1));
         }
 
         private class StreamPoints : IPointStream

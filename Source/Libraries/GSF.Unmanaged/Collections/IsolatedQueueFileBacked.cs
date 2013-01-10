@@ -49,7 +49,7 @@ namespace openHistorian.Collections
         IsolatedNode<T> m_currentHead;
         IsolatedNode<T> m_currentTail;
 
-        AsyncRunner<EventArgs> m_runnerDumpToFile;
+        AsyncWorker m_workerDumpToFile;
         int m_unitCount;
 
         object m_syncRoot;
@@ -67,15 +67,15 @@ namespace openHistorian.Collections
             m_pooledNodes = new ResourceQueue<IsolatedNode<T>>(() => new IsolatedNode<T>(m_unitCount), 2, 10);
             m_inboundQueue = new ContinuousQueue<IsolatedNode<T>>();
             m_outboundQueue = new ContinuousQueue<IsolatedNode<T>>();
-            m_runnerDumpToFile = new AsyncRunner<EventArgs>(EventArgs.Empty);
-            m_runnerDumpToFile.Running += RunnerDumpToFileRunning;
+            m_workerDumpToFile = new AsyncWorker();
+            m_workerDumpToFile.DoWork += WorkerDumpToFileDoWork;
             m_syncRoot = new object();
             T value = default(T);
             m_maxCount = maxInMemorySize / value.SizeOf;
             m_itemsPerFile = individualFileSize / value.SizeOf;
         }
 
-        void RunnerDumpToFileRunning(object sender, EventArgs e)
+        void WorkerDumpToFileDoWork(object sender, EventArgs e)
         {
             lock (m_syncRoot)
             {
@@ -102,7 +102,7 @@ namespace openHistorian.Collections
             {
                 if (m_inboundQueue.Count * (long)m_unitCount > m_maxCount)
                 {
-                    m_runnerDumpToFile.Run();
+                    m_workerDumpToFile.RunWorker();
                 }
                 m_currentHead = m_pooledNodes.Dequeue();
                 m_currentHead.Reset();
@@ -192,7 +192,7 @@ namespace openHistorian.Collections
 
         public void Dispose()
         {
-            m_runnerDumpToFile.StopExecutingAndWait();
+            m_workerDumpToFile.Dispose();
 
         }
     }

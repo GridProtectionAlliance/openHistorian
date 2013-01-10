@@ -175,16 +175,16 @@ namespace openHistorian.Engine.ArchiveWriters
             lock (SyncRoot)
             {
                 if (m_filesToProcess.Count > 0)
-                    AsyncProcess.Run();
+                    AsyncProcess.RunWorker();
                 else if (forcedQuit)
                 {
                     OnThreadExited();
-                    AsyncProcess.StopExecuting();
+                    AsyncProcess.Dispose();
                 }
                 else
                 {
                     TimeSpan newWaitTime = (m_settings.NewFileOnInterval - state.FileAge.Elapsed);
-                    AsyncProcess.RunAfterDelay(newWaitTime);
+                    AsyncProcess.RunWorkerAfterDelay(newWaitTime);
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 m_filesToProcess.Enqueue(new KeyValuePair<ArchiveFile, long>(archiveFile, sequenceId));
                 OnNewData(sequenceId);
             }
-            AsyncProcess.Run();
+            AsyncProcess.RunWorker();
         }
 
        

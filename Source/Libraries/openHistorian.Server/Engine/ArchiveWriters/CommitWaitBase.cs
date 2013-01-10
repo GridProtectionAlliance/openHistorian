@@ -25,23 +25,24 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using GSF.Threading;
 
 //ToDo: clean up and implement this class.
 namespace openHistorian.Engine.ArchiveWriters
 {
 
     internal abstract class CommitWaitBase<T> : IDisposable
-        where T : EventArgs, new()
+        where T : new()
     {
-        
-        protected AsyncProcess<T> AsyncProcess;
+
+        protected AsyncWorker AsyncProcess;
         ManualResetEvent m_threadQuit;
         long m_lastCommitedSequenceNumber;
         long m_lastRolloverSequenceNumber;
         long m_latestSequenceId;
         bool m_threadHasQuit;
         bool m_disposed;
-
+        T m_state;
         /// <summary>
         /// Provides a way to block a thread until data has been committed to the archive writer.
         /// </summary>
@@ -80,9 +81,9 @@ namespace openHistorian.Engine.ArchiveWriters
 
         protected CommitWaitBase()
         {
-            AsyncProcess = new AsyncProcess<T>(new T());
-            AsyncProcess.Running += ProcessInsertingData;
-            AsyncProcess.AfterRun += ReleasePendingWaitLocks;
+            m_state = new T();
+            AsyncProcess = new AsyncWorker();
+            AsyncProcess.DoWork += ProcessInsertingData;
 
             m_threadQuit = new ManualResetEvent(false);
             SyncRoot = new object();
@@ -90,6 +91,12 @@ namespace openHistorian.Engine.ArchiveWriters
             m_lastCommitedSequenceNumber = -1;
             m_lastRolloverSequenceNumber = -1;
             m_latestSequenceId = -1;
+        }
+
+        void ProcessInsertingData(object sender, EventArgs obj)
+        {
+            ProcessInsertingData(sender, m_state);
+            ReleasePendingWaitLocks(sender, EventArgs.Empty);
         }
 
         protected abstract void ProcessInsertingData(object sender, T obj);
@@ -172,7 +179,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 m_pendingCommitRequests.Add(waiting);
             }
             if (startImediately)
-                AsyncProcess.Run();
+                AsyncProcess.RunWorker();
 
             waiting.Wait.WaitOne();
             return waiting.Successful;
@@ -198,7 +205,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 if (startImediately)
                 {
                     ShouldRollover = true;
-                    AsyncProcess.Run();
+                    AsyncProcess.RunWorker();
                 }
 
             }
@@ -279,8 +286,9 @@ namespace openHistorian.Engine.ArchiveWriters
             }
         }
 
-        void ReleasePendingWaitLocks(object sender, T state)
+        void ReleasePendingWaitLocks(object sender, EventArgs state)
         {
+            
             lock (SyncRoot)
             {
                 int x = m_pendingCommitRequests.Count - 1;
@@ -318,7 +326,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 {
                     m_disposed = true;
                     ShouldQuit = true;
-                    AsyncProcess.Run();
+                    AsyncProcess.RunWorker();
                 }
             }
         }

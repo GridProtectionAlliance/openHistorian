@@ -66,7 +66,7 @@ namespace openVisN.Framework
 
     public class UpdateFramework : IDisposable
     {
-        AsyncRunner<EventArgs> m_async;
+        AsyncWorker m_async;
 
         public event EventHandler BeforeExecuteQuery;
         public event EventHandler AfterQuery;
@@ -98,8 +98,8 @@ namespace openVisN.Framework
             m_enabled = true;
             m_syncEvent = new SynchronousEvent<QueryResultsEventArgs>();
             m_syncEvent.CustomEvent += m_syncEvent_CustomEvent;
-            m_async = new AsyncRunner<EventArgs>(EventArgs.Empty);
-            m_async.Running += m_async_Running;
+            m_async = new AsyncWorker();
+            m_async.DoWork += AsyncDoWork;
             m_activeSignals = new List<MetadataBase>();
             m_syncRoot = new object();
         }
@@ -121,7 +121,7 @@ namespace openVisN.Framework
             }
         }
 
-        void m_async_Running(object sender, EventArgs e)
+        void AsyncDoWork(object sender, EventArgs e)
         {
             if (BeforeExecuteQuery != null)
                 BeforeExecuteQuery(this, EventArgs.Empty);
@@ -166,7 +166,7 @@ namespace openVisN.Framework
             {
                 if (Mode == ExecutionMode.Automatic)
                 {
-                    m_async.RunAfterDelay(m_refreshInterval);
+                    m_async.RunWorkerAfterDelay(m_refreshInterval);
                 }
             }
 
@@ -194,7 +194,7 @@ namespace openVisN.Framework
                     if (updated && ExecutionModeChanged != null)
                         ExecutionModeChanged(this, new ExecutionModeEventArgs(value));
                     m_playback.LiveModeSelected();
-                    m_async.Run();
+                    m_async.RunWorker();
                 }
 
             }
@@ -213,7 +213,7 @@ namespace openVisN.Framework
                     throw new Exception("Cannot be restarted");
                 }
                 if (!value)
-                    m_async.StopExecuting();
+                    m_async.Dispose();
                 m_enabled = value;
             }
         }
@@ -222,7 +222,7 @@ namespace openVisN.Framework
         {
             lock (m_syncRoot)
                 m_RequestToken = null;
-            m_async.Run();
+            m_async.RunWorker();
         }
 
         public void SwitchToAutomatic(bool useCurrentWindow)
@@ -312,7 +312,7 @@ namespace openVisN.Framework
                 m_lowerBounds = startTime;
                 m_upperBounds = endTime;
             }
-            m_async.Run();
+            m_async.RunWorker();
         }
 
         public void UpdateSignals(List<MetadataBase> activeSignals)
@@ -322,12 +322,12 @@ namespace openVisN.Framework
                 m_RequestToken = null;
                 m_activeSignals = activeSignals;
             }
-            m_async.Run();
+            m_async.RunWorker();
         }
 
         public void Dispose()
         {
-            m_async.StopExecuting();
+            m_async.Dispose();
         }
     }
 }
