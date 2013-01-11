@@ -24,85 +24,200 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using GSF.Threading;
 
 namespace openHistorian.Collections
 {
+    /// <summary>
+    /// An interface required to use <see cref="IsolatedQueueFileBacked{T}"/>.
+    /// </summary>
     public interface ILoadable
     {
-        int SizeOf { get; }
+        /// <summary>
+        /// Gets the average memory size required for an individual element. 
+        /// </summary>
+        int InMemorySize { get; }
+        /// <summary>
+        /// Gets the average space this individual element takes when serialized to the disk.
+        /// </summary>
+        int OnDiskSize { get; }
+        /// <summary>
+        /// Saves this element using the provided <see cref="BinaryWriter"/>.
+        /// </summary>
+        /// <param name="writer"></param>
         void Save(BinaryWriter writer);
+        /// <summary>
+        /// Loads this element using the provided <see cref="BinaryReader"/>.
+        /// </summary>
+        /// <param name="reader"></param>
         void Load(BinaryReader reader);
     }
 
     //ToDo: Don't let the diskIO operations apply a lock on the entire Enqueue thread.
 
+    /// <summary>
+    /// Provides a high speed queue that has built in isolation of reads from writes. 
+    /// This means, reads must be synchronized with other reads, writes must be synchronized with other writes,
+    /// however read and write operations do not have to be synchronized.
+    /// </summary>
+    /// <typeparam name="T">A struct that implements <see cref="ILoadable"/> that will be stored in this queue.</typeparam>
     public partial class IsolatedQueueFileBacked<T> : IDisposable
         where T : struct, ILoadable
     {
+        /// <summary>
+        /// The queue that the writer always writes to. 
+        /// This queue is only read from if not operating in FileMode
+        /// </summary>
         ContinuousQueue<IsolatedNode<T>> m_inboundQueue;
+        /// <summary>
+        /// This queue is where the reader will read from when
+        /// operating in FileMode.
+        /// </summary>
         ContinuousQueue<IsolatedNode<T>> m_outboundQueue;
+        /// <summary>
+        /// Contains a queue of <see cref="IsolatedNode{T}"/> so they
+        /// don't need to be constructed every time. There is a high
+        /// probability that any node will be a Generation 2 object. Therefore
+        /// it is advised to pool these objects.
+        /// </summary>
         ResourceQueue<IsolatedNode<T>> m_pooledNodes;
 
+        /// <summary>
+        /// The node that will be written to. It is probable that the
+        /// head and tail are the same instance.
+        /// </summary>
         IsolatedNode<T> m_currentHead;
+        /// <summary>
+        /// The node that will be read from. It is probable that the
+        /// head and tail are the same instance.
+        /// </summary>
         IsolatedNode<T> m_currentTail;
 
-        AsyncWorker m_workerDumpToFile;
-        int m_unitCount;
-
-        object m_syncRoot;
+        AsyncWorker m_workerFlushToFile;
+        bool m_disposing;
+        bool m_disposed;
         bool m_isFileMode;
-        int m_maxCount;
-        int m_itemsPerFile;
+        int m_elementsPerNode;
+        object m_syncRoot;
+
+        /// <summary>
+        /// Number of nodes that it takes to max out the memory desired for this buffer.
+        /// </summary>
+        int m_maxNodeCount;
+        /// <summary>
+        /// The number of nodes to put in each file.
+        /// </summary>
+        int m_nodesPerFile;
         FileIO m_fileIO;
 
+        /// <summary>
+        /// Creates a new <see cref="IsolatedQueueFileBacked{T}"/>. 
+        /// </summary>
+        /// <param name="path">The disk path to use to save the state of this queue to. 
+        /// It is critical that this path is unique to the instance of this class.</param>
+        /// <param name="maxInMemorySize">The maximum desired in-memory size before switching to a file storage method.</param>
+        /// <param name="individualFileSize">The desired size of each file.</param>
+        /// <remarks>The total memory used by this class will be approximately the sum of <see cref="maxInMemorySize"/> and
+        /// <see cref="individualFileSize"/> while operating in file mode.</remarks>
         public IsolatedQueueFileBacked(string path, int maxInMemorySize, int individualFileSize)
         {
             m_fileIO = new FileIO(path);
             m_isFileMode = (m_fileIO.FileCount > 0);
 
-            m_unitCount = 1024;
-            m_pooledNodes = new ResourceQueue<IsolatedNode<T>>(() => new IsolatedNode<T>(m_unitCount), 2, 10);
+            m_elementsPerNode = 1024;
+            m_pooledNodes = new ResourceQueue<IsolatedNode<T>>(() => new IsolatedNode<T>(m_elementsPerNode), 2, 10);
             m_inboundQueue = new ContinuousQueue<IsolatedNode<T>>();
             m_outboundQueue = new ContinuousQueue<IsolatedNode<T>>();
-            m_workerDumpToFile = new AsyncWorker();
-            m_workerDumpToFile.DoWork += WorkerDumpToFileDoWork;
+            m_workerFlushToFile = new AsyncWorker();
+            m_workerFlushToFile.DoWork += OnWorkerFlushToFileDoWork;
+            m_workerFlushToFile.CleanupWork += OnWorkerFlushToFileCleanupWork;
             m_syncRoot = new object();
             T value = default(T);
-            m_maxCount = maxInMemorySize / value.SizeOf;
-            m_itemsPerFile = individualFileSize / value.SizeOf;
+            m_maxNodeCount = maxInMemorySize / value.InMemorySize / m_elementsPerNode;
+            m_nodesPerFile = individualFileSize / value.OnDiskSize / m_elementsPerNode;
+
+            m_nodesPerFile = Math.Max(m_nodesPerFile, 10);
+            m_maxNodeCount = Math.Max(m_maxNodeCount, m_nodesPerFile);
         }
 
-        void WorkerDumpToFileDoWork(object sender, EventArgs e)
+        /// <summary>
+        /// Gets if this object has been disposed.
+        /// </summary>
+        public bool IsDisposed
         {
-            lock (m_syncRoot)
+            get
             {
-                //Check for a premature call
-                if (m_inboundQueue.Count * (long)m_unitCount < m_maxCount)
-                {
-                    return;
-                }
-                if (!m_isFileMode)
-                {
-                    m_isFileMode = true;
-                }
-                while (m_inboundQueue.Count * (long)m_unitCount > m_itemsPerFile)
-                {
-                    int itemsToKeep = Math.Max(1, m_inboundQueue.Count - m_itemsPerFile / m_unitCount);
-                    m_fileIO.DumpToDisk(m_inboundQueue, itemsToKeep);
-                }
+                return m_disposed;
             }
         }
 
+        /// <summary>
+        /// Does the writes to the archive file.
+        /// </summary>
+        void OnWorkerFlushToFileDoWork(object sender, EventArgs e)
+        {
+            while (true)
+            {
+                IsolatedNode<T>[] nodesToWrite;
+                lock (m_syncRoot)
+                {
+                    if (!ShouldFlushToFile())
+                        return;
+
+                    m_isFileMode = true;
+                    nodesToWrite = m_inboundQueue.Dequeue(m_nodesPerFile);
+                }
+                m_fileIO.DumpToDisk(nodesToWrite);
+            }
+
+        }
+
+        bool ShouldFlushToFile()
+        {
+            if (m_isFileMode)
+            {
+                return m_inboundQueue.Count > m_nodesPerFile;
+            }
+            return m_inboundQueue.Count > m_maxNodeCount;
+        }
+
+
+        void OnWorkerFlushToFileCleanupWork(object sender, EventArgs e)
+        {
+            //lock (m_syncRoot)
+            //{
+            //    //Check for a premature call
+            //    if (m_inboundQueue.Count * (long)m_elementsPerNode < m_maxCount)
+            //    {
+            //        return;
+            //    }
+            //    if (!m_isFileMode)
+            //    {
+            //        m_isFileMode = true;
+            //    }
+            //    while (m_inboundQueue.Count * (long)m_elementsPerNode > m_itemsPerFile)
+            //    {
+            //        int itemsToKeep = Math.Max(1, m_inboundQueue.Count - m_itemsPerFile / m_elementsPerNode);
+            //        m_fileIO.DumpToDisk(m_inboundQueue, itemsToKeep);
+            //    }
+            //}
+        }
+
+        /// <summary>
+        /// Writes data to the queue. Will not block
+        /// </summary>
+        /// <param name="item"></param>
         public void Enqueue(T item)
         {
+            if (m_disposing)
+                throw new ObjectDisposedException(GetType().FullName);
+
             if (m_currentHead == null || m_currentHead.IsHeadFull)
             {
-                if (m_inboundQueue.Count * (long)m_unitCount > m_maxCount)
+                //This can be done without a lock since it will be checked in the worker.
+                if (ShouldFlushToFile())
                 {
-                    m_workerDumpToFile.RunWorker();
+                    m_workerFlushToFile.RunWorker();
                 }
                 m_currentHead = m_pooledNodes.Dequeue();
                 m_currentHead.Reset();
@@ -116,6 +231,9 @@ namespace openHistorian.Collections
 
         public bool TryDequeue(out T item)
         {
+            if (m_disposing)
+                throw new ObjectDisposedException(GetType().FullName);
+
             if (m_currentTail == null || m_currentTail.IsTailFull)
             {
                 if (m_currentTail != null)
@@ -126,44 +244,52 @@ namespace openHistorian.Collections
                     //immediately, this is ok since it will be coordinated at that point.
                     m_pooledNodes.Enqueue(m_currentTail);
                 }
+                bool repeat = true;
+                bool success = false; //initialization not necessary. Just trying to get rid of a compilier warning.
 
-                bool success;
-                lock (m_syncRoot)
+                while (repeat)
                 {
-                TryAgain:
-                    if (m_isFileMode)
+                    repeat = false;
+                    bool readFromDisk = false;
+                    lock (m_syncRoot)
                     {
-                        if (m_outboundQueue.Count > 0)
+                        if (m_isFileMode)
                         {
-                            m_currentTail = m_outboundQueue.Dequeue();
-                            success = true;
-                        }
-                        else
-                        {
-                            if (m_fileIO.FileCount == 0)
+                            if (m_outboundQueue.Count > 0)
                             {
-                                m_isFileMode = false;
+                                m_currentTail = m_outboundQueue.Dequeue();
+                                success = true;
                             }
                             else
                             {
-                                m_fileIO.ReadFromDisk(m_outboundQueue, () => m_pooledNodes.Dequeue());
+                                if (m_fileIO.FileCount == 0)
+                                {
+                                    m_isFileMode = false;
+                                }
+                                else
+                                {
+                                    readFromDisk = true;
+                                }
+                                repeat = true;
                             }
-                            goto TryAgain;
-                        }
-                    }
-                    else
-                    {
-                        if (m_inboundQueue.Count > 0)
-                        {
-                            m_currentTail = m_inboundQueue.Dequeue();
-                            success = true;
                         }
                         else
                         {
-                            success = false;
+                            if (m_inboundQueue.Count > 0)
+                            {
+                                m_currentTail = m_inboundQueue.Dequeue();
+                                success = true;
+                            }
+                            else
+                            {
+                                success = false;
+                            }
                         }
                     }
-
+                    if (readFromDisk)
+                    {
+                        m_fileIO.ReadFromDisk(m_outboundQueue, () => m_pooledNodes.Dequeue());
+                    }
                 }
 
                 if (!success)
@@ -186,14 +312,20 @@ namespace openHistorian.Collections
             {
                 //ToDo: properly calculate the number of elements.
                 //This should also include the files pending loading.
-                return m_inboundQueue.Count * (long)m_unitCount;
+                return m_inboundQueue.Count * (long)m_elementsPerNode;
             }
         }
 
         public void Dispose()
         {
-            m_workerDumpToFile.Dispose();
+            if (!m_disposed)
+            {
+                m_disposing = true;
 
+                m_workerFlushToFile.Dispose();
+
+                m_disposed = true;
+            }
         }
     }
 }

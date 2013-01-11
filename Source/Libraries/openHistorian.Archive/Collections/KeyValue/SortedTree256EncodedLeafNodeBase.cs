@@ -69,6 +69,252 @@ namespace openHistorian.Collections.KeyValue
             NodeHeader.Save(Stream, NodeHeader.Size, 0, 0);
         }
 
+        protected override unsafe bool LeafNodeInsert(long nodeIndex, ITreeScanner256 treeScanner, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid, ref ulong maxKey, ref ulong minKey)
+        {
+            if (key1 < minKey)
+                minKey = key1;
+            if (key1 > maxKey)
+                maxKey = key1;
+
+            byte* buffer = stackalloc byte[64];
+            byte* buffer2 = stackalloc byte[64];
+            var header = new NodeHeader(Stream, BlockSize, nodeIndex);
+            long firstPosition = nodeIndex * BlockSize + NodeHeader.Size;
+            long endOfStreamPosition = nodeIndex * BlockSize + header.ValidBytes;
+            int bytesRemaining = BlockSize - header.ValidBytes;
+            long curPosition = firstPosition;
+            long prevPosition = firstPosition;
+            Stream.Position = firstPosition;
+
+            //Find the best location to insert
+            //This is done before checking if a split is required to prevent splitting 
+            //if a duplicate key is found
+            ulong curKey1 = 0;
+            ulong curKey2 = 0;
+            ulong curValue1 = 0;
+            ulong curValue2 = 0;
+            ulong prevKey1 = 0;
+            ulong prevKey2 = 0;
+            ulong prevValue1 = 0;
+            ulong prevValue2 = 0;
+
+            bool insertAfter = true; //The default case. This will be reassigned if needing to be inserted before.
+            bool skipScan = false; //If using the cached values reveals that the current key is after the end of the stream. the sequential scan can be skipped.
+            //m_cachedNodeIndex = -1;
+            if (m_cachedNodeIndex == nodeIndex)
+            {
+                int compareKeysResults = (CompareKeys(key1, key2, m_lastKey1, m_lastKey2));
+                if (compareKeysResults == 0) //if keys match, result is found.
+                {
+                    isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                    return false;
+                }
+                if (compareKeysResults > 0) //if the key is greater than the test index, the insert will occur at the end of the stream.
+                {
+                    skipScan = true;
+                    curKey1 = m_lastKey1;
+                    curKey2 = m_lastKey2;
+                    curValue1 = m_lastValue1;
+                    curValue2 = m_lastValue2;
+                    prevPosition = endOfStreamPosition;
+                    curPosition = prevPosition;
+                }
+            }
+
+            if (!skipScan)
+            {
+                while (curPosition < endOfStreamPosition)
+                {
+                    prevKey1 = curKey1;
+                    prevKey2 = curKey2;
+                    prevValue1 = curValue1;
+                    prevValue2 = curValue2;
+
+                    DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
+                    curPosition = Stream.Position;
+
+                    int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
+                    if (compareKeysResults == 0) //if keys match, result is found.
+                    {
+                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        return false;
+                    }
+                    if (compareKeysResults < 0) //if the key is greater than the test index, change the lower bounds
+                    {
+                        insertAfter = false;
+                        break;
+                    }
+                    prevPosition = Stream.Position;
+                }
+            }
+
+            if (insertAfter)
+            {
+                /////////////////////////////////////////////////////////////////////////////
+                //
+                //This is where the optimizations will take place 
+                //to increase the speed of inserting sequential data.
+                if (header.RightSiblingNodeIndex == 0)
+                {
+                    bool headerChanged = false;
+                    while (true)
+                    {
+                        int shiftDelta2 = EncodeRecord(buffer, key1, key2, value1, value2, curKey1, curKey2, curValue1, curValue2);
+                        if (bytesRemaining < shiftDelta2)
+                        {
+                            if (headerChanged)
+                                header.Save(Stream, BlockSize, nodeIndex);
+
+                            NewNodeThenInsert(key1, key2, value1, value2, nodeIndex);
+                            isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                            return true;
+                        }
+                        bytesRemaining -= shiftDelta2;
+                        headerChanged = true;
+                        m_cachedNodeIndex = nodeIndex;
+                        m_lastKey1 = key1;
+                        m_lastKey2 = key2;
+                        m_lastValue1 = value1;
+                        m_lastValue2 = value2;
+
+                       
+                        
+
+                        Stream.Position = prevPosition;
+                        WriteToStream(buffer, shiftDelta2);
+                        header.ValidBytes += shiftDelta2;
+
+                        curKey1 = m_lastKey1;
+                        curKey2 = m_lastKey2;
+                        curValue1 = m_lastValue1;
+                        curValue2 = m_lastValue2;
+                        endOfStreamPosition = nodeIndex * BlockSize + header.ValidBytes;
+                        prevPosition = endOfStreamPosition;
+                        curPosition = endOfStreamPosition;
+                        
+                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        if (!isValid && CompareKeys(key1, key2, curKey1, curKey2) <= 0)
+                            break;
+                        
+                        if (key1 < minKey)
+                            minKey = key1;
+                        if (key1 > maxKey)
+                            maxKey = key1;
+                    }
+
+                    header.Save(Stream, BlockSize, nodeIndex);
+                    return true;
+                }
+                //
+                /////////////////////////////////////////////////////////////////////////////
+
+                //Insert afters only occur at the end of the stream
+                int shiftDelta = EncodeRecord(buffer, key1, key2, value1, value2, curKey1, curKey2, curValue1, curValue2);
+                if (bytesRemaining < shiftDelta)
+                {
+                    if (header.RightSiblingNodeIndex == 0)
+                    {
+                        NewNodeThenInsert(key1, key2, value1, value2, nodeIndex);
+                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        return true;
+                    }
+                    else
+                    {
+                        SplitNodeThenInsert(key1, key2, value1, value2, nodeIndex);
+                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        return true;
+                    }
+                }
+
+
+
+                m_cachedNodeIndex = nodeIndex;
+                m_lastKey1 = key1;
+                m_lastKey2 = key2;
+                m_lastValue1 = value1;
+                m_lastValue2 = value2;
+
+                Stream.Position = prevPosition;
+                WriteToStream(buffer, shiftDelta);
+
+                header.ValidBytes += shiftDelta;
+                header.Save(Stream, BlockSize, nodeIndex);
+                isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                return true;
+            }
+            else
+            {
+                //the insert will need to occur before the current point.
+                if (prevPosition == firstPosition)
+                {
+                    //if the insert is at the beginning of the stream
+
+                    int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, 0, 0, 0, 0);
+
+                    int shiftDelta2 = EncodeRecord(buffer2, curKey1, curKey2, curValue1, curValue2, key1, key2, value1, value2);
+
+                    int shiftDelta = shiftDelta1 + shiftDelta2;
+                    shiftDelta -= (int)(curPosition - prevPosition);
+
+                    if (bytesRemaining < shiftDelta)
+                    {
+                        SplitNodeThenInsert(key1, key2, value1, value2, nodeIndex);
+                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        return true;
+                    }
+
+                    Stream.Position = firstPosition;
+                    if (shiftDelta < 0)
+                        Stream.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                    else
+                        Stream.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
+
+                    WriteToStream(buffer, shiftDelta1);
+                    WriteToStream(buffer2, shiftDelta2);
+
+                    header.ValidBytes += shiftDelta;
+                    header.Save(Stream, BlockSize, nodeIndex);
+                    isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                    return true;
+                }
+                else
+                {
+                    //if the insert is in the middle of the the stream
+                    Stream.Position = curPosition;
+
+                    int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, prevKey1, prevKey2, prevValue1, prevValue2);
+
+                    int shiftDelta2 = EncodeRecord(buffer2, curKey1, curKey2, curValue1, curValue2, key1, key2, value1, value2);
+
+                    int shiftDelta = shiftDelta1 + shiftDelta2;
+
+                    shiftDelta -= (int)(curPosition - prevPosition);
+
+                    if (bytesRemaining < shiftDelta)
+                    {
+                        SplitNodeThenInsert(key1, key2, value1, value2, nodeIndex);
+                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        return true;
+                    }
+
+                    Stream.Position = prevPosition;
+                    if (shiftDelta < 0)
+                        Stream.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                    else
+                        Stream.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
+
+                    WriteToStream(buffer, shiftDelta1);
+                    WriteToStream(buffer2, shiftDelta2);
+
+                    header.ValidBytes += shiftDelta;
+                    header.Save(Stream, BlockSize, nodeIndex);
+                    isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                    return true;
+                }
+
+            }
+        }
+
         unsafe protected override bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2)
         {
             byte* buffer = stackalloc byte[64];

@@ -39,7 +39,7 @@ namespace openHistorian.Collections.KeyValue
             }
             File.Delete("c:\\temp\\ArchiveFileDelMe.d2");
         }
-
+        
         [Test]
         public void SortedTree256ArchiveFile()
         {
@@ -49,6 +49,7 @@ namespace openHistorian.Collections.KeyValue
             using (BinaryStream bs = new BinaryStream(stream))
             {
                 SortedTree256BaseTest.BenchmarkTree(() => new SortedTree256(bs, 4096), Count);
+                SortedTree256BaseEnhancedTest.BenchmarkTreeScanner(() => new SortedTree256TSEncoded(bs, 4096), Count);
             }
             File.Delete("c:\\temp\\ArchiveFileDelMe.d2");
         }
@@ -90,6 +91,7 @@ namespace openHistorian.Collections.KeyValue
             using (BinaryStream bs = new BinaryStream())
             {
                 SortedTree256BaseTest.BenchmarkTree(() => new SortedTree256TSEncoded(bs, 4096), Count);
+                SortedTree256BaseEnhancedTest.BenchmarkTreeScanner(() => new SortedTree256TSEncoded(bs, 4096), Count);
             }
         }
     }

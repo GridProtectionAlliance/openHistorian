@@ -233,32 +233,32 @@ namespace openHistorian.Collections.KeyValue
                 return;
             throw new Exception("Key already exists");
         }
-        
-        //public void AddRange(IDataScanner dataScanner)
-        //{
-        //    ulong key1, key2, value1, value2;
-        //    dataScanner.SeekToKey(0, 0);
-        //    var isValid = dataScanner.GetNextKey(out key1, out key2, out value1, out value2);
-        //    if (key1 < m_firstKey)
-        //        m_firstKey = key1;
 
-        //    while (isValid)
-        //    {
-        //        //Search for the proper save node
-        //        long nodeIndexAddress = m_rootNodeIndexAddress;
-        //        for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-        //        {
-        //            nodeIndexAddress = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndexAddress, key1, key2);
-        //        }
+        public void Add(ITreeScanner256 treeScanner)
+        {
+            ulong key1, key2, value1, value2;
+            var isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+            ulong minKey = m_firstKey;
+            ulong maxKey = m_lastKey;
 
-        //        if (!LeafNodeInsert(dataScanner, nodeIndexAddress, ref key1, ref key2, ref value1, ref value2, ref isValid))
-        //            throw new Exception("Key already exists");
+        TryAgain:
+            while (isValid)
+            {
+                //Search for the proper save node
+                long nodeIndexAddress = m_rootNodeIndexAddress;
+                for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
+                {
+                    nodeIndexAddress = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndexAddress, key1, key2);
+                }
 
-        //    }
-        //    if (key1 > m_lastKey)
-        //        m_lastKey = key1;
+                if (!LeafNodeInsert(nodeIndexAddress, treeScanner, ref key1, ref key2, ref value1, ref value2, ref isValid, ref maxKey, ref minKey))
+                    throw new Exception("Key already exists");
 
-        //}
+            }
+            if (key1 > m_lastKey)
+                m_lastKey = key1;
+
+        }
 
         /// <summary>
         /// Gets the data for the following key. 
@@ -310,6 +310,7 @@ namespace openHistorian.Collections.KeyValue
 
         #region [ Leaf Node Methods ]
 
+        protected abstract bool LeafNodeInsert(long nodeIndex, ITreeScanner256 treeScanner, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid, ref ulong maxKey, ref ulong minKey);
         protected abstract bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2);
         protected abstract bool LeafNodeGetValue(long nodeIndex, ulong key1, ulong key2, out ulong value1, out ulong value2);
         protected abstract void LeafNodeCreateEmptyNode(long newNodeIndex);

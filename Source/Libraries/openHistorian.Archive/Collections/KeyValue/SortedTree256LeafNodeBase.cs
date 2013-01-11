@@ -71,6 +71,11 @@ namespace openHistorian.Collections.KeyValue
             NodeHeader.Save(Stream, 0, 0, 0);
         }
 
+        protected override bool LeafNodeInsert(long nodeIndex, ITreeScanner256 treeScanner, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid, ref ulong maxKey, ref ulong minKey)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2)
         {
             int offset = 0;

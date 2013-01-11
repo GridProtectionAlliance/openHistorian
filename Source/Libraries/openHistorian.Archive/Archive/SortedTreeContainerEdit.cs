@@ -91,6 +91,13 @@ namespace openHistorian.Archive
             m_tree.Add(date, pointId, value1, value2);
         }
 
+        public void AddPoints(ITreeScanner256 scanner)
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            m_tree.Add(scanner);
+        }
+
         public ITreeScanner256 GetDataRange()
         {
             if (m_disposed)

@@ -26,47 +26,56 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace openHistorian.Collections
 {
     public partial class IsolatedQueueFileBacked<T>
     {
+        /// <summary>
+        /// Does the disk related IO functionality. Also reads existing files on a restore. 
+        /// </summary>
         internal class FileIO
         {
+            object m_syncRoot;
             Queue<string> m_allFiles;
+            long m_sizeOfAllFiles;
             string m_path;
             const string Extension = ".dat";
             const string WorkingExtension = ".working";
 
             public FileIO(string pathName)
             {
+                m_syncRoot = new object();
                 m_allFiles = new Queue<string>();
                 m_path = pathName;
 
                 var files = Directory.GetFiles(pathName, "*" + Extension).ToList();
                 files.Sort();
+                files.ForEach(x => m_sizeOfAllFiles += new FileInfo(x).Length);
                 files.ForEach(x => m_allFiles.Enqueue(x));
             }
 
             /// <summary>
             /// Creates a new archive file from the data in the queue.
             /// </summary>
-            /// <param name="queue">The queue to keep.</param>
-            /// <param name="countRemaining">The number of items to keep in the queue</param>
-            public void DumpToDisk(ContinuousQueue<IsolatedNode<T>> queue, int countRemaining)
+            /// <param name="queue">The nodes to dump.</param>
+            public void DumpToDisk(IEnumerable<IsolatedNode<T>> queue)
             {
                 string file, fileTemp;
                 GetFiles(out file, out fileTemp);
                 using (var fs = new FileStream(fileTemp, FileMode.CreateNew, FileAccess.Write))
                 {
-                    DumpToDisk(fs, queue, countRemaining);
+                    DumpToDisk(fs, queue);
                 }
                 File.Move(fileTemp, file);
-                m_allFiles.Enqueue(file);
+                lock (m_syncRoot)
+                {
+                    m_allFiles.Enqueue(file);
+                    m_sizeOfAllFiles += new FileInfo(file).Length;
+                }
             }
 
-            internal void DumpToDisk(Stream stream, ContinuousQueue<IsolatedNode<T>> queue, int countRemaining)
+            internal void DumpToDisk(Stream stream, IEnumerable<IsolatedNode<T>> queue)
             {
                 T item = default(T);
                 var wr = new BinaryWriter(stream);
@@ -74,9 +83,8 @@ namespace openHistorian.Collections
                 wr.Write("IsolatedQueueFileBacked".ToCharArray());
                 wr.Write((byte)1);
 
-                while (queue.Count > countRemaining)
+                foreach (var node in queue)
                 {
-                    var node = queue.Dequeue();
                     wr.Write(node.Count);
                     while (node.TryDequeue(out item))
                     {
@@ -93,7 +101,12 @@ namespace openHistorian.Collections
             /// <param name="instance">A function to call that will construct an IsolatedNode.</param>
             public void ReadFromDisk(ContinuousQueue<IsolatedNode<T>> queue, Func<IsolatedNode<T>> instance)
             {
-                var file = m_allFiles.Dequeue();
+                string file;
+                lock (m_syncRoot)
+                {
+                    file = m_allFiles.Dequeue();
+                    m_sizeOfAllFiles -= new FileInfo(file).Length;
+                }
 
                 using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                 {
@@ -149,6 +162,17 @@ namespace openHistorian.Collections
                 get
                 {
                     return m_allFiles.Count;
+                }
+            }
+
+            /// <summary>
+            /// Gets the number of bytes in every file in this buffer.
+            /// </summary>
+            public long FileSizes
+            {
+                get
+                {
+                    return m_sizeOfAllFiles;
                 }
             }
 

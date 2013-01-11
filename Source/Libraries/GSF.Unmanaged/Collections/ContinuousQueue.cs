@@ -145,6 +145,17 @@ namespace openHistorian.Collections
         }
 
         /// <summary>
+        /// Returns an array of items that were read from the tail of the queue
+        /// in order.
+        /// </summary>
+        /// <param name="count">The number of items to read</param>
+        /// <returns></returns>
+        public T[] Dequeue(int count)
+        {
+            return ReadFromTail(count);
+        }
+
+        /// <summary>
         /// Removes an item from the head of the queue.
         /// </summary>
         /// <returns></returns>
@@ -339,6 +350,26 @@ namespace openHistorian.Collections
                 m_head += Capacity;
 
         }
+
+        /// <summary>
+        /// Returns an array of items that were read from the tail of the queue
+        /// in order.
+        /// </summary>
+        /// <param name="count">The number of items to read</param>
+        /// <returns></returns>
+        public T[] ReadFromTail(int count)
+        {
+            if (count > Count)
+                throw new ArgumentOutOfRangeException("count", "cannot be more than the number of items in the queue");
+
+            T[] items = new T[count];
+            for (int x = 0; x < count; x++)
+            {
+                items[x] = Dequeue();
+            }
+            return items;
+        }
+
         public T[] ToArray()
         {
             T[] items = new T[Count];

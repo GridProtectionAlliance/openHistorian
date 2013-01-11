@@ -28,11 +28,20 @@ namespace openHistorian.Collections
                 Item4 = (Item3 * 2L);
             }
 
-            public int SizeOf
+            public int InMemorySize
             {
                 get
                 {
                     return sizeof(TestType);
+
+                }
+            }
+
+            public int OnDiskSize
+            {
+                get
+                {
+                    return 16;
                 }
             }
 
@@ -69,7 +78,7 @@ namespace openHistorian.Collections
         {
             const string Path = @"C:\Temp\Buffer\";
             const int cnt = 1000000;
-            
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
             using (var collection = new IsolatedQueueFileBacked<TestType>(Path, 3 * 1024 * 1024, 1024 * 1024))
