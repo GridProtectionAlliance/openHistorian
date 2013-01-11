@@ -155,7 +155,7 @@ namespace OpenHistorianAdapters
         {
             get
             {
-                return true;
+                return false;
             }
         }
 
@@ -230,7 +230,8 @@ namespace OpenHistorianAdapters
                     // This will be done regardless of whether the object is finalized or disposed.
                     if (disposing)
                     {
-                        m_client.Dispose();
+                        if (m_client != null) 
+                            m_client.Dispose();
                     }
                 }
                 finally
@@ -260,7 +261,8 @@ namespace OpenHistorianAdapters
         /// </summary>
         protected override void AttemptDisconnection()
         {
-            m_client.Dispose();
+            if (m_client != null) 
+                m_client.Dispose();
         }
 
         /// <summary>

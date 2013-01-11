@@ -81,6 +81,8 @@
     <Compile Include="Collections\KeyValue\SortedTree256EncodedLeafNodeBase_TreeScanner.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256DeltaEncoded.cs" />
     <Compile Include="Collections\KeyValue\NullTreeScanner256.cs" />
+    <Compile Include="Collections\KeyValue\TreeIndexer128.cs" />
+    <Compile Include="Collections\KeyValue\TreeIndexer128_Cache.cs" />
     <Compile Include="Collections\KeyValue\UnionScanner256.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_TreeScanner.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase_NodeHeader.cs" />
