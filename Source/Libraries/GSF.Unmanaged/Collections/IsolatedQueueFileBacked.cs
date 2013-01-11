@@ -97,6 +97,7 @@ namespace openHistorian.Collections
         bool m_disposing;
         bool m_disposed;
         bool m_isFileMode;
+        bool m_currentlyWritingFile;
         int m_elementsPerNode;
         object m_syncRoot;
 
@@ -114,14 +115,15 @@ namespace openHistorian.Collections
         /// Creates a new <see cref="IsolatedQueueFileBacked{T}"/>. 
         /// </summary>
         /// <param name="path">The disk path to use to save the state of this queue to. 
-        /// It is critical that this path is unique to the instance of this class.</param>
+        /// It is critical that this path and file prefix is unique to the instance of this class.</param>
+        /// <param name="filePrefix">The prefix string to add to the beginning of every file in this directory.</param>
         /// <param name="maxInMemorySize">The maximum desired in-memory size before switching to a file storage method.</param>
         /// <param name="individualFileSize">The desired size of each file.</param>
         /// <remarks>The total memory used by this class will be approximately the sum of <see cref="maxInMemorySize"/> and
         /// <see cref="individualFileSize"/> while operating in file mode.</remarks>
-        public IsolatedQueueFileBacked(string path, int maxInMemorySize, int individualFileSize)
+        public IsolatedQueueFileBacked(string path, string filePrefix, int maxInMemorySize, int individualFileSize)
         {
-            m_fileIO = new FileIO(path);
+            m_fileIO = new FileIO(path, filePrefix);
             m_isFileMode = (m_fileIO.FileCount > 0);
 
             m_elementsPerNode = 1024;
@@ -166,8 +168,13 @@ namespace openHistorian.Collections
 
                     m_isFileMode = true;
                     nodesToWrite = m_inboundQueue.Dequeue(m_nodesPerFile);
+                    m_currentlyWritingFile = true;
                 }
                 m_fileIO.DumpToDisk(nodesToWrite);
+                lock (m_syncRoot)
+                {
+                    m_currentlyWritingFile = false;
+                }
             }
 
         }
@@ -181,26 +188,31 @@ namespace openHistorian.Collections
             return m_inboundQueue.Count > m_maxNodeCount;
         }
 
-
         void OnWorkerFlushToFileCleanupWork(object sender, EventArgs e)
         {
-            //lock (m_syncRoot)
-            //{
-            //    //Check for a premature call
-            //    if (m_inboundQueue.Count * (long)m_elementsPerNode < m_maxCount)
-            //    {
-            //        return;
-            //    }
-            //    if (!m_isFileMode)
-            //    {
-            //        m_isFileMode = true;
-            //    }
-            //    while (m_inboundQueue.Count * (long)m_elementsPerNode > m_itemsPerFile)
-            //    {
-            //        int itemsToKeep = Math.Max(1, m_inboundQueue.Count - m_itemsPerFile / m_elementsPerNode);
-            //        m_fileIO.DumpToDisk(m_inboundQueue, itemsToKeep);
-            //    }
-            //}
+            while (m_inboundQueue.Count >= m_nodesPerFile)
+            {
+                IsolatedNode<T>[] nodesToWrite = m_inboundQueue.Dequeue(m_nodesPerFile);
+                m_fileIO.DumpToDisk(nodesToWrite);
+            }
+            if (m_inboundQueue.Count > 0)
+            {
+                IsolatedNode<T>[] nodesToWrite = m_inboundQueue.Dequeue(m_inboundQueue.Count);
+                m_fileIO.DumpToDisk(nodesToWrite);
+            }
+
+            if (m_currentTail != null && m_currentTail.Count > 0)
+            {
+                m_outboundQueue.AddToTail(m_currentTail);
+            }
+            if (m_outboundQueue.Count > 0)
+            {
+                IsolatedNode<T>[] nodesToWrite = m_outboundQueue.Dequeue(m_outboundQueue.Count);
+                m_fileIO.DumpToDisk(nodesToWrite, false);
+            }
+
+
+
         }
 
         /// <summary>
@@ -264,6 +276,12 @@ namespace openHistorian.Collections
                             {
                                 if (m_fileIO.FileCount == 0)
                                 {
+                                    if (m_currentlyWritingFile)
+                                    {
+                                        m_currentTail = null;
+                                        item = default(T);
+                                        return false;
+                                    }
                                     m_isFileMode = false;
                                 }
                                 else

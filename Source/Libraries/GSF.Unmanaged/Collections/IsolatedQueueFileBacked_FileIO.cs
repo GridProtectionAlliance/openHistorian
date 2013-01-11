@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using GSF.Text;
 
 namespace openHistorian.Collections
 {
@@ -36,6 +37,7 @@ namespace openHistorian.Collections
         /// </summary>
         internal class FileIO
         {
+            string m_filePrefix;
             object m_syncRoot;
             Queue<string> m_allFiles;
             long m_sizeOfAllFiles;
@@ -43,14 +45,22 @@ namespace openHistorian.Collections
             const string Extension = ".dat";
             const string WorkingExtension = ".working";
 
-            public FileIO(string pathName)
+            public FileIO(string pathName, string filePrefix)
             {
+                m_filePrefix = filePrefix;
                 m_syncRoot = new object();
                 m_allFiles = new Queue<string>();
                 m_path = pathName;
 
-                var files = Directory.GetFiles(pathName, "*" + Extension).ToList();
-                files.Sort();
+                Func<string, bool> whereClause = s =>
+                    {
+                        var name = Path.GetFileNameWithoutExtension(s).Substring(filePrefix.Length).Trim();
+                        long value;
+                        return long.TryParse(name, out value);
+                    };
+
+                var files = Directory.GetFiles(pathName, filePrefix + " *" + Extension).Where(whereClause).ToList();
+                files.Sort(new NaturalComparer());
                 files.ForEach(x => m_sizeOfAllFiles += new FileInfo(x).Length);
                 files.ForEach(x => m_allFiles.Enqueue(x));
             }
@@ -59,19 +69,24 @@ namespace openHistorian.Collections
             /// Creates a new archive file from the data in the queue.
             /// </summary>
             /// <param name="queue">The nodes to dump.</param>
-            public void DumpToDisk(IEnumerable<IsolatedNode<T>> queue)
+            /// <param name="appendToEnd">true to write the file as the next sequential file number,
+            /// false to force the number to be before all other numbers 
+            /// and thus be imported first next time it restarts</param>
+            public void DumpToDisk(IEnumerable<IsolatedNode<T>> queue, bool appendToEnd = true)
             {
                 string file, fileTemp;
-                GetFiles(out file, out fileTemp);
+                long fileSize;
+                GetFiles(out file, out fileTemp, appendToEnd);
                 using (var fs = new FileStream(fileTemp, FileMode.CreateNew, FileAccess.Write))
                 {
                     DumpToDisk(fs, queue);
+                    fileSize = fs.Length;
                 }
                 File.Move(fileTemp, file);
                 lock (m_syncRoot)
                 {
                     m_allFiles.Enqueue(file);
-                    m_sizeOfAllFiles += new FileInfo(file).Length;
+                    m_sizeOfAllFiles += fileSize;
                 }
             }
 
@@ -85,11 +100,15 @@ namespace openHistorian.Collections
 
                 foreach (var node in queue)
                 {
-                    wr.Write(node.Count);
+                    int count = node.Count;
+                    wr.Write(count);
                     while (node.TryDequeue(out item))
                     {
+                        count--;
                         item.Save(wr);
                     }
+                    if (count != 0)
+                        throw new Exception("The node was modified while being serialized.");
                 }
                 wr.Write(-1);
             }
@@ -176,10 +195,34 @@ namespace openHistorian.Collections
                 }
             }
 
-            void GetFiles(out string file, out string workingFile)
+            void GetFiles(out string file, out string workingFile, bool appendToEnd)
             {
+                long delta = 0;
             TryAgain:
-                string fileName = DateTime.UtcNow.Ticks.ToString();
+                delta++;
+                long currentTime = DateTime.UtcNow.Ticks;
+
+                if (m_allFiles.Count > 0)
+                {
+                    if (appendToEnd)
+                    {
+                        string name = Path.GetFileNameWithoutExtension(m_allFiles.Last());
+                        name = name.Substring(m_filePrefix.Length).Trim();
+                        long value = long.Parse(name);
+                        if (value > currentTime)
+                            currentTime = value + delta;
+                    }
+                    else
+                    {
+                        string name = Path.GetFileNameWithoutExtension(m_allFiles.First());
+                        name = name.Substring(m_filePrefix.Length).Trim();
+                        long value = long.Parse(name);
+                        currentTime = value - delta;
+                    }
+                }
+
+                string fileName = m_filePrefix + " " + currentTime.ToString();
+
                 file = Path.Combine(m_path, fileName + Extension);
                 workingFile = Path.Combine(m_path, fileName + WorkingExtension);
 

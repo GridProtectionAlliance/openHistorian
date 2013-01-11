@@ -77,16 +77,20 @@ namespace openHistorian.Collections
         public void Test()
         {
             const string Path = @"C:\Temp\Buffer\";
+            const string Prefix = @"Data";
             const int cnt = 1000000;
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var collection = new IsolatedQueueFileBacked<TestType>(Path, 3 * 1024 * 1024, 1024 * 1024))
+            using (var collection = new IsolatedQueueFileBacked<TestType>(Path, Prefix, 3 * 1024 * 1024, 1024 * 1024))
             {
                 for (int x = 0; x < cnt; x++)
                 {
                     collection.Enqueue(new TestType((byte)(x % 251)));
                 }
+                TestType T;
+
+                collection.TryDequeue(out T);
             }
             sw.Stop();
             Console.WriteLine(sw.Elapsed.TotalSeconds);
@@ -96,9 +100,10 @@ namespace openHistorian.Collections
         public void TestDequeue()
         {
             const string Path = @"C:\Temp\Buffer\";
+            const string Prefix = @"Data";
             int cnt = 0;
 
-            var collection = new IsolatedQueueFileBacked<TestType>(Path, 1 * 1024 * 1024, 1024 * 1024);
+            var collection = new IsolatedQueueFileBacked<TestType>(Path, Prefix, 1 * 1024 * 1024, 1024 * 1024);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
