@@ -37,7 +37,8 @@ namespace openHistorian.Archive
         #region [ Members ]
 
         SubFileStream m_subStream;
-        BinaryStream m_binaryStream;
+        BinaryStream m_binaryStream1;
+        BinaryStream m_binaryStream2;
         SortedTree256Base m_tree;
         bool m_disposed;
 
@@ -48,8 +49,10 @@ namespace openHistorian.Archive
         public SortedTreeContainerEdit(TransactionalEdit currentTransaction, Guid fileNumber, int flags)
         {
             m_subStream = currentTransaction.OpenFile(fileNumber, flags);
-            m_binaryStream = new BinaryStream(m_subStream);
-            m_tree = SortedTree256Initializer.Open(m_binaryStream);
+            m_binaryStream1 = new BinaryStream(m_subStream);
+            m_binaryStream2 = new BinaryStream(m_subStream);
+            m_tree = SortedTree256Initializer.Open(m_binaryStream1, m_binaryStream2);
+            m_tree.SkipIntermediateSaves = true;
         }
 
         #endregion
@@ -102,7 +105,7 @@ namespace openHistorian.Archive
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            return m_tree.GetDataRange();
+            return m_tree.GetTreeScanner();
         }
 
         public void Dispose()
@@ -116,10 +119,15 @@ namespace openHistorian.Archive
                         m_tree.Save();
                         m_tree = null;
                     }
-                    if (m_binaryStream != null)
+                    if (m_binaryStream1 != null)
                     {
-                        m_binaryStream.Dispose();
-                        m_binaryStream = null;
+                        m_binaryStream1.Dispose();
+                        m_binaryStream1 = null;
+                    }
+                    if (m_binaryStream2 != null)
+                    {
+                        m_binaryStream2.Dispose();
+                        m_binaryStream2 = null;
                     }
                     if (m_subStream != null)
                     {

@@ -45,7 +45,28 @@ namespace openHistorian.Collections.KeyValue
         /// </summary>
         /// <param name="stream">The stream to load from</param>
         public SortedTree256TSEncoded(BinaryStreamBase stream)
-            : base(stream)
+            : base(stream, stream)
+        {
+        }
+
+        /// <summary>
+        /// Loads an existing <see cref="SortedTree256"/>
+        /// from the provided stream.
+        /// </summary>
+        /// <param name="stream">The stream to load from</param>
+        public SortedTree256TSEncoded(BinaryStreamBase stream1, BinaryStreamBase stream2)
+            : base(stream1, stream2)
+        {
+        }
+
+        /// <summary>
+        /// Creates an empty <see cref="SortedTree256"/> 
+        /// and writes the data to the provided stream. 
+        /// </summary>
+        /// <param name="stream">The stream to use to store the tree.</param>
+        /// <param name="blockSize">The size in bytes of a single block.</param>
+        public SortedTree256TSEncoded(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
+            : base(stream1, stream2, blockSize)
         {
         }
 
@@ -56,7 +77,7 @@ namespace openHistorian.Collections.KeyValue
         /// <param name="stream">The stream to use to store the tree.</param>
         /// <param name="blockSize">The size in bytes of a single block.</param>
         public SortedTree256TSEncoded(BinaryStreamBase stream, int blockSize)
-            : base(stream, blockSize)
+            : base(stream, stream, blockSize)
         {
         }
 

@@ -143,7 +143,7 @@ namespace openHistorian.Collections.KeyValue
             Stopwatch sw = new Stopwatch();
             sw.Start();
             ulong v1, v2, v3, v4;
-            var scan = tree.GetDataRange();
+            var scan = tree.GetTreeScanner();
             scan.SeekToKey(0, 0);
             while(scan.GetNextKey(out v1, out v2, out v3, out v4))
                 ;

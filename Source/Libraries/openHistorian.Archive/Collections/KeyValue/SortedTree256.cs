@@ -45,7 +45,7 @@ namespace openHistorian.Collections.KeyValue
         /// </summary>
         /// <param name="stream">The stream to load from</param>
         public SortedTree256(BinaryStreamBase stream)
-            : base(stream)
+            : base(stream, stream)
         {
         }
 
@@ -56,7 +56,7 @@ namespace openHistorian.Collections.KeyValue
         /// <param name="stream">The stream to use to store the tree.</param>
         /// <param name="blockSize">The size in bytes of a single block.</param>
         public SortedTree256(BinaryStreamBase stream, int blockSize)
-            : base(stream, blockSize)
+            : base(stream, stream, blockSize)
         {
         }
 

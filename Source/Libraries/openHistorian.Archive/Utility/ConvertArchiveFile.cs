@@ -56,7 +56,7 @@ namespace openHistorian.Utility
                 using (ArchiveFile file1 = ArchiveFile.CreateFile(newFileName, compressionMethod))
                 using (var edit1 = file1.BeginEdit())
                 {
-                    var scan0 = tree0.GetDataRange();
+                    var scan0 = tree0.GetTreeScanner();
                     scan0.SeekToKey(0, 0);
                     ulong key1, key2, value1, value2;
                     while (scan0.GetNextKey(out key1, out key2, out value1, out value2))

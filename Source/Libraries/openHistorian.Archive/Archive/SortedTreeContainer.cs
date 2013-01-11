@@ -85,7 +85,7 @@ namespace openHistorian.Archive
 
         public ITreeScanner256 GetDataRange()
         {
-            return m_tree.GetDataRange();
+            return m_tree.GetTreeScanner();
         }
 
         public void Dispose()

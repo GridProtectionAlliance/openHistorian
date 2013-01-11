@@ -38,14 +38,14 @@ namespace openHistorian.Collections.KeyValue
 
         #region [ Constructors ]
 
-        protected SortedTree256InternalNodeBase(BinaryStreamBase stream)
-            : base(stream)
+        protected SortedTree256InternalNodeBase(BinaryStreamBase stream1, BinaryStreamBase stream2)
+            : base(stream1, stream2)
         {
             Initialize();
         }
 
-        protected SortedTree256InternalNodeBase(BinaryStreamBase stream, int blockSize)
-            : base(stream, blockSize)
+        protected SortedTree256InternalNodeBase(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
+            : base(stream1, stream2, blockSize)
         {
             Initialize();
         }
@@ -107,7 +107,6 @@ namespace openHistorian.Collections.KeyValue
         {
             int offset;
             var header = new NodeHeader(Stream, BlockSize, nodeIndex, nodeLevel);
-
             if (FindOffsetOfKey(nodeIndex, header.NodeRecordCount, key1, key2, out offset))
             {
                 //An exact match was found, return the value that is currently being pointed to.
@@ -118,22 +117,9 @@ namespace openHistorian.Collections.KeyValue
             {
                 Stream.Position = nodeIndex * BlockSize + (offset - sizeof(long));
                 return Stream.ReadInt64();
-                //An exact match was not found. Determine if before or after.
-
-                //Check if offset is the first entry.
-                if (offset == NodeHeader.Size + sizeof(long))
-                {
-                    Stream.Position = nodeIndex * BlockSize + (offset - sizeof(long));
-                    return Stream.ReadInt64();
-                }
-                else
-                {
-                    Stream.Position = nodeIndex * BlockSize + offset - sizeof(long);
-                    return Stream.ReadInt64();
-                }
             }
         }
-        protected override BucketInfo InternalNodeGetNodeIndexAddressBucket(byte nodeLevel, long nodeIndex, ulong key1, ulong key2)
+        protected override NodeDetails InternalNodeGetNodeIndexAddressBucket(byte nodeLevel, long nodeIndex, ulong key1, ulong key2)
         {
             var header = new NodeHeader(Stream, BlockSize, nodeIndex, nodeLevel);
             return FindOffsetOfKey(nodeIndex, header.NodeRecordCount, key1, key2);
@@ -205,10 +191,10 @@ namespace openHistorian.Collections.KeyValue
         /// <remarks>
         /// Search method is a binary search algorithm
         /// </remarks>
-        BucketInfo FindOffsetOfKey(long nodeIndex, int nodeRecordCount, ulong key1, ulong key2)
+        NodeDetails FindOffsetOfKey(long nodeIndex, int nodeRecordCount, ulong key1, ulong key2)
         {
-            BucketInfo bucket = default(BucketInfo);
-            bucket.IsValid = true;
+            NodeDetails nodeDetails = default(NodeDetails);
+            nodeDetails.IsValid = true;
 
             long addressOfFirstKey = nodeIndex * BlockSize + NodeHeader.Size + sizeof(long);
             int searchLowerBoundsIndex = 0;
@@ -226,22 +212,22 @@ namespace openHistorian.Collections.KeyValue
                 if (compareKeysResults == 0)
                 {
                     //offset = NodeHeader.Size + sizeof(long) + StructureSize * currentTestIndex;
-                    bucket.LowerKey1 = compareKey1;
-                    bucket.LowerKey2 = compareKey2;
-                    bucket.IsLowerNull = false;
-                    bucket.NodeIndex = Stream.ReadInt64();
+                    nodeDetails.LowerKey1 = compareKey1;
+                    nodeDetails.LowerKey2 = compareKey2;
+                    nodeDetails.IsLowerNull = false;
+                    nodeDetails.NodeIndex = Stream.ReadInt64();
                     
                     if (currentTestIndex == nodeRecordCount)
                     {
-                        bucket.IsUpperNull = true;
+                        nodeDetails.IsUpperNull = true;
                     }
                     else
                     {
-                        bucket.IsUpperNull = false;
-                        bucket.UpperKey1 = Stream.ReadUInt64();
-                        bucket.UpperKey2 = Stream.ReadUInt64();
+                        nodeDetails.IsUpperNull = false;
+                        nodeDetails.UpperKey1 = Stream.ReadUInt64();
+                        nodeDetails.UpperKey2 = Stream.ReadUInt64();
                     }
-                    return bucket;
+                    return nodeDetails;
                 }
                 if (compareKeysResults > 0)
                     searchLowerBoundsIndex = currentTestIndex + 1;
@@ -252,30 +238,30 @@ namespace openHistorian.Collections.KeyValue
             if (searchLowerBoundsIndex==0)
             {
                 Stream.Position = addressOfFirstKey - sizeof (long);
-                bucket.IsLowerNull = true;
-                bucket.NodeIndex = Stream.ReadInt64();
+                nodeDetails.IsLowerNull = true;
+                nodeDetails.NodeIndex = Stream.ReadInt64();
             }
             else
             {
                 Stream.Position = addressOfFirstKey + searchLowerBoundsIndex * StructureSize - sizeof(long) - KeySize;
-                bucket.IsLowerNull = false;
-                bucket.LowerKey1 = Stream.ReadUInt64();
-                bucket.LowerKey2 = Stream.ReadUInt64();
-                bucket.NodeIndex = Stream.ReadInt64();
+                nodeDetails.IsLowerNull = false;
+                nodeDetails.LowerKey1 = Stream.ReadUInt64();
+                nodeDetails.LowerKey2 = Stream.ReadUInt64();
+                nodeDetails.NodeIndex = Stream.ReadInt64();
             }
 
             if (searchLowerBoundsIndex == nodeRecordCount)
             {
-                bucket.IsUpperNull = true;
+                nodeDetails.IsUpperNull = true;
             }
             else
             {
-                bucket.IsUpperNull = false;
-                bucket.UpperKey1 = Stream.ReadUInt64();
-                bucket.UpperKey2 = Stream.ReadUInt64();
+                nodeDetails.IsUpperNull = false;
+                nodeDetails.UpperKey1 = Stream.ReadUInt64();
+                nodeDetails.UpperKey2 = Stream.ReadUInt64();
             }
 
-            return bucket;
+            return nodeDetails;
         }
 
         /// <summary>

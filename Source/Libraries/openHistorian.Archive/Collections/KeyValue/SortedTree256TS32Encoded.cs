@@ -46,7 +46,7 @@ namespace openHistorian.Collections.KeyValue
         /// </summary>
         /// <param name="stream">The stream to load from</param>
         public SortedTree256TS32Encoded(BinaryStreamBase stream)
-            : base(stream)
+            : base(stream, stream)
         {
         }
 
@@ -57,7 +57,7 @@ namespace openHistorian.Collections.KeyValue
         /// <param name="stream">The stream to use to store the tree.</param>
         /// <param name="blockSize">The size in bytes of a single block.</param>
         public SortedTree256TS32Encoded(BinaryStreamBase stream, int blockSize)
-            : base(stream, blockSize)
+            : base(stream, stream, blockSize)
         {
         }
 
@@ -135,7 +135,7 @@ namespace openHistorian.Collections.KeyValue
 
                 delta = prevValue2 ^ value2;
                 bitCount = 64 - BitMath.CountLeadingZeros(delta);
-                
+
                 uint extraBytes = (uint)(bitCount + 7) >> 3; //adding 7 will cause a round up instead of a round down.
                 buffer[0] = (byte)(qualityBit | keyBits | 192 | ((extraBytes - 3) << 3));
                 *(ulong*)(buffer + bytePos) = delta;

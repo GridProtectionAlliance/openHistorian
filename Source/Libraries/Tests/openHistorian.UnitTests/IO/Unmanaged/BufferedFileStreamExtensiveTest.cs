@@ -147,8 +147,8 @@ namespace openHistorian.IO.Unmanaged.Test
                                 BinaryStream bs = new BinaryStream(bfs);
                                 SortedTree256 tree = new SortedTree256(bs);
 
-                                var item1 = tree.GetDataRange();
-                                var item2 = tree2.GetDataRange();
+                                var item1 = tree.GetTreeScanner();
+                                var item2 = tree2.GetTreeScanner();
 
                                 ulong x1, x2, x3, x4;
                                 ulong y1, y2, y3, y4;

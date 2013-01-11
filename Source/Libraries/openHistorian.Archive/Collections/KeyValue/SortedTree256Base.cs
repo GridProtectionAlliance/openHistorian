@@ -39,36 +39,20 @@ namespace openHistorian.Collections.KeyValue
     /// </remarks>
     public abstract class SortedTree256Base
     {
-        BucketInfo[] m_cache;
-
-        protected struct BucketInfo
-        {
-            public ulong LowerKey1;
-            public ulong LowerKey2;
-            public ulong UpperKey1;
-            public ulong UpperKey2;
-            public long NodeIndex;
-            public bool IsLowerNull;
-            public bool IsUpperNull;
-            public bool IsValid;
-            public bool Contains(ulong key1, ulong key2)
-            {
-                return IsValid &&
-                    (IsLowerNull || (CompareKeys(LowerKey1, LowerKey2, key1, key2) <= 0)) &&
-                    (IsUpperNull || (CompareKeys(key1, key2, UpperKey1, UpperKey2) < 0));
-            }
-        }
 
         #region [ Members ]
 
+        bool m_skipIntermediateSaves;
+        bool m_nodeHeaderChanged;
         byte m_rootNodeLevel;
         int m_blockSize;
         long m_rootNodeIndexAddress;
         long m_lastAllocatedBlock;
         ulong m_firstKey;
         ulong m_lastKey;
-
-        BinaryStreamBase m_stream;
+        SortedTree256Cache m_cache;
+        BinaryStreamBase m_stream1;
+        BinaryStreamBase m_stream2;
 
         #endregion
 
@@ -78,11 +62,11 @@ namespace openHistorian.Collections.KeyValue
         /// Opens an existing <see cref="SortedTree256Base"/> from the stream.
         /// </summary>
         /// <param name="stream">A dedicated stream where data can be read/written to/from.</param>
-        protected SortedTree256Base(BinaryStreamBase stream)
+        protected SortedTree256Base(BinaryStreamBase stream1, BinaryStreamBase stream2)
         {
-            m_cache = new BucketInfo[5];
-            ClearCache();
-            m_stream = stream;
+            m_cache = new SortedTree256Cache();
+            m_stream1 = stream1;
+            m_stream2 = stream2;
             LoadHeader();
         }
 
@@ -94,11 +78,11 @@ namespace openHistorian.Collections.KeyValue
         /// <param name="blockSize">the size of one block.  This should exactly match the
         /// amount of data space available in the underlying data object. BPlus trees get their 
         /// performance benefit because there is fewer I/O's required to find and insert blocks.</param>
-        protected SortedTree256Base(BinaryStreamBase stream, int blockSize)
+        protected SortedTree256Base(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
         {
-            m_cache = new BucketInfo[5];
-            ClearCache();
-            m_stream = stream;
+            m_cache = new SortedTree256Cache();
+            m_stream1 = stream1;
+            m_stream2 = stream2;
             m_blockSize = blockSize;
             m_rootNodeLevel = 0;
             m_rootNodeIndexAddress = 1;
@@ -113,6 +97,23 @@ namespace openHistorian.Collections.KeyValue
         #endregion
 
         #region [ Properties ]
+
+        /// <summary>
+        /// The sorted tree will not continuely call the Save method every time the header is changed.
+        /// When setting this to true, the user must always manually call the <see cref="Save"/> method
+        /// after making changes to this tree
+        /// </summary>
+        internal bool SkipIntermediateSaves
+        {
+            get
+            {
+                return m_skipIntermediateSaves;
+            }
+            set
+            {
+                m_skipIntermediateSaves = value;
+            }
+        }
 
         /// <summary>
         /// Determines if the tree has any data in it.
@@ -158,7 +159,18 @@ namespace openHistorian.Collections.KeyValue
         {
             get
             {
-                return m_stream;
+                return m_stream1;
+            }
+        }
+
+        /// <summary>
+        /// Contains the stream for reading and writing and optional cloning.
+        /// </summary>
+        protected BinaryStreamBase StreamLeaf
+        {
+            get
+            {
+                return m_stream2;
             }
         }
 
@@ -200,6 +212,14 @@ namespace openHistorian.Collections.KeyValue
         #region [ Public Methods ]
 
         /// <summary>
+        /// Saves any header data that may have changed.
+        /// </summary>
+        public void Save()
+        {
+            SaveHeader();
+        }
+
+        /// <summary>
         /// Adds the following data to the tree.
         /// </summary>
         /// <param name="key1">The unique key value.</param>
@@ -208,32 +228,43 @@ namespace openHistorian.Collections.KeyValue
         /// <param name="value2">The value to insert.</param>
         public void Add(ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            if (key1 < m_firstKey)
-                m_firstKey = key1;
-            if (key1 > m_lastKey)
-                m_lastKey = key1;
+            //m_cache.ClearCache();
 
+            if (key1 < m_firstKey)
+            {
+                m_firstKey = key1;
+                m_nodeHeaderChanged = true;
+            }
+            if (key1 > m_lastKey)
+            {
+                m_lastKey = key1;
+                m_nodeHeaderChanged = true;
+            }
             long nodeIndexAddress = m_rootNodeIndexAddress;
             for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
-                BucketInfo currentBucket = m_cache[nodeLevel - 1];
-                if (currentBucket.Contains(key1, key2))
+                if (!m_cache.NodeContains(nodeLevel, key1, key2, ref nodeIndexAddress))
                 {
-                    nodeIndexAddress = currentBucket.NodeIndex;
-                }
-                else
-                {
-                    Array.Clear(m_cache, 0, nodeLevel);
-                    currentBucket = InternalNodeGetNodeIndexAddressBucket(nodeLevel, nodeIndexAddress, key1, key2);
-                    nodeIndexAddress = currentBucket.NodeIndex;
-                    m_cache[nodeLevel - 1] = currentBucket;
+                    NodeDetails nodeDetails = InternalNodeGetNodeIndexAddressBucket(nodeLevel, nodeIndexAddress, key1, key2);
+                    nodeIndexAddress = nodeDetails.NodeIndex;
+                    m_cache.CacheNode(nodeLevel, nodeDetails);
                 }
             }
             if (LeafNodeInsert(nodeIndexAddress, key1, key2, value1, value2))
+            {
+                if (!m_skipIntermediateSaves && m_nodeHeaderChanged)
+                    SaveHeader();
                 return;
+            }
+
             throw new Exception("Key already exists");
         }
 
+        /// <summary>
+        /// Adds the data contained in the <see cref="treeScanner"/> to this tree.
+        /// </summary>
+        /// <param name="treeScanner"></param>
+        /// <remarks>The tree is only read in order. No seeking of the tree occurs.</remarks>
         public void Add(ITreeScanner256 treeScanner)
         {
             ulong key1, key2, value1, value2;
@@ -241,22 +272,38 @@ namespace openHistorian.Collections.KeyValue
             ulong minKey = m_firstKey;
             ulong maxKey = m_lastKey;
 
-        TryAgain:
             while (isValid)
             {
                 //Search for the proper save node
                 long nodeIndexAddress = m_rootNodeIndexAddress;
                 for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
                 {
-                    nodeIndexAddress = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndexAddress, key1, key2);
+                    if (!m_cache.NodeContains(nodeLevel, key1, key2, ref nodeIndexAddress))
+                    {
+                        NodeDetails nodeDetails = InternalNodeGetNodeIndexAddressBucket(nodeLevel, nodeIndexAddress, key1, key2);
+                        nodeIndexAddress = nodeDetails.NodeIndex;
+                        m_cache.CacheNode(nodeLevel, nodeDetails);
+                    }
                 }
 
                 if (!LeafNodeInsert(nodeIndexAddress, treeScanner, ref key1, ref key2, ref value1, ref value2, ref isValid, ref maxKey, ref minKey))
                     throw new Exception("Key already exists");
 
             }
-            if (key1 > m_lastKey)
-                m_lastKey = key1;
+
+            if (minKey < m_firstKey)
+            {
+                m_firstKey = minKey;
+                m_nodeHeaderChanged = true;
+            }
+            if (maxKey > m_lastKey)
+            {
+                m_lastKey = maxKey;
+                m_nodeHeaderChanged = true;
+            }
+
+            if (!m_skipIntermediateSaves && m_nodeHeaderChanged)
+                SaveHeader();
 
         }
 
@@ -284,7 +331,7 @@ namespace openHistorian.Collections.KeyValue
         /// Returns a <see cref="ITreeScanner256"/> that can be used to parse throught the tree.
         /// </summary>
         /// <returns></returns>
-        public ITreeScanner256 GetDataRange()
+        public ITreeScanner256 GetTreeScanner()
         {
             return LeafNodeGetScanner();
         }
@@ -302,7 +349,7 @@ namespace openHistorian.Collections.KeyValue
         #region [ Internal Node Methods ]
 
         protected abstract long InternalNodeGetNodeIndexAddress(byte nodeLevel, long nodeIndex, ulong key1, ulong key2);
-        protected abstract BucketInfo InternalNodeGetNodeIndexAddressBucket(byte nodeLevel, long nodeIndex, ulong key1, ulong key2);
+        protected abstract NodeDetails InternalNodeGetNodeIndexAddressBucket(byte nodeLevel, long nodeIndex, ulong key1, ulong key2);
         protected abstract void InternalNodeInsert(byte nodeLevel, long nodeIndex, ulong key1, ulong key2, long childNodeIndex);
         protected abstract void InternalNodeCreateNode(long newNodeIndex, byte nodeLevel, long firstNodeIndex, ulong dividingKey1, ulong dividingKey2, long secondNodeIndex);
 
@@ -330,7 +377,7 @@ namespace openHistorian.Collections.KeyValue
         protected long GetNextNewNodeIndex()
         {
             m_lastAllocatedBlock++;
-            SaveHeader();
+            m_nodeHeaderChanged = true;
             return m_lastAllocatedBlock;
         }
 
@@ -346,18 +393,28 @@ namespace openHistorian.Collections.KeyValue
         /// or create a new root if the current root is split.</remarks>
         protected void NodeWasSplit(byte nodeLevel, long nodeIndexOfSplitNode, ulong dividingKey1, ulong dividingKey2, long nodeIndexOfRightSibling)
         {
-            ClearCache();
+            //m_cache.ClearCache();
             if (m_rootNodeLevel > nodeLevel)
             {
+                m_cache.InvalidateCache(nodeLevel);
+
                 long nodeIndex = m_rootNodeIndexAddress;
                 for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
                 {
-                    nodeIndex = InternalNodeGetNodeIndexAddress(level, nodeIndex, dividingKey1, dividingKey2);
+                    if (!m_cache.NodeContains(level, dividingKey1, dividingKey2, ref nodeIndex))
+                    {
+                        NodeDetails nodeDetails = InternalNodeGetNodeIndexAddressBucket(level, nodeIndex, dividingKey1, dividingKey2);
+                        nodeIndex = nodeDetails.NodeIndex;
+                        m_cache.CacheNode(nodeLevel, nodeDetails);
+                    }
                 }
+
+                m_cache.InvalidateCache(nodeLevel + 1);
                 InternalNodeInsert((byte)(nodeLevel + 1), nodeIndex, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
             }
             else
             {
+                m_cache.ClearCache();
                 m_rootNodeLevel += 1;
                 m_rootNodeIndexAddress = GetNextNewNodeIndex();
                 InternalNodeCreateNode(m_rootNodeIndexAddress, m_rootNodeLevel, nodeIndexOfSplitNode, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
@@ -392,6 +449,8 @@ namespace openHistorian.Collections.KeyValue
         /// </summary>
         void SaveHeader()
         {
+            m_nodeHeaderChanged = false;
+
             long oldPosotion = Stream.Position;
             Stream.Position = 0;
             Stream.Write(FileType);
@@ -404,14 +463,10 @@ namespace openHistorian.Collections.KeyValue
             Stream.Write(m_lastKey);
             Stream.Position = oldPosotion;
         }
-
+        
         /// <summary>
         /// Compares one key to another key to determine which is greater
         /// </summary>
-        /// <param name="firstKey1"></param>
-        /// <param name="firstKey2"></param>
-        /// <param name="secondKey1"></param>
-        /// <param name="secondKey2"></param>
         /// <returns>1 if the first key is greater. -1 if the second key is greater. 0 if the keys are equal.</returns>
         protected static int CompareKeys(ulong firstKey1, ulong firstKey2, ulong secondKey1, ulong secondKey2)
         {
@@ -425,23 +480,47 @@ namespace openHistorian.Collections.KeyValue
         }
 
         //ToDo: Implement these shortcuts
+
+        /// <summary>
+        /// Returns true if the first key is greater than or equal to the later key
+        /// </summary>
         protected static bool IsGreaterThanOrEqualTo(ulong key1, ulong key2, ulong compareKey1, ulong compareKey2)
         {
             return (key1 > compareKey1) | ((key1 == compareKey1) & (key2 >= compareKey2));
         }
+
+        /// <summary>
+        /// Returns true if the first key is greater than the later key.
+        /// </summary>
         protected static bool IsGreaterThan(ulong key1, ulong key2, ulong compareKey1, ulong compareKey2)
         {
             return (key1 > compareKey1) | ((key1 == compareKey1) & (key2 > compareKey2));
         }
 
-        void ClearCache()
+        /// <summary>
+        /// Returns true if the first key is less than or equal to the later key
+        /// </summary>
+        protected static bool IsLessThanOrEqualTo(ulong key1, ulong key2, ulong compareKey1, ulong compareKey2)
         {
-            Array.Clear(m_cache, 0, 5);
+            return (key1 < compareKey1) | ((key1 == compareKey1) & (key2 <= compareKey2));
         }
 
-        public void Save()
+        /// <summary>
+        /// Returns true if the first key is less than the later key.
+        /// </summary>
+        protected static bool IsLessThan(ulong key1, ulong key2, ulong compareKey1, ulong compareKey2)
         {
-            SaveHeader();
+            return (key1 < compareKey1) | ((key1 == compareKey1) & (key2 < compareKey2));
+        }
+
+        protected static bool IsEqual(ulong key1, ulong key2, ulong compareKey1, ulong compareKey2)
+        {
+            return (key1 == compareKey1) & (key2 == compareKey2);
+        }
+
+        protected static bool IsNotEqual(ulong key1, ulong key2, ulong compareKey1, ulong compareKey2)
+        {
+            return (key1 != compareKey1) | (key2 != compareKey2);
         }
 
 

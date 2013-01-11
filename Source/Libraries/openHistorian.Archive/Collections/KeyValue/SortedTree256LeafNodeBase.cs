@@ -44,16 +44,16 @@ namespace openHistorian.Collections.KeyValue
 
         #region [ Constructors ]
 
-        protected SortedTree256LeafNodeBase(BinaryStreamBase stream)
-            : base(stream)
+        protected SortedTree256LeafNodeBase(BinaryStreamBase stream1, BinaryStreamBase stream2)
+            : base(stream1, stream2)
         {
             m_cachedNodeIndex = -1;
             Initialize();
         }
 
 
-        protected SortedTree256LeafNodeBase(BinaryStreamBase stream, int blockSize)
-            : base(stream, blockSize)
+        protected SortedTree256LeafNodeBase(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
+            : base(stream1, stream2, blockSize)
         {
             m_cachedNodeIndex = -1;
             Initialize();

@@ -38,7 +38,8 @@ namespace openHistorian.FileStructure
     {
         #region [ Members ]
 
-        IoSession m_ioStream;
+        IoSession m_ioStream1;
+        IoSession m_ioStream2;
 
         /// <summary>
         /// Determines if the file stream has been disposed.
@@ -124,10 +125,15 @@ namespace openHistorian.FileStructure
             {
                 try
                 {
-                    if (m_ioStream != null)
+                    if (m_ioStream1 != null)
                     {
-                        m_ioStream.Dispose();
-                        m_ioStream = null;
+                        m_ioStream1.Dispose();
+                        m_ioStream1 = null;
+                    }
+                    if (m_ioStream2 != null)
+                    {
+                        m_ioStream2.Dispose();
+                        m_ioStream2 = null;
                     }
                 }
                 finally
@@ -145,9 +151,12 @@ namespace openHistorian.FileStructure
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                if (m_ioStream == null || m_ioStream.IsDisposed)
-                    return 1;
-                return 0;
+                int count = 0;
+                if (m_ioStream1 == null || m_ioStream1.IsDisposed)
+                    count++;
+                if (m_ioStream2 == null || m_ioStream2.IsDisposed)
+                    count++;
+                return count;
             }
         }
 
@@ -165,8 +174,17 @@ namespace openHistorian.FileStructure
                 throw new ObjectDisposedException(GetType().FullName);
             if (RemainingSupportedIoSessions == 0)
                 throw new Exception("There are not any remaining IO Sessions");
-            m_ioStream = new IoSession(m_blockSize, this);
-            return m_ioStream;
+            
+            var session = new IoSession(m_blockSize, this);
+            if (m_ioStream1 == null || m_ioStream1.IsDisposed)
+            {
+                m_ioStream1 = session;
+            }
+            else
+            {
+                m_ioStream2 = session;
+            }
+            return session;
         }
 
         public BinaryStreamBase CreateBinaryStream()

@@ -61,5 +61,20 @@ namespace openHistorian.Collections.KeyValue
             throw new ArgumentOutOfRangeException("method");
         }
 
+        public static SortedTree256Base Open(BinaryStreamBase stream1, BinaryStreamBase stream2)
+        {
+            stream1.Position = 0;
+            Guid type = stream1.ReadGuid();
+            if (type == SortedTree256.GetFileType())
+                return new SortedTree256(stream1);
+            if (type == SortedTree256DeltaEncoded.GetFileType())
+                return new SortedTree256DeltaEncoded(stream1);
+            if (type == SortedTree256TSEncoded.GetFileType())
+                return new SortedTree256TSEncoded(stream1);
+            if (type == SortedTree256TS32Encoded.GetFileType())
+                return new SortedTree256TS32Encoded(stream1);
+            throw new ArgumentOutOfRangeException("method");
+        }
+
     }
 }

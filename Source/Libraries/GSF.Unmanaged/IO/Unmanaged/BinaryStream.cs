@@ -103,6 +103,7 @@ namespace openHistorian.IO.Unmanaged
         public BinaryStream(ISupportsBinaryStream stream, bool leaveOpen = true)
             : base()
         {
+            m_leaveOpen = leaveOpen;
             m_temp = new byte[16];
             m_stream = stream;
             m_firstPosition = 0;
@@ -113,8 +114,8 @@ namespace openHistorian.IO.Unmanaged
             if (stream.RemainingSupportedIoSessions < 1)
                 throw new Exception("Stream has run out of read sessions");
             m_mainIoSession = stream.GetNextIoSession();
-            if (stream.RemainingSupportedIoSessions >= 1)
-                m_secondaryIoSession = stream.GetNextIoSession();
+            //if (stream.RemainingSupportedIoSessions >= 1)
+            //    m_secondaryIoSession = stream.GetNextIoSession();
         }
 
         #endregion
@@ -139,7 +140,7 @@ namespace openHistorian.IO.Unmanaged
         {
             get
             {
-                return m_stream.RemainingSupportedIoSessions > 0;
+                return m_stream.RemainingSupportedIoSessions > 0 || m_secondaryIoSession != null;
             }
         }
 
@@ -223,6 +224,7 @@ namespace openHistorian.IO.Unmanaged
         {
             if (!SupportsAnotherClone)
                 throw new Exception("Base stream does not support additional clones");
+            
             return new BinaryStream(m_stream, false);
         }
 
@@ -412,7 +414,7 @@ namespace openHistorian.IO.Unmanaged
             }
             base.Write(value);
         }
-       
+
         public override void Write(int value)
         {
             const int size = sizeof(int);
@@ -425,7 +427,7 @@ namespace openHistorian.IO.Unmanaged
             }
             base.Write(value);
         }
-        
+
         public override void Write(float value)
         {
             const int size = sizeof(float);
@@ -438,7 +440,7 @@ namespace openHistorian.IO.Unmanaged
             }
             base.Write(value);
         }
-        
+
         public override void Write(long value)
         {
             const int size = sizeof(long);
@@ -451,7 +453,7 @@ namespace openHistorian.IO.Unmanaged
             }
             base.Write(value);
         }
-        
+
         public override void Write(double value)
         {
             const int size = sizeof(double);
@@ -464,7 +466,7 @@ namespace openHistorian.IO.Unmanaged
             }
             base.Write(value);
         }
-        
+
         public override void Write(decimal value)
         {
             const int size = sizeof(decimal);
@@ -477,7 +479,7 @@ namespace openHistorian.IO.Unmanaged
             }
             base.Write(value);
         }
-        
+
         public override void Write(Guid value)
         {
             const int size = 16;
@@ -490,7 +492,7 @@ namespace openHistorian.IO.Unmanaged
             }
             base.Write(value);
         }
-       
+
         public override void Write7Bit(uint value)
         {
             const int size = 5;
@@ -531,7 +533,7 @@ namespace openHistorian.IO.Unmanaged
             }
             base.Write7Bit(value);
         }
-       
+
         public override void Write7Bit(ulong value)
         {
             const int size = 9;
@@ -600,7 +602,7 @@ namespace openHistorian.IO.Unmanaged
             }
             base.Write7Bit(value);
         }
-        
+
         public override void Write(byte[] value, int offset, int count)
         {
             if (m_current + count <= m_lastWrite)
@@ -690,7 +692,7 @@ namespace openHistorian.IO.Unmanaged
         #endregion
 
         #region Core Types
-      
+
         public override byte ReadByte()
         {
             const int size = sizeof(byte);
@@ -702,7 +704,7 @@ namespace openHistorian.IO.Unmanaged
             }
             return base.ReadByte();
         }
-       
+
         public override short ReadInt16()
         {
             const int size = sizeof(short);
@@ -714,7 +716,7 @@ namespace openHistorian.IO.Unmanaged
             }
             return base.ReadInt16();
         }
-        
+
         public override int ReadInt32()
         {
             const int size = sizeof(int);
@@ -726,7 +728,7 @@ namespace openHistorian.IO.Unmanaged
             }
             return base.ReadInt32();
         }
-      
+
         public override float ReadSingle()
         {
             const int size = sizeof(float);
@@ -738,7 +740,7 @@ namespace openHistorian.IO.Unmanaged
             }
             return base.ReadSingle();
         }
-        
+
         public override long ReadInt64()
         {
             const int size = sizeof(long);
@@ -750,7 +752,7 @@ namespace openHistorian.IO.Unmanaged
             }
             return base.ReadInt64();
         }
-        
+
         public override double ReadDouble()
         {
             const int size = sizeof(double);
@@ -762,7 +764,7 @@ namespace openHistorian.IO.Unmanaged
             }
             return base.ReadDouble();
         }
-        
+
         public override decimal ReadDecimal()
         {
             const int size = sizeof(decimal);
@@ -774,7 +776,7 @@ namespace openHistorian.IO.Unmanaged
             }
             return base.ReadDecimal();
         }
-      
+
         public override Guid ReadGuid()
         {
             const int size = 16;
@@ -824,7 +826,7 @@ namespace openHistorian.IO.Unmanaged
             }
             return base.Read7BitUInt32();
         }
-        
+
         public override ulong Read7BitUInt64()
         {
             const int size = 9;
@@ -886,7 +888,7 @@ namespace openHistorian.IO.Unmanaged
             }
             return base.Read7BitUInt64();
         }
-      
+
         public override int Read(byte[] value, int offset, int count)
         {
             if (RemainingReadLength >= count)

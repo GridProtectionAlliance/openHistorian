@@ -36,7 +36,7 @@ namespace openHistorian.Collections.KeyValue
 
             tree0 = SortPoints(tree0);
 
-            var scan0 = tree0.GetDataRange();
+            var scan0 = tree0.GetTreeScanner();
             scan0.SeekToKey(0, 0);
             ulong key1, key2, value1, value2;
             while (scan0.GetNextKey(out key1, out key2, out value1, out value2))
@@ -70,7 +70,7 @@ namespace openHistorian.Collections.KeyValue
         internal static SortedTree256 SortPoints(SortedTree256 tree)
         {
             ulong maxPointId = 0;
-            var scan = tree.GetDataRange();
+            var scan = tree.GetTreeScanner();
             ulong key1, key2, value1, value2;
             scan.SeekToKey(0, 0);
             while (scan.GetNextKey(out key1, out key2, out value1, out value2))

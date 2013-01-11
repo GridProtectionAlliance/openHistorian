@@ -29,14 +29,14 @@ namespace openHistorian.UnitTests.Archive
 
 
 
-            string fileName = @"c:\temp\testFile.d2";
-            TestFile(1024, fileName);
-            TestFile(2048, fileName);
-            TestFile(4096, fileName);
-            TestFile(4096 << 1, fileName);
-            TestFile(4096 << 2, fileName);
-            TestFile(4096 << 3, fileName);
-            TestFile(4096 << 4, fileName);
+            //string fileName = @"c:\temp\testFile.d2";
+            //TestFile(1024, fileName);
+            //TestFile(2048, fileName);
+            //TestFile(4096, fileName);
+            //TestFile(4096 << 1, fileName);
+            //TestFile(4096 << 2, fileName);
+            //TestFile(4096 << 3, fileName);
+            //TestFile(4096 << 4, fileName);
         }
 
         void Test(int pageSize)
@@ -48,7 +48,7 @@ namespace openHistorian.UnitTests.Archive
 
             var sw = new Stopwatch();
             sw.Start();
-            using (var af = ArchiveFile.CreateInMemory(CompressionMethod.TimeSeriesEncoded2, pageSize))
+            using (var af = ArchiveFile.CreateInMemory(CompressionMethod.TimeSeriesEncoded, pageSize))
             using (var edit = af.BeginEdit())
             {
                 for (uint x = 0; x < 1000000; x++)

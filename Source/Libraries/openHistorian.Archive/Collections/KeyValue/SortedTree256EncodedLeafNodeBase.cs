@@ -23,6 +23,7 @@
 
 using System;
 using openHistorian.IO;
+using openHistorian.IO.Unmanaged;
 
 namespace openHistorian.Collections.KeyValue
 {
@@ -36,15 +37,15 @@ namespace openHistorian.Collections.KeyValue
 
         #region [ Constructors ]
 
-        protected SortedTree256EncodedLeafNodeBase(BinaryStreamBase stream)
-            : base(stream)
+        protected SortedTree256EncodedLeafNodeBase(BinaryStreamBase stream1, BinaryStreamBase stream2)
+            : base(stream1,stream2)
         {
             m_cachedNodeIndex = -1;
         }
 
 
-        protected SortedTree256EncodedLeafNodeBase(BinaryStreamBase stream, int blockSize)
-            : base(stream, blockSize)
+        protected SortedTree256EncodedLeafNodeBase(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
+            : base(stream1,stream2, blockSize)
         {
             m_cachedNodeIndex = -1;
         }
@@ -65,8 +66,8 @@ namespace openHistorian.Collections.KeyValue
 
         protected override void LeafNodeCreateEmptyNode(long newNodeIndex)
         {
-            Stream.Position = BlockSize * newNodeIndex;
-            NodeHeader.Save(Stream, NodeHeader.Size, 0, 0);
+            StreamLeaf.Position = BlockSize * newNodeIndex;
+            NodeHeader.Save(StreamLeaf, NodeHeader.Size, 0, 0);
         }
 
         protected override unsafe bool LeafNodeInsert(long nodeIndex, ITreeScanner256 treeScanner, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid, ref ulong maxKey, ref ulong minKey)
@@ -78,13 +79,13 @@ namespace openHistorian.Collections.KeyValue
 
             byte* buffer = stackalloc byte[64];
             byte* buffer2 = stackalloc byte[64];
-            var header = new NodeHeader(Stream, BlockSize, nodeIndex);
+            var header = new NodeHeader(StreamLeaf, BlockSize, nodeIndex);
             long firstPosition = nodeIndex * BlockSize + NodeHeader.Size;
             long endOfStreamPosition = nodeIndex * BlockSize + header.ValidBytes;
             int bytesRemaining = BlockSize - header.ValidBytes;
             long curPosition = firstPosition;
             long prevPosition = firstPosition;
-            Stream.Position = firstPosition;
+            StreamLeaf.Position = firstPosition;
 
             //Find the best location to insert
             //This is done before checking if a split is required to prevent splitting 
@@ -131,7 +132,7 @@ namespace openHistorian.Collections.KeyValue
                     prevValue2 = curValue2;
 
                     DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
-                    curPosition = Stream.Position;
+                    curPosition = StreamLeaf.Position;
 
                     int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
                     if (compareKeysResults == 0) //if keys match, result is found.
@@ -144,7 +145,7 @@ namespace openHistorian.Collections.KeyValue
                         insertAfter = false;
                         break;
                     }
-                    prevPosition = Stream.Position;
+                    prevPosition = StreamLeaf.Position;
                 }
             }
 
@@ -163,7 +164,7 @@ namespace openHistorian.Collections.KeyValue
                         if (bytesRemaining < shiftDelta2)
                         {
                             if (headerChanged)
-                                header.Save(Stream, BlockSize, nodeIndex);
+                                header.Save(StreamLeaf, BlockSize, nodeIndex);
 
                             NewNodeThenInsert(key1, key2, value1, value2, nodeIndex);
                             isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
@@ -171,38 +172,32 @@ namespace openHistorian.Collections.KeyValue
                         }
                         bytesRemaining -= shiftDelta2;
                         headerChanged = true;
-                        m_cachedNodeIndex = nodeIndex;
-                        m_lastKey1 = key1;
-                        m_lastKey2 = key2;
-                        m_lastValue1 = value1;
-                        m_lastValue2 = value2;
 
-                       
-                        
-
-                        Stream.Position = prevPosition;
+                        StreamLeaf.Position = prevPosition;
                         WriteToStream(buffer, shiftDelta2);
                         header.ValidBytes += shiftDelta2;
 
-                        curKey1 = m_lastKey1;
-                        curKey2 = m_lastKey2;
-                        curValue1 = m_lastValue1;
-                        curValue2 = m_lastValue2;
-                        endOfStreamPosition = nodeIndex * BlockSize + header.ValidBytes;
-                        prevPosition = endOfStreamPosition;
-                        curPosition = endOfStreamPosition;
+                        curKey1 = key1;
+                        curKey2 = key2;
+                        curValue1 = value1;
+                        curValue2 = value2;
+                        prevPosition += shiftDelta2; 
                         
                         isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
-                        if (!isValid && CompareKeys(key1, key2, curKey1, curKey2) <= 0)
+                        if (!isValid && IsLessThanOrEqualTo(key1, key2, curKey1, curKey2))
                             break;
-                        
-                        if (key1 < minKey)
-                            minKey = key1;
-                        if (key1 > maxKey)
-                            maxKey = key1;
+
+                        minKey = Math.Min(key1, minKey);
+                        maxKey = Math.Max(key1, maxKey);
                     }
 
-                    header.Save(Stream, BlockSize, nodeIndex);
+                    m_cachedNodeIndex = nodeIndex;
+                    m_lastKey1 = key1;
+                    m_lastKey2 = key2;
+                    m_lastValue1 = value1;
+                    m_lastValue2 = value2;
+
+                    header.Save(StreamLeaf, BlockSize, nodeIndex);
                     return true;
                 }
                 //
@@ -225,20 +220,18 @@ namespace openHistorian.Collections.KeyValue
                         return true;
                     }
                 }
-
-
-
+                
                 m_cachedNodeIndex = nodeIndex;
                 m_lastKey1 = key1;
                 m_lastKey2 = key2;
                 m_lastValue1 = value1;
                 m_lastValue2 = value2;
 
-                Stream.Position = prevPosition;
+                StreamLeaf.Position = prevPosition;
                 WriteToStream(buffer, shiftDelta);
 
                 header.ValidBytes += shiftDelta;
-                header.Save(Stream, BlockSize, nodeIndex);
+                header.Save(StreamLeaf, BlockSize, nodeIndex);
                 isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
                 return true;
             }
@@ -263,24 +256,24 @@ namespace openHistorian.Collections.KeyValue
                         return true;
                     }
 
-                    Stream.Position = firstPosition;
+                    StreamLeaf.Position = firstPosition;
                     if (shiftDelta < 0)
-                        Stream.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                        StreamLeaf.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
                     else
-                        Stream.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                        StreamLeaf.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
 
                     WriteToStream(buffer, shiftDelta1);
                     WriteToStream(buffer2, shiftDelta2);
 
                     header.ValidBytes += shiftDelta;
-                    header.Save(Stream, BlockSize, nodeIndex);
+                    header.Save(StreamLeaf, BlockSize, nodeIndex);
                     isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
                     return true;
                 }
                 else
                 {
                     //if the insert is in the middle of the the stream
-                    Stream.Position = curPosition;
+                    StreamLeaf.Position = curPosition;
 
                     int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, prevKey1, prevKey2, prevValue1, prevValue2);
 
@@ -297,17 +290,17 @@ namespace openHistorian.Collections.KeyValue
                         return true;
                     }
 
-                    Stream.Position = prevPosition;
+                    StreamLeaf.Position = prevPosition;
                     if (shiftDelta < 0)
-                        Stream.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                        StreamLeaf.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
                     else
-                        Stream.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                        StreamLeaf.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
 
                     WriteToStream(buffer, shiftDelta1);
                     WriteToStream(buffer2, shiftDelta2);
 
                     header.ValidBytes += shiftDelta;
-                    header.Save(Stream, BlockSize, nodeIndex);
+                    header.Save(StreamLeaf, BlockSize, nodeIndex);
                     isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
                     return true;
                 }
@@ -319,13 +312,13 @@ namespace openHistorian.Collections.KeyValue
         {
             byte* buffer = stackalloc byte[64];
             byte* buffer2 = stackalloc byte[64];
-            var header = new NodeHeader(Stream, BlockSize, nodeIndex);
+            var header = new NodeHeader(StreamLeaf, BlockSize, nodeIndex);
             long firstPosition = nodeIndex * BlockSize + NodeHeader.Size;
             long endOfStreamPosition = nodeIndex * BlockSize + header.ValidBytes;
             int bytesRemaining = BlockSize - header.ValidBytes;
             long curPosition = firstPosition;
             long prevPosition = firstPosition;
-            Stream.Position = firstPosition;
+            StreamLeaf.Position = firstPosition;
 
             //Find the best location to insert
             //This is done before checking if a split is required to prevent splitting 
@@ -371,7 +364,7 @@ namespace openHistorian.Collections.KeyValue
                     prevValue2 = curValue2;
 
                     DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
-                    curPosition = Stream.Position;
+                    curPosition = StreamLeaf.Position;
 
                     int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
                     if (compareKeysResults == 0) //if keys match, result is found.
@@ -383,7 +376,7 @@ namespace openHistorian.Collections.KeyValue
                         insertAfter = false;
                         break;
                     }
-                    prevPosition = Stream.Position;
+                    prevPosition = StreamLeaf.Position;
                 }
             }
 
@@ -411,11 +404,11 @@ namespace openHistorian.Collections.KeyValue
                 m_lastValue1 = value1;
                 m_lastValue2 = value2;
 
-                Stream.Position = prevPosition;
+                StreamLeaf.Position = prevPosition;
                 WriteToStream(buffer, shiftDelta);
 
                 header.ValidBytes += shiftDelta;
-                header.Save(Stream, BlockSize, nodeIndex);
+                header.Save(StreamLeaf, BlockSize, nodeIndex);
                 return true;
             }
             else
@@ -438,23 +431,23 @@ namespace openHistorian.Collections.KeyValue
                         return true;
                     }
 
-                    Stream.Position = firstPosition;
+                    StreamLeaf.Position = firstPosition;
                     if (shiftDelta < 0)
-                        Stream.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                        StreamLeaf.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
                     else
-                        Stream.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                        StreamLeaf.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
 
                     WriteToStream(buffer, shiftDelta1);
                     WriteToStream(buffer2, shiftDelta2);
 
                     header.ValidBytes += shiftDelta;
-                    header.Save(Stream, BlockSize, nodeIndex);
+                    header.Save(StreamLeaf, BlockSize, nodeIndex);
                     return true;
                 }
                 else
                 {
                     //if the insert is in the middle of the the stream
-                    Stream.Position = curPosition;
+                    StreamLeaf.Position = curPosition;
 
                     int shiftDelta1 = EncodeRecord(buffer, key1, key2, value1, value2, prevKey1, prevKey2, prevValue1, prevValue2);
 
@@ -470,17 +463,17 @@ namespace openHistorian.Collections.KeyValue
                         return true;
                     }
 
-                    Stream.Position = prevPosition;
+                    StreamLeaf.Position = prevPosition;
                     if (shiftDelta < 0)
-                        Stream.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                        StreamLeaf.RemoveBytes(-shiftDelta, (int)(endOfStreamPosition - prevPosition));
                     else
-                        Stream.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
+                        StreamLeaf.InsertBytes(shiftDelta, (int)(endOfStreamPosition - prevPosition));
 
                     WriteToStream(buffer, shiftDelta1);
                     WriteToStream(buffer2, shiftDelta2);
 
                     header.ValidBytes += shiftDelta;
-                    header.Save(Stream, BlockSize, nodeIndex);
+                    header.Save(StreamLeaf, BlockSize, nodeIndex);
                     return true;
                 }
 
@@ -498,8 +491,8 @@ namespace openHistorian.Collections.KeyValue
         /// <returns>true if the key was found, false if the key was not found.</returns>
         protected override bool LeafNodeGetValue(long nodeIndex, ulong key1, ulong key2, out ulong value1, out ulong value2)
         {
-            var header = new NodeHeader(Stream, BlockSize, nodeIndex);
-            Stream.Position = nodeIndex * BlockSize + NodeHeader.Size;
+            var header = new NodeHeader(StreamLeaf, BlockSize, nodeIndex);
+            StreamLeaf.Position = nodeIndex * BlockSize + NodeHeader.Size;
             long lastPosition = nodeIndex * BlockSize + header.ValidBytes;
 
             ulong curKey1 = 0;
@@ -507,7 +500,7 @@ namespace openHistorian.Collections.KeyValue
             ulong curValue1 = 0;
             ulong curValue2 = 0;
 
-            while (Stream.Position < lastPosition)
+            while (StreamLeaf.Position < lastPosition)
             {
                 DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
 
@@ -529,9 +522,7 @@ namespace openHistorian.Collections.KeyValue
             value2 = 0;
             return false;
         }
-
-
-
+        
         protected override ITreeScanner256 LeafNodeGetScanner()
         {
             return new TreeScanner(this);
@@ -546,7 +537,7 @@ namespace openHistorian.Collections.KeyValue
             byte* buffer = stackalloc byte[64];
 
             m_cachedNodeIndex = -1;
-            NodeHeader firstNodeHeader = new NodeHeader(Stream, BlockSize, firstNodeIndex);
+            NodeHeader firstNodeHeader = new NodeHeader(StreamLeaf, BlockSize, firstNodeIndex);
             NodeHeader secondNodeHeader = default(NodeHeader);
 
             //Debug code.
@@ -556,41 +547,43 @@ namespace openHistorian.Collections.KeyValue
             long secondNodeIndex = GetNextNewNodeIndex();
 
             firstNodeHeader.RightSiblingNodeIndex = secondNodeIndex;
-            firstNodeHeader.Save(Stream, BlockSize, firstNodeIndex);
+            firstNodeHeader.Save(StreamLeaf, BlockSize, firstNodeIndex);
 
             secondNodeHeader.LeftSiblingNodeIndex = firstNodeIndex;
 
-            Stream.Position = secondNodeIndex * BlockSize + NodeHeader.Size;
+            StreamLeaf.Position = secondNodeIndex * BlockSize + NodeHeader.Size;
 
             int length = EncodeRecord(buffer, key1, key2, value1, value2, 0, 0, 0, 0);
             WriteToStream(buffer, length);
-            secondNodeHeader.ValidBytes = (int)(Stream.Position - secondNodeIndex * BlockSize);
-            secondNodeHeader.Save(Stream, BlockSize, secondNodeIndex);
+            secondNodeHeader.ValidBytes = (int)(StreamLeaf.Position - secondNodeIndex * BlockSize);
+            secondNodeHeader.Save(StreamLeaf, BlockSize, secondNodeIndex);
 
+            //Prevents multiple seeks by moving up here
             NodeWasSplit(0, firstNodeIndex, key1, key2, secondNodeIndex);
-        }
 
+        }
+        
         unsafe void WriteToStream(byte* buffer, int length)
         {
             int pos = 0;
             while (pos + 8 <= length)
             {
-                Stream.Write(*(long*)(buffer + pos));
+                StreamLeaf.Write(*(long*)(buffer + pos));
                 pos += 8;
             }
             if (pos + 4 <= length)
             {
-                Stream.Write(*(int*)(buffer + pos));
+                StreamLeaf.Write(*(int*)(buffer + pos));
                 pos += 4;
             }
             if (pos + 2 <= length)
             {
-                Stream.Write(*(short*)(buffer + pos));
+                StreamLeaf.Write(*(short*)(buffer + pos));
                 pos += 2;
             }
             if (pos + 1 <= length)
             {
-                Stream.Write(*(buffer + pos));
+                StreamLeaf.Write(*(buffer + pos));
             }
         }
 
@@ -599,7 +592,7 @@ namespace openHistorian.Collections.KeyValue
             byte* buffer = stackalloc byte[64];
 
             m_cachedNodeIndex = -1;
-            NodeHeader firstNodeHeader = new NodeHeader(Stream, BlockSize, firstNodeIndex);
+            NodeHeader firstNodeHeader = new NodeHeader(StreamLeaf, BlockSize, firstNodeIndex);
             NodeHeader secondNodeHeader = default(NodeHeader);
 
             long midPoint = firstNodeIndex * BlockSize + (BlockSize >> 1);
@@ -607,7 +600,7 @@ namespace openHistorian.Collections.KeyValue
             long endOfStreamPosition = firstNodeIndex * BlockSize + firstNodeHeader.ValidBytes;
             long curPosition = firstPosition;
             long prevPosition = firstPosition;
-            Stream.Position = firstPosition;
+            StreamLeaf.Position = firstPosition;
 
             //navigate to the approximate midpoint.
             ulong curKey1 = 0;
@@ -617,9 +610,9 @@ namespace openHistorian.Collections.KeyValue
 
             while (curPosition < midPoint)
             {
-                prevPosition = Stream.Position;
+                prevPosition = StreamLeaf.Position;
                 DecodeNextRecord(ref curKey1, ref curKey2, ref curValue1, ref curValue2);
-                curPosition = Stream.Position;
+                curPosition = StreamLeaf.Position;
             }
 
             //Determine how many bytes it will take to store the new KVP since it will no longer be a delta
@@ -632,29 +625,29 @@ namespace openHistorian.Collections.KeyValue
             int copyLength = (int)(endOfStreamPosition - curPosition);
 
             //do the copy
-            Stream.Copy(sourceStartingAddress, targetStartingAddress, copyLength);
+            StreamLeaf.Copy(sourceStartingAddress, targetStartingAddress, copyLength);
 
-            Stream.Position = targetStartingAddress - storageSize;
+            StreamLeaf.Position = targetStartingAddress - storageSize;
             WriteToStream(buffer, storageSize);
 
             //update the node that was the old right sibling
             if (firstNodeHeader.RightSiblingNodeIndex != 0)
             {
-                NodeHeader oldRightSibling = new NodeHeader(Stream, BlockSize, firstNodeHeader.RightSiblingNodeIndex);
+                NodeHeader oldRightSibling = new NodeHeader(StreamLeaf, BlockSize, firstNodeHeader.RightSiblingNodeIndex);
                 oldRightSibling.LeftSiblingNodeIndex = secondNodeIndex;
-                oldRightSibling.Save(Stream, BlockSize, firstNodeHeader.RightSiblingNodeIndex);
+                oldRightSibling.Save(StreamLeaf, BlockSize, firstNodeHeader.RightSiblingNodeIndex);
             }
 
             //update the second header
             secondNodeHeader.ValidBytes = copyLength + storageSize + NodeHeader.Size;
             secondNodeHeader.LeftSiblingNodeIndex = firstNodeIndex;
             secondNodeHeader.RightSiblingNodeIndex = firstNodeHeader.RightSiblingNodeIndex;
-            secondNodeHeader.Save(Stream, BlockSize, secondNodeIndex);
+            secondNodeHeader.Save(StreamLeaf, BlockSize, secondNodeIndex);
 
             //update the first header
             firstNodeHeader.ValidBytes = (int)(prevPosition - firstNodeIndex * BlockSize);
             firstNodeHeader.RightSiblingNodeIndex = secondNodeIndex;
-            firstNodeHeader.Save(Stream, BlockSize, firstNodeIndex);
+            firstNodeHeader.Save(StreamLeaf, BlockSize, firstNodeIndex);
 
             NodeWasSplit(0, firstNodeIndex, curKey1, curKey2, secondNodeIndex);
             if (CompareKeys(key1, key2, curKey1, curKey2) > 0)

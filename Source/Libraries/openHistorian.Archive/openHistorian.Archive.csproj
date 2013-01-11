@@ -72,6 +72,7 @@
     <Compile Include="Archive\ArchiveFile_Editor.cs" />
     <Compile Include="Archive\SortedTreeContainer.cs" />
     <Compile Include="Archive\SortedTreeContainerEdit.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256Cache.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256TS32Encoded.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Initializer.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256TSEncoded.cs" />

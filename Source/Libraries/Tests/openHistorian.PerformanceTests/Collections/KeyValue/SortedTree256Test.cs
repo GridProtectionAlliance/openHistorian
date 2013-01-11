@@ -49,7 +49,12 @@ namespace openHistorian.Collections.KeyValue
             using (BinaryStream bs = new BinaryStream(stream))
             {
                 SortedTree256BaseTest.BenchmarkTree(() => new SortedTree256(bs, 4096), Count);
-                SortedTree256BaseEnhancedTest.BenchmarkTreeScanner(() => new SortedTree256TSEncoded(bs, 4096), Count);
+                SortedTree256BaseEnhancedTest.BenchmarkTreeScanner(() =>
+                {
+                    var tree = new SortedTree256TSEncoded(bs, 4096);
+                    tree.SkipIntermediateSaves = true;
+                    return tree;
+                }, Count);
             }
             File.Delete("c:\\temp\\ArchiveFileDelMe.d2");
         }
