@@ -72,7 +72,6 @@
     <Compile Include="Archive\ArchiveFile_Editor.cs" />
     <Compile Include="Archive\SortedTreeContainer.cs" />
     <Compile Include="Archive\SortedTreeContainerEdit.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256Cache.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256TS32Encoded.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Initializer.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256TSEncoded.cs" />
@@ -81,11 +80,10 @@
     <Compile Include="Collections\KeyValue\SortedTree256EncodedLeafNodeBase_TreeScanner.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256DeltaEncoded.cs" />
     <Compile Include="Collections\KeyValue\NullTreeScanner256.cs" />
-    <Compile Include="Collections\KeyValue\TreeIndexer128.cs" />
-    <Compile Include="Collections\KeyValue\TreeIndexer128_Cache.cs" />
+    <Compile Include="Collections\KeyValue\LeafNodeIndexer128.cs" />
+    <Compile Include="Collections\KeyValue\LeafNodeIndexer128_Cache.cs" />
     <Compile Include="Collections\KeyValue\UnionScanner256.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_TreeScanner.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase_NodeHeader.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase_NodeHeader.cs" />
     <Compile Include="Collections\KeyValue\ITreeScanner256.cs" />
     <Compile Include="AccessMode.cs" />
@@ -109,7 +107,6 @@
     <Compile Include="OldCode\Local\XmlConfig.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Base.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256InternalNodeBase.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256LeafNodeBase.cs" />
     <Compile Include="OldCode\ContinuousBuffer.cs" />
     <Compile Include="OldCode\DataPoint.cs" />

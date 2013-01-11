@@ -79,11 +79,8 @@ namespace openHistorian.Collections.KeyValue
                 m_rightSiblingNodeIndex=0;
                 m_nodeIndex=0;
 
-                m_nodeIndex = m_tree.RootNodeIndexAddress;
-                for (byte nodeLevel = m_tree.RootNodeLevel; nodeLevel > 0; nodeLevel--)
-                {
-                    m_nodeIndex = m_tree.InternalNodeGetNodeIndexAddress(nodeLevel, m_nodeIndex, key1, key2);
-                }
+                m_nodeIndex = m_tree.FindLeafNodeAddress(key1, key2);
+               
                 var header = new NodeHeader(m_tree.Stream, m_tree.BlockSize, m_nodeIndex);
                 m_nodeRecordCount = header.NodeRecordCount;
                 m_rightSiblingNodeIndex = header.RightSiblingNodeIndex;

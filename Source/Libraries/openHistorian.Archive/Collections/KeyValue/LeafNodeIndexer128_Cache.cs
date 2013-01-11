@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeIndexer128_Cache.cs - Gbtc
+//  LeafNodeIndexer128_Cache.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,7 +28,7 @@ using System.Text;
 
 namespace openHistorian.Collections.KeyValue
 {
-    public partial class TreeIndexer128
+    public partial class LeafNodeIndexer128
     {
         struct NodeDetails
         {

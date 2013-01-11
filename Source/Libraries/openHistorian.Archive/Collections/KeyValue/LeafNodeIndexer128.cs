@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeIndexer128.cs - Gbtc
+//  LeafNodeIndexer128.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,7 +26,7 @@ using openHistorian.IO;
 
 namespace openHistorian.Collections.KeyValue
 {
-    public partial class TreeIndexer128
+    public partial class LeafNodeIndexer128
     {
         /// <summary>
         /// Assists in the read/write operations of the header of a node.
@@ -95,7 +95,7 @@ namespace openHistorian.Collections.KeyValue
         /// that means there is no index and this tree will pass though the <see cref="rootNodeIndexAddress"/>.</param>
         /// <param name="rootNodeIndexAddress">The index of the root node.</param>
         /// <param name="getNextNewNodeIndex">A method </param>
-        public TreeIndexer128(BinaryStreamBase stream, int blockSize, byte rootNodeLevel, int rootNodeIndexAddress, Func<long> getNextNewNodeIndex)
+        public LeafNodeIndexer128(BinaryStreamBase stream, int blockSize, byte rootNodeLevel, long rootNodeIndexAddress, Func<long> getNextNewNodeIndex)
         {
             m_stream = stream;
             m_getNextNewNodeIndex = getNextNewNodeIndex;
@@ -144,12 +144,24 @@ namespace openHistorian.Collections.KeyValue
         /// <param name="key2">The key to look up.</param>
         public long Get(ulong key1, ulong key2)
         {
-            long nodeIndex = m_rootNodeIndexAddress;
+            long nodeIndexAddress = m_rootNodeIndexAddress;
             for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
             {
-                nodeIndex = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndex, key1, key2);
+                if (!m_cache.NodeContains(nodeLevel, key1, key2, ref nodeIndexAddress))
+                {
+                    NodeDetails nodeDetails = InternalNodeGetNodeIndexAddressBucket(nodeLevel, nodeIndexAddress, key1, key2);
+                    nodeIndexAddress = nodeDetails.NodeIndex;
+                    m_cache.CacheNode(nodeLevel, nodeDetails);
+                }
             }
-            return nodeIndex;
+            return nodeIndexAddress;
+
+            //long nodeIndex = m_rootNodeIndexAddress;
+            //for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
+            //{
+            //    nodeIndex = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndex, key1, key2);
+            //}
+            //return nodeIndex;
         }
 
         #endregion

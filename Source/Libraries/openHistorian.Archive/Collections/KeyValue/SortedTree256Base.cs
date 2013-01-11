@@ -39,9 +39,9 @@ namespace openHistorian.Collections.KeyValue
     /// </remarks>
     public abstract class SortedTree256Base
     {
-
         #region [ Members ]
 
+        LeafNodeIndexer128 m_indexer;
         bool m_skipIntermediateSaves;
         bool m_nodeHeaderChanged;
         byte m_rootNodeLevel;
@@ -50,7 +50,6 @@ namespace openHistorian.Collections.KeyValue
         long m_lastAllocatedBlock;
         ulong m_firstKey;
         ulong m_lastKey;
-        SortedTree256Cache m_cache;
         BinaryStreamBase m_stream1;
         BinaryStreamBase m_stream2;
 
@@ -64,10 +63,11 @@ namespace openHistorian.Collections.KeyValue
         /// <param name="stream">A dedicated stream where data can be read/written to/from.</param>
         protected SortedTree256Base(BinaryStreamBase stream1, BinaryStreamBase stream2)
         {
-            m_cache = new SortedTree256Cache();
             m_stream1 = stream1;
             m_stream2 = stream2;
             LoadHeader();
+            m_indexer = new LeafNodeIndexer128(stream1, m_blockSize, m_rootNodeLevel, m_rootNodeIndexAddress, GetNextNewNodeIndex);
+
         }
 
         /// <summary>
@@ -80,7 +80,6 @@ namespace openHistorian.Collections.KeyValue
         /// performance benefit because there is fewer I/O's required to find and insert blocks.</param>
         protected SortedTree256Base(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
         {
-            m_cache = new SortedTree256Cache();
             m_stream1 = stream1;
             m_stream2 = stream2;
             m_blockSize = blockSize;
@@ -92,6 +91,7 @@ namespace openHistorian.Collections.KeyValue
             LeafNodeCreateEmptyNode(m_rootNodeIndexAddress);
             SaveHeader();
             LoadHeader();
+            m_indexer = new LeafNodeIndexer128(stream1, m_blockSize, m_rootNodeLevel, m_rootNodeIndexAddress, GetNextNewNodeIndex);
         }
 
         #endregion
@@ -185,28 +185,6 @@ namespace openHistorian.Collections.KeyValue
             }
         }
 
-        /// <summary>
-        /// Gets the address of the root node.
-        /// </summary>
-        protected long RootNodeIndexAddress
-        {
-            get
-            {
-                return m_rootNodeIndexAddress;
-            }
-        }
-
-        /// <summary>
-        /// Gets the level of the root node.
-        /// </summary>
-        protected byte RootNodeLevel
-        {
-            get
-            {
-                return m_rootNodeLevel;
-            }
-        }
-
         #endregion
 
         #region [ Public Methods ]
@@ -240,16 +218,9 @@ namespace openHistorian.Collections.KeyValue
                 m_lastKey = key1;
                 m_nodeHeaderChanged = true;
             }
-            long nodeIndexAddress = m_rootNodeIndexAddress;
-            for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-            {
-                if (!m_cache.NodeContains(nodeLevel, key1, key2, ref nodeIndexAddress))
-                {
-                    NodeDetails nodeDetails = InternalNodeGetNodeIndexAddressBucket(nodeLevel, nodeIndexAddress, key1, key2);
-                    nodeIndexAddress = nodeDetails.NodeIndex;
-                    m_cache.CacheNode(nodeLevel, nodeDetails);
-                }
-            }
+
+            long nodeIndexAddress = m_indexer.Get(key1, key2);
+          
             if (LeafNodeInsert(nodeIndexAddress, key1, key2, value1, value2))
             {
                 if (!m_skipIntermediateSaves && m_nodeHeaderChanged)
@@ -274,21 +245,10 @@ namespace openHistorian.Collections.KeyValue
 
             while (isValid)
             {
-                //Search for the proper save node
-                long nodeIndexAddress = m_rootNodeIndexAddress;
-                for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-                {
-                    if (!m_cache.NodeContains(nodeLevel, key1, key2, ref nodeIndexAddress))
-                    {
-                        NodeDetails nodeDetails = InternalNodeGetNodeIndexAddressBucket(nodeLevel, nodeIndexAddress, key1, key2);
-                        nodeIndexAddress = nodeDetails.NodeIndex;
-                        m_cache.CacheNode(nodeLevel, nodeDetails);
-                    }
-                }
+                long nodeIndexAddress = m_indexer.Get(key1, key2);
 
                 if (!LeafNodeInsert(nodeIndexAddress, treeScanner, ref key1, ref key2, ref value1, ref value2, ref isValid, ref maxKey, ref minKey))
                     throw new Exception("Key already exists");
-
             }
 
             if (minKey < m_firstKey)
@@ -316,13 +276,9 @@ namespace openHistorian.Collections.KeyValue
         /// <param name="value2">the value output</param>
         public void Get(ulong key1, ulong key2, out ulong value1, out ulong value2)
         {
-            long nodeIndex = m_rootNodeIndexAddress;
-            for (byte nodeLevel = m_rootNodeLevel; nodeLevel > 0; nodeLevel--)
-            {
-                nodeIndex = InternalNodeGetNodeIndexAddress(nodeLevel, nodeIndex, key1, key2);
-            }
+            long nodeIndexAddress = m_indexer.Get(key1, key2);
 
-            if (LeafNodeGetValue(nodeIndex, key1, key2, out value1, out value2))
+            if (LeafNodeGetValue(nodeIndexAddress, key1, key2, out value1, out value2))
                 return;
             throw new Exception("Key Not Found");
         }
@@ -346,15 +302,6 @@ namespace openHistorian.Collections.KeyValue
         /// </summary>
         protected abstract Guid FileType { get; }
 
-        #region [ Internal Node Methods ]
-
-        protected abstract long InternalNodeGetNodeIndexAddress(byte nodeLevel, long nodeIndex, ulong key1, ulong key2);
-        protected abstract NodeDetails InternalNodeGetNodeIndexAddressBucket(byte nodeLevel, long nodeIndex, ulong key1, ulong key2);
-        protected abstract void InternalNodeInsert(byte nodeLevel, long nodeIndex, ulong key1, ulong key2, long childNodeIndex);
-        protected abstract void InternalNodeCreateNode(long newNodeIndex, byte nodeLevel, long firstNodeIndex, ulong dividingKey1, ulong dividingKey2, long secondNodeIndex);
-
-        #endregion
-
         #region [ Leaf Node Methods ]
 
         protected abstract bool LeafNodeInsert(long nodeIndex, ITreeScanner256 treeScanner, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid, ref ulong maxKey, ref ulong minKey);
@@ -368,6 +315,11 @@ namespace openHistorian.Collections.KeyValue
         #endregion
 
         #region [ Protected Methods ]
+
+        protected long FindLeafNodeAddress(ulong key1, ulong key2)
+        {
+            return m_indexer.Get(key1, key2);
+        }
 
         /// <summary>
         /// Returns the node index address for a freshly allocated block.
@@ -393,33 +345,7 @@ namespace openHistorian.Collections.KeyValue
         /// or create a new root if the current root is split.</remarks>
         protected void NodeWasSplit(byte nodeLevel, long nodeIndexOfSplitNode, ulong dividingKey1, ulong dividingKey2, long nodeIndexOfRightSibling)
         {
-            //m_cache.ClearCache();
-            if (m_rootNodeLevel > nodeLevel)
-            {
-                m_cache.InvalidateCache(nodeLevel);
-
-                long nodeIndex = m_rootNodeIndexAddress;
-                for (byte level = m_rootNodeLevel; level > nodeLevel + 1; level--)
-                {
-                    if (!m_cache.NodeContains(level, dividingKey1, dividingKey2, ref nodeIndex))
-                    {
-                        NodeDetails nodeDetails = InternalNodeGetNodeIndexAddressBucket(level, nodeIndex, dividingKey1, dividingKey2);
-                        nodeIndex = nodeDetails.NodeIndex;
-                        m_cache.CacheNode(nodeLevel, nodeDetails);
-                    }
-                }
-
-                m_cache.InvalidateCache(nodeLevel + 1);
-                InternalNodeInsert((byte)(nodeLevel + 1), nodeIndex, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
-            }
-            else
-            {
-                m_cache.ClearCache();
-                m_rootNodeLevel += 1;
-                m_rootNodeIndexAddress = GetNextNewNodeIndex();
-                InternalNodeCreateNode(m_rootNodeIndexAddress, m_rootNodeLevel, nodeIndexOfSplitNode, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
-                SaveHeader();
-            }
+            m_indexer.NodeWasSplit(nodeIndexOfSplitNode, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
         }
 
         #endregion
@@ -463,7 +389,7 @@ namespace openHistorian.Collections.KeyValue
             Stream.Write(m_lastKey);
             Stream.Position = oldPosotion;
         }
-        
+
         /// <summary>
         /// Compares one key to another key to determine which is greater
         /// </summary>

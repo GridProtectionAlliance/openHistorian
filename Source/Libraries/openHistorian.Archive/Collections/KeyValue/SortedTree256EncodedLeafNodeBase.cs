@@ -27,7 +27,7 @@ using openHistorian.IO.Unmanaged;
 
 namespace openHistorian.Collections.KeyValue
 {
-    internal abstract partial class SortedTree256EncodedLeafNodeBase : SortedTree256InternalNodeBase
+    internal abstract partial class SortedTree256EncodedLeafNodeBase : SortedTree256Base
     {
         long m_cachedNodeIndex;
         ulong m_lastKey1;
