@@ -33,7 +33,7 @@ using TVA.Parsing;
 using openHistorian;
 using openHistorian.Queues;
 
-namespace OpenHistorianAdapters
+namespace OpenHistorian.Adapters
 {
     /// <summary>
     /// Represents an output adapter that publishes measurements to TVA Historian for archival.

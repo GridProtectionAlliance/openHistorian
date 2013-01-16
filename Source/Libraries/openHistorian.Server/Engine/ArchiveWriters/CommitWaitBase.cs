@@ -35,7 +35,7 @@ namespace openHistorian.Engine.ArchiveWriters
         where T : new()
     {
 
-        protected AsyncWorker AsyncProcess;
+        protected ScheduledTask AsyncProcess;
         ManualResetEvent m_threadQuit;
         long m_lastCommitedSequenceNumber;
         long m_lastRolloverSequenceNumber;
@@ -82,9 +82,7 @@ namespace openHistorian.Engine.ArchiveWriters
         protected CommitWaitBase()
         {
             m_state = new T();
-            AsyncProcess = new AsyncWorker();
-            AsyncProcess.DoWork += ProcessInsertingData;
-
+            AsyncProcess = new ScheduledTask(ProcessInsertingData, ProcessInsertingData);
             m_threadQuit = new ManualResetEvent(false);
             SyncRoot = new object();
             m_pendingCommitRequests = new List<WaitingForCommit>();
@@ -93,13 +91,13 @@ namespace openHistorian.Engine.ArchiveWriters
             m_latestSequenceId = -1;
         }
 
-        void ProcessInsertingData(object sender, EventArgs obj)
+        void ProcessInsertingData()
         {
-            ProcessInsertingData(sender, m_state);
-            ReleasePendingWaitLocks(sender, EventArgs.Empty);
+            ProcessInsertingData(m_state);
+            ReleasePendingWaitLocks();
         }
 
-        protected abstract void ProcessInsertingData(object sender, T obj);
+        protected abstract void ProcessInsertingData(T state);
 
         protected bool ShouldQuit { get; private set; }
 
@@ -179,7 +177,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 m_pendingCommitRequests.Add(waiting);
             }
             if (startImediately)
-                AsyncProcess.RunWorker();
+                AsyncProcess.Start();
 
             waiting.Wait.WaitOne();
             return waiting.Successful;
@@ -205,7 +203,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 if (startImediately)
                 {
                     ShouldRollover = true;
-                    AsyncProcess.RunWorker();
+                    AsyncProcess.Start();
                 }
 
             }
@@ -286,7 +284,7 @@ namespace openHistorian.Engine.ArchiveWriters
             }
         }
 
-        void ReleasePendingWaitLocks(object sender, EventArgs state)
+        void ReleasePendingWaitLocks()
         {
             
             lock (SyncRoot)
@@ -326,7 +324,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 {
                     m_disposed = true;
                     ShouldQuit = true;
-                    AsyncProcess.RunWorker();
+                    AsyncProcess.Dispose();
                 }
             }
         }

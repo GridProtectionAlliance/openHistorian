@@ -93,7 +93,7 @@ namespace openHistorian.Collections
         /// </summary>
         IsolatedNode<T> m_currentTail;
 
-        AsyncWorker m_workerFlushToFile;
+        ScheduledTask m_workerFlushToFile;
         bool m_disposing;
         bool m_disposed;
         bool m_isFileMode;
@@ -130,9 +130,7 @@ namespace openHistorian.Collections
             m_pooledNodes = new ResourceQueue<IsolatedNode<T>>(() => new IsolatedNode<T>(m_elementsPerNode), 2, 10);
             m_inboundQueue = new ContinuousQueue<IsolatedNode<T>>();
             m_outboundQueue = new ContinuousQueue<IsolatedNode<T>>();
-            m_workerFlushToFile = new AsyncWorker();
-            m_workerFlushToFile.DoWork += OnWorkerFlushToFileDoWork;
-            m_workerFlushToFile.CleanupWork += OnWorkerFlushToFileCleanupWork;
+            m_workerFlushToFile = new ScheduledTask(OnWorkerFlushToFileDoWork, OnWorkerFlushToFileCleanupWork);
             m_syncRoot = new object();
             T value = default(T);
             m_maxNodeCount = maxInMemorySize / value.InMemorySize / m_elementsPerNode;
@@ -156,7 +154,7 @@ namespace openHistorian.Collections
         /// <summary>
         /// Does the writes to the archive file.
         /// </summary>
-        void OnWorkerFlushToFileDoWork(object sender, EventArgs e)
+        void OnWorkerFlushToFileDoWork()
         {
             while (true)
             {
@@ -188,7 +186,7 @@ namespace openHistorian.Collections
             return m_inboundQueue.Count > m_maxNodeCount;
         }
 
-        void OnWorkerFlushToFileCleanupWork(object sender, EventArgs e)
+        void OnWorkerFlushToFileCleanupWork()
         {
             while (m_inboundQueue.Count >= m_nodesPerFile)
             {
@@ -229,7 +227,7 @@ namespace openHistorian.Collections
                 //This can be done without a lock since it will be checked in the worker.
                 if (ShouldFlushToFile())
                 {
-                    m_workerFlushToFile.RunWorker();
+                    m_workerFlushToFile.Start();
                 }
                 m_currentHead = m_pooledNodes.Dequeue();
                 m_currentHead.Reset();

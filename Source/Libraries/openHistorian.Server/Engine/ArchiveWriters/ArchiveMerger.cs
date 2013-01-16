@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using GSF.Threading;
 using openHistorian.Archive;
 using openHistorian.Engine.Configuration;
 
@@ -86,12 +87,10 @@ namespace openHistorian.Engine.ArchiveWriters
             m_archiveInitializer = new ArchiveInitializer(settings.Initializer);
         }
 
-
-
         /// <summary>
         /// This is executed by a dedicated thread and moves data from the point queue to the database.
         /// </summary>
-        protected override void ProcessInsertingData(object sender, StateVariables state)
+        protected override void ProcessInsertingData(StateVariables state)
         {
             bool forcedQuit;
             bool forcedNewFile;
@@ -175,7 +174,7 @@ namespace openHistorian.Engine.ArchiveWriters
             lock (SyncRoot)
             {
                 if (m_filesToProcess.Count > 0)
-                    AsyncProcess.RunWorker();
+                    AsyncProcess.Start();
                 else if (forcedQuit)
                 {
                     OnThreadExited();
@@ -184,7 +183,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 else
                 {
                     TimeSpan newWaitTime = (m_settings.NewFileOnInterval - state.FileAge.Elapsed);
-                    AsyncProcess.RunWorkerAfterDelay(newWaitTime);
+                    AsyncProcess.Start(newWaitTime);
                 }
             }
         }
@@ -201,7 +200,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 m_filesToProcess.Enqueue(new KeyValuePair<ArchiveFile, long>(archiveFile, sequenceId));
                 OnNewData(sequenceId);
             }
-            AsyncProcess.RunWorker();
+            AsyncProcess.Start();
         }
 
        

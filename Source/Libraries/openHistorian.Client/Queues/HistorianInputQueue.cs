@@ -39,7 +39,7 @@ namespace openHistorian.Queues
     /// remote historian. Data is also kept in this buffer until it has been committed
     /// to the disk subsystem. 
     /// </summary>
-    public class HistorianInputQueue
+    public class HistorianInputQueue : IDisposable
     {
         struct PointData
         {
@@ -61,7 +61,7 @@ namespace openHistorian.Queues
 
         IsolatedQueue<PointData> m_blocks;
 
-        AsyncWorker m_worker;
+        ScheduledTask m_worker;
 
         Func<IHistorianDatabase> m_getDatabase;
 
@@ -71,8 +71,12 @@ namespace openHistorian.Queues
             m_blocks = new IsolatedQueue<PointData>();
             m_pointStream = new StreamPoints(m_blocks, 1000);
             m_getDatabase = getDatabase;
-            m_worker = new AsyncWorker();
-            m_worker.DoWork += WorkerDoWork;
+            m_worker = new ScheduledTask(WorkerDoWork, WorkerCleanUp);
+        }
+
+        void WorkerCleanUp()
+        {
+            
         }
 
         /// <summary>
@@ -91,10 +95,29 @@ namespace openHistorian.Queues
                     m_blocks.Enqueue(data);
                 }
             }
-            m_worker.RunWorker();
+            m_worker.Start();
         }
 
-        void WorkerDoWork(object sender, EventArgs e)
+        /// <summary>
+        /// Adds point data to the queue.
+        /// </summary>
+        public void Enqueue(ulong key1, ulong key2, ulong value1, ulong value2)
+        {
+            lock (m_syncWrite)
+            {
+                PointData data = new PointData()
+                {
+                    Key1 = key1,
+                    Key2 = key2,
+                    Value1 = value1,
+                    Value2 = value2
+                };
+                m_blocks.Enqueue(data);
+            }
+            m_worker.Start();
+        }
+
+        void WorkerDoWork()
         {
             m_pointStream.Reset();
 
@@ -107,14 +130,14 @@ namespace openHistorian.Queues
             catch (Exception)
             {
                 m_database = null;
-                m_worker.RunWorkerAfterDelay(new TimeSpan(TimeSpan.TicksPerSecond * 1));
+                m_worker.Start(new TimeSpan(TimeSpan.TicksPerSecond * 1));
                 return;
             }
 
             if (m_pointStream.QuitOnPointCount)
-                m_worker.RunWorker();
+                m_worker.Start();
             else
-                m_worker.RunWorkerAfterDelay(new TimeSpan(TimeSpan.TicksPerSecond * 1));
+                m_worker.Start(new TimeSpan(TimeSpan.TicksPerSecond * 1));
         }
 
         private class StreamPoints : IPointStream
@@ -167,6 +190,11 @@ namespace openHistorian.Queues
             {
                 m_canceled = true;
             }
+        }
+
+        public void Dispose()
+        {
+            m_worker.Dispose();
         }
     }
 }

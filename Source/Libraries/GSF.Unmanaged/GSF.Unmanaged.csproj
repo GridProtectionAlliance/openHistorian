@@ -64,6 +64,7 @@
     <Compile Include="Communications\LinearBuffer.cs" />
     <Compile Include="Communications\NetworkBinaryStream.cs" />
     <Compile Include="Compression.cs" />
+    <Compile Include="GC\DisposableWeakReference.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
@@ -83,9 +84,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
     <Compile Include="Threading\AsyncWorker.cs" />
+    <Compile Include="Threading\AsyncWorkerBackground.cs" />
+    <Compile Include="Threading\AsyncWorkerEventArgs.cs" />
+    <Compile Include="Threading\AsyncWorkerForeground.cs" />
+    <Compile Include="Threading\CustomThread.cs" />
+    <Compile Include="Threading\IAsyncWorker.cs" />
+    <Compile Include="Threading\ScheduledTask.cs" />
     <Compile Include="Threading\ReaderWriterRpinLockSlim.cs" />
+    <Compile Include="Threading\StateMachine.cs" />
     <Compile Include="Threading\SynchronousEvent.cs" />
     <Compile Include="Threading\TimeoutOperation.cs" />
+    <Compile Include="Threading\Worker.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="UnmanagedMemory\BufferPool_AllocationList.cs" />
     <Compile Include="UnmanagedMemory\BufferPool_CollectionEngine.cs" />
