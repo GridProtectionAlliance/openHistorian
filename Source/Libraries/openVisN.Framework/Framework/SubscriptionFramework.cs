@@ -33,9 +33,8 @@ using openHistorian.Data.Query;
 
 namespace openVisN.Framework
 {
-    public class SubscriptionFramework
+    public class SubscriptionFramework : IDisposable
     {
-
         SignalAssignment m_angleReference;
         UpdateFramework m_updateFramework;
         object m_syncRoot;
@@ -194,7 +193,9 @@ namespace openVisN.Framework
             }
         }
 
-
-
+        public void Dispose()
+        {
+            m_updateFramework.Dispose();
+        }
     }
 }

@@ -47,7 +47,7 @@ namespace GSF.Threading
         /// <param name="onException"></param>
         public ScheduledTask(Action callback, Action onDisposing = null, Action<Exception> onException = null)
         {
-            m_internal = new Internal(callback, onDisposing, onException);
+            m_internal = new Internal(callback, onDisposing, onException, true);
         }
 
         /// <summary>
@@ -154,13 +154,12 @@ namespace GSF.Threading
                 public const int Disposed = 8;
             }
 
+            CustomThreadBase m_thread;
             ManualResetEvent m_hasQuit;
             StateMachine m_state;
-            ManualResetEvent m_resetEvent;
-            RegisteredWaitHandle m_registeredHandle;
-            Action m_callback;
-            Action m_disposingCallback;
-            Action<Exception> m_exceptionCallback;
+            WeakAction m_callback;
+            WeakAction m_disposingCallback;
+            WeakAction<Exception> m_exceptionCallback;
             int m_delayRequested;
             volatile bool m_disposing;
 
@@ -170,13 +169,22 @@ namespace GSF.Threading
             /// <param name="callback">The method to repeatedly call</param>
             /// <param name="disposing">The method to call once upon disposing</param>
             /// <param name="exceptions">A callback for exception processing that may occur</param>
-            public Internal(Action callback, Action disposing, Action<Exception> exceptions)
+            /// <param name="isForeground"></param>
+            public Internal(Action callback, Action disposing, Action<Exception> exceptions, bool isForeground)
             {
-                m_exceptionCallback = exceptions;
-                m_disposingCallback = disposing;
-                m_callback = callback;
+                if (isForeground)
+                {
+                    m_thread = new ForegroundThread(InternalBeginRunOnTimer);
+                }
+                else
+                {
+                    m_thread = new BackgroundThread(InternalBeginRunOnTimer);
+
+                }
+                m_exceptionCallback = new WeakAction<Exception>(exceptions);
+                m_disposingCallback = new WeakAction(disposing);
+                m_callback = new WeakAction(callback);
                 m_state = new StateMachine(State.NotRunning);
-                m_resetEvent = new ManualResetEvent(false);
                 m_hasQuit = new ManualResetEvent(false);
             }
 
@@ -201,14 +209,14 @@ namespace GSF.Threading
                         case State.NotRunning:
                             if (m_state.TryChangeState(State.NotRunning, State.ScheduledToRun))
                             {
-                                ThreadPool.QueueUserWorkItem(BeginRunOnTimer);
+                                m_thread.StartNow();
                                 return;
                             }
                             break;
                         case State.ScheduledToRunAfterDelay:
                             if (m_state.TryChangeState(State.ScheduledToRunAfterDelay, State.ScheduledToRun))
                             {
-                                m_resetEvent.Set();
+                                m_thread.ShortCircuitDelayRequest();
                                 return;
                             }
                             break;
@@ -260,14 +268,14 @@ namespace GSF.Threading
                         case State.NotRunning:
                             if (m_state.TryChangeState(State.NotRunning, State.ScheduledToRunAfterDelay))
                             {
-                                m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_resetEvent, BeginRunOnTimer, null, delay, true);
+                                m_thread.StartLater(delay);
                                 return;
                             }
                             break;
                         case State.Running:
                             if (m_state.TryChangeState(State.Running, State.RunAgainAfterDelayIntermediate))
                             {
-                                m_resetEvent.Reset();
+                                m_thread.ResetTimer();
                                 m_delayRequested = delay;
                                 m_state.SetState(State.RunAgainAfterDelay);
                                 return;
@@ -290,19 +298,6 @@ namespace GSF.Threading
 
             #region [  The Worker Thread  ]
 
-            void BeginRunOnTimer(object state)
-            {
-                InternalBeginRunOnTimer();
-            }
-
-            void BeginRunOnTimer(object state, bool isTimeout)
-            {
-                if (m_registeredHandle != null)
-                    m_registeredHandle.Unregister(null);
-
-                InternalBeginRunOnTimer();
-            }
-
             void InternalBeginRunOnTimer()
             {
                 if (m_state.TryChangeStates(State.ScheduledToRunAfterDelay, State.ScheduledToRun, State.Running))
@@ -317,19 +312,16 @@ namespace GSF.Threading
 
                         try
                         {
-                            m_callback();
+                            m_callback.TryInvoke();
                         }
                         catch (Exception ex)
                         {
-                            if (m_exceptionCallback != null)
+                            try
                             {
-                                try
-                                {
-                                    m_exceptionCallback(ex);
-                                }
-                                catch (Exception)
-                                {
-                                }
+                                m_exceptionCallback.TryInvoke(ex);
+                            }
+                            catch (Exception)
+                            {
                             }
                         }
 
@@ -364,7 +356,7 @@ namespace GSF.Threading
                         case State.Running:
                             if (m_state.TryChangeState(State.Running, State.Resetting))
                             {
-                                m_resetEvent.Reset();
+                                m_thread.ResetTimer();
                                 m_state.SetState(State.NotRunning);
                                 return NextAction.Quit;
                             }
@@ -382,7 +374,7 @@ namespace GSF.Threading
                         case State.RunAgainAfterDelay:
                             if (m_state.TryChangeState(State.RunAgainAfterDelay, State.ScheduledToRunAfterDelay))
                             {
-                                m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_resetEvent, BeginRunOnTimer, null, m_delayRequested, true);
+                                m_thread.StartLater(m_delayRequested);
                                 return NextAction.Quit;
                             }
                             break;
@@ -425,17 +417,15 @@ namespace GSF.Threading
                                 if (m_state.TryChangeState(State.NotRunning, State.Disposed))
                                 {
                                     CallDisposeCallback();
-
                                     return;
                                 }
                                 break;
                             case State.ScheduledToRunAfterDelay:
                                 if (m_state.TryChangeState(State.ScheduledToRunAfterDelay, State.ScheduledToRun))
                                 {
-                                    m_resetEvent.Set();
+                                    m_thread.ResetTimer();
                                     m_hasQuit.WaitOne();
                                     CallDisposeCallback();
-
                                     return;
                                 }
                                 break;
@@ -444,7 +434,6 @@ namespace GSF.Threading
                             case State.RunAgain:
                                 m_hasQuit.WaitOne();
                                 CallDisposeCallback();
-
                                 return;
                             case State.RunAgainAfterDelayIntermediate:
                                 break;
@@ -459,31 +448,26 @@ namespace GSF.Threading
                         wait.SpinOnce();
                     }
                 }
-
             }
 
             void CallDisposeCallback()
             {
                 try
                 {
-                    if (m_disposingCallback != null)
-                        m_disposingCallback();
+                    m_disposingCallback.TryInvoke();
                 }
                 catch (Exception ex)
                 {
                     try
                     {
-                        if (m_exceptionCallback != null)
-                            m_exceptionCallback(ex);
+                        m_exceptionCallback.TryInvoke(ex);
                     }
                     catch (Exception)
                     {
                     }
                 }
+                m_thread.Dispose();
             }
         }
-
-
-
     }
 }

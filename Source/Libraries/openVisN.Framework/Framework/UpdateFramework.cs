@@ -171,11 +171,7 @@ namespace openVisN.Framework
 
             if (AfterExecuteQuery != null)
                 AfterExecuteQuery(this, EventArgs.Empty);
-
-
         }
-
-
 
         public ExecutionMode Mode
         {

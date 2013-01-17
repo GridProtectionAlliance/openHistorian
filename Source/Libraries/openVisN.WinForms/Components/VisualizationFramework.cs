@@ -39,7 +39,7 @@ namespace openVisN.Components
         int m_port = 0;
         bool m_useNetworkHistorian;
         bool m_enabled;
-        List<ISubscriber> m_pendingSubscribers=new List<ISubscriber>();
+        List<ISubscriber> m_pendingSubscribers = new List<ISubscriber>();
 
         string[] m_localDirectories = new string[0];
 
@@ -48,7 +48,13 @@ namespace openVisN.Components
             InitializeComponent();
 
             m_framework = new SubscriptionFramework();
+            Disposed += VisualizationFramework_Disposed;
 
+        }
+
+        void VisualizationFramework_Disposed(object sender, EventArgs e)
+        {
+            m_framework.Dispose();
         }
 
         public VisualizationFramework(IContainer container)
@@ -58,6 +64,7 @@ namespace openVisN.Components
             InitializeComponent();
 
             m_framework = new SubscriptionFramework();
+            Disposed += VisualizationFramework_Disposed;
 
         }
 
@@ -175,6 +182,5 @@ namespace openVisN.Components
             }
         }
 
-
-    }
+   }
 }
