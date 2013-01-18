@@ -109,6 +109,7 @@ namespace openHistorian.Collections
         /// The number of nodes to put in each file.
         /// </summary>
         int m_nodesPerFile;
+
         FileIO m_fileIO;
 
         /// <summary>

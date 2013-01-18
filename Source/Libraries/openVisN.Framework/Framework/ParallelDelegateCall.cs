@@ -24,10 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace openVisN.Framework
 {
@@ -78,29 +75,8 @@ namespace openVisN.Framework
 
             public void Process(object callback)
             {
-                //lock (m_sb)
-                //{
-                //    m_sb.AppendLine("Start");
-                //}
                 EventHandler<T> d2 = (EventHandler<T>)callback;
-                //try
-                //{
                 d2.Invoke(m_sender, m_variable);
-                //}
-                //catch (Exception ex)
-                //{
-                //    lock (this)
-                //    {
-                //        if (m_exceptionsThrown == null)
-                //            m_exceptionsThrown = new List<Exception>();
-                //        m_exceptionsThrown.Add(ex);
-                //    }
-                //}
-
-                //lock (m_sb)
-                //{
-                //    m_sb.AppendLine("Stop");
-                //}
                 if (Interlocked.Increment(ref m_delegatesExecuted) == m_numberOfDelegates)
                 {
                     m_waitForComplete.Set();

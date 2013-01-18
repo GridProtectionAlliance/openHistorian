@@ -66,6 +66,7 @@ namespace openVisN.Framework
 
     public class UpdateFramework : IDisposable
     {
+        volatile bool m_disposing;
         ScheduledTask m_async;
 
         public event EventHandler BeforeExecuteQuery;
@@ -80,7 +81,7 @@ namespace openVisN.Framework
 
         TimeSpan m_refreshInterval;
         AutomaticPlayback m_playback;
-        object m_RequestToken;
+        object m_requestToken;
         HistorianQuery m_query;
         object m_syncRoot;
         volatile bool m_enabled;
@@ -132,8 +133,8 @@ namespace openVisN.Framework
 
             lock (m_syncRoot)
             {
-                token = m_RequestToken;
-                m_RequestToken = null;
+                token = m_requestToken;
+                m_requestToken = null;
                 if (Mode == ExecutionMode.Manual)
                 {
                     startTime = m_lowerBounds;
@@ -184,7 +185,7 @@ namespace openVisN.Framework
                 lock (m_syncRoot)
                 {
                     bool updated = m_mode != value;
-                    m_RequestToken = null;
+                    m_requestToken = null;
                     m_mode = value;
                     if (updated && ExecutionModeChanged != null)
                         ExecutionModeChanged(this, new ExecutionModeEventArgs(value));
@@ -216,7 +217,7 @@ namespace openVisN.Framework
         public void Execute()
         {
             lock (m_syncRoot)
-                m_RequestToken = null;
+                m_requestToken = null;
             m_async.Start();
         }
 
@@ -258,7 +259,6 @@ namespace openVisN.Framework
             }
         }
 
-
         public void GetTimeWindow(out DateTime startTime, out DateTime endTime)
         {
             lock (m_syncRoot)
@@ -273,7 +273,7 @@ namespace openVisN.Framework
             lock (m_syncRoot)
             {
                 m_playback.ChangeWindowSize(duration);
-                m_RequestToken = token;
+                m_requestToken = token;
             }
         }
 
@@ -293,7 +293,6 @@ namespace openVisN.Framework
 
         }
 
-
         public void Execute(DateTime startTime, DateTime endTime, object token)
         {
             lock (m_syncRoot)
@@ -303,7 +302,7 @@ namespace openVisN.Framework
                     return;
                 }
 
-                m_RequestToken = token;
+                m_requestToken = token;
                 m_lowerBounds = startTime;
                 m_upperBounds = endTime;
             }
@@ -314,7 +313,7 @@ namespace openVisN.Framework
         {
             lock (m_syncRoot)
             {
-                m_RequestToken = null;
+                m_requestToken = null;
                 m_activeSignals = activeSignals;
             }
             m_async.Start();
@@ -322,7 +321,10 @@ namespace openVisN.Framework
 
         public void Dispose()
         {
-            m_async.Dispose();
+            m_disposing = true;
+            Thread.MemoryBarrier();
+            m_syncEvent.Dispose();
+            m_async.DisposeWithoutWait();
         }
     }
 }

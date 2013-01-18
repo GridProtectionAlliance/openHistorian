@@ -32,7 +32,7 @@ namespace openHistorian.Engine
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
-    public class ArchiveDatabaseEngine : IHistorianDatabase
+    public class ArchiveDatabaseEngine : IHistorianDatabase, IDisposable
     {
         List<ArchiveListRemovalStatus> m_pendingDispose;
         AutoCommit m_archiveWriter;

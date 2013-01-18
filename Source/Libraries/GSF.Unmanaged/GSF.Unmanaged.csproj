@@ -93,6 +93,7 @@
     <Compile Include="Threading\IAsyncWorker.cs" />
     <Compile Include="Threading\ScheduledTask.cs" />
     <Compile Include="Threading\ReaderWriterRpinLockSlim.cs" />
+    <Compile Include="Threading\ScheduledTask_Internal.cs" />
     <Compile Include="Threading\StateMachine.cs" />
     <Compile Include="Threading\SynchronousEvent.cs" />
     <Compile Include="Threading\TimeoutOperation.cs" />

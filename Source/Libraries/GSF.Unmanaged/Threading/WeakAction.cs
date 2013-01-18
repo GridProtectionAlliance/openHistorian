@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace GSF.Threading
@@ -34,16 +35,20 @@ namespace GSF.Threading
     /// </summary>
     public class WeakAction : WeakReference
     {
+        MethodInfo m_method;
+
         public WeakAction(Action target)
-            : base(target)
+            : base((target == null) ? null : target.Target)
         {
+            if (target != null)
+                m_method = target.Method;
         }
         public bool TryInvoke()
         {
-            Action target = (Action)base.Target;
+            object target = base.Target;
             if (target == null)
                 return false;
-            target.Invoke();
+            m_method.Invoke(target, null);
             return true;
         }
     }
@@ -53,16 +58,19 @@ namespace GSF.Threading
     /// </summary>
     public class WeakAction<T> : WeakReference
     {
+        MethodInfo m_method;
         public WeakAction(Action<T> target)
-            : base(target)
+            : base((target == null) ? null : target.Target)
         {
+            if (target != null)
+                m_method = target.Method;
         }
         public bool TryInvoke(T obj)
         {
-            Action<T> target = (Action<T>)base.Target;
+            object target = base.Target;
             if (target == null)
                 return false;
-            target.Invoke(obj);
+            m_method.Invoke(target, new object[] { obj });
             return true;
         }
     }

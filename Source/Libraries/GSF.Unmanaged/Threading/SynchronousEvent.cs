@@ -28,12 +28,17 @@ using System.Threading;
 
 namespace GSF.Threading
 {
-    public class SynchronousEvent<T>
+    /// <summary>
+    /// Provides a way to raise events on another thread. The events
+    /// will be raised on the thread that constructed this class.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class SynchronousEvent<T> : IDisposable
         where T : EventArgs
     {
+        bool m_disposed;
         ManualResetEvent m_waiting;
         public event EventHandler<T> CustomEvent;
-
         AsyncOperation m_asyncEventHelper;
 
         public SynchronousEvent()
@@ -42,23 +47,54 @@ namespace GSF.Threading
             m_asyncEventHelper = AsyncOperationManager.CreateOperation(null);
         }
 
+        /// <summary>
+        /// Posts an event on the constructing thread.
+        /// This call blocks until the custom event 
+        /// Not thread safe.
+        /// </summary>
+        /// <param name="args"></param>
         public void RaiseEvent(T args)
         {
+            if (m_disposed)
+                return;
             if (CustomEvent != null)
             {
                 m_waiting.Reset();
+                Thread.MemoryBarrier();
+                if (m_disposed)
+                    return;
                 m_asyncEventHelper.Post(Callback, args);
                 m_waiting.WaitOne();
             }
-
         }
 
         void Callback(object sender)
         {
-            if (CustomEvent != null)
+            if (m_disposed)
+                return;
+            try
             {
-                CustomEvent(this, (T)sender);
+                if (CustomEvent != null)
+                {
+                    CustomEvent(this, (T)sender);
+                }
             }
+            finally
+            {
+                m_waiting.Set();
+            }
+
+        }
+
+        /// <summary>
+        /// Prevents any future events from processing and
+        /// attempts to cancel a pending operation. 
+        /// Function returns before any attempts to cancel are successful.
+        /// </summary>
+        public void Dispose()
+        {
+            m_disposed = true;
+            Thread.MemoryBarrier();
             m_waiting.Set();
         }
     }
