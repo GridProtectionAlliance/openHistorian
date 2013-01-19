@@ -24,6 +24,7 @@
 
 using System;
 using System.IO;
+using GSF;
 using NUnit.Framework;
 
 namespace openHistorian.FileStructure.Test

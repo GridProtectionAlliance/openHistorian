@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.IO.Unmanaged
+namespace GSF.IO.Unmanaged
 {
     public class StreamBlockEventArgs
         : EventArgs

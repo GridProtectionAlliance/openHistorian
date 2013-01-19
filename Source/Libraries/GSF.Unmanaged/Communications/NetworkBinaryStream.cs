@@ -28,7 +28,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 
-namespace openHistorian.Communications
+namespace GSF.Communications
 {
 
     public class NetworkBinaryStream : Stream

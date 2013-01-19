@@ -27,7 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     /// <summary>
     /// Represents an individual node that allows for items to be added and removed from the 

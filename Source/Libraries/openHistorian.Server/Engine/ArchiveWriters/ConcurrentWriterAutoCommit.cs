@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using openHistorian.Engine.Configuration;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 using openHistorian.Archive;
 
 namespace openHistorian.Engine.ArchiveWriters

@@ -24,6 +24,7 @@
 
 using System;
 using System.IO;
+using GSF;
 using openHistorian.Archive;
 using openHistorian.Engine.Configuration;
 

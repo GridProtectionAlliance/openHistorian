@@ -23,7 +23,7 @@
 
 using System;
 using System.Data;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 
 namespace openHistorian.FileStructure
 {

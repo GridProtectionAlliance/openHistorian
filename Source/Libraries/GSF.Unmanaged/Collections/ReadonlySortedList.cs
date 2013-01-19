@@ -25,7 +25,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     /// <summary>
     /// A list that can be modified until <see cref="IsReadOnly"/> is set to true. Once this occurs,

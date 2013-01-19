@@ -7,7 +7,7 @@ using System.IO;
 using NUnit.Framework;
 using MemS = System.IO.MemoryStream;
 
-namespace openHistorian.IO.Unmanaged.Test
+namespace GSF.IO.Unmanaged.Test
 {
     [TestFixture()]
     public unsafe class BufferedFileStream_IoQueue

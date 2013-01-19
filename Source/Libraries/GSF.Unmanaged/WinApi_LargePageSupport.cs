@@ -4,7 +4,7 @@
 //using System.Runtime.InteropServices;
 //using System.Text;
 
-//namespace openHistorian
+//namespace GSF
 //{
 //    public static partial class WinApi
 //    {

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using GSF;
 using NUnit.Framework;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 
 namespace openHistorian.IO
 {

@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.UnmanagedMemory
+namespace GSF.UnmanagedMemory
 {
     /// <summary>
     /// Maintains the core settings for the buffer pool and the methods for how they are calculated.

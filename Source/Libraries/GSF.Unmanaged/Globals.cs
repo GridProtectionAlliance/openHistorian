@@ -22,9 +22,9 @@
 //
 //******************************************************************************************************
 
-using openHistorian.UnmanagedMemory;
+using GSF.UnmanagedMemory;
 
-namespace openHistorian
+namespace GSF
 {
     /// <summary>
     /// Maintains the static global classes for the historian.

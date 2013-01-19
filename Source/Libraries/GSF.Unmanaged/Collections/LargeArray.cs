@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     /// <summary>
     /// Since large arrays expand slowly, this class can quickly grow an array with millions of elements.

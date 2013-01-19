@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using GSF;
+using GSF.IO;
 using NUnit.Framework;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 
 namespace openHistorian.IO
 {

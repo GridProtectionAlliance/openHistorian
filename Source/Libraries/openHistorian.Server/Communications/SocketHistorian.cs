@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
+using GSF.Communications;
 using openHistorian.Engine;
 
 namespace openHistorian.Communications

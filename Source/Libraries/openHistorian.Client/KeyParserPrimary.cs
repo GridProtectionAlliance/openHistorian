@@ -24,7 +24,7 @@
 
 using System;
 using System.Data;
-using openHistorian.IO;
+using GSF.IO;
 
 namespace openHistorian
 {

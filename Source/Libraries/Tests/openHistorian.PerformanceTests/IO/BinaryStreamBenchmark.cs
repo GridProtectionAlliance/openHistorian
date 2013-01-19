@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 
-namespace openHistorian.Unmanaged
+namespace GSF.Unmanaged
 {
     class BinaryStreamBenchmark
     {

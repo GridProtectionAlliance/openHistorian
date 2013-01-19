@@ -28,7 +28,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using openHistorian.Collections.KeyValue;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 using openHistorian.Archive;
 
 namespace openHistorian.Utility

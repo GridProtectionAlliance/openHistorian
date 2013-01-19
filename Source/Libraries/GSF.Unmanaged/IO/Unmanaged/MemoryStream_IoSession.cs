@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.IO.Unmanaged
+namespace GSF.IO.Unmanaged
 {
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.

@@ -25,8 +25,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using openHistorian.IO.Unmanaged;
-using MemoryStream = openHistorian.IO.Unmanaged.MemoryStream;
+using GSF;
+using GSF.IO.Unmanaged;
+using MemoryStream = GSF.IO.Unmanaged.MemoryStream;
 
 namespace openHistorian.FileStructure
 {

@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 using System.Runtime.InteropServices;
-using openHistorian.UnmanagedMemory;
+using GSF.UnmanagedMemory;
 
 namespace openHistorian.FileStructure
 {

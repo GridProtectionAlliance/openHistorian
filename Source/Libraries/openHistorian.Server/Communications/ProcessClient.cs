@@ -24,7 +24,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using openHistorian.IO;
+using GSF.Communications;
+using GSF.IO;
 
 namespace openHistorian.Communications
 {

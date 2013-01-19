@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     /// <summary>
     /// Provides a thread safe collection of many different resources of the same type.

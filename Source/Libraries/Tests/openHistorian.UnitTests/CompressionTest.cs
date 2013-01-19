@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
+using GSF;
 using NUnit.Framework;
 
 namespace openHistorian

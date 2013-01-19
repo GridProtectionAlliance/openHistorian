@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Threading;
+using GSF;
 using TimeSeriesFramework;
 using TimeSeriesFramework.Adapters;
 using TVA;

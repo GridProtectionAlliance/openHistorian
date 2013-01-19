@@ -28,7 +28,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     /// <summary>
     /// Provides a buffer of point data where reads are isolated from writes.

@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.IO;
 using GSF.Threading;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     /// <summary>
     /// An interface required to use <see cref="IsolatedQueueFileBacked{T}"/>.

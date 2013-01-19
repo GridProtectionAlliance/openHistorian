@@ -24,10 +24,10 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.Collections;
-using openHistorian.UnmanagedMemory;
+using GSF.Collections;
+using GSF.UnmanagedMemory;
 
-namespace openHistorian.IO.Unmanaged
+namespace GSF.IO.Unmanaged
 {
     /// <summary>
     /// Contains a list of page meta data. Provides a simplified way to interact with this list.

@@ -25,7 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using openHistorian.Collections;
+using GSF;
+using GSF.Collections;
 
 namespace openHistorian.FileStructure
 {

@@ -7,7 +7,7 @@ using System.Threading;
 using NUnit.Framework;
 using openHistorian.Engine;
 using openHistorian.Engine.ArchiveWriters;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 using openHistorian.Archive;
 
 namespace openHistorian.Server.Database

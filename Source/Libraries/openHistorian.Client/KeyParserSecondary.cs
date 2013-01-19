@@ -26,8 +26,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using openHistorian.Collections;
-using openHistorian.IO;
+using GSF.Collections;
+using GSF.IO;
 
 namespace openHistorian
 {

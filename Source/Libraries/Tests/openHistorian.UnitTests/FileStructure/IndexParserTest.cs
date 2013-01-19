@@ -23,8 +23,9 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 using NUnit.Framework;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 
 namespace openHistorian.FileStructure.Test
 {

@@ -25,9 +25,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using openHistorian.UnmanagedMemory;
+using GSF.UnmanagedMemory;
 
-namespace openHistorian.IO.Unmanaged
+namespace GSF.IO.Unmanaged
 {
     /// <summary>
     /// A page replacement algorithm that utilizes a quasi LRU algorithm.

@@ -23,7 +23,7 @@
 //******************************************************************************************************
 using System.IO;
 
-namespace openHistorian.IO
+namespace GSF.IO
 {
     public class BinaryStreamWrapper : BinaryStreamBase
     {

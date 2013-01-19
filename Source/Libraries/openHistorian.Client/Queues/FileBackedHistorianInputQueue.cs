@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianInputQueue.cs - Gbtc
+//  FileBackedHistorianInputQueue.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,27 +16,27 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  1/4/2013 - Steven E. Chisholm
+//  1/18/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
 
 using System;
+using System.IO;
 using GSF.Threading;
 using GSF.Collections;
 
 namespace openHistorian.Queues
 {
-
     /// <summary>
     /// Serves as a local queue for getting data into a remote historian. 
     /// This queue will isolate the input from the volitality of a 
     /// remote historian. Data is also kept in this buffer until it has been committed
     /// to the disk subsystem. 
     /// </summary>
-    public class HistorianInputQueue : IDisposable
+    public class FileBackedHistorianInputQueue : IDisposable
     {
-        struct PointData
+        struct PointData : ILoadable
         {
             public ulong Key1;
             public ulong Key2;
@@ -46,6 +46,37 @@ namespace openHistorian.Queues
             {
                 return stream.Read(out Key1, out Key2, out Value1, out Value2);
             }
+
+            unsafe public int InMemorySize
+            {
+                get
+                {
+                    return sizeof(PointData);
+                }
+            }
+
+            public int OnDiskSize
+            {
+                get
+                {
+                    return 32;
+                }
+            }
+            public void Save(BinaryWriter writer)
+            {
+                writer.Write(Key1);
+                writer.Write(Key2);
+                writer.Write(Value1);
+                writer.Write(Value2);
+            }
+
+            public void Load(BinaryReader reader)
+            {
+                Key1 = reader.ReadUInt64();
+                Key2 = reader.ReadUInt64();
+                Value1 = reader.ReadUInt64();
+                Value2 = reader.ReadUInt64();
+            }
         }
 
         StreamPoints m_pointStream;
@@ -54,16 +85,27 @@ namespace openHistorian.Queues
 
         IHistorianDatabase m_database;
 
-        IsolatedQueue<PointData> m_blocks;
+        IsolatedQueueFileBacked<PointData> m_blocks;
 
         ScheduledTask m_worker;
 
         Func<IHistorianDatabase> m_getDatabase;
 
-        public HistorianInputQueue(Func<IHistorianDatabase> getDatabase)
+        /// <summary>
+        /// Creates a new <see cref="FileBackedHistorianInputQueue"/>. 
+        /// </summary>
+        /// <param name="getDatabase">A lamda expression for connecting to a database</param>
+        /// <param name="path">The disk path to use to save the state of this queue to. 
+        /// It is critical that this path and file prefix is unique to the instance of this class.</param>
+        /// <param name="filePrefix">The prefix string to add to the beginning of every file in this directory.</param>
+        /// <param name="maxInMemorySize">The maximum desired in-memory size before switching to a file storage method.</param>
+        /// <param name="individualFileSize">The desired size of each file.</param>
+        /// <remarks>The total memory used by this class will be approximately the sum of <see cref="maxInMemorySize"/> and
+        /// <see cref="individualFileSize"/> while operating in file mode.</remarks>
+        public FileBackedHistorianInputQueue(Func<IHistorianDatabase> getDatabase, string path, string filePrefix, int maxInMemorySize, int individualFileSize)
         {
             m_syncWrite = new object();
-            m_blocks = new IsolatedQueue<PointData>();
+            m_blocks = new IsolatedQueueFileBacked<PointData>(path, filePrefix, maxInMemorySize, individualFileSize);
             m_pointStream = new StreamPoints(m_blocks, 1000);
             m_getDatabase = getDatabase;
             m_worker = new ScheduledTask(WorkerDoWork, WorkerCleanUp);
@@ -132,16 +174,16 @@ namespace openHistorian.Queues
 
         void WorkerCleanUp()
         {
-   
+
         }
 
         private class StreamPoints : IPointStream
         {
-            IsolatedQueue<PointData> m_measurements;
+            IsolatedQueueFileBacked<PointData> m_measurements;
             bool m_canceled = false;
             int m_maxPoints;
             int m_count;
-            public StreamPoints(IsolatedQueue<PointData> measurements, int maxPointsPerStream)
+            public StreamPoints(IsolatedQueueFileBacked<PointData> measurements, int maxPointsPerStream)
             {
                 m_measurements = measurements;
                 m_maxPoints = maxPointsPerStream;

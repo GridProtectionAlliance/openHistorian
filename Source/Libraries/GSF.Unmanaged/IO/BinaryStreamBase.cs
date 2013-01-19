@@ -27,7 +27,7 @@
 using System;
 using System.Text;
 
-namespace openHistorian.IO
+namespace GSF.IO
 {
     unsafe public abstract class BinaryStreamBase : IDisposable
     {

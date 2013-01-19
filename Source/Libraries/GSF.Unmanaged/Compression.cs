@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian
+namespace GSF
 {
     /// <summary>
     /// Contains 7 bit encoding functions

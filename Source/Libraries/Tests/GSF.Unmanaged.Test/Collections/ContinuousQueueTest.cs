@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     [TestFixture]
     public class ContinuousQueueTest

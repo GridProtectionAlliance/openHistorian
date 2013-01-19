@@ -1,6 +1,7 @@
 ﻿using System;
+using GSF;
 using NUnit.Framework;
-using openHistorian.Collections;
+using GSF.Collections;
 
 namespace openHistorian.Collections.Test
 {

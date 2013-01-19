@@ -59,18 +59,10 @@
   <ItemGroup>
     <Compile Include="Archive\TestPageSizes.cs" />
     <Compile Include="BitMath.cs" />
-    <Compile Include="Collections\BitArray.cs" />
-    <Compile Include="Collections\ContinuousQueueTest.cs" />
-    <Compile Include="Collections\IsolatedQueueFileBacked.cs" />
-    <Compile Include="Collections\IsolatedQueueTest.cs" />
-    <Compile Include="Collections\ISupportsReadonlyTest.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256TS32EncodedTest.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256DeltaEncodedTest.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Test.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256TSEncodedTest.cs" />
-    <Compile Include="Collections\LargeArray.cs" />
-    <Compile Include="Collections\ResourceQueue.cs" />
-    <Compile Include="Collections\ResourceQueueCollection.cs" />
     <Compile Include="CompressionTest.cs" />
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="FileStructure\DiskIOEnhanced2Test.cs" />

@@ -25,7 +25,7 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 
 namespace openHistorian.FileStructure
 {

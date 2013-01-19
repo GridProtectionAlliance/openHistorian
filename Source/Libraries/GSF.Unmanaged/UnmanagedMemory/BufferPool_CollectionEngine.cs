@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian.UnmanagedMemory
+namespace GSF.UnmanagedMemory
 {
     /// <summary>
     /// Does the garbage collection and manages the actual size of the buffer pool.

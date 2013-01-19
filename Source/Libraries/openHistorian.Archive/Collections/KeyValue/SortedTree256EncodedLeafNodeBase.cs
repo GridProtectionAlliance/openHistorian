@@ -22,8 +22,8 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.IO;
-using openHistorian.IO.Unmanaged;
+using GSF.IO;
+using GSF.IO.Unmanaged;
 
 namespace openHistorian.Collections.KeyValue
 {

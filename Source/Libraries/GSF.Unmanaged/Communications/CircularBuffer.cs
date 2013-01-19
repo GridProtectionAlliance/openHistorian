@@ -25,7 +25,7 @@
 using System;
 using System.IO;
 
-namespace openHistorian.Communications
+namespace GSF.Communications
 {
     /// <summary>
     /// Provides a fixed size circular byte buffer

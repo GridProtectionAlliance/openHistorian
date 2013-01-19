@@ -24,7 +24,7 @@
 
 using System;
 using System.Diagnostics;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 using openHistorian.Archive;
 
 namespace openHistorian.Engine.ArchiveWriters

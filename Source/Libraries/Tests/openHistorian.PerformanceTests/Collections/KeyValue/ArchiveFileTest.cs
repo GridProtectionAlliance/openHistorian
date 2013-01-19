@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using NUnit.Framework;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 using openHistorian.Archive;
 
 namespace openHistorian.Collections.KeyValue

@@ -23,7 +23,7 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.IO;
+using GSF.IO;
 using openHistorian.Archive;
 
 namespace openHistorian.Collections.KeyValue

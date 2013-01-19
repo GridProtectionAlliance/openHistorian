@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using openHistorian.IO;
-using openHistorian.IO.Unmanaged;
+using GSF.IO;
+using GSF.IO.Unmanaged;
 
 namespace openHistorian.Collections.KeyValue
 {

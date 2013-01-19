@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using GSF;
+using NUnit.Framework;
 using openHistorian;
 using System;
 

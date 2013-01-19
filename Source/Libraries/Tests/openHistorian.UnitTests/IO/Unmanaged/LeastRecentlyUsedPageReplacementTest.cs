@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using GSF;
 using NUnit.Framework;
-using openHistorian.UnmanagedMemory;
+using GSF.UnmanagedMemory;
 
-namespace openHistorian.IO.Unmanaged.Test
+namespace GSF.IO.Unmanaged.Test
 {
 
     /// <summary>

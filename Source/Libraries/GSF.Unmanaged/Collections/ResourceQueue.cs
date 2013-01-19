@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
 
     /// <summary>

@@ -28,7 +28,7 @@ using System.IO;
 using System.Linq;
 using GSF.Text;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     public partial class IsolatedQueueFileBacked<T>
     {

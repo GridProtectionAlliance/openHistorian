@@ -28,7 +28,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     /// <summary>
     /// Represents an object that can be configured as read only and thus made immutable.  

@@ -28,14 +28,11 @@ namespace openHistorian.Adapters
                         queue.Enqueue(0,x,0,0);
                     }
                     Thread.Sleep(100);
-
                 }
                 Thread.Sleep(100);
             }
 
             //Thread.Sleep(100);
-
-
         }
 
 

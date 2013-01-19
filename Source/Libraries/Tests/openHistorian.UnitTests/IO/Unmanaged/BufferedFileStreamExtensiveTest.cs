@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Text;
+using GSF.IO;
 using NUnit.Framework;
 using openHistorian.Collections.KeyValue;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 using System;
 using System.IO;
-using openHistorian.UnmanagedMemory;
+using GSF.UnmanagedMemory;
 
 namespace openHistorian.IO.Unmanaged.Test
 {

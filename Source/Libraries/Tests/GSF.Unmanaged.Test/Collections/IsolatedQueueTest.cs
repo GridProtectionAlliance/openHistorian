@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using NUnit.Framework;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     [TestFixture]
     public class IsolatedQueueTest

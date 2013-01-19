@@ -6,7 +6,7 @@ using System.Text;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace openHistorian.Collections.Test
+namespace GSF.Collections.Test
 {
     [TestFixture()]
     public class ResourceQueueCollectionTest

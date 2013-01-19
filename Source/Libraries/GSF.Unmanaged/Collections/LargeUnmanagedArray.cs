@@ -24,9 +24,9 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.UnmanagedMemory;
+using GSF.UnmanagedMemory;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     /// <summary>
     /// Allows the creation of a large array that is backed by unmanaged memory that is located in the buffer pool.

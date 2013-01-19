@@ -1,9 +1,10 @@
-﻿using NUnit.Framework;
+﻿using GSF;
+using NUnit.Framework;
 using openHistorian.IO.Unmanaged;
 using System;
-using openHistorian.UnmanagedMemory;
+using GSF.UnmanagedMemory;
 
-namespace openHistorian.IO.Unmanaged.Test
+namespace GSF.IO.Unmanaged.Test
 {
 
 

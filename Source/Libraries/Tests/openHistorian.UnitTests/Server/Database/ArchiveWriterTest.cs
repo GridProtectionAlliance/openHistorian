@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using GSF;
 using NUnit.Framework;
 using openHistorian.Archive;
 using openHistorian.Engine;

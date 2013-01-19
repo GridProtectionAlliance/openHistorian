@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian.UnmanagedMemory
+namespace GSF.UnmanagedMemory
 {
     /// <summary>
     /// This class allocates and pools unmanaged memory.

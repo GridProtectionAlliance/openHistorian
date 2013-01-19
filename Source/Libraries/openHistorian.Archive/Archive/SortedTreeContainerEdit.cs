@@ -24,7 +24,7 @@
 using System;
 using openHistorian.Collections.KeyValue;
 using openHistorian.FileStructure;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 
 namespace openHistorian.Archive
 {

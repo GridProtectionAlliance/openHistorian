@@ -25,9 +25,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GSF;
 using NUnit.Framework;
+using GSF.IO;
+using GSF.IO.Unmanaged;
 using openHistorian.IO;
-using openHistorian.IO.Unmanaged;
 
 namespace openHistorian.FileStructure.Test
 {

@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.IO.Unmanaged
+namespace GSF.IO.Unmanaged
 {
     /// <summary>
     /// Implementing this interface allows a binary stream to be attached to a buffer.

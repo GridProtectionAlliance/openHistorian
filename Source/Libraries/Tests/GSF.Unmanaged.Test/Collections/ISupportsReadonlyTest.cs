@@ -1,7 +1,9 @@
 ﻿using System;
+using GSF;
+using GSF.Collections;
 using NUnit.Framework;
 
-namespace openHistorian.Collections
+namespace GSF.Collections
 {
     /// <summary>
     ///This is a test class for ISupportsReadonlyTest and is intended

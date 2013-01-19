@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 using NUnit.Framework;
 
 namespace openHistorian.FileStructure.Test

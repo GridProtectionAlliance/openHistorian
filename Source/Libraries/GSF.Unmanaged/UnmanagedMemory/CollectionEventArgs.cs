@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.UnmanagedMemory
+namespace GSF.UnmanagedMemory
 {
     public enum BufferPoolCollectionMode
     {

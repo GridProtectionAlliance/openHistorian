@@ -24,7 +24,7 @@
 
 using System;
 
-namespace openHistorian.IO.Unmanaged
+namespace GSF.IO.Unmanaged
 {
     public partial class BufferedFileStream
     {

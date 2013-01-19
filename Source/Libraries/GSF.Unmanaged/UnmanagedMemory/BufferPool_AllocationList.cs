@@ -23,9 +23,9 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.Collections;
+using GSF.Collections;
 
-namespace openHistorian.UnmanagedMemory
+namespace GSF.UnmanagedMemory
 {
     //Bug: I cannot use m_isPageAllocated to determine how many pages are allocated. 
     //bug: This is because it will not be valid if a block is freed. The bits are not

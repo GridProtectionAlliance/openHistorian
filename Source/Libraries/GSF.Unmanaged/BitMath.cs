@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace openHistorian
+namespace GSF
 {
     /// <summary>
     /// Contains some random and useful functions.

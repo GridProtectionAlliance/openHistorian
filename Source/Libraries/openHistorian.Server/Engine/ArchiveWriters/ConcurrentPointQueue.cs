@@ -23,7 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.IO.Unmanaged;
+using GSF.IO.Unmanaged;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
