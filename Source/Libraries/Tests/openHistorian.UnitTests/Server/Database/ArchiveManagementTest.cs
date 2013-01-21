@@ -185,10 +185,10 @@ namespace openHistorian.Server.Database
 
                         for (uint x = 1; x < 102; x++)
                         {
-                            scan.GetNextKey(out value1, out value2, out value3, out value4);
+                            scan.Read(out value1, out value2, out value3, out value4);
                             Assert.IsTrue(value1 == x);
                         }
-                        Assert.IsFalse(scan.GetNextKey(out value1, out value2, out value3, out value4));
+                        Assert.IsFalse(scan.Read(out value1, out value2, out value3, out value4));
                     }
                 }
             }

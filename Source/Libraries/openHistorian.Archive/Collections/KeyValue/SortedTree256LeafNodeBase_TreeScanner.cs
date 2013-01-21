@@ -37,7 +37,7 @@ namespace openHistorian.Collections.KeyValue
                 m_tree = tree;
             }
 
-            public bool GetNextKey(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
+            public bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
             {
                 //If there are no more records in the current node.
                 if (m_keyIndexOfCurrentKey >= m_nodeRecordCount)

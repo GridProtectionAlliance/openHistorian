@@ -159,8 +159,8 @@ namespace openHistorian.IO.Unmanaged.Test
 
                                 while (b1 & b2)
                                 {
-                                    b1 = item1.GetNextKey(out x1, out x2, out x3, out x4);
-                                    b2 = item2.GetNextKey(out y1, out y2, out y3, out y4);
+                                    b1 = item1.Read(out x1, out x2, out x3, out x4);
+                                    b2 = item2.Read(out y1, out y2, out y3, out y4);
 
                                     Assert.AreEqual(b1, b1);
                                     Assert.AreEqual(x1, y1);

@@ -81,6 +81,7 @@
     <Compile Include="IO\Unmanaged\MemoryStream.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
+    <Compile Include="IStream256.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
     <Compile Include="Threading\AsyncWorker.cs" />

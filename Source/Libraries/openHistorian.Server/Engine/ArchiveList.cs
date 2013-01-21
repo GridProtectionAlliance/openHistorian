@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.Threading;
 using openHistorian.Archive;
 
 namespace openHistorian.Engine
@@ -49,12 +50,24 @@ namespace openHistorian.Engine
         /// </summary>
         List<ArchiveListSnapshot> m_allSnapshots;
 
+        ScheduledTask m_processRemovals;
+
+        List<ArchiveListRemovalStatus> m_filesToDelete;
+        List<ArchiveListRemovalStatus> m_filesToDispose;
+
         public ArchiveList()
         {
+            m_filesToDelete = new List<ArchiveListRemovalStatus>();
+            m_filesToDispose = new List<ArchiveListRemovalStatus>();
+            m_processRemovals = new ScheduledTask(ThreadingMode.Background);
+            m_processRemovals.OnRunWorker += m_processRemovals_OnRunWorker;
+            m_processRemovals.OnDispose += m_processRemovals_OnDispose;
             m_lockedFiles = new List<ArchiveFile>();
             m_fileSummaries = new List<ArchiveFileSummary>();
             m_allSnapshots = new List<ArchiveListSnapshot>();
         }
+
+
 
         public ArchiveList(IEnumerable<string> archiveFiles)
             : this()
@@ -166,9 +179,52 @@ namespace openHistorian.Engine
                         f.ArchiveFileFile.Dispose();
                     }
                 }
+                m_processRemovals.Dispose();
                 m_disposed = true;
             }
-
         }
+
+        void m_processRemovals_OnRunWorker(object sender, ScheduledTaskEventArgs e)
+        {
+            lock (m_syncRoot)
+            {
+                for (int x = m_filesToDelete.Count - 1; x >= 0; x--)
+                {
+                    var file = m_filesToDelete[x];
+                    if (!file.IsBeingUsed)
+                    {
+                        file.Archive.Delete();
+                        m_filesToDelete.RemoveAt(x);
+                    }
+                }
+
+                for (int x = m_filesToDispose.Count - 1; x >= 0; x--)
+                {
+                    var file = m_filesToDispose[x];
+                    if (!file.IsBeingUsed)
+                    {
+                        file.Archive.Dispose();
+                        m_filesToDispose.RemoveAt(x);
+                    }
+                }
+
+                if (m_filesToDelete.Count > 0 || m_filesToDispose.Count > 0)
+                    m_processRemovals.Start(1000);
+            }
+        }
+
+        void m_processRemovals_OnDispose(object sender, ScheduledTaskEventArgs e)
+        {
+            lock (m_syncRoot)
+            {
+                m_filesToDelete.ForEach(x => x.Archive.Delete());
+                m_filesToDelete.Clear();
+
+                m_filesToDispose.ForEach(x => x.Archive.Dispose());
+                m_filesToDispose.Clear();
+            }
+        }
+
+
     }
 }

@@ -30,7 +30,6 @@ using GSF.Threading;
 //ToDo: clean up and implement this class.
 namespace openHistorian.Engine.ArchiveWriters
 {
-
     internal abstract class CommitWaitBase<T> : IDisposable
         where T : new()
     {
@@ -43,6 +42,7 @@ namespace openHistorian.Engine.ArchiveWriters
         bool m_threadHasQuit;
         bool m_disposed;
         T m_state;
+
         /// <summary>
         /// Provides a way to block a thread until data has been committed to the archive writer.
         /// </summary>
@@ -82,7 +82,8 @@ namespace openHistorian.Engine.ArchiveWriters
         protected CommitWaitBase()
         {
             m_state = new T();
-            AsyncProcess = new ScheduledTask(ProcessInsertingData, ProcessInsertingData);
+            AsyncProcess = new ScheduledTask(ThreadingMode.Foreground);
+            AsyncProcess.OnEvent += ProcessInsertingData;
             m_threadQuit = new ManualResetEvent(false);
             SyncRoot = new object();
             m_pendingCommitRequests = new List<WaitingForCommit>();
@@ -91,7 +92,7 @@ namespace openHistorian.Engine.ArchiveWriters
             m_latestSequenceId = -1;
         }
 
-        void ProcessInsertingData()
+        void ProcessInsertingData(object sender, EventArgs e)
         {
             ProcessInsertingData(m_state);
             ReleasePendingWaitLocks();
@@ -286,7 +287,6 @@ namespace openHistorian.Engine.ArchiveWriters
 
         void ReleasePendingWaitLocks()
         {
-            
             lock (SyncRoot)
             {
                 int x = m_pendingCommitRequests.Count - 1;

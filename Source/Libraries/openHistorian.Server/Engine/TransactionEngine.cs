@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ITreeScanner256.cs - Gbtc
+//  TransactionEngine.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,29 +16,23 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  6/23/2012 - Steven E. Chisholm
+//  7/18/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//       
+//
 //******************************************************************************************************
 
-using GSF;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace openHistorian.Collections.KeyValue
+namespace openHistorian.Engine
 {
     /// <summary>
-    /// Assists in the parsing of data from a <see cref="SortedTree256Base"/>.
+    /// Code handles how transactions are assigned.
     /// </summary>
-    public interface ITreeScanner256 : IStream256
+    class TransactionEngine
     {
-        /// <summary>
-        /// Moves the current position to the location where the provided key should be located. 
-        /// </summary>
-        /// <param name="key1"></param>
-        /// <param name="key2"></param>
-        /// <remarks>
-        /// If the key does not exist in the database, the location will be at the next point in the list. 
-        /// To seek to the beginning of the tree. Seek to 0,0. 
-        /// </remarks>
-        void SeekToKey(ulong key1, ulong key2);
     }
 }

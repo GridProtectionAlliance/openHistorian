@@ -28,6 +28,35 @@ using System.Threading;
 
 namespace GSF.Threading
 {
+    public enum ThreadingMode
+    {
+        Foreground,
+        Background
+    }
+    public class ScheduledTaskEventArgs : EventArgs
+    {
+        /// <summary>
+        /// True if execution is the result of an interval timing out.
+        /// False if running immediately.
+        /// </summary>
+        public bool IsOnInterval { get; private set; }
+        /// <summary>
+        /// True if this is the last time a function is being executed. 
+        /// </summary>
+        public bool IsDisposing { get; private set; }
+        /// <summary>
+        /// Returns true if this is an immediate rerun. False otherwise.
+        /// </summary>
+        public bool IsRerun { get; private set; }
+
+        public ScheduledTaskEventArgs(bool isOnInterval, bool isDisposing, bool isRerun)
+        {
+            IsOnInterval = isOnInterval;
+            IsDisposing = isDisposing;
+            IsRerun = isRerun;
+        }
+    }
+
     /// <summary>
     /// Provides a time sceduled task that can either be canceled prematurely or told to execute early.
     /// </summary>
@@ -40,14 +69,30 @@ namespace GSF.Threading
         Internal m_internal;
 
         /// <summary>
+        /// Only occurs once when the schedule is being disposed
+        /// </summary>
+        public event EventHandler<ScheduledTaskEventArgs> OnDispose;
+        /// <summary>
+        /// Occurs every time the schedule runs.
+        /// </summary>
+        public event EventHandler<ScheduledTaskEventArgs> OnRunWorker;
+        /// <summary>
+        /// Occurs when disposing or working.
+        /// </summary>
+        public event EventHandler<ScheduledTaskEventArgs> OnEvent;
+        /// <summary>
+        /// Occurs when unhandled exceptions in the worker or disposed thread;
+        /// </summary>
+        public event UnhandledExceptionEventHandler OnException;
+
+        /// <summary>
         /// Creates a task that can be manually scheduled to run.
         /// </summary>
-        /// <param name="callback"></param>
-        /// <param name="onDisposing"></param>
-        /// <param name="onException"></param>
-        public ScheduledTask(Action callback, Action onDisposing = null, Action<Exception> onException = null)
+        /// <param name="threadMode">Determines if this thread is to be a foreground or background thread.
+        /// A background thread will run on the thread pool while a foreground thread will be a dedicated thread.</param>
+        public ScheduledTask(ThreadingMode threadMode)
         {
-            m_internal = new Internal(callback, onDisposing, onException, true);
+            m_internal = new Internal(Callback, threadMode == ThreadingMode.Foreground);
         }
 
         /// <summary>
@@ -99,6 +144,21 @@ namespace GSF.Threading
             m_internal.Start();
         }
 
+        /// <summary>
+        /// Immediately starts the task. Will not signal the class to run again if
+        /// it is currently running.
+        /// </summary>
+        /// <remarks>
+        /// If this is called after a Start(Delay) the timer will be short circuited 
+        /// and the process will still start immediately. 
+        /// </remarks>
+        public void StartIfNotRunning()
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            m_internal.StartIfNotRunning();
+        }
+
         public void Start(TimeSpan delay)
         {
             Start(delay.Milliseconds);
@@ -117,6 +177,66 @@ namespace GSF.Threading
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             m_internal.Start(delay);
+        }
+
+        void Callback()
+        {
+            var args = m_internal.EventArgs;
+            if (args.IsDisposing)
+            {
+                try
+                {
+                    if (OnDispose != null)
+                        OnDispose(this, args);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        if (OnException != null)
+                            OnException(this, new UnhandledExceptionEventArgs(ex, false));
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (OnRunWorker != null)
+                        OnRunWorker(this, args);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        if (OnException != null)
+                            OnException(this, new UnhandledExceptionEventArgs(ex, false));
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+
+            try
+            {
+                if (OnEvent != null)
+                    OnEvent(this, args);
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    if (OnException != null)
+                        OnException(this, new UnhandledExceptionEventArgs(ex, false));
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
 
         /// <summary>

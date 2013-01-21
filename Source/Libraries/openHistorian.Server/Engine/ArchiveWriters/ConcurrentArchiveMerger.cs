@@ -192,7 +192,7 @@ namespace openHistorian.Engine.ArchiveWriters
                             reader.SeekToKey(0, 0);
 
                             ulong value1, value2, key1, key2;
-                            while (reader.GetNextKey(out key1, out key2, out value1, out value2))
+                            while (reader.Read(out key1, out key2, out value1, out value2))
                             {
                                 fileEditor.AddPoint(key1, key2, value1, value2);
                             }

@@ -123,7 +123,7 @@ namespace openHistorian.Engine
             TryAgain:
                 if (m_timedOut)
                     Cancel();
-                if (m_currentScanner.GetNextKey(out key1, out key2, out value1, out value2))
+                if (m_currentScanner.Read(out key1, out key2, out value1, out value2))
                 {
                     if (key1 <= m_stopKey)
                     {

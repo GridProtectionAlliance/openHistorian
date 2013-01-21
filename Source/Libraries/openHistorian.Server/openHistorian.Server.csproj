@@ -40,8 +40,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\ArchiveWriters\ArchiveMerger.cs" />
-    <Compile Include="Engine\ArchiveWriters\AsyncProcess.cs" />
     <Compile Include="Engine\ArchiveWriters\CommitWaitBase.cs" />
+    <Compile Include="Engine\ArchiveWriters\PointStreamCache.cs" />
+    <Compile Include="Engine\ArchiveWriters\PrestageWriter.cs" />
+    <Compile Include="Engine\ArchiveWriters\RolloverArgs.cs" />
+    <Compile Include="Engine\ArchiveWriters\StageWriter.cs" />
+    <Compile Include="Engine\ArchiveWriters\StagingFile.cs" />
+    <Compile Include="Engine\ArchiveWriters\TransactionalBlocking.cs" />
+    <Compile Include="Engine\ArchiveWriters\WriteProcessor.cs" />
+    <Compile Include="Engine\TransactionEngine.cs" />
     <Compile Include="HistorianServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Engine\Configuration\ArchiveInitializerSettings.cs" />

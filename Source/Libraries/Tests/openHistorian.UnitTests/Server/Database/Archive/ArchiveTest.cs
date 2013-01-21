@@ -52,7 +52,7 @@ namespace openHistorian
             reader1.SeekToKey(0,0);
 
             ulong value1, value2, key1, key2;
-            while (reader1.GetNextKey(out key1, out key2, out value1, out value2))
+            while (reader1.Read(out key1, out key2, out value1, out value2))
             {
                 cnt++;
            

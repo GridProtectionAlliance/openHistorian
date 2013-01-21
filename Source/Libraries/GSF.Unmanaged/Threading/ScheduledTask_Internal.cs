@@ -54,12 +54,11 @@ namespace GSF.Threading
                 public const int Disposed = 8;
             }
 
+            ScheduledTaskEventArgs m_callbackArgs;
             CustomThreadBase m_thread;
             ManualResetEvent m_hasQuit;
             StateMachine m_state;
             WeakAction m_callback;
-            WeakAction m_disposingCallback;
-            WeakAction<Exception> m_exceptionCallback;
             volatile int m_delayRequested;
             volatile bool m_disposing;
 
@@ -67,10 +66,8 @@ namespace GSF.Threading
             /// Creates a task that can be manually scheduled to run.
             /// </summary>
             /// <param name="callback">The method to repeatedly call</param>
-            /// <param name="disposing">The method to call once upon disposing</param>
-            /// <param name="exceptions">A callback for exception processing that may occur</param>
             /// <param name="isForeground"></param>
-            public Internal(Action callback, Action disposing, Action<Exception> exceptions, bool isForeground)
+            public Internal(Action callback, bool isForeground)
             {
                 if (isForeground)
                 {
@@ -79,13 +76,18 @@ namespace GSF.Threading
                 else
                 {
                     m_thread = new BackgroundThread(InternalBeginRunOnTimer);
-
                 }
-                m_exceptionCallback = new WeakAction<Exception>(exceptions);
-                m_disposingCallback = new WeakAction(disposing);
                 m_callback = new WeakAction(callback);
                 m_state = new StateMachine(State.NotRunning);
                 m_hasQuit = new ManualResetEvent(false);
+            }
+
+            public ScheduledTaskEventArgs EventArgs
+            {
+                get
+                {
+                    return m_callbackArgs;
+                }
             }
 
             /// <summary>
@@ -136,6 +138,59 @@ namespace GSF.Threading
                         case State.RunAgainAfterDelayIntermediate:
                             //Wait for it to transition to its next state
                             break;
+                        case State.RunAgain:
+                        case State.ScheduledToRun:
+                            return;
+                    }
+
+                    wait.SpinOnce();
+                }
+            }
+
+            /// <summary>
+            /// Immediately starts the task. 
+            /// This will not request the class to run again if it is already running.
+            /// </summary>
+            /// <remarks>
+            /// If this is called after a Start(Delay) the timer will be short circuited 
+            /// and the process will still start immediately. 
+            /// </remarks>
+            public void StartIfNotRunning()
+            {
+                SpinWait wait = new SpinWait();
+                while (true)
+                {
+                    if (m_disposing)
+                        return;
+
+                    int state = m_state;
+                    switch (state)
+                    {
+                        case State.NotRunning:
+                            if (m_state.TryChangeState(State.NotRunning, State.ScheduledToRun))
+                            {
+                                m_thread.StartNow();
+                                return;
+                            }
+                            break;
+                        case State.ScheduledToRunAfterDelay:
+                            if (m_state.TryChangeState(State.ScheduledToRunAfterDelay, State.ScheduledToRun))
+                            {
+                                m_thread.ShortCircuitDelayRequest();
+                                return;
+                            }
+                            break;
+                        case State.RunAgainAfterDelay:
+                            if (m_state.TryChangeState(State.RunAgainAfterDelay, State.RunAgain))
+                            {
+                                return;
+                            }
+                            break;
+                        case State.RunAgainAfterDelayIntermediate:
+                        case State.Resetting:
+                            //Wait for it to transition to its next state
+                            break;
+                        case State.Running:
                         case State.RunAgain:
                         case State.ScheduledToRun:
                             return;
@@ -203,7 +258,10 @@ namespace GSF.Threading
                 SpinWait wait = new SpinWait();
                 while (true)
                 {
-                    if (m_state.TryChangeStates(State.ScheduledToRunAfterDelay, State.ScheduledToRun, State.Running))
+                    bool wasScheduled = m_state.TryChangeState(State.ScheduledToRunAfterDelay, State.Running);
+                    bool wasRunNow = m_state.TryChangeState(State.ScheduledToRun, State.Running);
+                    bool isRerun = false;
+                    if (wasScheduled || wasRunNow)
                     {
                         while (true)
                         {
@@ -214,25 +272,16 @@ namespace GSF.Threading
                                 return;
                             }
 
-                            try
-                            {
-                                m_callback.TryInvoke();
-                            }
-                            catch (Exception ex)
-                            {
-                                try
-                                {
-                                    m_exceptionCallback.TryInvoke(ex);
-                                }
-                                catch (Exception)
-                                {
-                                }
-                            }
+                            m_callbackArgs = new ScheduledTaskEventArgs(wasScheduled, false, isRerun);
+                            m_callback.TryInvoke();
 
                             if (CheckAfterExecuteAction() == NextAction.Quit)
                             {
                                 return;
                             }
+                            isRerun = true;
+                            wasScheduled = false;
+                            wasRunNow = false;
                         }
                     }
                     wait.SpinOnce();
@@ -379,20 +428,8 @@ namespace GSF.Threading
 
             void CallDisposeCallback()
             {
-                try
-                {
-                    m_disposingCallback.TryInvoke();
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        m_exceptionCallback.TryInvoke(ex);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
+                m_callbackArgs = new ScheduledTaskEventArgs(false, true, false);
+                m_callback.TryInvoke();
             }
         }
 

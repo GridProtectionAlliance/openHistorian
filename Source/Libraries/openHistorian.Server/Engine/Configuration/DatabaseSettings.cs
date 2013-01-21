@@ -34,6 +34,11 @@ namespace openHistorian.Engine.Configuration
         public List<ArchiveRolloverSettings> ArchiveRollovers;
         public List<string> AttachedFiles { get; set; }
 
+        public ArchiveRolloverSettings Stage0;
+        public ArchiveRolloverSettings Stage1;
+        public ArchiveRolloverSettings Stage2;
+        public ArchiveRolloverSettings Stage3;
+
         public DatabaseSettings()
         {
             ArchiveRollovers = new List<ArchiveRolloverSettings>();
@@ -146,11 +151,83 @@ namespace openHistorian.Engine.Configuration
                     rollover.Initializer.IsMemoryArchive = false;
                     rollover.Initializer.Paths.AddRange(config.Paths.GetSavePaths());
                     rollover.NewFileOnSize = 1024 * 1024 * 1024; //1GB
-
                     ArchiveRollovers.Add(rollover);
                 }
             }
         }
+
+        //void SetupWriters(DatabaseConfig config)
+        //{
+        //    if (!config.Writer.HasValue)
+        //        return;
+        //    if (!config.Writer.Value.IsValid)
+        //        throw new ArgumentException("The writer has not been defined", "config");
+        //    var options = config.Writer.Value;
+
+        //    if (options.IsInMemoryOnly)
+        //    {
+        //        TimeSpan commitInterval = new TimeSpan((long)(options.MemoryCommitInterval.Value * TimeSpan.TicksPerSecond));
+        //        if (commitInterval.TotalMilliseconds < 1)
+        //            commitInterval = new TimeSpan(0, 0, 0, 0, 1);
+        //        TimeSpan rollover1 = new TimeSpan(commitInterval.Ticks * 100);
+
+        //        ArchiveWriter = new ArchiveWriterSettings();
+        //        ArchiveWriter.CommitOnInterval = commitInterval;
+        //        ArchiveWriter.NewFileOnInterval = rollover1;
+
+        //        ArchiveRolloverSettings rollover = new ArchiveRolloverSettings();
+        //        rollover.Initializer.IsMemoryArchive = true;
+        //        rollover.NewFileOnSize = 1024 * 1024;
+        //        ArchiveRollovers.Add(rollover);
+
+        //        rollover = new ArchiveRolloverSettings();
+        //        rollover.Initializer.IsMemoryArchive = true;
+        //        rollover.NewFileOnSize = 10 * 1024 * 1024;
+        //        ArchiveRollovers.Add(rollover);
+        //    }
+        //    else
+        //    {
+        //        TimeSpan commitInterval = new TimeSpan((long)(options.MemoryCommitInterval.Value * TimeSpan.TicksPerSecond));
+        //        if (commitInterval.TotalMilliseconds < 1)
+        //            commitInterval = new TimeSpan(0, 0, 0, 0, 1);
+
+        //        TimeSpan rolloverIntermediate = new TimeSpan(commitInterval.Ticks * 100);
+        //        TimeSpan rolloverDisk = new TimeSpan((long)(options.DiskCommitInterval.Value * TimeSpan.TicksPerSecond));
+
+        //        if (rolloverIntermediate < rolloverDisk)
+        //        {
+        //            //Generate an intermediate rollover archive.
+        //            ArchiveWriter = new ArchiveWriterSettings();
+        //            ArchiveWriter.CommitOnInterval = commitInterval;
+        //            ArchiveWriter.NewFileOnInterval = rolloverIntermediate;
+
+        //            ArchiveRolloverSettings rollover = new ArchiveRolloverSettings();
+        //            rollover.Initializer.IsMemoryArchive = true;
+        //            rollover.NewFileOnInterval = rolloverDisk;
+        //            ArchiveRollovers.Add(rollover);
+
+        //            rollover = new ArchiveRolloverSettings();
+        //            rollover.Initializer.IsMemoryArchive = false;
+        //            rollover.Initializer.Paths.AddRange(config.Paths.GetSavePaths());
+        //            rollover.NewFileOnSize = 1024 * 1024 * 1024; //1GB
+
+        //            ArchiveRollovers.Add(rollover);
+        //        }
+        //        else
+        //        {
+        //            //No need for an intermediate memory file
+        //            ArchiveWriter = new ArchiveWriterSettings();
+        //            ArchiveWriter.CommitOnInterval = commitInterval;
+        //            ArchiveWriter.NewFileOnInterval = rolloverIntermediate;
+
+        //            ArchiveRolloverSettings rollover = new ArchiveRolloverSettings();
+        //            rollover.Initializer.IsMemoryArchive = false;
+        //            rollover.Initializer.Paths.AddRange(config.Paths.GetSavePaths());
+        //            rollover.NewFileOnSize = 1024 * 1024 * 1024; //1GB
+        //            ArchiveRollovers.Add(rollover);
+        //        }
+        //    }
+        //}
     }
 
 }

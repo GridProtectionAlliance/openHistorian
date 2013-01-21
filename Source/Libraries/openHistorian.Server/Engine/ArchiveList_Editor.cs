@@ -142,6 +142,40 @@ namespace openHistorian.Engine
                 return false;
             }
 
+            public bool RemoveAndDelete(ArchiveFile archive)
+            {
+                ArchiveListRemovalStatus status;
+                if (Remove(archive, out status))
+                {
+                    if (!status.IsBeingUsed)
+                    {
+                        status.Archive.Delete();
+                        return true;
+                    }
+                    m_collection.m_filesToDelete.Add(status);
+                    m_collection.m_processRemovals.Start(1000);
+                    return true;
+                }
+                return false;
+            }
+
+            public bool RemoveAndDispose(ArchiveFile archive)
+            {
+                ArchiveListRemovalStatus status;
+                if (Remove(archive, out status))
+                {
+                    if (!status.IsBeingUsed)
+                    {
+                        status.Archive.Dispose();
+                        return true;
+                    }
+                    m_collection.m_filesToDispose.Add(status);
+                    m_collection.m_processRemovals.Start(1000);
+                    return true;
+                }
+                return false;
+            }
+
             /// <summary>
             /// Releases the lock on the <see cref="ArchiveList"/>.
             /// </summary>

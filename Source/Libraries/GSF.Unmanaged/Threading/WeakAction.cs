@@ -74,4 +74,27 @@ namespace GSF.Threading
             return true;
         }
     }
+
+    /// <summary>
+    /// Provides a weak referenced action delegate. 
+    /// </summary>
+    public class WeakEventHandler<T> : WeakReference
+        where T : EventArgs
+    {
+        MethodInfo m_method;
+        public WeakEventHandler(EventHandler<T> target)
+            : base((target == null) ? null : target.Target)
+        {
+            if (target != null)
+                m_method = target.Method;
+        }
+        public bool TryInvoke(object sender, T e)
+        {
+            object target = base.Target;
+            if (target == null)
+                return false;
+            m_method.Invoke(target, new object[] { sender, e });
+            return true;
+        }
+    }
 }

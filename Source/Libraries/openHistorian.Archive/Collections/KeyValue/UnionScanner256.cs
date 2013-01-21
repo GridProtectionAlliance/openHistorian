@@ -15,7 +15,7 @@ namespace openHistorian.Collections.KeyValue
             m_trees = trees;
         }
 
-        public bool GetNextKey(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
+        public bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
         {
             throw new NotImplementedException();
         }

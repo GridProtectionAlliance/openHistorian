@@ -95,13 +95,13 @@ namespace openHistorian.Test
                 {
                     var scanner = instance.GetTreeScanner();
                     scanner.SeekToKey(0, 0);
-                    Assert.AreEqual(false, scanner.GetNextKey(out date, out pointId, out value1, out value2));
+                    Assert.AreEqual(false, scanner.Read(out date, out pointId, out value1, out value2));
                 }
                 using (var instance = snap2.CreateReadSnapshot())
                 {
                     var scanner = instance.GetTreeScanner();
                     scanner.SeekToKey(0, 0);
-                    Assert.AreEqual(true, scanner.GetNextKey(out date, out pointId, out value1, out value2));
+                    Assert.AreEqual(true, scanner.Read(out date, out pointId, out value1, out value2));
                     Assert.AreEqual(1uL, date);
                     Assert.AreEqual(2uL, pointId);
                     Assert.AreEqual(3uL, value1);
@@ -138,13 +138,13 @@ namespace openHistorian.Test
                 {
                     var scanner = instance.GetTreeScanner();
                     scanner.SeekToKey(0, 0);
-                    Assert.AreEqual(false, scanner.GetNextKey(out date, out pointId, out value1, out value2));
+                    Assert.AreEqual(false, scanner.Read(out date, out pointId, out value1, out value2));
                 }
                 using (var instance = snap2.CreateReadSnapshot())
                 {
                     var scanner = instance.GetTreeScanner();
                     scanner.SeekToKey(0, 0);
-                    Assert.AreEqual(false, scanner.GetNextKey(out date, out pointId, out value1, out value2));
+                    Assert.AreEqual(false, scanner.Read(out date, out pointId, out value1, out value2));
                 }
             }
         }

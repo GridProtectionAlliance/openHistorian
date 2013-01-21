@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 using GSF.IO;
 using GSF.IO.Unmanaged;
 
@@ -70,7 +71,7 @@ namespace openHistorian.Collections.KeyValue
             NodeHeader.Save(StreamLeaf, NodeHeader.Size, 0, 0);
         }
 
-        protected override unsafe bool LeafNodeInsert(long nodeIndex, ITreeScanner256 treeScanner, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid, ref ulong maxKey, ref ulong minKey)
+        protected override unsafe bool LeafNodeInsert(long nodeIndex, IStream256 treeScanner, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid, ref ulong maxKey, ref ulong minKey)
         {
             if (key1 < minKey)
                 minKey = key1;
@@ -107,7 +108,7 @@ namespace openHistorian.Collections.KeyValue
                 int compareKeysResults = (CompareKeys(key1, key2, m_lastKey1, m_lastKey2));
                 if (compareKeysResults == 0) //if keys match, result is found.
                 {
-                    isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                    isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                     return false;
                 }
                 if (compareKeysResults > 0) //if the key is greater than the test index, the insert will occur at the end of the stream.
@@ -137,7 +138,7 @@ namespace openHistorian.Collections.KeyValue
                     int compareKeysResults = CompareKeys(key1, key2, curKey1, curKey2);
                     if (compareKeysResults == 0) //if keys match, result is found.
                     {
-                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                         return false;
                     }
                     if (compareKeysResults < 0) //if the key is greater than the test index, change the lower bounds
@@ -167,7 +168,7 @@ namespace openHistorian.Collections.KeyValue
                                 header.Save(StreamLeaf, BlockSize, nodeIndex);
 
                             NewNodeThenInsert(key1, key2, value1, value2, nodeIndex);
-                            isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                            isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                             return true;
                         }
                         bytesRemaining -= shiftDelta2;
@@ -183,7 +184,7 @@ namespace openHistorian.Collections.KeyValue
                         curValue2 = value2;
                         prevPosition += shiftDelta2; 
                         
-                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                         if (!isValid && IsLessThanOrEqualTo(key1, key2, curKey1, curKey2))
                             break;
 
@@ -210,13 +211,13 @@ namespace openHistorian.Collections.KeyValue
                     if (header.RightSiblingNodeIndex == 0)
                     {
                         NewNodeThenInsert(key1, key2, value1, value2, nodeIndex);
-                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                         return true;
                     }
                     else
                     {
                         SplitNodeThenInsert(key1, key2, value1, value2, nodeIndex);
-                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                         return true;
                     }
                 }
@@ -232,7 +233,7 @@ namespace openHistorian.Collections.KeyValue
 
                 header.ValidBytes += shiftDelta;
                 header.Save(StreamLeaf, BlockSize, nodeIndex);
-                isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                 return true;
             }
             else
@@ -252,7 +253,7 @@ namespace openHistorian.Collections.KeyValue
                     if (bytesRemaining < shiftDelta)
                     {
                         SplitNodeThenInsert(key1, key2, value1, value2, nodeIndex);
-                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                         return true;
                     }
 
@@ -267,7 +268,7 @@ namespace openHistorian.Collections.KeyValue
 
                     header.ValidBytes += shiftDelta;
                     header.Save(StreamLeaf, BlockSize, nodeIndex);
-                    isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                    isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                     return true;
                 }
                 else
@@ -286,7 +287,7 @@ namespace openHistorian.Collections.KeyValue
                     if (bytesRemaining < shiftDelta)
                     {
                         SplitNodeThenInsert(key1, key2, value1, value2, nodeIndex);
-                        isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                        isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                         return true;
                     }
 
@@ -301,7 +302,7 @@ namespace openHistorian.Collections.KeyValue
 
                     header.ValidBytes += shiftDelta;
                     header.Save(StreamLeaf, BlockSize, nodeIndex);
-                    isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+                    isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
                     return true;
                 }
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ITreeScanner256.cs - Gbtc
+//  IStream256.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,24 +21,23 @@
 //     
 //******************************************************************************************************
 
-using GSF;
-
-namespace openHistorian.Collections.KeyValue
+namespace GSF
 {
     /// <summary>
-    /// Assists in the parsing of data from a <see cref="SortedTree256Base"/>.
+    /// A 256 bit stream that can be parsed only once.
     /// </summary>
-    public interface ITreeScanner256 : IStream256
+    public interface IStream256
     {
         /// <summary>
-        /// Moves the current position to the location where the provided key should be located. 
+        /// Advances to the next entry
         /// </summary>
-        /// <param name="key1"></param>
-        /// <param name="key2"></param>
-        /// <remarks>
-        /// If the key does not exist in the database, the location will be at the next point in the list. 
-        /// To seek to the beginning of the tree. Seek to 0,0. 
-        /// </remarks>
-        void SeekToKey(ulong key1, ulong key2);
+        /// <param name="key1">an output parameter to store the first key</param>
+        /// <param name="key2">an output parameter to store the second key</param>
+        /// <param name="value1">an output parameter to store the first value</param>
+        /// <param name="value2">an output parameter to store the second value</param>
+        /// <returns>
+        /// Returns true if the next value is valid. Returns false if the end of the stream has been encountered.
+        /// </returns>
+        bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2);
     }
 }

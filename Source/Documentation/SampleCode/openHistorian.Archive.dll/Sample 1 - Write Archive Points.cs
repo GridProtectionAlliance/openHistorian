@@ -43,7 +43,7 @@ namespace SampleCode.openHistorian.Archive.dll
                     scanner.SeekToKey(0ul, 0ul);
 
                     ulong time, key, quality, value;
-                    while (scanner.GetNextKey(out time, out key, out quality, out value))
+                    while (scanner.Read(out time, out key, out quality, out value))
                     {
                         Console.WriteLine("{0} - {1} - {2} - {3}", time, key, quality, value);
                     }
@@ -117,8 +117,8 @@ namespace SampleCode.openHistorian.Archive.dll
                     ulong time1, key1, quality1, value1;
                     ulong time2, key2, quality2, value2;
 
-                    while (scanner1.GetNextKey(out time1, out key1, out quality1, out value1) &
-                       scanner2.GetNextKey(out time2, out key2, out quality2, out value2))
+                    while (scanner1.Read(out time1, out key1, out quality1, out value1) &
+                       scanner2.Read(out time2, out key2, out quality2, out value2))
                     {
                         Assert.AreEqual(time1, time2);
                         Assert.AreEqual(key1, key2);
@@ -145,7 +145,7 @@ namespace SampleCode.openHistorian.Archive.dll
 
                     ulong time, key, quality, value;
 
-                    while (scanner.GetNextKey(out time, out key, out quality, out value))
+                    while (scanner.Read(out time, out key, out quality, out value))
                     {
                         writer.AddPoint(time + 1, key, quality, value + 1);
                     }

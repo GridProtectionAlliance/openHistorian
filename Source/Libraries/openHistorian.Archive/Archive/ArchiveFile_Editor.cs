@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 using openHistorian.Collections.KeyValue;
 using openHistorian.FileStructure;
 
@@ -88,7 +89,7 @@ namespace openHistorian.Archive
                 m_dataTree.AddPoint(key1, key2, value1, value2);
             }
 
-            public void AddPoints(ITreeScanner256 scanner)
+            public void AddPoints(IStream256 scanner)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);

@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 using GSF.IO;
 
 namespace openHistorian.Collections.KeyValue
@@ -236,10 +237,10 @@ namespace openHistorian.Collections.KeyValue
         /// </summary>
         /// <param name="treeScanner"></param>
         /// <remarks>The tree is only read in order. No seeking of the tree occurs.</remarks>
-        public void Add(ITreeScanner256 treeScanner)
+        public void Add(IStream256 treeScanner)
         {
             ulong key1, key2, value1, value2;
-            var isValid = treeScanner.GetNextKey(out key1, out key2, out value1, out value2);
+            var isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
             ulong minKey = m_firstKey;
             ulong maxKey = m_lastKey;
 
@@ -304,7 +305,7 @@ namespace openHistorian.Collections.KeyValue
 
         #region [ Leaf Node Methods ]
 
-        protected abstract bool LeafNodeInsert(long nodeIndex, ITreeScanner256 treeScanner, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid, ref ulong maxKey, ref ulong minKey);
+        protected abstract bool LeafNodeInsert(long nodeIndex, IStream256 treeScanner, ref ulong key1, ref ulong key2, ref ulong value1, ref ulong value2, ref bool isValid, ref ulong maxKey, ref ulong minKey);
         protected abstract bool LeafNodeInsert(long nodeIndex, ulong key1, ulong key2, ulong value1, ulong value2);
         protected abstract bool LeafNodeGetValue(long nodeIndex, ulong key1, ulong key2, out ulong value1, out ulong value2);
         protected abstract void LeafNodeCreateEmptyNode(long newNodeIndex);

@@ -66,7 +66,9 @@ namespace openHistorian.Queues
             m_blocks = new IsolatedQueue<PointData>();
             m_pointStream = new StreamPoints(m_blocks, 1000);
             m_getDatabase = getDatabase;
-            m_worker = new ScheduledTask(WorkerDoWork, WorkerCleanUp);
+            m_worker = new ScheduledTask(ThreadingMode.Foreground);
+            m_worker.OnRunWorker += WorkerDoWork;
+            m_worker.OnDispose += WorkerCleanUp;
         }
 
         /// <summary>
@@ -107,7 +109,7 @@ namespace openHistorian.Queues
             m_worker.Start();
         }
 
-        void WorkerDoWork()
+        void WorkerDoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
         {
             m_pointStream.Reset();
 
@@ -130,7 +132,7 @@ namespace openHistorian.Queues
                 m_worker.Start(new TimeSpan(TimeSpan.TicksPerSecond * 1));
         }
 
-        void WorkerCleanUp()
+        void WorkerCleanUp(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
         {
    
         }

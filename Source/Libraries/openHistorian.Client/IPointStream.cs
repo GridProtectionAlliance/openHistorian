@@ -22,23 +22,41 @@
 //******************************************************************************************************
 
 
+using GSF;
+
 namespace openHistorian
 {
+    /// <summary>
+    /// Provides a point stream that has no data in it. Obtain an instance of this class
+    /// by calling the static member <see cref="Instance"/>.
+    /// </summary>
+    public class NullPointStream : IPointStream
+    {
+        public readonly static IPointStream Instance = new NullPointStream();
+        
+        private NullPointStream()
+        {
+        }
+
+        public bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
+        {
+            key1 = 0;
+            key2 = 0;
+            value1 = 0;
+            value2 = 0;
+            return false;
+        }
+
+        public void Cancel()
+        {
+        }
+    }
 
     /// <summary>
     /// Represents a fundamental way to stream points.
     /// </summary>
-    public interface IPointStream
+    public interface IPointStream : IStream256
     {
-        /// <summary>
-        /// Gets the next point in the stream.
-        /// </summary>
-        /// <param name="key1"></param>
-        /// <param name="key2"></param>
-        /// <param name="value1"></param>
-        /// <param name="value2"></param>
-        /// <returns>True if the data is valid. False if the end of the stream has been encountered.</returns>
-        bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2);
         /// <summary>
         /// Prematurely stops the execution of the stream.
         /// Once canceled, no more points will be returned.

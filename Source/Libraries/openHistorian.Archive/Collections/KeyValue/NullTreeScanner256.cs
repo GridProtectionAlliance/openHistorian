@@ -53,7 +53,7 @@ namespace openHistorian.Collections.KeyValue
         /// <returns>
         /// Returns true if the next value was found. Returns false if the end of the tree has been encountered.
         /// </returns>
-        public bool GetNextKey(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
+        public bool Read(out ulong key1, out ulong key2, out ulong value1, out ulong value2)
         {
             key1 = 0;
             key2 = 0;

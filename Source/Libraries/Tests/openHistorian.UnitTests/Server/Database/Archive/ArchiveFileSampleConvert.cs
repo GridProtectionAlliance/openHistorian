@@ -74,7 +74,7 @@ namespace openHistorian.UnitTests.Server.Database.Archive
                 {
                     for (ulong v2 = 1; v2 < 86000; v2++)
                     {
-                        Assert.IsTrue(scanner.GetNextKey(out key1, out key2, out value1, out value2));
+                        Assert.IsTrue(scanner.Read(out key1, out key2, out value1, out value2));
                         Assert.AreEqual(key1, v1 * 2342523);
                         Assert.AreEqual(key2, v2);
                         Assert.AreEqual(value1, 0ul);

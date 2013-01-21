@@ -131,7 +131,9 @@ namespace GSF.Collections
             m_pooledNodes = new ResourceQueue<IsolatedNode<T>>(() => new IsolatedNode<T>(m_elementsPerNode), 2, 10);
             m_inboundQueue = new ContinuousQueue<IsolatedNode<T>>();
             m_outboundQueue = new ContinuousQueue<IsolatedNode<T>>();
-            m_workerFlushToFile = new ScheduledTask(OnWorkerFlushToFileDoWork, OnWorkerFlushToFileCleanupWork);
+            m_workerFlushToFile = new ScheduledTask(ThreadingMode.Foreground);
+            m_workerFlushToFile.OnRunWorker += OnWorkerFlushToFileDoWork;
+            m_workerFlushToFile.OnDispose += OnWorkerFlushToFileCleanupWork;
             m_syncRoot = new object();
             T value = default(T);
             m_maxNodeCount = maxInMemorySize / value.InMemorySize / m_elementsPerNode;
@@ -155,7 +157,7 @@ namespace GSF.Collections
         /// <summary>
         /// Does the writes to the archive file.
         /// </summary>
-        void OnWorkerFlushToFileDoWork()
+        void OnWorkerFlushToFileDoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
         {
             while (true)
             {
@@ -187,7 +189,7 @@ namespace GSF.Collections
             return m_inboundQueue.Count > m_maxNodeCount;
         }
 
-        void OnWorkerFlushToFileCleanupWork()
+        void OnWorkerFlushToFileCleanupWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
         {
             while (m_inboundQueue.Count >= m_nodesPerFile)
             {

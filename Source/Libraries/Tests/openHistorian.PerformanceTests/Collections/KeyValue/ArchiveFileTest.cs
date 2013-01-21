@@ -34,21 +34,21 @@ namespace openHistorian.Collections.KeyValue
                 scan3.SeekToKey(0, 0);
                 ulong key1, key2, value1, value2;
                 ulong key11, key22, value11, value22;
-                while (scan1.GetNextKey(out key1, out key2, out value1, out value2))
+                while (scan1.Read(out key1, out key2, out value1, out value2))
                 {
-                    Assert.IsTrue(scan2.GetNextKey(out key11, out key22, out value11, out value22));
+                    Assert.IsTrue(scan2.Read(out key11, out key22, out value11, out value22));
                     Assert.AreEqual(key1, key11);
                     Assert.AreEqual(key2, key22);
                     Assert.AreEqual(value1, value11);
                     Assert.AreEqual(value2, value22);
-                    Assert.IsTrue(scan3.GetNextKey(out key11, out key22, out value11, out value22));
+                    Assert.IsTrue(scan3.Read(out key11, out key22, out value11, out value22));
                     Assert.AreEqual(key1, key11);
                     Assert.AreEqual(key2, key22);
                     Assert.AreEqual(value1, value11);
                     Assert.AreEqual(value2, value22);
                 }
-                Assert.IsFalse(scan2.GetNextKey(out key1, out key2, out value1, out value2));
-                Assert.IsFalse(scan3.GetNextKey(out key1, out key2, out value1, out value2));
+                Assert.IsFalse(scan2.Read(out key1, out key2, out value1, out value2));
+                Assert.IsFalse(scan3.Read(out key1, out key2, out value1, out value2));
 
             }
         }
@@ -90,7 +90,7 @@ namespace openHistorian.Collections.KeyValue
                 var scan0 = tree0.GetTreeScanner();
                 scan0.SeekToKey(0, 0);
                 ulong key1, key2, value1, value2;
-                while (scan0.GetNextKey(out key1, out key2, out value1, out value2))
+                while (scan0.Read(out key1, out key2, out value1, out value2))
                 {
                     edit1.AddPoint(key1, key2, value1, value2);
                     edit2.AddPoint(key1, key2, value1, value2);
@@ -111,7 +111,7 @@ namespace openHistorian.Collections.KeyValue
             var scan = tree.GetTreeScanner();
             ulong key1, key2, value1, value2;
             scan.SeekToKey(0, 0);
-            while (scan.GetNextKey(out key1, out key2, out value1, out value2))
+            while (scan.Read(out key1, out key2, out value1, out value2))
             {
                 maxPointId = Math.Max(key2, maxPointId);
             }
@@ -119,7 +119,7 @@ namespace openHistorian.Collections.KeyValue
             var map = new PointValue[(int)maxPointId + 1];
 
             scan.SeekToKey(0, 0);
-            while (scan.GetNextKey(out key1, out key2, out value1, out value2))
+            while (scan.Read(out key1, out key2, out value1, out value2))
             {
                 if (map[(int)key2] == null)
                     map[(int)key2] = new PointValue();
@@ -141,7 +141,7 @@ namespace openHistorian.Collections.KeyValue
 
             var tree2 = new SortedTree256(new BinaryStream(), 4096);
             scan.SeekToKey(0, 0);
-            while (scan.GetNextKey(out key1, out key2, out value1, out value2))
+            while (scan.Read(out key1, out key2, out value1, out value2))
             {
                 tree2.Add(key1, map[(int)key2].NewPointId, value1, value2);
             }

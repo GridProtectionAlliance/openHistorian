@@ -84,6 +84,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\GSF.Unmanaged\GSF.Unmanaged.csproj">
+      <Project>{B2504A65-9432-4691-A417-267FDB1A95A3}</Project>
+      <Name>GSF.Unmanaged</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\NPlot\NPlot45.csproj">
       <Project>{7141c894-6346-41c2-b497-dba4beba71d6}</Project>
       <Name>NPlot45</Name>
