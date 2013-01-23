@@ -43,12 +43,34 @@ namespace GSF.Threading
             if (target != null)
                 m_method = target.Method;
         }
+
         public bool TryInvoke()
         {
             object target = base.Target;
             if (target == null)
                 return false;
             m_method.Invoke(target, null);
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            Delegate del = obj as Delegate;
+            if (del == null)
+                return false;
+
+            object target = base.Target;
+            if (target == null)
+                return false;
+
+            if (!ReferenceEquals(target, del.Target))
+                return false;
+
+            if (del.Method != m_method)
+                return false;
+
             return true;
         }
     }
@@ -65,12 +87,34 @@ namespace GSF.Threading
             if (target != null)
                 m_method = target.Method;
         }
+
         public bool TryInvoke(T obj)
         {
             object target = base.Target;
             if (target == null)
                 return false;
             m_method.Invoke(target, new object[] { obj });
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            Delegate del = obj as Delegate;
+            if (del == null)
+                return false;
+
+            object target = base.Target;
+            if (target == null)
+                return false;
+
+            if (!ReferenceEquals(target, del.Target))
+                return false;
+
+            if (del.Method != m_method)
+                return false;
+
             return true;
         }
     }
@@ -88,12 +132,34 @@ namespace GSF.Threading
             if (target != null)
                 m_method = target.Method;
         }
+
         public bool TryInvoke(object sender, T e)
         {
             object target = base.Target;
             if (target == null)
                 return false;
             m_method.Invoke(target, new object[] { sender, e });
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            Delegate del = obj as Delegate;
+            if (del == null)
+                return false;
+
+            object target = base.Target;
+            if (target == null)
+                return false;
+
+            if (!ReferenceEquals(target, del.Target))
+                return false;
+
+            if (del.Method != m_method)
+                return false;
+
             return true;
         }
     }

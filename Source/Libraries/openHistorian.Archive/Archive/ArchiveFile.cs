@@ -187,18 +187,6 @@ namespace openHistorian.Archive
         #region [ Methods ]
 
         /// <summary>
-        /// Sets parameters controlling how this file responds to file resizing requests.
-        /// Currently does nothing.
-        /// </summary>
-        /// <param name="initialFileSize"></param>
-        /// <param name="autoGrowthSize"></param>
-        /// <param name="requiredFreeSpaceForAutoGrowth"></param>
-        public void SetFileSize(long initialFileSize, long autoGrowthSize, long requiredFreeSpaceForAutoGrowth)
-        {
-
-        }
-
-        /// <summary>
         /// Called only by the constructor if a new archive file will be created.
         /// </summary>
         void InitializeNewFile(CompressionMethod compression)

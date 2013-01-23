@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.Threading;
 
 namespace GSF.UnmanagedMemory
 {
@@ -40,14 +41,14 @@ namespace GSF.UnmanagedMemory
             /// in a later version, some sort of concurrent garbage collection may be implemented
             /// which means more control will need to be with the Event
             /// </summary>
-            List<EventHandler<CollectionEventArgs>> m_requestCollectionEvent;
+            List<WeakEventHandler<CollectionEventArgs>> m_requestCollectionEvent;
 
             BufferPool m_pool;
 
             public CollectionEngine(BufferPool pool)
             {
                 m_pool = pool;
-                m_requestCollectionEvent = new List<EventHandler<CollectionEventArgs>>();
+                m_requestCollectionEvent = new List<WeakEventHandler<CollectionEventArgs>>();
             }
 
             /// <summary>
@@ -59,17 +60,19 @@ namespace GSF.UnmanagedMemory
                 int collectionCount = m_pool.GetCollectionBasedOnSize(size);
                 long stopShrinkingLimit = CalculateStopShrinkingLimit(size);
 
+                RemoveDeadEvents();
+
                 for (int x = 0; x < collectionCount; x++)
                 {
                     if (m_pool.CurrentAllocatedSize < stopShrinkingLimit)
                         break;
                     var eventArgs = new CollectionEventArgs(m_pool.TryReleasePage, BufferPoolCollectionMode.Normal, 0);
+
                     foreach (var c in m_requestCollectionEvent)
                     {
-                        c.Invoke(m_pool, eventArgs);
+                        c.TryInvoke(m_pool, eventArgs);
                     }
                 }
-
 
                 long newSize = m_pool.CurrentAllocatedSize;
 
@@ -81,11 +84,12 @@ namespace GSF.UnmanagedMemory
                         (int)((0.05 * m_pool.MaximumBufferSize - m_pool.FreeSpaceBytes) / m_pool.PageSize);
                     var eventArgs = new CollectionEventArgs(m_pool.TryReleasePage, BufferPoolCollectionMode.Emergency,
                                                             pagesToBeReleased);
+
                     foreach (var c in m_requestCollectionEvent)
                     {
                         if (eventArgs.DesiredPageReleaseCount == 0)
                             break;
-                        c.Invoke(m_pool, eventArgs);
+                        c.TryInvoke(m_pool, eventArgs);
                     }
 
                     if (eventArgs.DesiredPageReleaseCount > 0)
@@ -96,7 +100,7 @@ namespace GSF.UnmanagedMemory
                         {
                             if (eventArgs.DesiredPageReleaseCount == 0)
                                 break;
-                            c.Invoke(m_pool, eventArgs);
+                            c.TryInvoke(m_pool, eventArgs);
                         }
                         if (m_pool.IsFull)
                         {
@@ -104,6 +108,8 @@ namespace GSF.UnmanagedMemory
                         }
                     }
                 }
+
+                RemoveDeadEvents();
 
             }
 
@@ -121,12 +127,27 @@ namespace GSF.UnmanagedMemory
 
             public void AddEvent(EventHandler<CollectionEventArgs> client)
             {
-                m_requestCollectionEvent.Add(client);
+                m_requestCollectionEvent.Add(new WeakEventHandler<CollectionEventArgs>(client));
+                RemoveDeadEvents();
             }
 
             public void RemoveEvent(EventHandler<CollectionEventArgs> client)
             {
-                m_requestCollectionEvent.Remove(client);
+                m_requestCollectionEvent.Remove(new WeakEventHandler<CollectionEventArgs>(client));
+                RemoveDeadEvents();
+            }
+
+            /// <summary>
+            /// Searches the collection events and removes any events that have been collected by
+            /// the garbage collector.
+            /// </summary>
+            void RemoveDeadEvents()
+            {
+                for (int x = m_requestCollectionEvent.Count - 1; x >= 0; x--)
+                {
+                    if (!m_requestCollectionEvent[x].IsAlive) 
+                        m_requestCollectionEvent.RemoveAt(x);
+                }
             }
         }
     }

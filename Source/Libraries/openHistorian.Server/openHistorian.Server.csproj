@@ -48,6 +48,7 @@
     <Compile Include="Engine\ArchiveWriters\StagingFile.cs" />
     <Compile Include="Engine\ArchiveWriters\TransactionalBlocking.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessor.cs" />
+    <Compile Include="Engine\ArchiveWriters\WriteProcessorSettings.cs" />
     <Compile Include="Engine\TransactionEngine.cs" />
     <Compile Include="HistorianServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

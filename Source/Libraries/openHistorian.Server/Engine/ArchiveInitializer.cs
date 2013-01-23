@@ -23,7 +23,9 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using GSF;
 using openHistorian.Archive;
 using openHistorian.Engine.Configuration;
@@ -35,12 +37,48 @@ namespace openHistorian.Engine
     /// </summary>
     internal class ArchiveInitializer
     {
-        ArchiveInitializerSettings m_settings;
+        string m_prefix;
+        bool m_isMemoryArchive;
+        List<string> m_paths;
+        long m_requiredFreeSpaceForNewFile;
+        long m_initialSize;
+        CompressionMethod m_method;
+
+        private ArchiveInitializer()
+        {
+        }
 
         public ArchiveInitializer(ArchiveInitializerSettings settings)
         {
-            m_settings = settings;
+            m_prefix = "";
+            m_isMemoryArchive = settings.IsMemoryArchive;
+            m_paths = settings.Paths.ToList();
+            m_requiredFreeSpaceForNewFile = settings.RequiredFreeSpaceForNewFile;
+            m_initialSize = settings.InitialSize;
+            m_method = CompressionMethod.None;
         }
+
+        public static ArchiveInitializer CreateInMemory(CompressionMethod method)
+        {
+            var settings = new ArchiveInitializer();
+            settings.m_isMemoryArchive = true;
+            settings.m_method = method;
+            return settings;
+
+        }
+
+        public static ArchiveInitializer CreateOnDisk(List<string> paths, CompressionMethod method, string prefix)
+        {
+            var settings = new ArchiveInitializer();
+            settings.m_prefix = prefix;
+            settings.m_isMemoryArchive = false;
+            settings.m_paths = paths.ToList();
+            settings.m_requiredFreeSpaceForNewFile = 1024 * 1024;
+            settings.m_initialSize = 1024 * 1024;
+            settings.m_method = method;
+            return settings;
+        }
+
 
         /// <summary>
         /// Creates a new <see cref="ArchiveFile"/> based on the settings passed to this class.
@@ -49,15 +87,14 @@ namespace openHistorian.Engine
         /// <returns></returns>
         public ArchiveFile CreateArchiveFile()
         {
-            if (m_settings.IsMemoryArchive)
+            if (m_isMemoryArchive)
             {
-                return ArchiveFile.CreateInMemory();
+                return ArchiveFile.CreateInMemory(m_method);
             }
             else
             {
                 var fileName = CreateArchiveName();
-                var file = ArchiveFile.CreateFile(fileName);
-                file.SetFileSize(m_settings.InitialSize, m_settings.AutoGrowthSize, m_settings.RequiredFreeSpaceForAutoGrowth);
+                var file = ArchiveFile.CreateFile(fileName,m_method);
                 return file;
             }
         }
@@ -68,15 +105,15 @@ namespace openHistorian.Engine
         /// <returns></returns>
         string CreateArchiveName()
         {
-            long requiredFreeSpace = Math.Min(m_settings.RequiredFreeSpaceForNewFile, m_settings.InitialSize);
-            foreach (var path in m_settings.Paths)
+            long requiredFreeSpace = Math.Min(m_requiredFreeSpaceForNewFile, m_initialSize);
+            foreach (var path in m_paths)
             {
                 long freeSpace, totalSpace;
-                if (WinApi.GetAvailableFreeSpace(path,out freeSpace, out totalSpace))
+                if (WinApi.GetAvailableFreeSpace(path, out freeSpace, out totalSpace))
                 {
-                    if (freeSpace>=requiredFreeSpace)
+                    if (freeSpace >= requiredFreeSpace)
                     {
-                        return Path.Combine(path, Guid.NewGuid().ToString() + ".d2");
+                        return Path.Combine(path, DateTime.Now.Ticks.ToString() + "-" + m_prefix + "-" + Guid.NewGuid().ToString() + ".d2");
                     }
                 }
             }

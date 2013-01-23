@@ -284,7 +284,7 @@ namespace openHistorian.Collections.KeyValue
                     {
                         NodeDetails nodeDetails = InternalNodeGetNodeIndexAddressBucket(level, nodeIndex, dividingKey1, dividingKey2);
                         nodeIndex = nodeDetails.NodeIndex;
-                        m_cache.CacheNode(nodeLevel, nodeDetails);
+                        m_cache.CacheNode(level, nodeDetails);
                     }
                 }
 

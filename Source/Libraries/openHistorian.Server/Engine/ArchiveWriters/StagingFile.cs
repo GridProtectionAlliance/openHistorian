@@ -68,7 +68,7 @@ namespace openHistorian.Engine.ArchiveWriters
         {
             if (m_archiveFile == null)
             {
-                m_archiveFile = ArchiveFile.CreateInMemory();
+                m_archiveFile = m_initializer.CreateArchiveFile();
                 using (var edit = m_archiveList.AcquireEditLock())
                 {
                     //Add the newly created file.

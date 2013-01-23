@@ -33,8 +33,7 @@ namespace GSF.UnmanagedMemory
     public partial class BufferPool : IDisposable
     {
         #region [ Members ]
-
-
+        
         /// <summary>
         /// Represents the ceiling for the amount of memory the buffer pool can use (124GB)
         /// </summary>
@@ -130,10 +129,9 @@ namespace GSF.UnmanagedMemory
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a new <see cref="BufferPoolKernel"/> that can be used for user defined <see cref="BufferPool"/>.
+        /// Creates a new <see cref="BufferPool"/>.
         /// </summary>
-        /// <param name="pageSize">The desired page size. This must be at least the size of the largest 
-        /// <see cref="BufferPool.PageSize"/> that will be created using this kernel. The recommeneded size is 1MB.</param>
+        /// <param name="pageSize">The desired page size. Must be between 4KB and 256KB</param>
         /// <param name="maximumBufferSize">The desired maximum size of the allocation. Note: could be less if there is not enough system memory.</param>
         /// <param name="utilizationLevel">Specifies the desired utilization level of the allocated space.</param>
         public BufferPool(int pageSize = 64*1024, long maximumBufferSize = MaximumTestedSupportedMemoryCeiling, TargetUtilizationLevels utilizationLevel = TargetUtilizationLevels.Low)
@@ -157,8 +155,6 @@ namespace GSF.UnmanagedMemory
             m_collectionEngine = new CollectionEngine(this);
         }
 
-
-
         #endregion
 
         #region [ Properties ]
@@ -167,8 +163,7 @@ namespace GSF.UnmanagedMemory
         /// Gets the current <see cref="TargetUtilizationLevels"/>.
         /// </summary>
         public TargetUtilizationLevels TargetUtilizationLevel { get; private set; }
-
-
+        
         /// <summary>
         /// The number maximum supported number of bytes that can be allocated based
         /// on the amount of RAM in the system.  This is not user configurable.
@@ -267,7 +262,6 @@ namespace GSF.UnmanagedMemory
             {
                 if (CurrentAllocatedSize == CurrentCapacity)
                 {
-
                     m_collectionEngine.AllocateMoreFreeSpace();
                     //Grow the allocated pool
 

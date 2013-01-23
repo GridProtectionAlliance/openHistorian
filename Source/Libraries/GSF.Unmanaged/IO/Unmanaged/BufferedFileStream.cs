@@ -25,6 +25,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using GSF.UnmanagedMemory;
 
 namespace GSF.IO.Unmanaged
@@ -51,6 +52,10 @@ namespace GSF.IO.Unmanaged
         /// To limit flushing to a single flush call
         /// </summary>
         object m_syncFlush;
+        /// <summary>
+        /// A problem was encountered when disposing of this stream while a collection was occuring.
+        /// </summary>
+        object m_syncDispose;
 
         BufferPool m_pool;
 
@@ -62,6 +67,7 @@ namespace GSF.IO.Unmanaged
         FileStream m_baseStream;
 
         LeastRecentlyUsedPageReplacement m_pageReplacementAlgorithm;
+
 
         bool m_disposed;
         bool m_ownsStream;
@@ -104,6 +110,8 @@ namespace GSF.IO.Unmanaged
 
             m_syncRoot = new object();
             m_syncFlush = new object();
+            m_syncDispose = new object();
+
             m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement(dirtyPageSize, pool);
             m_baseStream = stream;
             pool.RequestCollection += BufferPool_RequestCollection;
@@ -146,6 +154,37 @@ namespace GSF.IO.Unmanaged
                     }
                 }
                 m_queue.Write(dirtyPages, waitForWriteToDisk);
+            }
+        }
+
+        void TryFlush(bool waitForWriteToDisk, bool skipPagesInUse, int desiredFlushCount)
+        {
+            PageMetaDataList.PageMetaData[] dirtyPages;
+            if (Monitor.TryEnter(m_syncFlush))
+            {
+                try
+                {
+                    if (Monitor.TryEnter(m_syncRoot))
+                    {
+                        try
+                        {
+                            dirtyPages = m_pageReplacementAlgorithm.GetDirtyPages(skipPagesInUse).ToArray();
+                            foreach (var block in dirtyPages)
+                            {
+                                m_pageReplacementAlgorithm.ClearDirtyBits(block);
+                            }
+                        }
+                        finally
+                        {
+                            Monitor.Exit(m_syncRoot);
+                        }
+                        m_queue.Write(dirtyPages, waitForWriteToDisk);
+                    }
+                }
+                finally
+                {
+                    Monitor.Exit(m_syncFlush);
+                }
             }
         }
 
@@ -198,7 +237,11 @@ namespace GSF.IO.Unmanaged
             if (!m_disposed)
             {
                 //Flush(true, false, -1);
-                m_disposed = true;
+                lock (m_syncDispose)
+                {
+                    m_disposed = true;
+                }
+
                 Globals.BufferPool.RequestCollection -= BufferPool_RequestCollection;
                 m_pageReplacementAlgorithm.Dispose();
                 if (m_ownsStream)
@@ -208,17 +251,42 @@ namespace GSF.IO.Unmanaged
 
         void BufferPool_RequestCollection(object sender, CollectionEventArgs e)
         {
-            if (e.CollectionMode == BufferPoolCollectionMode.Critical)
+            if (m_disposed)
+                return;
+
+            lock (m_syncDispose)
             {
-                lock (m_syncRoot)
+                if (m_disposed)
+                    return;
+
+                if (e.CollectionMode == BufferPoolCollectionMode.Critical)
                 {
-                    m_pageReplacementAlgorithm.DoCollection(e);
+                    if (Monitor.TryEnter(m_syncRoot))
+                    {
+                        try
+                        {
+                            m_pageReplacementAlgorithm.DoCollection(e);
+                        }
+                        finally
+                        {
+                            Monitor.Exit(m_syncRoot);
+                        }
+                    }
+
+                    TryFlush(false, true, e.DesiredPageReleaseCount);
                 }
-                Flush(false, true, e.DesiredPageReleaseCount);
-            }
-            lock (m_syncRoot)
-            {
-                m_pageReplacementAlgorithm.DoCollection(e);
+
+                if (Monitor.TryEnter(m_syncRoot))
+                {
+                    try
+                    {
+                        m_pageReplacementAlgorithm.DoCollection(e);
+                    }
+                    finally
+                    {
+                        Monitor.Exit(m_syncRoot);
+                    }
+                }
             }
         }
 

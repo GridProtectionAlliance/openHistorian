@@ -23,14 +23,13 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using openHistorian.Engine.Configuration;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
-    class WriteProcessor : IDisposable
+    internal class WriteProcessor : IDisposable
     {
         ArchiveList m_archiveList;
         object m_syncRoot;
@@ -40,43 +39,20 @@ namespace openHistorian.Engine.ArchiveWriters
         StageWriter m_stage1;
         StageWriter m_stage2;
 
-        public WriteProcessor(DatabaseSettings settings, ArchiveList archiveList)
+        public WriteProcessor(WriteProcessorSettings settings, ArchiveList list)
         {
+            m_archiveList = list;
             m_syncRoot = new object();
-            m_archiveList = archiveList;
 
-            var prestageSettings = new PrestageSettings()
-                {
-                    DelayOnPointCount = 20 * 1000,
-                    RolloverPointCount = 10 * 1000,
-                    RolloverInterval = 100
-                };
+            m_stage2 = new StageWriter(settings.Stage2, FinalizeArchiveFile);
+            m_stage1 = new StageWriter(settings.Stage1, m_stage2.AppendData);
+            m_stage0 = new StageWriter(settings.Stage0, m_stage1.AppendData);
+            m_prestage = new PrestageWriter(settings.Prestage, m_stage0.AppendData);
+        }
 
-            var stage0Settings = new StageWriterSettings()
-                {
-                    RolloverInterval = 1000,
-                    RolloverSize = 1 * 1000 * 1000,
-                    StagingFile = new StagingFile(archiveList, new ArchiveInitializer(settings.Stage0.Initializer))
-                };
-
-            var stage1Settings = new StageWriterSettings()
-            {
-                RolloverInterval = 1000,
-                RolloverSize = 1 * 1000 * 1000,
-                StagingFile = new StagingFile(archiveList, new ArchiveInitializer(settings.Stage1.Initializer))
-            };
-
-            var stage2Settings = new StageWriterSettings()
-            {
-                RolloverInterval = 1000,
-                RolloverSize = 1 * 1000 * 1000,
-                StagingFile = new StagingFile(archiveList, new ArchiveInitializer(settings.Stage2.Initializer))
-            };
-
-            m_stage2 = new StageWriter(stage2Settings, FinalizeArchiveFile);
-            m_stage1 = new StageWriter(stage1Settings, m_stage2.AppendData);
-            m_stage0 = new StageWriter(stage0Settings, m_stage1.AppendData);
-            m_prestage = new PrestageWriter(prestageSettings, m_stage0.AppendData);
+        public void Write(ulong key1, ulong key2, ulong value1, ulong value2)
+        {
+            m_prestage.Write(key1, key2, value1, value2);
         }
 
         void FinalizeArchiveFile(RolloverArgs args)
@@ -89,9 +65,12 @@ namespace openHistorian.Engine.ArchiveWriters
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            m_prestage.Stop();
+            m_stage0.Stop();
+            m_stage1.Stop();
+            m_stage2.Stop();
         }
 
-       
+
     }
 }

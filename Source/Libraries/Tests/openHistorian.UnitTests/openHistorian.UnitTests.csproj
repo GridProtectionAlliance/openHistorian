@@ -69,6 +69,7 @@
     <Compile Include="Engine\ArchiveWriters\PrestageWriterTest.cs" />
     <Compile Include="Engine\ArchiveWriters\StageWriterTest.cs" />
     <Compile Include="Engine\ArchiveWriters\StagingFileTest.cs" />
+    <Compile Include="Engine\ArchiveWriters\WriteProcessorTest.cs" />
     <Compile Include="FileStructure\DiskIOEnhanced2Test.cs" />
     <Compile Include="FileStructure\DiskIOEnhancedTest.cs" />
     <Compile Include="FileStructure\FileHeaderBlockTest.cs" />
