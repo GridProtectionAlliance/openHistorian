@@ -42,6 +42,17 @@ namespace openHistorian.Engine.ArchiveWriters
             m_archiveList = archiveList;
         }
 
+        /// <summary>
+        /// Gets if the staging file is backed by a physical file.
+        /// </summary>
+        public bool IsFileBacked
+        {
+            get
+            {
+                return m_initializer.IsFileBacked;
+            }
+        }
+
         public void Append(IStream256 scan)
         {
             if (m_archiveFile == null)

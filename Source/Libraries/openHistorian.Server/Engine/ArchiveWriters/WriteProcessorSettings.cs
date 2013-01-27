@@ -22,7 +22,9 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
+using System.Linq;
 using openHistorian.Archive;
+using openHistorian.Engine.Configuration;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
@@ -36,6 +38,14 @@ namespace openHistorian.Engine.ArchiveWriters
         private WriteProcessorSettings()
         {
 
+        }
+
+        public static WriteProcessorSettings CreateFromSettings(DatabaseConfig config, ArchiveList list)
+        {
+            if (config.Writer.Value.IsInMemoryOnly)
+                return CreateInMemory(list);
+            else
+                return CreateOnDisk(list, config.Paths.GetSavePaths().ToList());
         }
 
         public static WriteProcessorSettings CreateInMemory(ArchiveList list)
@@ -53,6 +63,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 {
                     RolloverInterval = 1000,
                     RolloverSize = 1 * 1000 * 1000,
+                    MaximumAllowedSize = 10 * 1000 * 1000,
                     StagingFile = new StagingFile(list, ArchiveInitializer.CreateInMemory(CompressionMethod.None))
                 };
 
@@ -60,6 +71,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 {
                     RolloverInterval = 10 * 1000,
                     RolloverSize = 10 * 1000 * 1000,
+                    MaximumAllowedSize = 100 * 1000 * 1000,
                     StagingFile = new StagingFile(list, ArchiveInitializer.CreateInMemory(CompressionMethod.None))
                 };
 
@@ -67,6 +79,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 {
                     RolloverInterval = 100 * 1000,
                     RolloverSize = 100 * 1000 * 1000,
+                    MaximumAllowedSize = 100 * 1000 * 1000,
                     StagingFile = new StagingFile(list, ArchiveInitializer.CreateInMemory(CompressionMethod.TimeSeriesEncoded2))
                 };
             return settings;
@@ -87,6 +100,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 {
                     RolloverInterval = 1000,
                     RolloverSize = 1 * 1000 * 1000,
+                    MaximumAllowedSize = 10 * 1000 * 1000,
                     StagingFile = new StagingFile(list, ArchiveInitializer.CreateInMemory(CompressionMethod.None))
                 };
 
@@ -94,14 +108,16 @@ namespace openHistorian.Engine.ArchiveWriters
                 {
                     RolloverInterval = 10 * 1000,
                     RolloverSize = 10 * 1000 * 1000,
-                    StagingFile = new StagingFile(list, ArchiveInitializer.CreateOnDisk(paths, CompressionMethod.None,"Stage1"))
+                    MaximumAllowedSize = 100 * 1000 * 1000,
+                    StagingFile = new StagingFile(list, ArchiveInitializer.CreateOnDisk(paths, CompressionMethod.None, "Stage1"))
                 };
 
             settings.Stage2 = new StageWriterSettings()
                 {
                     RolloverInterval = 100 * 1000,
                     RolloverSize = 100 * 1000 * 1000,
-                    StagingFile = new StagingFile(list, ArchiveInitializer.CreateOnDisk(paths, CompressionMethod.TimeSeriesEncoded2,"Stage2"))
+                    MaximumAllowedSize = 1000 * 1000 * 1000,
+                    StagingFile = new StagingFile(list, ArchiveInitializer.CreateOnDisk(paths, CompressionMethod.TimeSeriesEncoded2, "Stage2"))
                 };
             return settings;
         }

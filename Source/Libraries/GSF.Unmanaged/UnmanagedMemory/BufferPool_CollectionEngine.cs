@@ -41,14 +41,14 @@ namespace GSF.UnmanagedMemory
             /// in a later version, some sort of concurrent garbage collection may be implemented
             /// which means more control will need to be with the Event
             /// </summary>
-            List<WeakEventHandler<CollectionEventArgs>> m_requestCollectionEvent;
+            ThreadSafeList<WeakEventHandler<CollectionEventArgs>> m_requestCollectionEvent;
 
             BufferPool m_pool;
 
             public CollectionEngine(BufferPool pool)
             {
                 m_pool = pool;
-                m_requestCollectionEvent = new List<WeakEventHandler<CollectionEventArgs>>();
+                m_requestCollectionEvent = new ThreadSafeList<WeakEventHandler<CollectionEventArgs>>();
             }
 
             /// <summary>
@@ -133,7 +133,7 @@ namespace GSF.UnmanagedMemory
 
             public void RemoveEvent(EventHandler<CollectionEventArgs> client)
             {
-                m_requestCollectionEvent.Remove(new WeakEventHandler<CollectionEventArgs>(client));
+                m_requestCollectionEvent.RemoveAndWait(new WeakEventHandler<CollectionEventArgs>(client));
                 RemoveDeadEvents();
             }
 
@@ -143,11 +143,7 @@ namespace GSF.UnmanagedMemory
             /// </summary>
             void RemoveDeadEvents()
             {
-                for (int x = m_requestCollectionEvent.Count - 1; x >= 0; x--)
-                {
-                    if (!m_requestCollectionEvent[x].IsAlive) 
-                        m_requestCollectionEvent.RemoveAt(x);
-                }
+                m_requestCollectionEvent.RemoveIf(obj => !obj.IsAlive);
             }
         }
     }

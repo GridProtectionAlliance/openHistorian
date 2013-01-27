@@ -73,6 +73,7 @@
     <Compile Include="Threading\AsyncWorkerTest.cs" />
     <Compile Include="Threading\AsyncWorkerEventArgsTest.cs" />
     <Compile Include="Threading\ScheduledTaskTest.cs" />
+    <Compile Include="Threading\TreadSafeListTest.cs" />
     <Compile Include="Threading\WorkerTest.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  WeakAction.cs - Gbtc
+//  WeakDelegateBase.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,65 +16,63 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  1/16/2013 - Steven E. Chisholm
+//  1/26/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace GSF.Threading
 {
-    /// <summary>
-    /// Provides a weak referenced action delegate. 
-    /// </summary>
-    public class WeakAction : WeakDelegateBase<Action>
+    public abstract class WeakDelegateBase<T> : WeakReference
+        where T : class
     {
-        public WeakAction(Action target)
-            : base(target)
+        MethodInfo m_method;
+        protected WeakDelegateBase(Delegate target)
+            : base((target == null) ? null : target.Target)
         {
-        }
-        public bool TryInvoke()
-        {
-            return TryInvokeInternal(null);
-        }
-    }
-
-    /// <summary>
-    /// Provides a weak referenced action delegate. 
-    /// </summary>
-    public class WeakAction<T> : WeakDelegateBase<Action<T>>
-    {
-        public WeakAction(Action<T> target)
-            : base(target)
-        {
-        }
-        public bool TryInvoke(T obj)
-        {
-            return TryInvokeInternal(new object[] {obj});
-        }
-        
-    }
-
-    /// <summary>
-    /// Provides a weak referenced action delegate. 
-    /// </summary>
-    public class WeakEventHandler<T> : WeakDelegateBase<EventHandler<T>>
-        where T : EventArgs
-    {
-        public WeakEventHandler(EventHandler<T> target)
-            : base(target)
-        {
+            if (target != null)
+                m_method = target.Method;
         }
 
-        public bool TryInvoke(object sender, T e)
+        protected bool TryInvokeInternal(object[] parameters)
         {
-            return TryInvokeInternal(new object[] { sender, e });
+            object target = base.Target;
+            if (target == null)
+                return false;
+            m_method.Invoke(target, parameters);
+            return true;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+                return true;
+
+            if (obj == null)
+                return false;
+
+            WeakDelegateBase<T> typeObject = obj as WeakDelegateBase<T>;
+            if (typeObject != null)
+                return Equals(typeObject);
+
+            return false;
+        }
+
+        protected virtual bool Equals(WeakDelegateBase<T> obj)
+        {
+            if (obj == null)
+                return false;
+
+            return (m_method == obj.m_method) && ReferenceEquals(Target, obj.Target);
+        }
+
+
+
+
+
     }
 }

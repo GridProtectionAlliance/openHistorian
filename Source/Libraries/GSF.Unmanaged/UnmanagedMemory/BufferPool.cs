@@ -33,7 +33,7 @@ namespace GSF.UnmanagedMemory
     public partial class BufferPool : IDisposable
     {
         #region [ Members ]
-        
+
         /// <summary>
         /// Represents the ceiling for the amount of memory the buffer pool can use (124GB)
         /// </summary>
@@ -105,17 +105,11 @@ namespace GSF.UnmanagedMemory
         {
             add
             {
-                lock (m_syncRoot)
-                {
-                    m_collectionEngine.AddEvent(value);
-                }
+                m_collectionEngine.AddEvent(value);
             }
             remove
             {
-                lock (m_syncRoot)
-                {
-                    m_collectionEngine.RemoveEvent(value);
-                }
+                m_collectionEngine.RemoveEvent(value);
             }
         }
 
@@ -138,7 +132,7 @@ namespace GSF.UnmanagedMemory
         {
             if (pageSize < 4096 || pageSize > 256 * 1024)
                 throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
-            
+
             if (!BitMath.IsPowerOfTwo((uint)pageSize))
                 throw new ArgumentOutOfRangeException("pageSize", "Page size must be between 4KB and 256KB and a power of 2");
 
@@ -163,7 +157,7 @@ namespace GSF.UnmanagedMemory
         /// Gets the current <see cref="TargetUtilizationLevels"/>.
         /// </summary>
         public TargetUtilizationLevels TargetUtilizationLevel { get; private set; }
-        
+
         /// <summary>
         /// The number maximum supported number of bytes that can be allocated based
         /// on the amount of RAM in the system.  This is not user configurable.

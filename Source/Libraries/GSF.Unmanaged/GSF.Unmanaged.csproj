@@ -93,12 +93,16 @@
     <Compile Include="Threading\ForegroundThread.cs" />
     <Compile Include="Threading\IAsyncWorker.cs" />
     <Compile Include="Threading\ScheduledTask.cs" />
-    <Compile Include="Threading\ReaderWriterRpinLockSlim.cs" />
+    <Compile Include="Threading\ReaderWriterSpinLockSlim.cs" />
     <Compile Include="Threading\ScheduledTask_Internal.cs" />
     <Compile Include="Threading\StateMachine.cs" />
     <Compile Include="Threading\SynchronousEvent.cs" />
+    <Compile Include="Threading\ThreadSafeList.cs" />
+    <Compile Include="Threading\ThreadSafeList_Enumerator.cs" />
+    <Compile Include="Threading\ThreadSafeList_Iterator.cs" />
     <Compile Include="Threading\TimeoutOperation.cs" />
     <Compile Include="Threading\WeakAction.cs" />
+    <Compile Include="Threading\WeakDelegateBase.cs" />
     <Compile Include="Threading\Worker.cs" />
     <Compile Include="UnmanagedMemory\BufferPool.cs" />
     <Compile Include="UnmanagedMemory\BufferPool_AllocationList.cs" />

@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using GSF;
 using openHistorian.Engine.ArchiveWriters;
 using openHistorian.Engine.Configuration;
 
@@ -35,7 +36,7 @@ namespace openHistorian.Engine
     public class ArchiveDatabaseEngine : IHistorianDatabase, IDisposable
     {
         List<ArchiveListRemovalStatus> m_pendingDispose;
-        AutoCommit m_archiveWriter;
+        WriteProcessor m_archiveWriter;
         ArchiveList m_archiveList;
         volatile bool m_disposed;
 
@@ -46,63 +47,19 @@ namespace openHistorian.Engine
         }
 
         public ArchiveDatabaseEngine(DatabaseConfig settings)
-            : this(new DatabaseSettings(settings))
+            : this(new DatabaseSettings(settings), settings)
         {
 
         }
 
-        internal ArchiveDatabaseEngine(DatabaseSettings settings)
+        internal ArchiveDatabaseEngine(DatabaseSettings settings, DatabaseConfig config)
         {
             m_pendingDispose = new List<ArchiveListRemovalStatus>();
             m_archiveList = new ArchiveList(settings.AttachedFiles);
 
             if (settings.ArchiveWriter != null)
             {
-                m_archiveWriter = new AutoCommit(settings, m_archiveList);
-            }
-        }
-
-        /// <summary>
-        /// The most recent transaction that is available to be queried.
-        /// </summary>
-        public long LastCommittedTransactionId
-        {
-            get
-            {
-                return m_archiveWriter.LastCommittedTransactionId;
-            }
-        }
-
-        /// <summary>
-        /// The most recent transaction id that has been committed to a perminent storage system.
-        /// </summary>
-        public long LastDiskCommittedTransactionId
-        {
-            get
-            {
-                return m_archiveWriter.LastDiskCommittedTransactionId;
-            }
-        }
-
-        /// <summary>
-        /// The transaction of the most recently inserted data.
-        /// </summary>
-        public long CurrentTransactionId
-        {
-            get
-            {
-                return m_archiveWriter.CurrentTransactionId;
-            }
-        }
-
-        /// <summary>
-        /// Determines if this database is currently online.
-        /// </summary>
-        public bool IsOnline
-        {
-            get
-            {
-                return true;
+                m_archiveWriter = new WriteProcessor(WriteProcessorSettings.CreateFromSettings(config, m_archiveList), m_archiveList);
             }
         }
 
@@ -112,58 +69,31 @@ namespace openHistorian.Engine
                 throw new ObjectDisposedException(GetType().FullName);
             if (m_archiveWriter == null)
                 throw new Exception("Writing is not configured on this historian");
-            m_archiveWriter.WriteData(key1, key2, value1, value2);
+            m_archiveWriter.Write(key1, key2, value1, value2);
         }
 
-        public void Write(IPointStream points)
+        public void Write(IStream256 points)
         {
+
+            m_archiveWriter.Write(points);
             ulong key1, key2, value1, value2;
             while (points.Read(out key1, out key2, out value1, out value2))
                 Write(key1, key2, value1, value2);
         }
 
-        public long WriteBulk(IPointStream points)
-        {
-            Write(points);
-            return CurrentTransactionId;
-        }
-
-        public bool IsCommitted(long transactionId)
-        {
-            return m_archiveWriter.IsCommitted(transactionId);
-        }
-
-        public bool IsDiskCommitted(long transactionId)
-        {
-            return m_archiveWriter.IsDiskCommitted(transactionId);
-        }
-
-        public bool WaitForCommitted(long transactionId)
-        {
-            return m_archiveWriter.WaitForCommitted(transactionId);
-        }
-
-        public bool WaitForDiskCommitted(long transactionId)
-        {
-            return m_archiveWriter.WaitForDiskCommitted(transactionId);
-        }
-
         public void SoftCommit()
         {
-            m_archiveWriter.Commit();
+            m_archiveWriter.SoftCommit();
         }
 
         public void HardCommit()
         {
-            m_archiveWriter.CommitToDisk();
+            m_archiveWriter.HardCommit();
         }
 
-        /// <summary>
-        /// Disconnects from the current database. 
-        /// </summary>
         public void Disconnect()
         {
-            //Does nothing
+
         }
 
         /// <summary>
@@ -176,32 +106,6 @@ namespace openHistorian.Engine
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             return new ArchiveReader(m_archiveList);
-        }
-
-        /// <summary>
-        /// Talks the historian database offline
-        /// </summary>
-        /// <param name="waitTimeSeconds">the maximum number of seconds to wait before terminating all client connections.</param>
-        public void TakeOffline(float waitTimeSeconds = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Brings this database online.
-        /// </summary>
-        public void BringOnline()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Shuts down this database.
-        /// </summary>
-        /// <param name="waitTimeSeconds"></param>
-        public void Shutdown(float waitTimeSeconds = 0)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

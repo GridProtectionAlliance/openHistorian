@@ -25,11 +25,12 @@
 using System;
 using System.Linq;
 using System.Text;
+using GSF;
 using openHistorian.Engine.Configuration;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
-    internal class WriteProcessor : IDisposable
+    internal partial class WriteProcessor : IDisposable
     {
         ArchiveList m_archiveList;
         object m_syncRoot;
@@ -50,9 +51,14 @@ namespace openHistorian.Engine.ArchiveWriters
             m_prestage = new PrestageWriter(settings.Prestage, m_stage0.AppendData);
         }
 
-        public void Write(ulong key1, ulong key2, ulong value1, ulong value2)
+        public long Write(ulong key1, ulong key2, ulong value1, ulong value2)
         {
-            m_prestage.Write(key1, key2, value1, value2);
+            return m_prestage.Write(key1, key2, value1, value2);
+        }
+
+        public long Write(IStream256 stream)
+        {
+            return m_prestage.Write(stream);
         }
 
         void FinalizeArchiveFile(RolloverArgs args)
@@ -70,7 +76,15 @@ namespace openHistorian.Engine.ArchiveWriters
             m_stage1.Stop();
             m_stage2.Stop();
         }
+        
+        public void SoftCommit()
+        {
+            throw new NotImplementedException();
+        }
 
-
+        public void HardCommit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

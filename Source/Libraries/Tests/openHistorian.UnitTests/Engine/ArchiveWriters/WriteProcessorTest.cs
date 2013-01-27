@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using GSF;
 using NUnit.Framework;
 using openHistorian.Engine;
 
@@ -39,6 +40,7 @@ namespace openHistorian.Engine.ArchiveWriters
         [Test]
         public void TestLongTermFast()
         {
+            Globals.BufferPool.SetMaximumBufferSize(1024 * 1024 * 1500); //Lower to 100MB so more GC occurs.
             List<string> paths = new List<string>();
             paths.Add(@"C:\Temp\Historian");
 

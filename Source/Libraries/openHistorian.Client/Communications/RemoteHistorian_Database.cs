@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 
 namespace openHistorian.Communications
 {
@@ -59,7 +60,7 @@ namespace openHistorian.Communications
                 return m_historianReader;
             }
 
-            public void Write(IPointStream points)
+            public void Write(IStream256 points)
             {
                 if (m_historianReader != null)
                     throw new Exception("Cannot write to the database when a reader is open when using sockets.");

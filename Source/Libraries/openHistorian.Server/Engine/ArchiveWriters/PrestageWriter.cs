@@ -24,6 +24,7 @@
 
 using System;
 using System.Threading;
+using GSF;
 using GSF.Threading;
 
 namespace openHistorian.Engine.ArchiveWriters
@@ -128,7 +129,7 @@ namespace openHistorian.Engine.ArchiveWriters
             return sequenceId;
         }
 
-        public long Write(IPointStream stream)
+        public long Write(IStream256 stream)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);

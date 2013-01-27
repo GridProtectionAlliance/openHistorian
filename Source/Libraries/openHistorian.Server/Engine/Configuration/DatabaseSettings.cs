@@ -137,7 +137,7 @@ namespace openHistorian.Engine.Configuration
                     rollover.Initializer.IsMemoryArchive = false;
                     rollover.Initializer.Paths.AddRange(config.Paths.GetSavePaths());
                     rollover.NewFileOnSize = 1024 * 1024 * 1024; //1GB
-
+                    
                     ArchiveRollovers.Add(rollover);
                 }
                 else

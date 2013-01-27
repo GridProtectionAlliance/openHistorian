@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Threading;
 using GSF.Threading;
 using openHistorian.Archive;
 
@@ -42,6 +43,12 @@ namespace openHistorian.Engine.ArchiveWriters
         /// </summary>
         public long RolloverSize;
 
+        /// <summary>
+        /// The size that a file is permitted to get before entering a wait state to wait for a pending rollover
+        /// to complete.
+        /// </summary>
+        public long MaximumAllowedSize;
+
         public StagingFile StagingFile;
     }
 
@@ -50,25 +57,28 @@ namespace openHistorian.Engine.ArchiveWriters
     /// </summary>
     internal class StageWriter : IDisposable
     {
+        public event Action<long> SequenceNumberCommitted;
+
         bool m_stopped;
         bool m_disposed;
         int m_rolloverInterval;
         long m_rolloverSize;
+        long m_maximumAllowedSize;
         long m_lastCommitedSequenceNumber;
         long m_lastRolledOverSequenceNumber;
         ScheduledTask m_rolloverTask;
         Action<RolloverArgs> m_onRollover;
         object m_syncRoot;
         StagingFile m_stagingFile;
+        ManualResetEvent m_rolloverComplete;
 
         public StageWriter(StageWriterSettings settings, Action<RolloverArgs> onRollover)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            m_rolloverComplete = new ManualResetEvent(false);
             m_stagingFile = settings.StagingFile;
             m_rolloverInterval = settings.RolloverInterval;
             m_rolloverSize = settings.RolloverSize;
-
+            m_maximumAllowedSize = settings.MaximumAllowedSize;
             m_syncRoot = new object();
             m_onRollover = onRollover;
             m_rolloverTask = new ScheduledTask(ThreadingMode.Foreground);
@@ -76,11 +86,24 @@ namespace openHistorian.Engine.ArchiveWriters
             m_rolloverTask.Start(m_rolloverInterval);
         }
 
+        /// <summary>
+        /// Gets if this stage is backed by a physical file. 
+        /// This means that any commits that occur are hard commits.
+        /// </summary>
+        public bool IsFileBacked
+        {
+            get
+            {
+                return m_stagingFile.IsFileBacked;
+            }
+        }
+
         public void AppendData(RolloverArgs args)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
+            long currentSize;
             ArchiveListRemovalStatus removedFile = null;
             //If there is data to write then write it to the current archive.
             lock (m_syncRoot)
@@ -94,9 +117,20 @@ namespace openHistorian.Engine.ArchiveWriters
                     m_stagingFile.Combine(args.File);
                 m_lastCommitedSequenceNumber = args.SequenceNumber;
 
-                if (m_stagingFile.Size > m_rolloverSize)
+                currentSize = m_stagingFile.Size;
+
+                if (currentSize > m_rolloverSize)
                     m_rolloverTask.Start();
+
+                if (currentSize > m_maximumAllowedSize)
+                    m_rolloverComplete.Reset();
             }
+            
+            if (SequenceNumberCommitted != null)
+                SequenceNumberCommitted(args.SequenceNumber);
+
+            if (currentSize > m_maximumAllowedSize)
+                m_rolloverComplete.WaitOne();
         }
 
         void ProcessRollover(object sender, ScheduledTaskEventArgs e)
@@ -118,6 +152,7 @@ namespace openHistorian.Engine.ArchiveWriters
             {
                 sequenceNumber = m_lastCommitedSequenceNumber;
                 file = m_stagingFile.GetFileAndSetNull();
+                m_rolloverComplete.Set();
             }
 
             if (file == null)
@@ -154,6 +189,9 @@ namespace openHistorian.Engine.ArchiveWriters
             if (!m_disposed)
             {
                 m_disposed = true;
+                if (m_rolloverTask != null)
+                    m_rolloverTask.Dispose();
+                m_rolloverTask = null;
             }
         }
     }

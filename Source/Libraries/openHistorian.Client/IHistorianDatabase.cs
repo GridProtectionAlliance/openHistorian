@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 
 namespace openHistorian
 {
@@ -42,7 +43,7 @@ namespace openHistorian
         /// Writes the point stream to the database. 
         /// </summary>
         /// <param name="points"></param>
-        void Write(IPointStream points);
+        void Write(IStream256 points);
         
         /// <summary>
         /// Writes an individual point to the database.

@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 using openHistorian.Communications;
 using System.Net;
 
@@ -74,7 +75,7 @@ namespace openHistorian
             return m_currentDatabase.OpenDataReader();
         }
 
-        void IHistorianDatabase.Write(IPointStream points)
+        void IHistorianDatabase.Write(IStream256 points)
         {
             ConnectIfNotConnected();
             m_currentDatabase.Write(points);

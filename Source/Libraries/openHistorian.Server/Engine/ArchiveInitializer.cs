@@ -79,6 +79,16 @@ namespace openHistorian.Engine
             return settings;
         }
 
+        /// <summary>
+        /// Gets if the <see cref="ArchiveFile"/> that is created with this initializer is file backed.
+        /// </summary>
+        public bool IsFileBacked
+        {
+            get
+            {
+                return !m_isMemoryArchive;
+            }
+        }
 
         /// <summary>
         /// Creates a new <see cref="ArchiveFile"/> based on the settings passed to this class.

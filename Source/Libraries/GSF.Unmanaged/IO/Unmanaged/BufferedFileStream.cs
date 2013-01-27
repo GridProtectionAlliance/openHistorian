@@ -52,10 +52,6 @@ namespace GSF.IO.Unmanaged
         /// To limit flushing to a single flush call
         /// </summary>
         object m_syncFlush;
-        /// <summary>
-        /// A problem was encountered when disposing of this stream while a collection was occuring.
-        /// </summary>
-        object m_syncDispose;
 
         BufferPool m_pool;
 
@@ -110,8 +106,7 @@ namespace GSF.IO.Unmanaged
 
             m_syncRoot = new object();
             m_syncFlush = new object();
-            m_syncDispose = new object();
-
+            
             m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement(dirtyPageSize, pool);
             m_baseStream = stream;
             pool.RequestCollection += BufferPool_RequestCollection;
@@ -236,13 +231,13 @@ namespace GSF.IO.Unmanaged
         {
             if (!m_disposed)
             {
-                //Flush(true, false, -1);
-                lock (m_syncDispose)
-                {
-                    m_disposed = true;
-                }
-
+                //Unregistering from this event gaurentees that a collection will no longer
+                //be called since this class utilizes custom code to garentee this.
                 Globals.BufferPool.RequestCollection -= BufferPool_RequestCollection;
+                
+                //Flush(true, false, -1);
+                m_disposed = true;
+
                 m_pageReplacementAlgorithm.Dispose();
                 if (m_ownsStream)
                     m_baseStream.Dispose();
@@ -251,31 +246,8 @@ namespace GSF.IO.Unmanaged
 
         void BufferPool_RequestCollection(object sender, CollectionEventArgs e)
         {
-            if (m_disposed)
-                return;
-
-            lock (m_syncDispose)
+            if (e.CollectionMode == BufferPoolCollectionMode.Critical)
             {
-                if (m_disposed)
-                    return;
-
-                if (e.CollectionMode == BufferPoolCollectionMode.Critical)
-                {
-                    if (Monitor.TryEnter(m_syncRoot))
-                    {
-                        try
-                        {
-                            m_pageReplacementAlgorithm.DoCollection(e);
-                        }
-                        finally
-                        {
-                            Monitor.Exit(m_syncRoot);
-                        }
-                    }
-
-                    TryFlush(false, true, e.DesiredPageReleaseCount);
-                }
-
                 if (Monitor.TryEnter(m_syncRoot))
                 {
                     try
@@ -286,6 +258,20 @@ namespace GSF.IO.Unmanaged
                     {
                         Monitor.Exit(m_syncRoot);
                     }
+                }
+
+                TryFlush(false, true, e.DesiredPageReleaseCount);
+            }
+
+            if (Monitor.TryEnter(m_syncRoot))
+            {
+                try
+                {
+                    m_pageReplacementAlgorithm.DoCollection(e);
+                }
+                finally
+                {
+                    Monitor.Exit(m_syncRoot);
                 }
             }
         }
