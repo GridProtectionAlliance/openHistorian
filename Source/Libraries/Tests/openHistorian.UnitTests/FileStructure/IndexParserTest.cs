@@ -26,6 +26,7 @@ using System;
 using GSF;
 using NUnit.Framework;
 using GSF.IO.Unmanaged;
+using openHistorian.FileStructure.IO;
 
 namespace openHistorian.FileStructure.Test
 {
@@ -38,7 +39,7 @@ namespace openHistorian.FileStructure.Test
             int blockSize = 4096;
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
             IndexMapper map = new IndexMapper(blockSize);
-            DiskIo stream = new DiskIo(blockSize, new MemoryStream(), 0);
+            DiskIo stream = new DiskIo(blockSize, new MemoryFile(blockSize), 0);
             SubFileMetaData node = new SubFileMetaData(1, Guid.NewGuid(), AccessMode.ReadWrite);
             IndexParser parse = new IndexParser(blockSize, 1, stream, node);
             parse.SetPosition(14312);

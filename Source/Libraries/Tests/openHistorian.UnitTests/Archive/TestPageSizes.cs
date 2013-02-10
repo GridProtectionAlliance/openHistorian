@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using openHistorian.Archive;
 using openHistorian.FileStructure;
+using openHistorian.FileStructure.IO;
 
 namespace openHistorian.UnitTests.Archive
 {
@@ -44,7 +45,7 @@ namespace openHistorian.UnitTests.Archive
 
             DiskIoSession.ReadCount = 0;
             DiskIoSession.WriteCount = 0;
-            DiskIo.ChecksumCount = 0;
+            Footer.ChecksumCount = 0;
 
             var sw = new Stopwatch();
             sw.Start();
@@ -66,7 +67,7 @@ namespace openHistorian.UnitTests.Archive
             Console.WriteLine("Rate: " + (1 / sw.Elapsed.TotalSeconds).ToString());
             Console.WriteLine("Read: " + (DiskIoSession.ReadCount).ToString());
             Console.WriteLine("Write: " + (DiskIoSession.WriteCount).ToString());
-            Console.WriteLine("Checksums: " + (DiskIo.ChecksumCount).ToString());
+            Console.WriteLine("Checksums: " + (Footer.ChecksumCount).ToString());
 
         }
 

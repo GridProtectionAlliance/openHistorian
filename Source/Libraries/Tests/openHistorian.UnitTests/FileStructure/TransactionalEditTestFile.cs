@@ -1,58 +1,48 @@
-﻿//******************************************************************************************************
-//  TransactionalEditTest.cs - Gbtc
-//
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
-//
-//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
-//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
-//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
-//  not use this file except in compliance with the License. You may obtain a copy of the License at:
-//
-//      http://www.opensource.org/licenses/eclipse-1.0.php
-//
-//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
-//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
-//  License for the specific language governing permissions and limitations.
-//
-//  Code Modification History:
-//  ----------------------------------------------------------------------------------------------------
-//  12/2/2011 - Steven E. Chisholm
-//       Generated original version of source code.
-//
-//******************************************************************************************************
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
+using System.IO;
 using GSF;
 using NUnit.Framework;
-using GSF.IO.Unmanaged;
 using openHistorian.FileStructure.IO;
 
 namespace openHistorian.FileStructure.Test
 {
     [TestFixture()]
-    public class TransactionalEditTest
+    public class TransactionalEditTestFile
     {
         static int BlockSize = 4096;
         static int BlockDataLength = BlockSize - FileStructureConstants.BlockFooterLength;
+
 
         [Test()]
         public void Test()
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
-            DiskIo stream = new DiskIo(BlockSize, new MemoryFile(BlockSize), 0);
-            FileHeaderBlock fat = stream.Header;
-            //obtain a readonly copy of the file allocation table.
-            fat = stream.Header;
-            TestCreateNewFile(stream, fat);
-            fat = stream.Header;
-            TestOpenExistingFile(stream, fat);
-            fat = stream.Header;
-            TestRollback(stream, fat);
-            fat = stream.Header;
-            TestVerifyRollback(stream, fat);
-            Assert.IsTrue(true);
-            stream.Dispose();
+
+            string fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".tmp");
+            try
+            {
+                using (FileStream fs = new FileStream(fileName, FileMode.Create))
+                using (BufferedFile bfs = new BufferedFile(fs, true, OpenMode.Create))
+                using (DiskIo stream = new DiskIo(BlockSize, bfs, 0))
+                {
+                    FileHeaderBlock fat = stream.Header;
+                    //obtain a readonly copy of the file allocation table.
+                    fat = stream.Header;
+                    TestCreateNewFile(stream, fat);
+                    fat = stream.Header;
+                    TestOpenExistingFile(stream, fat);
+                    fat = stream.Header;
+                    TestRollback(stream, fat);
+                    fat = stream.Header;
+                    TestVerifyRollback(stream, fat);
+                    Assert.IsTrue(true);
+                }
+            }
+            finally
+            {
+                File.Delete(fileName);
+            }
+
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
         }
         static void TestCreateNewFile(DiskIo stream, FileHeaderBlock fat)

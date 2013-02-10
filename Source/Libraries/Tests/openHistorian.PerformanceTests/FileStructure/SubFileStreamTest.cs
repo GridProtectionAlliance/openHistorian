@@ -5,6 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using openHistorian.Collections.KeyValue;
 using GSF.IO.Unmanaged;
+using openHistorian.FileStructure.IO;
 
 namespace openHistorian.FileStructure
 {
@@ -21,7 +22,7 @@ namespace openHistorian.FileStructure
             using (var stream = edit.CreateFile(Guid.NewGuid(), 12))
             using (BinaryStream bs = new BinaryStream(stream))
             {
-                DiskIo.ChecksumCount = 0;
+                Footer.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
                 DiskIoSession.ReadCount = 0;
 
@@ -40,7 +41,7 @@ namespace openHistorian.FileStructure
 
             Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.000"));
             Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.000"));
-            Console.WriteLine("Checksums: " + (DiskIo.ChecksumCount / size).ToString("0.000"));
+            Console.WriteLine("Checksums: " + (Footer.ChecksumCount / size).ToString("0.000"));
         }
 
 
@@ -48,7 +49,7 @@ namespace openHistorian.FileStructure
         public void TestSequentialWriteAmplification()
         {
             double size;
-            DiskIo.ChecksumCount = 0;
+            Footer.ChecksumCount = 0;
             DiskIoSession.WriteCount = 0;
             DiskIoSession.ReadCount = 0;
 
@@ -57,7 +58,7 @@ namespace openHistorian.FileStructure
             using (var stream = edit.CreateFile(Guid.NewGuid(), 12))
             using (BinaryStream bs = new BinaryStream(stream))
             {
-                DiskIo.ChecksumCount = 0;
+                Footer.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
                 DiskIoSession.ReadCount = 0;
 
@@ -71,14 +72,14 @@ namespace openHistorian.FileStructure
 
             Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
             Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
-            Console.WriteLine("Checksums: " + (DiskIo.ChecksumCount / size).ToString("0.0"));
+            Console.WriteLine("Checksums: " + (Footer.ChecksumCount / size).ToString("0.0"));
         }
 
         [Test]
         public void TestSequentialReWriteAmplification()
         {
             double size;
-            DiskIo.ChecksumCount = 0;
+            Footer.ChecksumCount = 0;
             DiskIoSession.WriteCount = 0;
             DiskIoSession.ReadCount = 0;
 
@@ -87,7 +88,7 @@ namespace openHistorian.FileStructure
             using (var stream = edit.CreateFile(Guid.NewGuid(), 12))
             using (BinaryStream bs = new BinaryStream(stream))
             {
-                DiskIo.ChecksumCount = 0;
+                Footer.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
                 DiskIoSession.ReadCount = 0;
 
@@ -99,7 +100,7 @@ namespace openHistorian.FileStructure
                 size = bs.Position / 4096.0;
                 bs.Position = 0;
 
-                DiskIo.ChecksumCount = 0;
+                Footer.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
                 DiskIoSession.ReadCount = 0;
 
@@ -111,14 +112,14 @@ namespace openHistorian.FileStructure
 
             Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
             Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
-            Console.WriteLine("Checksums: " + (DiskIo.ChecksumCount / size).ToString("0.0"));
+            Console.WriteLine("Checksums: " + (Footer.ChecksumCount / size).ToString("0.0"));
         }
 
         [Test]
         public void TestSequentialReadAmplification()
         {
             double size;
-            DiskIo.ChecksumCount = 0;
+            Footer.ChecksumCount = 0;
             DiskIoSession.WriteCount = 0;
             DiskIoSession.ReadCount = 0;
 
@@ -135,7 +136,7 @@ namespace openHistorian.FileStructure
                 size = bs.Position / 4096.0;
                 bs.Position = 0;
 
-                DiskIo.ChecksumCount = 0;
+                Footer.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
                 DiskIoSession.ReadCount = 0;
 
@@ -147,7 +148,7 @@ namespace openHistorian.FileStructure
 
             Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
             Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
-            Console.WriteLine("Checksums: " + (DiskIo.ChecksumCount / size).ToString("0.0"));
+            Console.WriteLine("Checksums: " + (Footer.ChecksumCount / size).ToString("0.0"));
 
         }
 

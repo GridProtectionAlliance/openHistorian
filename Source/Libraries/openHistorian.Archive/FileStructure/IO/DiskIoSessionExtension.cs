@@ -28,7 +28,7 @@ namespace openHistorian.FileStructure
 {
     unsafe internal static class DiskIoSessionExtension
     {
-        
+
         public static void Read(this DiskIoSession diskIoSession, int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber, byte[] destination)
         {
             diskIoSession.Read(blockIndex, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);

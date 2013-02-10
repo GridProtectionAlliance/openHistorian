@@ -29,6 +29,7 @@ using System.Text;
 using GSF;
 using NUnit.Framework;
 using GSF.IO.Unmanaged;
+using openHistorian.FileStructure.IO;
 
 namespace openHistorian.FileStructure.Test
 {
@@ -61,19 +62,20 @@ namespace openHistorian.FileStructure.Test
         public void Test()
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
-            DiskIo stream = new DiskIo(BlockSize, new MemoryStream(), 0);
-            FileHeaderBlock header = new FileHeaderBlock(BlockSize, stream, OpenMode.Create, AccessMode.ReadWrite);
+            DiskIo stream = new DiskIo(BlockSize, new MemoryFile(BlockSize), 0);
+            FileHeaderBlock header = stream.Header;
+            header = header.CloneEditable();
             header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
             header.CreateNewFile(Guid.NewGuid());
-            header.WriteToFileSystem(stream);
+            stream.CommitChanges(header);
             TestWrite(stream, 0);
             TestWrite(stream, 1);
             TestWrite(stream, 2);
             TestWrite(stream, 0);
             TestWrite(stream, 1);
             TestWrite(stream, 2);
-            header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
+            header = stream.Header;
             Assert.IsTrue(true);
             stream.Dispose();
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
@@ -81,8 +83,7 @@ namespace openHistorian.FileStructure.Test
 
         internal static void TestWrite(DiskIo stream, int FileNumber)
         {
-
-            FileHeaderBlock header = new FileHeaderBlock(BlockSize, stream, OpenMode.Open, AccessMode.ReadOnly);
+            FileHeaderBlock header = stream.Header;
             header = header.CloneEditable();
             SubFileMetaData node = header.Files[FileNumber];
             IndexParser parse = new IndexParser(BlockSize, header.SnapshotSequenceNumber, stream, node);
@@ -98,6 +99,8 @@ namespace openHistorian.FileStructure.Test
                 throw new Exception();
             if (parse.DataClusterAddress != nextPage)
                 throw new Exception();
+
+            
             stream.WriteToNewBlock(parse.DataClusterAddress, BlockType.DataBlock, (int)(pd.VirtualPosition / BlockDataLength), node.FileIdNumber, header.SnapshotSequenceNumber, block);
 
 
@@ -138,8 +141,7 @@ namespace openHistorian.FileStructure.Test
             //    throw new Exception();
             //if (parse.ForthIndirectBlockAddress != nextPage + 2)
             //    throw new Exception();
-
-            header.WriteToFileSystem(stream);
+            stream.CommitChanges(header);
         }
 
 

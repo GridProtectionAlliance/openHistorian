@@ -51,46 +51,6 @@ namespace openHistorian.FileStructure
                 buffer.WriteToNewBlock(blockIndex, blockType, indexValue, fileIdNumber, snapshotSequenceNumber, data);
             }
         }
-
-        /// <summary>
-        /// Clears an entire block by writing zeroes to it.
-        /// </summary>
-        /// <param name="memoryUnit">the extension object</param>
-        /// <param name="blockIndex">The block address</param>
-        /// <param name="blockType">The type of block that will be copied.</param>
-        /// <param name="indexValue">The block's index value.</param>
-        /// <param name="fileIdNumber">The block's fileIdNumber.</param>
-        /// <param name="snapshotSequenceNumber">The blocks's snapshot sequence number.</param>
-        public static void WriteZeroesToNewBlock(this DiskIo memoryUnit, int blockIndex, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
-        {
-            using (var buffer = memoryUnit.CreateDiskIoSession())
-            {
-                buffer.WriteZeroesToNewBlock(blockIndex, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
-            }
-        }
-
-        /// <summary>
-        /// Copies one block from one address to another.
-        /// </summary>
-        /// <param name="memoryUnit">the extension object</param>
-        /// <param name="sourceAddress">The source address</param>
-        /// <param name="destinationAddress">The destination address.</param>
-        /// <param name="blockType">The type of block that will be copied.</param>
-        /// <param name="indexValue">The block's index value.</param>
-        /// <param name="fileIdNumber">The block's fileIdNumber.</param>
-        /// <param name="snapshotSequenceNumber">The blocks's snapshot sequence number.</param>
-        public static void CopyBlock(this DiskIo memoryUnit, int sourceAddress, int destinationAddress, BlockType blockType, int indexValue, int fileIdNumber, int snapshotSequenceNumber)
-        {
-            using (DiskIoSession destinationData = memoryUnit.CreateDiskIoSession())
-            using (DiskIoSession sourceData = memoryUnit.CreateDiskIoSession())
-            {
-                sourceData.Read(sourceAddress, blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
-                destinationData.BeginWriteToNewBlock(destinationAddress);
-                Memory.Copy(sourceData.Pointer, destinationData.Pointer, sourceData.Length);
-                destinationData.EndWrite(blockType, indexValue, fileIdNumber, snapshotSequenceNumber);
-            }
-
-        }
            
     }
 }

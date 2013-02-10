@@ -6,6 +6,7 @@ using System.Text;
 using NUnit.Framework;
 using openHistorian.FileStructure;
 using GSF.IO.Unmanaged;
+using openHistorian.FileStructure.IO;
 
 namespace openHistorian.Collections.KeyValue
 {
@@ -69,7 +70,7 @@ namespace openHistorian.Collections.KeyValue
             {
                 SortedTree256BaseTest.BenchmarkTree(() => new SortedTree256(bs, 4096), Count);
             }
-            Console.WriteLine((DiskIo.ChecksumCount/11).ToString("N0"));
+            Console.WriteLine((Footer.ChecksumCount / 11).ToString("N0"));
         }
 
         [Test]

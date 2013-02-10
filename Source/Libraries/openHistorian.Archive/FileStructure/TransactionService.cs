@@ -26,8 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using GSF;
-using GSF.IO.Unmanaged;
-using MemoryStream = GSF.IO.Unmanaged.MemoryStream;
+using openHistorian.FileStructure.IO;
 
 namespace openHistorian.FileStructure
 {
@@ -78,8 +77,9 @@ namespace openHistorian.FileStructure
         {
             var ts = new TransactionService();
             ts.m_blockSize = blockSize;
-            ts.m_diskIo = new DiskIo(blockSize, new MemoryStream(), 0);
-            ts.m_fileHeaderBlock = new FileHeaderBlock(blockSize, ts.m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
+            var ms = new MemoryFile(Globals.BufferPool,blockSize);
+            ts.m_diskIo = new DiskIo(blockSize, ms, 0);
+            ts.m_fileHeaderBlock = ts.m_diskIo.Header;
             return ts;
         }
 
@@ -90,10 +90,10 @@ namespace openHistorian.FileStructure
         {
             var ts = new TransactionService();
             FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
-            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream, Globals.BufferPool, blockSize, true);
+            var bufferedFileStream = new BufferedFile(fileStream, Globals.BufferPool, blockSize, true, OpenMode.Create);
             ts.m_blockSize = blockSize;
             ts.m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
-            ts.m_fileHeaderBlock = new FileHeaderBlock(blockSize, ts.m_diskIo, OpenMode.Create, AccessMode.ReadOnly);
+            ts.m_fileHeaderBlock = ts.m_diskIo.Header;
             return ts;
         }
 
@@ -105,12 +105,10 @@ namespace openHistorian.FileStructure
             var ts = new TransactionService();
             FileStream fileStream = new FileStream(fileName, FileMode.Open, (accessMode == AccessMode.ReadOnly) ? FileAccess.Read : FileAccess.ReadWrite);
             int blockSize = FileHeaderBlock.SearchForBlockSize(fileStream);
-
-            BufferedFileStream bufferedFileStream = new BufferedFileStream(fileStream, Globals.BufferPool, blockSize, true);
-
+            var bufferedFileStream = new BufferedFile(fileStream, Globals.BufferPool, blockSize, true, OpenMode.Open);
             ts.m_blockSize = blockSize;
             ts.m_diskIo = new DiskIo(blockSize, bufferedFileStream, 0);
-            ts.m_fileHeaderBlock = new FileHeaderBlock(blockSize, ts.m_diskIo, OpenMode.Open, AccessMode.ReadOnly);
+            ts.m_fileHeaderBlock = ts.m_diskIo.Header;
             return ts;
         }
 
@@ -197,7 +195,7 @@ namespace openHistorian.FileStructure
 
         void OnTransactionCommitted()
         {
-            m_fileHeaderBlock = new FileHeaderBlock(m_blockSize, m_diskIo, OpenMode.Open, AccessMode.ReadOnly);
+            m_fileHeaderBlock = m_diskIo.Header;
             m_currentTransaction = null;
         }
 

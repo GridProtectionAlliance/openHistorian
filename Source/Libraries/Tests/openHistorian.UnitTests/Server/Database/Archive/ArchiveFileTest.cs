@@ -148,8 +148,5 @@ namespace openHistorian.Test
                 }
             }
         }
-
-
-
     }
 }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using NUnit.Framework;
 using openHistorian.Archive;
+using openHistorian.FileStructure.IO;
 
 namespace openHistorian
 {
@@ -46,7 +47,7 @@ namespace openHistorian
 
                 fileEditor.Commit();
             }
-            long oldCount = FileStructure.DiskIo.ChecksumCount;
+            long oldCount = Footer.ChecksumCount;
 
             var reader1 = s_archiveFile.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
             reader1.SeekToKey(0,0);

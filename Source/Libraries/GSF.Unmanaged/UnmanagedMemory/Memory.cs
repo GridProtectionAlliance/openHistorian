@@ -129,7 +129,7 @@ namespace GSF.UnmanagedMemory
                         //if (m_isLargePage)
                         //    WinApi.LargePageSupport.VirtualFree(Address);
                         //else
-                            Marshal.FreeHGlobal(Address);
+                        Marshal.FreeHGlobal(Address);
                     }
                 }
                 finally
@@ -203,6 +203,15 @@ namespace GSF.UnmanagedMemory
             {
                 pointer[i] = 0;
             }
+        }
+        /// <summary>
+        /// Sets the data in this buffer to all zeroes
+        /// </summary>
+        /// <param name="pointer">the starting position.</param>
+        /// <param name="length">the number of bytes to clear.</param>
+        public unsafe static void Clear(IntPtr pointer, int length)
+        {
+            Clear((byte*)pointer, length);
         }
 
         #endregion

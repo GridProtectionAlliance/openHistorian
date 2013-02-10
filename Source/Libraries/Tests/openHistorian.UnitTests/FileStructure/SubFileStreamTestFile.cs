@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using GSF;
@@ -39,7 +40,7 @@ namespace openHistorian.FileStructure.Test
     /// Also provides a way to copy on write to support the versioning file system.
     /// </summary>
     [TestFixture()]
-    public class SubFileStreamTest
+    public class SubFileStreamTestFile
     {
         static int BlockSize = 4096;
         static int BlockDataLength = BlockSize - FileStructureConstants.BlockFooterLength;
@@ -49,13 +50,26 @@ namespace openHistorian.FileStructure.Test
         {
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
 
-            DiskIo stream = new DiskIo(BlockSize, new MemoryFile(BlockSize), 0);
-            TestReadAndWrites(stream);
+            string fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".tmp");
+            try
+            {
+                using (FileStream fs = new FileStream(fileName, FileMode.Create))
+                using (BufferedFile bfs = new BufferedFile(fs, true, OpenMode.Create))
+                using (DiskIo stream = new DiskIo(BlockSize, bfs, 0))
+                {
+                    TestReadAndWrites(stream);
 
-            TestReadAndWritesWithCommit(stream);
-            TestReadAndWritesToDifferentFilesWithCommit(stream);
-            TestBinaryStream(stream);
-            stream.Dispose();
+                    TestReadAndWritesWithCommit(stream);
+                    TestReadAndWritesToDifferentFilesWithCommit(stream);
+                    TestBinaryStream(stream);
+                }
+            }
+            finally
+            {
+                File.Delete(fileName);
+            }
+
+
             Assert.IsTrue(true);
             Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
 

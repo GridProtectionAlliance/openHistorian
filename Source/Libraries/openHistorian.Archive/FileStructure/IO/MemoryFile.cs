@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  MemoryStream.cs - Gbtc
+//  MemoryFile.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  5/1/2012 - Steven E. Chisholm
+//  2/1/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -25,14 +25,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using GSF.IO.Unmanaged;
 using GSF.UnmanagedMemory;
 
-namespace GSF.IO.Unmanaged
+namespace openHistorian.FileStructure.IO
 {
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.
     /// </summary>
-    unsafe public partial class MemoryStream : ISupportsBinaryStreamAdvanced
+    unsafe internal partial class MemoryFile : DiskMediumBase
     {
         /// <summary>
         /// This class was created to allow settings update to be atomic.
@@ -121,6 +122,8 @@ namespace GSF.IO.Unmanaged
                     yield return GetIndex(x);
                 }
             }
+
+
         }
 
         #region [ Members ]
@@ -140,61 +143,43 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// The size of each page.
         /// </summary>
-        int m_blockSize;
+        int m_diskBlockSize;
 
         /// <summary>
-        /// Releases all the resources used by the <see cref="MemoryStream"/> object.
+        /// Releases all the resources used by the <see cref="MemoryFile"/> object.
         /// </summary>
         bool m_disposed;
-
-        /// <summary>
-        /// A debug counter that keep track of the number of time a lookup is performed.
-        /// </summary>
-        public long LookupCount = 0;
-
-        /// <summary>
-        /// This event occurs any time new data is added to the BinaryStream's 
-        /// internal memory. It gives the consumer of this class an opportunity to 
-        /// properly initialize the data before it is handed to an IoSession.
-        /// </summary>
-        public event EventHandler<StreamBlockEventArgs> BlockLoadedFromDisk;
-
-        /// <summary>
-        /// This event occurs right before something is committed to the disk. 
-        /// This gives the opportunity to finalize the data, such as updating checksums.
-        /// After the block has been successfully written <see cref="ISupportsBinaryStreamAdvanced.BlockLoadedFromDisk"/>
-        /// is called if the block is to remain in memory.
-        /// </summary>
-        public event EventHandler<StreamBlockEventArgs> BlockAboutToBeWrittenToDisk;
 
         #endregion
 
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a new <see cref="MemoryStream"/> using the default <see cref="BufferPool"/>.
+        /// Creates a new <see cref="MemoryFile"/> using the default <see cref="BufferPool"/>.
         /// </summary>
-        public MemoryStream()
-            : this(Globals.BufferPool)
+        public MemoryFile(int blockSize)
+            : this(GSF.Globals.BufferPool, blockSize)
         {
         }
 
         /// <summary>
-        /// Create a new <see cref="MemoryStream"/>
+        /// Create a new <see cref="MemoryFile"/>
         /// </summary>
-        public MemoryStream(BufferPool pool)
+        public MemoryFile(BufferPool pool, int fileStructureBlockSize)
+            : base(pool.PageSize, fileStructureBlockSize)
         {
             m_pool = pool;
             m_shiftLength = pool.PageShiftBits;
-            m_blockSize = pool.PageSize;
+            m_diskBlockSize = pool.PageSize;
             m_settings = new Settings();
             m_syncRoot = new object();
+            Initialize(FileHeaderBlock.CreateNew(fileStructureBlockSize));
         }
 
         /// <summary>
-        /// Releases the unmanaged resources before the <see cref="MemoryStream"/> object is reclaimed by <see cref="GC"/>.
+        /// Releases the unmanaged resources before the <see cref="MemoryFile"/> object is reclaimed by <see cref="GC"/>.
         /// </summary>
-        ~MemoryStream()
+        ~MemoryFile()
         {
             Dispose(false);
         }
@@ -204,20 +189,9 @@ namespace GSF.IO.Unmanaged
         #region [ Properties ]
 
         /// <summary>
-        /// Gets the unit size of an individual block
-        /// </summary>
-        public int BlockSize
-        {
-            get
-            {
-                return m_blockSize;
-            }
-        }
-
-        /// <summary>
         /// Gets if the stream can be written to.
         /// </summary>
-        public bool IsReadOnly
+        public override bool IsReadOnly
         {
             get
             {
@@ -228,7 +202,7 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// Gets if the stream has been disposed.
         /// </summary>
-        public bool IsDisposed
+        public override bool IsDisposed
         {
             get
             {
@@ -239,24 +213,11 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// Gets the length of the current stream.
         /// </summary>
-        public long Length
+        public override long Length
         {
             get
             {
-                return (long)m_settings.PageCount * BlockSize;
-            }
-        }
-
-        /// <summary>
-        /// Gets the number of available simultaneous read/write sessions.
-        /// </summary>
-        /// <remarks>This value is used to determine if a binary stream can be cloned
-        /// to improve read/write/copy performance.</remarks>
-        int ISupportsBinaryStream.RemainingSupportedIoSessions
-        {
-            get
-            {
-                return int.MaxValue;
+                return (long)m_settings.PageCount * DiskBlockSize;
             }
         }
 
@@ -268,14 +229,14 @@ namespace GSF.IO.Unmanaged
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="MemoryStream"/> object and optionally releases the managed resources.
+        /// Releases the unmanaged resources used by the <see cref="MemoryFile"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         void Dispose(bool disposing)
@@ -298,53 +259,18 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// Aquire an IO Session.
         /// </summary>
-        public IBinaryStreamIoSession GetNextIoSession()
+        public override IBinaryStreamIoSession GetNextIoSession()
         {
             return new IoSession(this);
         }
 
-        /// <summary>
-        /// Creates a new binary from an IO session
-        /// </summary>
-        /// <returns></returns>
-        public BinaryStreamBase CreateBinaryStream()
-        {
-            return new BinaryStream(this);
-        }
-
-        /// <summary>
-        /// Sets the size of the stream.
-        /// </summary>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        public long SetLength(long length)
-        {
-            if (Length < length)
-            {
-                GetPage(length - 1);
-            }
-            else
-            {
-                //ToDO: Figure out how to safely shrink a file. 
-            }
-            return Length;
-        }
-
-        /// <summary>
-        /// Writes all current data to the disk subsystem.
-        /// </summary>
-        void ISupportsBinaryStreamAdvanced.Flush()
+        protected override void FlushWithHeader(FileHeaderBlock headerBlock)
         {
 
         }
-
-        /// <summary>
-        /// Equivalent to SetLength but my not change the size of the file.
-        /// </summary>
-        /// <param name="position">The start of the position that will be invalidated</param>
-        void ISupportsBinaryStreamAdvanced.TrimEditsAfterPosition(long position)
+        public override void RollbackChanges()
         {
-            SetLength(position);
+
         }
 
         #endregion
@@ -394,12 +320,10 @@ namespace GSF.IO.Unmanaged
                     int pageIndex;
                     IntPtr pagePointer;
                     m_pool.AllocatePage(out pageIndex, out pagePointer);
-                    Memory.Clear((byte*)pagePointer, m_pool.PageSize);
+                    Memory.Clear(pagePointer, m_pool.PageSize);
 
-                    if (BlockLoadedFromDisk != null)
-                    {
-                        BlockLoadedFromDisk(this, new StreamBlockEventArgs(settings.PageCount * (long)BlockSize, pagePointer, BlockSize));
-                    }
+                    //Footer.WriteChecksumResultsToFooter(pagePointer, DiskBlockSize, m_pool.PageSize);
+
                     settings.AddNewPage((byte*)pagePointer, pageIndex);
                 }
 
@@ -416,8 +340,7 @@ namespace GSF.IO.Unmanaged
             if (m_disposed)
                 throw new ObjectDisposedException("MemoryStream");
 
-            LookupCount++;
-            length = m_blockSize;
+            length = m_diskBlockSize;
             firstPosition = position & ~(length - 1);
             firstPointer = (IntPtr)GetPage(position);
             supportsWriting = true;

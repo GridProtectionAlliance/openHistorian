@@ -51,4 +51,26 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         bool IsDisposed { get; }
     }
+
+    public static class BinaryStreamIoSessionExtensionMethods
+    {
+        /// <summary>
+        /// Reads from the underlying stream the requested set of data. 
+        /// This function is more user friendly than calling GetBlock().
+        /// </summary>
+        /// <param name="session">The session to do the reading on</param>
+        /// <param name="position">the starting position of the read</param>
+        /// <param name="pointer">an output pointer to <see cref="position"/>.</param>
+        /// <param name="validLength">the number of bytes that are valid after this position.</param>
+        /// <returns></returns>
+        public static void ReadBlock(this IBinaryStreamIoSession session, long position, out IntPtr pointer, out int validLength)
+        {
+            long firstPosition;
+            bool supportsWriting;
+            session.GetBlock(position, false, out pointer, out firstPosition, out validLength, out supportsWriting);
+            int seekDistance = (int)(position - firstPosition);
+            validLength -= seekDistance;
+            pointer += seekDistance;
+        }
+   }
 }

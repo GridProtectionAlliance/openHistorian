@@ -27,6 +27,7 @@ using System.IO;
 using System.Linq;
 using GSF;
 using GSF.Collections;
+using openHistorian.FileStructure.IO;
 
 namespace openHistorian.FileStructure
 {
@@ -87,24 +88,45 @@ namespace openHistorian.FileStructure
 
         #region [ Constructors ]
 
-        /// <summary>
-        /// Creates a new FileAllocationTable
-        /// </summary>
-        /// <param name="diskIo"></param>
-        /// <param name="openMode"> </param>
-        /// <param name="accessMode"> </param>
-        public FileHeaderBlock(int blockSize, DiskIo diskIo, OpenMode openMode, AccessMode accessMode)
+        FileHeaderBlock()
         {
-            m_blockSize = blockSize;
-            if (openMode == OpenMode.Create)
-            {
-                CreateNewFileAllocationTable(diskIo, accessMode);
-            }
-            else
-            {
-                LoadFromBuffer(diskIo, accessMode);
-            }
-            IsReadOnly = (accessMode == AccessMode.ReadOnly);
+
+        }
+
+        /// <summary>
+        /// Creates a new file header.
+        /// </summary>
+        /// <param name="blockSize">The block size to make the header</param>
+        /// <returns></returns>
+        public static FileHeaderBlock CreateNew(int blockSize)
+        {
+            var header = new FileHeaderBlock();
+            header.m_blockSize = blockSize;
+            header.m_minimumReadVersion = FileAllocationTableVersion;
+            header.m_minimumWriteVersion = FileAllocationTableVersion;
+            header.m_archiveId = Guid.NewGuid();
+            header.m_snapshotSequenceNumber = 1;
+            header.m_nextFileId = 0;
+            header.m_lastAllocatedBlock = 9;
+            header.m_files = new ReadonlyList<SubFileMetaData>();
+            header.m_userData = new byte[] { };
+            header.m_archiveType = Guid.Empty;
+            header.IsReadOnly = true;
+            return header;
+        }
+
+        /// <summary>
+        /// Opens a file header
+        /// </summary>
+        /// <param name="data">The block of data to be loaded. The length of this block must be equal to the
+        /// block size of a partition.</param>
+        /// <returns></returns>
+        public static FileHeaderBlock Open(byte[] data)
+        {
+            var header = new FileHeaderBlock();
+            header.LoadFromBuffer(data);
+            header.IsReadOnly = true;
+            return header;
         }
 
         #endregion
@@ -289,22 +311,7 @@ namespace openHistorian.FileStructure
             m_files.Add(node);
             return node;
         }
-
-        /// <summary>
-        /// Saves the file allocation table to the disk
-        /// </summary>
-        /// <param name="diskIo">The place to store the file allocation table.</param>
-        public void WriteToFileSystem(DiskIo diskIo)
-        {
-            if (!CanWrite)
-                throw new Exception("Writing is not supported to this file system type.");
-
-            byte[] data = GetBytes();
-            diskIo.WriteToExistingBlock(0, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
-            diskIo.WriteToExistingBlock(1, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
-            diskIo.WriteToExistingBlock(((m_snapshotSequenceNumber & 7) + 2), BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
-        }
-
+        
         /// <summary>
         /// Checks all of the information in the header file 
         /// to verify if it is valid.
@@ -319,37 +326,9 @@ namespace openHistorian.FileStructure
         }
 
         /// <summary>
-        /// Creates a new file system and writes the file allocation table to the provided disk.
-        /// </summary>
-        /// <param name="diskIo"></param>
-        /// <param name="mode"></param>
-        void CreateNewFileAllocationTable(DiskIo diskIo, AccessMode mode)
-        {
-            m_minimumReadVersion = FileAllocationTableVersion;
-            m_minimumWriteVersion = FileAllocationTableVersion;
-            m_archiveId = Guid.NewGuid();
-            m_snapshotSequenceNumber = 1;
-            m_nextFileId = 0;
-            m_lastAllocatedBlock = 9;
-            m_files = new ReadonlyList<SubFileMetaData>();
-            IsReadOnly = (mode == AccessMode.ReadOnly);
-            m_userData = new byte[] { };
-            m_archiveType = Guid.Empty;
-
-            byte[] data = GetBytes();
-
-            //write the file header to the first 10 pages of the file.
-            for (int x = 0; x < 10; x++)
-            {
-                diskIo.WriteToNewBlock(x, BlockType.FileAllocationTable, 0, 0, m_snapshotSequenceNumber, data);
-            }
-
-        }
-
-        /// <summary>
         /// This will return a byte array of data that can be written to an archive file.
         /// </summary>
-        byte[] GetBytes()
+        public byte[] GetBytes()
         {
             if (!IsFileAllocationTableValid())
                 throw new InvalidOperationException("File Allocation Table is invalid");
@@ -388,6 +367,7 @@ namespace openHistorian.FileStructure
             if (stream.Position + 32 > dataBytes.Length)
                 throw new Exception("the file size exceedes the allowable size.");
 
+            WriteFooterData(dataBytes);
             return dataBytes;
         }
 
@@ -395,13 +375,12 @@ namespace openHistorian.FileStructure
         /// This procedure will attempt to read all of the data out of the file allocation table
         /// If the file allocation table is corrupt, an error will be generated.
         /// </summary>
-        /// <param name="diskIo">the block that contains the buffer data.</param>
-        /// <param name="mode"></param>
-        void LoadFromBuffer(DiskIo diskIo, AccessMode mode)
+        /// <param name="buffer">the block that contains the buffer data.</param>
+        void LoadFromBuffer(byte[] buffer)
         {
-            byte[] buffer = new byte[m_blockSize];
-            diskIo.Read(0, BlockType.FileAllocationTable, 0, 0, int.MaxValue, buffer);
+            ValidateBlock(buffer);
 
+            m_blockSize = buffer.Length;
             MemoryStream stream = new MemoryStream(buffer);
             BinaryReader dataReader = new BinaryReader(stream);
 
@@ -445,11 +424,11 @@ namespace openHistorian.FileStructure
             //ToDo: check based on block
             if (fileCount > 64)
                 throw new Exception("Only 64 features are supported per archive");
-            
+
             m_files = new ReadonlyList<SubFileMetaData>(fileCount);
             for (int x = 0; x < fileCount; x++)
             {
-                m_files.Add(new SubFileMetaData(dataReader, mode));
+                m_files.Add(new SubFileMetaData(dataReader, AccessMode.ReadOnly));
             }
 
             //ToDo: check based on block length
@@ -458,9 +437,49 @@ namespace openHistorian.FileStructure
 
             if (!IsFileAllocationTableValid())
                 throw new Exception("File System is invalid");
-            IsReadOnly = (mode == AccessMode.ReadOnly);
-            if (mode != AccessMode.ReadOnly)
-                m_snapshotSequenceNumber++;
+            IsReadOnly = true;
+        }
+
+        unsafe void ValidateBlock(byte[] buffer)
+        {
+            long checksum1;
+            int checksum2;
+            fixed (byte* lpData = buffer)
+            {
+                Footer.ComputeChecksum((IntPtr)lpData, out checksum1, out checksum2, buffer.Length - 16);
+
+                long checksumInData1 = *(long*)(lpData + buffer.Length - 16);
+                int checksumInData2 = *(int*)(lpData + buffer.Length - 8);
+                if (checksum1 != checksumInData1 || checksum2 != checksumInData2)
+                {
+                    throw new Exception("Checksum on header file is invalid");
+                }
+                if (lpData[buffer.Length - 32] != (byte)BlockType.FileAllocationTable)
+                    throw new Exception("IoReadState.BlockTypeMismatch");
+                if (*(int*)(lpData + buffer.Length - 28) != 0)
+                    throw new Exception("IoReadState.IndexNumberMissmatch");
+                if (*(int*)(lpData + buffer.Length - 24) != 0)
+                    throw new Exception("IoReadState.FileIdNumberDidNotMatch");
+            }
+        }
+
+        unsafe void WriteFooterData(byte[] buffer)
+        {
+            fixed (byte* lpData = buffer)
+            {
+                long checksum1;
+                int checksum2;
+
+                lpData[buffer.Length - 32] = (byte)BlockType.FileAllocationTable;
+                *(int*)(lpData + buffer.Length - 28) = 0;
+                *(int*)(lpData + buffer.Length - 24) = 0;
+                *(int*)(lpData + buffer.Length - 20) = 0;
+
+                Footer.ComputeChecksum((IntPtr)lpData, out checksum1, out checksum2, buffer.Length - 16);
+                *(long*)(lpData + buffer.Length - 16) = checksum1;
+                *(int*)(lpData + buffer.Length - 8) = checksum2;
+                *(int*)(lpData + buffer.Length - 4) = 0;
+            }
         }
 
         public static int SearchForBlockSize(FileStream stream)
@@ -468,7 +487,7 @@ namespace openHistorian.FileStructure
             var oldPosition = stream.Position;
             BinaryReader dataReader = new BinaryReader(stream);
             stream.Position = 0;
-            
+
             if (!dataReader.ReadBytes(26).SequenceEqual(s_fileAllocationTableHeaderBytes))
                 throw new Exception("This file is not an archive file system, or the file is corrupt, or this file system major version is not recgonized by this version of the historian");
 

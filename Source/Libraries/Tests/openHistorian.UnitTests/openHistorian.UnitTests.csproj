@@ -70,6 +70,9 @@
     <Compile Include="Engine\ArchiveWriters\StageWriterTest.cs" />
     <Compile Include="Engine\ArchiveWriters\StagingFileTest.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessorTest.cs" />
+    <Compile Include="FileStructure\TransactionServiceTestFile.cs" />
+    <Compile Include="FileStructure\SubFileStreamTestFile.cs" />
+    <Compile Include="FileStructure\TransactionalEditTestFile.cs" />
     <Compile Include="FileStructure\DiskIOEnhanced2Test.cs" />
     <Compile Include="FileStructure\DiskIOEnhancedTest.cs" />
     <Compile Include="FileStructure\FileHeaderBlockTest.cs" />
@@ -80,6 +83,11 @@
     <Compile Include="FileStructure\SubFileStreamTest.cs" />
     <Compile Include="FileStructure\TransactionalEditTest.cs" />
     <Compile Include="FileStructure\TransactionServiceTest.cs" />
+    <Compile Include="FileStructure\IO\CustomBufferedFileStreamExtensiveTest.cs" />
+    <Compile Include="FileStructure\IO\BufferedFileTest.cs" />
+    <Compile Include="FileStructure\IO\CustomBufferedFileStream_IoQueue.cs" />
+    <Compile Include="FileStructure\IO\CustomPageReplacementTest.cs" />
+    <Compile Include="FileStructure\IO\PageListTest.cs" />
     <Compile Include="IO\BinaryStreamTest.cs" />
     <Compile Include="IO\BinaryStreamWrapperTest.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />

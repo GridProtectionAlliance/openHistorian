@@ -267,8 +267,7 @@ namespace openHistorian.FileStructure
             try
             {
                 //ToDo: First commit the data, then the file system.
-                m_fileHeaderBlock.WriteToFileSystem(m_dataReader);
-                m_dataReader.Flush();
+                m_dataReader.CommitChanges(m_fileHeaderBlock);
                 if (m_delHasBeenCommitted != null)
                     m_delHasBeenCommitted.Invoke();
             }
@@ -300,6 +299,7 @@ namespace openHistorian.FileStructure
             }
             try
             {
+                m_dataReader.RollbackChanges();
                 if (m_delHasBeenRolledBack != null)
                     m_delHasBeenRolledBack.Invoke();
             }
@@ -312,20 +312,20 @@ namespace openHistorian.FileStructure
             }
         }
 
-        /// <summary>
-        /// Sets the length of the file system to the length passed, but rounds it up to the nearest block.
-        /// </summary>
-        /// <param name="size">The desired size, specifying a value less than the current allocated size of the file system 
-        /// will cause it to shrink to the current size.</param>
-        /// <returns></returns>
-        public long SetFileLength(long size)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (m_disposed)
-                throw new Exception("Duplicate call to Commit/Rollback Transaction");
-            return m_dataReader.SetFileLength(size, m_fileHeaderBlock.LastAllocatedBlock + 1);
-        }
+        ///// <summary>
+        ///// Sets the length of the file system to the length passed, but rounds it up to the nearest block.
+        ///// </summary>
+        ///// <param name="size">The desired size, specifying a value less than the current allocated size of the file system 
+        ///// will cause it to shrink to the current size.</param>
+        ///// <returns></returns>
+        //public long SetFileLength(long size)
+        //{
+        //    if (m_disposed)
+        //        throw new ObjectDisposedException(GetType().FullName);
+        //    if (m_disposed)
+        //        throw new Exception("Duplicate call to Commit/Rollback Transaction");
+        //    return m_dataReader.SetFileLength(size, m_fileHeaderBlock.LastAllocatedBlock + 1);
+        //}
 
         /// <summary>
         /// Computes the amount of free space in the file system.  This takes into consideration the pending edits on the file.

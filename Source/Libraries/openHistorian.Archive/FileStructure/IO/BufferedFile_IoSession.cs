@@ -1,0 +1,125 @@
+﻿//******************************************************************************************************
+//  BufferedFile_IoStream.cs - Gbtc
+//
+//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://www.opensource.org/licenses/eclipse-1.0.php
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  2/1/2013 - Steven E. Chisholm
+//       Generated original version of source code. 
+//       
+//
+//******************************************************************************************************
+
+using System;
+using GSF.IO.Unmanaged;
+
+namespace openHistorian.FileStructure.IO
+{
+    partial class BufferedFile
+    {
+        // Nested Types
+        class IoSession : IBinaryStreamIoSession
+        {
+            bool m_disposed;
+            BufferedFile m_stream;
+            PageLock m_pageLock;
+
+            /// <summary>
+            /// Creates a new <see cref="IoSession"/>
+            /// </summary>
+            /// <param name="stream">the base class</param>
+            /// <param name="pageLock">The LRU IO Session</param>
+            internal IoSession(BufferedFile stream, PageLock pageLock)
+            {
+                m_stream = stream;
+                m_pageLock = pageLock;
+            }
+            
+            /// <summary>
+            /// Releases the unmanaged resources before the <see cref="IoSession"/> object is reclaimed by <see cref="GC"/>.
+            /// </summary>
+            ~IoSession()
+            {
+                Dispose(false);
+            }
+
+            /// <summary>
+            /// Gets if the object has been disposed
+            /// </summary>
+            public bool IsDisposed
+            {
+                get
+                {
+                    return m_disposed;
+                }
+            }
+
+            /// <summary>
+            /// Gets a block for the following Io session.
+            /// </summary>
+            /// <param name="position">the block returned must contain this position</param>
+            /// <param name="isWriting">indicates if the stream plans to write to this block</param>
+            /// <param name="firstPointer">the pointer for the first byte of the block</param>
+            /// <param name="firstPosition">the position that corresponds to <see cref="firstPointer"/></param>
+            /// <param name="length">the length of the block</param>
+            /// <param name="supportsWriting">notifies the calling class if this block supports 
+            /// writing without requiring this function to be called again if <see cref="isWriting"/> was set to false.</param>
+            public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+            {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                m_stream.GetBlock(m_pageLock, position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
+            }
+
+            /// <summary>
+            /// Sets the current usage of the <see cref="IBinaryStreamIoSession"/> to null.
+            /// </summary>
+            public void Clear()
+            {
+                m_pageLock.Clear();
+            }
+
+            /// <summary>
+            /// Releases all the resources used by the <see cref="IoSession"/> object.
+            /// </summary>
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            /// <summary>
+            /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
+            /// </summary>
+            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!m_disposed)
+                {
+                    try
+                    {
+                        m_pageLock.Dispose();
+                    }
+                    finally
+                    {
+                        m_pageLock = null;
+                        m_disposed = true;  // Prevent duplicate dispose.
+                    }
+                }
+            }
+        }
+
+    }
+}
