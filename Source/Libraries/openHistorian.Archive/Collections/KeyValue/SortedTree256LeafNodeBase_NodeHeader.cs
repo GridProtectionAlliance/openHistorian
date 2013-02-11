@@ -50,6 +50,8 @@ namespace openHistorian.Collections.KeyValue
             }
             public void Save(BinaryStreamBase stream, int blockSize, long nodeIndex)
             {
+                //if (RightSiblingNodeIndex==2)
+                //    System.Diagnostics.Debugger.Break();
                 stream.Position = blockSize * nodeIndex;
                 stream.Write((byte)0);
                 stream.Write(NodeRecordCount);
@@ -59,6 +61,8 @@ namespace openHistorian.Collections.KeyValue
 
             public static void Save(BinaryStreamBase stream, int nodeRecordCount, long leftSiblingNodeIndex, long rightSiblingNodeIndex)
             {
+                //if (rightSiblingNodeIndex == 2)
+                //    System.Diagnostics.Debugger.Break();
                 stream.Write((byte)0);
                 stream.Write(nodeRecordCount);
                 stream.Write(leftSiblingNodeIndex);

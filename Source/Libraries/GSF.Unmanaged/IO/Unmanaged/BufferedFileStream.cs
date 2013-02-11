@@ -42,7 +42,7 @@ namespace GSF.IO.Unmanaged
     /// </remarks>
     //ToDo: Consider allowing this class to scale horizontally like how the concurrent dictionary scales.
     //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
-    unsafe public partial class BufferedFileStream : ISupportsBinaryStreamAdvanced
+    unsafe public partial class BufferedFileStream : ISupportsBinaryStream
     {
         /// <summary>
         /// To synchronize all calls to this class.
@@ -69,21 +69,6 @@ namespace GSF.IO.Unmanaged
         bool m_ownsStream;
 
         IoQueue m_queue;
-
-        /// <summary>
-        /// This event occurs any time new data is added to the BinaryStream's 
-        /// internal memory. It gives the consumer of this class an opportunity to 
-        /// properly initialize the data before it is handed to an IoSession.
-        /// </summary>
-        public event EventHandler<StreamBlockEventArgs> BlockLoadedFromDisk;
-
-        /// <summary>
-        /// This event occurs right before something is committed to the disk. 
-        /// This gives the opportunity to finalize the data, such as updating checksums.
-        /// After the block has been successfully written <see cref="ISupportsBinaryStreamAdvanced.BlockLoadedFromDisk"/>
-        /// is called if the block is to remain in memory.
-        /// </summary>
-        public event EventHandler<StreamBlockEventArgs> BlockAboutToBeWrittenToDisk;
 
         public BufferedFileStream(FileStream stream, bool ownsStream = false)
             : this(stream, Globals.BufferPool, 4096, ownsStream)
@@ -287,24 +272,6 @@ namespace GSF.IO.Unmanaged
         public BinaryStreamBase CreateBinaryStream()
         {
             return new BinaryStream(this);
-        }
-
-        long ISupportsBinaryStreamAdvanced.Length
-        {
-            get
-            {
-                return m_baseStream.Length;
-            }
-        }
-
-        long ISupportsBinaryStreamAdvanced.SetLength(long length)
-        {
-            lock (m_syncRoot)
-            {
-                //if (m_baseStream.Length < length)
-                m_baseStream.SetLength(length);
-                return m_baseStream.Length;
-            }
         }
 
         public int BlockSize

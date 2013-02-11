@@ -50,17 +50,21 @@ namespace openHistorian.UnitTests.Archive
             var sw = new Stopwatch();
             sw.Start();
             using (var af = ArchiveFile.CreateInMemory(CompressionMethod.TimeSeriesEncoded, pageSize))
-            using (var edit = af.BeginEdit())
             {
-                for (uint x = 0; x < 1000000; x++)
+                using (var edit = af.BeginEdit())
                 {
-                    //if (x == 1000)
-                    //    DiskIoSession.BreakOnIO = true;
-                    edit.AddPoint(1, x, 0, 0);
-                }
+                    for (uint x = 0; x < 1000000; x++)
+                    {
+                        //if (x == 1000)
+                        //    DiskIoSession.BreakOnIO = true;
+                        edit.AddPoint(1, x, 0, 0);
+                    }
 
-                edit.Commit();
+                    edit.Commit();
+                }
+                long cnt = af.Count();
             }
+
             sw.Stop();
 
             Console.WriteLine("Size: " + pageSize.ToString());

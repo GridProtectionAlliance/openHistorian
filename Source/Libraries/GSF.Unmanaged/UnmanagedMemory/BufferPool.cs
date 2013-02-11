@@ -70,6 +70,8 @@ namespace GSF.UnmanagedMemory
             High = 2
         }
 
+        bool m_isCollecting;
+
         bool m_disposed;
 
         CollectionEngine m_collectionEngine;
@@ -254,15 +256,20 @@ namespace GSF.UnmanagedMemory
         {
             lock (m_syncRoot)
             {
+                if (m_isCollecting)
+                    throw new Exception("Cannot allocate data while a collection is occuring");
+
                 if (CurrentAllocatedSize == CurrentCapacity)
                 {
+                    m_isCollecting = true;
                     m_collectionEngine.AllocateMoreFreeSpace();
+                    m_isCollecting = false;
                     //Grow the allocated pool
 
                     //long newSize = CurrentAllocatedSize;
                     //GrowBufferToSize(newSize + (long)(0.1 * MaximumBufferSize));
                 }
-                GetNextPage(out index, out addressPointer);
+                InternalGetNextPage(out index, out addressPointer);
             }
         }
 
@@ -281,10 +288,11 @@ namespace GSF.UnmanagedMemory
             {
                 lock (m_syncRoot)
                 {
-                    if (TryReleasePage(pageIndex))
-                    {
-                        //ToDo: Consider calling the garbage collection routine and allow it to consider shrinking the pool.
-                    }
+                    if (m_isCollecting)
+                        throw new Exception("Cannot release data while a collection is occuring through this method");
+
+                    if (!InternalTryReleasePage(pageIndex))
+                        throw new Exception("Duplicate calls to release is not supported");
                 }
             }
         }
@@ -293,10 +301,14 @@ namespace GSF.UnmanagedMemory
         {
             lock (m_syncRoot)
             {
+                if (m_isCollecting)
+                    throw new Exception("Cannot release data while a collection is occuring through this method"); 
                 foreach (int x in pageIndexes)
                 {
-                    if (x >= 0)
-                        TryReleasePage(x);
+                    if (!InternalTryReleasePage(x))
+                        throw new Exception("Duplicate calls to release is not supported");
+                    //if (x >= 0)
+                    //    TryReleasePage(x);
                 }
             }
         }

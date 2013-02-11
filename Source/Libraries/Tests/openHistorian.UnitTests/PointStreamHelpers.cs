@@ -85,15 +85,15 @@ namespace openHistorian
             }
         }
 
-        public static int Count(this IStream256 stream)
+        public static long Count(this IStream256 stream)
         {
-            int x = 0;
+            long x = 0;
             ulong akey1, akey2, avalue1, avalue2;
             while (stream.Read(out akey1, out akey2, out avalue1, out avalue2))
                 x++;
             return x;
         }
-        public static int Count(this ArchiveFile stream)
+        public static long Count(this ArchiveFile stream)
         {
             using (var read = stream.BeginRead())
             {

@@ -104,12 +104,6 @@ namespace GSF.IO.Unmanaged
                 if (bytesRead < buffer.Length)
                     Array.Clear(buffer, bytesRead, buffer.Length - bytesRead);
 
-                fixed (byte* lp = buffer)
-                {
-                    if (m_baseStream.BlockLoadedFromDisk != null)
-                        m_baseStream.BlockLoadedFromDisk(m_baseStream, new StreamBlockEventArgs(position, (IntPtr)lp, buffer.Length));
-                }
-
                 callback(buffer);
                 m_bufferQueue.Enqueue(buffer);
             }
@@ -128,8 +122,6 @@ namespace GSF.IO.Unmanaged
                 {
                     if (block.IsDirtyFlags == allPagesAreDirty) //if all pages need to be written, one can shortcut
                     {
-                        if (m_baseStream.BlockAboutToBeWrittenToDisk != null)
-                            m_baseStream.BlockAboutToBeWrittenToDisk(m_baseStream, new StreamBlockEventArgs(block.PositionIndex * (long)m_bufferPoolSize, (IntPtr)block.LocationOfPage, buffer.Length));
                         Marshal.Copy((IntPtr)block.LocationOfPage, buffer, 0, buffer.Length);
                         IAsyncResult results;
                         lock (m_syncRoot)
@@ -138,9 +130,6 @@ namespace GSF.IO.Unmanaged
                             results = m_stream.BeginWrite(buffer, 0, buffer.Length, null, null);
                         }
                         m_stream.EndWrite(results);
-
-                        if (m_baseStream.BlockLoadedFromDisk != null)
-                            m_baseStream.BlockLoadedFromDisk(m_baseStream, new StreamBlockEventArgs(block.PositionIndex * (long)m_bufferPoolSize, (IntPtr)block.LocationOfPage, buffer.Length));
 
                         BytesWritten += buffer.Length;
                     }
@@ -152,8 +141,6 @@ namespace GSF.IO.Unmanaged
                             {
                                 long position = block.PositionIndex * (long)m_bufferPoolSize + x * m_dirtyPageSize;
                                 IntPtr location = (IntPtr)block.LocationOfPage + (x * m_dirtyPageSize);
-                                if (m_baseStream.BlockAboutToBeWrittenToDisk != null)
-                                    m_baseStream.BlockAboutToBeWrittenToDisk(m_baseStream, new StreamBlockEventArgs(position, location, m_dirtyPageSize));
 
                                 Marshal.Copy(location, buffer, 0, m_dirtyPageSize);
                                 IAsyncResult results;
@@ -163,9 +150,6 @@ namespace GSF.IO.Unmanaged
                                     results = m_stream.BeginWrite(buffer, 0, m_dirtyPageSize, null, null);
                                 }
                                 m_stream.EndWrite(results);
-
-                                if (m_baseStream.BlockLoadedFromDisk != null)
-                                    m_baseStream.BlockLoadedFromDisk(m_baseStream, new StreamBlockEventArgs(position, location, m_dirtyPageSize));
 
                                 BytesWritten += m_dirtyPageSize;
                             }

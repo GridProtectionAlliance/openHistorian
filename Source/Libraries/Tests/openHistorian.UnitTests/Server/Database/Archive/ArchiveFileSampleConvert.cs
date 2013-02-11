@@ -17,7 +17,8 @@ namespace openHistorian.UnitTests.Server.Database.Archive
         {
             if (File.Exists("c:\\temp\\ArchiveTestFileBig.d2"))
                 File.Delete("c:\\temp\\ArchiveTestFileBig.d2");
-            using (var af = ArchiveFile.CreateFile("c:\\temp\\ArchiveTestFileBig.d2", CompressionMethod.TimeSeriesEncoded))
+            using (var af = ArchiveFile.CreateInMemory(CompressionMethod.TimeSeriesEncoded))
+            //using (var af = ArchiveFile.CreateFile("c:\\temp\\ArchiveTestFileBig.d2", CompressionMethod.TimeSeriesEncoded))
             {
                 Random r = new Random(3);
 
@@ -31,9 +32,43 @@ namespace openHistorian.UnitTests.Server.Database.Archive
                         }
                         edit.Commit();
                     }
+                    af.Count();
                 }
+                af.Count();
             }
         }
+
+        //[Test]
+        //public void WriteFile2()
+        //{
+        //    using (var af = ArchiveFile.CreateInMemory(CompressionMethod.None))
+        //    //using (var af = ArchiveFile.CreateInMemory(CompressionMethod.TimeSeriesEncoded))
+        //    //using (var af = ArchiveFile.CreateFile("c:\\temp\\ArchiveTestFileBig.d2", CompressionMethod.TimeSeriesEncoded))
+        //    {
+        //        Random r = new Random(3);
+
+        //        for (ulong v1 = 1; v1 < 360; v1++)
+        //        {
+        //            long cnt = af.Count();
+        //            using (var edit = af.BeginEdit())
+        //            {
+        //                for (ulong v2 = 1; v2 < 28; v2++)
+        //                {
+        //                    Assert.AreEqual(cnt, af.Count());
+        //                    if (v1 == 128)
+        //                        v1 = v1;
+
+        //                    edit.AddPoint(v1 * 2342523, v2, 0, (ulong)r.Next());
+        //                    Assert.AreEqual(cnt, af.Count());
+        //                    Assert.AreEqual(cnt + (long)v2, edit.GetRange().Count());
+        //                }
+        //                edit.Commit();
+        //            }
+        //            af.Count();
+        //        }
+        //        af.Count();
+        //    }
+        //}
 
         //[Test]
         //public void WriteFile2()

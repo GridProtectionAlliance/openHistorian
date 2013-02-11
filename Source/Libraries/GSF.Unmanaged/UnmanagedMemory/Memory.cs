@@ -186,6 +186,10 @@ namespace GSF.UnmanagedMemory
         {
             WinApi.MoveMemory(dest, src, count);
         }
+        public static unsafe void Copy(IntPtr src, IntPtr dest, int count)
+        {
+            WinApi.MoveMemory((byte*)dest, (byte*)src, count);
+        }
 
         /// <summary>
         /// Sets the data in this buffer to all zeroes
@@ -214,9 +218,30 @@ namespace GSF.UnmanagedMemory
             Clear((byte*)pointer, length);
         }
 
+        public unsafe static bool IsEmpty(IntPtr pointer, int length)
+        {
+            return IsEmpty((byte*)pointer, length);
+        }
+        public unsafe static bool IsEmpty(byte* pointer, int length)
+        {
+            int i;
+            for (i = 0; i < length - 8; i += 8)
+            {
+                if (*(long*)(pointer + i) != 0)
+                    return false;
+            }
+            for (; i < length; i++)
+            {
+                if (pointer[i] != 0)
+                    return false;
+            }
+            return true;
+        }
+
         #endregion
 
         #endregion
+
 
     }
 }

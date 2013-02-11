@@ -1,4 +1,6 @@
 ﻿//using System;
+//using GSF;
+//using GSF.IO.Unmanaged;
 //using NUnit.Framework;
 
 //namespace openHistorian.IO.Unmanaged

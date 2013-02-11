@@ -29,7 +29,7 @@ namespace GSF.IO.Unmanaged
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.
     /// </summary>
-    unsafe public partial class MemoryStream
+    public partial class MemoryStream
     {
         // Nested Types
         class IoSession : IBinaryStreamIoSession
@@ -65,7 +65,8 @@ namespace GSF.IO.Unmanaged
             {
                 if (m_stream == null)
                     throw new ObjectDisposedException(GetType().FullName);
-                m_stream.GetBlock(position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
+                supportsWriting = true;
+                m_stream.GetBlock(position, out firstPointer, out firstPosition, out length);
             }
 
             /// <summary>

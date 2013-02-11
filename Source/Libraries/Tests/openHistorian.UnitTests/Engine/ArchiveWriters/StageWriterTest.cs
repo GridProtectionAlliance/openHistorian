@@ -43,7 +43,7 @@ namespace openHistorian.Engine.ArchiveWriters
 
         void FinalizeArchiveFile(RolloverArgs args)
         {
-            m_pointsRead = args.File.Count();
+            m_pointsRead = (int)args.File.Count();
             m_sequenceNumber = args.SequenceNumber;
             Assert.NotNull(args.File);
         }

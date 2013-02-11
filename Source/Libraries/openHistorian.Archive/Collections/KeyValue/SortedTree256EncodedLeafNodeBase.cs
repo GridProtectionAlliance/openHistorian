@@ -526,7 +526,8 @@ namespace openHistorian.Collections.KeyValue
         
         protected override ITreeScanner256 LeafNodeGetScanner()
         {
-            return new TreeScanner(this);
+            return new TreeScannerEnsureSequential(new TreeScanner(this));
+            //return new TreeScanner(this);
         }
 
         #endregion

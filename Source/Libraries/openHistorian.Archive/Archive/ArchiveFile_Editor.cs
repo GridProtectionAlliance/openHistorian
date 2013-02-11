@@ -89,6 +89,13 @@ namespace openHistorian.Archive
                 m_dataTree.AddPoint(key1, key2, value1, value2);
             }
 
+            public ITreeScanner256 GetRange()
+            {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                return m_dataTree.GetDataRange();
+            }
+
             public void AddPoints(IStream256 scanner)
             {
                 if (m_disposed)

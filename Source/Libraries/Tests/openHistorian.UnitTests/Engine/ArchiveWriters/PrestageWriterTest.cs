@@ -18,6 +18,9 @@ namespace openHistorian.Engine.ArchiveWriters
         [Test]
         public void TestOnCommitInterval()
         {
+            m_pointsRead = 0;
+            m_sequenceNumber = 0;
+            m_pointCount = new List<int>();
             var prestageSettings = new PrestageSettings()
             {
                 DelayOnPointCount = 20 * 1000,
@@ -42,7 +45,9 @@ namespace openHistorian.Engine.ArchiveWriters
         [Test]
         public void Test1()
         {
-
+            m_pointsRead = 0;
+            m_sequenceNumber = 0;
+            m_pointCount = new List<int>();
             var prestageSettings = new PrestageSettings()
             {
                 DelayOnPointCount = 30 * 1000,
@@ -73,7 +78,9 @@ namespace openHistorian.Engine.ArchiveWriters
         [Test]
         public void Test2()
         {
-
+            m_pointsRead = 0;
+            m_sequenceNumber = 0;
+            m_pointCount = new List<int>();
             var prestageSettings = new PrestageSettings()
             {
                 DelayOnPointCount = 30 * 1000,
@@ -105,14 +112,14 @@ namespace openHistorian.Engine.ArchiveWriters
 
         void FinalizeArchiveFile(RolloverArgs args)
         {
-            m_pointsRead = args.CurrentStream.Count();
+            m_pointsRead = (int)args.CurrentStream.Count();
             m_sequenceNumber = args.SequenceNumber;
             Assert.Null(args.File);
         }
 
         void FinalizeArchiveFileList(RolloverArgs args)
         {
-            m_pointCount.Add(args.CurrentStream.Count());
+            m_pointCount.Add((int)args.CurrentStream.Count());
             m_sequenceNumber = args.SequenceNumber;
             Assert.Null(args.File);
         }

@@ -96,6 +96,7 @@
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
     <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataListTest.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamCoreTest.cs" />
     <Compile Include="Local\HistorianServer_Test1.cs" />
     <Compile Include="Local\HistorianServer_Test2.cs" />
     <Compile Include="Local\XmlConfigTest.cs" />

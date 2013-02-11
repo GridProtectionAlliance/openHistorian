@@ -24,8 +24,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using GSF;
 using GSF.IO.Unmanaged;
 using GSF.UnmanagedMemory;
@@ -46,8 +44,7 @@ namespace openHistorian.FileStructure.IO
     //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
     unsafe internal partial class BufferedFile : DiskMediumBase
     {
-        GSF.IO.Unmanaged.MemoryStream m_writeBuffer;
-        IBinaryStreamIoSession m_writeBufferIO;
+        MemoryStreamCore m_writeBuffer;
 
         long m_endOfCommittedPosition;
         long m_endOfHeaderPosition;
@@ -56,11 +53,6 @@ namespace openHistorian.FileStructure.IO
         /// To synchronize all calls to this class.
         /// </summary>
         object m_syncRoot;
-
-        /// <summary>
-        /// To limit flushing to a single flush call
-        /// </summary>
-        object m_syncFlush;
 
         BufferPool m_pool;
 
@@ -92,15 +84,13 @@ namespace openHistorian.FileStructure.IO
             : base(pool.PageSize, dirtyPageSize)
         {
             m_endOfHeaderPosition = dirtyPageSize * 10;
-            m_writeBuffer = new GSF.IO.Unmanaged.MemoryStream(pool);
-            m_writeBufferIO = m_writeBuffer.GetNextIoSession();
+            m_writeBuffer = new MemoryStreamCore(pool);
             m_ownsStream = ownsStream;
             m_pool = pool;
 
             m_queue = new IoQueue(stream, pool.PageSize, dirtyPageSize, this);
 
             m_syncRoot = new object();
-            m_syncFlush = new object();
 
             m_pageReplacementAlgorithm = new PageReplacementAlgorithm(pool);
             m_baseStream = stream;
@@ -124,6 +114,7 @@ namespace openHistorian.FileStructure.IO
                 Initialize(FileHeaderBlock.Open(buffer));
             }
             m_endOfCommittedPosition = (Header.LastAllocatedBlock + 1) * (long)dirtyPageSize;
+            m_writeBuffer.ConfigureAlignment(m_endOfCommittedPosition, pool.PageSize);
         }
 
         void GetBlock(PageLock pageLock, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
@@ -131,8 +122,8 @@ namespace openHistorian.FileStructure.IO
             pageLock.Clear();
             if (position >= m_endOfCommittedPosition)
             {
-                m_writeBufferIO.GetBlock(position - m_endOfCommittedPosition, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
-                firstPosition += m_endOfCommittedPosition;
+                supportsWriting = true;
+                m_writeBuffer.GetBlock(position, out firstPointer, out firstPosition, out length);
                 return;
             }
             else if (position < m_endOfHeaderPosition)
@@ -146,25 +137,23 @@ namespace openHistorian.FileStructure.IO
                 supportsWriting = false;
                 length = DiskBlockSize;
 
-                long relativePosition = (position - m_endOfHeaderPosition) & ~(long)m_pool.PageMask; //rounds to the beginning of the block to be looked up.
-                firstPosition = relativePosition + m_endOfHeaderPosition;
+                firstPosition = position & ~(long)m_pool.PageMask; //rounds to the beginning of the block to be looked up.
 
-                GetBlockFromCommittedSpace(pageLock, relativePosition, out firstPointer);
+                GetBlockFromCommittedSpace(pageLock, firstPosition, out firstPointer);
 
                 //Make sure the block does not go beyond the end of the uncommitted space.
                 if (firstPosition + length > m_endOfCommittedPosition)
-                    length = (int)(m_endOfCommittedPosition - m_endOfHeaderPosition - relativePosition);
+                    length = (int)(m_endOfCommittedPosition - firstPosition);
 
                 return;
             }
         }
 
-        void GetBlockFromCommittedSpace(PageLock pageLock, long relativePosition, out IntPtr firstPointer)
+        void GetBlockFromCommittedSpace(PageLock pageLock, long position, out IntPtr firstPointer)
         {
-
             lock (m_syncRoot)
             {
-                if (m_pageReplacementAlgorithm.TryGetSubPage(pageLock, relativePosition, out firstPointer))
+                if (m_pageReplacementAlgorithm.TryGetSubPage(pageLock, position, out firstPointer))
                 {
                     return;
                 }
@@ -175,11 +164,11 @@ namespace openHistorian.FileStructure.IO
             IntPtr poolAddress;
             m_pool.AllocatePage(out poolPageIndex, out poolAddress);
 
-            m_queue.Read(relativePosition + m_endOfHeaderPosition, poolAddress);
+            m_queue.Read(position, poolAddress);
             bool wasPageAdded;
             lock (m_syncRoot)
             {
-                firstPointer = m_pageReplacementAlgorithm.AddOrGetPage(pageLock, relativePosition, poolAddress, poolPageIndex, out wasPageAdded);
+                firstPointer = m_pageReplacementAlgorithm.AddOrGetPage(pageLock, position, poolAddress, poolPageIndex, out wasPageAdded);
             }
             if (!wasPageAdded)
                 m_pool.ReleasePage(poolPageIndex);
@@ -187,36 +176,61 @@ namespace openHistorian.FileStructure.IO
 
         protected override void FlushWithHeader(FileHeaderBlock header)
         {
-            long oldEndOfCommittedBytes = m_endOfCommittedPosition;
             long endOfUncommitted = (header.LastAllocatedBlock + 1) * (long)FileStructureBlockSize;
-            m_queue.Write(m_writeBufferIO, m_endOfCommittedPosition, endOfUncommitted - m_endOfCommittedPosition, true);
-            m_endOfCommittedPosition = endOfUncommitted;
+            long copyLength = endOfUncommitted - m_endOfCommittedPosition;
+
+            m_queue.Write(m_writeBuffer, m_endOfCommittedPosition, copyLength, true);
+
             var bytes = header.GetBytes();
             m_queue.WriteToDisk(0, bytes, FileStructureBlockSize);
             m_queue.WriteToDisk(FileStructureBlockSize, bytes, FileStructureBlockSize);
             m_queue.WriteToDisk(FileStructureBlockSize * ((header.SnapshotSequenceNumber & 7) + 2), bytes, FileStructureBlockSize);
             m_queue.FlushFileBuffers();
 
-            //Finish filling up the split page in the buffer.
-            lock (m_syncRoot)
+            if ((m_endOfCommittedPosition & (DiskBlockSize - 1)) != 0)
             {
-                IntPtr ptrDest;
-                long relativePosition = oldEndOfCommittedBytes - m_endOfHeaderPosition;
-                int startPos = (int)(relativePosition & (DiskBlockSize - 1));
-                long startOfRelative = relativePosition - (relativePosition & (DiskBlockSize - 1)); //Mod
-                int copyLength = DiskBlockSize - (int)(relativePosition - startOfRelative);
-                if (copyLength == DiskBlockSize)
-                    return;
-                if (m_pageReplacementAlgorithm.TryGetSubPageNoLock(startOfRelative, out ptrDest))
+                long startPos = m_endOfCommittedPosition & (~(long)(DiskBlockSize - 1));
+                //Finish filling up the split page in the buffer.
+                lock (m_syncRoot)
                 {
-                    int length;
-                    IntPtr ptrSrc;
-                    m_writeBufferIO.ReadBlock(0, out ptrSrc, out length);
-                    Footer.WriteChecksumResultsToFooter(ptrSrc, FileStructureBlockSize, copyLength);
-                    Memory.Copy((byte*)ptrSrc, (byte*)ptrDest + startPos, copyLength);
+                    IntPtr ptrDest;
+
+                    if (m_pageReplacementAlgorithm.TryGetSubPageNoLock(startPos, out ptrDest))
+                    {
+                        int length;
+                        IntPtr ptrSrc;
+                        m_writeBuffer.ReadBlock(m_endOfCommittedPosition, out ptrSrc, out length);
+                        Footer.WriteChecksumResultsToFooter(ptrSrc, FileStructureBlockSize, length);
+                        ptrDest += (DiskBlockSize - length);
+                        Memory.Copy(ptrSrc, ptrDest, length);
+                    }
                 }
+
+                startPos += DiskBlockSize;
+                while (startPos < endOfUncommitted)
+                {
+                    //If the address doesn't exist in the current list. Read it from the disk.
+                    int poolPageIndex;
+                    IntPtr poolAddress;
+                    m_pool.AllocatePage(out poolPageIndex, out poolAddress);
+                    m_writeBuffer.CopyTo(startPos, poolAddress, DiskBlockSize);
+                    Footer.WriteChecksumResultsToFooter(poolAddress, FileStructureBlockSize, DiskBlockSize);
+
+                    bool wasPageAdded;
+                    lock (m_syncRoot)
+                    {
+                        wasPageAdded = m_pageReplacementAlgorithm.TryAddPage(startPos, poolAddress, poolPageIndex);
+                    }
+                    if (!wasPageAdded)
+                        m_pool.ReleasePage(poolPageIndex);
+
+                    startPos += DiskBlockSize;
+                }
+
             }
 
+            m_endOfCommittedPosition = endOfUncommitted;
+            m_writeBuffer.ConfigureAlignment(m_endOfCommittedPosition, m_pool.PageSize);
         }
 
         public override void RollbackChanges()
@@ -240,7 +254,6 @@ namespace openHistorian.FileStructure.IO
                         m_pageReplacementAlgorithm.Dispose();
                         if (m_ownsStream)
                             m_baseStream.Dispose();
-                        m_writeBufferIO.Dispose();
                         m_writeBuffer.Dispose();
                     }
                 }
@@ -249,7 +262,6 @@ namespace openHistorian.FileStructure.IO
                     m_disposed = true;
                     m_pageReplacementAlgorithm = null;
                     m_writeBuffer = null;
-                    m_writeBufferIO = null;
                     m_queue = null;
                 }
 

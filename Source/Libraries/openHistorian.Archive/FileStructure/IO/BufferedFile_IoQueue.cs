@@ -25,6 +25,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using GSF;
 using GSF.Collections;
 using GSF.IO.Unmanaged;
@@ -40,7 +41,7 @@ namespace openHistorian.FileStructure.IO
         /// Manages the I/O for the file stream
         /// Also provides a way to synchronize calls to the FileStream.
         /// </summary>
-        unsafe internal class IoQueue
+        internal class IoQueue
         {
             int m_bufferPoolSize;
             int m_dirtyPageSize;
@@ -99,9 +100,11 @@ namespace openHistorian.FileStructure.IO
 
                 Marshal.Copy(buffer, 0, locationToCopyData, buffer.Length);
                 m_bufferQueue.Enqueue(buffer);
-                
+
                 Footer.WriteChecksumResultsToFooter(locationToCopyData, m_dirtyPageSize, buffer.Length);
             }
+
+
 
             /// <summary>
             /// Writes all of the dirty blocks passed onto the disk subsystem.
@@ -110,29 +113,23 @@ namespace openHistorian.FileStructure.IO
             /// <param name="currentEndOfCommitPosition">the last valid byte of the file system where this data will be appended to.</param>
             /// <param name="length">The number by bytes to write to the file system.</param>
             /// <param name="waitForWriteToDisk">True to wait for a complete commit to disk before returning from this function.</param>
-            public void Write(IBinaryStreamIoSession stream, long currentEndOfCommitPosition, long length, bool waitForWriteToDisk)
+            public void Write(MemoryStreamCore stream, long currentEndOfCommitPosition, long length, bool waitForWriteToDisk)
             {
                 var buffer = m_bufferQueue.Dequeue();
-                long readPosition = 0;
-                long writePosition = currentEndOfCommitPosition;
-                while (readPosition < length)
+                long endPosition = currentEndOfCommitPosition + length;
+                long currentPosition = currentEndOfCommitPosition;
+                while (currentPosition < endPosition)
                 {
-                    int subLength = (int)Math.Min((long)buffer.Length, length - readPosition);
-
                     IntPtr ptr;
                     int streamLength;
-                    stream.ReadBlock(readPosition, out ptr, out streamLength);
-                    if (streamLength < buffer.Length)
-                        throw new Exception("Stream is not aligned as expected");
-
+                    stream.ReadBlock(currentPosition, out ptr, out streamLength);
+                    int subLength = (int)Math.Min(streamLength, endPosition - currentPosition);
                     Footer.ComputeChecksumAndClearFooter(ptr, m_dirtyPageSize, subLength);
                     Marshal.Copy(ptr, buffer, 0, subLength);
-
-                    WriteToDisk(writePosition, buffer, subLength);
+                    WriteToDisk(currentPosition, buffer, subLength);
 
                     BytesWritten += subLength;
-                    readPosition += subLength;
-                    writePosition += subLength;
+                    currentPosition += subLength;
                 }
                 m_bufferQueue.Enqueue(buffer);
 
@@ -162,6 +159,16 @@ namespace openHistorian.FileStructure.IO
                 }
                 m_stream.EndWrite(results);
             }
+
+            //public void WriteToDiskSync(long position, byte[] buffer, int length)
+            //{
+            //    IAsyncResult results;
+            //    lock (m_syncRoot)
+            //    {
+            //        m_stream.Position = position;
+            //        m_stream.Write(buffer, 0, length);
+            //    }
+            //}
 
             public int ReadBytesFromDisk(long position, byte[] buffer, int length)
             {

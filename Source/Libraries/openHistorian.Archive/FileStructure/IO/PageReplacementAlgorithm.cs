@@ -182,6 +182,23 @@ namespace openHistorian.FileStructure.IO
             return startOfBufferPoolPage;
         }
 
+        public bool TryAddPage(long position, IntPtr startOfBufferPoolPage, int bufferPoolIndex)
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            if ((position & m_bufferPageSizeMask) != 0)
+                throw new ArgumentOutOfRangeException("position", "must lie on a page boundary");
+
+            int positionIndex = (int)(position >> m_bufferPageSizeShiftBits);
+            int arrayIndex = m_pageList.ToArrayIndex(positionIndex);
+            if (arrayIndex >= 0) //If page already existed in the pool
+            {
+                return false;
+            }
+            arrayIndex = m_pageList.AllocateNewPage(positionIndex, startOfBufferPoolPage, bufferPoolIndex);
+            return true;
+        }
+
         /// <summary>
         /// Gets a object that can be used to acquire locks on pages so they won't be 
         /// released during a collection cycle.

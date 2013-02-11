@@ -66,7 +66,7 @@ namespace GSF.UnmanagedMemory
                 {
                     if (m_pool.CurrentAllocatedSize < stopShrinkingLimit)
                         break;
-                    var eventArgs = new CollectionEventArgs(m_pool.TryReleasePage, BufferPoolCollectionMode.Normal, 0);
+                    var eventArgs = new CollectionEventArgs(m_pool.InternalTryReleasePage, BufferPoolCollectionMode.Normal, 0);
 
                     foreach (var c in m_requestCollectionEvent)
                     {
@@ -82,7 +82,7 @@ namespace GSF.UnmanagedMemory
                 {
                     int pagesToBeReleased =
                         (int)((0.05 * m_pool.MaximumBufferSize - m_pool.FreeSpaceBytes) / m_pool.PageSize);
-                    var eventArgs = new CollectionEventArgs(m_pool.TryReleasePage, BufferPoolCollectionMode.Emergency,
+                    var eventArgs = new CollectionEventArgs(m_pool.InternalTryReleasePage, BufferPoolCollectionMode.Emergency,
                                                             pagesToBeReleased);
 
                     foreach (var c in m_requestCollectionEvent)
@@ -94,7 +94,7 @@ namespace GSF.UnmanagedMemory
 
                     if (eventArgs.DesiredPageReleaseCount > 0)
                     {
-                        eventArgs = new CollectionEventArgs(m_pool.TryReleasePage, BufferPoolCollectionMode.Critical,
+                        eventArgs = new CollectionEventArgs(m_pool.InternalTryReleasePage, BufferPoolCollectionMode.Critical,
                                                             eventArgs.DesiredPageReleaseCount);
                         foreach (var c in m_requestCollectionEvent)
                         {

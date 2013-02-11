@@ -66,6 +66,7 @@
     <Compile Include="Compression.cs" />
     <Compile Include="GC\DisposableWeakReference.cs" />
     <Compile Include="Globals.cs" />
+    <Compile Include="IO\AsyncWriter.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="Collections\ContinuousQueue.cs" />
@@ -75,12 +76,12 @@
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
-    <Compile Include="IO\Unmanaged\ISupportsBinaryStreamAdvanced.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream.cs" />
     <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamCore.cs" />
     <Compile Include="IStream256.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Text\NaturalComparer.cs" />

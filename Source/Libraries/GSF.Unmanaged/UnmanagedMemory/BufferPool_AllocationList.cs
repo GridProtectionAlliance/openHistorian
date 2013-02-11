@@ -88,7 +88,7 @@ namespace GSF.UnmanagedMemory
         /// <param name="index">the index identifier of the block</param>
         /// <param name="addressPointer">the address to the start of the block</param>
         /// <exception cref="OutOfMemoryException">Thrown if the list is full</exception>
-        void GetNextPage(out int index, out IntPtr addressPointer)
+        void InternalGetNextPage(out int index, out IntPtr addressPointer)
         {
             index = m_isPageAvailable.FindSetBit();
             if (index < 0)
@@ -96,6 +96,8 @@ namespace GSF.UnmanagedMemory
             m_allocatedPagesCount++;
             m_isPageAvailable.ClearBit(index);
             addressPointer = GetPageAddress(index);
+            //if (!Memory.IsEmpty(addressPointer,PageSize))
+            //    throw new Exception("Page has been modified since it was last released.");
         }
 
         /// <summary>
@@ -103,13 +105,16 @@ namespace GSF.UnmanagedMemory
         /// </summary>
         /// <param name="index">the index identifier of the block</param>
         /// <returns>True if the page was released. False if the page was already marked as released.</returns>
-        bool TryReleasePage(int index)
+        bool InternalTryReleasePage(int index)
         {
             if (m_isPageAvailable.TrySetBit(index))
             {
+                //IntPtr page = GetPageAddress(index);
+                //Memory.Clear(page,PageSize);
                 m_allocatedPagesCount--;
                 return true;
             }
+            throw new Exception("Cannot have duplicate calls to release pages.");
             return false;
         }
 

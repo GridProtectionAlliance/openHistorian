@@ -29,7 +29,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 ulong count = 0;
                 while (sw.Elapsed.TotalMinutes < 10)
                 {
-                    writer.Write(count,1*count,2*count,3*count);
+                    writer.Write(count, 1 * count, 2 * count, 3 * count);
                     count++;
                     Thread.Sleep(1);
                 }
@@ -40,7 +40,7 @@ namespace openHistorian.Engine.ArchiveWriters
         [Test]
         public void TestLongTermFast()
         {
-            Globals.BufferPool.SetMaximumBufferSize(1024 * 1024 * 1500); //Lower to 100MB so more GC occurs.
+            //Globals.BufferPool.SetMaximumBufferSize(1024 * 1024 * 1500); //Lower to 100MB so more GC occurs.
             List<string> paths = new List<string>();
             paths.Add(@"C:\Temp\Historian");
 
@@ -52,15 +52,44 @@ namespace openHistorian.Engine.ArchiveWriters
                 sw.Start();
 
                 ulong count = 0;
-                while (sw.Elapsed.TotalMinutes < 10)
+                while (sw.Elapsed.TotalMinutes < 0.5)
                 {
                     writer.Write(count, 1 * count, 2 * count, 3 * count);
                     count++;
                     //Thread.Sleep(1);
                 }
+                Console.WriteLine(count);
             }
             Thread.Sleep(1000);
+        }
+
+        [Test]
+        public void CountPointsWritten()
+        {
+            long count;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var serverOptions = new HistorianServerOptions();
+            serverOptions.IsNetworkHosted = false;
+            serverOptions.IsReadOnly = true;
+            serverOptions.Paths.Add(@"C:\Temp\Historian\temp5");
+
+            using (var server = new HistorianServer(serverOptions))
+            {
+                var database = server.GetDatabase();
+                using (var reader = database.OpenDataReader())
+                {
+                    var stream = reader.Read(0, ulong.MaxValue);
+                    count = stream.Count();
+                }
+            }
+            sw.Stop();
+            Console.WriteLine(count.ToString());
+            Console.WriteLine(sw.Elapsed.TotalSeconds.ToString());
 
         }
+
+
     }
 }

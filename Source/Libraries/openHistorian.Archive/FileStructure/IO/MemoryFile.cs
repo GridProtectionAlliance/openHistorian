@@ -33,117 +33,11 @@ namespace openHistorian.FileStructure.IO
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.
     /// </summary>
-    unsafe internal partial class MemoryFile : DiskMediumBase
+    internal partial class MemoryFile : DiskMediumBase
     {
-        /// <summary>
-        /// This class was created to allow settings update to be atomic.
-        /// </summary>
-        class Settings
-        {
-            const int Mask = 1023;
-            const int ElementsPerRow = 1024;
-            const int ShiftBits = 10;
-
-            public int PageCount { get; private set; }
-            int[][] m_pageIndex;
-            byte*[][] m_pagePointer;
-
-            public Settings()
-            {
-                m_pageIndex = new int[4][];
-                m_pagePointer = new byte*[4][];
-                PageCount = 0;
-            }
-
-            public byte* GetPointer(int page)
-            {
-                return m_pagePointer[page >> ShiftBits][page & Mask];
-            }
-            int GetIndex(int page)
-            {
-                return m_pageIndex[page >> ShiftBits][page & Mask];
-            }
-
-            public bool AddingRequiresClone
-            {
-                get
-                {
-                    return m_pagePointer.Length * ElementsPerRow == PageCount;
-                }
-            }
-
-            void EnsureCapacity()
-            {
-                if (AddingRequiresClone)
-                {
-                    var oldIndex = m_pageIndex;
-                    var oldPointer = m_pagePointer;
-
-                    m_pageIndex = new int[m_pageIndex.Length * 2][];
-                    m_pagePointer = new byte*[m_pagePointer.Length * 2][];
-                    oldIndex.CopyTo(m_pageIndex, 0);
-                    oldPointer.CopyTo(m_pagePointer, 0);
-                }
-
-                int bigIndex = PageCount >> ShiftBits;
-                if (m_pageIndex[bigIndex] == null)
-                {
-                    m_pageIndex[bigIndex] = new int[ElementsPerRow];
-                    m_pagePointer[bigIndex] = new byte*[ElementsPerRow];
-                }
-
-            }
-
-            public void AddNewPage(byte* pagePointer, int pageIndex)
-            {
-                EnsureCapacity();
-                int index = PageCount;
-                int bigIndex = index >> ShiftBits;
-                int smallIndex = index & Mask;
-                m_pageIndex[bigIndex][smallIndex] = pageIndex;
-                m_pagePointer[bigIndex][smallIndex] = pagePointer;
-                Thread.MemoryBarrier(); //Incrementing the page count must occur after the data is correct.
-                PageCount++;
-            }
-
-            public Settings Clone()
-            {
-                return (Settings)MemberwiseClone();
-            }
-
-            /// <summary>
-            /// Returns all of the buffer pool page indexes used by this class
-            /// </summary>
-            /// <returns></returns>
-            public IEnumerable<int> GetAllPageIndexes()
-            {
-                for (int x = 0; x < PageCount; x++)
-                {
-                    yield return GetIndex(x);
-                }
-            }
-
-
-        }
-
         #region [ Members ]
 
-        object m_syncRoot;
-
-        volatile Settings m_settings;
-
-        /// <summary>
-        /// The buffer pool to utilize
-        /// </summary>
-        BufferPool m_pool;
-        /// <summary>
-        /// The number of bits in the page size.
-        /// </summary>
-        int m_shiftLength;
-        /// <summary>
-        /// The size of each page.
-        /// </summary>
-        int m_diskBlockSize;
+        MemoryStreamCore m_core;
 
         /// <summary>
         /// Releases all the resources used by the <see cref="MemoryFile"/> object.
@@ -168,22 +62,10 @@ namespace openHistorian.FileStructure.IO
         public MemoryFile(BufferPool pool, int fileStructureBlockSize)
             : base(pool.PageSize, fileStructureBlockSize)
         {
-            m_pool = pool;
-            m_shiftLength = pool.PageShiftBits;
-            m_diskBlockSize = pool.PageSize;
-            m_settings = new Settings();
-            m_syncRoot = new object();
+            m_core = new MemoryStreamCore(pool);
             Initialize(FileHeaderBlock.CreateNew(fileStructureBlockSize));
         }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="MemoryFile"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~MemoryFile()
-        {
-            Dispose(false);
-        }
-
+ 
         #endregion
 
         #region [ Properties ]
@@ -217,7 +99,7 @@ namespace openHistorian.FileStructure.IO
         {
             get
             {
-                return (long)m_settings.PageCount * DiskBlockSize;
+                return m_core.Length;
             }
         }
 
@@ -231,26 +113,15 @@ namespace openHistorian.FileStructure.IO
         /// <filterpriority>2</filterpriority>
         public override void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="MemoryFile"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
             if (!m_disposed)
             {
                 try
                 {
-                    m_pool.ReleasePages(m_settings.GetAllPageIndexes());
+                    m_core.Dispose();
                 }
                 finally
                 {
-                    m_pool = null;
-                    m_settings = null;
+                    m_core = null;
                     m_disposed = true;
                 }
             }
@@ -277,73 +148,16 @@ namespace openHistorian.FileStructure.IO
 
         #region [ Helper Methods ]
 
-        /// <summary>
-        /// Returns the page that corresponds to the absolute position.  
-        /// This function will also autogrow the stream.
-        /// </summary>
-        /// <param name="position">The position to use to calculate the page to retrieve</param>
-        /// <returns></returns>
-        byte* GetPage(long position)
-        {
-            Settings settings = m_settings;
-
-            int pageIndex = (int)(position >> m_shiftLength);
-
-            if (pageIndex >= settings.PageCount)
-            {
-                IncreasePageCount(pageIndex + 1);
-                settings = m_settings;
-            }
-
-            return settings.GetPointer(pageIndex);
-        }
-
-        /// <summary>
-        /// Increases the size of the Memory Stream and updated the settings if needed
-        /// </summary>
-        /// <param name="pageCount"></param>
-        void IncreasePageCount(int pageCount)
-        {
-            lock (m_syncRoot)
-            {
-                bool cloned = false;
-                Settings settings = m_settings;
-                if (settings.AddingRequiresClone)
-                {
-                    cloned = true;
-                    settings = settings.Clone();
-                }
-
-                //If there are not enough pages in the stream, add enough.
-                while (pageCount > settings.PageCount)
-                {
-                    int pageIndex;
-                    IntPtr pagePointer;
-                    m_pool.AllocatePage(out pageIndex, out pagePointer);
-                    Memory.Clear(pagePointer, m_pool.PageSize);
-
-                    //Footer.WriteChecksumResultsToFooter(pagePointer, DiskBlockSize, m_pool.PageSize);
-
-                    settings.AddNewPage((byte*)pagePointer, pageIndex);
-                }
-
-                if (cloned)
-                {
-                    Thread.MemoryBarrier(); // make sure that all of the settings are saved before assigning
-                    m_settings = settings;
-                }
-            }
-        }
-
         void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
         {
             if (m_disposed)
                 throw new ObjectDisposedException("MemoryStream");
-
-            length = m_diskBlockSize;
-            firstPosition = position & ~(length - 1);
-            firstPointer = (IntPtr)GetPage(position);
             supportsWriting = true;
+
+            m_core.GetBlock(position, out firstPointer, out firstPosition, out length);
+            //firstPosition = position;
+            //m_core.ReadBlock(position,out firstPointer, out length);
+            //length = FileStructureBlockSize;
         }
 
         #endregion

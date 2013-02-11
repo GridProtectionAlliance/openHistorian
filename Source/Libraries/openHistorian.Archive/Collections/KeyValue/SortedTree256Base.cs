@@ -68,7 +68,6 @@ namespace openHistorian.Collections.KeyValue
             m_stream2 = stream2;
             LoadHeader();
             m_indexer = new LeafNodeIndexer128(stream1, m_blockSize, m_rootNodeLevel, m_rootNodeIndexAddress, GetNextNewNodeIndex);
-
         }
 
         /// <summary>
@@ -221,7 +220,7 @@ namespace openHistorian.Collections.KeyValue
             }
 
             long nodeIndexAddress = m_indexer.Get(key1, key2);
-          
+
             if (LeafNodeInsert(nodeIndexAddress, key1, key2, value1, value2))
             {
                 if (!m_skipIntermediateSaves && m_nodeHeaderChanged)
@@ -239,6 +238,12 @@ namespace openHistorian.Collections.KeyValue
         /// <remarks>The tree is only read in order. No seeking of the tree occurs.</remarks>
         public void Add(IStream256 treeScanner)
         {
+            //ulong key1, key2, value1, value2;
+            //while (treeScanner.Read(out key1, out key2, out value1, out value2))
+            //{
+            //    Add(key1, key2, value1, value2);
+            //}
+
             ulong key1, key2, value1, value2;
             var isValid = treeScanner.Read(out key1, out key2, out value1, out value2);
             ulong minKey = m_firstKey;
@@ -290,7 +295,9 @@ namespace openHistorian.Collections.KeyValue
         /// <returns></returns>
         public ITreeScanner256 GetTreeScanner()
         {
-            return LeafNodeGetScanner();
+            var scanner = LeafNodeGetScanner();
+            scanner.SeekToKey(0, 0);
+            return scanner;
         }
 
         #endregion
@@ -347,6 +354,11 @@ namespace openHistorian.Collections.KeyValue
         protected void NodeWasSplit(byte nodeLevel, long nodeIndexOfSplitNode, ulong dividingKey1, ulong dividingKey2, long nodeIndexOfRightSibling)
         {
             m_indexer.NodeWasSplit(nodeIndexOfSplitNode, dividingKey1, dividingKey2, nodeIndexOfRightSibling);
+            if (m_indexer.HasChanged)
+            {
+                m_indexer.Save(out m_rootNodeLevel, out m_rootNodeIndexAddress);
+                m_nodeHeaderChanged = true;
+            }
         }
 
         #endregion

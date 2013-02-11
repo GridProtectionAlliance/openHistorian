@@ -32,111 +32,12 @@ namespace GSF.IO.Unmanaged
     /// <summary>
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.
     /// </summary>
-    unsafe public partial class MemoryStream : ISupportsBinaryStreamAdvanced
+    public partial class MemoryStream : ISupportsBinaryStream
     {
-        /// <summary>
-        /// This class was created to allow settings update to be atomic.
-        /// </summary>
-        class Settings
-        {
-            const int Mask = 1023;
-            const int ElementsPerRow = 1024;
-            const int ShiftBits = 10;
-
-            public int PageCount { get; private set; }
-            int[][] m_pageIndex;
-            byte*[][] m_pagePointer;
-
-            public Settings()
-            {
-                m_pageIndex = new int[4][];
-                m_pagePointer = new byte*[4][];
-                PageCount = 0;
-            }
-
-            public byte* GetPointer(int page)
-            {
-                return m_pagePointer[page >> ShiftBits][page & Mask];
-            }
-            int GetIndex(int page)
-            {
-                return m_pageIndex[page >> ShiftBits][page & Mask];
-            }
-
-            public bool AddingRequiresClone
-            {
-                get
-                {
-                    return m_pagePointer.Length * ElementsPerRow == PageCount;
-                }
-            }
-
-            void EnsureCapacity()
-            {
-                if (AddingRequiresClone)
-                {
-                    var oldIndex = m_pageIndex;
-                    var oldPointer = m_pagePointer;
-
-                    m_pageIndex = new int[m_pageIndex.Length * 2][];
-                    m_pagePointer = new byte*[m_pagePointer.Length * 2][];
-                    oldIndex.CopyTo(m_pageIndex, 0);
-                    oldPointer.CopyTo(m_pagePointer, 0);
-                }
-
-                int bigIndex = PageCount >> ShiftBits;
-                if (m_pageIndex[bigIndex] == null)
-                {
-                    m_pageIndex[bigIndex] = new int[ElementsPerRow];
-                    m_pagePointer[bigIndex] = new byte*[ElementsPerRow];
-                }
-
-            }
-
-            public void AddNewPage(byte* pagePointer, int pageIndex)
-            {
-                EnsureCapacity();
-                int index = PageCount;
-                int bigIndex = index >> ShiftBits;
-                int smallIndex = index & Mask;
-                m_pageIndex[bigIndex][smallIndex] = pageIndex;
-                m_pagePointer[bigIndex][smallIndex] = pagePointer;
-                Thread.MemoryBarrier(); //Incrementing the page count must occur after the data is correct.
-                PageCount++;
-            }
-
-            public Settings Clone()
-            {
-                return (Settings)MemberwiseClone();
-            }
-
-            /// <summary>
-            /// Returns all of the buffer pool page indexes used by this class
-            /// </summary>
-            /// <returns></returns>
-            public IEnumerable<int> GetAllPageIndexes()
-            {
-                for (int x = 0; x < PageCount; x++)
-                {
-                    yield return GetIndex(x);
-                }
-            }
-        }
-
         #region [ Members ]
 
-        object m_syncRoot;
+        MemoryStreamCore m_core;
 
-        volatile Settings m_settings;
-
-        /// <summary>
-        /// The buffer pool to utilize
-        /// </summary>
-        BufferPool m_pool;
-        /// <summary>
-        /// The number of bits in the page size.
-        /// </summary>
-        int m_shiftLength;
         /// <summary>
         /// The size of each page.
         /// </summary>
@@ -146,26 +47,6 @@ namespace GSF.IO.Unmanaged
         /// Releases all the resources used by the <see cref="MemoryStream"/> object.
         /// </summary>
         bool m_disposed;
-
-        /// <summary>
-        /// A debug counter that keep track of the number of time a lookup is performed.
-        /// </summary>
-        public long LookupCount = 0;
-
-        /// <summary>
-        /// This event occurs any time new data is added to the BinaryStream's 
-        /// internal memory. It gives the consumer of this class an opportunity to 
-        /// properly initialize the data before it is handed to an IoSession.
-        /// </summary>
-        public event EventHandler<StreamBlockEventArgs> BlockLoadedFromDisk;
-
-        /// <summary>
-        /// This event occurs right before something is committed to the disk. 
-        /// This gives the opportunity to finalize the data, such as updating checksums.
-        /// After the block has been successfully written <see cref="ISupportsBinaryStreamAdvanced.BlockLoadedFromDisk"/>
-        /// is called if the block is to remain in memory.
-        /// </summary>
-        public event EventHandler<StreamBlockEventArgs> BlockAboutToBeWrittenToDisk;
 
         #endregion
 
@@ -184,19 +65,8 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         public MemoryStream(BufferPool pool)
         {
-            m_pool = pool;
-            m_shiftLength = pool.PageShiftBits;
+            m_core = new MemoryStreamCore(pool);
             m_blockSize = pool.PageSize;
-            m_settings = new Settings();
-            m_syncRoot = new object();
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="MemoryStream"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~MemoryStream()
-        {
-            Dispose(false);
         }
 
         #endregion
@@ -243,7 +113,7 @@ namespace GSF.IO.Unmanaged
         {
             get
             {
-                return (long)m_settings.PageCount * BlockSize;
+                return m_core.Length;
             }
         }
 
@@ -270,26 +140,15 @@ namespace GSF.IO.Unmanaged
         /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="MemoryStream"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
-        {
             if (!m_disposed)
             {
                 try
                 {
-                    m_pool.ReleasePages(m_settings.GetAllPageIndexes());
+                    m_core.Dispose();
                 }
                 finally
                 {
-                    m_pool = null;
-                    m_settings = null;
+                    m_core = null;
                     m_disposed = true;
                 }
             }
@@ -312,115 +171,15 @@ namespace GSF.IO.Unmanaged
             return new BinaryStream(this);
         }
 
-        /// <summary>
-        /// Sets the size of the stream.
-        /// </summary>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        public long SetLength(long length)
-        {
-            if (Length < length)
-            {
-                GetPage(length - 1);
-            }
-            else
-            {
-                //ToDO: Figure out how to safely shrink a file. 
-            }
-            return Length;
-        }
-
-        /// <summary>
-        /// Writes all current data to the disk subsystem.
-        /// </summary>
-        void ISupportsBinaryStreamAdvanced.Flush()
-        {
-
-        }
-
-        /// <summary>
-        /// Equivalent to SetLength but my not change the size of the file.
-        /// </summary>
-        /// <param name="position">The start of the position that will be invalidated</param>
-        void ISupportsBinaryStreamAdvanced.TrimEditsAfterPosition(long position)
-        {
-            SetLength(position);
-        }
-
         #endregion
 
         #region [ Helper Methods ]
 
-        /// <summary>
-        /// Returns the page that corresponds to the absolute position.  
-        /// This function will also autogrow the stream.
-        /// </summary>
-        /// <param name="position">The position to use to calculate the page to retrieve</param>
-        /// <returns></returns>
-        byte* GetPage(long position)
-        {
-            Settings settings = m_settings;
-
-            int pageIndex = (int)(position >> m_shiftLength);
-
-            if (pageIndex >= settings.PageCount)
-            {
-                IncreasePageCount(pageIndex + 1);
-                settings = m_settings;
-            }
-
-            return settings.GetPointer(pageIndex);
-        }
-
-        /// <summary>
-        /// Increases the size of the Memory Stream and updated the settings if needed
-        /// </summary>
-        /// <param name="pageCount"></param>
-        void IncreasePageCount(int pageCount)
-        {
-            lock (m_syncRoot)
-            {
-                bool cloned = false;
-                Settings settings = m_settings;
-                if (settings.AddingRequiresClone)
-                {
-                    cloned = true;
-                    settings = settings.Clone();
-                }
-
-                //If there are not enough pages in the stream, add enough.
-                while (pageCount > settings.PageCount)
-                {
-                    int pageIndex;
-                    IntPtr pagePointer;
-                    m_pool.AllocatePage(out pageIndex, out pagePointer);
-                    Memory.Clear((byte*)pagePointer, m_pool.PageSize);
-
-                    if (BlockLoadedFromDisk != null)
-                    {
-                        BlockLoadedFromDisk(this, new StreamBlockEventArgs(settings.PageCount * (long)BlockSize, pagePointer, BlockSize));
-                    }
-                    settings.AddNewPage((byte*)pagePointer, pageIndex);
-                }
-
-                if (cloned)
-                {
-                    Thread.MemoryBarrier(); // make sure that all of the settings are saved before assigning
-                    m_settings = settings;
-                }
-            }
-        }
-
-        void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+        void GetBlock(long position, out IntPtr firstPointer, out long firstPosition, out int length)
         {
             if (m_disposed)
                 throw new ObjectDisposedException("MemoryStream");
-
-            LookupCount++;
-            length = m_blockSize;
-            firstPosition = position & ~(length - 1);
-            firstPointer = (IntPtr)GetPage(position);
-            supportsWriting = true;
+            m_core.GetBlock(position, out firstPointer, out firstPosition, out length);
         }
 
         #endregion
