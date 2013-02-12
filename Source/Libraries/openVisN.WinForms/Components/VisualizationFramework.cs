@@ -70,7 +70,14 @@ namespace openVisN.Components
 
         public void Start()
         {
-            m_framework.Start(Paths);
+            if (UseNetworkHistorian)
+            {
+                m_framework.Start(Server, Port);
+            }
+            else
+            {
+                m_framework.Start(Paths);
+            }
         }
 
         public void Stop()
@@ -182,5 +189,5 @@ namespace openVisN.Components
             }
         }
 
-   }
+    }
 }

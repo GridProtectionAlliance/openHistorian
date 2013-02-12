@@ -395,7 +395,7 @@ namespace GSF.Collections
                     foreach (int bitPos in BitMath.GetSetBitPositions((ulong)m_array[x]))
                     {
                         int absolutePosition = bitPos + (x << BitsPerElementShift);
-                        if (absolutePosition <= count)
+                        if (absolutePosition <= m_count)
                             yield return absolutePosition;
                     }
                 }
@@ -413,7 +413,7 @@ namespace GSF.Collections
                     foreach (int bitPos in BitMath.GetClearedBitPositions((ulong)m_array[x]))
                     {
                         int absolutePosition = bitPos + (x << BitsPerElementShift);
-                        if (absolutePosition <= count)
+                        if (absolutePosition <= m_count)
                             yield return absolutePosition;
                     }
                 }

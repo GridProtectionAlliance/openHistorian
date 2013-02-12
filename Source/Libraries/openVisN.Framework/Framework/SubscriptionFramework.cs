@@ -24,8 +24,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using openHistorian;
+using openHistorian.Communications;
 using openHistorian.Engine;
 using openVisN.Calculations;
 using openVisN.Library;
@@ -75,11 +77,23 @@ namespace openVisN.Framework
         public void Start(string[] paths)
         {
             HistorianDatabaseCollection databaseCollection = new HistorianDatabaseCollection();
-            databaseCollection.Add("Full Resolution Synchrophasor", new ArchiveDatabaseEngine(null, paths));
+            databaseCollection.Add("Default", new ArchiveDatabaseEngine(null, paths));
             HistorianQuery query = new HistorianQuery(databaseCollection);
             m_updateFramework.Start(query);
             m_updateFramework.Mode = ExecutionMode.Manual;
             m_updateFramework.Enabled = true;
+        }
+        public void Start(string ip, int port)
+        {
+            var options = new HistorianClientOptions();
+            options.IsReadOnly = true;
+            options.ServerNameOrIp = ip;
+            options.NetworkPort = port;
+            var client = new HistorianClient(options);
+            HistorianQuery query = new HistorianQuery(client);
+            m_updateFramework.Start(query);
+            m_updateFramework.Mode = ExecutionMode.Manual;
+            m_updateFramework.Enabled = true; 
         }
 
         public IEnumerable<MetadataBase> AllSignals
@@ -179,7 +193,7 @@ namespace openVisN.Framework
             m_updateFramework.Execute(lowerBounds, upperBounds, token);
         }
 
-       
+
         public void RefreshQuery()
         {
             m_updateFramework.Execute();

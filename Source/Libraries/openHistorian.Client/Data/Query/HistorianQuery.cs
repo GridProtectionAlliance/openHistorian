@@ -45,12 +45,23 @@ namespace openHistorian.Data.Query
         public IDictionary<Guid, SignalDataBase> GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, IEnumerable<ISignalCalculation> signals)
         {
             //ToDo: Modify the query base on the zoom level
-            var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
+            IHistorianDatabase db=null;
+            try
+            {
+                db = m_historian.ConnectToDatabase("Default");
+                //var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
 
-            var scanner = new PeriodicScanner(m_samplesPerSecond);
-            var timestamps = scanner.GetParser(startTime, endTime, 900u);
-            var options = new DataReaderOptions(TimeSpan.FromSeconds(1));
-            return db.GetSignalsWithCalculations(timestamps, signals, options);
+                var scanner = new PeriodicScanner(m_samplesPerSecond);
+                var timestamps = scanner.GetParser(startTime, endTime, 900u);
+                var options = new DataReaderOptions(TimeSpan.FromSeconds(1));
+                return db.GetSignalsWithCalculations(timestamps, signals, options);
+            }
+            finally
+            {
+                if (db != null) 
+                    db.Disconnect();
+            }
+
         }
 
     }

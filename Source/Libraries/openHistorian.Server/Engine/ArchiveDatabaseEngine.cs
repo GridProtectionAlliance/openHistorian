@@ -74,7 +74,6 @@ namespace openHistorian.Engine
 
         public void Write(IStream256 points)
         {
-
             m_archiveWriter.Write(points);
             ulong key1, key2, value1, value2;
             while (points.Read(out key1, out key2, out value1, out value2))
