@@ -66,6 +66,7 @@ namespace openHistorian.Engine.ArchiveWriters
         [Test]
         public void CountPointsWritten()
         {
+            Globals.BufferPool.SetMaximumBufferSize(1024 * 1024 * 1);
             long count;
             Stopwatch sw = new Stopwatch();
             sw.Start();

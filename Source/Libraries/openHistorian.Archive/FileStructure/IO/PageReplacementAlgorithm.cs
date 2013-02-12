@@ -245,7 +245,7 @@ namespace openHistorian.FileStructure.IO
         /// <returns></returns>
         bool CheckForCollection(int index)
         {
-            return m_arrayIndexLocks.Any(pageLock => pageLock.CurrentBlock == index);
+            return !m_arrayIndexLocks.Any(pageLock => pageLock.CurrentBlock == index);
         }
 
         /// <summary>
