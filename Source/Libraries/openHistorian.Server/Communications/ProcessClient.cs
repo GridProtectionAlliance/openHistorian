@@ -55,7 +55,7 @@ namespace openHistorian.Communications
 
         public void Run()
         {
-            m_netStream.Timeout = 5000;
+            //m_netStream.Timeout = 5000;
 
             try
             {

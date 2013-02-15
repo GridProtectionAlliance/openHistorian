@@ -94,6 +94,12 @@
     <Compile Include="Components\VisualizationFramework.Designer.cs">
       <DependentUpon>VisualizationFramework.cs</DependentUpon>
     </Compile>
+    <Compile Include="Containers\MultiControlDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Containers\MultiControlDisplay.Designer.cs">
+      <DependentUpon>MultiControlDisplay.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +121,9 @@
     <EmbeddedResource Include="Components\SignalPlots.resx">
       <DependentUpon>SignalPlots.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Containers\MultiControlDisplay.resx">
+      <DependentUpon>MultiControlDisplay.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPlot\NPlot45.csproj">
@@ -130,6 +139,7 @@
       <Name>openVisN.Framework</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
