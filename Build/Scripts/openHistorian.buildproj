@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+*******************************************************************************************************
+**  openHistorian.buildproj - Gbtc
+**
+**  Copyright © 2011, Grid Protection Alliance.  All Rights Reserved.
+**
+**  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+**  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+**  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+**  not use this file except in compliance with the License. You may obtain a copy of the License at:
+**
+**      http://www.opensource.org/licenses/eclipse-1.0.php
+**
+**  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+**  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+**  License for the specific language governing permissions and limitations.
+**  
+**  Code Modification History:
+**  ===================================================================================================
+**  05/26/2011 - J. Ritchie Carroll
+**       Created openHistorian build script based on openPDC build script.
+**
+*******************************************************************************************************
+-->
+
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="..\..\..\Contributor Resources\Tools\Build Tools\Master Build\MasterBuild.buildproj"/>
+
+  <Target Name="BeforePrepareSettings">
+    <PropertyGroup>
+      <!-- Must-override setting(s). -->
+      <ProjectName>openHistorian</ProjectName>
+      <ServerFolder>$/$(ProjectName)/Main</ServerFolder>
+      <!-- Use Visual Studio 11.0 tools -->
+      <TfsClient Condition="'$(TfsClient)' == ''">$(VS110COMNTOOLS)\..\IDE\tf.exe</TfsClient>
+      <VisualStudio Condition="'$(VisualStudio)' == ''">$(VS110COMNTOOLS)\..\IDE\devenv.com</VisualStudio>
+      <MSTest Condition="'$(MSTest)' == ''">$(VS110COMNTOOLS)\..\IDE\mstest.exe</MSTest>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="AfterPrepareSettings">
+    <PropertyGroup>
+      <!-- Project specific settings. -->
+      <ProjectSolution>$(LocalFolder)\Source\$(ProjectName).sln</ProjectSolution>
+      <BuildDeployFolder Condition="'$(BuildDeployFolder)' == ''">\\GPAWEB\NightlyBuilds\openHistorian\Beta\</BuildDeployFolder>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="BeforeVersionSource">
+    <ItemGroup>
+      <!-- List of files to be versioned. -->
+      <FilesToVersion Include="$(LocalFolder)\Source\**\AssemblyInfo.*" Exclude="$(LocalFolder)\Source\Applications\openPDCManager\Web.Data\Properties\AssemblyInfo.*">
+        <VersionRegex>(?'BeforeVersion'AssemblyVersion\(%22)(?'CoreVersion'(\*|\d+)\.)+(\*|\d+)(?'AfterVersion'%22\))</VersionRegex>
+        <VersionPrecision>4</VersionPrecision>
+      </FilesToVersion>
+      <FilesToVersion Include="$(LocalFolder)\Source\**\AssemblyInfo.*" Exclude="$(LocalFolder)\Source\Applications\openPDCManager\Web.Data\Properties\AssemblyInfo.*">
+        <VersionRegex>(?'BeforeVersion'AssemblyFileVersion\(%22)(?'CoreVersion'(\*|\d+)\.)+(\*|\d+)(?'AfterVersion'%22\))</VersionRegex>
+        <VersionPrecision>4</VersionPrecision>
+      </FilesToVersion>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="BeforeBuildProjects">
+    <ItemGroup>
+      <!-- List of projects to build. -->
+      <ProjectsToBuild Include="$(ProjectSolution)"/>
+      <ProjectsToBuild Include="$(LocalFolder)\Build\Scripts\$(ProjectName).shfbproj" Condition="'$(SkipHelpFiles)' == ''"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="BeforeExecuteUnitTests">
+    <ItemGroup>
+      <!-- List of unit test assemblies. -->
+      <UnitTestAssemblies Include="$(BuildOutputFolder)\**\*.Test.dll"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="AfterExecuteUnitTests">
+    <!-- Clean-up after all unit tests have been executed and passed. -->
+    <RemoveDir Directories="%(UnitTestAssemblies.RootDir)%(UnitTestAssemblies.Directory)" Condition="Exists('%(UnitTestAssemblies.RootDir)%(UnitTestAssemblies.Directory)')"/>
+  </Target>
+
+  <Target Name="BeforeCleanBuild">
+    <ItemGroup>
+      <!-- Exclude the main setup application from the list of build output files to be deleted. -->
+      <FilesToDelete Remove="$(BuildOutputFolder)\Setup\Setup.exe"/>
+    </ItemGroup>
+  </Target>
+  
+  <Target Name="BeforeDeployBuild">
+    <ItemGroup>
+      <!-- List of binaries to archive. -->
+      <BinariesToArchive Include="$(BuildOutputFolder)\**\*.*"/>
+      <!-- List of installs to archive. -->
+      <InstallsToArchive Include="$(BuildOutputFolder)\Setup\**\*.*"/>
+      <!-- Destinations of archive files (*.zip). -->
+      <ArchiveDestinations Include="$(BuildDeployFolder)"/>
+    </ItemGroup>
+  </Target>
+
+</Project>

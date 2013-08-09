@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="ConfigurationSetupUtility.Screens.UpdateConfigurationScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}">
+    <DockPanel Name="dockPanel1">
+        <Label Content="Database schema update" DockPanel.Dock="Top" Margin="10" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="16" />
+        <StackPanel DockPanel.Dock="Bottom">
+            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Margin="20,0,20,10">
+                Do you want to upgrade an existing configuration<LineBreak />
+                database to the latest schema?
+            </TextBlock>
+            <StackPanel HorizontalAlignment="Center">
+                <RadioButton Content="I want to upgrade to the latest schema." Height="18" IsChecked="True" Checked="UpdateConfigurationRadioButton_Checked" Name="m_updateConfigurationRadioButton" />
+                <RadioButton Content="I want to use an existing database as-is." Height="18" Checked="UseExistingConfigurationRadioButton_Checked" Name="m_useExistingConfigurationRadioButton" />
+            </StackPanel>
+            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Margin="20">
+                Upgrading to the latest database schema is typically only<LineBreak />needed when moving between different product versions.
+            </TextBlock>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

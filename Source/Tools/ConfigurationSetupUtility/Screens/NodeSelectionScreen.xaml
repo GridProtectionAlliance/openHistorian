@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="ConfigurationSetupUtility.Screens.NodeSelectionScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}">
+    <DockPanel>
+        <Label Content="Node selection" DockPanel.Dock="Top" HorizontalContentAlignment="Center" Margin="10" FontSize="16" FontWeight="Bold" />
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0">
+                <TextBlock Text="Please wait while we retrieve node information from your database..." TextAlignment="Center" TextWrapping="Wrap" DockPanel.Dock="Top" Margin="10,0" Name="m_infoTextBlock" />
+                <DataGrid Name="m_dataGrid" SelectionMode="Single" DockPanel.Dock="Bottom" Margin="10" SelectionChanged="DataGrid_SelectionChanged" IsReadOnly="True" Loaded="DataGrid_Loaded" />
+            </DockPanel>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Create new node:&#x0a;Enter node name and click &quot;New Node&quot;." Margin="5" />
+                <TextBox Grid.Row="1" Margin="5" Name="m_newNodeTextBox" PreviewKeyDown="NewNodeTextBox_PreviewKeyDown" />
+                <Button Grid.Row="1" Grid.Column="1" Content="New Node" HorizontalAlignment="Center" Padding="5,2" Margin="5" Click="NewNodeButton_Click" />
+            </Grid>
+        </Grid>
+    </DockPanel>
+</UserControl>

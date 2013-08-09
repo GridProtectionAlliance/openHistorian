@@ -31,29 +31,35 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace NPlot
 {
-
     /// <summary>
     /// Encapsulates functionality for plotting data as a line chart.
     /// </summary>
     public class LinePlot : IPlot
     {
-
-        LineData m_lineData;
+        private readonly LineData m_lineData;
 
         /// <summary>
         /// Gets or sets the data, or column name for the ordinate [y] axis.
         /// </summary>
-        IList<double> YData { get; set; }
+        private IList<double> YData
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Gets or sets the data, or column name for the abscissa [x] axis.
         /// </summary>
-        IList<double> XData { get; set; }
+        private IList<double> XData
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Constructor
@@ -81,7 +87,7 @@ namespace NPlot
             if (pointCount == 0)
                 return;
 
-            var sw = StepTimer.Start("Transform");
+            Stopwatch sw = StepTimer.Start("Transform");
 
             Transform2D t = new Transform2D(xAxis, yAxis);
 
@@ -139,7 +145,6 @@ namespace NPlot
                     PointF[] newArray = new PointF[index];
                     Array.Copy(points, 0, newArray, 0, index);
                     g.DrawLines(Pen, newArray);
-
                 }
                 StepTimer.Stop(sw);
             }
@@ -161,7 +166,7 @@ namespace NPlot
         /// <returns>A suitable y-axis.</returns>
         public LinearAxis SuggestYAxis()
         {
-            var a = m_lineData.GetY();
+            LinearAxis a = m_lineData.GetY();
             a.IncreaseRange(0.08);
             return a;
         }
@@ -178,9 +183,9 @@ namespace NPlot
             set
             {
                 pen_ = value;
-
             }
         }
+
         private Pen pen_ = new Pen(Color.Black);
 
 
@@ -205,7 +210,5 @@ namespace NPlot
                 return pen_.Color;
             }
         }
-
-
     }
 }

@@ -35,7 +35,7 @@ namespace GSF.IO.Unmanaged
     /// <remarks>
     /// This class is used by <see cref="BufferedFileStream"/> to decide which pages should be replaced.
     /// </remarks>
-    unsafe public partial class LeastRecentlyUsedPageReplacement : IDisposable
+    public unsafe partial class LeastRecentlyUsedPageReplacement : IDisposable
     {
         #region [ Members ]
 
@@ -49,14 +49,17 @@ namespace GSF.IO.Unmanaged
             /// A pointer to the first byte of an individual dirty page
             /// </summary>
             public byte* Location;
+
             /// <summary>
             /// The absolute position of the first byte of an individual page
             /// </summary>
             public long Position;
+
             /// <summary>
             /// A flag specifiying if the page is dirty
             /// </summary>
             public bool IsDirty;
+
             /// <summary>
             /// The valid length of the current sub page.
             /// </summary>
@@ -67,34 +70,35 @@ namespace GSF.IO.Unmanaged
         /// A constant used by <see cref="m_ioSessionCurrentlyUsedArrayIndexes"/> to flag 
         /// when an <see cref="IoSession"/> is not referencing any pages.
         /// </summary>
-        const int IsCleared = -1;
+        private const int IsCleared = -1;
+
         /// <summary>
         /// A constant used by <see cref="m_ioSessionCurrentlyUsedArrayIndexes"/> to flag 
         /// when no <see cref="IoSession"/> is assigned to this list position.
         /// </summary>
-        const int IsNull = -2;
+        private const int IsNull = -2;
 
-        int m_bufferPageSize;
-        int m_bufferPageSizeMask;
-        int m_bufferPageSizeShiftBits;
+        private readonly int m_bufferPageSize;
+        private readonly int m_bufferPageSizeMask;
+        private readonly int m_bufferPageSizeShiftBits;
 
-        int m_dirtyPageSize;
-        int m_dirtyPageSizeShiftBits;
-        int m_dirtyPageSizeMask;
+        private readonly int m_dirtyPageSize;
+        private readonly int m_dirtyPageSizeShiftBits;
+        private readonly int m_dirtyPageSizeMask;
 
-        bool m_disposed;
+        private bool m_disposed;
 
         /// <summary>
         /// contains a list of all the meta pages.
         /// </summary>
         /// <remarks>These items in the list are not in any particular order.</remarks>
-        PageMetaDataList m_pageList;
+        private readonly PageMetaDataList m_pageList;
 
         /// <summary>
         /// Contains the currently active IO sessions.
         /// The value is either the array index or <see cref="IsNull"/> or <see cref="IsCleared"/>.
         /// </summary>
-        List<int> m_ioSessionCurrentlyUsedArrayIndexes;
+        private readonly List<int> m_ioSessionCurrentlyUsedArrayIndexes;
 
         #endregion
 
@@ -105,7 +109,7 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         /// <param name="dirtyPageSize">The size of a single dirty page. Must be a power of 2.</param>
         /// <param name="pool">The buffer pool that blocks will be allocated on.</param>
-        public LeastRecentlyUsedPageReplacement(int dirtyPageSize, BufferPool pool)
+        public LeastRecentlyUsedPageReplacement(int dirtyPageSize, MemoryPool pool)
         {
             if (pool.PageSize < 4096)
                 throw new ArgumentOutOfRangeException("PageSize Must be greater than 4096", "pool");
@@ -154,7 +158,7 @@ namespace GSF.IO.Unmanaged
         /// <param name="isWriting">a bool indicating if this individual page will be written to.</param>
         /// <param name="subPage">an output field of the resulting sub page</param>
         /// <returns>False if the page does not exists and needs to be added.</returns>
-        bool TryGetSubPage(long position, int ioSession, bool isWriting, out SubPageMetaData subPage)
+        private bool TryGetSubPage(long position, int ioSession, bool isWriting, out SubPageMetaData subPage)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -199,7 +203,7 @@ namespace GSF.IO.Unmanaged
         /// <param name="startIndex">the starting index of <see cref="data"/> to copy</param>
         /// <param name="length">the length to copy, must be equal to the buffer pool page size</param>
         /// <returns>True if the page was sucessfully added. False if it already exists and was not added.</returns>
-        bool TryAddNewPage(long position, byte[] data, int startIndex, int length)
+        private bool TryAddNewPage(long position, byte[] data, int startIndex, int length)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -221,7 +225,7 @@ namespace GSF.IO.Unmanaged
 
             arrayIndex = m_pageList.AllocateNewPage(positionIndex);
 
-            var pageMetaData = m_pageList.GetMetaDataPage(arrayIndex, 0, 0);
+            PageMetaDataList.PageMetaData pageMetaData = m_pageList.GetMetaDataPage(arrayIndex, 0, 0);
             Marshal.Copy(data, startIndex, (IntPtr)pageMetaData.LocationOfPage, length);
 
             return true;
@@ -258,7 +262,7 @@ namespace GSF.IO.Unmanaged
         /// This is done on a dispose operation.
         /// </summary>
         /// <param name="ioSession"></param>
-        void ReleaseIoSession(int ioSession)
+        private void ReleaseIoSession(int ioSession)
         {
             if (m_disposed)
                 return;
@@ -269,7 +273,7 @@ namespace GSF.IO.Unmanaged
         /// De-references the current IoSession's page.
         /// </summary>
         /// <param name="ioSession"></param>
-        void ClearIoSession(int ioSession)
+        private void ClearIoSession(int ioSession)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -293,7 +297,7 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        bool CheckForCollection(int index)
+        private bool CheckForCollection(int index)
         {
             return !m_ioSessionCurrentlyUsedArrayIndexes.Contains(index);
         }
@@ -344,7 +348,7 @@ namespace GSF.IO.Unmanaged
                 }
                 finally
                 {
-                    m_disposed = true;  // Prevent duplicate dispose.
+                    m_disposed = true; // Prevent duplicate dispose.
                 }
             }
         }
@@ -354,6 +358,5 @@ namespace GSF.IO.Unmanaged
         #endregion
 
         #endregion
-
     }
 }

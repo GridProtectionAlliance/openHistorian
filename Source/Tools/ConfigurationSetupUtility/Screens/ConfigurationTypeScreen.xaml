@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="ConfigurationSetupUtility.Screens.ConfigurationTypeScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}">
+    <DockPanel>
+        <Label Content="Select configuration type" DockPanel.Dock="Top" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="16" Margin="10" />
+        <StackPanel DockPanel.Dock="Bottom">
+            <TextBlock Text="Please select the type of configuration to be set up." TextAlignment="Center" TextWrapping="Wrap" Margin="20,0,20,10" />
+            <StackPanel HorizontalAlignment="Center">
+                <RadioButton Content="Database" Height="18" Checked="DatabaseRadioButton_Checked" IsChecked="True" Name="m_databaseRadioButton" />
+                <RadioButton Content="XML" Height="18" Checked="XmlRadioButton_Checked" Name="m_xmlRadioButton" />
+                <RadioButton Content="Web service" Height="18" Checked="WebServiceRadioButton_Checked" Name="m_webServiceRadioButton" />
+            </StackPanel>
+            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Margin="20,0,20,10">
+                <LineBreak/>
+                XML and Web service configuration types are only available for the openHistorian. The openHistorian Manager requires a database for operation.
+            </TextBlock>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

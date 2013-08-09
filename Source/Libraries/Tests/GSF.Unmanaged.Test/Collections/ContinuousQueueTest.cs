@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 
-namespace GSF.Collections
+namespace GSF.Collections.Test
 {
     [TestFixture]
     public class ContinuousQueueTest
@@ -12,8 +10,8 @@ namespace GSF.Collections
         [Test]
         public void TestQueue()
         {
-            var baseLine = new Queue<int>();
-            var queue = new ContinuousQueue<int>();
+            Queue<int> baseLine = new Queue<int>();
+            ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
             for (int x = 1; x < 10000; x++)
             {
@@ -38,14 +36,13 @@ namespace GSF.Collections
                 Assert.AreEqual(baseLine.Dequeue(), queue.Dequeue());
                 Assert.IsTrue(baseLine.SequenceEqual(queue));
             }
-
         }
 
         [Test]
         public void Test2()
         {
-            var queue = new ContinuousQueue<int>();
-            
+            ContinuousQueue<int> queue = new ContinuousQueue<int>();
+
             for (int x = 0; x < 1000; x++)
             {
                 queue.Enqueue(x);
@@ -55,13 +52,12 @@ namespace GSF.Collections
             {
                 Assert.AreEqual(x, queue[x]);
             }
-            
         }
 
         [Test]
         public void TestGet()
         {
-            var queue = new ContinuousQueue<int>();
+            ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
             for (int x = 0; x < 1000; x++)
             {
@@ -88,7 +84,7 @@ namespace GSF.Collections
         [Test]
         public void TestSet()
         {
-            var queue = new ContinuousQueue<int>();
+            ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
             for (int x = 0; x < 1000; x++)
             {
@@ -110,14 +106,13 @@ namespace GSF.Collections
                 queue[x] = (int)-x;
                 Assert.AreEqual((int)-x, queue[x]);
             }
-
         }
 
         [Test]
         public void TestStack()
         {
-            var baseLine = new Stack<int>();
-            var queue = new ContinuousQueue<int>();
+            Stack<int> baseLine = new Stack<int>();
+            ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
             for (int x = 1; x < 10000; x++)
             {
@@ -132,7 +127,7 @@ namespace GSF.Collections
                 baseLine.Push(x);
 
                 Assert.AreEqual(0, queue.TailIndex);
-                Assert.AreEqual(x - 1 - x/100, queue.HeadIndex);
+                Assert.AreEqual(x - 1 - x / 100, queue.HeadIndex);
                 Assert.AreEqual(baseLine.Count, queue.Count);
             }
 
@@ -147,8 +142,8 @@ namespace GSF.Collections
         [Test]
         public void TestReverseStack()
         {
-            var baseLine = new Stack<int>();
-            var queue = new ContinuousQueue<int>();
+            Stack<int> baseLine = new Stack<int>();
+            ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
             for (int x = 1; x < 10000; x++)
             {
@@ -162,7 +157,7 @@ namespace GSF.Collections
                 queue.AddToTail(x);
                 baseLine.Push(x);
 
-                Assert.AreEqual(-(x - 1 - x / 100)-1, queue.TailIndex);
+                Assert.AreEqual(-(x - 1 - x / 100) - 1, queue.TailIndex);
                 Assert.AreEqual(-1, queue.HeadIndex);
                 Assert.AreEqual(baseLine.Count, queue.Count);
             }
@@ -173,9 +168,6 @@ namespace GSF.Collections
                 Assert.AreEqual(baseLine.Pop(), queue.RemoveFromTail());
                 Assert.IsTrue(baseLine.SequenceEqual(queue));
             }
-
         }
-
-
     }
 }

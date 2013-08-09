@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WavInputAdapter</name>
+    </assembly>
+    <members>
+        <member name="T:WavInputAdapter.WavInputAdapter">
+            <summary>
+            Represents an input adapter that reads measurements from a WAV file.
+            </summary>
+        </member>
+        <member name="M:WavInputAdapter.WavInputAdapter.Initialize">
+            <summary>
+            Initializes the connection string parameters of this <see cref="T:WavInputAdapter.WavInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:WavInputAdapter.WavInputAdapter.AttemptConnection">
+            <summary>
+            Attempts to open the file to start getting wave data.
+            </summary>
+        </member>
+        <member name="M:WavInputAdapter.WavInputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to close the file and release resources held by the adapter.
+            </summary>
+        </member>
+        <member name="M:WavInputAdapter.WavInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:WavInputAdapter.WavInputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:WavInputAdapter.WavInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+        </member>
+        <member name="P:WavInputAdapter.WavInputAdapter.WavFileName">
+            <summary>
+            Gets or sets the name of the file from which to read measurements.
+            </summary>
+        </member>
+        <member name="P:WavInputAdapter.WavInputAdapter.RecoveryDelay">
+            <summary>
+            Gets or sets the amount of time, in seconds, needed to recover from a back log.
+            </summary>
+        </member>
+        <member name="P:WavInputAdapter.WavInputAdapter.OutputMeasurements">
+            <summary>
+            Gets or sets the output measurements.
+            </summary>
+            <remarks>
+            The output measurements are like templates. New measurements generated
+            by this adapter will be copies of these output measurements, in which
+            only the values and timestamps will differ.
+            </remarks>
+        </member>
+        <member name="P:WavInputAdapter.WavInputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data input connects asynchronously.
+            </summary>
+            <remarks>
+            This returns false because this adapter does not connect asynchronously.
+            </remarks>
+        </member>
+        <member name="P:WavInputAdapter.WavInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -30,10 +30,15 @@ namespace GSF.Collections
     {
         T this[int index]
         {
-            get; 
-            set; 
+            get;
+            set;
         }
-        int Capacity { get; }
+
+        int Capacity
+        {
+            get;
+        }
+
         int SetCapacity(int length);
     }
 }

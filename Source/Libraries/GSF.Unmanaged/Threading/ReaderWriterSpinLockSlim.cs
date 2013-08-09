@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ContinuousQueue.cs - Gbtc
+//  ReaderWriterSpinLockSlim.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,7 +22,6 @@
 //*****************************************************************************************************
 
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace GSF.Threading
@@ -47,8 +46,8 @@ namespace GSF.Threading
         #region [ Members ]
 
         // Fields
-        volatile int m_readers;
-        volatile int m_writer;
+        private volatile int m_readers;
+        private volatile int m_writer;
 
         #endregion
 
@@ -136,4 +135,3 @@ namespace GSF.Threading
         #endregion
     }
 }
-

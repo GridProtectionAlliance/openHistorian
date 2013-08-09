@@ -23,21 +23,18 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace GSF.Threading
 {
-    class ForegroundThread : CustomThreadBase
+    internal class ForegroundThread : CustomThreadBase
     {
-        Thread m_thread;
-        Action m_callback;
-        ManualResetEvent m_go;
-        ManualResetEvent m_sleep;
-        volatile int m_sleepTime;
-        volatile bool m_disposed;
+        private readonly Thread m_thread;
+        private readonly Action m_callback;
+        private readonly ManualResetEvent m_go;
+        private readonly ManualResetEvent m_sleep;
+        private volatile int m_sleepTime;
+        private volatile bool m_disposed;
 
         public ForegroundThread(Action callback)
         {
@@ -49,7 +46,7 @@ namespace GSF.Threading
             m_thread.Start();
         }
 
-        void RunWorkerThread()
+        private void RunWorkerThread()
         {
             //Initially m_state == State.IsRunning;
             while (true)

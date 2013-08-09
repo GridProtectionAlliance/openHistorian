@@ -2,6 +2,7 @@
 using openHistorian.Archive;
 using System;
 using openHistorian;
+using openHistorian.Collections;
 
 namespace openHistorian.Test
 {
@@ -18,7 +19,7 @@ namespace openHistorian.Test
         [Test()]
         public void PartitionFileConstructorTest()
         {
-            using (ArchiveFile target = ArchiveFile.CreateInMemory())
+            using (var target = HistorianArchiveFile.CreateInMemory())
             {
             }
         }
@@ -29,7 +30,7 @@ namespace openHistorian.Test
         [Test()]
         public void AddPointTest()
         {
-            using (ArchiveFile target = ArchiveFile.CreateInMemory())
+            using (var target = HistorianArchiveFile.CreateInMemory())
             {
                 ulong date = 0;
                 ulong pointId = 0;
@@ -49,7 +50,7 @@ namespace openHistorian.Test
         [Test()]
         public void EnduranceTest()
         {
-            using (ArchiveFile target = ArchiveFile.CreateInMemory())
+            using (var target = HistorianArchiveFile.CreateInMemory())
             {
                 for (uint x = 0; x < 100; x++)
                 {
@@ -62,8 +63,8 @@ namespace openHistorian.Test
                         }
                         fileEditor.Commit();
                     }
-                    Assert.AreEqual(target.FirstKey, (ulong)0);
-                    Assert.AreEqual(target.LastKey, (ulong)(x-1));
+                    Assert.AreEqual(target.FirstKey.Timestamp, (ulong)0);
+                    Assert.AreEqual(target.LastKey.Timestamp, (ulong)(x-1));
                 }
                 
             }
@@ -75,13 +76,13 @@ namespace openHistorian.Test
         [Test()]
         public void CreateSnapshotTest()
         {
-            using (ArchiveFile target = ArchiveFile.CreateInMemory())
+            using (var target = HistorianArchiveFile.CreateInMemory())
             {
                 ulong date = 1;
                 ulong pointId = 2;
                 ulong value1 = 3;
                 ulong value2 = 4;
-                ArchiveFileSnapshotInfo snap1;
+                ArchiveFileSnapshotInfo<HistorianKey,HistorianValue> snap1;
                 using (var fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(date, pointId, value1, value2);
@@ -94,21 +95,21 @@ namespace openHistorian.Test
                 using (var instance = snap1.CreateReadSnapshot())
                 {
                     var scanner = instance.GetTreeScanner();
-                    scanner.SeekToKey(0, 0);
+                    scanner.SeekToStart();
                     Assert.AreEqual(false, scanner.Read(out date, out pointId, out value1, out value2));
                 }
                 using (var instance = snap2.CreateReadSnapshot())
                 {
                     var scanner = instance.GetTreeScanner();
-                    scanner.SeekToKey(0, 0);
+                    scanner.SeekToStart();
                     Assert.AreEqual(true, scanner.Read(out date, out pointId, out value1, out value2));
                     Assert.AreEqual(1uL, date);
                     Assert.AreEqual(2uL, pointId);
                     Assert.AreEqual(3uL, value1);
                     Assert.AreEqual(4uL, value2);
                 }
-                Assert.AreEqual(1uL, target.FirstKey);
-                Assert.AreEqual(2uL, target.LastKey);
+                Assert.AreEqual(1uL, target.FirstKey.Timestamp);
+                Assert.AreEqual(2uL, target.LastKey.Timestamp);
 
             }
         }
@@ -119,13 +120,13 @@ namespace openHistorian.Test
         [Test()]
         public void RollbackEditTest()
         {
-            using (ArchiveFile target = ArchiveFile.CreateInMemory())
+            using (var target = HistorianArchiveFile.CreateInMemory())
             {
                 ulong date = 1;
                 ulong pointId = 2;
                 ulong value1 = 3;
                 ulong value2 = 4;
-                ArchiveFileSnapshotInfo snap1;
+                ArchiveFileSnapshotInfo<HistorianKey, HistorianValue> snap1;
                 using (var fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(date, pointId, value1, value2);
@@ -137,13 +138,13 @@ namespace openHistorian.Test
                 using (var instance = snap1.CreateReadSnapshot())
                 {
                     var scanner = instance.GetTreeScanner();
-                    scanner.SeekToKey(0, 0);
+                    scanner.SeekToStart();
                     Assert.AreEqual(false, scanner.Read(out date, out pointId, out value1, out value2));
                 }
                 using (var instance = snap2.CreateReadSnapshot())
                 {
                     var scanner = instance.GetTreeScanner();
-                    scanner.SeekToKey(0, 0);
+                    scanner.SeekToStart();
                     Assert.AreEqual(false, scanner.Read(out date, out pointId, out value1, out value2));
                 }
             }

@@ -32,8 +32,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Collections;
-using System.Globalization;
 
 // TODO: More control over how labels are displayed.
 // TODO: SkipWeekends property.
@@ -41,443 +39,437 @@ using System.Globalization;
 
 namespace NPlot
 {
-	/// <summary>
-	/// The DateTimeAxis class
-	/// </summary>
-	public class DateTimeAxis : Axis
-	{
+    /// <summary>
+    /// The DateTimeAxis class
+    /// </summary>
+    public class DateTimeAxis : Axis
+    {
+        #region Clone implementation
 
-		#region Clone implementation
-		/// <summary>
-		/// Deep copy of DateTimeAxis.
-		/// </summary>
-		/// <returns>A copy of the DateTimeAxis Class.</returns>
-		public override object Clone()
-		{
-			DateTimeAxis a = new DateTimeAxis();
-			// ensure that this isn't being called on a derived type. If it is, then oh no!
-			if (this.GetType() != a.GetType())
-			{
-				throw new NPlotException( "Clone not defined in derived type. Help!" );
-			}
-			DoClone( this, a );
-			return a;
-		}
-
-
-		/// <summary>
-		/// Helper method for Clone.
-		/// </summary>
-		/// <param name="a">The original object to clone.</param>
-		/// <param name="b">The cloned object.</param>
-		protected static void DoClone( DateTimeAxis b, DateTimeAxis a )
-		{
-			Axis.DoClone( b, a );
-		}
-		#endregion
-
-		private void Init()
-		{
-		}
+        /// <summary>
+        /// Deep copy of DateTimeAxis.
+        /// </summary>
+        /// <returns>A copy of the DateTimeAxis Class.</returns>
+        public override object Clone()
+        {
+            DateTimeAxis a = new DateTimeAxis();
+            // ensure that this isn't being called on a derived type. If it is, then oh no!
+            if (this.GetType() != a.GetType())
+            {
+                throw new NPlotException("Clone not defined in derived type. Help!");
+            }
+            DoClone(this, a);
+            return a;
+        }
 
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="a">Axis to construct from</param>
-		public DateTimeAxis( Axis a )
-			: base( a )
-		{
-			this.Init();
-			this.NumberFormat = null;
-		}
+        /// <summary>
+        /// Helper method for Clone.
+        /// </summary>
+        /// <param name="a">The original object to clone.</param>
+        /// <param name="b">The cloned object.</param>
+        protected static void DoClone(DateTimeAxis b, DateTimeAxis a)
+        {
+            Axis.DoClone(b, a);
+        }
+
+        #endregion
+
+        private void Init()
+        {
+        }
 
 
-		/// <summary>
-		/// Default Constructor
-		/// </summary>
-		public DateTimeAxis()
-			: base()
-		{
-			this.Init();
-		}
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="a">Axis to construct from</param>
+        public DateTimeAxis(Axis a)
+            : base(a)
+        {
+            this.Init();
+            this.NumberFormat = null;
+        }
 
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="worldMin">World min of axis</param>
-		/// <param name="worldMax">World max of axis</param>
-		public DateTimeAxis( double worldMin, double worldMax )
-			: base( worldMin, worldMax )
-		{
-			this.Init();
-		}
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
+        public DateTimeAxis()
+            : base()
+        {
+            this.Init();
+        }
 
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="worldMin">World min of axis</param>
-		/// <param name="worldMax">World max of axis</param>
-		public DateTimeAxis( long worldMin, long worldMax )
-			: base( (double)worldMin, (double)worldMax )
-		{
-			this.Init();
-		}
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="worldMin">World min of axis</param>
+        /// <param name="worldMax">World max of axis</param>
+        public DateTimeAxis(double worldMin, double worldMax)
+            : base(worldMin, worldMax)
+        {
+            this.Init();
+        }
 
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="worldMin">World min of axis</param>
-		/// <param name="worldMax">World max of axis</param>
-		public DateTimeAxis( DateTime worldMin, DateTime worldMax )
-			: base( (double)worldMin.Ticks, (double)worldMax.Ticks )
-		{
-			this.Init();
-		}
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="worldMin">World min of axis</param>
+        /// <param name="worldMax">World max of axis</param>
+        public DateTimeAxis(long worldMin, long worldMax)
+            : base((double)worldMin, (double)worldMax)
+        {
+            this.Init();
+        }
 
 
-		/// <summary>
-		/// Draw the ticks.
-		/// </summary>
-		/// <param name="g">The drawing surface on which to draw.</param>
-		/// <param name="physicalMin">The minimum physical extent of the axis.</param>
-		/// <param name="physicalMax">The maximum physical extent of the axis.</param>
-		/// <param name="boundingBox">out: smallest box that completely encompasses all of the ticks and tick labels.</param>
-		/// <param name="labelOffset">out: a suitable offset from the axis to draw the axis label.</param>
-		protected override void DrawTicks( 
-			Graphics g, 
-			Point physicalMin, 
-			Point physicalMax, 
-			out object labelOffset,
-			out object boundingBox )
-		{
-			
-			// TODO: Look at offset and bounding box logic again here. why temp and other vars? 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="worldMin">World min of axis</param>
+        /// <param name="worldMax">World max of axis</param>
+        public DateTimeAxis(DateTime worldMin, DateTime worldMax)
+            : base((double)worldMin.Ticks, (double)worldMax.Ticks)
+        {
+            this.Init();
+        }
 
-			Point tLabelOffset;
-			Rectangle tBoundingBox;
 
-			labelOffset = this.getDefaultLabelOffset( physicalMin, physicalMax );
-			boundingBox = null;
+        /// <summary>
+        /// Draw the ticks.
+        /// </summary>
+        /// <param name="g">The drawing surface on which to draw.</param>
+        /// <param name="physicalMin">The minimum physical extent of the axis.</param>
+        /// <param name="physicalMax">The maximum physical extent of the axis.</param>
+        /// <param name="boundingBox">out: smallest box that completely encompasses all of the ticks and tick labels.</param>
+        /// <param name="labelOffset">out: a suitable offset from the axis to draw the axis label.</param>
+        protected override void DrawTicks(
+            Graphics g,
+            Point physicalMin,
+            Point physicalMax,
+            out object labelOffset,
+            out object boundingBox)
+        {
+            // TODO: Look at offset and bounding box logic again here. why temp and other vars? 
+
+            Point tLabelOffset;
+            Rectangle tBoundingBox;
+
+            labelOffset = this.getDefaultLabelOffset(physicalMin, physicalMax);
+            boundingBox = null;
 
             List<double> largeTicks;
             List<double> smallTicks;
-			this.WorldTickPositions( physicalMin, physicalMax, out largeTicks, out smallTicks );
+            this.WorldTickPositions(physicalMin, physicalMax, out largeTicks, out smallTicks);
 
-			// draw small ticks.
-			for (int i=0; i<smallTicks.Count; ++i)
-			{
-				this.DrawTick( g, (double)smallTicks[i], 
-					this.SmallTickSize, "", new Point(0, 0),
-					physicalMin, physicalMax, 
-					out tLabelOffset, out tBoundingBox );
-				// assume label offset and bounding box unchanged by small tick bounds.
-			}
+            // draw small ticks.
+            for (int i = 0; i < smallTicks.Count; ++i)
+            {
+                this.DrawTick(g, (double)smallTicks[i],
+                              this.SmallTickSize, "", new Point(0, 0),
+                              physicalMin, physicalMax,
+                              out tLabelOffset, out tBoundingBox);
+                // assume label offset and bounding box unchanged by small tick bounds.
+            }
 
-			// draw large ticks.
-			for (int i=0; i<largeTicks.Count; ++i)
-			{
-					
-				DateTime tickDate = new DateTime( (long)((double)largeTicks[i]) );
+            // draw large ticks.
+            for (int i = 0; i < largeTicks.Count; ++i)
+            {
+                DateTime tickDate = new DateTime((long)((double)largeTicks[i]));
                 string label = LargeTickLabel(tickDate);
 
-                this.DrawTick( g, (double)largeTicks[i],
-	                            this.LargeTickSize, label, new Point( 0, 0 ),
-                                physicalMin, physicalMax, out tLabelOffset, out tBoundingBox );
+                this.DrawTick(g, (double)largeTicks[i],
+                              this.LargeTickSize, label, new Point(0, 0),
+                              physicalMin, physicalMax, out tLabelOffset, out tBoundingBox);
 
-                Axis.UpdateOffsetAndBounds( ref labelOffset, ref boundingBox, tLabelOffset, tBoundingBox );
-             }
-
+                UpdateOffsetAndBounds(ref labelOffset, ref boundingBox, tLabelOffset, tBoundingBox);
+            }
         }
 
-		/// <summary>
-		/// Get the label corresponding to the provided date time
-		/// </summary>
-		/// <param name="tickDate">the date time to get the label for</param>
-		/// <returns>label for the provided DateTime</returns>
-		protected virtual string LargeTickLabel(DateTime tickDate)
-		{
-			string label = "";
+        /// <summary>
+        /// Get the label corresponding to the provided date time
+        /// </summary>
+        /// <param name="tickDate">the date time to get the label for</param>
+        /// <returns>label for the provided DateTime</returns>
+        protected virtual string LargeTickLabel(DateTime tickDate)
+        {
+            string label = "";
 
-			if(this.NumberFormat == null || this.NumberFormat == String.Empty) 
-			{
-				if ( this.LargeTickLabelType_ == LargeTickLabelType.year )
-				{
-					label = tickDate.Year.ToString();
-				}
+            if (this.NumberFormat == null || this.NumberFormat == String.Empty)
+            {
+                if (this.LargeTickLabelType_ == LargeTickLabelType.year)
+                {
+                    label = tickDate.Year.ToString();
+                }
 
-				else if ( this.LargeTickLabelType_ == LargeTickLabelType.month )
-				{
-					label = tickDate.ToString("MMM");
-					label += " ";
-					label += tickDate.Year.ToString().Substring(2,2);
-				}
+                else if (this.LargeTickLabelType_ == LargeTickLabelType.month)
+                {
+                    label = tickDate.ToString("MMM");
+                    label += " ";
+                    label += tickDate.Year.ToString().Substring(2, 2);
+                }
 
-				else if ( this.LargeTickLabelType_ == LargeTickLabelType.day )
-				{
-					label = (tickDate.Day).ToString();
-					label += " ";
-					label += tickDate.ToString("MMM");
-				}
-				
-				else if ( this.LargeTickLabelType_ == LargeTickLabelType.hourMinute )
-				{
-					string minutes = tickDate.Minute.ToString();
-					if (minutes.Length == 1)
-					{
-						minutes = "0" + minutes;
-					}
-					label = tickDate.Hour.ToString() + ":" + minutes;
-				}
-				else if ( this.LargeTickLabelType_ == LargeTickLabelType.hourMinuteSeconds )
-				{
-					string minutes = tickDate.Minute.ToString();
-					string seconds = tickDate.Second.ToString();
-					if (seconds.Length == 1)
-					{
-						seconds = "0" + seconds;
-					}
+                else if (this.LargeTickLabelType_ == LargeTickLabelType.day)
+                {
+                    label = (tickDate.Day).ToString();
+                    label += " ";
+                    label += tickDate.ToString("MMM");
+                }
 
-					if (minutes.Length == 1)
-					{
-						minutes = "0" + minutes;
-					}
-					label = tickDate.Hour.ToString() + ":" + minutes + "." + seconds;	
-				}
+                else if (this.LargeTickLabelType_ == LargeTickLabelType.hourMinute)
+                {
+                    string minutes = tickDate.Minute.ToString();
+                    if (minutes.Length == 1)
+                    {
+                        minutes = "0" + minutes;
+                    }
+                    label = tickDate.Hour.ToString() + ":" + minutes;
+                }
+                else if (this.LargeTickLabelType_ == LargeTickLabelType.hourMinuteSeconds)
+                {
+                    string minutes = tickDate.Minute.ToString();
+                    string seconds = tickDate.Second.ToString();
+                    if (seconds.Length == 1)
+                    {
+                        seconds = "0" + seconds;
+                    }
 
-			}
-			else 
-			{
-				label = tickDate.ToString(NumberFormat);
-			}
+                    if (minutes.Length == 1)
+                    {
+                        minutes = "0" + minutes;
+                    }
+                    label = tickDate.Hour.ToString() + ":" + minutes + "." + seconds;
+                }
+            }
+            else
+            {
+                label = tickDate.ToString(NumberFormat);
+            }
 
-			return label;
-		}
-
-
-		/// <summary>
-		/// Enumerates the different types of tick label possible.
-		/// </summary>
-		protected enum LargeTickLabelType 
-		{
-			/// <summary>
-			/// default - no tick labels.
-			/// </summary>
-			none = 0,
-
-			/// <summary>
-			/// tick labels should be years
-			/// </summary>
-			year = 1,
-
-			/// <summary>
-			/// Tick labels should be month names
-			/// </summary>
-			month = 2,
-
-			/// <summary>
-			/// Tick labels should be day names
-			/// </summary>
-			day = 3,
-
-			/// <summary>
-			/// Tick labels should be hour / minutes.
-			/// </summary>
-			hourMinute = 4,
-
-			/// <summary>
-			/// tick labels should be hour / minute / second.
-			/// </summary>
-			hourMinuteSeconds = 5
-		}
+            return label;
+        }
 
 
-		/// <summary>
-		///  this gets set after a get LargeTickPositions.
-		/// </summary>
-		protected LargeTickLabelType LargeTickLabelType_;
+        /// <summary>
+        /// Enumerates the different types of tick label possible.
+        /// </summary>
+        protected enum LargeTickLabelType
+        {
+            /// <summary>
+            /// default - no tick labels.
+            /// </summary>
+            none = 0,
+
+            /// <summary>
+            /// tick labels should be years
+            /// </summary>
+            year = 1,
+
+            /// <summary>
+            /// Tick labels should be month names
+            /// </summary>
+            month = 2,
+
+            /// <summary>
+            /// Tick labels should be day names
+            /// </summary>
+            day = 3,
+
+            /// <summary>
+            /// Tick labels should be hour / minutes.
+            /// </summary>
+            hourMinute = 4,
+
+            /// <summary>
+            /// tick labels should be hour / minute / second.
+            /// </summary>
+            hourMinuteSeconds = 5
+        }
 
 
-		/// <summary>
-		/// Determines the positions, in world coordinates, of the large ticks. No
-		/// small tick marks are currently calculated by this method.
-		/// 
-		/// </summary>
-		/// <param name="physicalMin">The physical position corresponding to the world minimum of the axis.</param>
-		/// <param name="physicalMax">The physical position corresponding to the world maximum of the axis.</param>
-		/// <param name="largeTickPositions">ArrayList containing the positions of the large ticks.</param>
-		/// <param name="smallTickPositions">null</param>
-		internal override void WorldTickPositions_FirstPass(
-			Point physicalMin, 
-			Point physicalMax,
-			out List<double> largeTickPositions,
+        /// <summary>
+        ///  this gets set after a get LargeTickPositions.
+        /// </summary>
+        protected LargeTickLabelType LargeTickLabelType_;
+
+
+        /// <summary>
+        /// Determines the positions, in world coordinates, of the large ticks. No
+        /// small tick marks are currently calculated by this method.
+        /// 
+        /// </summary>
+        /// <param name="physicalMin">The physical position corresponding to the world minimum of the axis.</param>
+        /// <param name="physicalMax">The physical position corresponding to the world maximum of the axis.</param>
+        /// <param name="largeTickPositions">ArrayList containing the positions of the large ticks.</param>
+        /// <param name="smallTickPositions">null</param>
+        internal override void WorldTickPositions_FirstPass(
+            Point physicalMin,
+            Point physicalMax,
+            out List<double> largeTickPositions,
             out List<double> smallTickPositions
-			)
-		{
-			smallTickPositions = null;
+            )
+        {
+            smallTickPositions = null;
 
             largeTickPositions = new List<double>();
 
-			const int daysInMonth = 30;
+            const int daysInMonth = 30;
 
-			TimeSpan timeLength = new TimeSpan( (long)(WorldMax-WorldMin));
-			DateTime worldMinDate = new DateTime( (long)this.WorldMin );
-			DateTime worldMaxDate = new DateTime( (long)this.WorldMax );
+            TimeSpan timeLength = new TimeSpan((long)(WorldMax - WorldMin));
+            DateTime worldMinDate = new DateTime((long)this.WorldMin);
+            DateTime worldMaxDate = new DateTime((long)this.WorldMax);
 
-			if(largeTickStep_ == TimeSpan.Zero) 
-			{
+            if (largeTickStep_ == TimeSpan.Zero)
+            {
+                // if less than 10 minutes, then large ticks on second spacings. 
 
-				// if less than 10 minutes, then large ticks on second spacings. 
+                if (timeLength < new TimeSpan(0, 0, 2, 0, 0))
+                {
+                    this.LargeTickLabelType_ = LargeTickLabelType.hourMinuteSeconds;
 
-				if ( timeLength < new TimeSpan(0,0,2,0,0) )
-				{
-					this.LargeTickLabelType_ = LargeTickLabelType.hourMinuteSeconds;
+                    double secondsSkip;
 
-					double secondsSkip;
+                    if (timeLength < new TimeSpan(0, 0, 0, 10, 0))
+                        secondsSkip = 1.0;
+                    else if (timeLength < new TimeSpan(0, 0, 0, 20, 0))
+                        secondsSkip = 2.0;
+                    else if (timeLength < new TimeSpan(0, 0, 0, 50, 0))
+                        secondsSkip = 5.0;
+                    else if (timeLength < new TimeSpan(0, 0, 2, 30, 0))
+                        secondsSkip = 15.0;
+                    else
+                        secondsSkip = 30.0;
 
-					if (timeLength < new TimeSpan( 0,0,0,10,0 ) )
-						secondsSkip = 1.0;
-					else if ( timeLength < new TimeSpan(0,0,0,20,0) )
-						secondsSkip = 2.0;
-					else if ( timeLength < new TimeSpan(0,0,0,50,0) )
-						secondsSkip = 5.0;
-					else if ( timeLength < new TimeSpan(0,0,2,30,0) )
-						secondsSkip = 15.0;
-					else 
-						secondsSkip = 30.0;
+                    int second = worldMinDate.Second;
+                    second -= second % (int)secondsSkip;
 
-					int second = worldMinDate.Second;
-					second -= second % (int)secondsSkip;					
+                    DateTime currentTickDate = new DateTime(
+                        worldMinDate.Year,
+                        worldMinDate.Month,
+                        worldMinDate.Day,
+                        worldMinDate.Hour,
+                        worldMinDate.Minute,
+                        second, 0);
 
-					DateTime currentTickDate = new DateTime( 
-						worldMinDate.Year,
-						worldMinDate.Month, 
-						worldMinDate.Day,
-						worldMinDate.Hour,
-						worldMinDate.Minute,
-						second,0 );
+                    while (currentTickDate < worldMaxDate)
+                    {
+                        double world = (double)currentTickDate.Ticks;
 
-					while ( currentTickDate < worldMaxDate )
-					{
-						double world = (double)currentTickDate.Ticks;
+                        if (world >= this.WorldMin && world <= this.WorldMax)
+                        {
+                            largeTickPositions.Add(world);
+                        }
 
-						if ( world >= this.WorldMin && world <= this.WorldMax )
-						{
-							largeTickPositions.Add( world );
-						}
+                        currentTickDate = currentTickDate.AddSeconds(secondsSkip);
+                    }
+                }
 
-						currentTickDate = currentTickDate.AddSeconds( secondsSkip );
-					}
-				}
+                    // Less than 2 hours, then large ticks on minute spacings.
 
-				// Less than 2 hours, then large ticks on minute spacings.
+                else if (timeLength < new TimeSpan(0, 2, 0, 0, 0))
+                {
+                    this.LargeTickLabelType_ = LargeTickLabelType.hourMinute;
 
-				else if ( timeLength < new TimeSpan(0,2,0,0,0) )
-				{
-					this.LargeTickLabelType_ = LargeTickLabelType.hourMinute;
+                    double minuteSkip;
 
-					double minuteSkip;
+                    if (timeLength < new TimeSpan(0, 0, 10, 0, 0))
+                        minuteSkip = 1.0;
+                    else if (timeLength < new TimeSpan(0, 0, 20, 0, 0))
+                        minuteSkip = 2.0;
+                    else if (timeLength < new TimeSpan(0, 0, 50, 0, 0))
+                        minuteSkip = 5.0;
+                    else if (timeLength < new TimeSpan(0, 2, 30, 0, 0))
+                        minuteSkip = 15.0;
+                    else //( timeLength < new TimeSpan( 0,5,0,0,0) )
+                        minuteSkip = 30.0;
 
-					if ( timeLength < new TimeSpan(0,0,10,0,0) )
-						minuteSkip = 1.0;
-					else if ( timeLength < new TimeSpan(0,0,20,0,0) )
-						minuteSkip = 2.0;
-					else if ( timeLength < new TimeSpan(0,0,50,0,0) )
-						minuteSkip = 5.0;
-					else if ( timeLength < new TimeSpan(0,2,30,0,0) )
-						minuteSkip = 15.0;
-					else //( timeLength < new TimeSpan( 0,5,0,0,0) )
-						minuteSkip = 30.0;
+                    int minute = worldMinDate.Minute;
+                    minute -= minute % (int)minuteSkip;
 
-					int minute = worldMinDate.Minute;
-					minute -= minute % (int)minuteSkip;					
+                    DateTime currentTickDate = new DateTime(
+                        worldMinDate.Year,
+                        worldMinDate.Month,
+                        worldMinDate.Day,
+                        worldMinDate.Hour,
+                        minute, 0, 0);
 
-					DateTime currentTickDate = new DateTime( 
-						worldMinDate.Year,
-						worldMinDate.Month, 
-						worldMinDate.Day,
-						worldMinDate.Hour,
-						minute,0,0 );
+                    while (currentTickDate < worldMaxDate)
+                    {
+                        double world = (double)currentTickDate.Ticks;
 
-					while ( currentTickDate < worldMaxDate )
-					{
-						double world = (double)currentTickDate.Ticks;
+                        if (world >= this.WorldMin && world <= this.WorldMax)
+                        {
+                            largeTickPositions.Add(world);
+                        }
 
-						if ( world >= this.WorldMin && world <= this.WorldMax )
-						{
-							largeTickPositions.Add( world );
-						}
+                        currentTickDate = currentTickDate.AddMinutes(minuteSkip);
+                    }
+                }
 
-						currentTickDate = currentTickDate.AddMinutes( minuteSkip );
-					}
-				}
+                    // Less than 2 days, then large ticks on hour spacings.
 
-				// Less than 2 days, then large ticks on hour spacings.
+                else if (timeLength < new TimeSpan(2, 0, 0, 0, 0))
+                {
+                    this.LargeTickLabelType_ = LargeTickLabelType.hourMinute;
 
-				else if ( timeLength < new TimeSpan(2,0,0,0,0) )
-				{
-					this.LargeTickLabelType_ = LargeTickLabelType.hourMinute;
-
-					double hourSkip;
-					if ( timeLength < new TimeSpan(0,10,0,0,0) )
-						hourSkip = 1.0;
-					else if ( timeLength < new TimeSpan(0,20,0,0,0) )
-						hourSkip = 2.0;
-					else
-						hourSkip = 6.0;
-
-
-					int hour = worldMinDate.Hour;
-					hour -= hour % (int)hourSkip;					
-
-					DateTime currentTickDate = new DateTime( 
-						worldMinDate.Year,
-						worldMinDate.Month, 
-						worldMinDate.Day,
-						hour,0,0,0 );
-
-					while ( currentTickDate < worldMaxDate )
-					{
-						double world = (double)currentTickDate.Ticks;
-
-						if ( world >= this.WorldMin && world <= this.WorldMax )
-						{
-							largeTickPositions.Add( world );
-						}
-
-						currentTickDate = currentTickDate.AddHours( hourSkip );
-					}
-
-				}
+                    double hourSkip;
+                    if (timeLength < new TimeSpan(0, 10, 0, 0, 0))
+                        hourSkip = 1.0;
+                    else if (timeLength < new TimeSpan(0, 20, 0, 0, 0))
+                        hourSkip = 2.0;
+                    else
+                        hourSkip = 6.0;
 
 
-				// less than 5 months, then large ticks on day spacings.
+                    int hour = worldMinDate.Hour;
+                    hour -= hour % (int)hourSkip;
 
-				else if ( timeLength < new TimeSpan(daysInMonth*4,0,0,0,0))
-				{
-					this.LargeTickLabelType_ = LargeTickLabelType.day;
+                    DateTime currentTickDate = new DateTime(
+                        worldMinDate.Year,
+                        worldMinDate.Month,
+                        worldMinDate.Day,
+                        hour, 0, 0, 0);
 
-					double daySkip;
-					if ( timeLength < new TimeSpan(10,0,0,0,0) )
-						daySkip = 1.0;
-					else if (timeLength < new TimeSpan(20,0,0,0,0) )
-						daySkip = 2.0;
-					else if (timeLength < new TimeSpan(7*10,0,0,0,0) )
-						daySkip = 7.0;
-					else 
-						daySkip = 14.0;
+                    while (currentTickDate < worldMaxDate)
+                    {
+                        double world = (double)currentTickDate.Ticks;
 
-					DateTime currentTickDate = new DateTime( 
-						worldMinDate.Year,
-						worldMinDate.Month, 
-						worldMinDate.Day );
+                        if (world >= this.WorldMin && world <= this.WorldMax)
+                        {
+                            largeTickPositions.Add(world);
+                        }
+
+                        currentTickDate = currentTickDate.AddHours(hourSkip);
+                    }
+                }
+
+
+                    // less than 5 months, then large ticks on day spacings.
+
+                else if (timeLength < new TimeSpan(daysInMonth * 4, 0, 0, 0, 0))
+                {
+                    this.LargeTickLabelType_ = LargeTickLabelType.day;
+
+                    double daySkip;
+                    if (timeLength < new TimeSpan(10, 0, 0, 0, 0))
+                        daySkip = 1.0;
+                    else if (timeLength < new TimeSpan(20, 0, 0, 0, 0))
+                        daySkip = 2.0;
+                    else if (timeLength < new TimeSpan(7 * 10, 0, 0, 0, 0))
+                        daySkip = 7.0;
+                    else
+                        daySkip = 14.0;
+
+                    DateTime currentTickDate = new DateTime(
+                        worldMinDate.Year,
+                        worldMinDate.Month,
+                        worldMinDate.Day);
 
                     if (daySkip == 2.0)
                     {
-
                         TimeSpan timeSinceBeginning = currentTickDate - DateTime.MinValue;
 
                         if (timeSinceBeginning.Days % 2 == 1)
@@ -510,7 +502,6 @@ namespace NPlot
                                 currentTickDate = currentTickDate.AddDays(-6.0);
                                 break;
                         }
-
                     }
 
                     if (daySkip == 14.0f)
@@ -523,41 +514,40 @@ namespace NPlot
                         }
                     }
 
-                    while ( currentTickDate < worldMaxDate )
-					{
-						double world = (double)currentTickDate.Ticks;
+                    while (currentTickDate < worldMaxDate)
+                    {
+                        double world = (double)currentTickDate.Ticks;
 
-						if ( world >= this.WorldMin && world <= this.WorldMax )
-						{
-							largeTickPositions.Add( world );
-						}
+                        if (world >= this.WorldMin && world <= this.WorldMax)
+                        {
+                            largeTickPositions.Add(world);
+                        }
 
-						currentTickDate = currentTickDate.AddDays(daySkip);
-					}
-				}
+                        currentTickDate = currentTickDate.AddDays(daySkip);
+                    }
+                }
 
 
-					// else ticks on month or year spacings.
+                    // else ticks on month or year spacings.
 
-				else if ( timeLength >= new TimeSpan(daysInMonth*4,0,0,0,0) )
-				{
+                else if (timeLength >= new TimeSpan(daysInMonth * 4, 0, 0, 0, 0))
+                {
+                    int monthSpacing = 0;
 
-					int monthSpacing = 0;
-			
-					if ( timeLength.Days < daysInMonth*(12*3+6) )
-					{
-						LargeTickLabelType_ = LargeTickLabelType.month;
+                    if (timeLength.Days < daysInMonth * (12 * 3 + 6))
+                    {
+                        LargeTickLabelType_ = LargeTickLabelType.month;
 
-						if ( timeLength.Days < daysInMonth*10 )
-							monthSpacing = 1;
-						else if ( timeLength.Days < daysInMonth*(12*2) )
-							monthSpacing = 3;
-						else // if ( timeLength.Days < daysInMonth*(12*3+6) )
-							monthSpacing = 6;
-					}
-					else
-					{
-						LargeTickLabelType_ = LargeTickLabelType.year;
+                        if (timeLength.Days < daysInMonth * 10)
+                            monthSpacing = 1;
+                        else if (timeLength.Days < daysInMonth * (12 * 2))
+                            monthSpacing = 3;
+                        else // if ( timeLength.Days < daysInMonth*(12*3+6) )
+                            monthSpacing = 6;
+                    }
+                    else
+                    {
+                        LargeTickLabelType_ = LargeTickLabelType.year;
 
                         if (timeLength.Days < daysInMonth * (12 * 6))
                             monthSpacing = 12;
@@ -568,52 +558,52 @@ namespace NPlot
                         else
                             monthSpacing = 120;
                         //LargeTickLabelType_ = LargeTickLabelType.none;
-					}
+                    }
 
-					// truncate start
-					DateTime currentTickDate = new DateTime( 
-						worldMinDate.Year,
-						worldMinDate.Month, 
-						1 );
-			
-					if (monthSpacing > 1)
-					{
-						currentTickDate = currentTickDate.AddMonths(
-							-(currentTickDate.Month-1)%monthSpacing );
-					}
+                    // truncate start
+                    DateTime currentTickDate = new DateTime(
+                        worldMinDate.Year,
+                        worldMinDate.Month,
+                        1);
 
-					// Align on 2 or 5 year boundaries if necessary.
-					if (monthSpacing >= 24)
-					{
-						currentTickDate = currentTickDate.AddYears(
-							-(currentTickDate.Year)%(monthSpacing/12) );						
-					}
+                    if (monthSpacing > 1)
+                    {
+                        currentTickDate = currentTickDate.AddMonths(
+                            -(currentTickDate.Month - 1) % monthSpacing);
+                    }
 
-					//this.firstLargeTick_ = (double)currentTickDate.Ticks;
+                    // Align on 2 or 5 year boundaries if necessary.
+                    if (monthSpacing >= 24)
+                    {
+                        currentTickDate = currentTickDate.AddYears(
+                            -(currentTickDate.Year) % (monthSpacing / 12));
+                    }
 
-					if ( LargeTickLabelType_ != LargeTickLabelType.none )
-					{
-						while ( currentTickDate < worldMaxDate )
-						{
-							double world = (double)currentTickDate.Ticks;
+                    //this.firstLargeTick_ = (double)currentTickDate.Ticks;
 
-							if ( world >= this.WorldMin && world <= this.WorldMax )
-							{
-								largeTickPositions.Add( world );
-							}
+                    if (LargeTickLabelType_ != LargeTickLabelType.none)
+                    {
+                        while (currentTickDate < worldMaxDate)
+                        {
+                            double world = (double)currentTickDate.Ticks;
 
-							currentTickDate = currentTickDate.AddMonths( monthSpacing );
-						}
-					}
-				}
-			}
-			else
-			{
-				for (DateTime date = worldMinDate; date < worldMaxDate; date += largeTickStep_) 
-				{
-					largeTickPositions.Add((double)date.Ticks);
-				}
-			}
+                            if (world >= this.WorldMin && world <= this.WorldMax)
+                            {
+                                largeTickPositions.Add(world);
+                            }
+
+                            currentTickDate = currentTickDate.AddMonths(monthSpacing);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (DateTime date = worldMinDate; date < worldMaxDate; date += largeTickStep_)
+                {
+                    largeTickPositions.Add((double)date.Ticks);
+                }
+            }
         }
 
 
@@ -634,11 +624,12 @@ namespace NPlot
             Point physicalMax,
             List<double> largeTickPositions,
             ref List<double> smallTickPositions
-          )
+            )
         {
             if (largeTickPositions.Count < 2 || !(LargeTickLabelType_.Equals(LargeTickLabelType.year)))
             {
-                smallTickPositions = new List<double>(); ;
+                smallTickPositions = new List<double>();
+                ;
             }
             else
             {
@@ -661,22 +652,21 @@ namespace NPlot
 
 
         /// <summary>
-		/// The distance between large ticks. If this is set to Zero [default],
-		/// this distance will be calculated automatically.
-		/// </summary>
-		public TimeSpan LargeTickStep 
-		{
-			set 
-			{
-				largeTickStep_ = value;
-			}
-			get 
-			{
-				return largeTickStep_;
-			}
-		}
- 		private TimeSpan largeTickStep_ = TimeSpan.Zero;
+        /// The distance between large ticks. If this is set to Zero [default],
+        /// this distance will be calculated automatically.
+        /// </summary>
+        public TimeSpan LargeTickStep
+        {
+            set
+            {
+                largeTickStep_ = value;
+            }
+            get
+            {
+                return largeTickStep_;
+            }
+        }
 
-
-	}
+        private TimeSpan largeTickStep_ = TimeSpan.Zero;
+    }
 }

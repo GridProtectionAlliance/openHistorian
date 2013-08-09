@@ -30,6 +30,7 @@ namespace openHistorian.UnitTests.Streaming
                 Assert.AreEqual(1ul, value2);
             }
             rw2.Close();
+            
             client.Disconnect();
             client.Dispose();
             server.Dispose();

@@ -1,9 +1,6 @@
-﻿using System;
-using GSF;
-using NUnit.Framework;
-using GSF.Collections;
+﻿using NUnit.Framework;
 
-namespace openHistorian.Collections.Test
+namespace GSF.Collections.Test
 {
     [TestFixture]
     public class LargeArray
@@ -17,13 +14,12 @@ namespace openHistorian.Collections.Test
         [Test]
         public unsafe void TestLargeUnmanagedArray()
         {
-            Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0);
-            using (var array = new LargeUnmanagedArray<int>(4, Globals.BufferPool, ptr => *(int*)ptr, (ptr, v) => *(int*)ptr = v))
+            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0);
+            using (LargeUnmanagedArray<int> array = new LargeUnmanagedArray<int>(4, Globals.MemoryPool, ptr => *(int*)ptr, (ptr, v) => *(int*)ptr = v))
             {
                 TestArray(array);
             }
-            Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0);
-
+            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0);
         }
 
         public void TestArray(ILargeArray<int> array)

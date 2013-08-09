@@ -142,9 +142,9 @@ namespace NPlot
             {
                 minc = Axis.WorldMin;
                 maxc = Axis.WorldMax;
-                    double tmp = PhysicalToWorld(min, true);
-                    Axis.WorldMax = PhysicalToWorld(max, true);
-                    Axis.WorldMin = tmp;
+                double tmp = PhysicalToWorld(min, true);
+                Axis.WorldMax = PhysicalToWorld(max, true);
+                Axis.WorldMin = tmp;
                 // need to trap somehow if the user selects an 
                 // arbitrarily small range. Otherwise the GDI+ 
                 // drawing routines lead to an overflow in painting 
@@ -177,6 +177,7 @@ namespace NPlot
                 m_physicalMin = value;
             }
         }
+
         private Point m_physicalMin;
 
 
@@ -194,6 +195,7 @@ namespace NPlot
                 m_physicalMax = value;
             }
         }
+
         private Point m_physicalMax;
 
 
@@ -211,6 +213,7 @@ namespace NPlot
                 m_axis = value;
             }
         }
+
         private Axis m_axis;
 
 
@@ -235,6 +238,5 @@ namespace NPlot
                 return this.Axis.WorldLength / this.PhysicalLength;
             }
         }
-
     }
 }

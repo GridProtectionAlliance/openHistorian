@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DynamicCalculator</name>
+    </assembly>
+    <members>
+        <member name="T:DynamicCalculator.DynamicCalculator">
+            <summary>
+            The DynamicCalculator is an action adapter which takes multiple
+            input measurements and performs a calculation on those measurements
+            to generate its own calculated measurement.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.Initialize">
+            <summary>
+            Initializes <see cref="T:DynamicCalculator.DynamicCalculator"/>.
+            </summary>
+        </member>
+        <member name="M:DynamicCalculator.DynamicCalculator.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.ExpressionText">
+            <summary>
+            Gets or sets the textual representation of the expression.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.VariableList">
+            <summary>
+            Gets or sets the list of variables used in the expression.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.Imports">
+            <summary>
+            Gets or sets the list of types which define
+            methods to be imported into the expression parser.
+            </summary>
+        </member>
+        <member name="P:DynamicCalculator.DynamicCalculator.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -20,7 +20,7 @@
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
-using System.Linq;
+
 using System;
 using System.Collections.Generic;
 using openVisN.Calculations;
@@ -28,20 +28,24 @@ using openVisN.Library;
 
 namespace openVisN
 {
-
     public abstract class SignalGroup
     {
-        SortedList<string, MetadataBase> m_signals;
-        public string SignalGroupName { get; set; }
+        private SortedList<string, MetadataBase> m_signals;
 
-        SortedList<string, MetadataBase> Signals
+        public string SignalGroupName
+        {
+            get;
+            set;
+        }
+
+        private SortedList<string, MetadataBase> Signals
         {
             get
             {
                 if (m_signals == null)
                 {
-                    var allSignals = GetAllSignalsNew();
-                    var signals = new SortedList<string, MetadataBase>(allSignals.Count);
+                    List<KeyValuePair<string, MetadataBase>> allSignals = GetAllSignalsNew();
+                    SortedList<string, MetadataBase> signals = new SortedList<string, MetadataBase>(allSignals.Count);
                     allSignals.ForEach((x) => signals.Add(x.Key, x.Value));
                     m_signals = signals;
                 }
@@ -58,8 +62,9 @@ namespace openVisN
 
         public override bool Equals(object obj)
         {
-            return object.ReferenceEquals(this, obj);
+            return ReferenceEquals(this, obj);
         }
+
         public override int GetHashCode()
         {
             return SignalGroupName.GetHashCode();
@@ -72,7 +77,6 @@ namespace openVisN
                 return rv;
             return null;
         }
-
     }
 
     public class SinglePhasorTerminal : SignalGroup
@@ -97,19 +101,19 @@ namespace openVisN
 
         public void CreateCalculatedSignals(MetadataBase angleReference)
         {
-            var calcPu = new SignalScaling(Math.Sqrt(3) / ExtraData.NominalVoltage, VoltageMagnitude);
+            SignalScaling calcPu = new SignalScaling(Math.Sqrt(3) / ExtraData.NominalVoltage, VoltageMagnitude);
             calcPu.GetPoints(out VoltageMagnitudePu);
 
-            var calc = new SinglePhasorPowerSignals(VoltageMagnitude, VoltageAngle, CurrentMagnitude, CurrentAngle);
+            SinglePhasorPowerSignals calc = new SinglePhasorPowerSignals(VoltageMagnitude, VoltageAngle, CurrentMagnitude, CurrentAngle);
             calc.GetPoints(out Watt, out PowerFactor, out VoltAmpre, out VoltAmpreReactive);
 
-            var calcRef = new SignalAngleDifference(VoltageAngle, angleReference);
+            SignalAngleDifference calcRef = new SignalAngleDifference(VoltageAngle, angleReference);
             calcRef.GetPoints(out VoltageAngleReference);
         }
 
         protected override List<KeyValuePair<string, MetadataBase>> GetAllSignalsNew()
         {
-            var list = new List<KeyValuePair<string, MetadataBase>>();
+            List<KeyValuePair<string, MetadataBase>> list = new List<KeyValuePair<string, MetadataBase>>();
             list.Add(new KeyValuePair<string, MetadataBase>("Voltage Magnitude", VoltageMagnitude));
             list.Add(new KeyValuePair<string, MetadataBase>("Voltage Angle", VoltageAngle));
             list.Add(new KeyValuePair<string, MetadataBase>("Current Magnitude", CurrentMagnitude));
@@ -124,7 +128,6 @@ namespace openVisN
             list.Add(new KeyValuePair<string, MetadataBase>("Voltage Magnitude Per Unit", VoltageMagnitudePu));
             list.Add(new KeyValuePair<string, MetadataBase>("Voltage Angle Reference", VoltageAngleReference));
             return list;
-
         }
     }
 }

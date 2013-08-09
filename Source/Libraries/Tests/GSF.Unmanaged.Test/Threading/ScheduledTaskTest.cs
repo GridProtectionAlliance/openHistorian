@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using NUnit.Framework;
 
-namespace GSF.Threading
+namespace GSF.Threading.Test
 {
     [TestFixture]
     public class ScheduledTaskTest
@@ -15,7 +12,7 @@ namespace GSF.Threading
         public void TestDisposed()
         {
             int count = 0;
-            var worker = new ScheduledTask(ThreadingMode.Foreground);
+            ScheduledTask worker = new ScheduledTask(ThreadingMode.Foreground);
             WeakReference workerWeak = new WeakReference(worker);
             worker = null;
             GC.Collect();
@@ -28,7 +25,7 @@ namespace GSF.Threading
         public void TestDisposedNested()
         {
             int count = 0;
-            var worker = new NestedDispose();
+            NestedDispose worker = new NestedDispose();
             WeakReference workerWeak = new WeakReference(worker);
             worker = null;
             GC.Collect();
@@ -38,19 +35,18 @@ namespace GSF.Threading
         }
 
 
-        class NestedDispose
+        private class NestedDispose
         {
-            public ScheduledTask worker;
+            public readonly ScheduledTask worker;
 
             public NestedDispose()
             {
                 worker = new ScheduledTask(ThreadingMode.Foreground);
-                worker.OnEvent+=Method;
+                worker.OnEvent += Method;
             }
 
-            void Method(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
+            private void Method(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
             {
-                
             }
         }
 
@@ -58,7 +54,7 @@ namespace GSF.Threading
         [Test]
         public void Test()
         {
-            using (var work = new ScheduledTask(ThreadingMode.Foreground))
+            using (ScheduledTask work = new ScheduledTask(ThreadingMode.Foreground))
             {
                 work.OnRunWorker += work_DoWork;
                 work.OnDispose += work_CleanupWork;
@@ -72,15 +68,14 @@ namespace GSF.Threading
             }
         }
 
-        void work_CleanupWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
+        private void work_CleanupWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
         {
             Thread.Sleep(100);
         }
 
-        void work_DoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
+        private void work_DoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
         {
             Thread.Sleep(100);
         }
-
     }
 }

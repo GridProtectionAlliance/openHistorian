@@ -28,7 +28,6 @@ using System.Runtime.InteropServices;
 
 namespace GSF.UnmanagedMemory
 {
-
     /// <summary>
     /// This class is used to allocate and free unmanaged memory.  To release memory allocated throught this class,
     /// call the Dispose method of the return value.
@@ -46,12 +45,22 @@ namespace GSF.UnmanagedMemory
         /// <summary>
         /// The pointer to the first byte of this unmanaged memory.
         /// </summary>
-        public IntPtr Address { get; private set; }
+        public IntPtr Address
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// The number of bytes in this allocation.
         /// </summary>
-        public int Size { get; private set; }
-        bool m_disposed;
+        public int Size
+        {
+            get;
+            private set;
+        }
+
+        private bool m_disposed;
         //bool m_isLargePage;
 
         #endregion
@@ -117,7 +126,7 @@ namespace GSF.UnmanagedMemory
         /// Releases the unmanaged resources used by the <see cref="Memory"/> object and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
@@ -136,7 +145,7 @@ namespace GSF.UnmanagedMemory
                 {
                     Size = 0;
                     Address = IntPtr.Zero;
-                    m_disposed = true;  // Prevent duplicate dispose.
+                    m_disposed = true; // Prevent duplicate dispose.
                 }
             }
         }
@@ -164,6 +173,7 @@ namespace GSF.UnmanagedMemory
         #endregion
 
         #region [ Constructor ]
+
         //static Memory()
         //{
         //    //if (WinApi.LargePageSupport.CanAllocateLargePage)
@@ -171,6 +181,7 @@ namespace GSF.UnmanagedMemory
         //    //else
         //        s_largePageMinimumSize = 0;
         //}
+
         #endregion
 
         #region [ Methods ]
@@ -186,6 +197,7 @@ namespace GSF.UnmanagedMemory
         {
             WinApi.MoveMemory(dest, src, count);
         }
+
         public static unsafe void Copy(IntPtr src, IntPtr dest, int count)
         {
             WinApi.MoveMemory((byte*)dest, (byte*)src, count);
@@ -199,7 +211,7 @@ namespace GSF.UnmanagedMemory
         public static unsafe void Clear(byte* pointer, int length)
         {
             int i;
-            for (i = 0; i < length - 8; i += 8)
+            for (i = 0; i <= length - 8; i += 8)
             {
                 *(long*)(pointer + i) = 0;
             }
@@ -208,21 +220,23 @@ namespace GSF.UnmanagedMemory
                 pointer[i] = 0;
             }
         }
+
         /// <summary>
         /// Sets the data in this buffer to all zeroes
         /// </summary>
         /// <param name="pointer">the starting position.</param>
         /// <param name="length">the number of bytes to clear.</param>
-        public unsafe static void Clear(IntPtr pointer, int length)
+        public static unsafe void Clear(IntPtr pointer, int length)
         {
             Clear((byte*)pointer, length);
         }
 
-        public unsafe static bool IsEmpty(IntPtr pointer, int length)
+        public static unsafe bool IsEmpty(IntPtr pointer, int length)
         {
             return IsEmpty((byte*)pointer, length);
         }
-        public unsafe static bool IsEmpty(byte* pointer, int length)
+
+        public static unsafe bool IsEmpty(byte* pointer, int length)
         {
             int i;
             for (i = 0; i < length - 8; i += 8)
@@ -241,7 +255,5 @@ namespace GSF.UnmanagedMemory
         #endregion
 
         #endregion
-
-
     }
 }

@@ -35,16 +35,15 @@ namespace GSF.Collections
     /// <typeparam name="T"></typeparam>
     public class LargeArray<T> : ILargeArray<T>
     {
-        bool m_disposed;
-        int m_size;
-        int m_bitShift;
-        int m_mask;
-        List<T[]> m_array;
+        private bool m_disposed;
+        private readonly int m_size;
+        private readonly int m_bitShift;
+        private readonly int m_mask;
+        private List<T[]> m_array;
 
         public LargeArray()
             : this(1024)
         {
-
         }
 
         public LargeArray(int jaggedArrayDepth)
@@ -60,7 +59,7 @@ namespace GSF.Collections
             get
             {
                 if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName); 
+                    throw new ObjectDisposedException(GetType().FullName);
                 if (index >= Capacity || index < 0)
                     throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array");
                 return m_array[index >> m_bitShift][index & m_mask];
@@ -68,7 +67,7 @@ namespace GSF.Collections
             set
             {
                 if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName); 
+                    throw new ObjectDisposedException(GetType().FullName);
                 if (index >= Capacity || index < 0)
                     throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array");
                 m_array[index >> m_bitShift][index & m_mask] = value;
@@ -118,6 +117,5 @@ namespace GSF.Collections
                 m_disposed = true;
             }
         }
-
     }
 }

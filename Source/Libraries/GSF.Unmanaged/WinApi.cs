@@ -33,9 +33,8 @@ namespace GSF
     /// <summary>
     /// Provides necessary Windows API functions.
     /// </summary>
-    public unsafe static partial class WinApi
+    public static unsafe class WinApi
     {
-        
         /// <summary>
         /// Flushes the buffers of a specified file and causes all buffered data to be written to a file.
         /// </summary>
@@ -55,8 +54,8 @@ namespace GSF
         /// <param name="source">a pointer to the source</param>
         /// <param name="count">the number of bytes to move</param>
         /// <remarks>By setting the SuppressUnmanagedCodeSecurityAttribute will decrease the pinvoke overhead by about 2x.</remarks>
-        [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false), SuppressUnmanagedCodeSecurityAttribute]
-        unsafe public static extern void MoveMemory(byte* destination, byte* source, int count);
+        [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false), SuppressUnmanagedCodeSecurity]
+        public static extern unsafe void MoveMemory(byte* destination, byte* source, int count);
 
         //[DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
         //public static extern void MoveMemory(IntPtr dest, IntPtr src, int size);
@@ -69,17 +68,17 @@ namespace GSF
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
-        out ulong lpFreeBytesAvailable,
-        out ulong lpTotalNumberOfBytes,
-        out ulong lpTotalNumberOfFreeBytes);
+        private static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
+                                                      out ulong lpFreeBytesAvailable,
+                                                      out ulong lpTotalNumberOfBytes,
+                                                      out ulong lpTotalNumberOfFreeBytes);
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static extern bool GetDiskFreeSpace(string lpRootPathName,
-          out uint lpSectorsPerCluster,
-          out uint lpBytesPerSector,
-          out uint lpNumberOfFreeClusters,
-          out uint lpTotalNumberOfClusters);
+        private static extern bool GetDiskFreeSpace(string lpRootPathName,
+                                                    out uint lpSectorsPerCluster,
+                                                    out uint lpBytesPerSector,
+                                                    out uint lpNumberOfFreeClusters,
+                                                    out uint lpTotalNumberOfClusters);
 
 
         /// <summary>
@@ -93,14 +92,14 @@ namespace GSF
         {
             try
             {
-                var fullPath = Path.GetFullPath(pathName);
+                string fullPath = Path.GetFullPath(pathName);
 
                 ulong lpFreeBytesAvailable;
                 ulong lpTotalNumberOfBytes;
                 ulong lpTotalNumberOfFreeBytes;
 
-                var success = GetDiskFreeSpaceEx(fullPath, out lpFreeBytesAvailable, out lpTotalNumberOfBytes,
-                                                 out lpTotalNumberOfFreeBytes);
+                bool success = GetDiskFreeSpaceEx(fullPath, out lpFreeBytesAvailable, out lpTotalNumberOfBytes,
+                                                  out lpTotalNumberOfFreeBytes);
 
                 freeSpace = (long)lpFreeBytesAvailable;
                 totalSize = (long)lpTotalNumberOfBytes;
@@ -113,10 +112,6 @@ namespace GSF
                 totalSize = (long)0;
                 return false;
             }
-
-        
         }
-
-
     }
 }

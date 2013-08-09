@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
+using openHistorian.Collections;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
@@ -28,7 +29,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 RolloverInterval = 1000
             };
 
-            using (var prestage = new PrestageWriter(prestageSettings, FinalizeArchiveFile))
+            using (var prestage = new PrestageWriter<HistorianKey,HistorianValue>(prestageSettings, FinalizeArchiveFile))
             {
                 AddPoints(999, prestage);
                 Thread.Sleep(100);
@@ -57,7 +58,7 @@ namespace openHistorian.Engine.ArchiveWriters
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var prestage = new PrestageWriter(prestageSettings, FinalizeArchiveFileList))
+            using (var prestage = new PrestageWriter<HistorianKey, HistorianValue>(prestageSettings, FinalizeArchiveFileList))
             {
                 for (int x = 0; x < 1000; x++)
                 {
@@ -90,7 +91,7 @@ namespace openHistorian.Engine.ArchiveWriters
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var prestage = new PrestageWriter(prestageSettings, FinalizeArchiveFileList))
+            using (var prestage = new PrestageWriter<HistorianKey, HistorianValue>(prestageSettings, FinalizeArchiveFileList))
             {
                 for (int x = 0; x < 1000; x++)
                 {
@@ -110,21 +111,21 @@ namespace openHistorian.Engine.ArchiveWriters
 
 
 
-        void FinalizeArchiveFile(RolloverArgs args)
+        void FinalizeArchiveFile(RolloverArgs<HistorianKey, HistorianValue> args)
         {
             m_pointsRead = (int)args.CurrentStream.Count();
             m_sequenceNumber = args.SequenceNumber;
             Assert.Null(args.File);
         }
 
-        void FinalizeArchiveFileList(RolloverArgs args)
+        void FinalizeArchiveFileList(RolloverArgs<HistorianKey, HistorianValue> args)
         {
             m_pointCount.Add((int)args.CurrentStream.Count());
             m_sequenceNumber = args.SequenceNumber;
             Assert.Null(args.File);
         }
 
-        void AddPoints(int count, PrestageWriter writer)
+        void AddPoints(int count, PrestageWriter<HistorianKey, HistorianValue> writer)
         {
             for (uint x = 0; x < count; x++)
             {

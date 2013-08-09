@@ -25,10 +25,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using GSF.Collections;
 
 namespace GSF.Threading
 {
@@ -41,20 +38,21 @@ namespace GSF.Threading
     public partial class ThreadSafeList<T>
         : IEnumerable<T>
     {
-        class Wrapper
+        private class Wrapper
         {
             public int ReferencedCount;
-            public T Item;
+            public readonly T Item;
+
             public Wrapper(T item)
             {
                 Item = item;
             }
         }
 
-        SortedList<long, Wrapper> m_list;
-        long m_sequenceNumber;
-        object m_syncRoot;
-        long m_version;
+        private readonly SortedList<long, Wrapper> m_list;
+        private long m_sequenceNumber;
+        private readonly object m_syncRoot;
+        private long m_version;
 
         public ThreadSafeList()
         {
@@ -139,7 +137,7 @@ namespace GSF.Threading
             return true;
         }
 
-        public void RemoveIf(Func<T,bool> condition)
+        public void RemoveIf(Func<T, bool> condition)
         {
             lock (m_syncRoot)
             {
@@ -162,7 +160,6 @@ namespace GSF.Threading
             }
         }
 
-       
 
         public IEnumerator<T> GetEnumerator()
         {

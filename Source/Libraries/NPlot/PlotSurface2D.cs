@@ -30,20 +30,20 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace NPlot
 {
-
     /// <summary>
     /// Implements the surface on which IDrawables are drawn. Is extended
     /// by Bitmap.PlotSurface2D, Windows.PlotSurface2D etc. TODO: better explanation.
     /// </summary>
     public class PlotSurface2D
     {
-
         /// <summary>
         /// Possible positions of the X axis.
         /// </summary>
@@ -76,7 +76,7 @@ namespace NPlot
             Right = 3,
         }
 
-        private StringFormat m_titleDrawFormat;
+        private readonly StringFormat m_titleDrawFormat;
 
         private Font m_titleFont;
         private string m_title;
@@ -106,7 +106,7 @@ namespace NPlot
         private List<double> m_zPositions;
         private SortedList<double, int> m_ordering;
 
-        private System.Drawing.Drawing2D.SmoothingMode m_smoothingMode;
+        private SmoothingMode m_smoothingMode;
 
         private List<AxesConstraint> m_axesConstraints = null;
 
@@ -129,7 +129,6 @@ namespace NPlot
         /// <returns></returns>
         public ArrayList HitTest(Point p)
         {
-
             ArrayList a = new ArrayList();
 
             // this is the case if PlotSurface has been cleared.
@@ -372,7 +371,7 @@ namespace NPlot
         /// <summary>
         /// Smoothing mode to use when drawing plots.
         /// </summary>
-        public System.Drawing.Drawing2D.SmoothingMode SmoothingMode
+        public SmoothingMode SmoothingMode
         {
             get
             {
@@ -407,7 +406,7 @@ namespace NPlot
             m_titleBrush = new SolidBrush(Color.Black);
             m_plotBackColor = Color.White;
 
-            m_smoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+            m_smoothingMode = SmoothingMode.None;
 
             m_axesConstraints = new List<AxesConstraint>();
         }
@@ -426,7 +425,6 @@ namespace NPlot
 
         private float DetermineScaleFactor(int w, int h)
         {
-
             float diag = (float)Math.Sqrt(w * w + h * h);
             float scaleFactor = (diag / 1400.0f) * 2.4f;
 
@@ -476,7 +474,6 @@ namespace NPlot
 
         private void UpdateAxes(bool recalculateAll)
         {
-
             int position = 0;
 
             // if we're not recalculating axes using all iplots then set
@@ -535,7 +532,6 @@ namespace NPlot
                 }
 
 
-
                 if (m_yAxis1 == null)
                 {
                     m_yAxis1 = p.SuggestYAxis();
@@ -564,10 +560,7 @@ namespace NPlot
                         m_yAxis1.TicksIndependentOfPhysicalExtent = false;
                     }
                 }
-
-
             }
-
         }
 
         private void DetermineAxesToDraw(out Axis xAxis1, out Axis xAxis2, out Axis yAxis1, out Axis yAxis2)
@@ -614,11 +607,10 @@ namespace NPlot
                 yAxis2.HideTickText = true;
                 yAxis2.TicksAngle = -(float)Math.PI / 2.0f;
             }
-
         }
 
         private void DeterminePhysicalAxesToDraw(Rectangle bounds, Axis xAxis1, Axis xAxis2, Axis yAxis1, Axis yAxis2,
-            out PhysicalAxis pXAxis1, out PhysicalAxis pXAxis2, out PhysicalAxis pYAxis1, out PhysicalAxis pYAxis2)
+                                                 out PhysicalAxis pXAxis1, out PhysicalAxis pXAxis2, out PhysicalAxis pYAxis1, out PhysicalAxis pYAxis2)
         {
             Rectangle cb = bounds;
 
@@ -704,9 +696,7 @@ namespace NPlot
             pXAxis2.PhysicalMax = new Point(cb.Right - rightIndent, cb.Top + topIndent);
             pYAxis2.PhysicalMin = new Point(cb.Right - rightIndent, cb.Bottom - bottomIndent);
             pYAxis2.PhysicalMax = new Point(cb.Right - rightIndent, cb.Top + topIndent);
-
         }
-
 
 
         /// <summary>
@@ -741,7 +731,7 @@ namespace NPlot
                 return;
             }
 
-            var sw = StepTimer.Start("Determine Axis");
+            Stopwatch sw = StepTimer.Start("Determine Axis");
 
             // determine the [non physical] axes to draw based on the axis properties set.
             Axis xAxis1, xAxis2, yAxis1, yAxis2;
@@ -792,7 +782,7 @@ namespace NPlot
                 Math.Min(pYAxis1.PhysicalMax.Y, pYAxis1.PhysicalMin.Y),
                 Math.Abs(pXAxis1.PhysicalMax.X - pXAxis1.PhysicalMin.X + 1),
                 Math.Abs(pYAxis1.PhysicalMin.Y - pYAxis1.PhysicalMax.Y + 1)
-            );
+                );
             m_bbXAxis1Cache = pXAxis1.GetBoundingBox();
             m_bbXAxis2Cache = pXAxis2.GetBoundingBox();
             m_bbYAxis1Cache = pYAxis1.GetBoundingBox();
@@ -831,7 +821,7 @@ namespace NPlot
             //sw = StepTimer.Start("Draw IDrawables");
 
             // draw drawables..
-            System.Drawing.Drawing2D.SmoothingMode smoothSave = g.SmoothingMode;
+            SmoothingMode smoothSave = g.SmoothingMode;
 
             g.SmoothingMode = m_smoothingMode;
 
@@ -874,7 +864,6 @@ namespace NPlot
             pYAxis2.Draw(g, out axisBounds);
 
             StepTimer.Stop(sw);
-
         }
 
 
@@ -976,7 +965,6 @@ namespace NPlot
         }
 
 
-
         /// <summary>
         /// Gets an array list containing all drawables currently added to the PlotSurface2D.
         /// </summary>
@@ -989,5 +977,3 @@ namespace NPlot
         }
     }
 }
-
-

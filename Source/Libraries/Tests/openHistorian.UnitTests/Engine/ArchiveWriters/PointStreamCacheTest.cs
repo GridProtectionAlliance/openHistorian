@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using openHistorian.Collections;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
@@ -13,22 +14,27 @@ namespace openHistorian.Engine.ArchiveWriters
         public void Test1()
         {
             const int count = 10000;
-            using (var cache = new PointStreamCache())
+            using (var cache = new PointStreamCache<HistorianKey,HistorianValue>())
             {
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
                 Assert.IsFalse(cache.IsReading);
 
                 var stream1 = new PointStreamSequential(10, count);
 
                 ulong key1, key2, value1, value2;
-
+                
                 for (uint x = 0; x < 10; x++)
                 {
                     Assert.AreEqual((int)x, cache.Count);
                     stream1.Read(out key1, out key2, out value1, out value2);
-                    cache.Write(key1, key2, value1, value2);
+                    key.Timestamp = key1;
+                    key.PointId = key2;
+                    value.Quality = value1;
+                    value.Value = value2;
+                    cache.Write(key, value);
                 }
                 cache.Write(stream1);
-                
                 Assert.AreEqual(count, cache.Count);
                 Assert.IsFalse(cache.IsReading);
 
@@ -43,9 +49,9 @@ namespace openHistorian.Engine.ArchiveWriters
                 Assert.IsTrue(cache.AreEqual(new PointStreamSequential(10, count)));
 
                 cache.ClearAndSetWriting();
-                Assert.AreEqual(cache.Count,0);
+                Assert.AreEqual(cache.Count, 0);
 
-                stream1 = new PointStreamSequential(100, count-1000);
+                stream1 = new PointStreamSequential(100, count - 1000);
                 cache.Write(stream1);
                 cache.SetReadingFromBeginning();
                 Assert.IsTrue(cache.AreEqual(new PointStreamSequential(100, count - 1000)));

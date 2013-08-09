@@ -21,13 +21,15 @@
 //       
 //
 //******************************************************************************************************
+
 using System.IO;
 
 namespace GSF.IO
 {
     public class BinaryStreamWrapper : BinaryStreamBase
     {
-        Stream m_stream;
+        private readonly Stream m_stream;
+
         public BinaryStreamWrapper(Stream stream)
         {
             m_stream = stream;
@@ -39,7 +41,6 @@ namespace GSF.IO
         /// <filterpriority>2</filterpriority>
         public override void Dispose()
         {
-
         }
 
         /// <summary>
@@ -85,6 +86,5 @@ namespace GSF.IO
                 throw new EndOfStreamException();
             return len;
         }
-
     }
 }

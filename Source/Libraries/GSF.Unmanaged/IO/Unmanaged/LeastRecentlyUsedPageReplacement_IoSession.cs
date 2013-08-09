@@ -39,14 +39,14 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         public class IoSession : IDisposable
         {
-            LeastRecentlyUsedPageReplacement m_lru;
-            
-            bool m_disposed;
+            private readonly LeastRecentlyUsedPageReplacement m_lru;
+
+            private bool m_disposed;
 
             /// <summary>
             /// The ID associated with this IoSession
             /// </summary>
-            readonly int m_ioSessionId;
+            private readonly int m_ioSessionId;
 
             /// <summary>
             /// Creates a new instance of <see cref="IoSession"/>.
@@ -111,13 +111,10 @@ namespace GSF.IO.Unmanaged
                     }
                     finally
                     {
-                        m_disposed = true;  // Prevent duplicate dispose.
+                        m_disposed = true; // Prevent duplicate dispose.
                     }
                 }
             }
         }
-
-      
-
     }
 }

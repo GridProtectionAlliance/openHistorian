@@ -48,9 +48,10 @@ namespace openVisN.Library
         public long D2;
         public long D3;
         public long D4;
+
         public SignalGroupBook(string line)
         {
-            var parts = line.Split('\t');
+            string[] parts = line.Split('\t');
             GroupId = long.Parse(parts[0]);
             GroupName = parts[1].Trim();
             Type = parts[2].Trim();
@@ -75,7 +76,7 @@ namespace openVisN.Library
 
         public SignalGroup CreateGroup(Dictionary<ulong, MetadataBase> points, MetadataBase signalReference)
         {
-            var signal = new SinglePhasorTerminal();
+            SinglePhasorTerminal signal = new SinglePhasorTerminal();
             signal.SignalGroupName = GroupName;
             AssignIfFound(Im, ref signal.CurrentMagnitude, points);
             AssignIfFound(Ia, ref signal.CurrentAngle, points);
@@ -94,7 +95,7 @@ namespace openVisN.Library
             return signal;
         }
 
-        void AssignIfFound(long id, ref MetadataBase category, Dictionary<ulong, MetadataBase> points)
+        private void AssignIfFound(long id, ref MetadataBase category, Dictionary<ulong, MetadataBase> points)
         {
             if (id >= 0 && points.ContainsKey((ulong)id))
                 category = points[(ulong)id];
@@ -110,12 +111,13 @@ namespace openVisN.Library
             : this(DefaultPath)
         {
         }
+
         public AllSignalGroups(string config)
         {
             SignalGroups = new List<SignalGroupBook>();
 
             bool firstLine = true;
-            foreach (var line in File.ReadAllLines(config))
+            foreach (string line in File.ReadAllLines(config))
             {
                 if (firstLine)
                 {
@@ -127,6 +129,5 @@ namespace openVisN.Library
                 }
             }
         }
-
     }
 }

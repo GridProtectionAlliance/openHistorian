@@ -34,32 +34,37 @@ namespace GSF.IO.Unmanaged
     /// This class is not thread safe.
     /// </summary>
     /// <remarks>Maintains the following relationship: PositionIndex, ArrayIndex, PageMetaData</remarks>
-    unsafe public class PageMetaDataList : IDisposable
+    public unsafe class PageMetaDataList : IDisposable
     {
         #region [ Members ]
 
-        struct InternalPageMetaData
+        private struct InternalPageMetaData
         {
             /// <summary>
             /// Dirty flags representing the user defined block size.
             /// </summary>
             public ulong IsDirtyFlags;
+
             /// <summary>
             /// The pointer
             /// </summary>
             public byte* LocationOfPage;
+
             /// <summary>
-            /// The index assigned by the <see cref="BufferPool"/>.
+            /// The index assigned by the <see cref="MemoryPool"/>.
             /// </summary>
             public int BufferPoolIndex;
+
             /// <summary>
             /// The bytes that this page represents. Position * BufferPoolSize.
             /// </summary>
             public int PositionIndex;
+
             /// <summary>
             /// The number of times this object has been referenced
             /// </summary>
             public int ReferencedCount;
+
             /// <summary>
             /// Convert struct to a PageMetaData struct.
             /// </summary>
@@ -86,35 +91,38 @@ namespace GSF.IO.Unmanaged
             /// Dirty flags representing the user defined block size.
             /// </summary>
             public ulong IsDirtyFlags;
+
             /// <summary>
             /// The pointer
             /// </summary>
             public byte* LocationOfPage;
+
             /// <summary>
             /// The index position in the <see cref="PageMetaDataList"/> of this page so updates can occur rapidly.
             /// </summary>
             public int ArrayIndex;
+
             /// <summary>
             /// The bytes that this page represents. Position * BufferPoolSize.
             /// </summary>
             public int PositionIndex;
         }
 
-        BufferPool m_pool;
+        private readonly MemoryPool m_pool;
 
         /// <summary>
         /// Contains all of the pages that are cached for the file stream.
         /// Map is PositionIndex,ArrayIndex
         /// </summary>
         /// ToDO: Change this type to a b+ tree so it can store more pages efficiently.
-        SortedList<int, int> m_indexMap;
+        private readonly SortedList<int, int> m_indexMap;
 
         /// <summary>
         /// A list of all pages.
         /// </summary>
-        NullableLargeArray<InternalPageMetaData> m_listOfPages;
+        private NullableLargeArray<InternalPageMetaData> m_listOfPages;
 
-        bool m_disposed;
+        private bool m_disposed;
 
         #endregion
 
@@ -124,7 +132,7 @@ namespace GSF.IO.Unmanaged
         /// Creates a new PageMetaDataList.
         /// </summary>
         /// <param name="pool">The buffer pool to utilize if any unmanaged memory needs to be created.</param>
-        public PageMetaDataList(BufferPool pool)
+        public PageMetaDataList(MemoryPool pool)
         {
             m_pool = pool;
             m_listOfPages = new NullableLargeArray<InternalPageMetaData>();
@@ -135,7 +143,7 @@ namespace GSF.IO.Unmanaged
 
         #region [ Properties ]
 
-        InternalPageMetaData this[int index]
+        private InternalPageMetaData this[int index]
         {
             get
             {
@@ -173,7 +181,7 @@ namespace GSF.IO.Unmanaged
                 }
                 finally
                 {
-                    m_disposed = true;  // Prevent duplicate dispose.
+                    m_disposed = true; // Prevent duplicate dispose.
                 }
             }
         }
@@ -213,7 +221,7 @@ namespace GSF.IO.Unmanaged
             cachePage.ReferencedCount = 0;
             cachePage.PositionIndex = positionIndex;
             int arrayIndex = m_listOfPages.AddValue(cachePage);
-            m_indexMap.Add(positionIndex,arrayIndex);
+            m_indexMap.Add(positionIndex, arrayIndex);
             return arrayIndex;
         }
 
@@ -227,7 +235,7 @@ namespace GSF.IO.Unmanaged
         /// <returns></returns>
         public PageMetaData GetMetaDataPage(int arrayIndex, ulong isWritingMask, int incrementReferencedCount)
         {
-            var metaData = this[arrayIndex];
+            InternalPageMetaData metaData = this[arrayIndex];
             metaData.IsDirtyFlags |= isWritingMask;
             if (incrementReferencedCount > 0)
             {
@@ -247,7 +255,7 @@ namespace GSF.IO.Unmanaged
         /// <param name="arrayIndex"></param>
         public void ClearDirtyBits(int arrayIndex)
         {
-            var metaData = this[arrayIndex];
+            InternalPageMetaData metaData = this[arrayIndex];
             metaData.IsDirtyFlags = 0;
             this[arrayIndex] = metaData;
         }
@@ -258,14 +266,14 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         /// <returns></returns>
         //ToDo: I should probably change the isFiltered callback to an IEnumerable<int>.
-        public IEnumerable<PageMetaData> GetDirtyPages(Func<int,bool> isFiltered)
+        public IEnumerable<PageMetaData> GetDirtyPages(Func<int, bool> isFiltered)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            foreach (var block in m_indexMap)
+            foreach (KeyValuePair<int, int> block in m_indexMap)
             {
-                var pageMetaData = this[block.Value];
+                InternalPageMetaData pageMetaData = this[block.Value];
                 if (pageMetaData.IsDirtyFlags != 0 && !isFiltered(block.Value))
                     yield return pageMetaData.ToPageMetaData(block.Value);
             }
@@ -302,7 +310,7 @@ namespace GSF.IO.Unmanaged
             {
                 if (m_listOfPages.HasValue(x))
                 {
-                    var block = m_listOfPages.GetValue(x);
+                    InternalPageMetaData block = m_listOfPages.GetValue(x);
                     block.ReferencedCount >>= shiftLevel;
                     m_listOfPages.SetValue(x, block);
                     if (block.ReferencedCount == 0 && block.IsDirtyFlags == 0)
@@ -324,6 +332,5 @@ namespace GSF.IO.Unmanaged
         }
 
         #endregion
-
     }
 }

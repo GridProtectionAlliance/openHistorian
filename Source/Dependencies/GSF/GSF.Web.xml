@@ -1,0 +1,1780 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.Web</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.Web.Embedded.NamespaceDoc">
+            <summary>
+            Contains embedded ASP.NET web pages and WCF web services that support the implementation of role-based security in .NET and non-.NET based development platforms.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute">
+            <summary>
+            Attribute indicating the location of an embedded resource that should be
+            served by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>.
+            </summary>
+            <remarks>
+            <para>
+            This attribute is used by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            module/path provider to retrieve the list of embedded resources from an assembly
+            that should be considered a part of the virtual filesystem.
+            </para>
+            </remarks>
+            <example>
+            <para>
+            Below is an example of what it might look like to embed a web form and a
+            user control in an assembly to be served up with the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>:
+            </para>
+            <code lang="C#">
+            [assembly: EmbeddedResourceFileAttribute("MyNamespace.WebForm1.aspx", "MyNamespace")]
+            [assembly: EmbeddedResourceFileAttribute("MyNamespace.UserControl1.ascx", "MyNamespace")]
+            </code>
+            </example>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceFileAttribute.m_resourceNamespace">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourceNamespace"/>
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceFileAttribute.m_resourcePath">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourcePath"/>
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourceFileAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/> class.
+            </summary>
+            <param name="resourcePath">The path to the embedded resource.  Used to get the resource as a stream from the assembly.</param>
+            <param name="resourceNamespace">The namespace the resource is in.  This will generally be removed from the full resource path to calculate the "application path" for the embedded resource.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="resourcePath"/> or <paramref name="resourceNamespace"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="resourcePath"/> is <see cref="F:System.String.Empty"/>
+            or if it only consists of periods and/or spaces.
+            </exception>
+            <remarks>
+            <para>
+            Both <paramref name="resourcePath"/> and <paramref name="resourceNamespace"/>
+            will be processed to have leading and trailing periods and spaces removed.
+            If <paramref name="resourcePath"/> ends up being empty, an
+            <see cref="T:System.ArgumentOutOfRangeException"/> is thrown.  No exception
+            is thrown if <paramref name="resourceNamespace"/> turns out empty.
+            </para>
+            </remarks>
+            <example>
+            <para>
+            If the <paramref name="resourcePath"/> is <c>RootNS.SubNS.AppRoot.Folder.File.aspx</c>
+            and the <paramref name="resourceNamespace"/> is <c>RootNS.SubNS.AppRoot</c>,
+            the virtual "path" to the embedded file will be <c>Folder.File.aspx</c>
+            (which will be converted by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            to <c>~/Folder/File.aspx</c>).
+            </para>
+            </example>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourceFileAttribute.RemoveMalformedEndChars(System.String)">
+            <summary>
+            Removes leading and trailing dots and spaces from a string.
+            </summary>
+            <param name="toFix">The <see cref="T:System.String"/> to be cleaned up.</param>
+            <returns>A version of <paramref name="toFix"/> with leading and trailing dots and spaces removed.</returns>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceFileAttribute.MalformedEndCharExpression">
+            <summary>
+            Regular expression indicating the characters that can't start or end a resource.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+            <seealso cref="M:GSF.Web.Hosting.EmbeddedResourceFileAttribute.RemoveMalformedEndChars(System.String)"/>
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourceNamespace">
+            <summary>
+            Gets the namespace for the embedded resource.
+            </summary>
+            <value>
+            A <see cref="T:System.String"/> with the embedded resource namespace.
+            </value>
+            <remarks>
+            <para>
+            This namespace will be removed from the full <see cref="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourcePath"/>
+            to create the virtual application path for the resource.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourceFileAttribute.ResourcePath">
+            <summary>
+            Gets the path to the embedded resource.
+            </summary>
+            <value>
+            A <see cref="T:System.String"/> with the full path to an embedded resource in
+            the associated assembly.
+            </value>
+            <remarks>
+            <para>
+            This path will be used to retrieve the resource from the assembly and serve
+            it up.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+        </member>
+        <member name="T:GSF.Web.Hosting.EmbeddedResourcePathProvider">
+            <summary>
+            A <see cref="T:System.Web.Hosting.VirtualPathProvider"/> that allows serving
+            pages from embedded resources.
+            </summary>
+            <remarks>
+            <para>
+            ASP.NET retrieves files to serve via the <see cref="T:System.Web.Hosting.HostingEnvironment"/>.
+            Rather than opening a file via <see cref="T:System.IO.File"/>, you ask
+            the <see cref="T:System.Web.Hosting.HostingEnvironment"/> for its
+            <see cref="P:System.Web.Hosting.HostingEnvironment.VirtualPathProvider"/>
+            and ask that provider for the file.  The provider will return a
+            <see cref="T:System.Web.Hosting.VirtualFile"/> reference that will allow you
+            to open a stream on the file and use the contents.
+            </para>
+            <para>
+            This implementation of <see cref="T:System.Web.Hosting.VirtualPathProvider"/>
+            allows you to serve files to ASP.NET through embedded resources.  Rather
+            than deploying your web forms, user controls, etc., to the file system,
+            you can embed the files as resources right in your assembly and deploy
+            just your assembly.  The <see cref="T:System.Web.Hosting.VirtualPathProvider"/>
+            mechanism will take care of the rest.
+            </para>
+            <note type="caution">
+            Most <see cref="T:System.Web.Hosting.VirtualPathProvider"/> implementations
+            handle both directories and files.  This implementation handles only files.
+            As such, if the <see cref="T:System.Web.Hosting.VirtualPathProvider"/> is
+            used to enumerate available files (as in directory browsing), files provided
+            via embedded resource will not be included.
+            </note>
+            <para>
+            To use this <see cref="T:System.Web.Hosting.VirtualPathProvider"/>, you need
+            to do four things to your web application.
+            </para>
+            <para>
+            First, you need to set all of the files you want to serve from your assembly
+            as embedded resources.  By default, web forms and so forth are set as "content"
+            files; setting them as embedded resources will package them into your assembly.
+            </para>
+            <para>
+            Second, in your <c>AssemblyInfo.cs</c> file (or whichever file you are
+            declaring your assembly attributes in) you need to add one
+            <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/> for
+            every file you plan on serving.  This lets the provider know which embedded
+            resources are available and which are actually resources for other purposes.
+            Your assembly attributes will look something like this:
+            </para>
+            <code lang="C#">
+            [assembly: EmbeddedResourceFileAttribute("MyNamespace.WebForm1.aspx", "MyNamespace")]
+            [assembly: EmbeddedResourceFileAttribute("MyNamespace.UserControl1.ascx", "MyNamespace")]
+            </code>
+            <para>
+            Third, you need to register this provider at application startup so ASP.NET
+            knows to use it.  In your <c>Global.asax</c>, during <c>Application_OnStart</c>,
+            put the following:
+            </para>
+            <code lang="C#">
+            System.Web.Hosting.HostingEnvironment.RegisterVirtualPathProvider(new EmbeddedResourcePathProvider());
+            </code>
+            <para>
+            Fourth, in your <c>web.config</c> file, you need to set up a configuration
+            section called <c>embeddedFileAssemblies</c> that lets the provider know
+            which assemblies should be queried for embedded files.  A sample configuration
+            section looks like this:
+            </para>
+            <code>
+            &lt;configuration&gt;
+              &lt;configSections&gt;
+                &lt;section name="embeddedFileAssemblies" type="GSF.Configuration.StringCollectionSectionHandler, GSF.Web.Hosting.EmbeddedResourcePathProvider"/&gt;
+              &lt;/configSections&gt;
+              &lt;embeddedFileAssemblies&gt;
+                &lt;add value="My.Web.Assembly"/&gt;
+              &lt;/embeddedFileAssemblies&gt;
+              &lt;!-- ... other web.config items ... --&gt;
+            &lt;/configuration&gt;
+            </code>
+            <para>
+            Once you have that set up, you're ready to serve files from embedded resources.
+            Simply deploy your application without putting the embedded resource files
+            into the filesystem.  When you visit the embedded locations, the provider
+            will automatically retrieve the proper embedded resource.
+            </para>
+            <para>
+            File paths are mapped into the application using the
+            <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+            declarations and the <see cref="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.MapResourceToWebApplication(System.String,System.String)"/>
+            method.  This allows you to set up your web application as normal in
+            Visual Studio and the folder structure, which automatically generates
+            namespaces for your embedded resources, will translate into virtual folders
+            in the embedded resource "filesystem."
+            </para>
+            <para>
+            By default, files that are embedded as resources will take precedence over
+            files in the filesystem.  If you would like the files in the filesystem
+            to take precedence (that is, if you would like to allow the filesystem
+            to "override" embedded files), you can set a key in the <c>appSettings</c>
+            section of your <c>web.config</c> file that enables overrides:
+            </para>
+            <code>
+            &lt;configuration&gt;
+              &lt;!-- ... other web.config items ... --&gt;
+              &lt;appSettings&gt;
+                &lt;add key="GSF.Web.Hosting.EmbeddedResourcePathProvider.AllowOverrides" value="true"/&gt;
+              &lt;/appSettings&gt;
+            &lt;/configuration&gt;
+            </code>
+            <para>
+            For more information on virtual filesystems in ASP.NET, check out
+            <see cref="T:System.Web.Hosting.VirtualPathProvider"/>.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+            <seealso cref="T:System.Web.Hosting.VirtualPathProvider"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ApplicationRootPath">
+            <summary>
+            The standard web application "app relative root" path.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ConfigSectionName">
+            <summary>
+            The name of the configuration section containing the list of assemblies
+            that should participate in the virtual filesystem.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ConfigKeyAllowOverrides">
+            <summary>
+            Appsettings key that indicates if filesystem files should override
+            embedded files.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourcePathProvider._files">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.Files"/>
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.FileExists(System.String)">
+            <summary>
+            Gets a value that indicates whether a file exists in the virtual file system.
+            </summary>
+            <param name="virtualPath">The path to the virtual file.</param>
+            <returns><see langword="true"/> if the file exists in the virtual file system; otherwise, <see langword="false"/>.</returns>
+            <remarks>
+            <para>
+            This override checks to see if the embedded resource file exists
+            in memory.  If so, this method will return <see langword="true"/>.
+            If not, it returns the value from the <see cref="P:System.Web.Hosting.VirtualPathProvider.Previous"/>
+            virtual path provider.
+            </para>
+            </remarks>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="virtualPath"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="virtualPath"/> is <see cref="F:System.String.Empty"/>.
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.FileExists(System.String)"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.GetCacheDependency(System.String,System.Collections.IEnumerable,System.DateTime)">
+            <summary>
+            Creates a cache dependency based on the specified virtual paths.
+            </summary>
+            <param name="virtualPath">The path to the primary virtual resource.</param>
+            <param name="virtualPathDependencies">An array of paths to other resources required by the primary virtual resource.</param>
+            <param name="utcStart">The UTC time at which the virtual resources were read.</param>
+            <returns>A <see cref="T:System.Web.Caching.CacheDependency"/> object for the specified virtual resources.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="virtualPath"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="virtualPath"/> is <see cref="F:System.String.Empty"/>.
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.GetCacheDependency(System.String,System.Collections.IEnumerable,System.DateTime)"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.GetFile(System.String)">
+            <summary>
+            Gets a virtual file from the virtual file system.
+            </summary>
+            <param name="virtualPath">The path to the virtual file.</param>
+            <returns>A descendent of the <see cref="T:System.Web.Hosting.VirtualFile"/> class that represents a file in the virtual file system.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="virtualPath"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="virtualPath"/> is <see cref="F:System.String.Empty"/>.
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.GetFile(System.String)"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.Initialize">
+            <summary>
+            Initializes the <see cref="T:System.Web.Hosting.VirtualPathProvider"/> instance.
+            </summary>
+            <remarks>
+            <para>
+            The set of assemblies configured to provide embedded resource files
+            are queried for <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+            attributes.  For each one present, the associated embedded resource
+            is added to the virtual filesystem served by this provider.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            <seealso cref="M:System.Web.Hosting.VirtualPathProvider.Initialize"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.GetConfiguredAssemblyNames">
+            <summary>
+            Gets the names of the configured assemblies from configuration.
+            </summary>
+            <returns>
+            A <see cref="T:System.Collections.Specialized.StringCollection"/> with
+            the names of the configured assemblies that should participate in this
+            path provider.
+            </returns>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.MapResourceToWebApplication(System.String,System.String)">
+            <summary>
+            Maps an embedded resource ID into a web application relative path (~/path).
+            </summary>
+            <param name="baseNamespace">
+            The base namespace of the resource to map.
+            </param>
+            <param name="resourcePath">
+            The fully qualified embedded resource path to map.
+            </param>
+            <returns>The mapped path of the resource into the web application.</returns>
+            <remarks>
+            <para>
+            The <paramref name="baseNamespace"/> is stripped from the front of the
+            <paramref name="resourcePath"/> and all but the last period in the remaining
+            <paramref name="resourcePath"/> is replaced with the directory separator character
+            ('/').  Finally, that path is mapped into a web application relative path.
+            </para>
+            <para>
+            The filename being mapped must have an extension associated with it, and that
+            extension may not have a period in it.  Only one period will be kept in the
+            mapped filename - others will be assumed to be directory separators.  If a filename
+            has multiple extensions (i.e., <c>My.Custom.config</c>), it will not map properly -
+            it will end up being <c>~/My/Custom.config</c>.
+            </para>
+            <para>
+            If <paramref name="baseNamespace"/> does not occur at the start of the
+            <paramref name="resourcePath"/>, an <see cref="T:System.InvalidOperationException"/>
+            is thrown.
+            </para>
+            </remarks>
+            <example>
+            <para>
+            Given a <paramref name="baseNamespace"/> of <c>MyNamespace</c>,
+            this method will process <paramref name="resourcePath"/> as follows:
+            </para>
+            <list type="table">
+            <listheader>
+            <term><paramref name="resourcePath"/> value</term>
+            <description>Mapping in Web App</description>
+            </listheader>
+            <item>
+            <term><c>MyNamespace.Config.MyFile.config</c></term>
+            <description><c>~/Config/MyFile.config</c></description>
+            </item>
+            <item>
+            <term><c>MyNamespace.MyPage.aspx</c></term>
+            <description><c>~/MyPage.aspx</c></description>
+            </item>
+            </list>
+            </example>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="baseNamespace"/> or <paramref name="resourcePath"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="baseNamespace"/> or <paramref name="resourcePath"/>:
+            <list type="bullet">
+            <item>
+            <description>
+            Is <see cref="F:System.String.Empty"/>.
+            </description>
+            </item>
+            <item>
+            <description>
+            Start or end with period.
+            </description>
+            </item>
+            <item>
+            <description>
+            Contain two or more periods together (like <c>MyNamespace..MySubnamespace</c>).
+            </description>
+            </item>
+            </list>
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.ValidateResourcePath(System.String,System.String)">
+            <summary>
+            Validates an embedded resource path or namespace.
+            </summary>
+            <param name="paramName">The name of the parameter being validated.</param>
+            <param name="path">The path/namespace to validate.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="path"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="path"/>:
+            <list type="bullet">
+            <item>
+            <description>
+            Is <see cref="F:System.String.Empty"/>.
+            </description>
+            </item>
+            <item>
+            <description>
+            Start or end with period.
+            </description>
+            </item>
+            <item>
+            <description>
+            Contain two or more periods together (like <c>MyNamespace..MySubnamespace</c>).
+            </description>
+            </item>
+            </list>
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.FileHandledByBaseProvider(System.String)">
+            <summary>
+            Determines if a file should be handled by the base provider or if
+            it should be handled by this provider.
+            </summary>
+            <param name="absolutePath">The absolute path to the file to check.</param>
+            <returns>
+            <see langword="true"/> if processing of the file at
+            <paramref name="absolutePath"/> should be done by the base provider;
+            <see langword="false"/> if this provider should handle it.
+            </returns>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.ProcessEmbeddedFiles(System.String)">
+            <summary>
+            Reads in the embedded files from an assembly an processes them into
+            the virtual filesystem.
+            </summary>
+            <param name="assemblyName">The name of the <see cref="T:System.Reflection.Assembly"/> to load and process.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="assemblyName"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="assemblyName"/> is <see cref="F:System.String.Empty"/>.
+            </exception>
+            <exception cref="T:System.IO.FileNotFoundException">
+            Thrown if the <see cref="T:System.Reflection.Assembly"/> indicated by
+            <paramref name="assemblyName"/> is not found.
+            </exception>
+            <remarks>
+            <para>
+            The <paramref name="assemblyName"/> will be passed to <see cref="M:System.Reflection.Assembly.Load(System.String)"/>
+            so the associated assembly can be processed.  If the assembly is not
+            found, a <see cref="T:System.IO.FileNotFoundException"/> is thrown.
+            </para>
+            <para>
+            Once the assembly is retrieved, it is queried for <see cref="T:GSF.Web.Hosting.EmbeddedResourceFileAttribute"/>
+            instances.  For each one found, the associated resources are processed
+            into virtual files that will be stored in
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.Files"/>
+            for later use.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            <seealso cref="M:GSF.Web.Hosting.EmbeddedResourcePathProvider.Initialize"/>
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.AllowOverrides">
+            <summary>
+            Gets a value indicating if embedded files can be overridden.
+            </summary>
+            <value>
+            <see langword="true"/> if embedded files can be overridden by other
+            files (e.g., if filesystem files override embedded files); <see langword="false"/>
+            if not.  Defaults to <see langword="false"/>.
+            </value>
+            <remarks>
+            <para>
+            This property uses the <see cref="P:System.Configuration.ConfigurationManager.AppSettings"/>
+            key <see cref="F:GSF.Web.Hosting.EmbeddedResourcePathProvider.ConfigKeyAllowOverrides"/>
+            to determine if overrides are allowed.  If the key is present, it is
+            parsed to a <see cref="T:System.Boolean"/> and that value is returned.
+            If the key is not present or if any error occurs during the parsing,
+            <see langword="false"/> is returned.
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourcePathProvider.Files">
+            <summary>
+            Gets the collection of files served by this provider.
+            </summary>
+            <value>
+            A <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
+            that contains all of the files served by this provider.
+            </value>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile">
+            <summary>
+            Represents a file object in embedded resource space.
+            </summary>
+            <remarks>
+            <para>
+            This type is used by the <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            to serve embedded resources as virtual files.  The properties on the
+            file can be used to retrieve an embedded resource stream from the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly"/>
+            at the appropriate
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ResourcePath"/>
+            using reflection.  As part of the <see cref="T:System.Web.Hosting.VirtualFile"/>
+            interface, you can do this easily via <see cref="M:GSF.Web.Hosting.EmbeddedResourceVirtualFile.Open"/>.
+            </para>
+            <para>
+            For more information on embedded resource virtual filesystem
+            usage, see <see cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+            </para>
+            </remarks>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourcePathProvider"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceVirtualFile._containingAssembly">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly"/>
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
+        </member>
+        <member name="F:GSF.Web.Hosting.EmbeddedResourceVirtualFile._resourcePath">
+            <summary>
+            Internal storage for the
+            <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ResourcePath"/>
+            property.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourceVirtualFile.#ctor(System.String,System.Reflection.Assembly,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/> class.
+            </summary>
+            <param name="virtualPath">The virtual path to the resource represented by this instance.</param>
+            <param name="containingAssembly">The <see cref="T:System.Reflection.Assembly"/> containing the resource represented by this instance.</param>
+            <param name="resourcePath">The path to the embedded resource in the <paramref name="containingAssembly"/>.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="containingAssembly"/> or <paramref name="resourcePath"/> is <see langword="null"/>.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown if <paramref name="resourcePath"/> is <see cref="F:System.String.Empty"/>.
+            </exception>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.EmbeddedResourceVirtualFile.Open">
+            <summary>
+            Returns a read-only stream to the virtual resource.
+            </summary>
+            <returns>A read-only stream to the virtual file.</returns>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
+            <seealso cref="M:System.Web.Hosting.VirtualFile.Open"/>
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly">
+            <summary>
+            Gets a reference to the assembly containing the virtual file.
+            </summary>
+            <value>
+            A <see cref="T:System.Reflection.Assembly"/> that contains the embedded
+            resource with the file contents.
+            </value>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
+        </member>
+        <member name="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ResourcePath">
+            <summary>
+            Gets the path to the embedded resource in the containing assembly.
+            </summary>
+            <value>
+            A <see cref="T:System.String"/> that indicates an embedded resource
+            in the <see cref="P:GSF.Web.Hosting.EmbeddedResourceVirtualFile.ContainingAssembly"/>
+            that represents the file for this instance.
+            </value>
+            <seealso cref="T:GSF.Web.Hosting.EmbeddedResourceVirtualFile"/>
+        </member>
+        <member name="T:GSF.Web.Hosting.NamespaceDoc">
+            <summary>
+            Contains classes that make-up the framework for serving content embedded in .NET assemblies over the web.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Hosting.VirtualFileBaseCollection">
+            <summary>
+            A strongly typed <see cref="T:System.Collections.ObjectModel.KeyedCollection`2"/>
+            where each element is a <see cref="T:System.Web.Hosting.VirtualFileBase"/> and is keyed
+            off of the <see cref="P:System.Web.Hosting.VirtualFileBase.VirtualPath"/>
+            property.
+            </summary>
+            <remarks>
+            <para>
+            The default constructor for this collection does a culture-invariant case-insensitive
+            comparison on the keys.  This allows for proper case-insensitive web-oriented
+            behavior that is generally expected.
+            </para>
+            </remarks>
+            <seealso cref="T:System.Web.Hosting.VirtualFileBase"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/> class that uses a case-insensitive comparer.
+            </summary>
+            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.#ctor(System.Collections.Generic.IEqualityComparer{System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/> class that uses the specified equality comparer.
+            </summary>
+            <param name="comparer">
+            The implementation of the <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>
+            generic interface to use when comparing keys, or <see langword="null"/> to use the default
+            equality comparer for the type of the key, obtained from <see cref="P:System.Collections.Generic.EqualityComparer`1.Default"/>.
+            </param>
+            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.#ctor(System.Collections.Generic.IEqualityComparer{System.String},System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/> class that uses the specified equality comparer.
+            </summary>
+            <param name="comparer">
+            The implementation of the <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>
+            generic interface to use when comparing keys, or <see langword="null"/> to use the default
+            equality comparer for the type of the key, obtained from <see cref="P:System.Collections.Generic.EqualityComparer`1.Default"/>.
+            </param>
+            <param name="dictionaryCreationThreshold">
+            The number of elements the collection can hold without creating a lookup dictionary
+            (0 creates the lookup dictionary when the first item is added), or ?1 to specify that
+            a lookup dictionary is never created.
+            </param>
+            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
+        </member>
+        <member name="M:GSF.Web.Hosting.VirtualFileBaseCollection.GetKeyForItem(System.Web.Hosting.VirtualFileBase)">
+            <summary>
+            Extracts the key from the specified element.
+            </summary>
+            <param name="item">
+            The <see cref="T:System.Web.Hosting.VirtualFileBase"/> element from which to extract the key (<see cref="P:System.Web.Hosting.VirtualFileBase.VirtualPath"/>).
+            </param>
+            <seealso cref="T:GSF.Web.Hosting.VirtualFileBaseCollection"/>
+        </member>
+        <member name="T:GSF.Web.Embedded.ISecurityService">
+            <summary>
+            Embedded WCF service contract used for securing external facing WCF services.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.Embedded.ISecurityService.GetUserData">
+            <summary>
+            Returns information about the current user. 
+            </summary>
+            <returns>An <see cref="T:GSF.Security.UserData"/> object of the user if user's security context has been initialized, otherwise null.</returns>
+        </member>
+        <member name="M:GSF.Web.Embedded.ISecurityService.RefreshUserData">
+            <summary>
+            Refreshes and returns information about the current user. 
+            </summary>
+            <returns>An <see cref="T:GSF.Security.UserData"/> object of the user if user's security context has been initialized, otherwise null.</returns>
+        </member>
+        <member name="M:GSF.Web.Embedded.ISecurityService.Authenticate(System.String,System.String)">
+            <summary>
+            Authenticates a user and caches the security context upon successful authentication for subsequent use.
+            </summary>
+            <param name="username">Username of the user.</param>
+            <param name="password">Password of the user.</param>
+            <returns>An <see cref="T:GSF.Security.UserData"/> object of the user.</returns>
+        </member>
+        <member name="M:GSF.Web.Embedded.ISecurityService.ResetPassword(System.String)">
+            <summary>
+            Resets user password.
+            </summary>
+            <param name="securityAnswer">Answer to user's security question.</param>
+            <returns>true if password is reset, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.Web.Embedded.ISecurityService.ChangePassword(System.String,System.String)">
+            <summary>
+            Changes user password.
+            </summary>
+            <param name="oldPassword">User's current password.</param>
+            <param name="newPassword">User's new password.</param>
+            <returns>true if the password is changed, otherwise false.</returns>
+        </member>
+        <member name="T:GSF.Web.NamespaceDoc">
+            <summary>
+            Contains classes and extension functions related to .NET web enabled platforms such as ASP.NET and WCF.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.SecurityModule">
+            <summary>
+            Represents an <see cref="T:System.Web.IHttpModule">HTTP module</see> that can be used to enable site-wide role-based security.
+            </summary>
+            <example>
+            Required config file entries:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="GSF.Configuration.CategorizedSettingsSection, GSF.Core" />
+              </configSections>
+              <categorizedSettings>
+                <securityProvider>
+                  <add name="ApplicationName" value="" description="Name of the application being secured as defined in the backend security datastore."
+                    encrypted="false" />
+                  <add name="ConnectionString" value="" description="Connection string to be used for connection to the backend security datastore."
+                    encrypted="false" />
+                  <add name="ProviderType" value="GSF.Security.LdapSecurityProvider, GSF.Security"
+                    description="The type to be used for enforcing security." encrypted="false" />
+                  <add name="IncludedResources" value="*/*.*=*" description="Semicolon delimited list of resources to be secured along with role names."
+                    encrypted="false" />
+                  <add name="ExcludedResources" value="*/WebResource.axd*;*/SecurityPortal.aspx*"
+                    description="Semicolon delimited list of resources to be excluded from being secured."
+                    encrypted="false" />
+                  <add name="NotificationSmtpServer" value="localhost" description="SMTP server to be used for sending out email notification messages."
+                    encrypted="false" />
+                  <add name="NotificationSenderEmail" value="sender@company.com" description="Email address of the sender of email notification messages." 
+                    encrypted="false" />
+                </securityProvider>
+                <activeDirectory>
+                  <add name="PrivilegedDomain" value="" description="Domain of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedUserName" value="" description="Username of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedPassword" value="" description="Password of privileged domain user account."
+                    encrypted="true" />
+                </activeDirectory>
+              </categorizedSettings>
+              <system.web>
+                <authentication mode="Windows"/>
+                <httpModules>
+                  <add name="SecurityModule" type="GSF.Web.SecurityModule, GSF.Web" />
+                </httpModules>
+              </system.web>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+            <seealso cref="T:GSF.Security.ISecurityProvider"/>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.Init(System.Web.HttpApplication)">
+            <summary>
+            Initializes the <see cref="T:GSF.Web.SecurityModule"/>.
+            </summary>
+            <param name="context">An <see cref="T:System.Web.HttpApplication"/> object.</param>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.Dispose">
+            <summary>
+            Releases the resources used by <see cref="T:GSF.Web.SecurityModule"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.Redirect(System.Net.HttpStatusCode)">
+            <summary>
+            Redirects the client browser based on the specified <paramref name="httpStatusCode"/>
+            </summary>
+            <param name="httpStatusCode"><see cref="T:System.Net.HttpStatusCode"/> to be used for the redirect.</param>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.GetResourceName">
+            <summary>
+            Gets the name of resource being accessed.
+            </summary>
+            <returns><see cref="P:System.Web.HttpApplication.Request"/>.<see cref="P:System.Web.HttpRequest.Url"/>.<see cref="P:System.Uri.PathAndQuery"/> property value.</returns>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.IsAccessRestricted">
+            <summary>
+            Determines if access to the requested resource is restricted by <see cref="T:GSF.Security.RestrictAccessAttribute"/>.
+            </summary>
+            <returns>true if access to the requested resource is restricted, otherwise false.</returns>
+        </member>
+        <member name="P:GSF.Web.SecurityModule.Application">
+            <summary>
+            Gets the current <see cref="T:System.Web.HttpApplication"/> instance.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.SecurityModule.SessionEnabledHandler">
+            <summary>
+            A handler used to force the SessionStateModule to load session state.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.SessionEnabledHandler.#ctor(System.Web.IHttpHandler)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Web.SecurityModule.SessionEnabledHandler"/> class.
+            </summary>
+            <param name="originalHandler">The original handler object.</param>
+        </member>
+        <member name="M:GSF.Web.SecurityModule.SessionEnabledHandler.ProcessRequest(System.Web.HttpContext)">
+            <summary>
+            This method will never get called.
+            </summary>
+        </member>
+        <member name="P:GSF.Web.SecurityModule.SessionEnabledHandler.IsReusable">
+            <summary>
+            Returns false since class has a member.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.Embedded.SecurityPortal">
+            <summary>
+            Embedded web page used by secure ASP.NET web sites for security related tasks.
+            </summary>
+            <example>
+            Config file entries for customizing the page:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="GSF.Configuration.CategorizedSettingsSection, GSF.Core" />
+              </configSections>
+              <categorizedSettings>
+                <securityPortal>
+                  <add name="CompanyLogo" value="~/images/MyCompanyLogo.png" description="Image file of the company's logo." encrypted="false" />
+                  <add name="CompanyLink" value="http://www.mycompany.com" description="Link to the company's web site." encrypted="false" />
+                  <add name="HelpPage" value="~/files/Help.pdf" description="Link to the help page." encrypted="false" />
+                  <add name="FooterText" value="(C) My Company. All rights reserved." description="Text to be displayed in the footer." encrypted="false" />
+                </securityPortal>
+              </categorizedSettings>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityPortal.Page_Load(System.Object,System.EventArgs)">
+            <summary>
+            Initializes the web page.
+            </summary>
+            <param name="sender">Source of this event.</param>
+            <param name="e">Arguments of this event.</param>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityPortal.LoginButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Logins the user.
+            </summary>
+            <param name="sender">Source of this event.</param>
+            <param name="e">Arguments of this event.</param>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityPortal.UpdateButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Updates user data.
+            </summary>
+            <param name="sender">Source of this event.</param>
+            <param name="e">Arguments of this event.</param>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityPortal.ChangeButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Changes user password.
+            </summary>
+            <param name="sender">Source of this event.</param>
+            <param name="e">Arguments of this event.</param>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityPortal.ResetCheckButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Checks if user password can be reset.
+            </summary>
+            <param name="sender">Source of this event.</param>
+            <param name="e">Arguments of this event.</param>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityPortal.ResetFinalButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Resets user password.
+            </summary>
+            <param name="sender">Source of this event.</param>
+            <param name="e">Arguments of this event.</param>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.StyleSheet">
+            <summary>
+            StyleSheet control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.MainForm">
+            <summary>
+            MainForm control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.LogoLink">
+            <summary>
+            LogoLink control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.LogoImage">
+            <summary>
+            LogoImage control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.HelpLink">
+            <summary>
+            HelpLink control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.HelpImage">
+            <summary>
+            HelpImage control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ContentPlaceHolder">
+            <summary>
+            ContentPlaceHolder control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.MessageLabel">
+            <summary>
+            MessageLabel control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.FooterLabel">
+            <summary>
+            FooterLabel control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.LoginPanel">
+            <summary>
+            LoginPanel control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.LoginUsernameValidator">
+            <summary>
+            LoginUsernameValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.LoginUsername">
+            <summary>
+            LoginUsername control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.RememberUsername">
+            <summary>
+            RememberUsername control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.LoginPasswordValidator">
+            <summary>
+            LoginPasswordValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.LoginPassword">
+            <summary>
+            LoginPassword control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ForgotPassword">
+            <summary>
+            ForgotPassword control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePassword">
+            <summary>
+            ChangePassword control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.LoginButton">
+            <summary>
+            LoginButton control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ResetPasswordCheckPanel">
+            <summary>
+            ResetPasswordCheckPanel control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ResetPasswordUsernameValidator">
+            <summary>
+            ResetPasswordUsernameValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ResetPasswordUsername">
+            <summary>
+            ResetPasswordUsername control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ResetCheckButton">
+            <summary>
+            ResetCheckButton control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ResetPasswordFinalPanel">
+            <summary>
+            ResetPasswordFinalPanel control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ResetPasswordSecurityQuestion">
+            <summary>
+            ResetPasswordSecurityQuestion control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ResetPasswordSecurityAnswer">
+            <summary>
+            ResetPasswordSecurityAnswer control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ResetFinalButton">
+            <summary>
+            ResetFinalButton control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordPanel">
+            <summary>
+            ChangePasswordPanel control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordUsernameValidator">
+            <summary>
+            ChangePasswordUsernameValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordUsername">
+            <summary>
+            ChangePasswordUsername control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordOldPasswordValidator">
+            <summary>
+            ChangePasswordOldPasswordValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordOldPassword">
+            <summary>
+            ChangePasswordOldPassword control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordNewPasswordValidator1">
+            <summary>
+            ChangePasswordNewPasswordValidator1 control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordNewPasswordValidator2">
+            <summary>
+            ChangePasswordNewPasswordValidator2 control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordNewPassword">
+            <summary>
+            ChangePasswordNewPassword control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordConfirmNewPasswordValidator1">
+            <summary>
+            ChangePasswordConfirmNewPasswordValidator1 control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordConfirmNewPasswordValidator2">
+            <summary>
+            ChangePasswordConfirmNewPasswordValidator2 control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangePasswordConfirmNewPassword">
+            <summary>
+            ChangePasswordConfirmNewPassword control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.ChangeButton">
+            <summary>
+            ChangeButton control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.MyAccountPanel">
+            <summary>
+            MyAccountPanel control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUsername">
+            <summary>
+            AccountUsername control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserCompany">
+            <summary>
+            AccountUserCompany control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserFirstNameValidator">
+            <summary>
+            AccountUserFirstNameValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserFirstName">
+            <summary>
+            AccountUserFirstName control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserLastNameValidator">
+            <summary>
+            AccountUserLastNameValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserLastName">
+            <summary>
+            AccountUserLastName control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserEmailAddressValidator">
+            <summary>
+            AccountUserEmailAddressValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserEmailAddress">
+            <summary>
+            AccountUserEmailAddress control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserPhoneNumberAddressValidator">
+            <summary>
+            AccountUserPhoneNumberAddressValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserPhoneNumber">
+            <summary>
+            AccountUserPhoneNumber control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserSecurityQuestion">
+            <summary>
+            AccountUserSecurityQuestion control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserSecurityAnswerValidator">
+            <summary>
+            AccountUserSecurityAnswerValidator control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccountUserSecurityAnswer">
+            <summary>
+            AccountUserSecurityAnswer control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.UpdateButton">
+            <summary>
+            UpdateButton control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.AccessDeniedPanel">
+            <summary>
+            AccessDeniedPanel control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:GSF.Web.Embedded.SecurityPortal.WarningImage">
+            <summary>
+            WarningImage control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="T:GSF.Web.Embedded.SecurityService">
+            <summary>
+            Embedded WCF service that can be used for securing applications using role-based security.
+            </summary>
+            <remarks>
+            This list shows the endpoints exposed by <see cref="T:GSF.Web.Embedded.SecurityService"/>:
+            <list type="table">
+                <listheader>
+                    <term>URI</term>
+                    <description>Protocol</description>
+                </listheader>
+                <item>
+                    <term><b>~/SecurityService.svc/soap</b></term>
+                    <description>SOAP 1.1</description>
+                </item>
+                <item>
+                    <term><b>~/SecurityService.svc/rest</b></term>
+                    <description>REST</description>
+                </item>
+            </list>
+            </remarks>
+            <example>
+            This example shows how to consume the REST endpoint of <see cref="T:GSF.Web.Embedded.SecurityService"/> using <a href="http://jquery.com/" target="_blank">jQuery</a>:
+            <code>
+            <![CDATA[
+            <script src="jquery.js" type="text/javascript" />
+            <script language="javascript" type="text/javascript">
+                $(document).ready(function () { login(); });
+            
+                function login() {
+                    $.get("SecurityService.svc/rest/getuserdata", loginCallback);
+                }
+            
+                function loginCallback(data) {
+                    var user = new UserData(data);
+                    if (!user.isAuthenticated) {
+                        alert('Access is denied.');
+                    }
+                    else {
+                        alert('Welcome ' + user.firstName + '!');
+                    }
+                }
+            
+                function UserData(xml) {
+                    this.username = $(xml).find('Username').text();
+                    this.password = $(xml).find('Password').text();
+                    this.firstName = $(xml).find('FirstName').text();
+                    this.lastName = $(xml).find('LastName').text();
+                    this.companyName = $(xml).find('CompanyName').text();
+                    this.phoneNumber = $(xml).find('PhoneNumber').text();
+                    this.emailAddress = $(xml).find('EmailAddress').text();
+                    this.securityQuestion = $(xml).find('SecurityQuestion').text();
+                    this.securityAnswer = $(xml).find('SecurityAnswer').text();
+                    this.passwordChangeDateTime = $(xml).find('PasswordChangeDateTime').text();
+                    this.accountCreatedDateTime = $(xml).find('AccountCreatedDateTime').text();
+                    this.isDefined = $(xml).find('IsDefined').text() === 'true';
+                    this.isExternal = $(xml).find('IsExternal').text() === 'true';
+                    this.isDisabled = $(xml).find('IsDisabled').text() === 'true';
+                    this.isLockedOut = $(xml).find('IsLockedOut').text() === 'true';
+                    this.isAuthenticated = $(xml).find('IsAuthenticated').text() === 'true';
+                    // Retrieve user groups.
+                    this.groups = groups = new Array();
+                    $(xml).find('Group').each(function () { groups.push($(this).text()); });
+                    // Retrieve user roles.
+                    this.roles = roles = new Array();
+                    $(xml).find('Role').each(function () { roles.push($(this).text()); });
+                }
+            </script>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityService.GetUserData">
+            <summary>
+            Returns information about the current user. 
+            </summary>
+            <returns>An <see cref="T:GSF.Security.UserData"/> object of the user if user's security context has been initialized, otherwise null.</returns>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityService.RefreshUserData">
+            <summary>
+            Refreshes and returns information about the current user. 
+            </summary>
+            <returns>An <see cref="T:GSF.Security.UserData"/> object of the user if user's security context has been initialized, otherwise null.</returns>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityService.Authenticate(System.String,System.String)">
+            <summary>
+            Authenticates a user and caches the security context upon successful authentication for subsequent use.
+            </summary>
+            <param name="username">Username of the user.</param>
+            <param name="password">Password of the user.</param>
+            <returns>An <see cref="T:GSF.Security.UserData"/> object of the user.</returns>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityService.ResetPassword(System.String)">
+            <summary>
+            Resets user password.
+            </summary>
+            <param name="securityAnswer">Answer to user's security question.</param>
+            <returns>true if password is reset, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.Web.Embedded.SecurityService.ChangePassword(System.String,System.String)">
+            <summary>
+            Changes user password.
+            </summary>
+            <param name="oldPassword">User's current password.</param>
+            <param name="newPassword">User's new password.</param>
+            <returns>true if the password is changed, otherwise false.</returns>
+        </member>
+        <member name="T:GSF.Web.UI.MsgBoxStyle">
+            <summary>
+            Specifies the buttons to be displayed in a message box.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.OKOnly">
+            <summary>
+            OK Button.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.OKCancel">
+            <summary>
+            OK and Cancel buttons.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.AbortRetryIgnore">
+            <summary>
+            Abort,Retry, and Ignore buttons.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.YesNoCancel">
+            <summary>
+            Yes, No, and Cancel buttons.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.YesNo">
+            <summary>
+            Yes and No buttons.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.RetryCancel">
+            <summary>
+            Retry and Cancel buttons.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.Critical">
+            <summary>
+            Critical message.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.Question">
+            <summary>
+            Warning query.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.Exclamation">
+            <summary>
+            Warning message.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.Information">
+            <summary>
+            Information message.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.DefaultButton1">
+            <summary>
+            First button is default.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.DefaultButton2">
+            <summary>
+            Second button is default.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.DefaultButton3">
+            <summary>
+            Third button is default.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.DefaultButton4">
+            <summary>
+            Fourth button is default.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.ApplicationModal">
+            <summary>
+            Application modal message box.
+            </summary>
+        </member>
+        <member name="F:GSF.Web.UI.MsgBoxStyle.SystemModal">
+            <summary>
+            System modal message box.
+            </summary>
+        </member>
+        <member name="T:GSF.Web.UI.ClientSideExtensions">
+            <summary>
+            Defines javascript client-side extensions for web controls.
+            </summary>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.JavaScriptEncode(System.String@)">
+            <summary>
+            Performs JavaScript encoding on given string.
+            </summary>
+            <param name="text">The string to be encoded.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.JavaScriptDecode(System.String@)">
+            <summary>
+            Decodes JavaScript characters from given string.
+            </summary>
+            <param name="text">The string to be decoded.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.SetDefaultButton(System.Web.UI.WebControls.TextBox,System.Web.UI.Control)">
+            <summary>
+            Registers a default button to be activated when the ENTER key is pressed inside this <paramref name="textbox"/>.
+            </summary>
+            <param name="textbox"><see cref="T:System.Web.UI.WebControls.TextBox"/> for which the default button is to be registered.</param>
+            <param name="control">Button <see cref="T:System.Web.UI.Control"/> to be assigned as the default action handler.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.SetSubmitOnce(System.Web.UI.WebControls.Button)">
+            <summary>
+            Registers the <paramref name="button"/> to be disabled after one click to prevent multiple postbacks.
+            </summary>
+            <param name="button"><see cref="T:System.Web.UI.WebControls.Button"/> for which submit once script is to be registered.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.BringToFront(System.Web.UI.Page)">
+            <summary>
+            Brings the <paramref name="page"/>'s browser window to the foreground.
+            </summary>
+            <param name="page"><see cref="T:System.Web.UI.Page"/> to be brought to the foreground.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.PushToBack(System.Web.UI.Page)">
+            <summary>
+            Pushes the <paramref name="page"/>'s browser window to the background.
+            </summary>
+            <param name="page"><see cref="T:System.Web.UI.Page"/> to be pushed to the background.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.Refresh(System.Web.UI.Page,System.Boolean)">
+            <summary>
+            Registers this <paramref name="page"/> to perform a page refresh.
+            </summary>
+            <param name="page"><see cref="T:System.Web.UI.Page"/> to refresh.</param>
+            <param name="refreshOnLoad">Refreshes the <paramref name="page"/> after the page content has loaded.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.Refresh(System.Web.UI.Control)">
+            <summary>
+            Registers the <paramref name="control"/> to perform a page refresh.
+            </summary>
+            <param name="control"><see cref="T:System.Web.UI.Control"/> that will perform a page refresh when clicked.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.Show(System.Web.UI.Page,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Shows a modeless popup window for the specified web page <paramref name="url"/> when the <paramref name="page"/> has loaded.
+            </summary>
+            <param name="page"><see name="Page"/> that will show the popup window when loaded.</param>
+            <param name="url">Web page url for which the popup windows is to be shown.</param>
+            <param name="height">Height of the popup window.</param>
+            <param name="width">Width of the popup window.</param>
+            <param name="left">Location of the popup window on X-axis.</param>
+            <param name="top">Location of the popup window on Y-axis.</param>
+            <param name="center">True if the popup window is to be centered, otherwise False.</param>
+            <param name="help">True if help button is to be displayed, otherwise False.</param>
+            <param name="resizable">True if the popup window can be resized, otherwise False.</param>
+            <param name="status">True if the status bar is to be displayed, otherwise False.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.Show(System.Web.UI.Control,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Shows a modeless popup window for the specified web page <paramref name="url"/> when the <paramref name="control"/> is clicked.
+            </summary>
+            <param name="control"><see name="Control"/> that will show the popup window when clicked.</param>
+            <param name="url">Web page url for which the popup windows is to be shown.</param>
+            <param name="height">Height of the popup window.</param>
+            <param name="width">Width of the popup window.</param>
+            <param name="left">Location of the popup window on X-axis.</param>
+            <param name="top">Location of the popup window on Y-axis.</param>
+            <param name="center">True if the popup window is to be centered, otherwise False.</param>
+            <param name="help">True if help button is to be displayed, otherwise False.</param>
+            <param name="resizable">True if the popup window can be resized, otherwise False.</param>
+            <param name="status">True if the status bar is to be displayed, otherwise False.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.ShowDialog(System.Web.UI.Page,System.String,System.Web.UI.Control,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Shows a modal popup window for the specified web page <paramref name="url"/> when the <paramref name="page"/> has loaded.
+            </summary>
+            <param name="page">Web page that will show the popup window when loaded.</param>
+            <param name="url">Web page url for which the popup windows is to be shown.</param>
+            <param name="dialogResultHolder"><see cref="T:System.Web.UI.Control"/> whose text is to updated with the text returned by the web page displayed in the popup window.</param>
+            <param name="height">Height of the popup window.</param>
+            <param name="width">Width of the popup window.</param>
+            <param name="left">Location of the popup window on X-axis.</param>
+            <param name="top">Location of the popup window on Y-axis.</param>
+            <param name="center">True if the popup window is to be centered, otherwise False.</param>
+            <param name="help">True if help button is to be displayed, otherwise False.</param>
+            <param name="resizable">True if the popup window can be resized, otherwise False.</param>
+            <param name="status">True if the status bar is to be displayed, otherwise False.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.ShowDialog(System.Web.UI.Control,System.String,System.Web.UI.Control,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Shows a modal popup window for the specified web page <paramref name="url"/> when the <paramref name="control"/> is clicked.
+            </summary>
+            <param name="control"><see cref="T:System.Web.UI.Control"/> that will show the popup window when clicked.</param>
+            <param name="url">Web page url for which the popup windows is to be shown.</param>
+            <param name="dialogResultHolder"><see cref="T:System.Web.UI.Control"/> whose text is to updated with the text returned by the web page displayed in the popup window.</param>
+            <param name="height">Height of the popup window.</param>
+            <param name="width">Width of the popup window.</param>
+            <param name="left">Location of the popup window on X-axis.</param>
+            <param name="top">Location of the popup window on Y-axis.</param>
+            <param name="center">True if the popup window is to be centered, otherwise False.</param>
+            <param name="help">True if help button is to be displayed, otherwise False.</param>
+            <param name="resizable">True if the popup window can be resized, otherwise False.</param>
+            <param name="status">True if the status bar is to be displayed, otherwise False.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.ShowPopup(System.Web.UI.Page,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Shows a popup for the specified web page <paramref name="url"/> when the <paramref name="page"/> has loaded.
+            </summary>
+            <param name="page"><see cref="T:System.Web.UI.Page"/> that will show the popup when loaded.</param>
+            <param name="url">Web page url for which the popup is to be shown.</param>
+            <param name="height">Height of the popup.</param>
+            <param name="width">Width of the popup.</param>
+            <param name="left">Location of the popup on X-axis.</param>
+            <param name="top">Location of the popup on Y-axis.</param>
+            <param name="center">True if the popup is to be centered, otherwise False.</param>
+            <param name="resizable">True if the popup can be resized, otherwise False.</param>
+            <param name="scrollbars">True is the scrollbars are to be displayed, otherwise False.</param>
+            <param name="toolbar">True if the toolbar is to be displayed, otherwise False.</param>
+            <param name="menubar">True if the menu bar is to be displayed, otherwise False.</param>
+            <param name="location">True if the address bar is to be displayed, otherwise False.</param>
+            <param name="status">True if the status bar is to be displayed, otherwise False.</param>
+            <param name="directories">True if the directories buttons (Netscape only) are to be displayed, otherwise False.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.ShowPopup(System.Web.UI.Control,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Shows a popup for the specified web page <paramref name="url"/> when the <paramref name="control"/> is clicked.
+            </summary>
+            <param name="control"><see cref="T:System.Web.UI.Control"/> that will show the popup when clicked.</param>
+            <param name="url">Web page url for which the popup is to be shown.</param>
+            <param name="height">Height of the popup.</param>
+            <param name="width">Width of the popup.</param>
+            <param name="left">Location of the popup on X-axis.</param>
+            <param name="top">Location of the popup on Y-axis.</param>
+            <param name="center">True if the popup is to be centered, otherwise False.</param>
+            <param name="resizable">True if the popup can be resized, otherwise False.</param>
+            <param name="scrollbars">True is the scrollbars are to be displayed, otherwise False.</param>
+            <param name="toolbar">True if the toolbar is to be displayed, otherwise False.</param>
+            <param name="menubar">True if the menu bar is to be displayed, otherwise False.</param>
+            <param name="location">True if the address bar is to be displayed, otherwise False.</param>
+            <param name="status">True if the status bar is to be displayed, otherwise False.</param>
+            <param name="directories">True if the directories buttons (Netscape only) are to be displayed, otherwise False.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.Close(System.Web.UI.Page,System.String)">
+            <summary>
+            Closes the current <paramref name="page"/> when it has finished loading in the browser and returns the specified <paramref name="returnValue"/> to the web page that opened it.
+            </summary>
+            <param name="page"><see cref="T:System.Web.UI.Page"/> to be closed.</param>
+            <param name="returnValue">Value to be returned to the parent web page.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.Close(System.Web.UI.Control,System.String)">
+            <summary>
+            Closes the current page when the <paramref name="control"/> is clicked and returns the specified <paramref name="returnValue"/> to the web page that opened it.
+            </summary>
+            <param name="control"><see cref="T:System.Web.UI.Control"/> that will close the current web page when clicked.</param>
+            <param name="returnValue">Value to be returned to the parent web page.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.MsgBox(System.Web.UI.Page,System.String,System.String,GSF.Web.UI.MsgBoxStyle,System.Boolean)">
+            <summary>
+            Shows a windows application style message box when the <paramref name="page"/> has loaded.
+            </summary>
+            <param name="page"><see cref="T:System.Web.UI.Page"/> that will show the message box when loaded.</param>
+            <param name="prompt">Text that is to be displayed in the message box.</param>
+            <param name="title">Title of the message box.</param>
+            <param name="buttons">Buttons to be displayed in the message box.</param>
+            <param name="doPostBack">True if a post-back is to be performed when either OK, Retry, or Yes buttons are clicked in the message box, otherwise False.</param>
+        </member>
+        <member name="M:GSF.Web.UI.ClientSideExtensions.MsgBox(System.Web.UI.Control,System.String,System.String,GSF.Web.UI.MsgBoxStyle,System.Boolean)">
+            <summary>
+            Shows a windows application style message box when the <paramref name="control"/> is clicked.
+            </summary>
+            <param name="control"><see cref="T:System.Web.UI.Control"/> that will show the message box when clicked.</param>
+            <param name="prompt">Text that is to be displayed in the message box.</param>
+            <param name="title">Title of the message box.</param>
+            <param name="buttons">Buttons to be displayed in the message box.</param>
+            <param name="doPostBack">True if a post-back is to be performed when either OK, Retry, or Yes buttons are clicked in the message box, otherwise False.</param>
+        </member>
+    </members>
+</doc>

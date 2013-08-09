@@ -24,9 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace openVisN.Library
 {
@@ -37,9 +34,10 @@ namespace openVisN.Library
         public long DeviceId;
         public string Description;
         public string DeviceName;
+
         public SignalBook(string line)
         {
-            var parts = line.Split('\t');
+            string[] parts = line.Split('\t');
             SignalId = Guid.Parse(parts[0]);
             PointId = long.Parse(parts[1]);
             DeviceId = long.Parse(parts[2]);
@@ -58,7 +56,7 @@ namespace openVisN.Library
 
     public class AllSignals
     {
-        public static string DefaultPath=@"C:\Unison\GPA\Demo\SignalMetadata.txt";
+        public static string DefaultPath = @"C:\Unison\GPA\Demo\SignalMetadata.txt";
 
         public List<SignalBook> Signals;
 
@@ -66,12 +64,13 @@ namespace openVisN.Library
             : this(DefaultPath)
         {
         }
+
         public AllSignals(string config)
         {
             Signals = new List<SignalBook>();
 
             bool firstLine = true;
-            foreach (var line in File.ReadAllLines(config))
+            foreach (string line in File.ReadAllLines(config))
             {
                 if (firstLine)
                 {

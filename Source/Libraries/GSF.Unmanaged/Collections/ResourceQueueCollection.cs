@@ -35,10 +35,10 @@ namespace GSF.Collections
     public class ResourceQueueCollection<TKey, TResource>
         where TResource : class
     {
-        SortedList<TKey, ResourceQueue<TResource>> m_list;
-        Func<TKey, Func<TResource>> m_instanceObject;
-        Func<TKey, int> m_maximumCount;
-        Func<TKey, int> m_initialCount;
+        private readonly SortedList<TKey, ResourceQueue<TResource>> m_list;
+        private readonly Func<TKey, Func<TResource>> m_instanceObject;
+        private readonly Func<TKey, int> m_maximumCount;
+        private readonly Func<TKey, int> m_initialCount;
 
         /// <summary>
         /// Creates a new ResourceQueueCollection.

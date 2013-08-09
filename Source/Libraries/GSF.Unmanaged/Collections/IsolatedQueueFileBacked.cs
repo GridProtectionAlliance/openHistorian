@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using GSF.Threading;
 
@@ -36,16 +35,25 @@ namespace GSF.Collections
         /// <summary>
         /// Gets the average memory size required for an individual element. 
         /// </summary>
-        int InMemorySize { get; }
+        int InMemorySize
+        {
+            get;
+        }
+
         /// <summary>
         /// Gets the average space this individual element takes when serialized to the disk.
         /// </summary>
-        int OnDiskSize { get; }
+        int OnDiskSize
+        {
+            get;
+        }
+
         /// <summary>
         /// Saves this element using the provided <see cref="BinaryWriter"/>.
         /// </summary>
         /// <param name="writer"></param>
         void Save(BinaryWriter writer);
+
         /// <summary>
         /// Loads this element using the provided <see cref="BinaryReader"/>.
         /// </summary>
@@ -68,49 +76,53 @@ namespace GSF.Collections
         /// The queue that the writer always writes to. 
         /// This queue is only read from if not operating in FileMode
         /// </summary>
-        ContinuousQueue<IsolatedNode<T>> m_inboundQueue;
+        private readonly ContinuousQueue<IsolatedNode<T>> m_inboundQueue;
+
         /// <summary>
         /// This queue is where the reader will read from when
         /// operating in FileMode.
         /// </summary>
-        ContinuousQueue<IsolatedNode<T>> m_outboundQueue;
+        private readonly ContinuousQueue<IsolatedNode<T>> m_outboundQueue;
+
         /// <summary>
         /// Contains a queue of <see cref="IsolatedNode{T}"/> so they
         /// don't need to be constructed every time. There is a high
         /// probability that any node will be a Generation 2 object. Therefore
         /// it is advised to pool these objects.
         /// </summary>
-        ResourceQueue<IsolatedNode<T>> m_pooledNodes;
+        private readonly ResourceQueue<IsolatedNode<T>> m_pooledNodes;
 
         /// <summary>
         /// The node that will be written to. It is probable that the
         /// head and tail are the same instance.
         /// </summary>
-        IsolatedNode<T> m_currentHead;
+        private IsolatedNode<T> m_currentHead;
+
         /// <summary>
         /// The node that will be read from. It is probable that the
         /// head and tail are the same instance.
         /// </summary>
-        IsolatedNode<T> m_currentTail;
+        private IsolatedNode<T> m_currentTail;
 
-        ScheduledTask m_workerFlushToFile;
-        bool m_disposing;
-        bool m_disposed;
-        bool m_isFileMode;
-        bool m_currentlyWritingFile;
-        int m_elementsPerNode;
-        object m_syncRoot;
+        private readonly ScheduledTask m_workerFlushToFile;
+        private bool m_disposing;
+        private bool m_disposed;
+        private bool m_isFileMode;
+        private bool m_currentlyWritingFile;
+        private readonly int m_elementsPerNode;
+        private readonly object m_syncRoot;
 
         /// <summary>
         /// Number of nodes that it takes to max out the memory desired for this buffer.
         /// </summary>
-        int m_maxNodeCount;
+        private readonly int m_maxNodeCount;
+
         /// <summary>
         /// The number of nodes to put in each file.
         /// </summary>
-        int m_nodesPerFile;
+        private readonly int m_nodesPerFile;
 
-        FileIO m_fileIO;
+        private readonly FileIO m_fileIO;
 
         /// <summary>
         /// Creates a new <see cref="IsolatedQueueFileBacked{T}"/>. 
@@ -157,7 +169,7 @@ namespace GSF.Collections
         /// <summary>
         /// Does the writes to the archive file.
         /// </summary>
-        void OnWorkerFlushToFileDoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
+        private void OnWorkerFlushToFileDoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
         {
             while (true)
             {
@@ -177,10 +189,9 @@ namespace GSF.Collections
                     m_currentlyWritingFile = false;
                 }
             }
-
         }
 
-        bool ShouldFlushToFile()
+        private bool ShouldFlushToFile()
         {
             if (m_isFileMode)
             {
@@ -189,7 +200,7 @@ namespace GSF.Collections
             return m_inboundQueue.Count > m_maxNodeCount;
         }
 
-        void OnWorkerFlushToFileCleanupWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
+        private void OnWorkerFlushToFileCleanupWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
         {
             while (m_inboundQueue.Count >= m_nodesPerFile)
             {
@@ -211,9 +222,6 @@ namespace GSF.Collections
                 IsolatedNode<T>[] nodesToWrite = m_outboundQueue.Dequeue(m_outboundQueue.Count);
                 m_fileIO.DumpToDisk(nodesToWrite, false);
             }
-
-
-
         }
 
         /// <summary>

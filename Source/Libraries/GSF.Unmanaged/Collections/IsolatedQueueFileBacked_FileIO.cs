@@ -37,13 +37,13 @@ namespace GSF.Collections
         /// </summary>
         internal class FileIO
         {
-            string m_filePrefix;
-            object m_syncRoot;
-            Queue<string> m_allFiles;
-            long m_sizeOfAllFiles;
-            string m_path;
-            const string Extension = ".dat";
-            const string WorkingExtension = ".working";
+            private readonly string m_filePrefix;
+            private readonly object m_syncRoot;
+            private readonly Queue<string> m_allFiles;
+            private long m_sizeOfAllFiles;
+            private readonly string m_path;
+            private const string Extension = ".dat";
+            private const string WorkingExtension = ".working";
 
             public FileIO(string pathName, string filePrefix)
             {
@@ -53,13 +53,13 @@ namespace GSF.Collections
                 m_path = pathName;
 
                 Func<string, bool> whereClause = s =>
-                    {
-                        var name = Path.GetFileNameWithoutExtension(s).Substring(filePrefix.Length).Trim();
-                        long value;
-                        return long.TryParse(name, out value);
-                    };
+                {
+                    string name = Path.GetFileNameWithoutExtension(s).Substring(filePrefix.Length).Trim();
+                    long value;
+                    return long.TryParse(name, out value);
+                };
 
-                var files = Directory.GetFiles(pathName, filePrefix + " *" + Extension).Where(whereClause).ToList();
+                List<string> files = Directory.GetFiles(pathName, filePrefix + " *" + Extension).Where(whereClause).ToList();
                 files.Sort(new NaturalComparer());
                 files.ForEach(x => m_sizeOfAllFiles += new FileInfo(x).Length);
                 files.ForEach(x => m_allFiles.Enqueue(x));
@@ -77,7 +77,7 @@ namespace GSF.Collections
                 string file, fileTemp;
                 long fileSize;
                 GetFiles(out file, out fileTemp, appendToEnd);
-                using (var fs = new FileStream(fileTemp, FileMode.CreateNew, FileAccess.Write))
+                using (FileStream fs = new FileStream(fileTemp, FileMode.CreateNew, FileAccess.Write))
                 {
                     DumpToDisk(fs, queue);
                     fileSize = fs.Length;
@@ -93,12 +93,12 @@ namespace GSF.Collections
             internal void DumpToDisk(Stream stream, IEnumerable<IsolatedNode<T>> queue)
             {
                 T item = default(T);
-                var wr = new BinaryWriter(stream);
+                BinaryWriter wr = new BinaryWriter(stream);
 
                 wr.Write("IsolatedQueueFileBacked".ToCharArray());
                 wr.Write((byte)1);
 
-                foreach (var node in queue)
+                foreach (IsolatedNode<T> node in queue)
                 {
                     int count = node.Count;
                     wr.Write(count);
@@ -127,7 +127,7 @@ namespace GSF.Collections
                     m_sizeOfAllFiles -= new FileInfo(file).Length;
                 }
 
-                using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+                using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
                 {
                     ReadFromDisk(fs, queue, instance);
                 }
@@ -137,7 +137,7 @@ namespace GSF.Collections
             internal void ReadFromDisk(Stream stream, ContinuousQueue<IsolatedNode<T>> queue, Func<IsolatedNode<T>> instance)
             {
                 T item = default(T);
-                var rd = new BinaryReader(stream);
+                BinaryReader rd = new BinaryReader(stream);
 
                 string header = new string(rd.ReadChars(23));
                 if (header != "IsolatedQueueFileBacked")
@@ -195,10 +195,10 @@ namespace GSF.Collections
                 }
             }
 
-            void GetFiles(out string file, out string workingFile, bool appendToEnd)
+            private void GetFiles(out string file, out string workingFile, bool appendToEnd)
             {
                 long delta = 0;
-            TryAgain:
+                TryAgain:
                 delta++;
                 long currentTime = DateTime.UtcNow.Ticks;
 

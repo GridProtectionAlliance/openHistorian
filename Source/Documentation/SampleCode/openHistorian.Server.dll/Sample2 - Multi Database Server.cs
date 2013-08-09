@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using openHistorian;
-using openHistorian.Engine;
+using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 
 namespace SampleCode.openHistorian.Server.dll
 {
@@ -19,76 +17,81 @@ namespace SampleCode.openHistorian.Server.dll
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
             Array.ForEach(Directory.GetFiles(@"c:\temp\Synchrophasor\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
-            var serverOptions = new HistorianServerDatabaseCollectionOptions();
-            serverOptions.IsNetworkHosted = false;
+            List<HistorianDatabaseInstance> serverDatabases = new List<HistorianDatabaseInstance>();
 
-            var db = new HistorianServerDatabaseSettings();
+            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
             db.DatabaseName = "Scada";
-            db.IsReadOnly = false;
-            db.Paths.Add(@"c:\temp\Scada\");
+            db.InMemoryArchive = false;
+            db.Paths = new[] { @"c:\temp\Scada\" };
 
-            serverOptions.Databases.Add(db);
-            
-            db=new HistorianServerDatabaseSettings();
+            serverDatabases.Add(db);
+
+            db = new HistorianDatabaseInstance();
             db.DatabaseName = "Synchrophasor";
-            db.IsReadOnly = false;
-            db.Paths.Add(@"c:\temp\Synchrophasor\");
+            db.InMemoryArchive = false;
+            db.Paths = new[] { @"c:\temp\Synchrophasor\" };
 
-            serverOptions.Databases.Add(db);
-            
-            using (var server = new HistorianServer(serverOptions))
+            serverDatabases.Add(db);
+
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
+            using (HistorianServer server = new HistorianServer(serverDatabases))
             {
-                var dbCollection = server.GetDatabaseCollection();
-                var database = dbCollection.ConnectToDatabase("Scada");
+                IHistorianDatabase<HistorianKey, HistorianValue> database = server["Scada"];
 
                 for (ulong x = 0; x < 10000; x++)
-                    database.Write(x, 0, 0, 0);
+                {
+                    key.Timestamp = x;
+                    database.Write(key, value);
+                }
                 database.HardCommit();
                 database.Disconnect();
 
-                database = dbCollection.ConnectToDatabase("Synchrophasor");
+                database = server["Synchrophasor"];
                 for (ulong x = 0; x < 10000; x++)
-                    database.Write(x, 0, 0, 0);
+                {
+                    key.Timestamp = x;
+                    database.Write(key, value);
+                }
                 database.HardCommit();
                 database.Disconnect();
             }
         }
-        
+
         [Test]
         public void TestReadData()
         {
-            var serverOptions = new HistorianServerDatabaseCollectionOptions();
-            serverOptions.IsNetworkHosted = true;
+            List<HistorianDatabaseInstance> serverDatabases = new List<HistorianDatabaseInstance>();
 
-            var db = new HistorianServerDatabaseSettings();
+            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
             db.DatabaseName = "Scada";
-            db.IsReadOnly = true;
-            db.Paths.Add(@"c:\temp\Scada\");
+            db.InMemoryArchive = true;
+            db.Paths = new[] { @"c:\temp\Scada\" };
 
-            serverOptions.Databases.Add(db);
+            serverDatabases.Add(db);
 
-            db = new HistorianServerDatabaseSettings();
+            db = new HistorianDatabaseInstance();
             db.DatabaseName = "Synchrophasor";
-            db.IsReadOnly = true;
-            db.Paths.Add(@"c:\temp\Synchrophasor\");
+            db.InMemoryArchive = true;
+            db.Paths = new[] { @"c:\temp\Synchrophasor\" };
 
-            serverOptions.Databases.Add(db);
+            serverDatabases.Add(db);
 
-            using (var server = new HistorianServer(serverOptions))
+            using (HistorianServer server = new HistorianServer(serverDatabases))
             {
-                var dbCollection = server.GetDatabaseCollection();
-                var database = dbCollection.ConnectToDatabase("Scada");
-                using (var reader = database.OpenDataReader())
+                IHistorianDatabase<HistorianKey, HistorianValue> database = server["Scada"];
+                using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                 {
-                    var stream = reader.Read(0, 100);
+                    TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
                     stream.Cancel();
                 }
                 database.Disconnect();
 
-                database = dbCollection.ConnectToDatabase("Synchrophasor");
-                using (var reader = database.OpenDataReader())
+                database = server["Synchrophasor"];
+                using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                 {
-                    var stream = reader.Read(0, 100);
+                    TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
                     stream.Cancel();
                 }
                 database.Disconnect();

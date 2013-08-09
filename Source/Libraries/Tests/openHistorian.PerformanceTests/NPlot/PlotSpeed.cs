@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using NPlot;
 using NUnit.Framework;
-using NPlot.Bitmap;
 using PlotSurface2D = NPlot.Bitmap.PlotSurface2D;
 using ST = NPlot.StepTimer;
 
@@ -17,12 +11,11 @@ namespace openHistorian.PerformanceTests.NPlot
     [TestFixture]
     public class PlotSpeed
     {
-        
         [Test]
         public void RefreshSpeed()
         {
-            var xVal = new List<double>();
-            var yVal = new List<double>();
+            List<double> xVal = new List<double>();
+            List<double> yVal = new List<double>();
 
             for (int x = 0; x < 100000; x++)
             {
@@ -56,6 +49,7 @@ namespace openHistorian.PerformanceTests.NPlot
             Console.WriteLine(sw2.Elapsed.TotalSeconds.ToString() + " seconds to refresh");
             Console.WriteLine(sw.Elapsed.TotalSeconds.ToString() + " seconds To add and refresh");
         }
+
         [Test]
         public void RefreshSpeedTest()
         {
@@ -66,7 +60,6 @@ namespace openHistorian.PerformanceTests.NPlot
             Console.WriteLine(time.ToString() + " seconds to on average");
 
             Console.WriteLine(ST.GetResultsPercent());
-
         }
     }
 }

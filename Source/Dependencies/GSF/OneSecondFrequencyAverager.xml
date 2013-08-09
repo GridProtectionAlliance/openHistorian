@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OneSecondFrequencyAverager</name>
+    </assembly>
+    <members>
+        <member name="T:AverageFrequencyUI.AverageFrequencyUserControl">
+            <summary>
+            Interaction logic for AverageFrequencyUserControl.xaml
+            </summary>
+            <summary>
+            AverageFrequencyUserControl
+            </summary>
+        </member>
+        <member name="M:AverageFrequencyUI.AverageFrequencyUserControl.#ctor(GSF.TimeSeries.UI.DataModels.Adapter)">
+            <summary>
+            Creates a new instance of the <see cref="T:AverageFrequencyUI.AverageFrequencyUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:AverageFrequencyUI.AverageFrequencyUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:AverageFrequencyUI.AverageFrequencyViewModel">
+            <summary>
+            View model for the <see cref="T:AverageFrequencyUI.AverageFrequencyUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:AverageFrequencyUI.AverageFrequencyViewModel.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:AverageFrequencyUI.AverageFrequencyViewModel"/> class.
+            </summary>
+        </member>
+        <member name="M:AverageFrequencyUI.AverageFrequencyViewModel.Load">
+            <summary>
+            Called when the view is loaded.
+            </summary>
+        </member>
+        <member name="M:AverageFrequencyUI.AverageFrequencyViewModel.Unload">
+            <summary>
+            Called when the view is unloaded.
+            </summary>
+        </member>
+        <member name="M:AverageFrequencyUI.AverageFrequencyViewModel.HandlePropertyChangedOnce(System.String)">
+            <summary>
+            Handles change in a property once per call stack.
+            </summary>
+            <param name="propertyName">The name of the property that was changed.</param>
+        </member>
+        <member name="E:AverageFrequencyUI.AverageFrequencyViewModel.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.VirtualDeviceNames">
+            <summary>
+            Gets or sets the collection of virtual device names in the system.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.IOMappings">
+            <summary>
+            Gets or sets the collection of I/O mappings used by the average frequency calculator.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.FrequencyMeasurements">
+            <summary>
+            Gets or sets the collection of frequency measurements in the system.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.Calculator">
+            <summary>
+            Gets or sets the calculator to be configured.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.SelectedVirtualDeviceName">
+            <summary>
+            Gets or sets the name of the virtual device to associate output measurements with.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.SelectedIOMapping">
+            <summary>
+            Gets or sets the I/O mapping the user currently has selected.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.SelectedFrequencyMeasurement">
+            <summary>
+            Gets or sets the frequency measurement the user currently has selected.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.AddSelectedCommand">
+            <summary>
+            Gets the command that is invoked when adding an I/O mapping for the selected frequency measurement.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.RemoveSelectedCommand">
+            <summary>
+            Gets the command that is invoked when removing an I/O mapping from the calculator.
+            </summary>
+        </member>
+        <member name="T:AverageFrequencyUI.AverageFrequencyViewModel.IOMapping">
+            <summary>
+            Represents a mapping between a frequency input definition
+            and an average frequency output definition.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.IOMapping.SignalReference">
+            <summary>
+            Gets or sets the signal reference of the frequency input.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.IOMapping.InputKey">
+            <summary>
+            Gets or sets the measurement key of the frequency input.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.IOMapping.OutputKey">
+            <summary>
+            Gets or sets the measurement key of the frequency output.
+            </summary>
+        </member>
+        <member name="T:AverageFrequencyUI.AverageFrequencyViewModel.FrequencyMeasurement">
+            <summary>
+            Represents a frequency measurement which can be selected
+            as an input to the average frequency calculator.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.FrequencyMeasurement.SignalReference">
+            <summary>
+            Gets or sets the signal reference of the frequency measurement.
+            </summary>
+        </member>
+        <member name="P:AverageFrequencyUI.AverageFrequencyViewModel.FrequencyMeasurement.Key">
+            <summary>
+            Gets or sets the measurement key of the frequency measurement.
+            </summary>
+        </member>
+        <member name="T:OneSecondFrequencyAverager.OneSecondFrequencyAverager">
+            <summary>
+            Represents an adapter that calculates the average
+            of the input frequencies over each full second.
+            </summary>
+        </member>
+        <member name="M:OneSecondFrequencyAverager.OneSecondFrequencyAverager.Initialize">
+            <summary>
+            Initializes this <see cref="T:OneSecondFrequencyAverager.OneSecondFrequencyAverager"/>.
+            </summary>
+        </member>
+        <member name="M:OneSecondFrequencyAverager.OneSecondFrequencyAverager.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing. Measurements are automatically filtered to the defined <see cref="P:GSF.TimeSeries.Adapters.IAdapter.InputMeasurementKeys"/>.
+            </summary>
+            <param name="measurements">Collection of measurements to queue for processing.</param>
+            <remarks>
+            Measurements are filtered against the defined <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>.
+            </remarks>
+        </member>
+        <member name="M:OneSecondFrequencyAverager.OneSecondFrequencyAverager.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
+        <member name="P:OneSecondFrequencyAverager.OneSecondFrequencyAverager.FlatlineCount">
+            <summary>
+            Gets or sets the number of consecutive points the <see cref="T:OneSecondFrequencyAverager.OneSecondFrequencyAverager"/>
+            can receive with the same value before it considers that signal flatlined and discards it.
+            </summary>
+        </member>
+        <member name="P:OneSecondFrequencyAverager.OneSecondFrequencyAverager.SupportsTemporalProcessing">
+            <summary>
+            Gets a flag indicating whether this adapter supports temporal processing.
+            </summary>
+        </member>
+    </members>
+</doc>

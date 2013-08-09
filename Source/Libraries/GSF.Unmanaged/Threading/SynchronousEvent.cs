@@ -36,10 +36,10 @@ namespace GSF.Threading
     public class SynchronousEvent<T> : IDisposable
         where T : EventArgs
     {
-        bool m_disposed;
-        ManualResetEvent m_waiting;
+        private bool m_disposed;
+        private readonly ManualResetEvent m_waiting;
         public event EventHandler<T> CustomEvent;
-        AsyncOperation m_asyncEventHelper;
+        private readonly AsyncOperation m_asyncEventHelper;
 
         public SynchronousEvent()
         {
@@ -68,7 +68,7 @@ namespace GSF.Threading
             }
         }
 
-        void Callback(object sender)
+        private void Callback(object sender)
         {
             if (m_disposed)
                 return;
@@ -83,7 +83,6 @@ namespace GSF.Threading
             {
                 m_waiting.Set();
             }
-
         }
 
         /// <summary>

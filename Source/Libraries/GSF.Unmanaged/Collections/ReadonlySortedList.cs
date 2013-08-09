@@ -30,14 +30,14 @@ namespace GSF.Collections
     /// <summary>
     /// A list that can be modified until <see cref="IsReadOnly"/> is set to true. Once this occurs,
     /// the list itself can no longer be modified.  Remember, this does not cause objects contained in this class to be Immutable 
-    /// unless they implement <see cref="T:openHistorian.Collections.ISupportsReadonly`1"/>.
+    /// unless they implement <see cref="T:GSF.Collections.ISupportsReadonly`1"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class ReadonlySortedList<TKey, TValue> : SupportsReadonlyBase<ReadonlySortedList<TKey, TValue>>, IDictionary<TKey, TValue>
     {
-        bool m_isISupportsReadonlyTypeKey;
-        bool m_isISupportsReadonlyTypeValue;
-        SortedList<TKey, TValue> m_list;
+        private readonly bool m_isISupportsReadonlyTypeKey;
+        private readonly bool m_isISupportsReadonlyTypeValue;
+        private SortedList<TKey, TValue> m_list;
 
         public ReadonlySortedList()
         {
@@ -59,7 +59,6 @@ namespace GSF.Collections
             m_isISupportsReadonlyTypeKey = typeof(ISupportsReadonly<TKey>).IsAssignableFrom(typeof(TKey));
             m_isISupportsReadonlyTypeValue = typeof(ISupportsReadonly<TValue>).IsAssignableFrom(typeof(TValue));
         }
-
 
 
         protected override void SetMembersAsReadOnly()
@@ -84,7 +83,7 @@ namespace GSF.Collections
         {
             if (m_isISupportsReadonlyTypeKey || m_isISupportsReadonlyTypeValue)
             {
-                var oldList = m_list;
+                SortedList<TKey, TValue> oldList = m_list;
                 m_list = new SortedList<TKey, TValue>(oldList.Count);
                 for (int x = 0; x < oldList.Count; x++)
                 {
@@ -129,7 +128,7 @@ namespace GSF.Collections
         public void Add(KeyValuePair<TKey, TValue> item)
         {
             TestForEditable();
-            ((System.Collections.Generic.ICollection<KeyValuePair<TKey, TValue>>)m_list).Add(item);
+            ((ICollection<KeyValuePair<TKey, TValue>>)m_list).Add(item);
         }
 
         /// <summary>
@@ -139,7 +138,7 @@ namespace GSF.Collections
         public void Clear()
         {
             TestForEditable();
-            ((System.Collections.Generic.ICollection<KeyValuePair<TKey, TValue>>)m_list).Clear();
+            ((ICollection<KeyValuePair<TKey, TValue>>)m_list).Clear();
         }
 
         /// <summary>
@@ -151,7 +150,7 @@ namespace GSF.Collections
         /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            return ((System.Collections.Generic.ICollection<KeyValuePair<TKey, TValue>>)m_list).Contains(item);
+            return ((ICollection<KeyValuePair<TKey, TValue>>)m_list).Contains(item);
         }
 
         /// <summary>
@@ -160,7 +159,7 @@ namespace GSF.Collections
         /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param><param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param><exception cref="T:System.ArgumentNullException"><paramref name="array"/> is null.</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception><exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.</exception>
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            ((System.Collections.Generic.ICollection<KeyValuePair<TKey, TValue>>)m_list).CopyTo(array, arrayIndex);
+            ((ICollection<KeyValuePair<TKey, TValue>>)m_list).CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -172,7 +171,7 @@ namespace GSF.Collections
         /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param><exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            return ((System.Collections.Generic.ICollection<KeyValuePair<TKey, TValue>>)m_list).Remove(item);
+            return ((ICollection<KeyValuePair<TKey, TValue>>)m_list).Remove(item);
         }
 
         /// <summary>
@@ -208,7 +207,7 @@ namespace GSF.Collections
         public void Add(TKey key, TValue value)
         {
             TestForEditable();
-            m_list.Add(key,value);
+            m_list.Add(key, value);
         }
 
         /// <summary>
@@ -283,6 +282,5 @@ namespace GSF.Collections
                 return m_list.Values;
             }
         }
-
     }
 }

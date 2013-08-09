@@ -22,9 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace GSF.Collections
@@ -36,10 +33,11 @@ namespace GSF.Collections
     /// <typeparam name="T"></typeparam>
     internal class IsolatedNode<T>
     {
-        volatile int m_lastBlock;
-        volatile int m_tail = 0;
-        volatile int m_head = 0;
-        T[] m_blocks;
+        private volatile int m_lastBlock;
+        private volatile int m_tail = 0;
+        private volatile int m_head = 0;
+        private readonly T[] m_blocks;
+
         public IsolatedNode(int count)
         {
             m_blocks = new T[count];
@@ -133,7 +131,5 @@ namespace GSF.Collections
             m_tail++;
             return true;
         }
-
-
     }
 }

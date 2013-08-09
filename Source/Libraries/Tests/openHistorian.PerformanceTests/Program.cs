@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using openHistorian.Collections.KeyValue;
 
 namespace openHistorian.PerformanceTests
 {
-    static class Program
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            var tree = new SortedTree256Test();
-            tree.SortedTree256Archive();
+            //var tree = new SortedTree256Test();
+            //tree.SortedTree256Archive();
             Console.ReadLine();
         }
     }

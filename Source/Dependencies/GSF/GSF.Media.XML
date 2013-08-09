@@ -1,0 +1,3456 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.Media</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.Media.ListInfoChunk">
+            <summary>
+            Represents the list info chunk in a WAVE media format file.
+            </summary>
+        </member>
+        <member name="T:GSF.Media.RiffChunk">
+            <summary>
+            Represents the type ID and size for a "chunk" in a RIFF media format file.
+            </summary>
+            <remarks>
+            <para>
+            The Resource Interchange File Format (RIFF) is a generic meta-format for storing data in tagged chunks.
+            It was introduced in 1991 by Microsoft and IBM, and was presented by Microsoft as the default format for
+            Windows 3.1 multimedia files. It is based on Electronic Arts's Interchange File Format, introduced in 1985,
+            the only difference being that multi-byte integers are in little-endian format, native to the 80x86 processor
+            series used in IBM PCs, rather than the big-endian format native to the 68k processor series used in Amiga and
+            Apple Macintosh computers, where IFF files were heavily used. (The specification for AIFF, the big-endian
+            analogue of RIFF, was published by Apple Computer in 1988.) The Microsoft implementation is mostly known
+            through file formats like AVI, ANI and WAV, which use the RIFF meta-format as their basis.
+            </para>
+            <para>
+            Some common RIFF file types:
+            <list type="table">
+            <listheader>
+                <term>File extension</term>
+                <description>Description</description>
+            </listheader>
+            <item>
+                <term>WAV</term>
+                <description>Windows audio file</description>
+            </item>
+            <item>
+                <term>AVI</term>
+                <description>Windows audio/video file</description>
+            </item>
+            <item>
+                <term>ANI</term>
+                <description>Animated Windows cursors</description>
+            </item>
+            <item>
+                <term>RMI</term>
+                <description>Windows RIFF MIDI file</description>
+            </item>
+            <item>
+                <term>CDR</term>
+                <description>CorelDRAW vector graphics file</description>
+            </item>
+            </list>
+            </para>
+            </remarks>
+        </member>
+        <member name="F:GSF.Media.RiffChunk.FixedLength">
+            <summary>
+            The fixed byte length of a <see cref="T:GSF.Media.RiffChunk"/> instance.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.RiffChunk.#ctor(GSF.Media.RiffChunk,System.String)">
+            <summary>
+            Constructor for derived classes used to initialize and validate  <see cref="T:GSF.Media.RiffChunk"/> properties.
+            </summary>
+            <param name="preRead">Pre-parsed <see cref="T:GSF.Media.RiffChunk"/> header.</param>
+            <param name="typeID">Expected type ID.</param>
+        </member>
+        <member name="M:GSF.Media.RiffChunk.#ctor(System.String)">
+            <summary>
+            Constructs a new <see cref="T:GSF.Media.RiffChunk"/> for the given <paramref name="typeID"/>.
+            </summary>
+            <param name="typeID">Expected type ID.</param>
+        </member>
+        <member name="M:GSF.Media.RiffChunk.GenerateBinaryImage(System.Byte[],System.Int32)">
+            <summary>
+            Generates a binary representation of this <see cref="T:GSF.Media.RiffChunk"/> and copies it into the given buffer.
+            </summary>
+            <param name="buffer">Buffer used to hold generated binary image of the source object.</param>
+            <param name="startIndex">0-based starting index in the <paramref name="buffer"/> to start writing.</param>
+            <returns>The number of bytes written to the <paramref name="buffer"/>.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="M:GSF.Media.RiffChunk.Clone">
+            <summary>
+            Creates a copy of the <see cref="T:GSF.Media.RiffChunk"/>.
+            </summary>
+            <returns>A new copy of the <see cref="T:GSF.Media.RiffChunk"/>.</returns>
+        </member>
+        <member name="M:GSF.Media.RiffChunk.ReadNext(System.IO.Stream)">
+            <summary>
+            Attempts to read the next RIFF chunk from the <paramref name="source"/> stream.
+            </summary>
+            <param name="source">Source stream for next RIFF chunk.</param>
+            <returns>Next RIFF chunk read from the <paramref name="source"/> stream.</returns>
+            <exception cref="T:System.InvalidOperationException">RIFF chunk too small, media file corrupted.</exception>
+        </member>
+        <member name="P:GSF.Media.RiffChunk.TypeID">
+            <summary>Four character text identifer for RIFF chunk.</summary>
+            <exception cref="T:System.ArgumentNullException">TypeID cannot be null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">TypeID must be extactly 4 characters in length.</exception>
+        </member>
+        <member name="P:GSF.Media.RiffChunk.ChunkSize">
+            <summary>Size of <see cref="T:GSF.Media.RiffChunk"/>.</summary>
+        </member>
+        <member name="P:GSF.Media.RiffChunk.BinaryLength">
+            <summary>
+            Gets the length of a <see cref="T:GSF.Media.RiffChunk"/> consisting of type ID and chunk size (i.e., 8 bytes).
+            </summary>
+        </member>
+        <member name="F:GSF.Media.ListInfoChunk.RiffTypeID">
+            <summary>
+            Type ID of a WAVE list chunk.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.ListInfoChunk.#ctor(GSF.Media.RiffChunk,System.IO.Stream)">
+            <summary>Reads a new WAVE list info section from the specified stream.</summary>
+            <param name="preRead">Pre-parsed <see cref="T:GSF.Media.RiffChunk"/> header.</param>
+            <param name="source">Source stream to read data from.</param>
+            <exception cref="T:System.InvalidOperationException">WAVE list info section is too small, wave file corrupted.</exception>
+        </member>
+        <member name="P:GSF.Media.ListInfoChunk.InfoStrings">
+            <summary>
+            Gets list of info strings from list info blocks of this <see cref="T:GSF.Media.ListInfoChunk"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Media.Music.DampingFunction">
+            <summary>
+            Provides a function signature for methods that damp an amplitude representing a
+            lowering of the acoustic pressure over time.
+            </summary>
+            <param name="sampleIndex">Sample index (0 to <paramref name="samplePeriod"/> - 1).</param>
+            <param name="samplePeriod">Total period, in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>), over which to perform damping.</param>
+            <param name="sampleRate">Number of samples per second, if useful for calculation.</param>
+            <returns>Scaling factor in the range of zero to one used to damp an amplitude at the given sample index.</returns>
+        </member>
+        <member name="T:GSF.Media.Music.Damping">
+            <summary>
+            Defines a few damping functions.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.Music.Damping.Natural(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Produces a natural damping curve very similar to that of a string based instrument - strong at
+            first and damping quickly over time from 1 to 0 over the <paramref name="samplePeriod"/>.
+            </summary>
+            <param name="sampleIndex">Sample index (0 to <paramref name="samplePeriod"/> - 1).</param>
+            <param name="samplePeriod">Total period, in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>), over which to perform damping.</param>
+            <param name="sampleRate">Number of samples per second, if useful for calculation.</param>
+            <returns>Scaling factor used to damp an amplitude at the given time.</returns>
+            <remarks>
+            This damping algorithm combines both the logarithmic and linear damping algoriths to
+            produce a very natural damping curve.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Damping.Logarithmic(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Produces a logarithmic damping curve - strong at first and damping quickly over time from 1 to 0 over the <paramref name="samplePeriod"/>.
+            </summary>
+            <param name="sampleIndex">Sample index (0 to <paramref name="samplePeriod"/> - 1).</param>
+            <param name="samplePeriod">Total period, in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>), over which to perform damping.</param>
+            <param name="sampleRate">Number of samples per second, if useful for calculation.</param>
+            <returns>Scaling factor used to damp an amplitude at the given time.</returns>
+            <remarks>
+            This damping would be similar to that of a note produced by a string based instrument.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Damping.InverseLogarithmic(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Produces an inverse logarithmic damping curve - slowly damping with a sharp end from 1 to 0 over the <paramref name="samplePeriod"/>.
+            </summary>
+            <param name="sampleIndex">Sample index (0 to <paramref name="samplePeriod"/> - 1).</param>
+            <param name="samplePeriod">Total period, in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>), over which to perform damping.</param>
+            <param name="sampleRate">Number of samples per second, if useful for calculation.</param>
+            <returns>Scaling factor used to damp an amplitude at the given time.</returns>
+            <remarks>
+            This damping would be similar to that of a note produced on an electronic keyboard or a breath based instrument.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Damping.Linear(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Produces a linear damping curve - damping with a perfect slope from 1 to 0 over the <paramref name="samplePeriod"/>.
+            </summary>
+            <param name="sampleIndex">Sample index (0 to <paramref name="samplePeriod"/> - 1).</param>
+            <param name="samplePeriod">Total period, in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>), over which to perform damping.</param>
+            <param name="sampleRate">Number of samples per second, if useful for calculation.</param>
+            <returns>Scaling factor used to damp an amplitude at the given time.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Damping.ReverseLinear(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Produces a reverse linear damping curve - damping with a perfect slope from 0 to 1 over the <paramref name="samplePeriod"/>.
+            </summary>
+            <param name="sampleIndex">Sample index (0 to <paramref name="samplePeriod"/> - 1).</param>
+            <param name="samplePeriod">Total period, in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>), over which to perform damping.</param>
+            <param name="sampleRate">Number of samples per second, if useful for calculation.</param>
+            <returns>Scaling factor used to damp an amplitude at the given time.</returns>
+            <remarks>This is just used for an interesting note effect.</remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Damping.Sinusoidal(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Produces a sinusoidal damping curve oscillating from 1 to 0 to 1 over the <paramref name="samplePeriod"/>.
+            </summary>
+            <param name="sampleIndex">Sample index (0 to <paramref name="samplePeriod"/> - 1).</param>
+            <param name="samplePeriod">Total period, in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>), over which to perform damping.</param>
+            <param name="sampleRate">Number of samples per second, if useful for calculation.</param>
+            <returns>Scaling factor used to damp an amplitude at the given time.</returns>
+            <remarks>This is just used for an interesting note effect.</remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Damping.Zero(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Produces a damping signature that represents no damping over time.
+            </summary>
+            <param name="sampleIndex">Sample index (0 to <paramref name="samplePeriod"/> - 1).</param>
+            <param name="samplePeriod">Total period, in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>), over which to perform damping.</param>
+            <param name="sampleRate">Number of samples per second, if useful for calculation.</param>
+            <returns>Returns a scalar of 1.0 regardless to time.</returns>
+            <remarks>
+            Zero damped sounds would be produced by synthetic sources such as an electronic keyboard.
+            </remarks>
+        </member>
+        <member name="T:GSF.Media.Music.Dynamic">
+            <summary>
+            Defines the relative intensity (i.e., volume) of a musical line.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Dynamic.Undefined">
+            <summary>No dynamic is defined.</summary>
+        </member>
+        <member name="F:GSF.Media.Music.Dynamic.Pianissimo">
+            <summary>pp - very soft.</summary>
+        </member>
+        <member name="F:GSF.Media.Music.Dynamic.Piano">
+            <summary>p - soft.</summary>
+        </member>
+        <member name="F:GSF.Media.Music.Dynamic.MezzoPiano">
+            <summary>mp - half soft as <see cref="F:GSF.Media.Music.Dynamic.Piano"/>.</summary>
+        </member>
+        <member name="F:GSF.Media.Music.Dynamic.MezzoForte">
+            <summary>mf - half loud as <see cref="F:GSF.Media.Music.Dynamic.Forte"/>.</summary>
+            <remarks>This is the default dynamic level.</remarks>
+        </member>
+        <member name="F:GSF.Media.Music.Dynamic.Forte">
+            <summary>f - loud.</summary>
+        </member>
+        <member name="F:GSF.Media.Music.Dynamic.Fortissimo">
+            <summary>ff - very loud.</summary>
+        </member>
+        <member name="T:GSF.Media.Music.MeasureSize">
+            <summary>
+            Defines the size of a musical measure as the number of beats per note value.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.Music.MeasureSize.#ctor(System.Int32,System.Double)">
+            <summary>
+            Creates a new musical measure defined as the number of beats per note value.
+            </summary>
+            <param name="beats">A <see cref="T:System.Int32"/> representing the beats.</param>
+            <param name="noteValue">A <see cref="T:System.Double"/> representing the note value.</param>
+        </member>
+        <member name="M:GSF.Media.Music.MeasureSize.#ctor(System.Int32,GSF.Media.Music.NoteValue)">
+            <summary>
+            Creates a new musical measure defined as the number of beats per note value.
+            </summary>
+            <param name="beats">A <see cref="T:System.Int32"/> representing the beats.</param>
+            <param name="noteValue">A <see cref="P:GSF.Media.Music.MeasureSize.NoteValue"/> representing the note value.</param>
+        </member>
+        <member name="M:GSF.Media.Music.MeasureSize.#ctor(System.Int32,GSF.Media.Music.NoteValueBritish)">
+            <summary>
+            Creates a new musical measure defined as the number of beats per note value.
+            </summary>
+            <param name="beats">A <see cref="T:System.Int32"/> representing the beats.</param>
+            <param name="noteValue">A <see cref="T:GSF.Media.Music.NoteValueBritish"/> representing the note value.</param>
+        </member>
+        <member name="M:GSF.Media.Music.MeasureSize.ValidateNoteValueAtBeat(System.Double,System.Int32)">
+            <summary>
+            Validates that given note value will fit within this <see cref="T:GSF.Media.Music.MeasureSize"/> for specified beat.
+            </summary>
+            <param name="noteValue">Note value (i.e., length) to validate.</param>
+            <param name="beat">Beat within in measure where note value is trying to fit.</param>
+        </member>
+        <member name="M:GSF.Media.Music.MeasureSize.ValidateNoteValueAtBeat(GSF.Media.Music.NoteValue,System.Int32,System.Int32)">
+            <summary>
+            Validates that given note value will fit within this <see cref="T:GSF.Media.Music.MeasureSize"/> for specified beat.
+            </summary>
+            <param name="noteValue">Named note value to validate.</param>
+            <param name="beat">Beat within in measure where note value is trying to fit.</param>
+            <param name="dots">Dot length extensions to apply to named note value.</param>
+        </member>
+        <member name="M:GSF.Media.Music.MeasureSize.ValidateNoteValueAtBeat(GSF.Media.Music.NoteValueBritish,System.Int32,System.Int32)">
+            <summary>
+            Validates that given note value will fit within this <see cref="T:GSF.Media.Music.MeasureSize"/> for specified beat.
+            </summary>
+            <param name="noteValue">Named note value to validate.</param>
+            <param name="beat">Beat within in measure where note value is trying to fit.</param>
+            <param name="dots">Dot length extensions to apply to named note value.</param>
+        </member>
+        <member name="P:GSF.Media.Music.MeasureSize.Beats">
+            <summary>
+            Gets or sets the number of beats per measure.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.MeasureSize.NoteValue">
+            <summary>
+            Get or sets the relative note value representing the basic pulse of the music.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.MeasureSize.NamedNoteValue">
+            <summary>
+            Get or sets the note value, expressed in American form, representing the basic pulse of the music.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.MeasureSize.NamedNoteValueBritish">
+            <summary>
+            Get or sets the note value, expressed in British form, representing the basic pulse of the music.
+            </summary>
+        </member>
+        <member name="T:GSF.Media.Music.NamespaceDoc">
+            <tocexclude />
+            <remarks>
+            This namespace is excluded from the official documentation TOC.
+            </remarks>
+        </member>
+        <member name="T:GSF.Media.Music.Note">
+             <summary>
+             Defines fundamental musical note frequencies and methods to create them.
+             </summary>
+             <example>
+             This example creates an in-memory wave file and adds notes to create a basic musical scale:
+             <code>
+             using System;
+             using GSF.Media;
+             using GSF.Media.Music;
+            
+             static class Program
+             {
+                 static void Main()
+                  {
+                      WaveFile waveFile = new WaveFile();
+                      long samplePeriod = 6 * waveFile.SampleRate;   // Compute total sample period
+                      int totalNotes = 15;                           // Total notes to traverse
+                      string noteID = Note.MiddleC;                  // Start note at middle C
+                      double frequency = Note.GetFrequency(noteID);  // Get frequency for middle C
+                      bool reverse = false;                          // Traverse notes in reverse order
+            
+                      for (int sample = 0; sample <![CDATA[<]]> samplePeriod; sample++)
+                      {
+                          // Change notes at even intervals within the sample period
+                          if (sample > 0 <![CDATA[&&]]> (sample % (samplePeriod / totalNotes)) == 0)
+                          {
+                              if (reverse)
+                              {
+                                  noteID = Note.GetPreviousID(noteID, false);
+                                  frequency = Note.GetFrequency(noteID);
+                              }
+                              else
+                              {
+                                  noteID = Note.GetNextID(noteID, false);
+                                  frequency = Note.GetFrequency(noteID);
+                              }
+            
+                              // Go back down the scale after C5
+                              if (noteID == "C5")
+                                  reverse = true;
+                          }
+            
+                          waveFile.AddSample(Timbre.BasicNote(frequency, sample, samplePeriod, waveFile.SampleRate) * 4500);
+                      }
+            
+                      waveFile.Play();
+                      Console.ReadKey();
+                  }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C0">
+            <summary>
+            Fundamental frequency for note C0.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C0S">
+            <summary>
+            Fundamental frequency for note C0#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D0">
+            <summary>
+            Fundamental frequency for note D0.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D0S">
+            <summary>
+            Fundamental frequency for note D0#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.E0">
+            <summary>
+            Fundamental frequency for note E0.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F0">
+            <summary>
+            Fundamental frequency for note F0.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F0S">
+            <summary>
+            Fundamental frequency for note F0#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G0">
+            <summary>
+            Fundamental frequency for note G0.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G0S">
+            <summary>
+            Fundamental frequency for note G0#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A0">
+            <summary>
+            Fundamental frequency for note A0.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A0S">
+            <summary>
+            Fundamental frequency for note A0#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.B0">
+            <summary>
+            Fundamental frequency for note B0.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C1">
+            <summary>
+            Fundamental frequency for note C1.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C1S">
+            <summary>
+            Fundamental frequency for note C1#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D1">
+            <summary>
+            Fundamental frequency for note D1.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D1S">
+            <summary>
+            Fundamental frequency for note D1#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.E1">
+            <summary>
+            Fundamental frequency for note E1.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F1">
+            <summary>
+            Fundamental frequency for note F1.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F1S">
+            <summary>
+            Fundamental frequency for note F1#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G1">
+            <summary>
+            Fundamental frequency for note G1.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G1S">
+            <summary>
+            Fundamental frequency for note G1#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A1">
+            <summary>
+            Fundamental frequency for note A1.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A1S">
+            <summary>
+            Fundamental frequency for note A1#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.B1">
+            <summary>
+            Fundamental frequency for note B1.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C2">
+            <summary>
+            Fundamental frequency for note C2.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C2S">
+            <summary>
+            Fundamental frequency for note C2#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D2">
+            <summary>
+            Fundamental frequency for note D2.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D2S">
+            <summary>
+            Fundamental frequency for note D2#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.E2">
+            <summary>
+            Fundamental frequency for note E2.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F2">
+            <summary>
+            Fundamental frequency for note F2.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F2S">
+            <summary>
+            Fundamental frequency for note F2#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G2">
+            <summary>
+            Fundamental frequency for note G2.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G2S">
+            <summary>
+            Fundamental frequency for note G2#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A2">
+            <summary>
+            Fundamental frequency for note A2.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A2S">
+            <summary>
+            Fundamental frequency for note A2#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.B2">
+            <summary>
+            Fundamental frequency for note B2.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C3">
+            <summary>
+            Fundamental frequency for note C3.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C3S">
+            <summary>
+            Fundamental frequency for note C3#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D3">
+            <summary>
+            Fundamental frequency for note D3.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D3S">
+            <summary>
+            Fundamental frequency for note D3#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.E3">
+            <summary>
+            Fundamental frequency for note E3.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F3">
+            <summary>
+            Fundamental frequency for note F3.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F3S">
+            <summary>
+            Fundamental frequency for note F3#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G3">
+            <summary>
+            Fundamental frequency for note G3.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G3S">
+            <summary>
+            Fundamental frequency for note G3#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A3">
+            <summary>
+            Fundamental frequency for note A3.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A3S">
+            <summary>
+            Fundamental frequency for note A3#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.B3">
+            <summary>
+            Fundamental frequency for note B3.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C4">
+            <summary>
+            Fundamental frequency for note C4 - Middle C.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C4S">
+            <summary>
+            Fundamental frequency for note C4#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D4">
+            <summary>
+            Fundamental frequency for note D4.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D4S">
+            <summary>
+            Fundamental frequency for note D4#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.E4">
+            <summary>
+            Fundamental frequency for note E4.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F4">
+            <summary>
+            Fundamental frequency for note F4.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F4S">
+            <summary>
+            Fundamental frequency for note F4#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G4">
+            <summary>
+            Fundamental frequency for note G4.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G4S">
+            <summary>
+            Fundamental frequency for note G4#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A4">
+            <summary>
+            Fundamental frequency for note A4.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A4S">
+            <summary>
+            Fundamental frequency for note A4#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.B4">
+            <summary>
+            Fundamental frequency for note B4.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C5">
+            <summary>
+            Fundamental frequency for note C5.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C5S">
+            <summary>
+            Fundamental frequency for note C5#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D5">
+            <summary>
+            Fundamental frequency for note D5.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D5S">
+            <summary>
+            Fundamental frequency for note D5#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.E5">
+            <summary>
+            Fundamental frequency for note E5.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F5">
+            <summary>
+            Fundamental frequency for note F5.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F5S">
+            <summary>
+            Fundamental frequency for note F5#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G5">
+            <summary>
+            Fundamental frequency for note G5.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G5S">
+            <summary>
+            Fundamental frequency for note G5#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A5">
+            <summary>
+            Fundamental frequency for note A5.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A5S">
+            <summary>
+            Fundamental frequency for note A5#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.B5">
+            <summary>
+            Fundamental frequency for note B5.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C6">
+            <summary>
+            Fundamental frequency for note C6.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C6S">
+            <summary>
+            Fundamental frequency for note C6#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D6">
+            <summary>
+            Fundamental frequency for note D6.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D6S">
+            <summary>
+            Fundamental frequency for note D6#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.E6">
+            <summary>
+            Fundamental frequency for note E6.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F6">
+            <summary>
+            Fundamental frequency for note F6.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F6S">
+            <summary>
+            Fundamental frequency for note F6#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G6">
+            <summary>
+            Fundamental frequency for note G6.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G6S">
+            <summary>
+            Fundamental frequency for note G6#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A6">
+            <summary>
+            Fundamental frequency for note A6.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A6S">
+            <summary>
+            Fundamental frequency for note A6#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.B6">
+            <summary>
+            Fundamental frequency for note B6.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C7">
+            <summary>
+            Fundamental frequency for note C7.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C7S">
+            <summary>
+            Fundamental frequency for note C7#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D7">
+            <summary>
+            Fundamental frequency for note D7.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D7S">
+            <summary>
+            Fundamental frequency for note D7#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.E7">
+            <summary>
+            Fundamental frequency for note E7.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F7">
+            <summary>
+            Fundamental frequency for note F7.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.F7S">
+            <summary>
+            Fundamental frequency for note F7#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G7">
+            <summary>
+            Fundamental frequency for note G7.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.G7S">
+            <summary>
+            Fundamental frequency for note G7#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A7">
+            <summary>
+            Fundamental frequency for note A7.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.A7S">
+            <summary>
+            Fundamental frequency for note A7#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.B7">
+            <summary>
+            Fundamental frequency for note B7.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C8">
+            <summary>
+            Fundamental frequency for note C8.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.C8S">
+            <summary>
+            Fundamental frequency for note C8#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D8">
+            <summary>
+            Fundamental frequency for note D8.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.D8S">
+            <summary>
+            Fundamental frequency for note D8#.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Music.Note.MiddleC">
+            <summary>Note ID for "Middle C"</summary>
+        </member>
+        <member name="M:GSF.Media.Music.Note.#ctor">
+            <summary>
+            Creates a new note of the specified frequency and length.
+            </summary>
+            <remarks>
+            <para>
+            Default note will be rest (zero frequency), quarter note.
+            </para>
+            <para>
+            It is expected that <see cref="T:GSF.Media.Music.Note"/> objects will be constructed using object intializers.
+            </para>
+            </remarks>
+            <example>
+            <code>
+            // Create a 3/8th length, middle C note
+            Note note1 = new Note { Frequency = Note.C4, NamedValue = NoteValue.Quarter, Dots = 1 };
+            
+            // Create a 1/8th length, E above middle C note
+            Note note2 = new Note { ID = "E4", NamedValueBritish = NoteValueBritish.Quaver };
+            
+            // Create a whole length, F# above middle C note, "p" soft dynamic
+            Note note3 = new Note { Frequency = Note.F4S, Value = 1.0, NamedDynamic = Dynamic.Piano };
+            </code>
+            </example>
+        </member>
+        <member name="M:GSF.Media.Music.Note.CalculateValueTime(GSF.Media.Music.Tempo)">
+            <summary>
+            Calculates the actual time duration, in seconds, for the specified tempo that
+            the note value will last. For example, if tempo is M.M. 120 quarter-notes per
+            minte, then each quarter-note would last a half-second.
+            </summary>
+            <param name="tempo">Tempo used to calculate note value time.</param>
+            <returns>Calculated note value time.</returns>
+            <remarks>
+            Calculated value is cached and available from <see cref="P:GSF.Media.Music.Note.ValueTime"/> property.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Note.ToString">
+            <summary>
+            Returns a string representation for the note.
+            </summary>
+            <returns>A <see cref="T:System.String"/> value representation for the note.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.Equals(GSF.Media.Music.Note)">
+            <summary>Returns True if the frequency and value of this note equals the frequency and value of the specified other note.</summary>
+            <param name="other">The other <see cref="T:GSF.Media.Music.Note"/> to compare against.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating the result.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.Equals(System.Object)">
+            <summary>Returns True if the frequency and value of this note equals the frequency and value of the specified other note.</summary>
+            <param name="obj">The other <see cref="T:System.Object"/> to compare against.</param>
+            <returns>A <see cref="T:System.Boolean"/> indicating the result.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.CompareTo(GSF.Media.Music.Note)">
+            <summary>Notes are compared by frequency, then by value (i.e., duration).</summary>
+            <param name="other">A <see cref="T:GSF.Media.Music.Note"/> that is compared against.</param>
+            <returns>An <see cref="T:System.Int32"/> that indicates: this object is greater than if 1, equal to if 0, or less than if -1.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.CompareTo(System.Object)">
+            <summary>Notes are compared by frequency, then by value (i.e., duration).</summary>
+            <param name="obj">An <see cref="T:System.Object"/> that is compared against.</param>
+            <returns>An <see cref="T:System.Int32"/> that indicates: this object is greater than if 1, equal to if 0, or less than if -1.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.GetHashCode">
+            <summary>
+            Serves as a hash function for the current <see cref="T:GSF.Media.Music.Note"/>.
+            </summary>
+            <returns>A hash code for the current <see cref="T:GSF.Media.Music.Note"/>.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.op_Equality(GSF.Media.Music.Note,GSF.Media.Music.Note)">
+            <summary>
+            Compares two <see cref="T:GSF.Media.Music.Note"/> frequencies and values for equality.
+            </summary>
+            <param name="note1">A <see cref="T:GSF.Media.Music.Note"/> left hand operand.</param>
+            <param name="note2">A <see cref="T:GSF.Media.Music.Note"/> right hand operand.</param>
+            <returns>A boolean indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.op_Inequality(GSF.Media.Music.Note,GSF.Media.Music.Note)">
+            <summary>
+            Compares two <see cref="T:GSF.Media.Music.Note"/> frequencies and values for inequality.
+            </summary>
+            <param name="note1">A <see cref="T:GSF.Media.Music.Note"/> left hand operand.</param>
+            <param name="note2">A <see cref="T:GSF.Media.Music.Note"/> right hand operand.</param>
+            <returns>A boolean indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.op_GreaterThan(GSF.Media.Music.Note,GSF.Media.Music.Note)">
+            <summary>
+            Returns true if left <see cref="T:GSF.Media.Music.Note"/> timestamp is greater than right <see cref="T:GSF.Media.Music.Note"/>.
+            </summary>
+            <param name="note1">A <see cref="T:GSF.Media.Music.Note"/> left hand operand.</param>
+            <param name="note2">A <see cref="T:GSF.Media.Music.Note"/> right hand operand.</param>
+            <returns>A boolean indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.op_GreaterThanOrEqual(GSF.Media.Music.Note,GSF.Media.Music.Note)">
+            <summary>
+            Returns true if left <see cref="T:GSF.Media.Music.Note"/> timestamp is greater than or equal to right <see cref="T:GSF.Media.Music.Note"/>.
+            </summary>
+            <param name="note1">A <see cref="T:GSF.Media.Music.Note"/> left hand operand.</param>
+            <param name="note2">A <see cref="T:GSF.Media.Music.Note"/> right hand operand.</param>
+            <returns>A boolean indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.op_LessThan(GSF.Media.Music.Note,GSF.Media.Music.Note)">
+            <summary>
+            Returns true if left <see cref="T:GSF.Media.Music.Note"/> timestamp is less than right <see cref="T:GSF.Media.Music.Note"/>.
+            </summary>
+            <param name="note1">A <see cref="T:GSF.Media.Music.Note"/> left hand operand.</param>
+            <param name="note2">A <see cref="T:GSF.Media.Music.Note"/> right hand operand.</param>
+            <returns>A boolean indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.op_LessThanOrEqual(GSF.Media.Music.Note,GSF.Media.Music.Note)">
+            <summary>
+            Returns true if left <see cref="T:GSF.Media.Music.Note"/> timestamp is less than or equal to right <see cref="T:GSF.Media.Music.Note"/>.
+            </summary>
+            <param name="note1">A <see cref="T:GSF.Media.Music.Note"/> left hand operand.</param>
+            <param name="note2">A <see cref="T:GSF.Media.Music.Note"/> right hand operand.</param>
+            <returns>A boolean indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.NamedValueIndex(System.Double)">
+            <summary>
+            Returns closest note value index (for <see cref="T:GSF.Media.Music.NoteValue"/> or <see cref="T:GSF.Media.Music.NoteValueBritish"/>)
+            given the relative duration of a note.
+            </summary>
+            <param name="value">Relative duration of the note.</param>
+            <returns>Closest note value enumeration index given the relative duration of a note.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Note.GetFrequency(System.String)">
+            <summary>
+            Gets the specified note frequency.
+            </summary>
+            <param name="noteID">ID of the note to retrieve - expected format is "Note + Octave + S?" (e.g., A2 or C5S)</param>
+            <returns>The specified note.</returns>
+            <exception cref="T:System.ArgumentNullException">noteID is null.</exception>
+            <exception cref="T:System.ArgumentException">Invalid note ID format - expected "Note + Octave + S?" (e.g., A2 or C5S).</exception>
+        </member>
+        <member name="M:GSF.Media.Music.Note.GetFrequency(System.Char,System.Int32,System.Boolean)">
+            <summary>
+            Gets the specified note frequency.
+            </summary>
+            <param name="note">Note (A - G) to retrieve.</param>
+            <param name="octave">Octave of the the note to retrieve (0 - 8).</param>
+            <param name="sharp">Indicates to get the "sharp" version of the note.</param>
+            <returns>The specified note.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Notes must be A - G, octaves must be 0 - 8, first note is C0, last note is D8S.</exception>
+            <exception cref="T:System.ArgumentException">Sharps are not defined for notes 'B' and 'E'.</exception>
+        </member>
+        <member name="M:GSF.Media.Music.Note.GetNextID(System.String,System.Boolean)">
+            <summary>
+            Gets the next note ID in sequence after the specified note ID.
+            </summary>
+            <param name="noteID">ID of the current note - expected format is "Note + Octave + S?" (e.g., A2 or C5S)</param>
+            <param name="includeSharps">Set to True to include sharp notes in the sequence.</param>
+            <returns>The next note ID that is after the specified note ID.</returns>
+            <exception cref="T:System.ArgumentNullException">noteID is null.</exception>
+            <exception cref="T:System.ArgumentException">Invalid note ID format - expected "Note + Octave + S?" (e.g., A2 or C5S).</exception>
+        </member>
+        <member name="M:GSF.Media.Music.Note.GetPreviousID(System.String,System.Boolean)">
+            <summary>
+            Gets the previous note ID in sequence before the specified note ID.
+            </summary>
+            <param name="noteID">ID of the current note - expected format is "Note + Octave + S?" (e.g., A2 or C5S)</param>
+            <param name="includeSharps">Set to True to include sharp notes in the sequence.</param>
+            <returns>The previous note ID that is before the specified note ID.</returns>
+            <exception cref="T:System.ArgumentNullException">noteID is null.</exception>
+            <exception cref="T:System.ArgumentException">Invalid note ID format - expected "Note + Octave + S?" (e.g., A2 or C5S).</exception>
+        </member>
+        <member name="P:GSF.Media.Music.Note.Frequency">
+            <summary>Gets or sets frequency of this note.</summary>
+        </member>
+        <member name="P:GSF.Media.Music.Note.ID">
+            <summary>Gets or sets note ID of the note.</summary>
+            <exception cref="T:System.ArgumentNullException">noteID is null.</exception>
+            <exception cref="T:System.ArgumentException">Invalid note ID format - expected "Note + Octave + S?" (e.g., A2 or C5S).</exception>
+        </member>
+        <member name="P:GSF.Media.Music.Note.Value">
+            <summary>Get or sets the relative note value representing the length of the note.</summary>
+        </member>
+        <member name="P:GSF.Media.Music.Note.ValueTime">
+            <summary>
+            Gets the cached note value time, in seconds, calculated from a call to <see cref="M:GSF.Media.Music.Note.CalculateValueTime(GSF.Media.Music.Tempo)"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Note.NamedValue">
+            <summary>Get or sets the note value, expressed in American form, representing the length of the note.</summary>
+        </member>
+        <member name="P:GSF.Media.Music.Note.NamedValueBritish">
+            <summary>Get or sets the note value, expressed in British form, representing the length of the note.</summary>
+        </member>
+        <member name="P:GSF.Media.Music.Note.Dots">
+            <summary>Gets or sets the total dotted note length extensions that apply to this note.</summary>
+            <remarks>This is only used in conjunction with the named note values.</remarks>
+        </member>
+        <member name="P:GSF.Media.Music.Note.Timbre">
+            <summary>
+            Gets or sets the individual tibre function used to synthesize the sounds
+            for this note (i.e., the instrument). If this timbre function is not defined,
+            the timbre of the song will be used for the note.
+            </summary>
+            <remarks>
+            Set this value to null to use current timbre function of the song.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.Music.Note.Damping">
+            <summary>
+            Gets or sets the individual damping function used to lower the sound volume
+            for this note over time. If this damping function is not defined, the
+            damping algorithm of the song will be used for the note.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Note.NamedDynamic">
+            <summary>
+            Gets or sets the named dynamic (i.e., volume) for this note.  If the dynamic
+            is undefined, the dynamic of the song will be used.
+            </summary>
+            <remarks>
+            Set this value to undefined to use the current dynamic of the song.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.Music.Note.Dynamic">
+            <summary>
+            Gets or sets the dynamic (i.e., volume) expressed as percentage in
+            the range of 0 to 1 for this note. If the dynamic is set to -1, the
+            dynamic of the song will be used.
+            </summary>
+            <remarks>
+            Set this value to -1 to use the current dynamic of the song.
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Value must be expressed as a fractional percentage between zero and one.
+            </exception>
+        </member>
+        <member name="P:GSF.Media.Music.Note.StartTimeIndex">
+            <summary>Gets or sets start time index for this note.</summary>
+            <remarks>This is typically assigned and used by host <see cref="T:GSF.Media.Music.Song"/></remarks>
+        </member>
+        <member name="P:GSF.Media.Music.Note.EndTimeIndex">
+            <summary>Gets or sets end time index for this note.</summary>
+            <remarks>This is typically assigned and used by host <see cref="T:GSF.Media.Music.Song"/></remarks>
+        </member>
+        <member name="P:GSF.Media.Music.Note.SamplePeriod">
+            <summary>Gets or sets the sample period for this note.</summary>
+            <remarks>This is typically assigned and used by host <see cref="T:GSF.Media.Music.Song"/></remarks>
+        </member>
+        <member name="T:GSF.Media.Music.NoteValue">
+            <summary>American note value (♪) representing the relative duration of a note.</summary>
+            <remarks>Note duration formula accessible via extension function "Duration()" for given note value.</remarks>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.Longa">
+            <summary>Quadruple whole note (i.e., 4 times the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.Breve">
+            <summary>Double whole note (i.e., 2 times the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.Whole">
+            <summary>Whole note.</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.Half">
+            <summary>Half note (i.e., 1/2 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.Quarter">
+            <summary>Quarter note (i.e., 1/4 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.Eighth">
+            <summary>Eighth note (i.e., 1/8 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.Sixteenth">
+            <summary>Sixteenth note (i.e., 1/16 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.ThirtySecond">
+            <summary>ThirtySecond note (i.e., 1/32 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.SixtyFourth">
+            <summary>SixtyFourth note (i.e., 1/64 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.HundredTwentyEighth">
+            <summary>HundredTwentyEighth note (i.e., 1/128 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.TwoHundredFiftySixth">
+            <summary>TwoHundredFiftySixth note (i.e., 1/256 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.FiveHundredTwelfth">
+            <summary>FiveHundredTwelfth note (i.e., 1/512 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValue.ThousandTwentyFourth">
+            <summary>ThousandTwentyFourth note (i.e., 1/1024 the length of a whole note).</summary>
+        </member>
+        <member name="T:GSF.Media.Music.NoteValueBritish">
+            <summary>British note value (♪) representing the relative duration of a note.</summary>
+            <remarks>Note duration formula accessible via extension function "Duration()" for given note value.</remarks>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Longa">
+            <summary>Quadruple whole note (i.e., 4 times the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Breve">
+            <summary>Double whole note (i.e., 2 times the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Semibreve">
+            <summary>Whole note.</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Minim">
+            <summary>Half note (i.e., 1/2 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Crotchet">
+            <summary>Quarter note (i.e., 1/4 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Quaver">
+            <summary>Eighth note (i.e., 1/8 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Semiquaver">
+            <summary>Sixteenth note (i.e., 1/16 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Demisemiquaver">
+            <summary>ThirtySecond note (i.e., 1/32 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Hemidemisemiquaver">
+            <summary>SixtyFourth note (i.e., 1/64 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.Quasihemidemisemiquaver">
+            <summary>HundredTwentyEighth note (i.e., 1/128 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.TwoHundredFiftySixth">
+            <summary>TwoHundredFiftySixth note (i.e., 1/256 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.FiveHundredTwelfth">
+            <summary>FiveHundredTwelfth note (i.e., 1/512 the length of a whole note).</summary>
+        </member>
+        <member name="F:GSF.Media.Music.NoteValueBritish.ThousandTwentyFourth">
+            <summary>ThousandTwentyFourth note (i.e., 1/1024 the length of a whole note).</summary>
+        </member>
+        <member name="T:GSF.Media.Music.NoteValueExtensions">
+            <summary>Defines extension functions related to note value enumerations.</summary>
+        </member>
+        <member name="M:GSF.Media.Music.NoteValueExtensions.Duration(GSF.Media.Music.NoteValue)">
+            <summary>
+            Returns source note value duration.  For example, 0.25 will be returned for
+            a quater note, 1.0 will be returned for a whole note, etc.
+            </summary>
+            <param name="source">Source note value.</param>
+            <returns>Duration of note value.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.NoteValueExtensions.Duration(GSF.Media.Music.NoteValueBritish)">
+            <summary>
+            Returns source note value duration.  For example, 0.25 will be returned for
+            a crotchet note, 1.0 will be returned for a semibreve note, etc.
+            </summary>
+            <param name="source">Source note value.</param>
+            <returns>Duration of note value.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.NoteValueExtensions.Duration(GSF.Media.Music.NoteValue,System.Int32)">
+            <summary>
+            Returns source note value duration.  For example, 0.25 will be returned for
+            a quater note, 1.0 will be returned for a whole note, etc.
+            </summary>
+            <param name="source">Source note value.</param>
+            <param name="dots">Total dotted note length extensions to apply.</param>
+            <returns>Duration of note value.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.NoteValueExtensions.Duration(GSF.Media.Music.NoteValueBritish,System.Int32)">
+            <summary>
+            Returns source note value duration.  For example, 0.25 will be returned for
+            a crotchet note, 1.0 will be returned for a semibreve note, etc.
+            </summary>
+            <param name="source">Source note value.</param>
+            <param name="dots">Total dotted note length extensions to apply.</param>
+            <returns>Duration of note value.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.NoteValueExtensions.Duration(GSF.Media.Music.NoteValue,GSF.Media.Music.NoteValue)">
+            <summary>
+            Returns source note value duration in terms of given reference note value.
+            For example, if measure size is 3/4 then reference is quarter notes and returned
+            value will be equivalent number of quarter notes for given source note.
+            </summary>
+            <param name="source">Source note value.</param>
+            <param name="reference">Reference note value.</param>
+            <returns>Duration of note value in terms of specified reference note value.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.NoteValueExtensions.Duration(GSF.Media.Music.NoteValueBritish,GSF.Media.Music.NoteValueBritish)">
+            <summary>
+            Returns source note value duration in terms of given reference note value.
+            For example, if measure size is 3/4 then reference is quarter notes and returned
+            value will be equivalent number of quarter notes for given source note.
+            </summary>
+            <param name="source">Source note value.</param>
+            <param name="reference">Reference note value.</param>
+            <returns>Duration of note value in terms of specified reference note value.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.NoteValueExtensions.Duration(GSF.Media.Music.NoteValue,GSF.Media.Music.NoteValue,System.Int32)">
+            <summary>
+            Returns source note value duration in terms of given reference note value.
+            For example, if measure size is 3/4 then reference is quarter notes and returned
+            value will be equivalent number of quarter notes for given source note.
+            </summary>
+            <param name="source">Source note value.</param>
+            <param name="reference">Reference note value.</param>
+            <param name="dots">Total dotted note length extensions to apply.</param>
+            <returns>Duration of note value in terms of specified reference note value.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.NoteValueExtensions.Duration(GSF.Media.Music.NoteValueBritish,GSF.Media.Music.NoteValueBritish,System.Int32)">
+            <summary>
+            Returns source note value duration in terms of given reference note value.
+            For example, if measure size is 3/4 then reference is quarter notes and returned
+            value will be equivalent number of quarter notes for given source note.
+            </summary>
+            <param name="source">Source note value.</param>
+            <param name="reference">Reference note value.</param>
+            <param name="dots">Total dotted note length extensions to apply.</param>
+            <returns>Duration of note value in terms of specified reference note value.</returns>
+        </member>
+        <member name="T:GSF.Media.Music.Phrase">
+            <summary>
+            Defines a repeatable series of notes that can be added to a song over and over,
+            for example, the phrase of music defining the chorus.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.Music.Phrase.#ctor">
+            <summary>
+            Constructs a new <see cref="T:GSF.Media.Music.Phrase"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.Music.Phrase.AddPhrase(GSF.Media.Music.Phrase)">
+            <summary>
+            Add another predefined phrase of notes to this phrase.
+            </summary>
+            <param name="phrase">Phrase to add.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Phrase.AddNotes(GSF.Media.Music.Note[])">
+            <summary>
+            Add a series of notes to the phrase.
+            </summary>
+            <param name="notes">Notes to add.</param>
+        </member>
+        <member name="P:GSF.Media.Music.Phrase.Notes">
+            <summary>
+            Series of notes that define the phrase.
+            </summary>
+        </member>
+        <member name="T:GSF.Media.Music.Song">
+             <summary>
+             Allows creation of a synthesized musical score storing the resultant song in an
+             in-memory wave file for play back or saving music to disk.
+             </summary>
+             <example>
+             This example generates a multi-instrument chord:
+             <code>
+             using System;
+             using GSF.Media;
+             using GSF.Media.Music;
+            
+             static class Program
+             {
+                 static void Main()
+                 {
+                     Song song = new Song { Damping = Damping.Linear };
+            
+                     Console.WriteLine("Generating multi-instrument chord...");
+            
+                     song.AddNotes
+                     (
+                         new Note { Frequency = Note.C4, Value = 4, Timbre = Timbre.EvenHarmonicSeries },
+                         new Note { Frequency = Note.C4, Value = 4, Timbre = Timbre.Clarinet },
+                         new Note { Frequency = Note.C4, Value = 4, Timbre = Timbre.Organ },
+                         new Note { Frequency = Note.E4, Value = 4, Timbre = Timbre.EvenHarmonicSeries },
+                         new Note { Frequency = Note.E4, Value = 4, Timbre = Timbre.Clarinet },
+                         new Note { Frequency = Note.E4, Value = 4, Timbre = Timbre.Organ },
+                         new Note { Frequency = Note.G4, Value = 4, Timbre = Timbre.EvenHarmonicSeries },
+                         new Note { Frequency = Note.G4, Value = 4, Timbre = Timbre.SimulatedClarinet },
+                         new Note { Frequency = Note.G4, Value = 4, Timbre = Timbre.SimulatedOrgan }
+                     );
+            
+                     song.Finish();
+            
+                     Console.WriteLine("Saving chord to disk...");
+                     song.Save("MajorTriad.wav");
+            
+                     Console.WriteLine("Playing chord...");
+                     song.Play();
+            
+                     Console.ReadKey();
+                 }
+             }
+             </code>
+             This example generates a familiar tune, plays the song and saves it to disk:
+             <code>
+             // Add reference to System.Speech
+             using System;
+             using System.IO;
+             using GSF.Media;
+             using GSF.Media.Music;
+             using System.Speech;
+             using System.Speech.Synthesis;
+             using System.Speech.AudioFormat;
+             
+             static class Program
+             {
+                 static void Main()
+                 {
+                     Console.WriteLine("Synthesizing speech...");
+                     WaveFile speech = CreateSynthesizedVoiceOver();
+             
+                     Console.WriteLine("Synthesizing song at tempo for use with speech...");
+             
+                     // Define all the notes of jingle bells as a single phrase of music
+                     Phrase score = CreateJingleBellsScore();
+             
+                     // Create one song at a slower tempo to help with speech synchronization
+                     Song speechTempSong = new Song { Tempo = new Tempo(160, NoteValue.Quarter) };
+             
+                     // Make sure audio specifications for song and speech match
+                     speechTempSong.SampleRate = speech.SampleRate;
+                     speechTempSong.BitsPerSample = speech.BitsPerSample;
+                     speechTempSong.Channels = speech.Channels;
+             
+                     // Add all the notes to the song
+                     speechTempSong.AddPhrase(score);
+                     speechTempSong.Finish();
+             
+                     Console.WriteLine("Synthesizing song by itself at normal tempo...");
+             
+                     // Create one song at a slower tempo to help with speech synchronization
+                     Song normalTempoSong = new Song();
+             
+                     // Add all the notes to the song
+                     normalTempoSong.AddPhrase(score);
+                     normalTempoSong.Finish();
+             
+                     Console.WriteLine("Saving normal tempo song to disk as \"JingleBells.wav\"...");
+                     normalTempoSong.Save("JingleBells.wav");
+             
+                     Console.WriteLine("Combining speech with song...");
+                     WaveFile combined = WaveFile.Combine(speech, speechTempSong);
+             
+                     Console.WriteLine("Saving combined work to disk as \"SingingComputer.wav\"...");
+                     combined.Save("SingingComputer.wav");
+             
+                     Console.WriteLine("Playing combined work...");
+                     combined.Play();
+             
+                     Console.ReadKey();
+                 }
+             
+                 private static WaveFile CreateSynthesizedVoiceOver()
+                 {
+                     SpeechSynthesizer synthesizer = new SpeechSynthesizer();
+                     MemoryStream speechStream = new MemoryStream();
+                     PromptBuilder songText = new PromptBuilder();
+             
+                     synthesizer.SelectVoice("Microsoft Sam");
+                     synthesizer.Rate = 5; // Range = -10 to +10
+                     synthesizer.SetOutputToWaveStream(speechStream);
+             
+                     songText.AppendText("Jin - gull bells!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(3000000));
+                     songText.AppendText("Jin - gull bells!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(3000000));
+                     songText.AppendText("Jin - gull - all, theuh - way!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(12000000));
+                     songText.AppendText("Oh - what - fun!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(1000000));
+                     songText.AppendText("It - is!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(500000));
+                     songText.AppendText("To - ride!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(500000));
+                     songText.AppendText("a - one - horse!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(500000));
+                     songText.AppendText("Open!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(500000));
+                     songText.AppendText("Sleigh!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(1000000));
+                     songText.AppendText("A!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(2500000));
+                     songText.AppendText("Jin - gull bells!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(3000000));
+                     songText.AppendText("Jin - gull bells!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(3000000));
+                     songText.AppendText("Jin - gull - all, theuh - way!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(12000000));
+                     songText.AppendText("Oh - what - fun!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(1000000));
+                     songText.AppendText("It - is!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(500000));
+                     songText.AppendText("To - ride!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(500000));
+                     songText.AppendText("a - one - horse!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(500000));
+                     songText.AppendText("Open!", PromptEmphasis.Strong);
+                     songText.AppendBreak(new TimeSpan(500000));
+                     songText.AppendText("Sleigh.", PromptEmphasis.Reduced);
+             
+                     synthesizer.Speak(songText);
+                     speechStream.Position = 0;
+                     return WaveFile.Load(speechStream);
+                 }
+             
+                 private static Phrase CreateJingleBellsScore()
+                 {
+                     Phrase score = new Phrase();
+                     Phrase passage = new Phrase();
+             
+                     // Define the repeating phrase of the song
+                     passage.AddNotes
+                     (
+                         new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter },
+                         new Note { Frequency = Note.C3, NamedValue = NoteValue.Whole }
+                     );
+                     passage.AddNotes(new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter });
+                     passage.AddNotes(new Note { Frequency = Note.B3, NamedValue = NoteValue.Half });
+             
+                     passage.AddNotes
+                     (
+                         new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter },
+                         new Note { Frequency = Note.G3, NamedValue = NoteValue.Whole }
+                     );
+                     passage.AddNotes(new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter });
+                     passage.AddNotes(new Note { Frequency = Note.B3, NamedValue = NoteValue.Half });
+             
+                     passage.AddNotes
+                     (
+                         new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter },
+                         new Note { Frequency = Note.C3, NamedValue = NoteValue.Whole }
+                     );
+                     passage.AddNotes(new Note { Frequency = Note.D4, NamedValue = NoteValue.Quarter });
+                     passage.AddNotes(new Note { Frequency = Note.G3, NamedValue = NoteValue.Quarter });
+                     passage.AddNotes(new Note { Frequency = Note.A3, NamedValue = NoteValue.Quarter });
+             
+                     passage.AddNotes
+                     (
+                         new Note { Frequency = Note.B3, NamedValue = NoteValue.Whole },
+                         new Note { Frequency = Note.G3, NamedValue = NoteValue.Whole }
+                     );
+             
+                     passage.AddNotes
+                     (
+                         new Note { Frequency = Note.C4, NamedValue = NoteValue.Quarter },
+                         new Note { Frequency = Note.D3, NamedValue = NoteValue.Whole }
+                     );
+                     passage.AddNotes(new Note { Frequency = Note.C4, NamedValue = NoteValue.Quarter });
+                     passage.AddNotes(new Note { Frequency = Note.C4, NamedValue = NoteValue.Quarter });
+                     passage.AddNotes(new Note { Frequency = Note.C4, NamedValue = NoteValue.Quarter });
+             
+                     passage.AddNotes
+                     (
+                         new Note { Frequency = Note.C4, NamedValue = NoteValue.Quarter },
+                         new Note { Frequency = Note.G3, NamedValue = NoteValue.Whole }
+                     );
+                     passage.AddNotes(new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter });
+                     passage.AddNotes(new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter });
+                     passage.AddNotes(new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter });
+             
+                     score.AddPhrase(passage);
+             
+                     score.AddNotes
+                     (
+                         new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter },
+                         new Note { Frequency = Note.F3S, NamedValue = NoteValue.Whole }
+                     );
+                     score.AddNotes(new Note { Frequency = Note.A3, NamedValue = NoteValue.Quarter });
+                     score.AddNotes(new Note { Frequency = Note.A3, NamedValue = NoteValue.Quarter });
+                     score.AddNotes(new Note { Frequency = Note.B3, NamedValue = NoteValue.Quarter });
+             
+                     score.AddNotes
+                     (
+                         new Note { Frequency = Note.A3, NamedValue = NoteValue.Half },
+                         new Note { Frequency = Note.G3, NamedValue = NoteValue.Whole }
+                     );
+                     score.AddNotes(new Note { Frequency = Note.D4, NamedValue = NoteValue.Half });
+             
+                     score.AddPhrase(passage);
+             
+                     score.AddNotes
+                     (
+                         new Note { Frequency = Note.D4, NamedValue = NoteValue.Quarter },
+                         new Note { Frequency = Note.G3, NamedValue = NoteValue.Whole },
+                         new Note { Frequency = Note.F3, NamedValue = NoteValue.Whole }
+                     );
+                     score.AddNotes(new Note { Frequency = Note.D4, NamedValue = NoteValue.Quarter });
+                     score.AddNotes(new Note { Frequency = Note.C4, NamedValue = NoteValue.Quarter });
+                     score.AddNotes(new Note { Frequency = Note.A3, NamedValue = NoteValue.Quarter });
+             
+                     score.AddNotes
+                     (
+                         new Note { Frequency = Note.G3, NamedValue = NoteValue.Whole },
+                         new Note { Frequency = Note.E3, NamedValue = NoteValue.Whole }
+                     );
+             
+                     return score;
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="T:GSF.Media.WaveFile">
+            <summary>
+            Represents a waveform audio format file (WAV).
+            </summary>
+        </member>
+        <member name="M:GSF.Media.WaveFile.#ctor">
+            <summary>
+            Creates a new empty in-memory wave file using standard CD quality settings.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.WaveFile.#ctor(GSF.Media.SampleRate,GSF.Media.BitsPerSample,GSF.Media.DataChannels)">
+            <summary>
+            Creates a new empty in-memory wave file in Pulse Code Modulation (PCM) audio format.
+            </summary>
+            <param name="sampleRate">Desired sample rate.</param>
+            <param name="bitsPerSample">Desired bits-per-sample.</param>
+            <param name="channels">Desired data channels.</param>
+        </member>
+        <member name="M:GSF.Media.WaveFile.#ctor(GSF.Media.SampleRate,GSF.Media.BitsPerSample,GSF.Media.DataChannels,GSF.Media.WaveFormat)">
+            <summary>
+            Creates a new empty in-memory wave file in specified audio format.
+            </summary>
+            <param name="sampleRate">Desired sample rate.</param>
+            <param name="bitsPerSample">Desired bits-per-sample.</param>
+            <param name="channels">Desired data channels.</param>
+            <param name="audioFormat">Desired audio format.</param>
+            <remarks>Consumer will need to apply appropriate data compression for non-PCM data formats.</remarks>
+        </member>
+        <member name="M:GSF.Media.WaveFile.#ctor(System.Int32,System.Int16,System.Int16)">
+            <summary>
+            Creates a new empty in-memory wave file in Pulse Code Modulation (PCM) audio format.
+            </summary>
+            <param name="sampleRate">Desired sample rate (e.g., 44100).</param>
+            <param name="bitsPerSample">Desired bits-per-sample (e.g., 16).</param>
+            <param name="channels">Desired data channels (e.g., 2 for stereo).</param>
+        </member>
+        <member name="M:GSF.Media.WaveFile.#ctor(System.Int32,System.Int16,System.Int16,System.UInt16)">
+            <summary>
+            Creates a new empty in-memory wave file in specified audio format.
+            </summary>
+            <param name="sampleRate">Desired sample rate (e.g., 44100).</param>
+            <param name="bitsPerSample">Desired bits-per-sample (e.g., 16).</param>
+            <param name="channels">Desired data channels (e.g., 2 for stereo).</param>
+            <param name="audioFormat">Desired audio format (e.g., 0x1 for Pulse Code Modulation).</param>
+            <remarks>
+            Consumer will need to apply appropriate data compression for non-PCM data formats.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.WaveFile.#ctor(GSF.Media.RiffHeaderChunk,GSF.Media.WaveFormatChunk,GSF.Media.WaveDataChunk,GSF.Media.ListInfoChunk)">
+            <summary>
+            Creates a new empty in-memory wave file using existing constituent chunks.
+            </summary>
+            <param name="waveData">A <see cref="T:GSF.Media.RiffHeaderChunk"/> header object.</param>
+            <param name="waveFormat">A <see cref="T:GSF.Media.WaveFormatChunk"/> format object.</param>
+            <param name="waveHeader">A <see cref="T:GSF.Media.WaveDataChunk"/> data object</param>
+            <param name="listInfo">Optional <see cref="T:GSF.Media.ListInfoChunk"/> object.</param>
+        </member>
+        <member name="M:GSF.Media.WaveFile.AddSample(System.Double)">
+            <summary>
+            Add the sample to the wave file.
+            </summary>
+            <param name="sample">Sample to add to the wave file.</param>
+            <remarks>
+            <para>
+            Sample is applied to all channels and cast to the appropriate size.  Sample should be scaled
+            by <see cref="P:GSF.Media.WaveFile.AmplitudeScalar"/> for integer based wave file formats to make sure sample will
+            fit into <see cref="P:GSF.Media.WaveFile.BitsPerSample"/> defined by wave file.
+            </para>
+            <para>
+            If you have samples to apply to individual channels (e.g., for a stereo format), use the
+            <see cref="M:GSF.Media.WaveFile.AddSamples(System.Double[])"/> method instead.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.WaveFile.AddSamples(System.Double[])">
+            <summary>
+            Adds a series of samples, one per channel, to the wave file.
+            </summary>
+            <param name="samples">Samples to add to the wave file.</param>
+            <remarks>
+            <para>
+            You need to pass in one sample for each defined channel (e.g., if wave is configured for stereo
+            you will need to pass in two parameters).
+            </para>
+            Each sample will be cast to the appropriate size.  Samples should be scaled by <see cref="P:GSF.Media.WaveFile.AmplitudeScalar"/>
+            for integer based wave file formats to make sure samples will fit into <see cref="P:GSF.Media.WaveFile.BitsPerSample"/> defined
+            by wave file.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.WaveFile.AddSampleBlock(GSF.LittleBinaryValue[])">
+            <summary>
+            Adds a block of samples in native format to the wave file (e.g., if <see cref="P:GSF.Media.WaveFile.BitsPerSample"/> = 16,
+            parameters need to be Int16 values). Note that <see cref="T:GSF.LittleBinaryValue"/> parameter type is
+            implicitly castable to common native types, including floating points.
+            </summary>
+            <param name="samples">Samples to add to the wave file.</param>
+            <remarks>
+            <para>
+            You need to pass in one sample for each defined channel (e.g., if wave is configured for stereo
+            you will need to pass in two parameters).
+            </para>
+            You should only add values that match the wave file's <see cref="P:GSF.Media.WaveFile.BitsPerSample"/> (e.g., if wave file is
+            configured for 16-bits only pass in Int16 values, casting if necessary).
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Play">
+            <summary>
+            Plays the wave file using <see cref="T:System.Media.SoundPlayer"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Save(System.String)">
+            <summary>
+            Saves wave file to the specified file name.
+            </summary>
+            <param name="waveFileName">Desired destination file name for wave file.</param>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Save(System.IO.Stream)">
+            <summary>
+            Saves wave file to the specified stream.
+            </summary>
+            <param name="destination">Destination stream for binary wave file data.</param>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Reverse">
+            <summary>
+            Reverses the data samples in the wave file.
+            </summary>
+            <remarks>
+            This is just used to reverse the sound in the file for effect.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Clone">
+            <summary>
+            Creates a deeply cloned copy of the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <returns>A deeply cloned copy of the <see cref="T:GSF.Media.WaveFile"/>.</returns>
+        </member>
+        <member name="M:GSF.Media.WaveFile.GetSampleTypeCode">
+            <summary>
+            Determines sample data type code based on defined <see cref="P:GSF.Media.WaveFile.BitsPerSample"/>
+            and <see cref="P:GSF.Media.WaveFile.AudioFormat"/>.
+            </summary>
+            <returns>
+            Sample type code based on defined <see cref="P:GSF.Media.WaveFile.BitsPerSample"/> and
+            <see cref="P:GSF.Media.WaveFile.AudioFormat"/>.
+            </returns>
+        </member>
+        <member name="M:GSF.Media.WaveFile.CastSample(System.Double)">
+            <summary>
+            Casts sample value to its equivalent native type based on defined <see cref="P:GSF.Media.WaveFile.BitsPerSample"/>
+            and <see cref="P:GSF.Media.WaveFile.AudioFormat"/>.
+            </summary>
+            <param name="sample">Sample value.</param>
+            <returns>
+            Sample value cast to its equivalent native type based on defined <see cref="P:GSF.Media.WaveFile.BitsPerSample"/>
+            and <see cref="P:GSF.Media.WaveFile.AudioFormat"/>.
+            </returns>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Load(System.String,System.Boolean)">
+            <summary>
+            Creates a new in-memory wave loaded from an existing wave file.
+            </summary>
+            <param name="waveFileName">File name of WAV file to load.</param>
+            <param name="loadData">Determines if wave data should be loaded into memory.</param>
+            <returns>In-memory representation of wave file.</returns>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Load(System.IO.Stream,System.Boolean)">
+            <summary>
+            Creates a new in-memory wave loaded from an existing wave audio stream.
+            </summary>
+            <param name="source">Stream of WAV formatted audio data to load.</param>
+            <param name="loadData">Determines if wave data should be loaded into memory.</param>
+            <returns>In-memory representation of wave file.</returns>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Combine(GSF.Media.WaveFile[])">
+            <summary>
+            Combines wave files together, all starting at the same time, into a single file.
+            This has the effect of playing two sound tracks simultaneously.
+            </summary>
+            <param name="waveFiles">Wave files to combine</param>
+            <returns>Combined wave files.</returns>
+            <remarks>
+            <para>
+            This overload "equalizes" the volume of each source wave file.  To specify a desired volume for
+            each combined wave file use the <see cref="M:GSF.Media.WaveFile.Combine(GSF.Media.WaveFile[],System.Double[])"/> overload that takes
+            a series of volumes as a parameter.
+            </para>
+            <para>
+            Resulting sounds will overlap; no truncation is performed. Final wave file length will equal length of
+            longest source file.
+            </para>
+            <para>
+            Combining sounds files with non-PCM based audio formats will have unexpected results.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Combine(GSF.Media.WaveFile[],System.Double[])">
+            <summary>
+            Combines wave files together, all starting at the same time, into a single file.
+            This has the effect of playing two sound tracks simultaneously.
+            </summary>
+            <param name="waveFiles">Wave files to combine</param>
+            <param name="volumes">Volume for each wave file (0.0 to 1.0)</param>
+            <returns>Combined wave files.</returns>
+            <remarks>
+            <para>
+            Cumulatively, volumes cannot exceed 1.0 - these volumes represent a fractional percentage
+            of volume to be applied to each wave file.
+            </para>
+            <para>
+            Resulting sounds will overlap; no truncation is performed. Final wave file length will equal length of
+            longest source file.
+            </para>
+            <para>
+            Combining sounds files with non-PCM based audio formats will have unexpected results.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.WaveFile.Append(GSF.Media.WaveFile[])">
+            <summary>
+            Appends wave files together, one after another, into a single file.
+            </summary>
+            <param name="waveFiles">Wave files to append</param>
+            <returns>Combined wave files.</returns>
+            <remarks>Each resulting wave file is appending behind the next.</remarks>
+        </member>
+        <member name="M:GSF.Media.WaveFile.CloneSampleBlock(GSF.LittleBinaryValue[])">
+            <summary>
+            Performs a deep clone of all the channel samples in a sample block.
+            </summary>
+            <param name="samples">Sample block to clone.</param>
+            <returns>A deep clone of all the channel samples in a sample block.</returns>
+        </member>
+        <member name="P:GSF.Media.WaveFile.AudioFormat">
+            <summary>
+            Gets or sets audio format used by the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            PCM = 1 (i.e., linear quantization), values other than 1 typically indicate some form of compression.
+            See <see cref="T:GSF.Media.WaveFormat"/> enumeration for more details.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFile.Channels">
+            <summary>
+            Gets or sets number of audio channels in the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            This property defines the number of channels (e.g., mono = 1, stereo = 2, etc.) defined
+            in each sample block. See <see cref="T:GSF.Media.DataChannels"/> enumeration for more details.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFile.SampleRate">
+            <summary>
+            Gets or sets the sample rate (i.e., the number of samples per second) defined in the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            This property defines the number of samples per second defined in each second of data in
+            the <see cref="T:GSF.Media.WaveFile"/>.  See <see cref="P:GSF.Media.WaveFile.SampleRate"/> enumeration for more details.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFile.ByteRate">
+            <summary>
+            Gets or sets the byte rate used for buffer estimation.
+            </summary>
+            <remarks>
+            <para>
+            This property is not usually changed.  It will be automatically calculated for new wave files.
+            </para>
+            <para>
+            This is typically just the arithmetic result of:
+            <see cref="P:GSF.Media.WaveFile.SampleRate"/> * <see cref="P:GSF.Media.WaveFile.Channels"/> * <see cref="P:GSF.Media.WaveFile.BitsPerSample"/> / 8.
+            However, this value can be changed as needed to accommodate better buffer estimations during
+            data read cycle.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFile.BlockAlignment">
+            <summary>
+            Gets or sets the block size of a complete sample of data (i.e., samples for all channels of data at
+            one instant in time).
+            </summary>
+            <remarks>
+            <para>
+            This property is not usually changed.  It will be automatically calculated for new wave files.
+            </para>
+            <para>
+            This is typically just the arithmetic result of:
+            <see cref="P:GSF.Media.WaveFile.Channels"/> * <see cref="P:GSF.Media.WaveFile.BitsPerSample"/> / 8.
+            However, this value can be changed as needed to accommodate even block-alignment of non-standard
+            <see cref="P:GSF.Media.WaveFile.BitsPerSample"/> values.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFile.BitsPerSample">
+            <summary>
+            Gets or sets number of bits-per-sample in the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            This property defines the number of bits-per-sample (e.g., 8, 16, 24, 32, etc.) used
+            by each sample in a block of samples - effectively the data sample size. See
+            <see cref="P:GSF.Media.WaveFile.BitsPerSample"/> enumeration for more details.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFile.AmplitudeScalar">
+            <summary>
+            Returns the amplitude scalar for the given bits per sample of the WaveFile (i.e., maximum value
+            for given <see cref="P:GSF.Media.WaveFile.BitsPerSample"/>).
+            </summary>
+            <remarks>
+            This defines a scaling factor (essentially a maximum value) used for integer based wave file
+            formats.  Floating point wave file formats do not need such scaling.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFile.InfoStrings">
+            <summary>
+            Gets list of info strings available in this <see cref="T:GSF.Media.WaveFile"/> if any were available during load; otherwise an empty dictionary.
+            </summary>
+            <remarks>
+            The current implementation only allows reading of loaded <see cref="T:GSF.Media.WaveFile"/> metadata tags, not updating them.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFile.AudioLength">
+            <summary>
+            Gets calculated audio length.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFile.ExtraParametersSize">
+            <summary>
+            Gets the size of the <see cref="P:GSF.Media.WaveFile.ExtraParameters"/> buffer, if defined.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFile.ExtraParameters">
+            <summary>
+            Gets or sets any extra parameters defined in the format header of the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            See the <see cref="T:GSF.Media.WaveFormatExtensible"/> class for an example of usage of this property.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFile.SampleBlocks">
+            <summary>
+            Accesses each individual block of sample data indexed by time.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFile.HeaderChunk">
+            <summary>
+            Gets or sets the <see cref="T:GSF.Media.RiffHeaderChunk"/> of this <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFile.FormatChunk">
+            <summary>
+            Gets or sets the <see cref="T:GSF.Media.WaveFormatChunk"/> of this <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFile.DataChunk">
+            <summary>
+            Gets or sets the <see cref="T:GSF.Media.WaveDataChunk"/> of this <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFile.InfoChunk">
+            <summary>
+            Gets the <see cref="T:GSF.Media.ListInfoChunk"/> of this <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.Music.Song.#ctor">
+            <summary>
+            Creates a new song with a 3/4 measure size, a tempo of 240 quarter-notes per minute,
+            mezzo-forte prevailing dynamic level, using a basic note timbre and standard CD-quality
+            settings for the underlying sound file.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.Music.Song.#ctor(GSF.Media.SampleRate,GSF.Media.BitsPerSample,GSF.Media.DataChannels)">
+            <summary>
+            Creates a new song with a 3/4 measure size, a tempo of 240 quarter-notes per minute,
+            mezzo-forte prevailing dynamic level, using a basic note timbre and the specified
+            audio format settings.
+            </summary>
+            <param name="sampleRate">Desired sample rate</param>
+            <param name="bitsPerSample">Desired bits-per-sample</param>
+            <param name="channels">Desired data channels</param>
+        </member>
+        <member name="M:GSF.Media.Music.Song.AddPhrase(GSF.Media.Music.Phrase)">
+            <summary>
+            Add a predefined phrase of notes to the song.
+            </summary>
+            <param name="phrase">Phrase to add.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Song.AddNotes(GSF.Media.Music.Note[])">
+            <summary>
+            Add a series of notes to the song.
+            </summary>
+            <param name="notes">Notes to add.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Song.Finish">
+            <summary>
+            Called when there are no more notes to add.
+            </summary>
+            <remarks>
+            This flushes the remaining queued notes into the song allowing them to run their remaining time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Song.AddRest(System.Double)">
+            <summary>
+            Add a rest for the given length for the current beat.
+            </summary>
+            <param name="restLength">Duration of wait specified as a note value.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Song.AddRest(GSF.Media.Music.NoteValue)">
+            <summary>
+            Add a rest for the given length for the current beat.
+            </summary>
+            <param name="restLength">Duration of wait specified as a note value.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Song.AddRest(GSF.Media.Music.NoteValueBritish)">
+            <summary>
+            Add a rest for the given length for the current beat.
+            </summary>
+            <param name="restLength">Duration of wait specified as a note value.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Song.AddRest(GSF.Media.Music.NoteValue,System.Int32)">
+            <summary>
+            Add a rest for the given length for the current beat.
+            </summary>
+            <param name="restLength">Duration of wait specified as a note value.</param>
+            <param name="dots">Total dotted note length extensions to apply.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Song.AddRest(GSF.Media.Music.NoteValueBritish,System.Int32)">
+            <summary>
+            Add a rest for the given length for the current beat.
+            </summary>
+            <param name="restLength">Duration of wait specified as a note value.</param>
+            <param name="dots">Total dotted note length extensions to apply.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Song.SetCrescendoDynamic(System.Int32,GSF.Media.Music.Dynamic)">
+            <summary>
+            Starts crescendo dynamic over the range of the specified number of beats.
+            </summary>
+            <param name="totalBeats">Total number of beats overwhich to gradually increase volume.</param>
+            <param name="endDynamic">Desired volume when crescendo is complete.</param>
+            <remarks>
+            Current <see cref="P:GSF.Media.Music.Song.Dynamic"/> is the starting dynamic which should be less than <paramref name="endDynamic"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Song.SetDiminuendoDynamic(System.Int32,GSF.Media.Music.Dynamic)">
+            <summary>
+            Starts diminuendo dynamic over the range of the specified number of beats.
+            </summary>
+            <param name="totalBeats">Total number of beats overwhich to gradually decrease volume.</param>
+            <param name="endDynamic">Desired volume when diminuendo is complete.</param>
+            <remarks>
+            Current <see cref="P:GSF.Media.Music.Song.Dynamic"/> is the starting dynamic which should be greater than <paramref name="endDynamic"/>.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.Music.Song.MeasureSize">
+            <summary>
+            Gets current measure size or defines a new measure size for the song.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Song.Tempo">
+            <summary>
+            Gets current tempo or defines a new tempo for the song.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Song.BeatTime">
+            <summary>
+            Returns the time for a single beat.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Song.Timbre">
+            <summary>
+            Gets or sets the default tibre function used to synthesize the sounds
+            of the added notes (i.e., the instrument). This timbre function will be
+            used if no other function is specified when adding notes.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Song.Damping">
+            <summary>
+            Gets or sets the default damping function used to lower the sound volume
+            of the added notes over time. This damping function will be used if no
+            other function is specified when adding notes.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Song.NamedDynamic">
+            <summary>
+            Gets or sets the prevailing named dynamic (i.e., volume) for the song.  Individual notes
+            can choose to override this dynamic.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Song.Dynamic">
+            <summary>
+            Gets or sets the prevailing dynamic (i.e., volume) expressed as percentage in the range
+            of 0 to 1 for the song. Individual notes can choose to override this dynamic.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Value must be expressed as a fractional percentage between zero and one.
+            </exception>
+        </member>
+        <member name="P:GSF.Media.Music.Song.InterNoteDelay">
+            <summary>Injects specified rest time, in seconds, between notes.</summary>
+        </member>
+        <member name="T:GSF.Media.Music.Tempo">
+            <summary>
+            Defines the tempo of song as the total number of note values in one minute.
+            </summary>
+            <remarks>
+            This defined tempo of the music assigns absolute durations to all the
+            note values within a score.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Tempo.#ctor(System.Int32,System.Double)">
+            <summary>
+            Contructs a new <see cref="T:GSF.Media.Music.Tempo"/> object.
+            </summary>
+            <param name="totalNoteValues">Total note values for <see cref="T:GSF.Media.Music.Tempo"/>.</param>
+            <param name="noteValue">Note value used for <see cref="T:GSF.Media.Music.Tempo"/>.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Tempo.#ctor(System.Int32,GSF.Media.Music.NoteValue)">
+            <summary>
+            Contructs a new <see cref="T:GSF.Media.Music.Tempo"/> object.
+            </summary>
+            <param name="totalNoteValues">Total note values for <see cref="T:GSF.Media.Music.Tempo"/>.</param>
+            <param name="noteValue">Named note value used for <see cref="T:GSF.Media.Music.Tempo"/>.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Tempo.#ctor(System.Int32,GSF.Media.Music.NoteValueBritish)">
+            <summary>
+            Contructs a new <see cref="T:GSF.Media.Music.Tempo"/> object.
+            </summary>
+            <param name="totalNoteValues">A <see cref="T:System.Int32"/> indicating the total note values.</param>
+            <param name="noteValue">Named note value used for <see cref="T:GSF.Media.Music.Tempo"/>.</param>
+        </member>
+        <member name="M:GSF.Media.Music.Tempo.CalculateNoteValueTime(System.Double)">
+            <summary>
+            Calculates the actual time duration, in seconds, for the given tempo that the specified
+            source note value will last. For example, if tempo is M.M. 120 quarter-notes per minute,
+            then each quarter-note would last a half-second.
+            </summary>
+            <param name="value">Relative value of note.</param>
+            <returns>Actual duration of note value in seconds.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Tempo.CalculateNoteValueTime(GSF.Media.Music.NoteValue,System.Int32)">
+            <summary>
+            Calculates the actual time duration, in seconds, for the given tempo that the specified
+            source note value will last. For example, if tempo is M.M. 120 quarter-notes per minute,
+            then each quarter-note would last a half-second.
+            </summary>
+            <param name="source">Source note value.</param>
+            <param name="dots">Total dotted note length extensions to apply.</param>
+            <returns>Actual duration of note value in seconds.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Tempo.CalculateNoteValueTime(GSF.Media.Music.NoteValueBritish,System.Int32)">
+            <summary>
+            Calculates the actual time duration, in seconds, for the given tempo that the specified
+            source note value will last. For example, if tempo is M.M. 120 crotchets per minute,
+            then each crotchet would last a half-second.
+            </summary>
+            <param name="source">Source note value.</param>
+            <param name="dots">Total dotted note length extensions to apply.</param>
+            <returns>Actual duration of note value in seconds.</returns>
+        </member>
+        <member name="P:GSF.Media.Music.Tempo.TotalNoteValues">
+            <summary>
+            Total number of reference note values that occur in one minute - thus defining
+            the tempo for a score.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Tempo.NoteValue">
+            <summary>
+            Returns relative value for reference note value.  For example, if tempo is
+            M.M. 120 quarter-notes per minute, then time is referenced in quarter-notes
+            and this function would return 0.25.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Tempo.NoteValueTime">
+            <summary>
+            Total time, in seconds, for reference note value.  For example, if tempo is
+            M.M. 120 quarter-notes per minute, then time is referenced in quarter-notes
+            and this function would return 0.5 seconds.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.Music.Tempo.NamedNoteValue">
+            <summary>Get or sets the note value, expressed in American form, representing the length of the note.</summary>
+        </member>
+        <member name="P:GSF.Media.Music.Tempo.NamedNoteValueBritish">
+            <summary>Get or sets the note value, expressed in British form, representing the length of the note.</summary>
+        </member>
+        <member name="T:GSF.Media.Music.TimbreFunction">
+            <summary>
+            Provides a function signature for methods that produce an amplitude representing the
+            acoustic pressure of a represented musical timbre for the given time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude of the represented musical timbre (a value between zero and one) at the given time.</returns>
+        </member>
+        <member name="T:GSF.Media.Music.Timbre">
+            <summary>
+            Defines a few timbre functions.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.AngularFrequency(System.Double,System.Int64,System.Double)">
+            <summary>
+            Computes the angular frequency for the given time.
+            </summary>
+            <param name="frequency">Frequency in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The computed angular frequency in radians per second at given time.</returns>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.PureTone(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a pure tone for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a pure tone at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            pure tone of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.BasicNote(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a basic note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a basic note at the given time.</returns>
+            <remarks>
+            <para>
+            This method computes an amplitude representing the acoustic pressure of a
+            basic note of the given frequency for the given time.
+            </para>
+            <para>
+            </para>
+            This timbre algorithm combines the simulated piano and the odd harmonic series
+            algoriths to produce a pleasant sounding note.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.Piano(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated piano note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated piano note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated piano note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.Flute(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated flute note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated flute note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated flute note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.AcousticGuitar(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated acoustic guitar note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a acoustic simulated guitar note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated acoustic guitar note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.BassGuitar(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated bass guitar note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated bass guitar note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated bass guitar note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.ElectricGuitar(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated electric guitar note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated electric guitar note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated electric guitar note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.Bell(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated bell note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated bell note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated bell note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.BigBell(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated big bell note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated big bell note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated big bell note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.ChimeBell(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated chime bell note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated chime bell note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated chime bell note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.Xylophone(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated xylophone note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated xylophone note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated xylophone note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.Clarinet(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated clarinet note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated clarinet note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            simulated clarinet note of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.Organ(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates a simulated organ note for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated clarinet note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a second-order
+            harmonic series approaching a square wave (i.e., Sin(f) + Sin(3f)/3) of the given
+            frequency for the given time to simulate an organ sound.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.OddHarmonicSeries(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates an odd harmonic series for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated clarinet note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of an
+            odd harmonic series of the given frequency for the given time.
+            Algorithm: Sin(f) + Sin(3f)/3 + Sin(5f)/5, etc.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Music.Timbre.EvenHarmonicSeries(System.Double,System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Generates an even harmonic series for the given frequency and time.
+            </summary>
+            <param name="frequency">Fundamental frequency of the desired note in Hz.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of song).</param>
+            <param name="samplePeriod">If useful, total period for note in whole samples per second (i.e., seconds of time * <paramref name="sampleRate"/>) over which to compute timbre.</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for a simulated clarinet note at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of an
+            even harmonic series of the given frequency for the given time.
+            Algorithm: Sin(2f) + Sin(4f)/3 + Sin(6f)/5, etc.
+            </remarks>
+        </member>
+        <member name="T:GSF.Media.NamespaceDoc">
+            <summary>
+            Contains classes used to create and manipulate waveform audio format (WAV) files.
+            </summary>
+        </member>
+        <member name="T:GSF.Media.RiffHeaderChunk">
+            <summary>
+            Represents the header chunk in a RIFF media format file.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.RiffHeaderChunk.RiffTypeID">
+            <summary>
+            Type ID of a RIFF header chunk.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.RiffHeaderChunk.FixedLength">
+            <summary>
+            The fixed byte length of a <see cref="T:GSF.Media.RiffChunk"/> instance.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.RiffHeaderChunk.#ctor(System.String)">
+            <summary>
+            Constructs a new RIFF header chunk for the specified format.
+            </summary>
+            <param name="format">RIFF header chunk header format.</param>
+        </member>
+        <member name="M:GSF.Media.RiffHeaderChunk.#ctor(GSF.Media.RiffChunk,System.IO.Stream,System.String)">
+            <summary>Reads a new RIFF header from the specified stream.</summary>
+            <param name="preRead">Pre-parsed <see cref="T:GSF.Media.RiffChunk"/> header.</param>
+            <param name="source">Source stream to read data from.</param>
+            <param name="format">Expected RIFF media format (e.g., "WAVE").</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="format"/> cannot be null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="format"/> must be extactly 4 characters in length.</exception>
+        </member>
+        <member name="M:GSF.Media.RiffHeaderChunk.GenerateBinaryImage(System.Byte[],System.Int32)">
+            <summary>
+            Generates binary image of the object and copies it into the given buffer.
+            </summary>
+            <param name="buffer">Buffer used to hold generated binary image of the source object.</param>
+            <param name="startIndex">0-based starting index in the <paramref name="buffer"/> to start writing.</param>
+            <returns>The number of bytes written to the <paramref name="buffer"/>.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="M:GSF.Media.RiffHeaderChunk.Clone">
+            <summary>
+            Returns a cloned instance of this RIFF header chunk.
+            </summary>
+            <returns>A cloned instance of this RIFF header chunk.</returns>
+        </member>
+        <member name="P:GSF.Media.RiffHeaderChunk.Format">
+            <summary>
+            Gets or sets format for RIFF header chunk.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.RiffHeaderChunk.BinaryLength">
+            <summary>
+            Gets length of binary representation of RIFF header chunk.
+            </summary>
+        </member>
+        <member name="T:GSF.Media.Sound.DTMF">
+             <summary>Dual Tone Multi-Frequency Class.</summary>
+             <example>
+             This example generates some familiar dual tone multi-frequency sounds
+             and plays them over the computer's speakers:
+             <code>
+             using System;
+             using GSF.Media;
+             using GSF.Media.Sound;
+            
+             static class Program
+             {
+                 static void Main()
+                 {
+                     WaveFile waveFile = new WaveFile(SampleRate.Hz8000, BitsPerSample.Bits16, DataChannels.Mono);
+                     double volume = 0.25D;  // Set volume of tones to 25% of maximum
+                     DTMF tone;
+            
+                     // Get the dial tone dual-frequencies
+                     tone = DTMF.DialTone;
+            
+                     // Change the duration of the dial-tone to 3 seconds
+                     tone.Duration = 3.0D;
+            
+                     // Generate a dial tone
+                     DTMF.Generate(waveFile, tone, volume);
+            
+                     // Generate a busy-signal tone, repeat four times
+                     DTMF.Generate(waveFile, DTMF.BusySignal, volume, 4);
+            
+                     // Generate an off-the-hook tone, repeat eight times
+                     DTMF.Generate(waveFile, DTMF.OffHook, volume, 8);
+            
+                     // Get the EBS Alert dual-frequencies
+                     tone = DTMF.EmergencyBroadcastSystemAlert;
+            
+                     // The official duration of an EBS Alert is 22.5 seconds, but
+                     // the noise is rather annoying - so we set it to 4 seconds
+                     tone.Duration = 4.0D;
+            
+                     // Generate the EBS Alert noise
+                     DTMF.Generate(waveFile, tone, volume);
+            
+                     // Play all the generated tones
+                     waveFile.Play();
+            
+                     Console.ReadKey();
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="F:GSF.Media.Sound.DTMF.LowFrequency">
+            <summary>Low frequency of <see cref="T:GSF.Media.Sound.DTMF"/>.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.DTMF.HighFrequency">
+            <summary>High frequency of <see cref="T:GSF.Media.Sound.DTMF"/>.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.DTMF.Duration">
+            <summary>Frequency duration, in seconds, of <see cref="T:GSF.Media.Sound.DTMF"/>.</summary>
+        </member>
+        <member name="M:GSF.Media.Sound.DTMF.#ctor">
+            <summary>
+            Constructs a new <see cref="T:GSF.Media.Sound.DTMF"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.Sound.DTMF.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            Constructs a new <see cref="T:GSF.Media.Sound.DTMF"/> using specified parameters.
+            </summary>
+            <param name="lowFrequency">A <see cref="T:System.Double"/> low frequency value.</param>
+            <param name="highFrequency">A <see cref="T:System.Double"/> high frequency value.</param>
+            <param name="duration">A <see cref="T:System.Double"/> duration value.</param>
+        </member>
+        <member name="M:GSF.Media.Sound.DTMF.ComputeFrequencies(GSF.Media.Sound.DTMF,System.Int64,System.Int32)">
+            <summary>
+            Computes a dual-tone multi-frequency sound for the given <see cref="T:GSF.Media.Sound.DTMF"/> information and time.
+            </summary>
+            <param name="tone">Instance of the <see cref="T:GSF.Media.Sound.DTMF"/> specifying the duration as well as the low and high frequencies of the dual-tone.</param>
+            <param name="sampleIndex">Sample index (represents time anywhere from zero to full length of tone).</param>
+            <param name="sampleRate">Number of samples per second.</param>
+            <returns>The amplitude for the dual-tone at the given time.</returns>
+            <remarks>
+            This method computes an amplitude representing the acoustic pressure of a
+            <see cref="T:GSF.Media.Sound.DTMF"/> of the given frequency for the given time.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.Sound.DTMF.Generate(GSF.Media.WaveFile,GSF.Media.Sound.DTMF,System.Double)">
+            <summary>
+            Generates the specified dual-tone multi-frequency storing it in the specified <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <param name="destination"><see cref="T:GSF.Media.WaveFile"/> used to store generated dual-tone multi-frequencies.</param>
+            <param name="tone">Dual-tone multi-frequency to generate.</param>
+            <param name="volume">Volume of generated dual-tones as a percentage (0 to 1).</param>
+        </member>
+        <member name="M:GSF.Media.Sound.DTMF.Generate(GSF.Media.WaveFile,GSF.Media.Sound.DTMF,System.Double,System.Int32)">
+            <summary>
+            Generates the specified dual-tone multi-frequency <paramref name="repeatCount"/> times storing it in the specified <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <param name="destination"><see cref="T:GSF.Media.WaveFile"/> used to store generated dual-tone multi-frequencies.</param>
+            <param name="tone">Dual-tone multi-frequency to generate.</param>
+            <param name="volume">Volume of generated dual-tones as a percentage (0 to 1).</param>
+            <param name="repeatCount">Number of times to repeat the tone.</param>
+        </member>
+        <member name="M:GSF.Media.Sound.DTMF.Generate(GSF.Media.WaveFile,GSF.Media.Sound.DTMF[],System.Double)">
+            <summary>
+            Generates a single instance of each of the specified dual-tone multi-frequencies storing them in the specified <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <param name="destination"><see cref="T:GSF.Media.WaveFile"/> used to store generated dual-tone multi-frequencies.</param>
+            <param name="tones">Dual-tone multi-frequencies to generate.</param>
+            <param name="volume">Volume of generated dual-tones as a percentage (0 to 1).</param>
+        </member>
+        <member name="M:GSF.Media.Sound.DTMF.Generate(GSF.Media.WaveFile,GSF.Media.Sound.DTMF[],System.Double,System.Int32)">
+            <summary>
+            Generates the specified dual-tone multi-frequencies <paramref name="repeatCount"/> times storing them in the specified <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <param name="destination"><see cref="T:GSF.Media.WaveFile"/> used to store generated dual-tone multi-frequencies.</param>
+            <param name="tones">Dual-tone multi-frequencies to generate.</param>
+            <param name="volume">Volume of generated dual-tones as a percentage (0 to 1).</param>
+            <param name="repeatCount">Number of times to repeat each tone.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Value must be expressed as a fractional percentage between zero and one.</exception>
+            <exception cref="T:System.InvalidOperationException"><see cref="T:GSF.Media.Sound.DTMF"/> only generated for <see cref="T:GSF.Media.WaveFile"/> with a sample rate of 8, 16, 24, 32 or 64 bits per sample.</exception>
+        </member>
+        <member name="P:GSF.Media.Sound.DTMF.DialTone">
+            <summary>Gets the <see cref="T:GSF.Media.Sound.DTMF"/> instance representing a telephone dial tone.</summary>
+        </member>
+        <member name="P:GSF.Media.Sound.DTMF.OffHook">
+            <summary>Gets the <see cref="T:GSF.Media.Sound.DTMF"/> instances representing a telephone off-the-hook signal.</summary>
+        </member>
+        <member name="P:GSF.Media.Sound.DTMF.BusySignal">
+            <summary>Gets the <see cref="T:GSF.Media.Sound.DTMF"/> instances representing a telephone busy signal.</summary>
+        </member>
+        <member name="P:GSF.Media.Sound.DTMF.EmergencyBroadcastSystemAlert">
+            <summary>Gets the <see cref="T:GSF.Media.Sound.DTMF"/> instance representing the Emergency Broadcast System alert tone.</summary>
+            <remarks>The official duration of an EBS Alert is 22.5 seconds.</remarks>
+        </member>
+        <member name="T:GSF.Media.Sound.NamespaceDoc">
+            <summary>
+            Contains classes used to create dual tone multi-frequency sounds and standard touch tones.
+            </summary>
+        </member>
+        <member name="T:GSF.Media.Sound.TouchToneKey">
+            <summary>
+            Touch tone key enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Zero">
+            <summary>Represents the number "0" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.One">
+            <summary>Represents the number "1" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Two">
+            <summary>Represents the number "2" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Three">
+            <summary>Represents the number "3" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Four">
+            <summary>Represents the number "4" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Five">
+            <summary>Represents the number "5" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Six">
+            <summary>Represents the number "6" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Seven">
+            <summary>Represents the number "7" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Eight">
+            <summary>Represents the number "8" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Nine">
+            <summary>Represents the number "9" on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Asterisk">
+            <summary>Represents the "*" key on a touch tone key pad.</summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchToneKey.Pound">
+            <summary>Represents the "#" key on a touch tone key pad.</summary>
+        </member>
+        <member name="T:GSF.Media.Sound.TouchTone">
+            <summary>
+            Touch tone generator.
+            </summary>
+            <example>
+            This example will "dial a phone number" over the computer's speakers:
+            <code>
+            using System;
+            using GSF.Media;
+            using GSF.Media.Sound;
+            
+            static class Program
+            {
+                static void Main()
+                {
+                    WaveFile waveFile = new WaveFile(SampleRate.Hz8000, BitsPerSample.Bits16, DataChannels.Mono);
+                    double volume = 0.25D;  // Set volume of TouchTone to 25% of maximum
+                    string phoneNumber = "9, 1 (535) 217-1631";
+            
+                    // Generate touch tones for specified phone number
+                    DTMF.Generate(waveFile, TouchTone.GetTouchTones(phoneNumber), volume);
+            
+                    Console.WriteLine("Dialing {0}...", phoneNumber);
+                    waveFile.Play();
+            
+                    Console.ReadKey();
+                }
+            } 
+            </code>
+            </example>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchTone.ValidTouchTones">
+            <summary>
+            Valid touch tone keys.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchTone.DefaultKeyDuration">
+            <summary>
+            Default duration, in seconds, of touch tones.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.Sound.TouchTone.DefaultInterKeyPause">
+            <summary>
+            Default duration, in seconds, of pause between touch tones.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.Sound.TouchTone.#ctor(GSF.Media.Sound.TouchToneKey)">
+            <summary>
+            Constructs a new <see cref="T:GSF.Media.Sound.TouchTone"/> for specified touch tone key.
+            </summary>
+            <param name="key">Touch tone to create.</param>
+        </member>
+        <member name="M:GSF.Media.Sound.TouchTone.#ctor(System.Char)">
+            <summary>
+            Constructs a new <see cref="T:GSF.Media.Sound.TouchTone"/> for specified touch tone key character.
+            </summary>
+            <param name="key">Character of touch tone to create.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="key"/> is not a valid touch tone character.</exception>
+        </member>
+        <member name="M:GSF.Media.Sound.TouchTone.#ctor(System.Int32)">
+            <summary>
+            Constructs a new <see cref="T:GSF.Media.Sound.TouchTone"/> for specified touch tone key number.
+            </summary>
+            <param name="key">Number of touch tone to create (note that * = 10 and # = 11).</param>
+            <exception cref="T:System.ArgumentException"><paramref name="key"/> is not a valid touch tone number.</exception>
+        </member>
+        <member name="M:GSF.Media.Sound.TouchTone.GetTouchTones(System.String)">
+            <summary>
+            Get array of touch tones for given string.
+            </summary>
+            <param name="keys">String of touch tone characters to convert to touch tones.</param>
+            <returns>Array of touch tones for given string.</returns>
+            <remarks>Non-touch tone characters are ignored. Commas are interpreted as a one second pause.</remarks>
+        </member>
+        <member name="M:GSF.Media.Sound.TouchTone.GetTouchTones(System.String,System.Double,System.Double)">
+            <summary>
+            Get array of touch tones for given string.
+            </summary>
+            <param name="keys">String of touch tone characters to convert to touch tones.</param>
+            <param name="keyDuration">Duration of touch tone key press in seconds, typically fractional.</param>
+            <param name="interKeyPause">Time to wait between key presses in seconds, typically fractional.</param>
+            <returns>Array of touch tones for given string.</returns>
+            <remarks>Non-touch tone characters are ignored. Commas are interpreted as a one second pause.</remarks>
+        </member>
+        <member name="M:GSF.Media.Sound.TouchTone.TryParse(System.Char,GSF.Media.Sound.TouchTone@)">
+            <summary>
+            Converts the character representation of a touch tone key into 
+            an instance of the <see cref="T:GSF.Media.Sound.TouchTone"/> class. A return value
+            indicates whether the conversion succeeded.
+            </summary>
+            <param name="key">A character containing a touch tone key to convert.</param>
+            <param name="result">
+            When this method returns, contains an instance of the <see cref="T:GSF.Media.Sound.TouchTone"/>
+            class equivalent to the touch tone key, if the conversion succeeded, or null
+            if the conversion failed. The conversion fails if the <paramref name="key"/>
+            parameter is not a valid touch tone.</param>
+            <returns>true if s was converted successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:GSF.Media.Sound.TouchTone.Parse(System.Char)">
+            <summary>
+            Converts the character representation of a touch tone key into
+            an instance of the <see cref="T:GSF.Media.Sound.TouchTone"/> class.
+            </summary>
+            <param name="key">A character containing a touch tone key to convert.</param>
+            <returns>
+            An instance of the <see cref="T:GSF.Media.Sound.TouchTone"/> class equivalent to the touch tone
+            chracter contained in <paramref name="key"/>.
+            </returns>
+            <exception cref="T:System.ArgumentException"><paramref name="key"/> is not a valid touch tone character.</exception>
+        </member>
+        <member name="P:GSF.Media.Sound.TouchTone.Key">
+            <summary>Gets or sets touch tone key for this touch tone.</summary>
+        </member>
+        <member name="T:GSF.Media.WaveDataChunk">
+            <summary>
+            Represents the data chunk in a WAVE media format file.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.WaveDataChunk.RiffTypeID">
+            <summary>
+            Type ID of a WAVE data chunk.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.WaveDataChunk.#ctor(GSF.Media.WaveFormatChunk)">
+            <summary>
+            Constructs a new WAVE data chunk for the specified format.
+            </summary>
+            <param name="waveFormat"><see cref="T:GSF.Media.WaveFormatChunk"/> that describes this <see cref="T:GSF.Media.WaveDataChunk"/>.</param>
+        </member>
+        <member name="M:GSF.Media.WaveDataChunk.#ctor(GSF.Media.RiffChunk,System.IO.Stream,GSF.Media.WaveFormatChunk)">
+            <summary>Reads a new WAVE format section from the specified stream.</summary>
+            <param name="preRead">Pre-parsed <see cref="T:GSF.Media.RiffChunk"/> header.</param>
+            <param name="source">Source stream to read data from.</param>
+            <param name="waveFormat">Format of the data section to be parsed.</param>
+            <exception cref="T:System.InvalidOperationException">WAVE format or extra parameters section too small, wave file corrupted.</exception>
+        </member>
+        <member name="M:GSF.Media.WaveDataChunk.GenerateBinaryImage(System.Byte[],System.Int32)">
+            <summary>
+            Generates a binary representation of this <see cref="T:GSF.Media.WaveDataChunk"/> and copies it into the given buffer.
+            </summary>
+            <param name="buffer">Buffer used to hold generated binary image of the source object.</param>
+            <param name="startIndex">0-based starting index in the <paramref name="buffer"/> to start writing.</param>
+            <returns>The number of bytes written to the <paramref name="buffer"/>.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="M:GSF.Media.WaveDataChunk.Clone">
+            <summary>
+            Creates a deeply cloned copy of the <see cref="T:GSF.Media.WaveDataChunk"/>.
+            </summary>
+            <returns>A deeply cloned copy of the <see cref="T:GSF.Media.WaveDataChunk"/>.</returns>
+        </member>
+        <member name="P:GSF.Media.WaveDataChunk.WaveFormat">
+            <summary>
+            Gets or sets associated <see cref="T:GSF.Media.WaveFormatChunk"/> that defines the format of the data in this <see cref="T:GSF.Media.WaveDataChunk"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveDataChunk.SampleBlocks">
+            <summary>
+            Gets list of little-endian formatted sample data blocks of this <see cref="T:GSF.Media.WaveDataChunk"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveDataChunk.ChunkSize">
+            <summary>
+            Gets the chunk size of this <see cref="T:GSF.Media.WaveDataChunk"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveDataChunk.BinaryLength">
+            <summary>
+            Gets length of the binary representation of this <see cref="T:GSF.Media.WaveDataChunk"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.Media.WaveDataReader">
+            <summary>
+            Represents wave data coming from a stream.
+            </summary>
+            <remarks>
+            This class is meant to be used when loading the entirety
+            of a wave file into memory is not a viable option. With
+            it, samples can be read directly from the data stream in
+            the order that they appear.
+            </remarks>
+        </member>
+        <member name="M:GSF.Media.WaveDataReader.#ctor(GSF.Media.WaveFormatChunk,System.IO.Stream)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Media.WaveDataReader"/> class.
+            </summary>
+            <param name="waveFormat">The format of the wave stream.</param>
+            <param name="waveStream">The stream containing wave data.</param>
+        </member>
+        <member name="M:GSF.Media.WaveDataReader.#ctor(System.IO.Stream)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Media.WaveDataReader"/> class.
+            </summary>
+            <param name="waveStream">The stream containing wave data.</param>
+        </member>
+        <member name="M:GSF.Media.WaveDataReader.GetNextSample">
+            <summary>
+            Reads and returns the next sample from the stream.
+            </summary>
+            <returns>
+            The next sample from the stream. The sample is returned as
+            an array of <see cref="T:GSF.LittleBinaryValue"/>s. Each
+            LittleBinaryValue represents a different channel.
+            A return value of null indicates the end of stream has been reached.
+            </returns>
+        </member>
+        <member name="M:GSF.Media.WaveDataReader.Close">
+            <summary>
+            Closes the underlying stream.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.WaveDataReader.Dispose">
+            <summary>
+            Disposes of the underlying stream.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.WaveDataReader.FromFile(System.String)">
+            <summary>
+            Creates a <see cref="T:GSF.Media.WaveDataReader"/> instance created from a WAV file.
+            </summary>
+            <param name="fileName">The name of the WAV file.</param>
+            <returns>The WaveData instance created from a WAV file.</returns>
+        </member>
+        <member name="M:GSF.Media.WaveDataReader.FromStream(System.IO.Stream)">
+            <summary>
+            Creates a <see cref="T:GSF.Media.WaveDataReader"/> instance created from a WAV stream.
+            </summary>
+            <param name="waveStream">The WAV stream. The data in the stream must include all headers that would be present in a WAV file.</param>
+            <returns>The WaveData instance created from a WAV stream.</returns>
+            <remarks>
+            This method is similar to the <see cref="M:GSF.Media.WaveDataReader.#ctor(System.IO.Stream)"/> constructor,
+            however this method will first search the stream for a format chunk in order to set
+            up the WaveData object with proper format info.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveDataReader.Format">
+            <summary>
+            Gets the format of the wave data.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveDataReader.WaveStream">
+            <summary>
+            Gets the underlying stream providing wave data.
+            </summary>
+        </member>
+        <member name="T:GSF.Media.SampleRate">
+            <summary>
+            Typical samples rates supported by wave files.
+            </summary>
+            <remarks>
+            <para>
+            Quantization of the analog waveform, or signal, is a real-time process operating over a continuous
+            time-period which produces a “stream” of digital values. In order for the process to work you must
+            define the rate at which new digital values are measured, or sampled, from the analog signal. The
+            rate at which new values are measured is called the “sampling rate” (a.k.a., the sampling frequency).
+            </para>
+            <para>
+            Audio based Compact Discs use a sampling rate of 44,100 Hz; this means the the Nyquist frequency is
+            22,050 Hz (i.e., the upper bound on the highest frequency that the digital data can clearly represent
+            without aliasing). This sample rate selection was no accident as the range of hearing for a healthy
+            young person is approximately 20 to 20,000 Hz.
+            </para>
+            <para>
+            In plain English, higher sampling rates will equate to higher quality sound reproduction but anything
+            above 44,100 Hz will not be perceived as better quality by normal human beings.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:GSF.Media.SampleRate.Hz8000">
+            <summary>8000 samples per second</summary>
+        </member>
+        <member name="F:GSF.Media.SampleRate.Hz11025">
+            <summary>11025 samples per second</summary>
+        </member>
+        <member name="F:GSF.Media.SampleRate.Hz12000">
+            <summary>12000 samples per second</summary>
+        </member>
+        <member name="F:GSF.Media.SampleRate.Hz16000">
+            <summary>16000 samples per second</summary>
+        </member>
+        <member name="F:GSF.Media.SampleRate.Hz22050">
+            <summary>22050 samples per second</summary>
+        </member>
+        <member name="F:GSF.Media.SampleRate.Hz24000">
+            <summary>24000 samples per second</summary>
+        </member>
+        <member name="F:GSF.Media.SampleRate.Hz32000">
+            <summary>32000 samples per second</summary>
+        </member>
+        <member name="F:GSF.Media.SampleRate.Hz44100">
+            <summary>44100 samples per second</summary>
+            <remarks>This is the standard setting for CD audio quality</remarks>
+        </member>
+        <member name="F:GSF.Media.SampleRate.Hz48000">
+            <summary>48000 samples per second</summary>
+        </member>
+        <member name="T:GSF.Media.BitsPerSample">
+            <summary>
+            Typical bit sizes supported by wave files.
+            </summary>
+            <remarks>
+            Strictly speaking, “bits-per-sample” describes the total number of bits used
+            to encode the amplitude (or volume) of a sampled signal.  The following table
+            describes a few typical bit ranges and their possible resolution:
+            <list type="table">
+            <listheader>
+                <term>Bit range</term>
+                <description>Resolution</description>
+            </listheader>
+            <item>
+                <term>8-bits (1 Byte)</term>
+                <description>0 to 255</description>
+            </item>
+            <item>
+                <term>16-bits (2 Bytes)</term>
+                <description>-32,768 to 32,767</description>
+            </item>
+            <item>
+                <term>24-bits (3 Bytes)</term>
+                <description>-8,388,608 to 8,388,607</description>
+            </item>
+            <item>
+                <term>32-bits (4 Bytes)</term>
+                <description>-2,147,483,648 to 2,147,483,647</description>
+            </item>
+            </list>
+            The net result is that more bits you use, the more resolution you can achieve in
+            amplitude; hence “more bits = better sound quality” however you have to compromise
+            for technical constraints because “more bits = more required space”.
+            </remarks>
+        </member>
+        <member name="F:GSF.Media.BitsPerSample.Bits8">
+            <summary>8-bits per sample</summary>
+        </member>
+        <member name="F:GSF.Media.BitsPerSample.Bits16">
+            <summary>16-bits per sample</summary>
+            <remarks>This is the standard setting for CD audio quality</remarks>
+        </member>
+        <member name="F:GSF.Media.BitsPerSample.Bits24">
+            <summary>24-bits per sample</summary>
+        </member>
+        <member name="F:GSF.Media.BitsPerSample.Bits32">
+            <summary>32-bits per sample</summary>
+        </member>
+        <member name="T:GSF.Media.DataChannels">
+            <summary>
+            Typical number of data channels used by wave files.
+            </summary>
+            <remarks>
+            These are some common number of data channels, but wave files can support any number of data channels.
+            </remarks>
+        </member>
+        <member name="F:GSF.Media.DataChannels.Mono">
+            <summary>Defines a single (monaural) data sample channel</summary>
+        </member>
+        <member name="F:GSF.Media.DataChannels.Stereo">
+            <summary>Defines two (stereo) data sample channels</summary>
+            <remarks>This is the standard setting for CD audio quality</remarks>
+        </member>
+        <member name="F:GSF.Media.DataChannels.DolbySurround">
+            <summary>Defines three data sample channels</summary>
+            <remarks>3.0 Channel Surround (analog matrixed: Dolby Surround)</remarks>
+        </member>
+        <member name="F:GSF.Media.DataChannels.DolbyProLogic">
+            <summary>Defines four data sample channels</summary>
+            <remarks>4.0 Channel Surround (analog matrixed: Dolby Pro Logic)</remarks>
+        </member>
+        <member name="F:GSF.Media.DataChannels.DolbyDigital">
+            <summary>Defines six data sample channels</summary>
+            <remarks>5.1 Channel Surround (digital discrete: Dolby Digital, DTS, SDDS)</remarks>
+        </member>
+        <member name="T:GSF.Media.WaveFormat">
+            <summary>
+            Common WAVE audio encoding formats.
+            </summary>
+            <remarks>
+            <para>
+            Microsoft defines more than 130 different audio encoding formats for WAVE files.  Only the
+            more common formats are defined here.
+            </para>
+            <para>
+            Note that PCM (i.e., Pulse Code Modulation) is a universal audio encoding format.  It is a
+            very common method of storing and transmitting uncompressed digital audio. Since it is a
+            generic format, it can be read by most any audio application similar to the way a plain text
+            file can be read by any word-processing program. PCM is used by Audio CDs and digital audio
+            tapes (DATs). PCM is also a very common format for AIFF and WAV files.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.Unknown">
+            <summary>Wave format type is undefined.</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.PCM">
+            <summary>Standard pulse-code modulation audio format</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.ADPCM">
+            <summary>Adaptive differential pulse-code modulation encoding algorithm</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.IeeeFloat">
+            <summary>Floating point PCM encoding algorithm</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.ALaw">
+            <summary>A-law encoding algorithm (used in Europe and the rest of the world)</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.MuLaw">
+            <summary>μ-law encoding algorithm (used in North America and Japan)</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.DTS">
+            <summary>Decode Timestamp encoding algorithm (used in MPEG-coded multimedia)</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.DRM">
+            <summary>Digital Rights Management encoded format (for digital-audio content protected by Microsoft DRM).</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.Mpeg">
+            <summary>MPEG Audio is a family of open standards for compressed audio that includes MP2, MP3 and AAC.</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.MpegLayer3">
+            <summary>ISO MPEG-Layer 3 audio format.</summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormat.WaveFormatExtensible">
+            <summary>Use WAVEFORMATEXTENSIBLE structure.</summary>
+            <remarks>
+            This wave file format is used to identify multiple channels in the wave file for spatial positioning
+            of speakers, see <see cref="F:GSF.Media.WaveFormat.WaveFormatExtensible"/> for more details.
+            </remarks>
+        </member>
+        <member name="T:GSF.Media.WaveFormatChunk">
+            <summary>
+            Represents the format chunk in a WAVE media format file.
+            </summary>
+        </member>
+        <member name="F:GSF.Media.WaveFormatChunk.RiffTypeID">
+            <summary>
+            RIFF type ID for wave format chunk (i.e., "fmt ").
+            </summary>
+        </member>
+        <member name="M:GSF.Media.WaveFormatChunk.#ctor(System.Int32,System.Int16,System.Int16,System.UInt16)">
+            <summary>
+            Constructs a new <see cref="T:GSF.Media.WaveFormatChunk"/> using the specified audio parameters.
+            </summary>
+            <param name="sampleRate">Sample rate for the <see cref="T:GSF.Media.WaveFormatChunk"/>.</param>
+            <param name="bitsPerSample">Bits per sample for the <see cref="T:GSF.Media.WaveFormatChunk"/>.</param>
+            <param name="channels">Audio channels for the <see cref="T:GSF.Media.WaveFormatChunk"/>.</param>
+            <param name="audioFormat">Audio format for the <see cref="T:GSF.Media.WaveFormatChunk"/>.</param>
+            <exception cref="T:System.IO.InvalidDataException">Invalid bit rate specified - wave file bit rates must be a multiple of 8.</exception>
+        </member>
+        <member name="M:GSF.Media.WaveFormatChunk.#ctor(GSF.Media.RiffChunk,System.IO.Stream)">
+            <summary>Reads a new <see cref="T:GSF.Media.WaveFormatChunk"/> from the specified stream.</summary>
+            <param name="preRead">Pre-parsed <see cref="T:GSF.Media.RiffChunk"/> header.</param>
+            <param name="source">Source stream to read data from.</param>
+            <exception cref="T:System.InvalidOperationException">WAVE format or extra parameters section too small, wave file corrupted.</exception>
+            <exception cref="T:System.IO.InvalidDataException">Invalid bit rate encountered - wave file bit rates must be a multiple of 8.</exception>
+        </member>
+        <member name="M:GSF.Media.WaveFormatChunk.ParseBinaryImage(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Parses <see cref="T:GSF.Media.WaveFormatChunk"/> object by parsing the specified <paramref name="buffer"/> containing a binary image.
+            </summary>
+            <param name="buffer">Buffer containing binary image to parse.</param>
+            <param name="startIndex">0-based starting index in the <paramref name="buffer"/> to start parsing.</param>
+            <param name="length">Valid number of bytes within <paramref name="buffer"/> from <paramref name="startIndex"/>.</param>
+            <returns>The number of bytes used for initialization in the <paramref name="buffer"/> (i.e., the number of bytes parsed).</returns>
+            <exception cref="T:System.InvalidOperationException">WAVE format section too small, wave file corrupted.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <paramref name="length"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="M:GSF.Media.WaveFormatChunk.GenerateBinaryImage(System.Byte[],System.Int32)">
+            <summary>
+            Generates a binary representation of this <see cref="T:GSF.Media.WaveFormatChunk"/> and copies it into the given buffer.
+            </summary>
+            <param name="buffer">Buffer used to hold generated binary image of the source object.</param>
+            <param name="startIndex">0-based starting index in the <paramref name="buffer"/> to start writing.</param>
+            <returns>The number of bytes written to the <paramref name="buffer"/>.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="M:GSF.Media.WaveFormatChunk.Clone">
+            <summary>
+            Creates a copy of the <see cref="T:GSF.Media.WaveFormatChunk"/>.
+            </summary>
+            <returns>A new copy of the <see cref="T:GSF.Media.WaveFormatChunk"/>.</returns>
+        </member>
+        <member name="M:GSF.Media.WaveFormatChunk.GetSampleTypeCode">
+            <summary>
+            Determines sample data type code based on defined <see cref="P:GSF.Media.WaveFormatChunk.BitsPerSample"/>
+            and <see cref="P:GSF.Media.WaveFormatChunk.AudioFormat"/>.
+            </summary>
+            <returns>
+            Sample type code based on defined <see cref="P:GSF.Media.WaveFormatChunk.BitsPerSample"/> and
+            <see cref="P:GSF.Media.WaveFormatChunk.AudioFormat"/>.
+            </returns>
+        </member>
+        <member name="M:GSF.Media.WaveFormatChunk.CastSample(System.Double)">
+            <summary>
+            Casts sample value to its equivalent native type based on defined <see cref="P:GSF.Media.WaveFormatChunk.BitsPerSample"/>
+            and <see cref="P:GSF.Media.WaveFormatChunk.AudioFormat"/>.
+            </summary>
+            <param name="sample">Sample value.</param>
+            <returns>
+            Sample value cast to its equivalent native type based on defined <see cref="P:GSF.Media.WaveFormatChunk.BitsPerSample"/>
+            and <see cref="P:GSF.Media.WaveFormatChunk.AudioFormat"/>.
+            </returns>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.ChunkSize">
+            <summary>Size of <see cref="T:GSF.Media.WaveFormatChunk"/>.</summary>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.BinaryLength">
+            <summary>
+            Gets the length of <see cref="T:GSF.Media.WaveFormatChunk"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.AudioFormat">
+            <summary>
+            Gets or sets audio format used by the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            PCM = 1 (i.e., linear quantization), values other than 1 typically indicate some form of compression.
+            See <see cref="T:GSF.Media.WaveFormat"/> enumeration for more details.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.Channels">
+            <summary>
+            Gets or sets number of audio channels in the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            This property defines the number of channels (e.g., mono = 1, stereo = 2, etc.) defined
+            in each sample block. See <see cref="T:GSF.Media.DataChannels"/> enumeration for more details.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.SampleRate">
+            <summary>
+            Gets or sets the sample rate (i.e., the number of samples per second) defined in the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            This property defines the number of samples per second defined in each second of data in
+            the <see cref="T:GSF.Media.WaveFile"/>.  See <see cref="P:GSF.Media.WaveFormatChunk.SampleRate"/> enumeration for more details.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.ByteRate">
+            <summary>
+            Gets or sets the byte rate used for buffer estimation.
+            </summary>
+            <remarks>
+            <para>
+            This property is not usually changed.  It will be automatically calculated for new wave files.
+            </para>
+            <para>
+            This is typically just the arithmetic result of:
+            <see cref="P:GSF.Media.WaveFormatChunk.SampleRate"/> * <see cref="P:GSF.Media.WaveFormatChunk.Channels"/> * <see cref="P:GSF.Media.WaveFormatChunk.BitsPerSample"/> / 8.
+            However, this value can be changed as needed to accommodate better buffer estimations during
+            data read cycle.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.BlockAlignment">
+            <summary>
+            Gets or sets the block size of a complete sample of data (i.e., samples for all channels of data at
+            one instant in time).
+            </summary>
+            <remarks>
+            <para>
+            This property is not usually changed.  It will be automatically calculated for new wave files.
+            </para>
+            <para>
+            This is typically just the arithmetic result of:
+            <see cref="P:GSF.Media.WaveFormatChunk.Channels"/> * <see cref="P:GSF.Media.WaveFormatChunk.BitsPerSample"/> / 8.
+            However, this value can be changed as needed to accommodate even block-alignment of non-standard
+            <see cref="P:GSF.Media.WaveFormatChunk.BitsPerSample"/> values.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.BitsPerSample">
+            <summary>
+            Gets or sets number of bits-per-sample in the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            This property defines the number of bits-per-sample (e.g., 8, 16, 24, 32, etc.) used
+            by each sample in a block of samples - effectively the data sample size. See
+            <see cref="P:GSF.Media.WaveFormatChunk.BitsPerSample"/> enumeration for more details.
+            </remarks>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.ExtraParametersSize">
+            <summary>
+            Gets the size of the <see cref="P:GSF.Media.WaveFormatChunk.ExtraParameters"/> buffer, if defined.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFormatChunk.ExtraParameters">
+            <summary>
+            Gets or sets any extra parameters defined in the format header of the <see cref="T:GSF.Media.WaveFile"/>.
+            </summary>
+            <remarks>
+            See the <see cref="T:GSF.Media.WaveFormatExtensible"/> class for an example of usage of this property.
+            </remarks>
+        </member>
+        <member name="T:GSF.Media.Speakers">
+            <summary>Spatial positioning flags for <see cref="P:GSF.Media.WaveFormatExtensible.ChannelMask"/> property.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.Undefined">
+            <summary>Speaker positions undefined.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.FrontLeft">
+            <summary>Front left speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.FrontRight">
+            <summary>Front right speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.FronCenter">
+            <summary>Front center speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.LowFrequency">
+            <summary>Low frequency speaker.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.BackLeft">
+            <summary>Back left speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.BackRight">
+            <summary>back right speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.FronLeftOfCenter">
+            <summary>Front left of center speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.FronRightOfCenter">
+            <summary>Front right of center speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.BackCenter">
+            <summary>Back center speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.SideLeft">
+            <summary>Side left speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.SideRight">
+            <summary>Side right speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.TopCenter">
+            <summary>Top center speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.TopFrontLeft">
+            <summary>Top front left speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.TopFrontCenter">
+            <summary>Top front center speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.TopFrontRight">
+            <summary>Top front right speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.TopBackLeft">
+            <summary>Top back left speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.TopBackCenter">
+            <summary>Top back center speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.TopBackRight">
+            <summary>Top back right speaker position.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.Reserved">
+            <summary>Reserved flags for <see cref="T:GSF.Media.Speakers"/> enumeration.</summary>
+        </member>
+        <member name="F:GSF.Media.Speakers.All">
+            <summary>All Speaker positions defined.</summary>
+        </member>
+        <member name="T:GSF.Media.DataFormatSubType">
+            <summary>Common sub-type GUID's for <see cref="P:GSF.Media.WaveFormatExtensible.SubFormat"/> property.</summary>
+        </member>
+        <member name="F:GSF.Media.DataFormatSubType.PCM">
+            <summary>Standard pulse-code modulation audio format</summary>
+            <remarks>
+            PCM (Pulse Code Modulation) is a common method of storing and transmitting uncompressed digital audio.
+            Since it is a generic format, it can be read by most audio applications—similar to the way a plain text
+            file can be read by any word-processing program. PCM is used by Audio CDs and digital audio tapes (DATs).
+            PCM is also a very common format for AIFF and WAV files.
+            </remarks>
+        </member>
+        <member name="F:GSF.Media.DataFormatSubType.ADPCM">
+            <summary>Adpative differential pulse-code modulation encoding algorithm</summary>
+        </member>
+        <member name="F:GSF.Media.DataFormatSubType.IeeeFloat">
+            <summary>Floating point PCM encoding algorithm</summary>
+        </member>
+        <member name="F:GSF.Media.DataFormatSubType.DRM">
+            <summary>Digital Rights Management encoded format (for digital-audio content protected by Microsoft DRM).</summary>
+        </member>
+        <member name="F:GSF.Media.DataFormatSubType.ALaw">
+            <summary>A-law encoding algorithm (used in Europe and the rest of the world)</summary>
+        </member>
+        <member name="F:GSF.Media.DataFormatSubType.MuLaw">
+            <summary>μ-law encoding algorithm (used in North America and Japan)</summary>
+        </member>
+        <member name="F:GSF.Media.DataFormatSubType.Mpeg">
+            <summary>MPEG Audio is a family of open standards for compressed audio that includes MP2, MP3 and AAC.</summary>
+        </member>
+        <member name="F:GSF.Media.DataFormatSubType.Analog">
+            <summary>Analog sub-format.</summary>
+        </member>
+        <member name="T:GSF.Media.WaveFormatExtensible">
+             <summary>
+             Represents the "extensible" format structure for a WAVE media format file.
+             </summary>
+             <example>
+             For some special bit-encodings you may need to use the "WaveFormatExtensible" audio format,
+             here is an example of how to use that format:
+             <code>
+             using System;
+             using GSF.Media;
+             using GSF.Media.Sound;
+            
+             static class Program
+             {
+                 static void Main()
+                 {
+                     // Generate an 8000 Hz, 32 bits per sample, mono channeled WAVE file in "Extensible" format
+                     WaveFile waveFile = new WaveFile(8000, 32, 1, (ushort)WaveFormat.WaveFormatExtensible);
+            
+                     // Apply the "WaveFormatExtensible" extra parameters
+                     WaveFormatExtensible extensible = new WaveFormatExtensible(waveFile.FormatChunk);
+                     waveFile.ExtraParameters = extensible.BinaryImage;
+            
+                     // Generate the EBS Alert noise
+                     DTMF.Generate(waveFile, DTMF.EmergencyBroadcastSystemAlert, 0.25D);
+            
+                     // Save the generated tone
+                     waveFile.Save("ExtensibleTest.wav");
+            
+                     Console.Write("File available to be played from Windows Media Player...");
+                     Console.ReadKey();
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="F:GSF.Media.WaveFormatExtensible.FixedLength">
+            <summary>
+            The fixed byte length of a <see cref="T:GSF.Media.WaveFormatExtensible"/> instance.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.WaveFormatExtensible.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.Media.WaveFormatExtensible"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Media.WaveFormatExtensible.#ctor(GSF.Media.WaveFormatChunk)">
+            <summary>
+            Creates a new <see cref="T:GSF.Media.WaveFormatExtensible"/> object based on the <see cref="T:GSF.Media.WaveFormatChunk"/> settings.
+            </summary>
+            <param name="waveFormat">A <see cref="T:GSF.Media.WaveFormatChunk"/> format.</param>
+        </member>
+        <member name="M:GSF.Media.WaveFormatExtensible.#ctor(System.UInt16,GSF.Media.Speakers,System.Guid)">
+            <summary>
+            Creates a new <see cref="T:GSF.Media.WaveFormatExtensible"/> object based on the given settings.
+            </summary>
+            <param name="sampleValue">An <see cref="T:System.UInt16"/> value representing the sample value.</param>
+            <param name="channelMask">A <see cref="T:GSF.Media.Speakers"/> object.</param>
+            <param name="subFormat">A <see cref="T:System.Guid"/> value.</param>
+        </member>
+        <member name="M:GSF.Media.WaveFormatExtensible.ParseBinaryImage(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Parses <see cref="T:GSF.Media.WaveFormatExtensible"/> object by parsing the specified <paramref name="buffer"/> containing a binary image.
+            </summary>
+            <param name="buffer">Buffer containing binary image to parse.</param>
+            <param name="startIndex">0-based starting index in the <paramref name="buffer"/> to start parsing.</param>
+            <param name="length">Valid number of bytes within <paramref name="buffer"/> from <paramref name="startIndex"/>.</param>
+            <returns>The number of bytes used for initialization in the <paramref name="buffer"/> (i.e., the number of bytes parsed).</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <paramref name="length"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <paramref name="length"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="M:GSF.Media.WaveFormatExtensible.GenerateBinaryImage(System.Byte[],System.Int32)">
+            <summary>
+            Generates a binary representation of this <see cref="T:GSF.Media.WaveFormatExtensible"/> and copies it into the given buffer.
+            </summary>
+            <param name="buffer">Buffer used to hold generated binary image of the source object.</param>
+            <param name="startIndex">0-based starting index in the <paramref name="buffer"/> to start writing.</param>
+            <returns>The number of bytes written to the <paramref name="buffer"/>.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="startIndex"/> or <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> is less than 0 -or- 
+            <paramref name="startIndex"/> and <see cref="P:GSF.Parsing.ISupportBinaryImage.BinaryLength"/> will exceed <paramref name="buffer"/> length.
+            </exception>
+        </member>
+        <member name="P:GSF.Media.WaveFormatExtensible.SampleValue">
+            <summary>
+            Gets or sets sample value.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFormatExtensible.ChannelMask">
+            <summary>
+            Gets or sets flags representing spatial locations of data channels (i.e., speaker locations).
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFormatExtensible.SubFormat">
+            <summary>
+            Gets or sets <see cref="T:System.Guid"/> for sub-format type of extensible WaveFile.
+            </summary>
+        </member>
+        <member name="P:GSF.Media.WaveFormatExtensible.BinaryLength">
+            <summary>
+            Gets the length of the binary representation of this <see cref="T:GSF.Media.WaveFormatExtensible"/> instance.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,5 @@
+[autorun]
+icon=System\GPA.ico
+open=setup.exe
+label=GPA openHistorian Setup
+action=Install the openHistorian

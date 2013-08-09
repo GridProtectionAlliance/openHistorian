@@ -4,8 +4,6 @@
 
 //namespace openHistorian.Test
 //{
-
-
 //    /// <summary>
 //    ///This is a test class for ResourceEngineTest and is intended
 //    ///to contain all ResourceEngineTest Unit Tests

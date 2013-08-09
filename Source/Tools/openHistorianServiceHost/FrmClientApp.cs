@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using openVisN.Framework;
+using openHistorian;
+using openHistorian.Data.Query;
 using openHistorianServiceHost.Properties;
+using openVisN.Framework;
+using openVisN.Library;
+
 namespace openHistorianServiceHost
 {
     public partial class FrmClientApp : Form
     {
-        string EventsFile;
-        string SignalGroupFile;
-        string SignalMetaData;
-        List<string> ArchiveFiles;
+        private string EventsFile;
+        private readonly string SignalGroupFile;
+        private readonly string SignalMetaData;
+        private readonly List<string> ArchiveFiles;
 
         public FrmClientApp()
         {
@@ -30,7 +29,7 @@ namespace openHistorianServiceHost
             }
             if (!File.Exists(Settings.Default.Configini))
             {
-                using (var dlg = new OpenFileDialog())
+                using (OpenFileDialog dlg = new OpenFileDialog())
                 {
                     dlg.Filter = "Config File|*.d2ini";
                     if (dlg.ShowDialog() != DialogResult.OK)
@@ -68,8 +67,8 @@ namespace openHistorianServiceHost
                 }
             }
 
-            openVisN.Library.AllSignals.DefaultPath = SignalMetaData;
-            openVisN.Library.AllSignalGroups.DefaultPath = SignalGroupFile;
+            AllSignals.DefaultPath = SignalMetaData;
+            AllSignalGroups.DefaultPath = SignalGroupFile;
 
             InitializeComponent();
 
@@ -89,46 +88,46 @@ namespace openHistorianServiceHost
             visualizationFramework1.Framework.Updater.NewQueryResults += Updater_NewQueryResults;
         }
 
-        void Updater_NewQueryResults(object sender, openVisN.Framework.QueryResultsEventArgs e)
+        private void Updater_NewQueryResults(object sender, QueryResultsEventArgs e)
         {
             m_lastResults = e;
             long pointCount = 0;
-            foreach (var r in e.Results.Values)
+            foreach (SignalDataBase r in e.Results.Values)
                 pointCount += r.Count;
             this.pointCount = pointCount;
         }
 
-        QueryResultsEventArgs m_lastResults;
-        long pointCount;
-        Stopwatch sw1 = new Stopwatch();
-        Stopwatch sw2 = new Stopwatch();
+        private QueryResultsEventArgs m_lastResults;
+        private long pointCount;
+        private readonly Stopwatch sw1 = new Stopwatch();
+        private readonly Stopwatch sw2 = new Stopwatch();
 
-        void UpdaterOnBeforeExecuteQuery(object sender, EventArgs eventArgs)
+        private void UpdaterOnBeforeExecuteQuery(object sender, EventArgs eventArgs)
         {
             sw1.Reset();
             sw2.Reset();
 
             sw1.Start();
-            openHistorian.Stats.Clear();
+            Stats.Clear();
         }
 
-        void UpdaterOnAfterExecuteQuery(object sender, EventArgs eventArgs)
+        private void UpdaterOnAfterExecuteQuery(object sender, EventArgs eventArgs)
         {
             try
             {
                 sw2.Stop();
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append(("Scanned: " + openHistorian.Stats.PointsScanned.ToString().PadRight(9)));
-                sb.Append(("" + (openHistorian.Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Points: " + openHistorian.Stats.PointsReturned.ToString().PadRight(9)));
-                sb.Append(("" + (openHistorian.Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Seek: " + openHistorian.Stats.SeeksRequested.ToString().PadRight(8)));
-                sb.Append(("" + (openHistorian.Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 100).ToString("0 K/s").PadRight(9)));
-                sb.Append(("| Calculated: " + (pointCount - openHistorian.Stats.PointsReturned).ToString().PadRight(7)));
+                sb.Append(("Scanned: " + Stats.PointsScanned.ToString().PadRight(9)));
+                sb.Append(("" + (Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9)));
+                sb.Append(("| Points: " + Stats.PointsReturned.ToString().PadRight(9)));
+                sb.Append(("" + (Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9)));
+                sb.Append(("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8)));
+                sb.Append(("" + (Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 100).ToString("0 K/s").PadRight(9)));
+                sb.Append(("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7)));
                 sb.Append(("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));
 
-                if (pointCount < openHistorian.Stats.PointsReturned)
+                if (pointCount < Stats.PointsReturned)
                 {
                     pointCount = pointCount;
                 }
@@ -139,11 +138,9 @@ namespace openHistorianServiceHost
             catch (Exception)
             {
             }
-
-
         }
 
-        void UpdaterOnAfterQuery(object sender, EventArgs eventArgs)
+        private void UpdaterOnAfterQuery(object sender, EventArgs eventArgs)
         {
             sw1.Stop();
             sw2.Start();
@@ -160,8 +157,6 @@ namespace openHistorianServiceHost
         {
             //Clipboard.SetText(NPlot.StepTimer.GetResultsPercent());
             //NPlot.StepTimer.Reset();
-
         }
-
     }
 }

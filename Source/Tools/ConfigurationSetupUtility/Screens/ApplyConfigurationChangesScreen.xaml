@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="ConfigurationSetupUtility.Screens.ApplyConfigurationChangesScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}">
+    <DockPanel>
+        <Label Content="Apply configuration changes" DockPanel.Dock="Top" Margin="10" HorizontalContentAlignment="Center" FontSize="16" FontWeight="Bold" />
+        <StackPanel DockPanel.Dock="Bottom">
+            <TextBlock Height="23" Text="Apply configuration changes to:" Margin="10" TextWrapping="Wrap" TextAlignment="Center" />
+            <StackPanel HorizontalAlignment="Center" Width="220">
+                <CheckBox Content="openHistorian Windows service" Height="16" IsChecked="True" HorizontalAlignment="Left" Checked="openHistorianServiceCheckBox_Checked" Unchecked="openHistorianServiceCheckBox_Unchecked" Name="m_openHistorianServiceCheckBox" />
+                <CheckBox Content="openHistorian Manager (local application)" Height="16" IsChecked="True" HorizontalAlignment="Left" Checked="openHistorianManagerLocalCheckBox_Checked" Unchecked="openHistorianManagerLocalCheckBox_Unchecked" Name="m_openHistorianManagerLocalCheckBox" />
+                <CheckBox Content="openHistorian Manager (web application)" Height="16" IsChecked="True" HorizontalAlignment="Left" Checked="openHistorianManagerWebCheckBox_Checked" Unchecked="openHistorianManagerWebCheckBox_Unchecked" Name="m_openHistorianManagerWebCheckBox" />
+                <Line Stretch="Fill"  Stroke="DarkGray" X2="1" Margin="0,10" Name="m_horizontalRule" />
+                <CheckBox Content="Setup / change primary historian" Height="16" HorizontalAlignment="Left" Checked="SetupHistorianCheckBox_Checked" Unchecked="SetupHistorianCheckBox_Unchecked" Name="m_setupHistorianCheckBox" IsChecked="True" />
+            </StackPanel>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

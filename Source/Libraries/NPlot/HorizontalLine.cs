@@ -34,158 +34,159 @@ using System.Drawing;
 
 namespace NPlot
 {
-
-	/// <summary>
-	/// Encapsulates functionality for drawing a horizontal line on a plot surface.
-	/// </summary>
-	public class HorizontalLine : IPlot
-	{
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="yValue">ordinate (Y) value of line.</param>
-		public HorizontalLine( double yValue )
-		{
-			this.value_ = yValue;
-		}
+    /// <summary>
+    /// Encapsulates functionality for drawing a horizontal line on a plot surface.
+    /// </summary>
+    public class HorizontalLine : IPlot
+    {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="yValue">ordinate (Y) value of line.</param>
+        public HorizontalLine(double yValue)
+        {
+            this.value_ = yValue;
+        }
 
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="yValue">ordinate (Y) value of line.</param>
-		/// <param name="color">draw the line using this color.</param>
-		public HorizontalLine( double yValue, Color color )
-		{
-			this.value_ = yValue;
-			this.pen_ = new Pen( color );
-		}
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="yValue">ordinate (Y) value of line.</param>
+        /// <param name="color">draw the line using this color.</param>
+        public HorizontalLine(double yValue, Color color)
+        {
+            this.value_ = yValue;
+            this.pen_ = new Pen(color);
+        }
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="yValue">ordinate (Y) value of line.</param>
-		/// <param name="pen">Pen to use to draw the line.</param>
-		public HorizontalLine( double yValue, Pen pen )
-		{
-			this.value_ = yValue;
-			this.pen_ = pen;
-		}
-        
-		/// <summary>
-		/// Returns null indicating that x extremities of the line are variable.
-		/// </summary>
-		/// <returns>null</returns>
-		public DateTimeAxis SuggestXAxis()
-		{
-			return null;
-		}
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="yValue">ordinate (Y) value of line.</param>
+        /// <param name="pen">Pen to use to draw the line.</param>
+        public HorizontalLine(double yValue, Pen pen)
+        {
+            this.value_ = yValue;
+            this.pen_ = pen;
+        }
 
-
-		/// <summary>
-		/// Returns a y-axis that is suitable for drawing this plot.
-		/// </summary>
-		/// <returns>A suitable y-axis.</returns>
-		public LinearAxis SuggestYAxis()
-		{
-			return new LinearAxis( this.value_, this.value_ );
-		}
-
-	    /// <summary>
-		/// Draws the horizontal line plot on a GDI+ surface against the provided x and y axes.
-		/// </summary>
-		/// <param name="g">The GDI+ surface on which to draw.</param>
-		/// <param name="xAxis">The X-Axis to draw against.</param>
-		/// <param name="yAxis">The Y-Axis to draw against.</param>
-		public void Draw(System.Drawing.Graphics g, PhysicalAxis xAxis, PhysicalAxis yAxis)
-		{
-			int xMin = xAxis.PhysicalMin.X;
-			int xMax = xAxis.PhysicalMax.X;
-			
-			xMin += pixelIndent_;
-			xMax -= pixelIndent_;
-
-			float length = Math.Abs(xMax - xMin);
-			float lengthDiff = length - length*scale_;
-			float indentAmount = lengthDiff/2;
-
-			xMin += (int)indentAmount;
-			xMax -= (int)indentAmount;
-
-			int yPos = (int)yAxis.WorldToPhysical( value_, false ).Y;
-		
-			g.DrawLine( pen_, new System.Drawing.Point( xMin, yPos ), new System.Drawing.Point( xMax, yPos ) );
-
-			// todo:  clip and proper logic for flipped axis min max.
-		}
-
-		private double value_;
-		/// <summary>
-		/// ordinate (Y) value to draw horizontal line at.
-		/// </summary>
-		public double YValue
-		{
-			get
-			{
-				return value_;
-			}
-			set
-			{
-				value_ = value;
-			}
-		}
-
-		private Pen pen_ = new Pen( Color.Black );
-		/// <summary>
-		/// Pen to use to draw the horizontal line.
-		/// </summary>
-		public Pen Pen
-		{
-			get
-			{
-				return pen_;
-			}
-			set
-			{
-				pen_ = value;
-			}
-		}
-
-		
-		/// <summary>
-		/// Each end of the line is indented by this many pixels. 
-		/// </summary>
-		public int PixelIndent
-		{
-			get
-			{
-				return pixelIndent_;
-			}
-			set
-			{
-				pixelIndent_ = value;
-			}
-		}
-		private int pixelIndent_ = 0;
+        /// <summary>
+        /// Returns null indicating that x extremities of the line are variable.
+        /// </summary>
+        /// <returns>null</returns>
+        public DateTimeAxis SuggestXAxis()
+        {
+            return null;
+        }
 
 
-		/// <summary>
-		/// The line length is multiplied by this amount. Default
-		/// corresponds to a value of 1.0.
-		/// </summary>
-		public float LengthScale
-		{
-			get
-			{
-				return scale_;
-			}
-			set
-			{
-				scale_ = value;
-			}
-		}
-		private float scale_ = 1.0f;
+        /// <summary>
+        /// Returns a y-axis that is suitable for drawing this plot.
+        /// </summary>
+        /// <returns>A suitable y-axis.</returns>
+        public LinearAxis SuggestYAxis()
+        {
+            return new LinearAxis(this.value_, this.value_);
+        }
 
-	}
+        /// <summary>
+        /// Draws the horizontal line plot on a GDI+ surface against the provided x and y axes.
+        /// </summary>
+        /// <param name="g">The GDI+ surface on which to draw.</param>
+        /// <param name="xAxis">The X-Axis to draw against.</param>
+        /// <param name="yAxis">The Y-Axis to draw against.</param>
+        public void Draw(Graphics g, PhysicalAxis xAxis, PhysicalAxis yAxis)
+        {
+            int xMin = xAxis.PhysicalMin.X;
+            int xMax = xAxis.PhysicalMax.X;
+
+            xMin += pixelIndent_;
+            xMax -= pixelIndent_;
+
+            float length = Math.Abs(xMax - xMin);
+            float lengthDiff = length - length * scale_;
+            float indentAmount = lengthDiff / 2;
+
+            xMin += (int)indentAmount;
+            xMax -= (int)indentAmount;
+
+            int yPos = (int)yAxis.WorldToPhysical(value_, false).Y;
+
+            g.DrawLine(pen_, new Point(xMin, yPos), new Point(xMax, yPos));
+
+            // todo:  clip and proper logic for flipped axis min max.
+        }
+
+        private double value_;
+
+        /// <summary>
+        /// ordinate (Y) value to draw horizontal line at.
+        /// </summary>
+        public double YValue
+        {
+            get
+            {
+                return value_;
+            }
+            set
+            {
+                value_ = value;
+            }
+        }
+
+        private Pen pen_ = new Pen(Color.Black);
+
+        /// <summary>
+        /// Pen to use to draw the horizontal line.
+        /// </summary>
+        public Pen Pen
+        {
+            get
+            {
+                return pen_;
+            }
+            set
+            {
+                pen_ = value;
+            }
+        }
+
+
+        /// <summary>
+        /// Each end of the line is indented by this many pixels. 
+        /// </summary>
+        public int PixelIndent
+        {
+            get
+            {
+                return pixelIndent_;
+            }
+            set
+            {
+                pixelIndent_ = value;
+            }
+        }
+
+        private int pixelIndent_ = 0;
+
+
+        /// <summary>
+        /// The line length is multiplied by this amount. Default
+        /// corresponds to a value of 1.0.
+        /// </summary>
+        public float LengthScale
+        {
+            get
+            {
+                return scale_;
+            }
+            set
+            {
+                scale_ = value;
+            }
+        }
+
+        private float scale_ = 1.0f;
+    }
 }

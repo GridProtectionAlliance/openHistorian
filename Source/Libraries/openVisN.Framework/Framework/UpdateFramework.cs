@@ -23,17 +23,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows.Forms;
-using openHistorian.Data.Query;
-using GSF.Threading;
-using System.Threading.Tasks;
 using System.Threading;
-using System.Linq;
+using GSF.Threading;
+using openHistorian.Data.Query;
 
 namespace openVisN.Framework
 {
-
     public enum ExecutionMode
     {
         Automatic,
@@ -42,7 +37,12 @@ namespace openVisN.Framework
 
     public class ExecutionModeEventArgs : EventArgs
     {
-        public ExecutionMode Mode { get; private set; }
+        public ExecutionMode Mode
+        {
+            get;
+            private set;
+        }
+
         public ExecutionModeEventArgs(ExecutionMode mode)
         {
             Mode = mode;
@@ -51,10 +51,30 @@ namespace openVisN.Framework
 
     public class QueryResultsEventArgs : EventArgs
     {
-        public DateTime StartTime { get; private set; }
-        public DateTime EndTime { get; private set; }
-        public object RequestedToken { get; private set; }
-        public IDictionary<Guid, SignalDataBase> Results { get; private set; }
+        public DateTime StartTime
+        {
+            get;
+            private set;
+        }
+
+        public DateTime EndTime
+        {
+            get;
+            private set;
+        }
+
+        public object RequestedToken
+        {
+            get;
+            private set;
+        }
+
+        public IDictionary<Guid, SignalDataBase> Results
+        {
+            get;
+            private set;
+        }
+
         public QueryResultsEventArgs(IDictionary<Guid, SignalDataBase> results, object requestToken, DateTime startTime, DateTime endTime)
         {
             StartTime = startTime;
@@ -66,8 +86,8 @@ namespace openVisN.Framework
 
     public class UpdateFramework : IDisposable
     {
-        volatile bool m_disposing;
-        ScheduledTask m_async;
+        private volatile bool m_disposing;
+        private readonly ScheduledTask m_async;
 
         public event EventHandler BeforeExecuteQuery;
         public event EventHandler AfterQuery;
@@ -77,20 +97,20 @@ namespace openVisN.Framework
         public event EventHandler<QueryResultsEventArgs> ParallelWithControlLockNewQueryResults;
         public event EventHandler<ExecutionModeEventArgs> ExecutionModeChanged;
 
-        SynchronousEvent<QueryResultsEventArgs> m_syncEvent;
+        private readonly SynchronousEvent<QueryResultsEventArgs> m_syncEvent;
 
-        TimeSpan m_refreshInterval;
-        AutomaticPlayback m_playback;
-        object m_requestToken;
-        HistorianQuery m_query;
-        object m_syncRoot;
-        volatile bool m_enabled;
-        DateTime m_lowerBounds;
-        DateTime m_upperBounds;
-        DateTime m_focusedDate;
-        ExecutionMode m_mode = ExecutionMode.Manual;
+        private TimeSpan m_refreshInterval;
+        private readonly AutomaticPlayback m_playback;
+        private object m_requestToken;
+        private HistorianQuery m_query;
+        private readonly object m_syncRoot;
+        private volatile bool m_enabled;
+        private DateTime m_lowerBounds;
+        private DateTime m_upperBounds;
+        private DateTime m_focusedDate;
+        private ExecutionMode m_mode = ExecutionMode.Manual;
 
-        List<MetadataBase> m_activeSignals;
+        private List<MetadataBase> m_activeSignals;
 
         public UpdateFramework()
         {
@@ -110,7 +130,7 @@ namespace openVisN.Framework
             m_query = query;
         }
 
-        void m_syncEvent_CustomEvent(object sender, QueryResultsEventArgs e)
+        private void m_syncEvent_CustomEvent(object sender, QueryResultsEventArgs e)
         {
             if (SynchronousNewQueryResults != null)
             {
@@ -122,7 +142,7 @@ namespace openVisN.Framework
             }
         }
 
-        void AsyncDoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
+        private void AsyncDoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
         {
             if (BeforeExecuteQuery != null)
                 BeforeExecuteQuery(this, EventArgs.Empty);
@@ -151,9 +171,9 @@ namespace openVisN.Framework
                 }
             }
 
-            var results = m_query.GetQueryResult(startTime, stopTime, 0, activeSignals);
+            IDictionary<Guid, SignalDataBase> results = m_query.GetQueryResult(startTime, stopTime, 0, activeSignals);
 
-            var queryResults = new QueryResultsEventArgs(results, token, startTime, stopTime);
+            QueryResultsEventArgs queryResults = new QueryResultsEventArgs(results, token, startTime, stopTime);
 
             if (AfterQuery != null)
                 AfterQuery(this, EventArgs.Empty);
@@ -193,7 +213,6 @@ namespace openVisN.Framework
                     m_playback.LiveModeSelected();
                     m_async.Start();
                 }
-
             }
         }
 
@@ -240,7 +259,6 @@ namespace openVisN.Framework
             }
             else
             {
-
             }
         }
 
@@ -256,7 +274,6 @@ namespace openVisN.Framework
             }
             else
             {
-
             }
         }
 
@@ -291,7 +308,6 @@ namespace openVisN.Framework
                     m_playback.PlaybackSpeed = value;
                 }
             }
-
         }
 
         public void Execute(DateTime startTime, DateTime endTime, object token)

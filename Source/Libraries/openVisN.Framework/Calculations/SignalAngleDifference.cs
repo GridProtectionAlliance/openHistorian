@@ -27,9 +27,9 @@ using openHistorian.Data.Query;
 
 namespace openVisN.Calculations
 {
-    class SignalAngleDifference : CalculationMethod
+    internal class SignalAngleDifference : CalculationMethod
     {
-        MetadataBase m_newSignal;
+        private readonly MetadataBase m_newSignal;
 
         public SignalAngleDifference(MetadataBase signal, MetadataBase signalReference)
             : base(signal, signalReference)
@@ -47,10 +47,10 @@ namespace openVisN.Calculations
             Dependencies[0].Calculate(signals);
             Dependencies[1].Calculate(signals);
 
-            var signal = signals[Dependencies[0].UniqueId];
-            var signalReference = signals[Dependencies[1].UniqueId];
+            SignalDataBase signal = signals[Dependencies[0].UniqueId];
+            SignalDataBase signalReference = signals[Dependencies[1].UniqueId];
 
-            var newSignal = TryGetSignal(m_newSignal, signals);
+            SignalDataBase newSignal = TryGetSignal(m_newSignal, signals);
 
             if (newSignal == null || newSignal.IsComplete)
                 return;
@@ -85,13 +85,11 @@ namespace openVisN.Calculations
                     else
                         posRef++;
                 }
-
-
             }
             newSignal.Completed();
         }
 
-        SignalDataBase TryGetSignal(MetadataBase signal, IDictionary<Guid, SignalDataBase> results)
+        private SignalDataBase TryGetSignal(MetadataBase signal, IDictionary<Guid, SignalDataBase> results)
         {
             SignalDataBase data;
             if (results.TryGetValue(signal.UniqueId, out data))

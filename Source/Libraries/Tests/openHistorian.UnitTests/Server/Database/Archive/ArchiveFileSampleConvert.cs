@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using openHistorian.Archive;
+using openHistorian.Collections;
 
 namespace openHistorian.UnitTests.Server.Database.Archive
 {
@@ -17,8 +18,8 @@ namespace openHistorian.UnitTests.Server.Database.Archive
         {
             if (File.Exists("c:\\temp\\ArchiveTestFileBig.d2"))
                 File.Delete("c:\\temp\\ArchiveTestFileBig.d2");
-            using (var af = ArchiveFile.CreateInMemory(CompressionMethod.TimeSeriesEncoded))
-            //using (var af = ArchiveFile.CreateFile("c:\\temp\\ArchiveTestFileBig.d2", CompressionMethod.TimeSeriesEncoded))
+            //using (var af = ArchiveFile.CreateInMemory(CompressionMethod.TimeSeriesEncoded))
+            using (var af = HistorianArchiveFile.CreateFile("c:\\temp\\ArchiveTestFileBig.d2", CompressionMethod.TimeSeriesEncoded))
             {
                 Random r = new Random(3);
 
@@ -28,6 +29,7 @@ namespace openHistorian.UnitTests.Server.Database.Archive
                     {
                         for (ulong v2 = 1; v2 < 86000; v2++)
                         {
+
                             edit.AddPoint(v1 * 2342523, v2, 0, (ulong)r.Next());
                         }
                         edit.Commit();
@@ -98,13 +100,13 @@ namespace openHistorian.UnitTests.Server.Database.Archive
         [Test]
         public void ReadFile()
         {
-            using (var af = ArchiveFile.OpenFile("c:\\temp\\ArchiveTestFileBig.d2", AccessMode.ReadOnly))
+            using (var af = HistorianArchiveFile.OpenFile("c:\\temp\\ArchiveTestFileBig.d2", isReadOnly:true))
             {
                 Random r = new Random(3);
 
                 ulong key1, key2, value1, value2;
                 var scanner = af.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
-                scanner.SeekToKey(0, 0);
+                scanner.SeekToStart();
                 for (ulong v1 = 1; v1 < 36; v1++)
                 {
                     for (ulong v2 = 1; v2 < 86000; v2++)

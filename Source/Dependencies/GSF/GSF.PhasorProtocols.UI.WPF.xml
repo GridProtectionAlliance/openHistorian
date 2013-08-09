@@ -1,0 +1,2012 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.PhasorProtocols.UI.WPF</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.PhasorProtocols.UI.Modal.ConfigurationCreator">
+            <summary>
+            Interaction logic for ConfigurationCreator.xaml
+            </summary>
+            <summary>
+            ConfigurationCreator
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConfigurationCreator.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.UI.Modal.ConfigurationCreator"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConfigurationCreator.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.Modal.ConfigurationCreator.ConfigurationFrame">
+            <summary>
+            Gets or sets the manually tweaked configuration frame.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder">
+            <summary>
+            Interaction logic for ConnectionStringBuilder.xaml
+            </summary>
+            <summary>
+            ConnectionStringBuilder
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.#ctor(GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ConnectionType)">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ConnectionStringBuilder_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles loaded event of the window.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ButtonSaveUdpServer_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Hanldes click event of the save button on UdpServer tab.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ButtonSaveFile_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Hanldes click event of the save button on File tab.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ButtonBrowseFile_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Hanldes click event of the browse button on File tab.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ButtonSaveSerial_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Hanldes click event of the save button on Serial tab.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ButtonSaveUDP_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Hanldes click event of the save button on UDP tab.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ButtonSaveTCP_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Hanldes click event of the save button on TCP tab.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ParseConnectionString">
+            <summary>
+            Parses <see cref="P:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ConnectionString"/> and creates <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.SetConnectionString(GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.TransportProtocol)">
+            <summary>
+            Creates connection string by merging keyvaluepairs defined in <see cref="T:System.Collections.Generic.Dictionary`2"/>.
+            </summary>
+            <param name="transportProtocol"><see cref="T:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.TransportProtocol"/> to format connection string.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.FormatIP(System.String)">
+            <summary>
+            Formats IPv6 address.
+            </summary>
+            <param name="ipAddress">IP address to be formatted.</param>
+            <returns>string, formatted IP address.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.PgConnection">
+            <summary>
+            Gets or sets a flag indicating if the connection is to Phasor Gateway.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ConnectionString">
+            <summary>
+            Gets or sets connection string from the parameters defined on the UI.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.TransportProtocol">
+            <summary>
+            Type of transport protocol enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.TransportProtocol.tcp">
+            <summary>
+            Defines TCP tranasport protocol.
+            </summary>
+            <remarks>
+            Use this to create connection string for TCP connection.
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.TransportProtocol.udp">
+            <summary>
+            Defines UDP tranasport protocol.
+            </summary>
+            <remarks>
+            Use this to create connection string for UDP connection.
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.TransportProtocol.serial">
+            <summary>
+            Defines Serial tranasport protocol.
+            </summary>
+            <remarks>
+            Use this to create connection string for Serial connection.
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.TransportProtocol.file">
+            <summary>
+            Defines file based connection.
+            </summary>
+            <remarks>
+            Use this to create connection string for File based connection.
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.TransportProtocol.udpserver">
+            <summary>
+            Defines UDP Server connection.
+            </summary>
+            <remarks>
+            Use this to create connection string for TCP Server connection.
+            </remarks>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ConnectionType">
+            <summary>
+            Type of connection enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ConnectionType.DeviceConnection">
+            <summary>
+            Defines connection to a device.
+            </summary>
+            <remarks>
+            Use this to connect to a device.
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ConnectionType.DataChannel">
+            <summary>
+            Defines data channel for communication.
+            </summary>
+            <remarks>
+            Use this to generate string to setup data channel.
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ConnectionType.CommandChannel">
+            <summary>
+            Defines command channel for communication.
+            </summary>
+            <remarks>
+            Use this to generate string to setup command channel.
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.UI.Modal.ConnectionStringBuilder.ConnectionType.AlternateCommandChannel">
+            <summary>
+            Defines alternate command channel.
+            </summary>
+            <remarks>
+            Use this to generate string to setup alternate command channel.
+            </remarks>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.Modal.HistorianViewChart">
+            <summary>
+            Interaction logic for MainWindow.xaml
+            </summary>
+            <summary>
+            HistorianViewChart
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.HistorianViewChart.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.Modal.HistorianViewChart"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.HistorianViewChart.#ctor(GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl)">
+            <param name="chartWindowUserControl"></param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.Modal.HistorianViewChart.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.AverageFrequencyUserControl">
+            <summary>
+            Interaction logic for AverageFrequencyUserControl.xaml
+            </summary>
+            <summary>
+            AverageFrequencyUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.AverageFrequencyUserControl.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PhasorProtocols.UI.UserControls.AverageFrequencyUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.AverageFrequencyUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.CalculatedMeasurementUserControl">
+            <summary>
+            Interaction logic for CalculatedMeasurementUserControl.xaml
+            </summary>
+            <summary>
+            CalculatedMeasurementUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.CalculatedMeasurementUserControl.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.CalculatedMeasurementUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.CalculatedMeasurementUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl">
+            <summary>
+            Interaction logic for ChartWindowUserConrol.xaml
+            </summary>
+            <summary>
+            ChartWindowUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.#ctor">
+            <summary>
+             Initializing the members 
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.SetInterval(System.String,System.String)">
+            <summary>
+            Sets the boundaries for the x-axis.
+            </summary>
+            <param name="startTimeString">A string representation of the lower x-axis boundary.</param>
+            <param name="endTimeString">A string representation of the upper x-axis boundary.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.UpdateChart">
+            <summary>
+            Updates the chart after changes have been made to the chart boundaries or the data displayed in the chart.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="E:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.ChartUpdated">
+            <summary>
+            Event Generated
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.ArchiveFiles">
+            <summary>
+            Gets or sets the start time to be displayed on the graph or exported to CSV.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.VisiblePoints">
+            <summary>
+            Gets or sets the start time to be displayed on the graph or exported to CSV.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.ChartResolution">
+            <summary>
+            Gets or sets the start time to be displayed on the graph or exported to CSV.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.StartTime">
+            <summary>
+            Gets or sets the start time to be displayed on the graph or exported to CSV.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.ChartWindowUserControl.EndTime">
+            <summary>
+            Gets or sets the start time to be displayed on the graph or exported to CSV.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.DeviceListUserControl">
+            <summary>
+            Interaction logic for DeviceListUserControl.xaml
+            </summary>
+            <summary>
+            DeviceListUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.DeviceListUserControl.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.DeviceListUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.DeviceListUserControl.DataGrid_PreviewKeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Handles PreviewKeyDown event on the datagrid.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Arguments for the event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.DeviceListUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.DeviceUserControl">
+            <summary>
+            Interaction logic for DeviceUserControl.xaml
+            </summary>
+            <summary>
+            DeviceUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.DeviceUserControl.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.DeviceUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.DeviceUserControl.#ctor(GSF.PhasorProtocols.UI.DataModels.Device)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.DeviceUserControl"/> class.
+            </summary>
+            <param name="device"><see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> to be edited.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.DeviceUserControl.DeviceUserControl_Unloaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles unload event of the <see cref="T:GSF.PhasorProtocols.UI.UserControls.DeviceUserControl"/>.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Arguments for the event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.DeviceUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl">
+            <summary>
+            Interaction logic for HistorianViewUserControl.xaml
+            </summary>
+            <summary>
+            HistorianViewUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.ArchiveIsOpen">
+            <summary>
+            Gets or sets a boolean that determines whether an archive is open or not.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.StartTime">
+            <summary>
+            Gets or sets the start time to be displayed on the graph or exported to CSV.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.EndTime">
+            <summary>
+            Gets or sets the end time to be displayed on the graph or exported to CSV.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper">
+            <summary>
+            This is a wrapper around a MetadataRecord that allows auto-generation
+            of columns in the data grid based on the public properties of this class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.#ctor(GSF.Historian.Files.MetadataRecord)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper"/> class.
+            </summary>
+            <param name="metadata">The <see cref="T:GSF.Historian.Files.MetadataRecord"/> to be wrapped.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.GetMetadata">
+            <summary>
+            Returns the wrapped <see cref="T:GSF.Historian.Files.MetadataRecord"/>.
+            </summary>
+            <returns>The wrapped metadata record.</returns>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.Export">
+            <summary>
+            Determines whether the measurement represented by this metadata record
+            should be exported to CSV by the Historian Data Viewer.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.Display">
+            <summary>
+            Determines whether the measurement represented by this metadata record
+            should be displayed on the Historian Data Viewer graph.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.PointNumber">
+            <summary>
+            Gets the point number of the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.Name">
+            <summary>
+            Gets the name of the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.Description">
+            <summary>
+            Gets the description of the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.Synonym1">
+            <summary>
+            Gets the first alternate name for the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.Synonym2">
+            <summary>
+            Gets the second alternate name for the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.Synonym3">
+            <summary>
+            Gets the third alternate name for the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.System">
+            <summary>
+            Gets the system name.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.LowRange">
+            <summary>
+            Gets the low range of the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.HighRange">
+            <summary>
+            Gets the high range of the measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.EngineeringUnits">
+            <summary>
+            Gets the engineering units used to measure the values.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.UserControls.HistorianViewUserControl.MetadataWrapper.Unit">
+            <summary>
+            Gets the unit number of the measurement.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.HomeUserControl">
+            <summary>
+            Interaction logic for HomeUserControl.xaml
+            </summary>
+            <summary>
+            HomeUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.HomeUserControl.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.HomeUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.HomeUserControl.GetMenuDataItem(System.Collections.ObjectModel.ObservableCollection{GSF.TimeSeries.UI.MenuDataItem},System.String,GSF.TimeSeries.UI.MenuDataItem@)">
+            <summary>
+            Recursively finds menu item to navigate to when a button is clicked on the UI.
+            </summary>
+            <param name="items">Collection of menu items.</param>
+            <param name="stringToMatch">Item to search for in menu items collection.</param>
+            <param name="item">Returns a menu item.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.HomeUserControl.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
+            <summary>
+            Handles ReceivedServiceResponse event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.HomeUserControl.UnsubscribeUnsynchronizedData">
+            <summary>
+            Unsubscribes data from the service.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.HomeUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.InputStatusMonitorUserControl">
+            <summary>
+            Interaction logic for InputStatusMonitorUserControl.xaml
+            </summary>
+            <summary>
+            InputStatusMonitorUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.InputStatusMonitorUserControl.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.InputStatusMonitorUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.InputStatusMonitorUserControl.InputStatusMonitorUserControl_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles loaded event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.InputStatusMonitorUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl">
+            <summary>
+            Interaction logic for InputWizardUserControl.xaml
+            </summary>
+            <summary>
+            InputWizardUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl.#ctor(GSF.PhasorProtocols.UI.DataModels.Device)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl"/> class for the specified <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.
+            </summary>
+            <param name="device"></param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl.CheckBoxAll_Checked(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Hanldes checked event on the select all check box.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl.CheckBoxAll_Unchecked(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles unchecked event on the select all check box.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamCurrentDeviceUserControl">
+            <summary>
+            Interaction logic for OutputStreamCurrentDeviceUserControl.xaml
+            </summary>
+            <summary>
+            OutputStreamCurrentDeviceUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamCurrentDeviceUserControl.#ctor(System.Int32,System.String)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamCurrentDeviceUserControl"/>.
+            <param name="outputStreamID">ID of the output stream to filter data.</param>
+            <param name="outputStreamAcronym">Acronym of the output stream for display purpose.</param>
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamCurrentDeviceUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceAnalogUserControl">
+            <summary>
+            Interaction logic for OutputStreamDeviceAnalogUserControl.xaml
+            </summary>
+            <summary>
+            OutputStreamDeviceAnalogUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceAnalogUserControl.#ctor(System.Int32)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceAnalogUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceAnalogUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceDigitalUserControl">
+            <summary>
+            Interaction logic for OutputStreamDeviceDigitalUserControl.xaml
+            </summary>
+            <summary>
+            OutputStreamDeviceDigitalUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceDigitalUserControl.#ctor(System.Int32)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceDigitalUserControl"/>
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceDigitalUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamMeasurementUserControl">
+            <summary>
+            Interaction logic for OutputStreamMeasurementUserControl.xaml
+            </summary>
+            <summary>
+            OutputStreamMeasurementUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamMeasurementUserControl.#ctor(System.Int32)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamMeasurementUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamMeasurementUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamDevicePhasorUserControl">
+            <summary>
+            Interaction logic for OutputStreamDevicePhasorUserControl.xaml
+            </summary>
+            <summary>
+            OutputStreamDevicePhasorUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamDevicePhasorUserControl.#ctor(System.Int32)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamDevicePhasorUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamDevicePhasorUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceUserControl">
+            <summary>
+            Interaction logic for OutputStreamDeviceUserControl.xaml
+            </summary>
+            <summary>
+            OutputStreamDeviceUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceUserControl.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamDeviceUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamUserControl">
+            <summary>
+            Interaction logic for OutputStreamUserControl.xaml
+            </summary>
+            <summary>
+            OutputStreamUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamUserControl.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl">
+            <summary>
+            Interaction logic for PhasorMeasurementUserControl.xaml
+            </summary>
+            <summary>
+            PhasorMeasurementUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl.#ctor(System.Int32)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl"/> class.
+            </summary>
+            <param name="deviceID">ID of the device to filter measurements.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl.PhasorMeasurementUserControl_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles loaded event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Arguments of the event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl.PhasorMeasurementUserControl_Unloaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles unloaded event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Arguments of the event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl.Application_Exit(System.Object,System.Windows.ExitEventArgs)">
+            <summary>
+            Handles the application exit event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Arguments of the event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl.PhasorMeasurementUserControl_KeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Handles key down event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Arguments of the event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl.DataGrid_PreviewKeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Handles key down event on the datagrid object.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Arguments of the event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.PhasorUserControl">
+            <summary>
+            Interaction logic for PhasorUserControl.xaml
+            </summary>
+            <summary>
+            PhasorUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorUserControl.#ctor(System.Int32)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.PhasorUserControl"/> class.
+            <param name="deviceID">ID of the device to filter data.</param>
+            </summary>        
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorUserControl.PhasorUserControl_Unloaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Handles unloaded event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Arguments of the event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorUserControl.DataGrid_PreviewKeyDown(System.Object,System.Windows.Input.KeyEventArgs)">
+            <summary>
+            Handles key down event on the datagrid object.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Arguments of the event.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.PhasorUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.RealTimeMeasurementUserControl">
+            <summary>
+            Interaction logic for RealTimeMeasurementUserControl.xaml
+            </summary>
+            <summary>
+            RealTimeMeasurementUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.RealTimeMeasurementUserControl.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.RealTimeMeasurementUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.RealTimeMeasurementUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.UserControls.RealTimeStatisticUserControl">
+            <summary>
+            Interaction logic for RealTimeStatisticUserControl.xaml
+            </summary>
+            <summary>
+            RealTimeStatisticUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.RealTimeStatisticUserControl.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.RealTimeStatisticUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.RealTimeStatisticUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel">
+            <summary>
+            View model for the <see cref="T:GSF.PhasorProtocols.UI.UserControls.AverageFrequencyUserControl"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.Load">
+            <summary>
+            Called when the view is loaded.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.Unload">
+            <summary>
+            Called when the view is unloaded.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.HandlePropertyChangedOnce(System.String)">
+            <summary>
+            Handles change in a property once per call stack.
+            </summary>
+            <param name="propertyName">The name of the property that was changed.</param>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.IOMapping">
+            <summary>
+            Represents a mapping between a frequency input definition
+            and an average frequency output definition.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.IOMapping.SignalReference">
+            <summary>
+            Gets or sets the signal reference of the frequency input.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.IOMapping.InputKey">
+            <summary>
+            Gets or sets the measurement key of the frequency input.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.IOMapping.OutputKey">
+            <summary>
+            Gets or sets the measurement key of the frequency output.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.FrequencyMeasurement">
+            <summary>
+            Represents a frequency measurement which can be selected
+            as an input to the average frequency calculator.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.FrequencyMeasurement.SignalReference">
+            <summary>
+            Gets or sets the signal reference of the frequency measurement.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.FrequencyMeasurement.Key">
+            <summary>
+            Gets or sets the measurement key of the frequency measurement.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.CalculatedMeasurements.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.CalculatedMeasurements.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.CalculatedMeasurements.Clear">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.PhasorProtocols.UI.DataModels.CalculatedMeasurement"/> and assigns it to CurrentItem.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.CalculatedMeasurements.Initialize">
+            <summary>
+            Initialization to be done before the initial call to <see cref="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.CalculatedMeasurements.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.CalculatedMeasurements.NodeLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> defined in the database.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.Devices">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> collection and current selection information for UI.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.#ctor(System.Int32,System.Boolean,GSF.PhasorProtocols.UI.DataModels.Device)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.Devices"/> class.
+            </summary>
+            <param name="itemsPerPage"></param>
+            <param name="autoSave"></param>
+            <param name="device"><see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> to be edited.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.Clear">
+            <summary>
+            Creates a new instance of <see cref="N:GSF.Historian"/> and assigns it to CurrentItem.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.Initialize">
+            <summary>
+            Initialization to be done before the initial call to <see cref="M:GSF.PhasorProtocols.UI.ViewModels.Devices.Load"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.Load">
+            <summary>
+            Loads collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information stored in the database.
+            </summary>
+            <remarks>This method is overridden because MethodInfo.Invoke in the base class did not like optional parameters.</remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.Save">
+            <summary>
+            Saves <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> information into database.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.GoToEdit(System.Object)">
+            <summary>
+            Handles <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.EditCommand"/>.
+            </summary>
+            <param name="parameter">Parameter to use for the command provided by commandparameter from UI.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.MakeCopy(System.Object)">
+            <summary>
+            Handles <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.CopyCommand"/>.
+            </summary>
+            <param name="parameter">Parameter to use for the command provided by commandparameter from UI.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.GoToMeasurements">
+            <summary>
+            Handles <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.MeasurementCommand"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.GoToPhasors">
+            <summary>
+            Handles <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.PhasorCommand"/>.
+            </summary>        
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.Delete">
+            <summary>
+            Deletes current item from the database.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.Search(System.Object)">
+            <summary>
+            Hanldes <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.SearchCommand"/>.
+            </summary>
+            <param name="parameter">string value to search for in measurement collection.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.ShowAll">
+            <summary>
+            Handles <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.ShowAllCommand"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.BuildConnectionStringCommand">
+            <summary>
+            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to build connection string.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.BuildAlternateCommandChannelCommand">
+            <summary>
+            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to build alternate command channel.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.RuntimeID">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> RuntimeID.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.NodeLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.ConcentratorDeviceLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of concentrator <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.CompanyLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.HistorianLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="N:GSF.Historian"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.InterconnectionLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Interconnection"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.ProtocolLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Protocol"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.VendorDeviceLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.TimezoneLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of system time zones.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.EditCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for edit operation.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.CopyCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for copy operation.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.UpdateConfigurationCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> for updating configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.PhasorCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to go to phasors configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.CanGoToPhasorOrMeasurement">
+            <summary>
+            Gets a boolean flag indicating if Phasors and Measurements button are visible or not.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.MeasurementCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to go to measurements configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.InitializeCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to send Initialize command to backed service.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.SearchCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to search within measurements.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Devices.ShowAllCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to show all measurements.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices">
+            <summary>
+            Bindable class to hold collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.InputWizardDevice"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices"/> class.
+            </summary>
+            <param name="itemsPerPage">Integer value to determine number of items per page.</param>
+            <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseConnectionFile">
+            <summary>
+            Handles BrowseConnectionFileCommand.
+            </summary>        
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseConfigurationFile">
+            <summary>
+            Handles BrowseConfigurationFileCommand.
+            </summary>        
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ParseConfiguration(System.Boolean)">
+            <summary>
+            Parses IConfigurationFrame to retrieve devices and other configuration information.        
+            </summary>        
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.SaveConfigurationFile">
+            <summary>
+            Saves current configuration information into XML file.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseIniFile">
+            <summary>
+            Handles BroseIniFileCommand.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BuildConnectionString">
+            <summary>
+            Pops up another window to build or modify connection string.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BuildAlternateCommandChannel">
+            <summary>
+            Pops up another window to build or modify alternate command channel.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.RequestConfiguration">
+            <summary>
+            Handles RequestConfigurationCommand.
+            </summary>        
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ManualConfiguration">
+            <summary>
+            Handles ManualConfigurationCommand.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.Helper_ReceivedServiceUpdate(System.Object,GSF.EventArgs{GSF.UpdateType,System.String})">
+            <summary>
+            Handles ReceivedServiceUpdate event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
+            <summary>
+            Handles ReceivedServiceResponse event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.SavePDC">
+            <summary>
+            Saves concentrating device information in to database.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.SaveConfiguration">
+            <summary>
+            Saves configuration information in to database.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ValidatePDCDetails(System.String@)">
+            <summary>
+            Determines whether PDC acronym is required to
+            save the configuration, and also determines
+            whether the user has entered it.
+            </summary>
+            <param name="errorMessage">Error message to be displayed when validation fails.</param>
+            <returns>True if the PDC details are valid; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.GenerateConnectionString">
+            <summary>
+            Generates connection string to save into database by merging connection string and alternate command channel.
+            </summary>
+            <returns>string, to store into database.</returns>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ConnectionFileName">
+            <summary>
+            Gets or sets name of the connection file used for configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ConfigurationFileName">
+            <summary>
+            Gets or sets name of the xml configuration file used for configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.IniFileName">
+            <summary>
+            Gets or sets name of the INI file used for configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.CompanyLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Company"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.HistorianLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="N:GSF.Historian"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.InterconnectionLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Interconnection"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ProtocolLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Protocol"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.VendorDeviceLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ConnectionString">
+            <summary>
+            Gets or sets connection string to backend service.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.AlternateCommandChannel">
+            <summary>
+            Gets or sets command channel to communicate with backend service.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.AccessID">
+            <summary>
+            Gets or sets ID of the device to be configured.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ProtocolID">
+            <summary>
+            Gets or sets protocol id for devices to be configured.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ProtocolAcronym">
+            <summary>
+            Gets or sets protocol acronym for devices to be configured.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ProtocolIsBpaPdcStream">
+            <summary>
+            Gets a flag indicating if selected protocol is BpaPdcStream. 
+            This is used to hide or display INI file selection on input wizard screen.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ConnectToConcentrator">
+            <summary>
+            Gets or sets boolean value indicating if connection is to concentrator.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.PdcID">
+            <summary>
+            Gets or sets ID of the concentrator device.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.PdcAcronym">
+            <summary>
+            Gets or sets acronym of the concentrator device.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.PdcMessage">
+            <summary>
+            Gets or sets message to be displayed on the screen when PDC acronym changes.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.PdcName">
+            <summary>
+            Gets or sets name of the concentrator device.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.PdcVendorDeviceID">
+            <summary>
+            Gets or sets vendor device id for this configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.CompanyID">
+            <summary>
+            Gets or sets company ID to which devices are to be associated in this configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.HistorianID">
+            <summary>
+            Gets or sets Historian ID to which devices are to be associated in this configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.InterconnectionID">
+            <summary>
+            Gets or sets Interconnection ID to which devices are to be associated in this configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.SkipDisableRealTimeData">
+            <summary>
+            Gets or sets a boolean flag for SkipDisableRealTimeData.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseConnectionFileCommand">
+            <summary>
+            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to browse to connection file.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BuildConnectionStringCommand">
+            <summary>
+            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to build connection string.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BuildAlternateCommandChannelCommand">
+            <summary>
+            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to build alternate command channel.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseIniFileCommand">
+            <summary>
+            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to browse to INI file.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.BrowseConfigurationFileCommand">
+            <summary>
+            Gets or sets <see cref="T:System.Windows.Input.ICommand"/> to browse to configuration file.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.RequestConfigurationCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to request configuration frame from backed service.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.SaveConfigurationFileCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to save current configuration to XML file.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ManualConfigurationCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to create or update configuration manually.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.ConfigurationSummary">
+            <summary>
+            Gets or sets summary message to be displayed on UI after parsing configuration file or frame.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.CanSave">
+            <summary>
+            Gets boolean flag indicating if configuration can be saved or not.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.CurrentDeviceRuntimeID">
+            <summary>
+            Gets or sets ID of the device in case where configuration is being updated.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.DisconnectedCurrentDevice">
+            <summary>
+            Gets a flag indicating if current device was disconnected before requesting configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.NewDeviceConfiguration">
+            <summary>
+            Gets or sets a flag indicating whether the wizard was launched in
+            order to set up a new device configuration or update an existing one.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceAnalogs">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceAnalog"/> collection and selected OutputStreamDeviceAnalog for UI.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceAnalogs.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceAnalogs"/> class.
+            </summary>
+            <param name="outputStreamDeviceID"> ID of the out put stream device to filter data</param>
+            <param name="itemsPerPage">Integer value to determine number of items per page.</param>
+            <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceAnalogs.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceAnalogs.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceAnalogs.Load">
+            <summary>
+            Load output stream device phasors.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceAnalogs.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceAnalogs.TypeLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> Type collection of type defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceAnalogs.OutputStreamDeviceID">
+            <summary>
+            Gets or set output stream device id.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceDigitals">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDeviceDigital"/> collection and selected OutputStreamDeviceDigital for UI.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceDigitals.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceDigitals"/> class.
+            </summary>
+            <param name="outputStreamDeviceID">ID of the output stream device.</param>
+            <param name="itemsPerPage">Integer value to determine number of items per page.</param>
+            <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceDigitals.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceDigitals.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceDigitals.Load">
+            <summary>
+            Load output stream device phasors.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceDigitals.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDeviceDigitals.OutputStreamDeviceID">
+            <summary>
+            Gets or set outputstream device id.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors">
+            <summary>
+             Class to hold bindable <see cref="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors"/> collection and selected OutputStreamDevicePhasor for UI.
+             </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors"/> class.
+            </summary>
+            <param name="outputStreamDeviceID">ID of the output stream device to filter data.</param>
+            <param name="itemsPerPage">Integer value to determine number of items per page.</param>
+            <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors.Load">
+            <summary>
+            Load output stream device phasors.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors.PhaseLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> Phase collection of type defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors.TypeLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> Type collection of type defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevicePhasors.OutputStreamDeviceID">
+            <summary>
+            Gets or sets output stream device id.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> collection and selected OutputStreamDevice for UI.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices"/> class.
+            </summary>
+            <param name="outputStreamID">ID of the output stream to filter data.</param>
+            <param name="itemsPerPage">Integer value to determine number of items per page.</param>
+            <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.Load">
+            <summary>
+            Loads output stream devices.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.Clear">
+            <summary>
+            Creates new instance of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/> and assigns it to CurrentItem.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.Delete">
+            <summary>
+            Deletes <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamDevice"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.GoToDeviceWizard">
+            <summary>
+            Handles <see cref="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.DeviceWizardCommand"/>.
+            </summary>        
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.OutputStreamID">
+            <summary>
+            Gets or sets Output Stream ID.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.PhasorDataFormatLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> PhasorDataformat collection of type defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.FrequencyDataFormatLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> FrequencyDataformat collection of type defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.AnalogDataFormatLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> AnalogDataformat collection of type defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.CoordinateFormatLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> CoordinateDataformat collection of type defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.PhasorCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object to go to Phasors screen.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.DeviceWizardCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object to go to Device Wizard screen.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.CanGoToDeviceWizard">
+            <summary>
+            Gets a boolean flag indicating if Phasors and Measurements button are visible or not.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.AnalogCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object to go to Analogs screen.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.DigitalCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object to go to Digitals screen.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamDevices.MirrorMode">
+            <summary>
+            Gets a boolean flag indicating if this screen is loaded for IEEE C37.118 mirroring.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamMeasurements">
+            <summary>
+            Class to hold bindable<see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStreamMeasurement"/> colletion and select OutputStreamMeasurement for UI.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamMeasurements.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.OutputStreamMeasurements"/> class.
+            </summary>
+            <param name="outputStreamID">ID of the output strea to filter data.</param>
+            <param name="itemsPerPage">Integer value to determine number of items per page.</param>
+            <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamMeasurements.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamMeasurements.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.OutputStreamMeasurements.Load">
+            <summary>
+            Loads output Stream Id to filter data.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamMeasurements.OutputStreamID">
+            <summary>
+            Gets or sets Output Stream ID.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamMeasurements.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreamMeasurements.CanSave">
+            <summary>
+            Determines if current information can be saved by user.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.UpdateConfigurationCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object for update operation.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.CopyCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object for copy operation.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.InitializeCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object for Initialize operation.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.BuildCommandChannelCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object to pop open connection string builder for command channel configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.BuildDataChannelCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> object to pop open connection string builder for data channel configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.DeviceCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to go to Devices configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.MeasurementCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to go to Measurements configuration.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.WizardCommand">
+            <summary>
+            Gets <see cref="T:System.Windows.Input.ICommand"/> to launch device wizard.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.NodeLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Node"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.TypeLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> types.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.DownSamplingMethodLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> down sampling methods.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.DataFormatLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> data formats.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.CoordinateFormatLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> coordinate formats.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.RuntimeID">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.OutputStream"/> RuntimeID.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.MirrorMode">
+            <summary>
+            Gets a boolean flag indicating if this screen is loaded for IEEE C37.118 mirroring.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.MirroringSourceLookupList">
+            <summary>
+            Gets or sets list of devices to use for mirroring.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.PhasorMeasurements">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> collection.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.PhasorMeasurements.Clear">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> and assigns it to CurrentItem.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.PhasorMeasurements.Load">
+            <summary>
+            Loads collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.PhasorMeasurements.DeviceLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of devices defined in the database.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.Phasors">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> collection and current selection information for UI.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Phasors.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.Phasors"/> class.
+            </summary>
+            <param name="deviceID">ID of teh device to fileter phasors.</param>
+            <param name="itemsPerPage">Integer value to determine number of items per page.</param>
+            <param name="autoSave">Boolean value to determine is user changes should be saved automatically.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Phasors.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Phasors.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Phasors.Load">
+            <summary>
+            Loads collection of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> defined in the database for a <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.Phasors.Clear">
+            <summary>
+            Creates a new instance of <see cref="T:GSF.PhasorProtocols.UI.DataModels.Phasor"/> and assigns it to CurrentItem.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Phasors.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Phasors.PhaseLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of phase defined in the database.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.Phasors.TypeLookupList">
+            <summary>
+            Gets <see cref="T:System.Collections.Generic.Dictionary`2"/> type collection of type defined in the database.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics"/>.
+            </summary>
+            <param name="itemsPerPage">Number of items to be displayed on page.</param>
+            <param name="refreshInterval">Interval at which data will be refreshed.</param>
+            <param name="autoSave">Boolean flag indicating if changed records to be auto saved.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.UnsubscribeUnsynchronizedData">
+            <summary>
+            Unsubscribes data from the service.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="E:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.NewMeasurements">
+            <summary>
+            When new measurements are received from the unsynchronized subscriber.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.RestartConnectionCycle">
+            <summary>
+            Gets or sets a boolean flag indicating if connection to backend windows service needs to be reestablished upon disconnection.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStatistics.LastRefresh">
+            <summary>
+            Gets or sets when data refreshed last time.
+            </summary>
+        </member>
+        <member name="T:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams">
+            <summary>
+            Class to hold bindable <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/> collection and current selection information for UI.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams"/>.
+            </summary>
+            <param name="itemsPerPage"></param>
+            <param name="refreshInterval">Interval to refresh measurement in a tree.</param>
+            <param name="autoSave"></param>        
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.GetCurrentItemKey">
+            <summary>
+            Gets the primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The primary key value of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.GetCurrentItemName">
+            <summary>
+            Gets the string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.
+            </summary>
+            <returns>The string based named identifier of the <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.Load">
+            <summary>
+            Overrides Load() method from the base class to add aditional functionalities.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.TerminateSubscription">
+            <summary>
+            Unsubscribes data from the service.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.UnsubscribeUnsynchronizedData">
+            <summary>
+            Unsubscribes data from the service.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
+            <summary>
+            Handles ReceivedServiceResponse event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.StartTime">
+            <summary>
+            Gets or sets start time for this <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.StopTime">
+            <summary>
+            Gets or sets stop for this <see cref="T:GSF.PhasorProtocols.UI.DataModels.RealTimeStream"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.TemporalSupportEnabled">
+            <summary>
+            Gets or sets flag that determines if temporal support is enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.IsNewRecord">
+            <summary>
+            Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.Expanded">
+            <summary>
+            Gets or sets a boolean flag <see cref="T:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams"/> expanded flag.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.RestartConnectionCycle">
+            <summary>
+            Gets or sets a boolean flag indicating if connection to backend windows service needs to be reestablished upon disconnection.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.LastRefresh">
+            <summary>
+            Gets or sets a last refresh time to display on UI.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams.StatisticMeasurements">
+            <summary>
+            Gets or sets <see cref="T:GSF.PhasorProtocols.UI.ViewModels.RealTimeStreams"/> StatisticMeasurements.
+            </summary>
+        </member>
+    </members>
+</doc>

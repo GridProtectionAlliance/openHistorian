@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace openHistorian.PerformanceTests
 {
     public static class StepTimer
     {
-        static Dictionary<string, Stopwatch> AllStopwatches;
+        private static readonly Dictionary<string, Stopwatch> AllStopwatches;
 
         static StepTimer()
         {
-            AllStopwatches=new Dictionary<string, Stopwatch>();
+            AllStopwatches = new Dictionary<string, Stopwatch>();
         }
 
         public static Stopwatch Start(string name)
         {
             if (!AllStopwatches.ContainsKey(name))
             {
-                AllStopwatches.Add(name,new Stopwatch());
+                AllStopwatches.Add(name, new Stopwatch());
             }
-            var sw = AllStopwatches[name];
+            Stopwatch sw = AllStopwatches[name];
             sw.Start();
             return sw;
         }
@@ -40,7 +37,7 @@ namespace openHistorian.PerformanceTests
         public static string GetResults()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var kvp in AllStopwatches)
+            foreach (KeyValuePair<string, Stopwatch> kvp in AllStopwatches)
             {
                 sb.Append(kvp.Key + '\t' + kvp.Value.Elapsed.TotalMilliseconds.ToString());
             }

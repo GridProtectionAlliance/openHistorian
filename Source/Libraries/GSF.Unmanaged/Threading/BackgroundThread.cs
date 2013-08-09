@@ -23,27 +23,15 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace GSF.Threading
 {
-    abstract class CustomThreadBase : IDisposable
+    internal class BackgroundThread : CustomThreadBase
     {
-        public abstract void StartNow();
-        public abstract void StartLater(int delay);
-        public abstract void ShortCircuitDelayRequest();
-        public abstract void ResetTimer();
-        public abstract void Dispose();
-    }
-
-    class BackgroundThread : CustomThreadBase
-    {
-        RegisteredWaitHandle m_registeredHandle;
-        Action m_callback;
-        ManualResetEvent m_resetEvent;
+        private RegisteredWaitHandle m_registeredHandle;
+        private readonly Action m_callback;
+        private readonly ManualResetEvent m_resetEvent;
 
         public BackgroundThread(Action callback)
         {
@@ -55,10 +43,12 @@ namespace GSF.Threading
         {
             ThreadPool.QueueUserWorkItem(BeginRunOnTimer);
         }
+
         public override void StartLater(int delay)
         {
             m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_resetEvent, BeginRunOnTimer, null, delay, true);
         }
+
         public override void ShortCircuitDelayRequest()
         {
             m_resetEvent.Set();
@@ -69,12 +59,12 @@ namespace GSF.Threading
             m_resetEvent.Reset();
         }
 
-        void BeginRunOnTimer(object state)
+        private void BeginRunOnTimer(object state)
         {
             m_callback();
         }
 
-        void BeginRunOnTimer(object state, bool isTimeout)
+        private void BeginRunOnTimer(object state, bool isTimeout)
         {
             if (m_registeredHandle != null)
                 m_registeredHandle.Unregister(null);

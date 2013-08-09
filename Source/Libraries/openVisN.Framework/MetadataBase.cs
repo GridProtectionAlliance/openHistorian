@@ -21,19 +21,29 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using openHistorian.Data.Query;
-using System;
-using openVisN.Calculations;
 using openHistorian.Data.Types;
+using openVisN.Calculations;
 
 namespace openVisN
 {
     public abstract class MetadataBase
         : TypeBase, ISignalCalculation
     {
-        public Guid UniqueId { get; private set; }
-        public ulong? HistorianId { get; private set; }
+        public Guid UniqueId
+        {
+            get;
+            private set;
+        }
+
+        public ulong? HistorianId
+        {
+            get;
+            private set;
+        }
+
         public TypeBase Functions
         {
             get
@@ -41,10 +51,29 @@ namespace openVisN
                 return this;
             }
         }
-        public abstract EnumValueType ValueType { get; }
-        public string Name { get; private set; }
-        public string Description { get; private set; }
-        public CalculationMethod Calculations { get; private set; }
+
+        public abstract EnumValueType ValueType
+        {
+            get;
+        }
+
+        public string Name
+        {
+            get;
+            private set;
+        }
+
+        public string Description
+        {
+            get;
+            private set;
+        }
+
+        public CalculationMethod Calculations
+        {
+            get;
+            private set;
+        }
 
         protected MetadataBase(Guid uniqueId, ulong? historianId, string name, string description, CalculationMethod calculations)
         {
@@ -66,6 +95,7 @@ namespace openVisN
                 return false;
             return obj2.UniqueId == UniqueId;
         }
+
         public override int GetHashCode()
         {
             return UniqueId.GetHashCode();
@@ -78,6 +108,7 @@ namespace openVisN
                 return UniqueId;
             }
         }
+
         public void Calculate(IDictionary<Guid, SignalDataBase> signals)
         {
             Calculations.Calculate(signals);

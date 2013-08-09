@@ -24,23 +24,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using openHistorian.Data.Query;
 
 namespace openVisN.Calculations
 {
     public class SinglePhasorPowerSignals : CalculationMethod
     {
-        const double TwoPieOver360 = 2.0 * Math.PI / 360.0;
-        MetadataBase Watt;
-        MetadataBase PowerFactor;
-        MetadataBase VoltAmpre;
-        MetadataBase VoltAmpreReactive;
+        private const double TwoPieOver360 = 2.0 * Math.PI / 360.0;
+        private readonly MetadataBase Watt;
+        private readonly MetadataBase PowerFactor;
+        private readonly MetadataBase VoltAmpre;
+        private readonly MetadataBase VoltAmpreReactive;
 
         public SinglePhasorPowerSignals(MetadataBase voltageMagnitudePointId, MetadataBase voltageAnglePointId,
-                                       MetadataBase currentMagnitudePointId, MetadataBase currentAnglePointId)
+                                        MetadataBase currentMagnitudePointId, MetadataBase currentAnglePointId)
             : base(voltageMagnitudePointId, voltageAnglePointId, currentMagnitudePointId, currentAnglePointId)
         {
             Watt = new MetadataDouble(Guid.NewGuid(), null, "", "", this);
@@ -64,15 +61,15 @@ namespace openVisN.Calculations
             Dependencies[2].Calculate(signals);
             Dependencies[3].Calculate(signals);
 
-            var pointListVM = signals[Dependencies[0].UniqueId];
-            var pointListVA = signals[Dependencies[1].UniqueId];
-            var pointListIM = signals[Dependencies[2].UniqueId];
-            var pointListIA = signals[Dependencies[3].UniqueId];
+            SignalDataBase pointListVM = signals[Dependencies[0].UniqueId];
+            SignalDataBase pointListVA = signals[Dependencies[1].UniqueId];
+            SignalDataBase pointListIM = signals[Dependencies[2].UniqueId];
+            SignalDataBase pointListIA = signals[Dependencies[3].UniqueId];
 
-            var pointListW = TryGetSignal(Watt, signals);
-            var pointListPF = TryGetSignal(PowerFactor, signals);
-            var pointListVAmp = TryGetSignal(VoltAmpre, signals);
-            var pointListVAR = TryGetSignal(VoltAmpreReactive, signals);
+            SignalDataBase pointListW = TryGetSignal(Watt, signals);
+            SignalDataBase pointListPF = TryGetSignal(PowerFactor, signals);
+            SignalDataBase pointListVAmp = TryGetSignal(VoltAmpre, signals);
+            SignalDataBase pointListVAR = TryGetSignal(VoltAmpreReactive, signals);
 
             if (pointListW != null && pointListW.IsComplete)
                 return;
@@ -99,7 +96,7 @@ namespace openVisN.Calculations
                 pointListIM.GetData(posIM, out timeIM, out im);
                 pointListIA.GetData(posIA, out timeIA, out ia);
 
-                var time = timeVM;
+                ulong time = timeVM;
 
                 if (timeVM == timeVA && timeVM == timeIM && timeVM == timeIA)
                 {
@@ -151,13 +148,12 @@ namespace openVisN.Calculations
                 pointListVAR.Completed();
         }
 
-        SignalDataBase TryGetSignal(MetadataBase signal, IDictionary<Guid, SignalDataBase> results)
+        private SignalDataBase TryGetSignal(MetadataBase signal, IDictionary<Guid, SignalDataBase> results)
         {
             SignalDataBase data;
             if (results.TryGetValue(signal.UniqueId, out data))
                 return data;
             return null;
         }
-
     }
 }

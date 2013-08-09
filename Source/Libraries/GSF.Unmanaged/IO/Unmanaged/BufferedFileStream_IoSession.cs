@@ -22,18 +22,15 @@
 //
 //******************************************************************************************************
 
-using System;
-
 namespace GSF.IO.Unmanaged
 {
     public partial class BufferedFileStream
     {
         // Nested Types
-        class IoSession : IBinaryStreamIoSession
+        private class IoSession : BinaryStreamIoSessionBase
         {
-            bool m_disposed;
-            BufferedFileStream m_stream;
-            LeastRecentlyUsedPageReplacement.IoSession m_ioSession;
+            private readonly BufferedFileStream m_stream;
+            private readonly LeastRecentlyUsedPageReplacement.IoSession m_ioSession;
 
             /// <summary>
             /// Creates a new <see cref="IoSession"/>
@@ -49,55 +46,31 @@ namespace GSF.IO.Unmanaged
             /// <summary>
             /// Releases all the resources used by the <see cref="IoSession"/> object.
             /// </summary>
-            public void Dispose()
+            public override void Dispose()
             {
-                if (!m_disposed)
+                if (!IsDisposed)
                 {
-                    try
-                    {
-                        m_ioSession.Dispose();
-                    }
-                    finally
-                    {
-                        m_disposed = true;  // Prevent duplicate dispose.
-                    }
+                    m_ioSession.Dispose();
+                    base.Dispose();
                 }
+            }
+
+            /// <summary>
+            /// Sets the current usage of the <see cref="BinaryStreamIoSessionBase"/> to null.
+            /// </summary>
+            public override void Clear()
+            {
+                m_stream.Clear(m_ioSession);
+                base.Clear();
             }
 
             /// <summary>
             /// Gets a block for the following Io session.
             /// </summary>
-            /// <param name="position">the block returned must contain this position</param>
-            /// <param name="isWriting">indicates if the stream plans to write to this block</param>
-            /// <param name="firstPointer">the pointer for the first byte of the block</param>
-            /// <param name="firstPosition">the position that corresponds to <see cref="firstPointer"/></param>
-            /// <param name="length">the length of the block</param>
-            /// <param name="supportsWriting">notifies the calling class if this block supports 
-            /// writing without requiring this function to be called again if <see cref="isWriting"/> was set to false.</param>
-            public void GetBlock(long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+            public override void GetBlock(BlockArguments args)
             {
-                m_stream.GetBlock(m_ioSession, position, isWriting, out firstPointer, out firstPosition, out length, out supportsWriting);
-            }
-
-            /// <summary>
-            /// Sets the current usage of the <see cref="IBinaryStreamIoSession"/> to null.
-            /// </summary>
-            public void Clear()
-            {
-               m_stream.Clear(m_ioSession);
-            }
-
-            /// <summary>
-            /// Gets if the object has been disposed
-            /// </summary>
-            public bool IsDisposed
-            {
-                get
-                {
-                    return m_disposed;
-                }
+                m_stream.GetBlock(m_ioSession, args);
             }
         }
-
     }
 }

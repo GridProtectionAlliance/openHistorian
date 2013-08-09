@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using openHistorian;
-using openHistorian.Engine;
+using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 
 namespace SampleCode.openHistorian.Server.dll
 {
@@ -18,17 +15,23 @@ namespace SampleCode.openHistorian.Server.dll
         {
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
-            var serverOptions = new HistorianServerOptions();
-            serverOptions.IsNetworkHosted = false;
-            serverOptions.IsReadOnly = false;
-            serverOptions.Paths.Add(@"c:\temp\Scada\");
+            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
+            db.IsNetworkHosted = false;
+            db.InMemoryArchive = false;
+            db.Paths = new[] { @"c:\temp\Scada\" };
 
-            using (var server = new HistorianServer(serverOptions))
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
+            using (HistorianServer server = new HistorianServer(db))
             {
-                var database = server.GetDatabase();
+                IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();
 
                 for (ulong x = 0; x < 10000; x++)
-                    database.Write(x, 0, 0, 0);
+                {
+                    key.Timestamp = x;
+                    database.Write(key, value);
+                }
 
                 database.HardCommit();
             }
@@ -37,26 +40,24 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void TestReadData()
         {
-            var serverOptions = new HistorianServerOptions();
-            serverOptions.IsNetworkHosted = true;
-            serverOptions.IsReadOnly = true;
-            serverOptions.NetworkPort = 12345;
-            serverOptions.Paths.Add(@"c:\temp\Scada\");
+            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
+            db.InMemoryArchive = true;
+            db.ConnectionString = "port=12345";
+            db.Paths = new[] { @"c:\temp\Scada\" };
 
-            using (var server = new HistorianServer(serverOptions))
+            using (HistorianServer server = new HistorianServer(db))
             {
-
-                var clientOptions = new HistorianClientOptions();
+                HistorianClientOptions clientOptions = new HistorianClientOptions();
                 clientOptions.IsReadOnly = true;
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                using (var client = new HistorianClient(clientOptions))
+                using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                 {
-                    var database = client.GetDatabase();
-                    using (var reader = database.OpenDataReader())
+                    IHistorianDatabase<HistorianKey, HistorianValue> database = client.GetDatabase();
+                    using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                     {
-                        var stream = reader.Read(0, 100);
+                        TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
                         stream.Cancel();
                     }
                     database.Disconnect();

@@ -29,19 +29,16 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Drawing;
 
 namespace NPlot
 {
-
     /// <summary>
     /// This class does highly efficient world->physical and physical->world transforms
     /// for linear axes. 
     /// </summary>
     public class Transform2D
     {
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -53,13 +50,13 @@ namespace NPlot
             InitializeY(yAxis);
         }
 
-        double m_pMinX;
-        double m_worldMinX;
-        double m_divideWorldLengthTimesPLengthX;
+        private double m_pMinX;
+        private double m_worldMinX;
+        private double m_divideWorldLengthTimesPLengthX;
 
-        double m_pMinY;
-        double m_worldMinY;
-        double m_divideWorldLengthTimesPLengthY;
+        private double m_pMinY;
+        private double m_worldMinY;
+        private double m_divideWorldLengthTimesPLengthY;
 
         public void InitializeX(PhysicalAxis physicalAxis)
         {
@@ -83,7 +80,7 @@ namespace NPlot
             m_divideWorldLengthTimesPLengthY = pLength / worldLength;
         }
 
-        float WorldToPhysicalX(double world)
+        private float WorldToPhysicalX(double world)
         {
             return (float)((world - m_worldMinX) * m_divideWorldLengthTimesPLengthX + m_pMinX);
         }
@@ -113,8 +110,5 @@ namespace NPlot
         {
             return new PointF(WorldToPhysicalX(worldPoint.X), WorldToPhysicalY(worldPoint.Y));
         }
-
-
-
     }
 }

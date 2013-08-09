@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>openHistorian.PerformanceTests</RootNamespace>
     <AssemblyName>openHistorian.PerformanceTests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -59,7 +59,11 @@
     <StartupObject>openHistorian.PerformanceTests.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+    <Reference Include="GSF.Historian, Version=2.0.68.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Historian.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
       <HintPath>..\..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -74,20 +78,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\BitArray.cs" />
-    <Compile Include="Collections\KeyValue\ArchiveFileTest.cs" />
-    <Compile Include="Collections\KeyValue\OptimizeCompressionMethodTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256BaseEnhancedTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256BaseTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256CompareTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256Test.cs" />
     <Compile Include="DebugStopwatch.cs" />
-    <Compile Include="FileStructure\SubFileStreamTest.cs" />
-    <Compile Include="IO\BinaryStreamBenchmark.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
     <Compile Include="NPlot\PlotSpeed.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SocketBenchmark.cs" />
     <Compile Include="StepTimer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -125,17 +120,9 @@
       <Project>{7141c894-6346-41c2-b497-dba4beba71d6}</Project>
       <Name>NPlot45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\openHistorian.Archive\openHistorian.Archive.csproj">
+    <ProjectReference Include="..\..\openHistorian.Core\openHistorian.Core.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
-      <Name>openHistorian.Archive</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\openHistorian.Server\openHistorian.Server.csproj">
-      <Project>{90942a72-2538-41a0-aff4-8c338b4a5edd}</Project>
-      <Name>openHistorian.Server</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\openHistorian.Client\openHistorian.Client.csproj">
-      <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
-      <Name>openHistorian.Client</Name>
+      <Name>openHistorian.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

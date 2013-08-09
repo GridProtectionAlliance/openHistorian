@@ -23,10 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace GSF.Collections
 {
@@ -38,9 +35,9 @@ namespace GSF.Collections
     /// <typeparam name="T"></typeparam>
     public class NullableLargeArray<T> : IDisposable
     {
-        bool m_disposed;
-        ILargeArray<T> m_list;
-        BitArray m_isUsed;
+        private bool m_disposed;
+        private ILargeArray<T> m_list;
+        private readonly BitArray m_isUsed;
 
         public NullableLargeArray()
             : this(new LargeArray<T>())
@@ -50,7 +47,7 @@ namespace GSF.Collections
         public NullableLargeArray(ILargeArray<T> baseList)
         {
             m_list = baseList;
-            m_isUsed = new BitArray(m_list.Capacity, false);
+            m_isUsed = new BitArray(false, m_list.Capacity);
         }
 
         /// <summary>
@@ -215,7 +212,7 @@ namespace GSF.Collections
                 SetCapacity(Capacity + 1);
                 index = FindFirstEmptyIndex();
             }
-            SetValue(index,value);
+            SetValue(index, value);
             return index;
         }
 
@@ -256,7 +253,7 @@ namespace GSF.Collections
             }
         }
 
-        int FindFirstEmptyIndex()
+        private int FindFirstEmptyIndex()
         {
             return m_isUsed.FindClearedBit();
         }
@@ -274,6 +271,5 @@ namespace GSF.Collections
                 m_list = null;
             }
         }
-
     }
 }

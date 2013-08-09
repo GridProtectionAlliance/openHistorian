@@ -30,13 +30,13 @@ namespace GSF.Collections
     /// <summary>
     /// A list that can be modified until <see cref="IsReadOnly"/> is set to true. Once this occurs,
     /// the list itself can no longer be modified.  Remember, this does not cause objects contained in this class to be Immutable 
-    /// unless they implement <see cref="T:openHistorian.Collections.ISupportsReadonly`1"/>.
+    /// unless they implement <see cref="T:GSF.Collections.ISupportsReadonly`1"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class ReadonlyList<T> : SupportsReadonlyBase<ReadonlyList<T>>, IList<T>
     {
-        bool m_isISupportsReadonlyType;
-        List<T> m_list;
+        private readonly bool m_isISupportsReadonlyType;
+        private List<T> m_list;
 
         public ReadonlyList()
         {
@@ -55,6 +55,7 @@ namespace GSF.Collections
             m_list = new List<T>(collection);
             m_isISupportsReadonlyType = typeof(ISupportsReadonly<T>).IsAssignableFrom(typeof(T));
         }
+
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
         /// <filterpriority>1</filterpriority>
@@ -62,6 +63,7 @@ namespace GSF.Collections
         {
             return m_list.GetEnumerator();
         }
+
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
         /// <filterpriority>2</filterpriority>
@@ -69,6 +71,7 @@ namespace GSF.Collections
         {
             return ((IEnumerable)m_list).GetEnumerator();
         }
+
         /// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
@@ -77,6 +80,7 @@ namespace GSF.Collections
             TestForEditable();
             m_list.Add(item);
         }
+
         /// <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
         public void Clear()
@@ -84,6 +88,7 @@ namespace GSF.Collections
             TestForEditable();
             m_list.Clear();
         }
+
         /// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
         /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
         /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
@@ -91,6 +96,7 @@ namespace GSF.Collections
         {
             return m_list.Contains(item);
         }
+
         /// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
         /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
@@ -104,6 +110,7 @@ namespace GSF.Collections
         {
             m_list.CopyTo(array, arrayIndex);
         }
+
         /// <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
         /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
         /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
@@ -139,7 +146,7 @@ namespace GSF.Collections
         {
             if (m_isISupportsReadonlyType)
             {
-                var oldList = m_list;
+                List<T> oldList = m_list;
                 m_list = new List<T>(oldList.Count);
                 for (int x = 0; x < oldList.Count; x++)
                 {
@@ -159,6 +166,7 @@ namespace GSF.Collections
         {
             return m_list.IndexOf(item);
         }
+
         /// <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
         /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
         /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
@@ -170,6 +178,7 @@ namespace GSF.Collections
             TestForEditable();
             m_list.Insert(index, item);
         }
+
         /// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
         /// <exception cref="T:System.ArgumentOutOfRangeException">

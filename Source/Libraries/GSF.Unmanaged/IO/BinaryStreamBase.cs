@@ -29,23 +29,35 @@ using System.Text;
 
 namespace GSF.IO
 {
-    unsafe public abstract class BinaryStreamBase : IDisposable
+    public abstract unsafe class BinaryStreamBase : IDisposable
     {
-        byte[] m_buffer = new byte[16];
+        private readonly byte[] m_buffer = new byte[16];
 
         #region [ Abstract Code ]
+
         /// <summary>
         /// Gets/Sets the current position for the stream.
         /// <remarks>It is important to use this to Get/Set the position from the underlying stream since 
         /// this class buffers the results of the query.  Setting this field does not gaurentee that
         /// the underlying stream will get set. Call FlushToUnderlyingStream to acomplish this.</remarks>
         /// </summary>
-        public abstract long Position { get; set; }
+        public abstract long Position
+        {
+            get;
+            set;
+        }
+
         public abstract void Write(byte[] value, int offset, int count);
         public abstract int Read(byte[] value, int offset, int count);
         public abstract void Dispose();
 
         #endregion
+
+        public long PointerVersion
+        {
+            get;
+            protected set;
+        }
 
         /// <summary>
         /// Determines if the binary stream can be cloned.  
@@ -76,7 +88,37 @@ namespace GSF.IO
         /// <param name="isWriting">hints to the stream if write access is desired.</param>
         public virtual void UpdateLocalBuffer(bool isWriting)
         {
+        }
 
+        /// <summary>
+        /// Gets a pointer from the current position that can be used for writing up the the provided length.
+        /// The current position is not advanced after calling this function.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="length">the number of bytes valid for the writing.</param>
+        /// <returns></returns>
+        /// <remarks>This method will throw an exeption if the provided length cannot be provided.</remarks>
+        public virtual byte* GetWritePointer(long position, int length)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Gets a pointer from the current position that can be used for writing up the the provided length.
+        /// The current position is not advanced after calling this function.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="length">the number of bytes valid for the writing.</param>
+        /// <returns></returns>
+        /// <remarks>This method will throw an exeption if the provided length cannot be provided.</remarks>
+        public virtual byte* GetReadPointer(long position, int length, out bool supportsWriting)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual byte* GetReadPointer(long position, int length)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -94,6 +136,18 @@ namespace GSF.IO
             Position = destination;
             Write(data, 0, length);
             Position = oldPos;
+        }
+
+        /// <summary>
+        /// Sets the current position and lets the underlying buffer know if this block is about to be 
+        /// written to.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="isWritingHint">true if the page will be written to. false otherwise.</param>
+        public virtual void SetPosition(long position, bool isWritingHint)
+        {
+            Position = position;
+            UpdateLocalBuffer(isWritingHint);
         }
 
         /// <summary>
@@ -143,6 +197,7 @@ namespace GSF.IO
         {
             Write((byte)value);
         }
+
         public virtual void Write(bool value)
         {
             if (value)
@@ -150,23 +205,28 @@ namespace GSF.IO
             else
                 Write((byte)0);
         }
+
         public virtual void Write(ushort value)
         {
             Write((short)value);
         }
+
         public virtual void Write(uint value)
         {
             Write((int)value);
         }
+
         public virtual void Write(ulong value)
         {
             Write((long)value);
         }
+
         public virtual void Write(byte value)
         {
             m_buffer[0] = value;
             Write(m_buffer, 0, 1);
         }
+
         public virtual void Write(short value)
         {
             fixed (byte* lp = m_buffer)
@@ -175,6 +235,7 @@ namespace GSF.IO
             }
             Write(m_buffer, 0, 2);
         }
+
         public virtual void Write(int value)
         {
             fixed (byte* lp = m_buffer)
@@ -183,6 +244,7 @@ namespace GSF.IO
             }
             Write(m_buffer, 0, 4);
         }
+
         public virtual void Write(float value)
         {
             fixed (byte* lp = m_buffer)
@@ -191,6 +253,7 @@ namespace GSF.IO
             }
             Write(m_buffer, 0, 4);
         }
+
         public virtual void Write(long value)
         {
             fixed (byte* lp = m_buffer)
@@ -199,6 +262,7 @@ namespace GSF.IO
             }
             Write(m_buffer, 0, 8);
         }
+
         public virtual void Write(double value)
         {
             fixed (byte* lp = m_buffer)
@@ -207,6 +271,7 @@ namespace GSF.IO
             }
             Write(m_buffer, 0, 8);
         }
+
         public virtual void Write(DateTime value)
         {
             fixed (byte* lp = m_buffer)
@@ -215,6 +280,7 @@ namespace GSF.IO
             }
             Write(m_buffer, 0, 8);
         }
+
         public virtual void Write(decimal value)
         {
             fixed (byte* lp = m_buffer)
@@ -223,6 +289,7 @@ namespace GSF.IO
             }
             Write(m_buffer, 0, 16);
         }
+
         public virtual void Write(Guid value)
         {
             fixed (byte* lp = m_buffer)
@@ -237,22 +304,25 @@ namespace GSF.IO
             Write((ushort)value);
             Write((byte)(value >> 16));
         }
+
         public virtual void WriteUInt40(ulong value)
         {
             Write((uint)value);
             Write((byte)(value >> 32));
         }
+
         public virtual void WriteUInt48(ulong value)
         {
             Write((uint)value);
             Write((ushort)(value >> 32));
         }
+
         public virtual void WriteUInt56(ulong value)
         {
             Write((uint)value);
             WriteUInt24((uint)(value >> 32));
         }
-    
+
         public virtual void WriteUInt(ulong value, int bytes)
         {
             switch (bytes)
@@ -291,6 +361,7 @@ namespace GSF.IO
         {
             Compression.Write7Bit(Write, value);
         }
+
         public virtual void Write7Bit(ulong value)
         {
             Compression.Write7Bit(Write, value);
@@ -312,6 +383,30 @@ namespace GSF.IO
             Write(value);
         }
 
+        public virtual void Write(byte* buffer, int length)
+        {
+            int pos = 0;
+            while (pos + 8 <= length)
+            {
+                Write(*(long*)(buffer + pos));
+                pos += 8;
+            }
+            if (pos + 4 <= length)
+            {
+                Write(*(int*)(buffer + pos));
+                pos += 4;
+            }
+            if (pos + 2 <= length)
+            {
+                Write(*(short*)(buffer + pos));
+                pos += 2;
+            }
+            if (pos + 1 <= length)
+            {
+                Write(*(buffer + pos));
+            }
+        }
+
         public virtual sbyte ReadSByte()
         {
             return (sbyte)ReadByte();
@@ -326,11 +421,13 @@ namespace GSF.IO
         {
             return (ushort)ReadInt16();
         }
+
         public virtual uint ReadUInt24()
         {
             uint value = ReadUInt16();
             return value | ((uint)ReadByte() << 16);
         }
+
         public virtual uint ReadUInt32()
         {
             return (uint)ReadInt32();
@@ -341,6 +438,7 @@ namespace GSF.IO
             ulong value = ReadUInt32();
             return value | ((ulong)ReadByte() << 32);
         }
+
         public virtual ulong ReadUInt48()
         {
             ulong value = ReadUInt32();
@@ -352,6 +450,7 @@ namespace GSF.IO
             ulong value = ReadUInt32();
             return value | ((ulong)ReadUInt24() << 32);
         }
+
         public virtual ulong ReadUInt64()
         {
             return (ulong)ReadInt64();
@@ -397,6 +496,7 @@ namespace GSF.IO
                 return *(short*)lp;
             }
         }
+
         public virtual int ReadInt32()
         {
             Read(m_buffer, 0, 4);
@@ -405,6 +505,7 @@ namespace GSF.IO
                 return *(int*)lp;
             }
         }
+
         public virtual float ReadSingle()
         {
             Read(m_buffer, 0, 4);
@@ -456,6 +557,7 @@ namespace GSF.IO
         {
             return Compression.Read7BitUInt32(ReadByte);
         }
+
         public virtual ulong Read7BitUInt64()
         {
             return Compression.Read7BitUInt64(ReadByte);
@@ -467,17 +569,39 @@ namespace GSF.IO
             Read(value, 0, count);
             return value;
         }
+
         public virtual byte[] ReadBytes()
         {
             return ReadBytes((int)Read7BitUInt32());
         }
+
         public virtual string ReadString()
         {
             return Encoding.ASCII.GetString(ReadBytes());
         }
 
-
-
-
+        public virtual void Read(byte* buffer, int length)
+        {
+            int pos = 0;
+            while (pos + 8 <= length)
+            {
+                *(long*)(buffer + pos) = ReadInt64();
+                pos += 8;
+            }
+            if (pos + 4 <= length)
+            {
+                *(int*)(buffer + pos) = ReadInt32();
+                pos += 4;
+            }
+            if (pos + 2 <= length)
+            {
+                *(short*)(buffer + pos) = ReadInt16();
+                pos += 2;
+            }
+            if (pos + 1 <= length)
+            {
+                *(buffer + pos) = ReadByte();
+            }
+        }
     }
 }

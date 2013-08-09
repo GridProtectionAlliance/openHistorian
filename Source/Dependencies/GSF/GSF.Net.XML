@@ -1,0 +1,1307 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.Net</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.Net.Ftp.FtpAsyncResult">
+            <summary>
+            Asynchronous transfer result.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpAsyncResult.Complete">
+            <summary>
+            FTP transfer result completed index.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpAsyncResult.Fail">
+            <summary>
+            FTP transfer result failed index.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpAsyncResult.Abort">
+            <summary>
+            FTP transfer result aborted index.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpAsyncResult.IsSuccess">
+            <summary>
+            Returns true if asynchronous transfer completed successfully.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpAsyncResult.IsFailed">
+            <summary>
+            Returns true if asynchronous transfer failed.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpAsyncResult.IsAborted">
+            <summary>
+            Returns true if asynchronous transfer was aborted.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpAsyncResult.ResponseCode">
+            <summary>
+            Gets response code from asynchronous transfer.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpAsyncResult.Message">
+            <summary>
+            Gets any message associated with asynchronous transfer.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpClient">
+            <summary>
+            Represents a FTP session.
+            </summary>
+            <remarks>
+            Creates a client connection to an FTP server for uploading or downloading files.
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpClient.#ctor">
+            <summary>
+            Constructs a new FTP session using the default settings.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpClient.#ctor(System.Boolean)">
+            <summary>
+            Constructs a new FTP session using the specified settings.
+            </summary>
+            <param name="caseInsensitive">Set to true to not be case sensitive with FTP file and directory names.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpClient.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Ftp.FtpClient"/> class.
+            </summary>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.Net.Ftp.FtpClient"/>.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpClient.SetCurrentDirectory(System.String)">
+            <summary>
+            Changes the current FTP session directory to the specified path.
+            </summary>
+            <param name="directoryPath">New directory.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpClient.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Net.Ftp.FtpClient"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpClient.AbortTransfer">
+            <summary>
+            Aborts current file transfer.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpClient.Connect(System.String,System.String)">
+            <summary>
+            Connects to FTP server using specified credentials.
+            </summary>
+            <param name="userName">User name used to authenticate to FTP server.</param>
+            <param name="password">Password used to authenticate to FTP server.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpClient.Close">
+            <summary>
+            Closes current FTP session.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpClient.BeginFileTransfer">
+            <summary>
+            Raised when file transfer begins.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`3.Argument1"/> is local filename,
+            <see cref="F:GSF.EventArgs`3.Argument2"/> is remote filename, 
+            <see cref="F:GSF.EventArgs`3.Argument3"/> is file transfer direction.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpClient.EndFileTransfer">
+            <summary>
+            Raised when file transfer completes.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`3.Argument1"/> is local filename,
+            <see cref="F:GSF.EventArgs`3.Argument2"/> is remote filename, 
+            <see cref="F:GSF.EventArgs`3.Argument3"/> is file transfer direction.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpClient.FileTransferProgress">
+            <summary>
+            Raised as file transfer is progressing.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is current file transfer progress,
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is file transfer direction.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpClient.FileTransferNotification">
+            <summary>
+            Raised when ansynchronous file transfer process has completed (success or failure).
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is result of asynchronous FTP transfer process.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpClient.ResponseReceived">
+            <summary>
+            Raised when FTP response has been received.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is received FTP response.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpClient.CommandSent">
+            <summary>
+            Raised when FTP command has been sent.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is sent FTP command.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.Server">
+            <summary>
+            Gets or sets FTP server name (DNS name or IP).
+            </summary>
+            <remarks>
+            FTP server name should not be prefixed with FTP://.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.CaseInsensitive">
+            <summary>
+            Gets or sets FTP case sensitivity of file and directory names.
+            </summary>
+            <remarks>
+            Set to true to not be case sensitive with FTP file and directory names.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.Port">
+            <summary>
+            Gets or sets FTP server port to use, defaults to 21.
+            </summary>
+            <remarks>
+            This only needs to be changed if the FTP server is established on a non-standard port number.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.CurrentDirectory">
+            <summary>
+            Gets or sets current FTP session directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.RootDirectory">
+            <summary>
+            Gets FTP session root directory entry.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.WaitLockTimeout">
+            <summary>
+            Gets or sets maximum number of seconds to wait for read lock for files to be uploaded. Defaults to 10 seconds.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.ControlChannel">
+            <summary>
+            Gets the current FTP control channel.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.IsConnected">
+            <summary>
+            Returns true if FTP session is currently connected.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpClient.IsBusy">
+            <summary>
+            Returns true if FTP session is currently busy.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.TransferMode">
+            <summary>
+            FTP transfer mode enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.TransferMode.Ascii">
+            <summary>
+            Transfer files in ASCII mode.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.TransferMode.Binary">
+            <summary>
+            Transfer files in binary mode.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.TransferMode.Unknown">
+            <summary>
+            File transfer mode is undetermined.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpControlChannel">
+            <summary>
+            FTP control channel.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpControlChannel.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.Net.Ftp.FtpControlChannel"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpControlChannel.Close">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Net.Ftp.FtpControlChannel"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpControlChannel.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Net.Ftp.FtpControlChannel"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpControlChannel.Connect">
+            <summary>
+            Connects the <see cref="T:GSF.Net.Ftp.FtpControlChannel"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpControlChannel.Command(System.String)">
+            <summary>
+            Send FTP command to control channel.
+            </summary>
+            <param name="cmd">A <see cref="T:System.String"/> representing the command to send.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpControlChannel.RefreshResponse">
+            <summary>
+            Refresh response from control channel.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpControlChannel.LastResponse">
+            <summary>
+            Last response from control channel.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpDataStream">
+            <summary>
+            FTP data stream.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDataStream.Close">
+            <summary>
+            Closes the FTP stream and releases any resources associated with the stream.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDataStream.Flush">
+            <summary>
+            Clears all buffers for this stream and causes any buffered data to be written to the underlying device.
+            </summary>
+            <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDataStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <summary>
+            Sets the position within the current stream.
+            </summary>
+            <param name="offset">A byte offset relative to the origin parameter.</param>
+            <param name="origin">
+            A value of type <see cref="T:System.IO.SeekOrigin"/> indicating the reference
+            point used to obtain the new position.
+            </param>
+            <returns>The new position within the current stream.</returns>
+            <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
+            <exception cref="T:System.NotSupportedException">Stream does not support seeking.</exception>
+            <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed.</exception>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDataStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Reads a sequence of bytes from the current stream and advances the
+            position within the stream by the number of bytes read.
+            </summary>
+            <param name="buffer">
+            An array of bytes. When this method returns, the <paramref name="buffer"/>
+            contains the specified byte array with the values between
+            <paramref name="offset"/> and (<paramref name="offset"/> + <paramref name="count"/> - 1)
+            replaced by the bytes read from the current source.</param>
+            <param name="offset">
+            The zero-based byte offset in <paramref name="buffer"/> at which to begin
+            storing the data read from the current stream.
+            </param>
+            <param name="count">
+            The maximum number of bytes to be read from the current stream.
+            </param>
+            <returns>
+            The total number of bytes read into the <paramref name="buffer"/>. This can be less than the 
+            number of bytes requested if that many bytes are not currently available, or zero (0) if the
+            end of the stream has been reached.
+            </returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDataStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            When overridden in a derived class, writes a sequence of bytes to the current stream and advances the current position
+            within this stream by the number of bytes written.
+            </summary>
+            <param name="buffer">
+            An array of bytes. When this method returns, the <paramref name="buffer"/>
+            contains the specified byte array with the values between
+            <paramref name="offset"/> and (<paramref name="offset"/> + <paramref name="count"/> - 1)
+            replaced by the bytes read from the current source.</param>
+            <param name="offset">
+            The zero-based byte offset in <paramref name="buffer"/> at which to begin
+            storing the data read from the current stream.
+            </param>
+            <param name="count">
+            The maximum number of bytes to be read from the current stream.
+            </param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDataStream.ReadByte">
+            <summary>
+            Reads a byte from the stream and advances the position within the stream
+            by one byte, or returns -1 if at the end of the stream.
+            </summary>
+            <returns>
+            The unsigned byte cast to an Int32, or -1 if at the end of the stream.
+            </returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDataStream.WriteByte(System.Byte)">
+            <summary>
+            Writes a byte to the current position in the stream and advances the position
+            within the stream by one byte.
+            </summary>
+            <param name="b">The byte to write to the stream.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDataStream.SetLength(System.Int64)">
+            <summary>
+            Sets the length of the current stream.
+            </summary>
+            <param name="len">The desired length of the current stream in bytes.</param>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDataStream.CanRead">
+            <summary>
+            Gets a value indicating whether the current stream supports reading.
+            </summary>
+            <returns>
+            true if the stream supports reading; otherwise, false.
+            </returns>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDataStream.CanSeek">
+            <summary>
+            Gets a value indicating whether the current stream supports seeking.
+            </summary>
+            <returns>
+            true if the stream supports seeking; otherwise, false.
+            </returns>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDataStream.CanWrite">
+            <summary>
+            Gets a value indicating whether the current stream supports writing.
+            </summary>
+            <returns>
+            true if the stream supports writing; otherwise, false.
+            </returns>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDataStream.Length">
+            <summary>
+            Gets the length in bytes of the stream.
+            </summary>
+            <returns>
+            A long value representing the length of the stream in bytes.
+            </returns>
+            <exception cref="T:System.NotSupportedException">Stream does not support seeking.</exception>
+            <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed.</exception>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDataStream.Position">
+            <summary>
+            Gets or sets the position within the current stream.
+            </summary>
+            <returns>
+            The current position within the stream.
+            </returns>
+            <exception cref="T:System.IO.IOException">An I/O error occurs.</exception>
+            <exception cref="T:System.NotSupportedException">Stream does not support seeking.</exception>
+            <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed.</exception>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpDirectory">
+            <summary>
+            Represents a FTP directory.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.IFtpFile">
+            <summary>
+            Abstract representation of a FTP file or directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpFile.Parent">
+            <summary>
+            Gets parent directory of file or directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpFile.Name">
+            <summary>
+            Gets name of file or directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpFile.FullPath">
+            <summary>
+            Gets full path of file or directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpFile.IsFile">
+            <summary>
+            Returns true if <see cref="T:GSF.Net.Ftp.IFtpFile"/> represents a file, otherwise false.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpFile.IsDirectory">
+            <summary>
+            Returns true if <see cref="T:GSF.Net.Ftp.IFtpFile"/> represents a directory, otherwise false.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpFile.Size">
+            <summary>
+            Gets or sets size of file or directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpFile.Permission">
+            <summary>
+            Gets or sets permission of file or directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpFile.TimeStamp">
+            <summary>
+            Gets or sets timestamp of file or directory.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.FindFile(System.String)">
+            <summary>
+            Finds matching file name in directory.
+            </summary>
+            <param name="fileName">FileName to find in directory.</param>
+            <returns>File reference, if found, otherwise null if file is not found.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.FindSubDirectory(System.String)">
+            <summary>
+            Finds matching subdirectory name in directory.
+            </summary>
+            <param name="dirName">Subdirectory name to find in directory.</param>
+            <returns>Subdirectory reference, if found, otherwise null if subdirectory is not found.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.PutFile(System.String)">
+            <summary>
+            Uploads local file to directory.
+            </summary>
+            <param name="localFile">Local file to upload.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.PutFile(System.String,System.String)">
+            <summary>
+            Uploads local file to directory using alternate name.
+            </summary>
+            <param name="localFile">Local file to upload.</param>
+            <param name="remoteFile">Remote filename to use for upload.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.GetFile(System.String)">
+            <summary>
+            Downloads remote file from directory.
+            </summary>
+            <param name="remoteFile">Remote filename to download.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.GetFile(System.String,System.String)">
+            <summary>
+            Downloads remote file from directory using alternate local filename.
+            </summary>
+            <param name="localFile">Local filename to use for download.</param>
+            <param name="remoteFile">Remote filename to download.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.BeginPutFile(System.String)">
+            <summary>
+            Starts asynchrnonous local file upload to directory.
+            </summary>
+            <param name="localFile">Local file to upload.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.BeginPutFile(System.String,System.String)">
+            <summary>
+            Starts asynchrnonous local file upload to directory using alternate name.
+            </summary>
+            <param name="localFile">Local file to upload.</param>
+            <param name="remoteFile">Remote filename to use for upload.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.BeginGetFile(System.String)">
+            <summary>
+            Starts asynchronous remote file download from directory.
+            </summary>
+            <param name="remoteFile">Remote filename to download.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.BeginGetFile(System.String,System.String)">
+            <summary>
+            Starts asynchronous remote file download from directory using alternate local filename.
+            </summary>
+            <param name="localFile">Local filename to use for download.</param>
+            <param name="remoteFile">Remote filename to download.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.RemoveFile(System.String)">
+            <summary>
+            Removes file from directory.
+            </summary>
+            <param name="fileName">Remote filename to remove.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.RemoveSubDir(System.String)">
+            <summary>
+            Removes subdirectory from directory.
+            </summary>
+            <param name="dirName">Subdirectory name to remove.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.CreateFile(System.String)">
+            <summary>
+            Creates a new zero-length remote file in directory.
+            </summary>
+            <param name="newFileName">New remote file name.</param>
+            <returns>File reference to new zero-length remote file.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.CreateFileStream(System.String)">
+            <summary>
+            Creates a new data stream for remote file in directory.
+            </summary>
+            <param name="newFileName">New remote file name.</param>
+            <returns>Output data stream for new remote file.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.Refresh">
+            <summary>
+            Refreshes directory listing.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.Equals(System.Object)">
+            <summary>
+            Determines if the two <see cref="T:GSF.Net.Ftp.FtpDirectory"/> objects are equal.
+            </summary>
+            <param name="obj">Other object to compare.</param>
+            <returns><c>true</c> if both objects are equal.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.GetHashCode">
+            <summary>
+            Generates hash code for this <see cref="T:GSF.Net.Ftp.FtpDirectory"/>.
+            </summary>
+            <returns>An <see cref="T:System.Int32"/> value as the result.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.CompareTo(System.Object)">
+            <summary>
+            Compares directory or file to another.
+            </summary>
+            <param name="obj">An <see cref="T:System.Object"/> to compare against.</param>
+            <returns>An <see cref="T:System.Int32"/> value representing the result. 1 - obj is greater than, 0 - obj is equal to, -1 - obj is less than.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.op_Equality(GSF.Net.Ftp.FtpDirectory,GSF.Net.Ftp.FtpDirectory)">
+            <summary>
+            Compares the two values for equality.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.op_Inequality(GSF.Net.Ftp.FtpDirectory,GSF.Net.Ftp.FtpDirectory)">
+            <summary>
+            Compares the two values for inequality.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.op_LessThan(GSF.Net.Ftp.FtpDirectory,GSF.Net.Ftp.FtpDirectory)">
+            <summary>
+            Returns true if left value is less than right value.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.op_GreaterThan(GSF.Net.Ftp.FtpDirectory,GSF.Net.Ftp.FtpDirectory)">
+            <summary>
+            Returns true if left value is greater than right value.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.op_LessThanOrEqual(GSF.Net.Ftp.FtpDirectory,GSF.Net.Ftp.FtpDirectory)">
+            <summary>
+            Returns true if left value is less or equal to than right value.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpDirectory.op_GreaterThanOrEqual(GSF.Net.Ftp.FtpDirectory,GSF.Net.Ftp.FtpDirectory)">
+            <summary>
+            Returns true if left value is greater than or equal to right value.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpDirectory"/> right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result.</returns>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpDirectory.DirectoryListLineScan">
+            <summary>
+            Raised when new directory line is scanned.
+            </summary>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpDirectory.DirectoryScanException">
+            <summary>
+            Raised when there is an exception scanning a directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.CaseInsensitive">
+            <summary>
+            Gets or sets FTP case sensitivity of file and directory names.
+            </summary>
+            <remarks>
+            Set to true to not be case sensitive with FTP file and directory names.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.Name">
+            <summary>
+            Name of directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.FullPath">
+            <summary>
+            Full path of directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.IsFile">
+            <summary>
+            Returns false for directory entries.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.IsDirectory">
+            <summary>
+            Returns true for directory entries.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.Size">
+            <summary>
+            Gets or sets size of directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.Permission">
+            <summary>
+            Gets or sets permission of directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.TimeStamp">
+            <summary>
+            Gets or sets timestamp of directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.Parent">
+            <summary>
+            Gets parent directory of directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.SubDirectories">
+            <summary>
+            Gets sub directories of directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpDirectory.Files">
+            <summary>
+            Gets files of directory.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpExceptionBase">
+            <summary>
+            FTP exception base class.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpExceptionBase.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Derserializes the <see cref="T:GSF.Net.Ftp.FtpExceptionBase"/>.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpExceptionBase.ResponseMessage">
+            <summary>
+            Response message related to exception, if any.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpInvalidResponseException">
+            <summary>
+            Invalid FTP response exception.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpAuthenticationException">
+            <summary>
+            FTP authentication exception.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpFileNotFoundException">
+            <summary>
+            FTP file not found exception.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpServerDownException">
+            <summary>
+            FTP server down exception.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpCommandException">
+            <summary>
+            FTP command exception.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpDataTransferException">
+            <summary>
+            FTP data transfer exception.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpUserAbortException">
+            <summary>
+            FTP user abort exception.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpResumeNotSupportedException">
+            <summary>
+            FTP resume not supported exception.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpFile">
+            <summary>
+            Represents a FTP file.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.GetInputStream">
+            <summary>
+            Gets FTP input stream for file.
+            </summary>
+            <returns>FTP input stream for file.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.GetOutputStream">
+            <summary>
+            Gets FTP output stream for file.
+            </summary>
+            <returns>FTP output stream for file.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.GetInputStream(System.Int64)">
+            <summary>
+            Gets FTP input stream for file at given offset.
+            </summary>
+            <param name="offset">Offset into stream to start.</param>
+            <returns>FTP input stream for file.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.GetOutputStream(System.Int64)">
+            <summary>
+            Gets FTP output stream for file at given offset.
+            </summary>
+            <param name="offset">Offset into stream to start.</param>
+            <returns>FTP output stream for file.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.Equals(System.Object)">
+            <summary>
+            Determines if the two <see cref="T:GSF.Net.Ftp.FtpFile"/> objects are equal.
+            </summary>
+            <param name="obj">Other object to compare.</param>
+            <returns><c>true</c> if both objects are equal.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.GetHashCode">
+            <summary>
+            Generates hash code for this <see cref="T:GSF.Net.Ftp.FtpFile"/>.
+            </summary>
+            <returns>An <see cref="T:System.Int32"/> representing the hash code.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.CompareTo(System.Object)">
+            <summary>
+            Compares directory or file to another.
+            </summary>
+            <param name="obj">An <see cref="T:System.Object"/> to compare against.</param>
+            <returns>An <see cref="T:System.Int32"/> that represents the result of the comparison. 1 - object is greater than, 0 - object is equal to, -1 - object is less than.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.op_Equality(GSF.Net.Ftp.FtpFile,GSF.Net.Ftp.FtpFile)">
+            <summary>
+            Compares the two values for equality.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.op_Inequality(GSF.Net.Ftp.FtpFile,GSF.Net.Ftp.FtpFile)">
+            <summary>
+            Compares the two values for inequality.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.op_LessThan(GSF.Net.Ftp.FtpFile,GSF.Net.Ftp.FtpFile)">
+            <summary>
+            Returns true if left value is less than right value.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.op_GreaterThan(GSF.Net.Ftp.FtpFile,GSF.Net.Ftp.FtpFile)">
+            <summary>
+            Returns true if left value is greater than right value.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.op_LessThanOrEqual(GSF.Net.Ftp.FtpFile,GSF.Net.Ftp.FtpFile)">
+            <summary>
+            Returns true if left value is less or equal to than right value.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result of the comparison.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFile.op_GreaterThanOrEqual(GSF.Net.Ftp.FtpFile,GSF.Net.Ftp.FtpFile)">
+            <summary>
+            Returns true if left value is greater than or equal to right value.
+            </summary>
+            <param name="value1">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the left hand operand.</param>
+            <param name="value2">A <see cref="T:GSF.Net.Ftp.FtpFile"/> as the right hand operand.</param>
+            <returns>A <see cref="T:System.Boolean"/> value indicating the result of the comparison.</returns>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFile.Name">
+            <summary>
+            Name of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFile.FullPath">
+            <summary>
+            Full path of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFile.IsFile">
+            <summary>
+            Returns true for file entries.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFile.IsDirectory">
+            <summary>
+            Returns false for directory entries.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFile.Size">
+            <summary>
+            Gets or sets size of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFile.Permission">
+            <summary>
+            Gets or sets permission of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFile.TimeStamp">
+            <summary>
+            Gets or sets timestamp of file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFile.Parent">
+            <summary>
+            Gets parent directory of file.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.TransferDirection">
+            <summary>
+            FTP file transfer direction enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.TransferDirection.Upload">
+            <summary>
+            FTP transfer direction set to upload.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.TransferDirection.Download">
+            <summary>
+            FTP transfer direction set to download.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpFileWatcher">
+            <summary>
+            FTP File Watcher
+            </summary>
+            <remarks>
+            Monitors for file changes over an FTP session.
+            </remarks>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.#ctor">
+            <summary>
+            Constructs a new FTP file watcher using the default settings.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.#ctor(System.Boolean,System.Boolean)">
+            <summary>
+            Constructs a new FTP file watcher using the specified settings.
+            </summary>
+            <param name="caseInsensitive">Set to true to not be case sensitive with FTP file and directory names.</param>
+            <param name="notifyOnComplete">Set to true to notify after file has completed uploading -or- set to false for immediate notification of new file.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Net.Ftp.FtpFileWatcher"/> class.
+            </summary>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.Net.Ftp.FtpFileWatcher"/>.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Net.Ftp.FtpFileWatcher"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.Close">
+            <summary>
+            Closes FTP session and clears resources used by the <see cref="T:GSF.Net.Ftp.FtpFileWatcher"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.Connect(System.String,System.String)">
+            <summary>
+            Connects to FTP server and enables file watching if <see cref="P:GSF.Net.Ftp.FtpFileWatcher.Enabled"/> is true.
+            </summary>
+            <param name="userName">A <see cref="T:System.String"/> value as the username.</param>
+            <param name="password">A <see cref="T:System.String"/> value as the password.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.CloneFtpSession">
+            <summary>
+            Clones FTP session used by file watcher so it can be used for other purposes.
+            </summary>
+            <returns>New connected FTP session matching settings defined for FTP file watcher.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.Reset">
+            <summary>
+            Resets and restarts FTP session used by FTP file watcher.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.OnStatus(System.String)">
+            <summary>
+            Raises <see cref="E:GSF.Net.Ftp.FtpFileWatcher.Status"/> event.
+            </summary>
+            <param name="status">A <see cref="T:System.String"/> status message.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.OnFileAdded(GSF.Net.Ftp.FtpFile)">
+            <summary>
+            Raises <see cref="E:GSF.Net.Ftp.FtpFileWatcher.FileAdded"/> event.
+            </summary>
+            <param name="file">A <see cref="T:GSF.Net.Ftp.FtpFile"/> file.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.OnFileDeleted(GSF.Net.Ftp.FtpFile)">
+            <summary>
+            Raises <see cref="E:GSF.Net.Ftp.FtpFileWatcher.FileDeleted"/> event.
+            </summary>
+            <param name="file">A <see cref="T:GSF.Net.Ftp.FtpFile"/> file.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.OnCommandSent(System.String)">
+            <summary>
+            Raises <see cref="E:GSF.Net.Ftp.FtpFileWatcher.CommandSent"/> event.
+            </summary>
+            <param name="command">A <see cref="T:System.String"/> command.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpFileWatcher.OnResponseReceived(System.String)">
+            <summary>
+            Raises <see cref="E:GSF.Net.Ftp.FtpFileWatcher.ResponseReceived"/> event.
+            </summary>
+            <param name="response">A <see cref="T:System.String"/> response.</param>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpFileWatcher.FileAdded">
+            <summary>
+            Raised when new file is added to monitored FTP directory.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is reference to newly added file.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpFileWatcher.FileDeleted">
+            <summary>
+            Raised when file is deleted from monitored FTP directory.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is reference to file that was removed.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpFileWatcher.Status">
+            <summary>
+            Raised when new status messages come from the FTP file watcher.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is status message from FTP file watcher.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpFileWatcher.CommandSent">
+            <summary>
+            Raised when FTP command has been sent.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is sent FTP command.
+            </remarks>
+        </member>
+        <member name="E:GSF.Net.Ftp.FtpFileWatcher.ResponseReceived">
+            <summary>
+            Raised when FTP response has been received.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is received FTP response.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFileWatcher.Server">
+            <summary>
+            Gets or sets FTP server name (DNS name or IP) to watch.
+            </summary>
+            <remarks>
+            FTP server name should not be prefixed with FTP://.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFileWatcher.Port">
+            <summary>
+            Gets or sets FTP server port to use, defaults to 21.
+            </summary>
+            <remarks>
+            This only needs to be changed if the FTP server is established on a non-standard port number.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFileWatcher.CaseInsensitive">
+            <summary>
+            Gets or sets FTP case sensitivity of file and directory names.
+            </summary>
+            <remarks>
+            Set to true to not be case sensitive with FTP file and directory names.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFileWatcher.WatchInterval">
+            <summary>
+            Gets or sets interval, in seconds, to scan for file changes on monitored FTP directory.
+            </summary>
+            <remarks>
+            Specify interval in seconds to poll FTP directory for file changes.
+            </remarks>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFileWatcher.Directory">
+            <summary>
+            Gets or sets name of FTP directory name to monitor. Leave blank to monitor initial FTP session directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFileWatcher.NotifyOnComplete">
+            <summary>
+            Sets flag for notification time. Set to true to only notify when a file is finished uploading, set to False to get an immediate notification when a new file is detected.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFileWatcher.Enabled">
+            <summary>
+            Gets or sets enabled state of the <see cref="T:GSF.Net.Ftp.FtpFileWatcher"/> object.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpFileWatcher.IsConnected">
+            <summary>
+            Returns true if FTP file watcher session is connected.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpInputDataStream">
+            <summary>
+            Defines a FTP data input stream for remote files.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpInputDataStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Cannot write to input stream, method is not supported.
+            </summary>
+            <exception cref="T:System.NotSupportedException">Cannot write to input stream.</exception>
+            <param name="buffer">A <see cref="T:System.Byte"/> array buffer to use.</param>
+            <param name="count">An <see cref="T:System.Int32"/> offset into the buffer.</param>
+            <param name="offset">An <see cref="T:System.Int32"/> count of bytes to write.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpInputDataStream.WriteByte(System.Byte)">
+            <summary>
+            Cannot write to input stream, method is not supported.
+            </summary>
+            <exception cref="T:System.NotSupportedException">Cannot write to input stream.</exception>
+            <param name="b">A <see cref="T:System.Byte"/> to write.</param>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpInputDataStream.CanWrite">
+            <summary>
+            Returns false, cannot write to input stream.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpOutputDataStream">
+            <summary>
+            Defines a FTP data output stream for remote files.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpOutputDataStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Cannot read from output stream, method is not supported.
+            </summary>
+            <exception cref="T:System.NotSupportedException">Cannot read from output stream.</exception>
+            <param name="buffer">A <see cref="T:System.Byte"/> array buffer.</param>
+            <param name="count">An <see cref="T:System.Int32"/> offset into the stream to read from.</param>
+            <param name="offset">An <see cref="T:System.Int32"/> number of bytes to read.</param>
+            <returns>An <see cref="T:System.Int32"/> number of bytes read.</returns>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpOutputDataStream.ReadByte">
+            <summary>
+            Cannot read from output stream, method is not supported.
+            </summary>
+            <exception cref="T:System.NotSupportedException">Cannot read from output stream.</exception>
+            <returns>An <see cref="T:System.Int32"/> number of bytes read.</returns>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpOutputDataStream.CanRead">
+            <summary>
+            Returns false, cannot read from output stream.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.FtpResponse">
+            <summary>
+            Defines a FTP response.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.InvalidCode">
+            <summary>
+            FTP response code for invalid code.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.DataChannelOpenedTransferStart">
+            <summary>
+            FTP response code for data channel opened, transfer start.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.FileOkBeginOpenDataChannel">
+            <summary>
+            FTP response code for file OK, begin open data channel.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.ServiceReady">
+            <summary>
+            FTP response code for service ready.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.ClosingDataChannel">
+            <summary>
+            FTP response code for closing data channel.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.EnterPassiveMode">
+            <summary>
+            FTP response code for enter passive mode.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.RequestFileActionComplete">
+            <summary>
+            FTP response code for request file action complete.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.UserLoggedIn">
+            <summary>
+            FTP response code for user logged in.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.UserAcceptedWaitingPass">
+            <summary>
+            FTP response code for user accepted waiting pass.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.RequestFileActionPending">
+            <summary>
+            FTP response code for request file action pending.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.ServiceUnavailable">
+            <summary>
+            FTP response code for service unavailable.
+            </summary>
+        </member>
+        <member name="F:GSF.Net.Ftp.FtpResponse.TransferAborted">
+            <summary>
+            FTP response code for transfer aborted.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpResponse.Message">
+            <summary>
+            Gets FTP response message.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpResponse.Respones">
+            <summary>
+            Gets FTP response queue.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.FtpResponse.Code">
+            <summary>
+            Gets FTP response code.
+            </summary>
+        </member>
+        <member name="T:GSF.Net.Ftp.IFtpSessionState">
+            <summary>
+            Abstract representation of a FTP session state (e.g., connected or disconnected).
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.IFtpSessionState.AbortTransfer">
+            <summary>
+            Aborts current file transfer.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.IFtpSessionState.Connect(System.String,System.String)">
+            <summary>
+            Connects to FTP server using specified credentials.
+            </summary>
+            <param name="userName">User name used to authenticate to FTP server.</param>
+            <param name="password">Password used to authenticate to FTP server.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.IFtpSessionState.Close">
+            <summary>
+            Closes current FTP session.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpSessionState.Server">
+            <summary>
+            Gets or sets FTP server name (DNS name or IP).
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpSessionState.Port">
+            <summary>
+            Gets or sets FTP server port to use, defaults to 21.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpSessionState.CurrentDirectory">
+            <summary>
+            Gets or sets current FTP session directory.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpSessionState.RootDirectory">
+            <summary>
+            Gets FTP session root directory entry.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpSessionState.ControlChannel">
+            <summary>
+            Gets the current FTP control channel.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.Ftp.IFtpSessionState.IsBusy">
+            <summary>
+            Returns true if FTP session is currently busy.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpSessionConnected.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.Net.Ftp.FtpSessionConnected"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpSessionConnected.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Net.Ftp.FtpSessionConnected"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpSessionConnected.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Net.Ftp.FtpSessionConnected"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpSessionDisconnected.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.Net.Ftp.FtpSessionDisconnected"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpSessionDisconnected.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.Net.Ftp.FtpSessionDisconnected"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.Net.Ftp.FtpSessionDisconnected.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.Net.Ftp.FtpSessionDisconnected"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="T:GSF.Net.Ftp.NamespaceDoc">
+            <summary>
+            Contains classes used to create client connections to FTP servers for uploading and downloading files.
+            </summary>
+        </member>
+    </members>
+</doc>

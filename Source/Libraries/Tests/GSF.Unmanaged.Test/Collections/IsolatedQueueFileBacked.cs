@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
+using System.IO;
 using NUnit.Framework;
 
-namespace GSF.Collections
+namespace GSF.Collections.Test
 {
     [TestFixture]
-    class IsolatedQueueFileBacked
+    internal class IsolatedQueueFileBacked
     {
-
-        unsafe struct TestType : ILoadable
+        private unsafe struct TestType : ILoadable
         {
             public byte Item1;
             public short Item2;
@@ -33,7 +29,6 @@ namespace GSF.Collections
                 get
                 {
                     return sizeof(TestType);
-
                 }
             }
 
@@ -45,7 +40,7 @@ namespace GSF.Collections
                 }
             }
 
-            public void Save(System.IO.BinaryWriter writer)
+            public void Save(BinaryWriter writer)
             {
                 writer.Write((byte)1);
                 writer.Write(Item1);
@@ -54,7 +49,7 @@ namespace GSF.Collections
                 writer.Write(Item4);
             }
 
-            public void Load(System.IO.BinaryReader reader)
+            public void Load(BinaryReader reader)
             {
                 byte version = reader.ReadByte();
                 if (version != 1)
@@ -82,7 +77,7 @@ namespace GSF.Collections
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var collection = new IsolatedQueueFileBacked<TestType>(Path, Prefix, 3 * 1024 * 1024, 1024 * 1024))
+            using (IsolatedQueueFileBacked<TestType> collection = new IsolatedQueueFileBacked<TestType>(Path, Prefix, 3 * 1024 * 1024, 1024 * 1024))
             {
                 for (int x = 0; x < cnt; x++)
                 {
@@ -94,8 +89,8 @@ namespace GSF.Collections
             }
             sw.Stop();
             Console.WriteLine(sw.Elapsed.TotalSeconds);
-
         }
+
         [Test]
         public void TestDequeue()
         {
@@ -103,7 +98,7 @@ namespace GSF.Collections
             const string Prefix = @"Data";
             int cnt = 0;
 
-            var collection = new IsolatedQueueFileBacked<TestType>(Path, Prefix, 1 * 1024 * 1024, 1024 * 1024);
+            IsolatedQueueFileBacked<TestType> collection = new IsolatedQueueFileBacked<TestType>(Path, Prefix, 1 * 1024 * 1024, 1024 * 1024);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -115,9 +110,6 @@ namespace GSF.Collections
             collection.Dispose();
             Console.WriteLine(sw.Elapsed.TotalSeconds);
             Console.WriteLine(cnt);
-
         }
-
-
     }
 }

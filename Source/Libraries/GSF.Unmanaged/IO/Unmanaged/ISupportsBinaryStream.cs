@@ -35,28 +35,30 @@ namespace GSF.IO.Unmanaged
         /// </summary>
         /// <remarks>This value is used to determine if a binary stream can be cloned
         /// to improve read/write/copy performance.</remarks>
-        int RemainingSupportedIoSessions { get; }
+        int RemainingSupportedIoSessions
+        {
+            get;
+        }
 
         /// <summary>
         /// Gets if the stream can be written to.
         /// </summary>
-        bool IsReadOnly { get; }
+        bool IsReadOnly
+        {
+            get;
+        }
 
         /// <summary>
         /// Gets if the stream has been disposed.
         /// </summary>
-        bool IsDisposed { get; }
-        
+        bool IsDisposed
+        {
+            get;
+        }
+
         /// <summary>
         /// Aquire an IO Session.
         /// </summary>
-        IBinaryStreamIoSession GetNextIoSession();
-
-        /// <summary>
-        /// Creates a new binary from an IO session
-        /// </summary>
-        /// <returns></returns>
-        BinaryStreamBase CreateBinaryStream();
-
+        BinaryStreamIoSessionBase CreateIoSession();
     }
 }

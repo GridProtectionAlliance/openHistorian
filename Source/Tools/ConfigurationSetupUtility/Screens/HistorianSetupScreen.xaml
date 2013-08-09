@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="ConfigurationSetupUtility.Screens.HistorianSetupScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}">
+    <DockPanel>
+        <Label Content="Set up primary historian" DockPanel.Dock="Top" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="16" Margin="7" />
+        <StackPanel DockPanel.Dock="Bottom">
+            <TextBlock Text="Please select an initial historian adapter type. Additional historians can be defined later from within the openHistorian Manager." Margin="40,0" TextAlignment="Center" TextWrapping="Wrap" />
+            <ListBox Height="135" Name="HistorianAdapterListBox" SelectionChanged="HistorianAdapterListBox_SelectionChanged" Margin="2" />
+            <Label Height="22" Content="Namespace.Type from Assembly.dll" Name="AssemblyInfoTextBox" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" FontSize="10" Margin="0,-7,0,2" />
+            <Grid Margin="10,0,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Label Content="Acronym:" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="10" />
+                <TextBox Text="PPA" Grid.Column="1" Margin="5,0,0,0" Name="AcronymTextBox" TextChanged="AcronymTextBox_TextChanged" CharacterCasing="Upper" />
+                <Label Content="Name:" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="1" FontSize="10" />
+                <TextBox Grid.Row="1" Margin="5,0,0,0" Text="Primary Phasor Archive" Grid.Column="1" Name="NameTextBox" TextChanged="NameTextBox_TextChanged" />
+                <Label Content="Description:" Grid.Row="2" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="10" />
+                <TextBox Grid.Row="2" Text="Primary historical archive for phasor data." Grid.Column="1" Margin="5,0,0,0" Name="DescriptionTextBox" TextChanged="DescriptionTextBox_TextChanged" />
+            </Grid>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

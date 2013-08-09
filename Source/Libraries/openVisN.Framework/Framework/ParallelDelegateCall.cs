@@ -33,17 +33,18 @@ namespace openVisN.Framework
         public static void ParallelRunAndWait<T>(this EventHandler<T> eventToRun, object sender, T variable)
             where T : EventArgs
         {
-            var type = new ParallelRun<T>(eventToRun, sender, variable);
+            ParallelRun<T> type = new ParallelRun<T>(eventToRun, sender, variable);
         }
-        class ParallelRun<T>
+
+        private class ParallelRun<T>
             where T : EventArgs
         {
-            int m_numberOfDelegates;
-            int m_delegatesExecuted;
-            object m_sender;
-            T m_variable;
-            ManualResetEvent m_waitForComplete;
-            List<Exception> m_exceptionsThrown;
+            private readonly int m_numberOfDelegates;
+            private int m_delegatesExecuted;
+            private readonly object m_sender;
+            private readonly T m_variable;
+            private readonly ManualResetEvent m_waitForComplete;
+            private List<Exception> m_exceptionsThrown;
 
             //StringBuilder m_sb;
 
@@ -52,7 +53,7 @@ namespace openVisN.Framework
                 //m_sb = new StringBuilder();
                 m_sender = sender;
                 m_variable = variable;
-                var delegates = eventToRun.GetInvocationList();
+                Delegate[] delegates = eventToRun.GetInvocationList();
                 m_numberOfDelegates = delegates.Count();
                 m_delegatesExecuted = 0;
                 m_waitForComplete = new ManualResetEvent(false);
@@ -61,7 +62,7 @@ namespace openVisN.Framework
                 int workerThreads;
                 int completionPortThreads;
                 ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
-                foreach (var d in delegates)
+                foreach (Delegate d in delegates)
                 {
                     ThreadPool.QueueUserWorkItem(Process, d);
                 }
@@ -82,9 +83,6 @@ namespace openVisN.Framework
                     m_waitForComplete.Set();
                 }
             }
-
-
-
         }
     }
 }

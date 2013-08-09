@@ -29,7 +29,12 @@ namespace openVisN.Calculations
 {
     public class CalculationMethod
     {
-        public static CalculationMethod Empty { get; private set; }
+        public static CalculationMethod Empty
+        {
+            get;
+            private set;
+        }
+
         static CalculationMethod()
         {
             Empty = new CalculationMethod();
@@ -41,19 +46,18 @@ namespace openVisN.Calculations
         {
             Dependencies = dependencies;
         }
+
         public virtual void Calculate(IDictionary<Guid, SignalDataBase> signals)
         {
-
         }
+
         public void AddDependentPoints(HashSet<MetadataBase> dependencies)
         {
-            foreach (var point in Dependencies)
+            foreach (MetadataBase point in Dependencies)
             {
                 dependencies.Add(point);
                 point.Calculations.AddDependentPoints(dependencies);
             }
         }
     }
-
-    
 }

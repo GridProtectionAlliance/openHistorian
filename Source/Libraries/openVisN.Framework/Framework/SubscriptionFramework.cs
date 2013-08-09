@@ -24,34 +24,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading;
 using openHistorian;
-using openHistorian.Communications;
+using openHistorian.Collections;
+using openHistorian.Data.Query;
 using openHistorian.Engine;
 using openVisN.Calculations;
 using openVisN.Library;
-using openHistorian.Data.Query;
 
 namespace openVisN.Framework
 {
     public class SubscriptionFramework : IDisposable
     {
-        SignalAssignment m_angleReference;
-        UpdateFramework m_updateFramework;
-        object m_syncRoot;
+        private readonly SignalAssignment m_angleReference;
+        private readonly UpdateFramework m_updateFramework;
+        private object m_syncRoot;
 
-        HashSet<SignalGroup> m_allSignalGroups;
-        HashSet<SignalGroup> m_activeSignalGroups;
-        HashSet<MetadataBase> m_activeSignals;
-        HashSet<MetadataBase> m_allSignals;
+        private readonly HashSet<SignalGroup> m_allSignalGroups;
+        private readonly HashSet<SignalGroup> m_activeSignalGroups;
+        private readonly HashSet<MetadataBase> m_activeSignals;
+        private readonly HashSet<MetadataBase> m_allSignals;
 
         public event EventHandler UpdateModeChanged;
         public event EventHandler PointsChanged;
         public event EventHandler StateUpdated;
         public event Action<DateTime, DateTime> DateRangeChanged;
 
-        List<ISubscriber> m_subscribers;
+        private readonly List<ISubscriber> m_subscribers;
 
         public SubscriptionFramework()
         {
@@ -65,7 +63,6 @@ namespace openVisN.Framework
 
             LoadSignalsAndSignalGroups();
             m_updateFramework = new UpdateFramework();
-
         }
 
         public SubscriptionFramework(string[] paths)
@@ -76,24 +73,25 @@ namespace openVisN.Framework
 
         public void Start(string[] paths)
         {
-            HistorianDatabaseCollection databaseCollection = new HistorianDatabaseCollection();
-            databaseCollection.Add("Default", new ArchiveDatabaseEngine(null, paths));
+            HistorianDatabaseCollection<HistorianKey, HistorianValue> databaseCollection = new HistorianDatabaseCollection<HistorianKey, HistorianValue>();
+            databaseCollection.Add("Default", new ArchiveDatabaseEngine<HistorianKey, HistorianValue>(WriterMode.None, paths));
             HistorianQuery query = new HistorianQuery(databaseCollection);
             m_updateFramework.Start(query);
             m_updateFramework.Mode = ExecutionMode.Manual;
             m_updateFramework.Enabled = true;
         }
+
         public void Start(string ip, int port)
         {
-            var options = new HistorianClientOptions();
+            HistorianClientOptions options = new HistorianClientOptions();
             options.IsReadOnly = true;
             options.ServerNameOrIp = ip;
             options.NetworkPort = port;
-            var client = new HistorianClient(options);
+            HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(options);
             HistorianQuery query = new HistorianQuery(client);
             m_updateFramework.Start(query);
             m_updateFramework.Mode = ExecutionMode.Manual;
-            m_updateFramework.Enabled = true; 
+            m_updateFramework.Enabled = true;
         }
 
         public IEnumerable<MetadataBase> AllSignals
@@ -112,23 +110,23 @@ namespace openVisN.Framework
             }
         }
 
-        void LoadSignalsAndSignalGroups()
+        private void LoadSignalsAndSignalGroups()
         {
             MetadataBase angleReference;
             m_angleReference.GetPoints(out angleReference);
 
-            var allSignals = new AllSignals();
-            var allSignalGroups = new AllSignalGroups();
+            AllSignals allSignals = new AllSignals();
+            AllSignalGroups allSignalGroups = new AllSignalGroups();
 
             allSignals.Signals.ForEach(x => m_allSignals.Add(x.MakeSignal()));
             Dictionary<ulong, MetadataBase> allPoints = m_allSignals.ToDictionary(signal => signal.HistorianId.Value);
 
             allSignalGroups.SignalGroups.ForEach(x =>
-                {
-                    var group = x.CreateGroup(allPoints, angleReference);
-                    group.GetAllSignals().ToList().ForEach(y => m_allSignals.Add(y));
-                    m_allSignalGroups.Add(group);
-                });
+            {
+                SignalGroup group = x.CreateGroup(allPoints, angleReference);
+                group.GetAllSignals().ToList().ForEach(y => m_allSignals.Add(y));
+                m_allSignalGroups.Add(group);
+            });
         }
 
         public void AddSubscriber(ISubscriber subscriber)
@@ -173,15 +171,15 @@ namespace openVisN.Framework
             RefreshActivePoints();
         }
 
-        void RefreshActivePoints()
+        private void RefreshActivePoints()
         {
             HashSet<MetadataBase> currentSignals = new HashSet<MetadataBase>();
-            foreach (var signal in m_activeSignals)
+            foreach (MetadataBase signal in m_activeSignals)
                 currentSignals.Add(signal);
-            foreach (var subscriber in m_subscribers)
+            foreach (ISubscriber subscriber in m_subscribers)
                 subscriber.GetAllDesiredSignals(currentSignals, m_activeSignalGroups);
 
-            foreach (var signal in currentSignals.ToArray())
+            foreach (MetadataBase signal in currentSignals.ToArray())
             {
                 signal.Calculations.AddDependentPoints(currentSignals);
             }

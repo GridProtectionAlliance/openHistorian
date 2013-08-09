@@ -164,6 +164,7 @@ namespace GSF
             value++;
             return value;
         }
+
         /// <summary>
         /// Rounds a number up to the nearest power of 2.
         /// If the value is a power of two, the same value is returned.
@@ -204,6 +205,7 @@ namespace GSF
                 return 1;
             return (1ul << 63) >> CountLeadingZeros(value);
         }
+
         /// <summary>
         /// Rounds a number down to the nearest power of 2.
         /// If the value is a power of two, the same value is returned.
@@ -416,7 +418,6 @@ namespace GSF
 
         #region [ Count Leading/Trailing Zeros ]
 
-
         public static int CountTrailingOnes(uint value)
         {
             return CountTrailingZeros(~value);
@@ -439,11 +440,12 @@ namespace GSF
 
         #endregion
 
-        public unsafe static ulong ConvertToUInt64(float value)
+        public static unsafe ulong ConvertToUInt64(float value)
         {
             return (ulong)*(uint*)&value;
         }
-        public unsafe static float ConvertToSingle(ulong value)
+
+        public static unsafe float ConvertToSingle(ulong value)
         {
             uint tmpValue = (uint)value;
             return *(float*)&tmpValue;
@@ -457,7 +459,7 @@ namespace GSF
         /// <returns></returns>
         public static IEnumerable<int> GetSetBitPositions(ulong value)
         {
-            //Once value becomes zero, the remainder of the loop can be shortcutted
+            // Once value becomes zero, the remainder of the loop can be short-cut
             for (int x = 0; value != 0; x++, value >>= 1)
             {
                 if ((value & 1) == 1)
@@ -473,13 +475,14 @@ namespace GSF
         /// <returns></returns>
         public static IEnumerable<int> GetSetBitPositions(uint value)
         {
-            //Once value becomes zero, the remainder of the loop can be shortcutted
+            // Once value becomes zero, the remainder of the loop can be short-cut
             for (int x = 0; value != 0; x++, value >>= 1)
             {
                 if ((value & 1) == 1)
                     yield return x;
             }
         }
+
         /// <summary>
         /// Returns the bit position for every bit that is cleared in the provided value.
         /// Bit positions are defined as 0-31;
@@ -490,9 +493,10 @@ namespace GSF
         {
             return GetSetBitPositions(~value);
         }
+
         /// <summary>
         /// Returns the bit position for every bit that is cleared in the provided value.
-        /// Bit positions are defined as 0-31;
+        /// Bit positions are defined as 0-63;
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -500,6 +504,5 @@ namespace GSF
         {
             return GetSetBitPositions(~value);
         }
-
     }
 }

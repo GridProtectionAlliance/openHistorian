@@ -1,26 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using NPlot;
 using openHistorian;
-using openHistorian.Archive;
-using openHistorian.Engine;
+using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 using openHistorian.Data.Query;
-using openVisN;
 using openHistorian.Data.Types;
+using openHistorian.Engine;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
 namespace simpleVisN
 {
     public partial class FrmMain : Form
     {
-        IHistorianDatabase m_archiveFile;
+        private IHistorianDatabase<HistorianKey, HistorianValue> m_archiveFile;
 
         public FrmMain()
         {
@@ -29,7 +24,6 @@ namespace simpleVisN
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
-
         }
 
         private void btnConvertHistorianFile_Click(object sender, EventArgs e)
@@ -44,11 +38,11 @@ namespace simpleVisN
                         dlgSave.Filter = "openHistorian 2.0 file|*.d2";
                         if (dlgSave.ShowDialog() == DialogResult.OK)
                         {
-                            openHistorian.Utility.ConvertArchiveFile.ConvertVersion1File(dlgOpen.FileName, dlgSave.FileName, CompressionMethod.TimeSeriesEncoded);
+                            throw new NotImplementedException();
+                            //openHistorian.Utility.ConvertArchiveFile.ConvertVersion1File(dlgOpen.FileName, dlgSave.FileName, CompressionMethod.TimeSeriesEncoded);
                             MessageBox.Show("Done!");
                         }
                     }
-
                 }
             }
         }
@@ -60,25 +54,29 @@ namespace simpleVisN
                 dlgOpen.Filter = "openHistorian 2.0 file|*.d2";
                 if (dlgOpen.ShowDialog() == DialogResult.OK)
                 {
-                    m_archiveFile = new ArchiveDatabaseEngine(null, dlgOpen.FileName);
+                    m_archiveFile = new ArchiveDatabaseEngine<HistorianKey, HistorianValue>(WriterMode.None, dlgOpen.FileName);
                 }
             }
             BuildListOfAllPoints();
         }
 
-        void BuildListOfAllPoints()
+        private void BuildListOfAllPoints()
         {
             HashSet<ulong> keys = new HashSet<ulong>();
-            using (var reader = m_archiveFile.OpenDataReader())
+            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = m_archiveFile.OpenDataReader())
             {
-                var scanner = reader.Read(0, ulong.MaxValue);
+                TreeStream<HistorianKey, HistorianValue> scanner = reader.Read(0, ulong.MaxValue);
                 ulong key1, key2, value1, value2;
-                while (scanner.Read(out key1, out key2, out value1, out value2))
+                while (scanner.Read())
                 {
+                    key1 = scanner.CurrentKey.Timestamp;
+                    key2 = scanner.CurrentKey.PointID;
+                    value1 = scanner.CurrentValue.Value3;
+                    value2 = scanner.CurrentValue.Value1;
                     keys.Add(key2);
                 }
             }
-            var AllKeys = keys.ToList();
+            List<ulong> AllKeys = keys.ToList();
             AllKeys.Sort();
 
             chkAllPoints.Items.Clear();
@@ -87,7 +85,7 @@ namespace simpleVisN
 
         private void btnPlot_Click(object sender, EventArgs e)
         {
-            var keys = new List<ulong>(chkAllPoints.CheckedItems.OfType<ulong>());
+            List<ulong> keys = new List<ulong>(chkAllPoints.CheckedItems.OfType<ulong>());
 
             plot.Clear();
 
@@ -98,13 +96,13 @@ namespace simpleVisN
             if (keys.Count == 0)
                 return;
 
-            var results = m_archiveFile.GetSignals(0, ulong.MaxValue, keys, TypeSingle.Instance);
+            Dictionary<ulong, SignalDataBase> results = m_archiveFile.GetSignals(0, ulong.MaxValue, keys, TypeSingle.Instance);
 
-            foreach (var point in keys)
+            foreach (ulong point in keys)
             {
                 List<double> y = new List<double>();
                 List<double> x = new List<double>();
-                var data = results[point];
+                SignalDataBase data = results[point];
 
                 for (int i = 0; i < data.Count; i++)
                 {
@@ -122,7 +120,6 @@ namespace simpleVisN
             }
 
             plot.Refresh();
-
         }
     }
 }

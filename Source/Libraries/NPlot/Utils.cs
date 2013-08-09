@@ -35,162 +35,160 @@ using System.Drawing;
 
 namespace NPlot
 {
-	/// <summary>
-	/// General purpose utility functions used internally.
-	/// </summary>
-	internal class Utils
-	{
-
-		/// <summary>
-		/// Numbers less than this are considered insignificant. This number is
-		/// bigger than double.Epsilon.
-		/// </summary>
-		public const double Epsilon = double.Epsilon * 1000.0;
-		
-
-		/// <summary>
-		/// Returns true if the absolute difference between parameters is less than Epsilon
-		/// </summary>
-		/// <param name="a">first number to compare</param>
-		/// <param name="b">second number to compare</param>
-		/// <returns>true if equal, false otherwise</returns>
-		public static bool DoubleEqual( double a, double b )
-		{
-			if ( System.Math.Abs(a-b) < Epsilon )
-			{
-				return true;
-			}
-			return false;
-		}
+    /// <summary>
+    /// General purpose utility functions used internally.
+    /// </summary>
+    internal class Utils
+    {
+        /// <summary>
+        /// Numbers less than this are considered insignificant. This number is
+        /// bigger than double.Epsilon.
+        /// </summary>
+        public const double Epsilon = double.Epsilon * 1000.0;
 
 
-		/// <summary>
-		/// Swaps the value of two doubles.
-		/// </summary>
-		/// <param name="a">first value to swap.</param>
-		/// <param name="b">second value to swap.</param>
-		public static void Swap( ref double a, ref double b )
-		{
-			double c = a;
-			a = b;
-			b = c;
-		}
+        /// <summary>
+        /// Returns true if the absolute difference between parameters is less than Epsilon
+        /// </summary>
+        /// <param name="a">first number to compare</param>
+        /// <param name="b">second number to compare</param>
+        /// <returns>true if equal, false otherwise</returns>
+        public static bool DoubleEqual(double a, double b)
+        {
+            if (Math.Abs(a - b) < Epsilon)
+            {
+                return true;
+            }
+            return false;
+        }
 
 
-		/// <summary>
-		/// Calculate the distance between two points, a and b.
-		/// </summary>
-		/// <param name="a">First point</param>
-		/// <param name="b">Second point</param>
-		/// <returns>Distance between points a and b</returns>
-		public static float Distance( PointF a, PointF b )
-		{ 
-			return (float)Math.Sqrt( (a.X - b.X)*(a.X - b.X) + (a.Y - b.Y)*(a.Y - b.Y) );
-		}
+        /// <summary>
+        /// Swaps the value of two doubles.
+        /// </summary>
+        /// <param name="a">first value to swap.</param>
+        /// <param name="b">second value to swap.</param>
+        public static void Swap(ref double a, ref double b)
+        {
+            double c = a;
+            a = b;
+            b = c;
+        }
 
 
-		/// <summary>
-		/// Calculate the distance between two points, a and b.
-		/// </summary>
-		/// <param name="a">First point</param>
-		/// <param name="b">Second point</param>
-		/// <returns>Distance between points a and b</returns>
-		public static int Distance( Point a, Point b )
-		{
-			return (int)Math.Sqrt( (a.X - b.X)*(a.X - b.X) + (a.Y - b.Y)*(a.Y - b.Y) );
-		}
+        /// <summary>
+        /// Calculate the distance between two points, a and b.
+        /// </summary>
+        /// <param name="a">First point</param>
+        /// <param name="b">Second point</param>
+        /// <returns>Distance between points a and b</returns>
+        public static float Distance(PointF a, PointF b)
+        {
+            return (float)Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+        }
 
-		/// <summary>
-		/// Returns the minimum and maximum values in an IList. The members of the list
-		/// can be of different types - any type for which the function Utils.ConvertToDouble
-		/// knows how to convert into a double.
-		/// </summary>
-		/// <param name="a">The IList to search.</param>
-		/// <param name="min">The minimum value.</param>
-		/// <param name="max">The maximum value.</param>
-		/// <returns>true if min max set, false otherwise (a == null or zero length).</returns>
+
+        /// <summary>
+        /// Calculate the distance between two points, a and b.
+        /// </summary>
+        /// <param name="a">First point</param>
+        /// <param name="b">Second point</param>
+        /// <returns>Distance between points a and b</returns>
+        public static int Distance(Point a, Point b)
+        {
+            return (int)Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+        }
+
+        /// <summary>
+        /// Returns the minimum and maximum values in an IList. The members of the list
+        /// can be of different types - any type for which the function Utils.ConvertToDouble
+        /// knows how to convert into a double.
+        /// </summary>
+        /// <param name="a">The IList to search.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        /// <returns>true if min max set, false otherwise (a == null or zero length).</returns>
         public static bool ArrayMinMax(IList<double> a, out double min, out double max)
-		{
-			if ( a == null || a.Count == 0 )
-			{
-				min = 0.0;
-				max = 0.0;
-				return false;
-			}
+        {
+            if (a == null || a.Count == 0)
+            {
+                min = 0.0;
+                max = 0.0;
+                return false;
+            }
 
-			min = a[0];
-			max = a[0];
-			
-			foreach ( double o in a )
-			{
+            min = a[0];
+            max = a[0];
 
-				double e = o;
+            foreach (double o in a)
+            {
+                double e = o;
 
-				if ( (min.Equals (double.NaN)) && (!e.Equals (double.NaN)) )
-				{
-					// if min/max are double.NaN and the current value not, then
-					// set them to the current value.
-					min = e;
-					max = e;
-				}
-				if (!double.IsNaN(e))
-				{
-					if (e < min)
-					{
-						min = e;
-					}
-					if (e > max)
-					{
-						max = e;
-					}
-				}
-			}
-			
-			if (min.Equals (double.NaN))
-			{
-				// if min == double.NaN, then max is also double.NaN
-				min = 0.0;
-				max = 0.0;
-				return false;
-			}
+                if ((min.Equals(double.NaN)) && (!e.Equals(double.NaN)))
+                {
+                    // if min/max are double.NaN and the current value not, then
+                    // set them to the current value.
+                    min = e;
+                    max = e;
+                }
+                if (!double.IsNaN(e))
+                {
+                    if (e < min)
+                    {
+                        min = e;
+                    }
+                    if (e > max)
+                    {
+                        max = e;
+                    }
+                }
+            }
 
-			return true;
-		}
+            if (min.Equals(double.NaN))
+            {
+                // if min == double.NaN, then max is also double.NaN
+                min = 0.0;
+                max = 0.0;
+                return false;
+            }
 
-        
-		/// <summary>
-		/// Returns unit vector along the line  a->b.
-		/// </summary>
-		/// <param name="a">line start point.</param>
-		/// <param name="b">line end point.</param>
-		/// <returns>The unit vector along the specified line.</returns>
-		public static PointF UnitVector( PointF a, PointF b )
-		{
-			PointF dir = new PointF( b.X - a.X, b.Y - a.Y );
-			double dirNorm = Math.Sqrt( dir.X*dir.X + dir.Y*dir.Y );
-			if ( dirNorm > 0.0f )
-			{
-				dir = new PointF( 
-					(float)((1.0f/dirNorm)*dir.X), 
-					(float)((1.0f/dirNorm)*dir.Y) ); // normalised axis direction vector
-			}
-			return dir;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// Get a Font exactly the same as the passed in one, except for scale factor.
-		/// </summary>
-		/// <param name="initial">The font to scale.</param>
-		/// <param name="scale">Scale by this factor.</param>
-		/// <returns>The scaled font.</returns>
-		public static Font ScaleFont( Font initial, double scale )
-		{
-			FontStyle fs = initial.Style;
-			GraphicsUnit gu = initial.Unit;
-			double sz = initial.Size;
-			sz = sz * scale ;
-			string nm = initial.Name;
-			return new Font( nm, (float)sz, fs, gu );
-		}
-	}
+
+        /// <summary>
+        /// Returns unit vector along the line  a->b.
+        /// </summary>
+        /// <param name="a">line start point.</param>
+        /// <param name="b">line end point.</param>
+        /// <returns>The unit vector along the specified line.</returns>
+        public static PointF UnitVector(PointF a, PointF b)
+        {
+            PointF dir = new PointF(b.X - a.X, b.Y - a.Y);
+            double dirNorm = Math.Sqrt(dir.X * dir.X + dir.Y * dir.Y);
+            if (dirNorm > 0.0f)
+            {
+                dir = new PointF(
+                    (float)((1.0f / dirNorm) * dir.X),
+                    (float)((1.0f / dirNorm) * dir.Y)); // normalised axis direction vector
+            }
+            return dir;
+        }
+
+        /// <summary>
+        /// Get a Font exactly the same as the passed in one, except for scale factor.
+        /// </summary>
+        /// <param name="initial">The font to scale.</param>
+        /// <param name="scale">Scale by this factor.</param>
+        /// <returns>The scaled font.</returns>
+        public static Font ScaleFont(Font initial, double scale)
+        {
+            FontStyle fs = initial.Style;
+            GraphicsUnit gu = initial.Unit;
+            double sz = initial.Size;
+            sz = sz * scale;
+            string nm = initial.Name;
+            return new Font(nm, (float)sz, fs, gu);
+        }
+    }
 }

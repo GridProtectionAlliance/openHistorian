@@ -42,38 +42,38 @@ namespace GSF.IO.Unmanaged
     /// </remarks>
     //ToDo: Consider allowing this class to scale horizontally like how the concurrent dictionary scales.
     //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
-    unsafe public partial class BufferedFileStream : ISupportsBinaryStream
+    public unsafe partial class BufferedFileStream : ISupportsBinaryStream
     {
         /// <summary>
         /// To synchronize all calls to this class.
         /// </summary>
-        object m_syncRoot;
+        private readonly object m_syncRoot;
+
         /// <summary>
         /// To limit flushing to a single flush call
         /// </summary>
-        object m_syncFlush;
+        private readonly object m_syncFlush;
 
-        BufferPool m_pool;
+        private MemoryPool m_pool;
 
-        int m_dirtyPageSize;
+        private int m_dirtyPageSize;
 
         /// <summary>
         /// The file stream use by this class.
         /// </summary>
-        FileStream m_baseStream;
+        private readonly FileStream m_baseStream;
 
-        LeastRecentlyUsedPageReplacement m_pageReplacementAlgorithm;
+        private readonly LeastRecentlyUsedPageReplacement m_pageReplacementAlgorithm;
 
 
-        bool m_disposed;
-        bool m_ownsStream;
+        private bool m_disposed;
+        private readonly bool m_ownsStream;
 
-        IoQueue m_queue;
+        private readonly IoQueue m_queue;
 
         public BufferedFileStream(FileStream stream, bool ownsStream = false)
-            : this(stream, Globals.BufferPool, 4096, ownsStream)
+            : this(stream, Globals.MemoryPool, 4096, ownsStream)
         {
-
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace GSF.IO.Unmanaged
         /// <param name="stream">The file stream to back</param>
         /// <param name="pool"></param>
         /// <param name="dirtyPageSize"></param>
-        public BufferedFileStream(FileStream stream, BufferPool pool, int dirtyPageSize, bool ownsStream = false)
+        public BufferedFileStream(FileStream stream, MemoryPool pool, int dirtyPageSize, bool ownsStream = false)
         {
             m_ownsStream = ownsStream;
             m_pool = pool;
@@ -91,7 +91,7 @@ namespace GSF.IO.Unmanaged
 
             m_syncRoot = new object();
             m_syncFlush = new object();
-            
+
             m_pageReplacementAlgorithm = new LeastRecentlyUsedPageReplacement(dirtyPageSize, pool);
             m_baseStream = stream;
             pool.RequestCollection += BufferPool_RequestCollection;
@@ -120,7 +120,7 @@ namespace GSF.IO.Unmanaged
         }
 
 
-        void Flush(bool waitForWriteToDisk, bool skipPagesInUse, int desiredFlushCount)
+        private void Flush(bool waitForWriteToDisk, bool skipPagesInUse, int desiredFlushCount)
         {
             lock (m_syncFlush)
             {
@@ -128,7 +128,7 @@ namespace GSF.IO.Unmanaged
                 lock (m_syncRoot)
                 {
                     dirtyPages = m_pageReplacementAlgorithm.GetDirtyPages(skipPagesInUse).ToArray();
-                    foreach (var block in dirtyPages)
+                    foreach (PageMetaDataList.PageMetaData block in dirtyPages)
                     {
                         m_pageReplacementAlgorithm.ClearDirtyBits(block);
                     }
@@ -137,7 +137,7 @@ namespace GSF.IO.Unmanaged
             }
         }
 
-        void TryFlush(bool waitForWriteToDisk, bool skipPagesInUse, int desiredFlushCount)
+        private void TryFlush(bool waitForWriteToDisk, bool skipPagesInUse, int desiredFlushCount)
         {
             PageMetaDataList.PageMetaData[] dirtyPages;
             if (Monitor.TryEnter(m_syncFlush))
@@ -149,7 +149,7 @@ namespace GSF.IO.Unmanaged
                         try
                         {
                             dirtyPages = m_pageReplacementAlgorithm.GetDirtyPages(skipPagesInUse).ToArray();
-                            foreach (var block in dirtyPages)
+                            foreach (PageMetaDataList.PageMetaData block in dirtyPages)
                             {
                                 m_pageReplacementAlgorithm.ClearDirtyBits(block);
                             }
@@ -168,43 +168,41 @@ namespace GSF.IO.Unmanaged
             }
         }
 
-        void GetBlock(LeastRecentlyUsedPageReplacement.IoSession ioSession, long position, bool isWriting, out IntPtr firstPointer, out long firstPosition, out int length, out bool supportsWriting)
+        private void GetBlock(LeastRecentlyUsedPageReplacement.IoSession ioSession, BlockArguments args)
         {
-
             LeastRecentlyUsedPageReplacement.SubPageMetaData subPage;
 
             lock (m_syncRoot)
             {
-                if (ioSession.TryGetSubPage(position, isWriting, out subPage))
+                if (ioSession.TryGetSubPage(args.position, args.isWriting, out subPage))
                 {
-                    firstPointer = (IntPtr)subPage.Location;
-                    length = subPage.Length;
-                    firstPosition = subPage.Position;
-                    supportsWriting = subPage.IsDirty;
+                    args.firstPointer = (IntPtr)subPage.Location;
+                    args.length = subPage.Length;
+                    args.firstPosition = subPage.Position;
+                    args.supportsWriting = subPage.IsDirty;
                     return;
                 }
             }
 
             Action<byte[]> callback = data =>
+            {
+                lock (m_syncRoot)
                 {
-                    lock (m_syncRoot)
-                    {
-                        ioSession.TryAddNewPage(position & ~(long)(data.Length - 1), data, 0, data.Length);
-                        ioSession.TryGetSubPage(position, isWriting, out subPage);
-                    }
-                };
+                    ioSession.TryAddNewPage(args.position & ~(long)(data.Length - 1), data, 0, data.Length);
+                    ioSession.TryGetSubPage(args.position, args.isWriting, out subPage);
+                }
+            };
 
-            m_queue.Read(position, callback);
+            m_queue.Read(args.position, callback);
 
-            firstPointer = (IntPtr)subPage.Location;
-            length = subPage.Length;
-            firstPosition = subPage.Position;
-            supportsWriting = subPage.IsDirty;
+            args.firstPointer = (IntPtr)subPage.Location;
+            args.length = subPage.Length;
+            args.firstPosition = subPage.Position;
+            args.supportsWriting = subPage.IsDirty;
             return;
-
         }
 
-        void Clear(LeastRecentlyUsedPageReplacement.IoSession ioSession)
+        private void Clear(LeastRecentlyUsedPageReplacement.IoSession ioSession)
         {
             lock (m_syncRoot)
             {
@@ -218,8 +216,8 @@ namespace GSF.IO.Unmanaged
             {
                 //Unregistering from this event gaurentees that a collection will no longer
                 //be called since this class utilizes custom code to garentee this.
-                Globals.BufferPool.RequestCollection -= BufferPool_RequestCollection;
-                
+                Globals.MemoryPool.RequestCollection -= BufferPool_RequestCollection;
+
                 //Flush(true, false, -1);
                 m_disposed = true;
 
@@ -229,7 +227,7 @@ namespace GSF.IO.Unmanaged
             }
         }
 
-        void BufferPool_RequestCollection(object sender, CollectionEventArgs e)
+        private void BufferPool_RequestCollection(object sender, CollectionEventArgs e)
         {
             if (e.CollectionMode == BufferPoolCollectionMode.Critical)
             {
@@ -261,7 +259,7 @@ namespace GSF.IO.Unmanaged
             }
         }
 
-        IBinaryStreamIoSession ISupportsBinaryStream.GetNextIoSession()
+        BinaryStreamIoSessionBase ISupportsBinaryStream.CreateIoSession()
         {
             lock (m_syncRoot)
             {
@@ -278,7 +276,7 @@ namespace GSF.IO.Unmanaged
         {
             get
             {
-                return Globals.BufferPool.PageSize;
+                return Globals.MemoryPool.PageSize;
             }
         }
 
@@ -286,7 +284,6 @@ namespace GSF.IO.Unmanaged
         {
             lock (m_syncFlush)
             {
-
             }
         }
 
@@ -305,7 +302,5 @@ namespace GSF.IO.Unmanaged
                 return m_disposed;
             }
         }
-
-
     }
 }

@@ -22,13 +22,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using openVisN.Framework;
 
@@ -36,7 +30,7 @@ namespace openVisN.Components
 {
     public partial class ManualAutomaticModeSelectorButton : UserControl
     {
-        VisualizationFramework m_frameworkCtrl;
+        private VisualizationFramework m_frameworkCtrl;
 
         public ManualAutomaticModeSelectorButton()
         {
@@ -44,11 +38,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue(null)
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue(null)
         ]
         public VisualizationFramework Framework
         {
@@ -60,7 +54,7 @@ namespace openVisN.Components
             {
                 if (!DesignMode)
                 {
-                    if (!object.ReferenceEquals(m_frameworkCtrl, value))
+                    if (!ReferenceEquals(m_frameworkCtrl, value))
                     {
                         //if (m_frameworkCtrl != null)
                         //{
@@ -126,23 +120,23 @@ namespace openVisN.Components
             //5x
         }
 
-        bool suspendUpdate;
+        private bool suspendUpdate;
+
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
             suspendUpdate = true;
             toolCustomPlaybackSpeed.Text = m_frameworkCtrl.Framework.Updater.PlaybackSpeed.ToString();
             suspendUpdate = false;
         }
-        
+
         private void toolCustomPlaybackSpeed_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter)
                 return;
             Save();
-    
         }
 
-        void Save()
+        private void Save()
         {
             if (suspendUpdate)
                 return;
@@ -154,7 +148,5 @@ namespace openVisN.Components
             }
             m_frameworkCtrl.Framework.Updater.PlaybackSpeed = speed;
         }
-
-      
     }
 }

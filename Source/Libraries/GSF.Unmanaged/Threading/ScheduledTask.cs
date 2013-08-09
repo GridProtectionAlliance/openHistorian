@@ -23,8 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Diagnostics;
-using System.Threading;
 
 namespace GSF.Threading
 {
@@ -33,21 +31,36 @@ namespace GSF.Threading
         Foreground,
         Background
     }
+
     public class ScheduledTaskEventArgs : EventArgs
     {
         /// <summary>
         /// True if execution is the result of an interval timing out.
         /// False if running immediately.
         /// </summary>
-        public bool IsOnInterval { get; private set; }
+        public bool IsOnInterval
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// True if this is the last time a function is being executed. 
         /// </summary>
-        public bool IsDisposing { get; private set; }
+        public bool IsDisposing
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Returns true if this is an immediate rerun. False otherwise.
         /// </summary>
-        public bool IsRerun { get; private set; }
+        public bool IsRerun
+        {
+            get;
+            private set;
+        }
 
         public ScheduledTaskEventArgs(bool isOnInterval, bool isDisposing, bool isRerun)
         {
@@ -62,24 +75,27 @@ namespace GSF.Threading
     /// </summary>
     public partial class ScheduledTask : IDisposable
     {
-        volatile bool m_disposed;
-        volatile bool m_isDisposing;
+        private volatile bool m_disposed;
+        private volatile bool m_isDisposing;
         //Class must be wrapped inside of another class so a Finalize method
         //will actually be called when this task is no longer being referenced.
-        Internal m_internal;
+        private Internal m_internal;
 
         /// <summary>
         /// Only occurs once when the schedule is being disposed
         /// </summary>
         public event EventHandler<ScheduledTaskEventArgs> OnDispose;
+
         /// <summary>
         /// Occurs every time the schedule runs.
         /// </summary>
         public event EventHandler<ScheduledTaskEventArgs> OnRunWorker;
+
         /// <summary>
         /// Occurs when disposing or working.
         /// </summary>
         public event EventHandler<ScheduledTaskEventArgs> OnEvent;
+
         /// <summary>
         /// Occurs when unhandled exceptions in the worker or disposed thread;
         /// </summary>
@@ -179,9 +195,9 @@ namespace GSF.Threading
             m_internal.Start(delay);
         }
 
-        void Callback()
+        private void Callback()
         {
-            var args = m_internal.EventArgs;
+            ScheduledTaskEventArgs args = m_internal.EventArgs;
             if (args.IsDisposing)
             {
                 try
@@ -262,6 +278,5 @@ namespace GSF.Threading
                 return m_disposed;
             }
         }
-
     }
 }

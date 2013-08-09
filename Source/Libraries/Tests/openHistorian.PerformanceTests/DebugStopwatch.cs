@@ -1,26 +1,26 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime;
-using System.Text;
+using NUnit.Framework;
 
 namespace openHistorian
 {
     public class DebugStopwatch
     {
-        Stopwatch sw;
+        private readonly Stopwatch sw;
+
         public DebugStopwatch()
         {
             GCSettings.LatencyMode = GCLatencyMode.Batch;
             sw = new Stopwatch();
         }
+
         public void DoGC()
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
+
         public void Start(bool skipCollection = false)
         {
             if (skipCollection)
@@ -36,6 +36,7 @@ namespace openHistorian
             sw.Stop();
             Assert.IsTrue(sw.Elapsed.TotalMilliseconds <= maximumTime);
         }
+
         public void Stop(double minimumTime, double maximumTime)
         {
             sw.Stop();
@@ -48,6 +49,7 @@ namespace openHistorian
             GC.Collect();
             function();
             int count = 0;
+            sw.Reset();
             while (sw.Elapsed.TotalSeconds < .25)
             {
                 sw.Start();
@@ -55,8 +57,7 @@ namespace openHistorian
                 sw.Stop();
                 count++;
             }
-            return sw.Elapsed.TotalSeconds/count;
+            return sw.Elapsed.TotalSeconds / count;
         }
-
     }
 }

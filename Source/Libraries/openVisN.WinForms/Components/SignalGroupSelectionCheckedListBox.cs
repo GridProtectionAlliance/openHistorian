@@ -22,14 +22,8 @@
 //******************************************************************************************************
 
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using openVisN.Framework;
 
@@ -37,11 +31,11 @@ namespace openVisN.Components
 {
     public partial class SignalGroupSelectionCheckedListBox : UserControl, ISubscriber
     {
-        VisualizationFramework m_frameworkCtrl;
-        
-        class SignalWrapper
+        private VisualizationFramework m_frameworkCtrl;
+
+        private class SignalWrapper
         {
-            public SignalGroup Signal;
+            public readonly SignalGroup Signal;
 
             public SignalWrapper(SignalGroup signal)
             {
@@ -68,7 +62,7 @@ namespace openVisN.Components
         {
             //m_frameworkCtrl = framework;
             chkAllSignals.Items.Clear();
-            foreach (var signal in framework.AllSignalGroups)
+            foreach (SignalGroup signal in framework.AllSignalGroups)
             {
                 chkAllSignals.Items.Add(new SignalWrapper(signal));
             }
@@ -77,16 +71,15 @@ namespace openVisN.Components
 
         public void GetAllDesiredSignals(HashSet<MetadataBase> activeSignals, HashSet<SignalGroup> currentlyActiveGroups)
         {
-           
         }
 
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue(null)
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue(null)
         ]
         public VisualizationFramework Framework
         {
@@ -98,7 +91,7 @@ namespace openVisN.Components
             {
                 if (!DesignMode)
                 {
-                    if (!object.ReferenceEquals(m_frameworkCtrl, value))
+                    if (!ReferenceEquals(m_frameworkCtrl, value))
                     {
                         if (m_frameworkCtrl != null)
                         {
@@ -121,9 +114,7 @@ namespace openVisN.Components
             else
             {
                 m_frameworkCtrl.Framework.DeactivateSignalGroup(item.Signal);
-                
             }
         }
-
     }
 }

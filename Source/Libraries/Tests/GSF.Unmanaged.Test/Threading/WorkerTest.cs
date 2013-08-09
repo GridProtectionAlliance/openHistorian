@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using NUnit.Framework;
 
-namespace GSF.Threading
+namespace GSF.Threading.Test
 {
     [TestFixture]
     public class WorkerTest
@@ -62,8 +59,6 @@ namespace GSF.Threading
 
             Assert.Less(1000.0 - 15, sw5.Elapsed.TotalMilliseconds);
             Assert.Greater(1000.0 + 15, sw5.Elapsed.TotalMilliseconds);
-
-
         }
     }
 }

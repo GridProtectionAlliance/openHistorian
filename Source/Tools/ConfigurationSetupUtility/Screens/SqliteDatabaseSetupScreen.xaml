@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="ConfigurationSetupUtility.Screens.SqliteDatabaseSetupScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="400" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}">
+    <DockPanel>
+        <Label Content="Set up an SQLite database" Margin="10" HorizontalContentAlignment="Center" DockPanel.Dock="Top" FontSize="16" FontWeight="Bold" />
+        <StackPanel DockPanel.Dock="Bottom">
+            <TextBlock Name="m_sqliteDatabaseInstructionTextBlock" Text="Please select the location in which to save the new database file." TextAlignment="Center" TextWrapping="Wrap" Margin="20,0" />
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <TextBox Height="23" Width="240" Margin="0,0,5,0" TextChanged="SqliteDatabaseFilePathTextBox_TextChanged" Name="m_sqliteDatabaseFilePathTextBox" Text="openHistorian.db" />
+                <Button Content="Browse..." Height="23" Width="75" Click="BrowseButton_Click" />
+            </StackPanel>
+            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Margin="20,0,20,10">
+                <LineBreak/>
+                Please note that you need to select a location for your database file for which you will have read/write access.
+                It is recommended that you avoid using the "Program Files" folder as the path for your SQLite database file since
+                in newer versions of Windows this is a protected location.
+            </TextBlock>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

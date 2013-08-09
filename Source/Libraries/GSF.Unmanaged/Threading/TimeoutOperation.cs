@@ -22,25 +22,19 @@
 //*****************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace GSF.Threading
 {
-
     public class TimeoutOperation
     {
-        object m_syncRoot = new object();
-        RegisteredWaitHandle m_registeredHandle;
-        ManualResetEvent m_resetEvent;
-        Action m_callback;
+        private readonly object m_syncRoot = new object();
+        private RegisteredWaitHandle m_registeredHandle;
+        private ManualResetEvent m_resetEvent;
+        private Action m_callback;
 
         public void RegisterTimeout(TimeSpan interval, Action callback)
         {
-
             lock (m_syncRoot)
             {
                 if (m_callback != null)
@@ -50,10 +44,9 @@ namespace GSF.Threading
                 m_resetEvent = new ManualResetEvent(false);
                 m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_resetEvent, BeginRun, null, interval, true);
             }
-
         }
 
-        void BeginRun(object state, bool isTimeout)
+        private void BeginRun(object state, bool isTimeout)
         {
             lock (m_syncRoot)
             {
@@ -66,7 +59,6 @@ namespace GSF.Threading
                 m_registeredHandle = null;
                 m_callback = null;
             }
-
         }
 
         public void Cancel()
@@ -82,7 +74,6 @@ namespace GSF.Threading
                     m_callback = null;
                 }
             }
-
         }
     }
 }

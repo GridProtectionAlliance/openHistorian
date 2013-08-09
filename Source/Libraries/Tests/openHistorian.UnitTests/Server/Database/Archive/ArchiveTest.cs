@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using NUnit.Framework;
 using openHistorian.Archive;
+using openHistorian.Collections;
 using openHistorian.FileStructure.IO;
 
 namespace openHistorian
@@ -16,7 +17,7 @@ namespace openHistorian
             Test();
         }
 
-        static ArchiveFile.Editor s_fileEditor;
+        static ArchiveFile<HistorianKey, HistorianValue>.Editor s_fileEditor;
         static int s_points;
 
         public static void Test()
@@ -26,7 +27,7 @@ namespace openHistorian
             //if (File.Exists(file))
             //    File.Delete(file);
             //s_archive = new Archive(file);
-            ArchiveFile s_archiveFile = ArchiveFile.CreateInMemory();
+            var s_archiveFile = HistorianArchiveFile.CreateInMemory();
             int cnt = 0;
 
 
@@ -47,10 +48,10 @@ namespace openHistorian
 
                 fileEditor.Commit();
             }
-            long oldCount = Footer.ChecksumCount;
+            //long oldCount = Statistics.ChecksumCount;
 
             var reader1 = s_archiveFile.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
-            reader1.SeekToKey(0,0);
+            reader1.SeekToStart();
 
             ulong value1, value2, key1, key2;
             while (reader1.Read(out key1, out key2, out value1, out value2))

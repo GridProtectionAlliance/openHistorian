@@ -23,9 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace GSF.Collections
 {
@@ -34,12 +31,18 @@ namespace GSF.Collections
         /// <summary>
         /// Get/Sets if a class is readonly.  Once it has been set as readonly, it is immutable and must be cloned to me modified.
         /// </summary>
-        bool IsReadOnly { get; set; }
+        bool IsReadOnly
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Makes a clone of this object and allows it to be edited.
         /// </summary>
         /// <returns></returns>
         object CloneEditable();
+
         /// <summary>
         /// Makes a readonly clone of this object. Returns the same object if it is already marked as readonly.
         /// </summary>
@@ -53,13 +56,14 @@ namespace GSF.Collections
     /// In order to modify the contest of this object, a clone of the object must be created with <see cref="CloneEditable"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface ISupportsReadonly<T> : ICloneable , ISupportsReadonly
+    public interface ISupportsReadonly<T> : ICloneable, ISupportsReadonly
     {
         /// <summary>
         /// Makes a clone of this object and allows it to be edited.
         /// </summary>
         /// <returns></returns>
         new T CloneEditable();
+
         /// <summary>
         /// Makes a readonly clone of this object. Returns the same object if it is already marked as readonly.
         /// </summary>

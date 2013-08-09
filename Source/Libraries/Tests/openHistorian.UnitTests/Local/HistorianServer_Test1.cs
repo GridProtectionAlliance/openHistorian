@@ -1,7 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System.Threading;
+using NUnit.Framework;
 using openHistorian.Engine;
-using openHistorian.Server;
-using openHistorian.Server.Database;
 
 namespace openHistorian.Local
 {
@@ -39,6 +38,7 @@ namespace openHistorian.Local
                     db.Write(x, 0, 0, 0);
                 }
                 db.SoftCommit();
+                Thread.Sleep(300);
                 using (var dbr = db.OpenDataReader())
                 {
                     Assert.IsTrue(dbr.Read(0, 1000).Count() == 1000);
@@ -50,6 +50,7 @@ namespace openHistorian.Local
                         db.Write(x, 0, 0, 0);
                     }
                     db.SoftCommit();
+                    Thread.Sleep(300);
 
                     Assert.IsTrue(rdr.Count() == 100);
                 }

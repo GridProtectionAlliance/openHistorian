@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GSF</RootNamespace>
     <AssemblyName>GSF.Unmanaged</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -21,20 +21,31 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\Build\Output\Debug\Library\GSF.Managed\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\..\Build\Output\Debug\Library\GSF.Managed\GSF.Unmanaged.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\Build\Output\Release\Library\GSF.Managed\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\..\Build\Output\Release\Library\GSF.Managed\GSF.Unmanaged.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
@@ -64,35 +75,33 @@
     <Compile Include="Communications\LinearBuffer.cs" />
     <Compile Include="Communications\NetworkBinaryStream.cs" />
     <Compile Include="Compression.cs" />
-    <Compile Include="GC\DisposableWeakReference.cs" />
+    <Compile Include="CompressionMethod.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="IO\AsyncWriter.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="Collections\ContinuousQueue.cs" />
     <Compile Include="IO\Unmanaged\BinaryStream.cs" />
+    <Compile Include="IO\Unmanaged\BinaryStreamIoSessionCache.cs" />
+    <Compile Include="IO\Unmanaged\BinaryStreamIoSessionExtensionMethods.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
-    <Compile Include="IO\Unmanaged\IBinaryStreamIoSession.cs" />
+    <Compile Include="IO\Unmanaged\BinaryStreamIoSessionBase.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStream.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStream_IoSession.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPoolStream.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPoolStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStreamCore.cs" />
-    <Compile Include="IStream256.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPoolStreamCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stats.cs" />
+    <Compile Include="StepTimer.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
-    <Compile Include="Threading\AsyncWorker.cs" />
-    <Compile Include="Threading\AsyncWorkerBackground.cs" />
-    <Compile Include="Threading\AsyncWorkerEventArgs.cs" />
-    <Compile Include="Threading\AsyncWorkerForeground.cs" />
     <Compile Include="Threading\BackgroundThread.cs" />
-    <Compile Include="Threading\CustomThread.cs" />
+    <Compile Include="Threading\CustomThreadBase.cs" />
     <Compile Include="Threading\ForegroundThread.cs" />
-    <Compile Include="Threading\IAsyncWorker.cs" />
     <Compile Include="Threading\ScheduledTask.cs" />
     <Compile Include="Threading\ReaderWriterSpinLockSlim.cs" />
     <Compile Include="Threading\ScheduledTask_Internal.cs" />
@@ -105,16 +114,18 @@
     <Compile Include="Threading\WeakAction.cs" />
     <Compile Include="Threading\WeakDelegateBase.cs" />
     <Compile Include="Threading\Worker.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool_AllocationList.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool_CollectionEngine.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool_Settings.cs" />
+    <Compile Include="UnmanagedMemory\MemoryPool.cs" />
+    <Compile Include="UnmanagedMemory\MemoryPool_AllocationList.cs" />
+    <Compile Include="UnmanagedMemory\MemoryPool_CollectionEngine.cs" />
+    <Compile Include="UnmanagedMemory\MemoryPool_Settings.cs" />
     <Compile Include="UnmanagedMemory\CollectionEventArgs.cs" />
     <Compile Include="UnmanagedMemory\Memory.cs" />
     <Compile Include="WinApi.cs" />
-    <Compile Include="WinApi_LargePageSupport.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

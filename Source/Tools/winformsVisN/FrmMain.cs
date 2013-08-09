@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using NPlot;
+using openHistorian;
+using openHistorian.Data.Query;
+using openVisN;
 using openVisN.Framework;
+using openVisN.Library;
 using winformsVisN.Properties;
 
 namespace winformsVisN
 {
     public partial class FrmMain : Form
     {
-        string EventsFile;
-        string SignalGroupFile;
-        string SignalMetaData;
-        List<string> ArchiveFiles;
+        private readonly string EventsFile;
+        private readonly string SignalGroupFile;
+        private readonly string SignalMetaData;
+        private readonly List<string> ArchiveFiles;
 
         public FrmMain()
         {
@@ -31,7 +32,7 @@ namespace winformsVisN
             }
             if (!File.Exists(Settings.Default.Configini))
             {
-                using (var dlg = new OpenFileDialog())
+                using (OpenFileDialog dlg = new OpenFileDialog())
                 {
                     dlg.Filter = "Config File|*.d2ini";
                     if (dlg.ShowDialog() != DialogResult.OK)
@@ -69,8 +70,8 @@ namespace winformsVisN
                 }
             }
 
-            openVisN.Library.AllSignals.DefaultPath = SignalMetaData;
-            openVisN.Library.AllSignalGroups.DefaultPath = SignalGroupFile;
+            AllSignals.DefaultPath = SignalMetaData;
+            AllSignalGroups.DefaultPath = SignalGroupFile;
             FrmEvents.DefaultFile = EventsFile;
 
             InitializeComponent();
@@ -88,46 +89,46 @@ namespace winformsVisN
             visualizationFramework1.Framework.Updater.NewQueryResults += Updater_NewQueryResults;
         }
 
-        void Updater_NewQueryResults(object sender, openVisN.Framework.QueryResultsEventArgs e)
+        private void Updater_NewQueryResults(object sender, QueryResultsEventArgs e)
         {
             m_lastResults = e;
             long pointCount = 0;
-            foreach (var r in e.Results.Values)
+            foreach (SignalDataBase r in e.Results.Values)
                 pointCount += r.Count;
             this.pointCount = pointCount;
         }
 
-        QueryResultsEventArgs m_lastResults;
-        long pointCount;
-        Stopwatch sw1 = new Stopwatch();
-        Stopwatch sw2 = new Stopwatch();
+        private QueryResultsEventArgs m_lastResults;
+        private long pointCount;
+        private readonly Stopwatch sw1 = new Stopwatch();
+        private readonly Stopwatch sw2 = new Stopwatch();
 
-        void UpdaterOnBeforeExecuteQuery(object sender, EventArgs eventArgs)
+        private void UpdaterOnBeforeExecuteQuery(object sender, EventArgs eventArgs)
         {
             sw1.Reset();
             sw2.Reset();
 
             sw1.Start();
-            openHistorian.Stats.Clear();
+            Stats.Clear();
         }
 
-        void UpdaterOnAfterExecuteQuery(object sender, EventArgs eventArgs)
+        private void UpdaterOnAfterExecuteQuery(object sender, EventArgs eventArgs)
         {
             try
             {
                 sw2.Stop();
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append(("Scanned: " + openHistorian.Stats.PointsScanned.ToString().PadRight(9)));
-                sb.Append(("" + (openHistorian.Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Points: " + openHistorian.Stats.PointsReturned.ToString().PadRight(9)));
-                sb.Append(("" + (openHistorian.Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 100000).ToString("0.0 M/s").PadRight(9)));
-                sb.Append(("| Seek: " + openHistorian.Stats.SeeksRequested.ToString().PadRight(8)));
-                sb.Append(("" + (openHistorian.Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 100).ToString("0 K/s").PadRight(9)));
-                sb.Append(("| Calculated: " + (pointCount - openHistorian.Stats.PointsReturned).ToString().PadRight(7)));
+                sb.Append(("Scanned: " + Stats.PointsScanned.ToString().PadRight(9)));
+                sb.Append(("" + (Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
+                sb.Append(("| Points: " + Stats.PointsReturned.ToString().PadRight(9)));
+                sb.Append(("" + (Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
+                sb.Append(("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8)));
+                sb.Append(("" + (Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 1000).ToString("0 K/s").PadRight(9)));
+                sb.Append(("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7)));
                 sb.Append(("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));
 
-                if (pointCount < openHistorian.Stats.PointsReturned)
+                if (pointCount < Stats.PointsReturned)
                 {
                     pointCount = pointCount;
                 }
@@ -138,11 +139,9 @@ namespace winformsVisN
             catch (Exception)
             {
             }
-
-
         }
 
-        void UpdaterOnAfterQuery(object sender, EventArgs eventArgs)
+        private void UpdaterOnAfterQuery(object sender, EventArgs eventArgs)
         {
             sw1.Stop();
             sw2.Start();
@@ -151,36 +150,35 @@ namespace winformsVisN
 
         private void BtnEvents_Click(object sender, EventArgs e)
         {
-            var win = new FrmEvents(visualizationFramework1);
+            FrmEvents win = new FrmEvents(visualizationFramework1);
             win.Show();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(NPlot.StepTimer.GetResultsPercent());
-            NPlot.StepTimer.Reset();
-
+            Clipboard.SetText(StepTimer.GetResultsPercent());
+            StepTimer.Reset();
         }
 
         private void BtnExport_Click(object sender, EventArgs e)
         {
-            var results = m_lastResults;
+            QueryResultsEventArgs results = m_lastResults;
             if (results == null)
             {
                 MessageBox.Show("No query has been executed");
                 return;
             }
-            using (var dlg = new SaveFileDialog())
+            using (SaveFileDialog dlg = new SaveFileDialog())
             {
                 dlg.Filter = "CVS File|*.csv";
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    var fs = new StreamWriter(dlg.FileName, false);
+                    StreamWriter fs = new StreamWriter(dlg.FileName, false);
                     fs.AutoFlush = false;
                     SortedList<DateTime, List<double?>> list = new SortedList<DateTime, List<double?>>();
 
                     int column = 0;
-                    foreach (var value in results.Results.Values)
+                    foreach (SignalDataBase value in results.Results.Values)
                     {
                         for (int x = 0; x < value.Count; x++)
                         {
@@ -196,7 +194,7 @@ namespace winformsVisN
                             }
                             list[d].Add(v);
                         }
-                        foreach (var lst in list.Values)
+                        foreach (List<double?> lst in list.Values)
                         {
                             while (lst.Count <= column)
                                 lst.Add(null);
@@ -204,20 +202,18 @@ namespace winformsVisN
                         column++;
                     }
 
-                    var name = new List<string>();
-                    var lookup = visualizationFramework1.Framework.AllSignals.ToDictionary((meta) => meta.UniqueId);
+                    List<string> name = new List<string>();
+                    Dictionary<Guid, MetadataBase> lookup = visualizationFramework1.Framework.AllSignals.ToDictionary((meta) => meta.UniqueId);
 
-                    foreach (var value in results.Results.Keys)
+                    foreach (Guid value in results.Results.Keys)
                     {
                         if (!lookup.ContainsKey(value))
                         {
                             name.Add(value.ToString());
-                            
                         }
                         else if (lookup[value].Name == "")
                         {
                             name.Add(value.ToString());
-                            
                         }
                         else
                         {
@@ -229,11 +225,11 @@ namespace winformsVisN
                     fs.Write("Date");
                     name.ForEach((x) => fs.Write("," + x));
                     fs.WriteLine();
-                    foreach (var kvp in list)
+                    foreach (KeyValuePair<DateTime, List<double?>> kvp in list)
                     {
                         fs.Write(kvp.Key.ToString("yyyy.MM.dd HH:mm:ss:fff"));
-                        
-                        foreach (var val in kvp.Value)
+
+                        foreach (double? val in kvp.Value)
                         {
                             fs.Write(",");
                             if (val.HasValue)
@@ -245,11 +241,7 @@ namespace winformsVisN
                     fs.Close();
                     Process.Start(dlg.FileName);
                 }
-                
             }
         }
-
-
-
     }
 }

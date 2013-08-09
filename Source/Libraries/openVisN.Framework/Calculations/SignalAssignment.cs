@@ -24,17 +24,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using openHistorian.Data.Query;
 
 namespace openVisN.Calculations
 {
-
-    class SignalAssignment : CalculationMethod
+    internal class SignalAssignment : CalculationMethod
     {
-        MetadataBase m_newSignal;
+        private readonly MetadataBase m_newSignal;
 
         public SignalAssignment()
             : base(new MetadataDouble(Guid.NewGuid(), null, "", ""))
@@ -56,9 +52,9 @@ namespace openVisN.Calculations
         {
             Dependencies[0].Calculate(signals);
 
-            var origionalSignal = signals[Dependencies[0].UniqueId];
+            SignalDataBase origionalSignal = signals[Dependencies[0].UniqueId];
 
-            var newSignal = TryGetSignal(m_newSignal, signals);
+            SignalDataBase newSignal = TryGetSignal(m_newSignal, signals);
 
             if (newSignal == null || newSignal.IsComplete)
                 return;
@@ -77,7 +73,7 @@ namespace openVisN.Calculations
             newSignal.Completed();
         }
 
-        SignalDataBase TryGetSignal(MetadataBase signal, IDictionary<Guid, SignalDataBase> results)
+        private SignalDataBase TryGetSignal(MetadataBase signal, IDictionary<Guid, SignalDataBase> results)
         {
             SignalDataBase data;
             if (results.TryGetValue(signal.UniqueId, out data))

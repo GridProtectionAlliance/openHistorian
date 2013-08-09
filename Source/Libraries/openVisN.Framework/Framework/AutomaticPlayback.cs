@@ -22,10 +22,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace openVisN.Framework
 {
@@ -34,10 +31,10 @@ namespace openVisN.Framework
     /// </summary>
     public class AutomaticPlayback
     {
-        DateTime m_playbackDate;
-        Stopwatch m_timeDuration;
-        double m_playbackSpeed;
-        TimeSpan m_windowSize;
+        private DateTime m_playbackDate;
+        private readonly Stopwatch m_timeDuration;
+        private double m_playbackSpeed;
+        private TimeSpan m_windowSize;
 
         public AutomaticPlayback()
         {
@@ -81,6 +78,5 @@ namespace openVisN.Framework
         {
             StartPlaybackFrom(m_playbackDate.AddTicks((long)(m_timeDuration.Elapsed.Ticks * m_playbackSpeed)));
         }
-
     }
 }

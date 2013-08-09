@@ -24,24 +24,20 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using openVisN.Framework;
 
 namespace openVisN.Components
 {
     public partial class VisualizationFramework : Component
     {
-        SubscriptionFramework m_framework;
-        string m_server = string.Empty;
-        int m_port = 0;
-        bool m_useNetworkHistorian;
-        bool m_enabled;
-        List<ISubscriber> m_pendingSubscribers = new List<ISubscriber>();
+        private readonly SubscriptionFramework m_framework;
+        private string m_server = string.Empty;
+        private int m_port = 0;
+        private bool m_useNetworkHistorian;
+        private bool m_enabled;
+        private List<ISubscriber> m_pendingSubscribers = new List<ISubscriber>();
 
-        string[] m_localDirectories = new string[0];
+        private string[] m_localDirectories = new string[0];
 
         public VisualizationFramework()
         {
@@ -49,10 +45,9 @@ namespace openVisN.Components
 
             m_framework = new SubscriptionFramework();
             Disposed += VisualizationFramework_Disposed;
-
         }
 
-        void VisualizationFramework_Disposed(object sender, EventArgs e)
+        private void VisualizationFramework_Disposed(object sender, EventArgs e)
         {
             m_framework.Dispose();
         }
@@ -65,7 +60,6 @@ namespace openVisN.Components
 
             m_framework = new SubscriptionFramework();
             Disposed += VisualizationFramework_Disposed;
-
         }
 
         public void Start()
@@ -82,7 +76,6 @@ namespace openVisN.Components
 
         public void Stop()
         {
-
         }
 
         public SubscriptionFramework Framework
@@ -94,11 +87,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Communications"),
-        Description("Determines whether the framework is connected to the historian"),
-        DefaultValue(false)
+            Bindable(true),
+            Browsable(true),
+            Category("Communications"),
+            Description("Determines whether the framework is connected to the historian"),
+            DefaultValue(false)
         ]
         public bool Enabled
         {
@@ -110,15 +103,14 @@ namespace openVisN.Components
             {
                 m_enabled = value;
             }
-
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Communications"),
-        Description("When using a local historian, these are the paths that it will use to connect."),
-        DefaultValue("")
+            Bindable(true),
+            Browsable(true),
+            Category("Communications"),
+            Description("When using a local historian, these are the paths that it will use to connect."),
+            DefaultValue("")
         ]
         public string[] Paths
         {
@@ -133,11 +125,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Communications"),
-        Description("Determines whether to connect remotely to a historian, or create a local one"),
-        DefaultValue(true)
+            Bindable(true),
+            Browsable(true),
+            Category("Communications"),
+            Description("Determines whether to connect remotely to a historian, or create a local one"),
+            DefaultValue(true)
         ]
         public bool UseNetworkHistorian
         {
@@ -152,11 +144,11 @@ namespace openVisN.Components
         }
 
         [
-        Browsable(true),
-        Bindable(true),
-        Description("Contains the server hostname or IP address that contains the historian."),
-        Category("Communications"),
-        DefaultValue("")
+            Browsable(true),
+            Bindable(true),
+            Description("Contains the server hostname or IP address that contains the historian."),
+            Category("Communications"),
+            DefaultValue("")
         ]
         public string Server
         {
@@ -171,11 +163,11 @@ namespace openVisN.Components
         }
 
         [
-        Browsable(true),
-        Bindable(true),
-        Description("Contains the port to communicate to the historian on."),
-        Category("Communications"),
-        DefaultValue(0)
+            Browsable(true),
+            Bindable(true),
+            Description("Contains the port to communicate to the historian on."),
+            Category("Communications"),
+            DefaultValue(0)
         ]
         public int Port
         {
@@ -188,6 +180,5 @@ namespace openVisN.Components
                 m_port = value;
             }
         }
-
     }
 }

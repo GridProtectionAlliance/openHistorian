@@ -34,21 +34,21 @@ namespace GSF.Collections
     /// <typeparam name="T"></typeparam>
     public class LargeUnmanagedArray<T> : ILargeArray<T>
     {
-        struct Block
+        private struct Block
         {
             public IntPtr Ptr;
             public int Index;
         }
 
-        bool m_disposed;
-        BufferPool m_pool;
-        int m_sizeOfT;
-        int m_elementsPerBlock;
-        List<Block> m_blocks;
-        Func<IntPtr, T> m_read;
-        Action<IntPtr, T> m_write;
+        private bool m_disposed;
+        private MemoryPool m_pool;
+        private readonly int m_sizeOfT;
+        private readonly int m_elementsPerBlock;
+        private List<Block> m_blocks;
+        private Func<IntPtr, T> m_read;
+        private Action<IntPtr, T> m_write;
 
-        public LargeUnmanagedArray(int sizeOfT, BufferPool pool, Func<IntPtr, T> read, Action<IntPtr, T> write)
+        public LargeUnmanagedArray(int sizeOfT, MemoryPool pool, Func<IntPtr, T> read, Action<IntPtr, T> write)
         {
             m_read = read;
             m_write = write;
@@ -58,13 +58,13 @@ namespace GSF.Collections
             m_elementsPerBlock = pool.PageSize / sizeOfT;
         }
 
-        void Expand()
+        private void Expand()
         {
             int index;
             IntPtr ptr;
 
             m_pool.AllocatePage(out index, out ptr);
-            m_blocks.Add(new Block() { Index = index, Ptr = ptr });
+            m_blocks.Add(new Block() {Index = index, Ptr = ptr});
         }
 
         public T this[int index]
@@ -74,7 +74,7 @@ namespace GSF.Collections
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 if (index >= Capacity || index < 0)
-                    throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array"); 
+                    throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array");
                 int major = index / m_elementsPerBlock;
                 int minor = index - major * m_elementsPerBlock;
                 return m_read(m_blocks[major].Ptr + m_sizeOfT * minor);
@@ -84,7 +84,7 @@ namespace GSF.Collections
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 if (index >= Capacity || index < 0)
-                    throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array"); 
+                    throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array");
                 int major = index / m_elementsPerBlock;
                 int minor = index - major * m_elementsPerBlock;
                 m_write(m_blocks[major].Ptr + m_sizeOfT * minor, value);
@@ -130,14 +130,12 @@ namespace GSF.Collections
             }
         }
 
-        IEnumerable<int> GetBlocks()
+        private IEnumerable<int> GetBlocks()
         {
-            foreach (var block in m_blocks)
+            foreach (Block block in m_blocks)
             {
                 yield return block.Index;
             }
         }
-
-
     }
 }

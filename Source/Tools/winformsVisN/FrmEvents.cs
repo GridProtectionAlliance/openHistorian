@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using openVisN.Components;
 
@@ -15,9 +9,9 @@ namespace winformsVisN
 {
     public partial class FrmEvents : Form
     {
-        public static string DefaultFile=@"C:\Unison\GPA\Demo\Events.txt";
+        public static string DefaultFile = @"C:\Unison\GPA\Demo\Events.txt";
 
-        VisualizationFramework m_framework;
+        private readonly VisualizationFramework m_framework;
 
         public FrmEvents(VisualizationFramework framework)
         {
@@ -27,12 +21,12 @@ namespace winformsVisN
 
         private void FrmEvents_Load(object sender, EventArgs e)
         {
-            var DT = new DataTable();
+            DataTable DT = new DataTable();
             DT.Columns.Add("Time", typeof(DateTime));
             DT.Columns.Add("Location", typeof(string));
             DT.Columns.Add("Cause", typeof(string));
 
-            var lines = File.ReadAllLines(DefaultFile);
+            string[] lines = File.ReadAllLines(DefaultFile);
             for (int x = 1; x < lines.Length; x++)
             {
                 DT.Rows.Add(lines[x].Split('\t'));
@@ -46,8 +40,7 @@ namespace winformsVisN
             dataGridView1.Columns["Cause"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridView1.Columns["Cause"].FillWeight = 10;
 
-            typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView1, new object[] { true });
-
+            typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView1, new object[] {true});
         }
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)

@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ICCPExport</name>
+    </assembly>
+    <members>
+        <member name="T:ICCPExport.FileExporter">
+            <summary>
+            Represents an action adapter that exports measurements on an interval to a file that can be picked up by other systems such as ICCP.
+            </summary>
+        </member>
+        <member name="M:ICCPExport.FileExporter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:ICCPExport.FileExporter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:ICCPExport.FileExporter.Initialize">
+            <summary>
+            Intializes <see cref="T:ICCPExport.FileExporter"/>.
+            </summary>
+        </member>
+        <member name="M:ICCPExport.FileExporter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Process frame of time-aligned measurements that arrived within the defined lag time.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements that arrived within lag time and are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within one second of data ranging from zero to frames per second - 1.</param>
+        </member>
+        <member name="P:ICCPExport.FileExporter.ExportInterval">
+            <summary>
+            Gets or sets the interval, in seconds, at which data will be queued for concentration and then exported.
+            </summary>
+        </member>
+        <member name="P:ICCPExport.FileExporter.UseReferenceAngle">
+            <summary>
+            Gets or sets a value that determines whether a reference angle is used to adjust the value of phase angles.
+            </summary>
+        </member>
+        <member name="P:ICCPExport.FileExporter.ReferenceAngleMeasurement">
+            <summary>
+            Gets or sets the key of the measurement used to adjust the value of phase angles.
+            </summary>
+        </member>
+        <member name="P:ICCPExport.FileExporter.CompanyTagPrefix">
+            <summary>
+            Gets or sets the prefix attached to the beginning of the measurements' point tags, excluding the underscore.
+            </summary>
+        </member>
+        <member name="P:ICCPExport.FileExporter.UseNumericQuality">
+            <summary>
+            Gets or sets the value that determines whether the measurement quality is represented as a numeric value rather than a symbolic value.
+            </summary>
+        </member>
+        <member name="P:ICCPExport.FileExporter.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:ICCPExport.FileExporter"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

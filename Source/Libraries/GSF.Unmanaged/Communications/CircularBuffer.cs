@@ -32,11 +32,11 @@ namespace GSF.Communications
     /// </summary>
     public class CircularBuffer
     {
-        byte[] m_buffer;
-        int m_capacity;
-        int m_head;
-        int m_tail;
-        int m_freeSpace;
+        private readonly byte[] m_buffer;
+        private readonly int m_capacity;
+        private int m_head;
+        private int m_tail;
+        private int m_freeSpace;
 
         public CircularBuffer(int capacity)
         {
@@ -58,6 +58,7 @@ namespace GSF.Communications
                 return Capacity - FreeSpace;
             }
         }
+
         /// <summary>
         /// Gets the number of bytes that can be written to this <see cref="CircularBuffer"/>.
         /// </summary>
@@ -68,6 +69,7 @@ namespace GSF.Communications
                 return m_freeSpace;
             }
         }
+
         /// <summary>
         /// Gets the maximum number of bytes that can be stored on this buffer.
         /// </summary>
@@ -117,7 +119,7 @@ namespace GSF.Communications
             }
             return count;
         }
-       
+
         /// <summary>
         /// Writes the provided byte array to the circular buffer.
         /// </summary>
@@ -148,8 +150,6 @@ namespace GSF.Communications
             }
             if (m_tail == m_capacity)
                 m_tail = 0;
-
         }
-
     }
 }

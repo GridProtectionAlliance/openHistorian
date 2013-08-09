@@ -21,9 +21,9 @@
 //     
 //*****************************************************************************************************
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
 
 namespace GSF.Collections
 {
@@ -36,27 +36,53 @@ namespace GSF.Collections
     /// <typeparam name="T">The type to make the elements.</typeparam>
     public class ContinuousQueue<T> : IEnumerable<T>
     {
+        #region [ Members ]
+
         /// <summary>
         /// Contains the array of objects
         /// </summary>
-        T[] m_items;
+        private T[] m_items;
 
         /// <summary>
         /// Contains the head pointer of the circular buffer.
         /// </summary>
-        int m_head;
+        private int m_head;
+
         /// <summary>
         /// Contains the tail of the circular buffer
         /// </summary>
-        int m_tail;
+        private int m_tail;
+
         /// <summary>
         /// The number of items in the buffer
         /// </summary>
-        int m_count;
+        private int m_count;
+
         /// <summary>
         /// The first index that exists in the buffer.
         /// </summary>
-        long m_tailIndex;
+        private long m_tailIndex;
+
+        #endregion
+
+        #region [ Constructors ]
+
+        /// <summary>
+        /// Creates a new ContinuousQueue
+        /// </summary>
+        /// <param name="capacity"></param>
+        public ContinuousQueue(int capacity = 16)
+        {
+            m_head = 0;
+            m_tail = 0;
+            m_count = 0;
+            m_tailIndex = 0;
+            SetCapacity(capacity);
+        }
+
+        #endregion
+
+        #region [ Properties ]
 
         /// <summary>
         /// Gets the first index that exists in the buffer.  
@@ -80,6 +106,7 @@ namespace GSF.Collections
                 return m_count;
             }
         }
+
         /// <summary>
         /// Represents the last item that can be indexed in this buffer.
         /// </summary>
@@ -103,17 +130,25 @@ namespace GSF.Collections
         }
 
         /// <summary>
-        /// Creates a new ContinuousQueue
+        /// Indexer that gets/sets an existing item in the list.
         /// </summary>
-        /// <param name="capacity"></param>
-        public ContinuousQueue(int capacity = 16)
+        /// <param name="index">the univerals index for the item.</param>
+        /// <returns></returns>
+        public T this[long index]
         {
-            m_head = 0;
-            m_tail = 0;
-            m_count = 0;
-            m_tailIndex = 0;
-            SetCapacity(capacity);
+            get
+            {
+                return GetItem(index);
+            }
+            set
+            {
+                SetItem(index, value);
+            }
         }
+
+        #endregion
+
+        #region [ Methods ]
 
         /// <summary>
         /// Adds an item to the head of the queue.
@@ -268,22 +303,6 @@ namespace GSF.Collections
             m_items[relativeIndex] = item;
         }
 
-        /// <summary>
-        /// Indexer that gets/sets an existing item in the list.
-        /// </summary>
-        /// <param name="index">the univerals index for the item.</param>
-        /// <returns></returns>
-        public T this[long index]
-        {
-            get
-            {
-                return GetItem(index);
-            }
-            set
-            {
-                SetItem(index, value);
-            }
-        }
 
         /// <summary>
         /// Sets the capacity of the queue
@@ -292,7 +311,7 @@ namespace GSF.Collections
         /// </summary>
         /// <param name="capacity"></param>
         /// <returns></returns>
-        int SetCapacity(int capacity)
+        private int SetCapacity(int capacity)
         {
             capacity = Math.Max(capacity, Count);
             T[] items = new T[capacity];
@@ -318,7 +337,7 @@ namespace GSF.Collections
             return capacity;
         }
 
-        void IncrementTail()
+        private void IncrementTail()
         {
             m_tailIndex++;
             m_count--;
@@ -326,7 +345,8 @@ namespace GSF.Collections
             if (m_tail == Capacity)
                 m_tail -= Capacity;
         }
-        void DecrementTail()
+
+        private void DecrementTail()
         {
             m_tailIndex--;
             m_count++;
@@ -334,21 +354,21 @@ namespace GSF.Collections
             if (m_tail < 0)
                 m_tail += Capacity;
         }
-        void IncrementHead()
-        {
 
+        private void IncrementHead()
+        {
             m_count++;
             m_head++;
             if (m_head == Capacity)
                 m_head -= Capacity;
         }
-        void DecrementHead()
+
+        private void DecrementHead()
         {
             m_count--;
             m_head--;
             if (m_head < 0)
                 m_head += Capacity;
-
         }
 
         /// <summary>
@@ -398,5 +418,23 @@ namespace GSF.Collections
         {
             return GetEnumerator();
         }
+
+        #endregion
+
+        #region [ Operators ]
+
+        #endregion
+
+        #region [ Static ]
+
+        // Static Fields
+
+        // Static Constructor
+
+        // Static Properties
+
+        // Static Methods
+
+        #endregion
     }
 }

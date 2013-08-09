@@ -1,9 +1,6 @@
-﻿using System;
-using GSF;
-using GSF.Collections;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
-namespace GSF.Collections
+namespace GSF.Collections.Test
 {
     /// <summary>
     ///This is a test class for ISupportsReadonlyTest and is intended
@@ -17,7 +14,7 @@ namespace GSF.Collections
 
             ISupportsReadonly<T> ro = (ISupportsReadonly<T>)obj.CloneReadonly();
             Assert.AreEqual(true, ro.IsReadOnly);
-            Assert.AreEqual(origional,obj.IsReadOnly);
+            Assert.AreEqual(origional, obj.IsReadOnly);
 
             ISupportsReadonly<T> rw = (ISupportsReadonly<T>)obj.CloneEditable();
             Assert.AreEqual(false, rw.IsReadOnly);
@@ -30,7 +27,6 @@ namespace GSF.Collections
             Assert.AreEqual(origional, obj.IsReadOnly);
 
             HelperFunctions.ExpectError(() => ro.IsReadOnly = false);
-
         }
     }
 }

@@ -32,7 +32,8 @@ namespace GSF.Threading
     /// </summary>
     public static class Worker
     {
-        static AutoResetEvent s_waitHandle = new AutoResetEvent(false);
+        private static readonly AutoResetEvent s_waitHandle = new AutoResetEvent(false);
+
         /// <summary>
         /// Runs the following Action after a predefined delay.
         /// </summary>
@@ -47,19 +48,21 @@ namespace GSF.Threading
             if (method == null)
                 throw new ArgumentNullException("method");
 
-            var callback = new WaitRun(delay, method);
+            WaitRun callback = new WaitRun(delay, method);
         }
 
-        class WaitRun
+        private class WaitRun
         {
-            RegisteredWaitHandle m_registeredHandle;
-            Action m_method;
+            private readonly RegisteredWaitHandle m_registeredHandle;
+            private readonly Action m_method;
+
             public WaitRun(int delay, Action method)
             {
                 m_method = method;
                 m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(s_waitHandle, BeginRunOnTimer, null, delay, true);
             }
-            void BeginRunOnTimer(object state, bool isTimeout)
+
+            private void BeginRunOnTimer(object state, bool isTimeout)
             {
                 try
                 {
@@ -74,7 +77,4 @@ namespace GSF.Threading
             }
         }
     }
-
-
-
 }

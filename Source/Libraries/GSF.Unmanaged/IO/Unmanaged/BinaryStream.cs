@@ -32,45 +32,51 @@ namespace GSF.IO.Unmanaged
     {
         #region [ Members ]
 
+        private readonly BlockArguments m_args;
+
         /// <summary>
         /// Determines if this class owns the underlying stream, thus when Dispose() is called
         /// the dispose of the underlying stream will also be called.
         /// </summary>
-        bool m_leaveOpen;
+        private readonly bool m_leaveOpen;
 
-        bool m_disposed;
+        private bool m_disposed;
+
         /// <summary>
         /// The position that corresponds to the first byte in the buffer.
         /// </summary>
-        long m_firstPosition;
+        private long m_firstPosition;
+
         /// <summary>
         /// Contains the position for the last position
         /// </summary>
-        long m_lastPosition;
+        private long m_lastPosition;
+
         /// <summary>
         /// the current position data.
         /// </summary>
-        byte* m_current;
+        private byte* m_current;
+
         /// <summary>
         /// the first position of the block
         /// </summary>
-        byte* m_first;
+        private byte* m_first;
+
         /// <summary>
         /// one past the last address for reading
         /// </summary>
-        byte* m_lastRead;
+        private byte* m_lastRead;
+
         /// <summary>
         /// one past the last address for writing
         /// </summary>
-        byte* m_lastWrite;
+        private byte* m_lastWrite;
 
-        IBinaryStreamIoSession m_mainIoSession;
+        private BinaryStreamIoSessionBase m_mainIoSession;
 
-        IBinaryStreamIoSession m_secondaryIoSession;
+        private BinaryStreamIoSessionBase m_secondaryIoSession;
 
-        ISupportsBinaryStream m_stream;
-
-        byte[] m_temp;
+        private ISupportsBinaryStream m_stream;
 
         #endregion
 
@@ -80,18 +86,16 @@ namespace GSF.IO.Unmanaged
         /// Creates a <see cref="BinaryStream"/> that is in memory only.
         /// </summary>
         public BinaryStream()
-            : this(new MemoryStream(), false)
+            : this(new MemoryPoolStream(), false)
         {
-
         }
 
         /// <summary>
         /// Creates a <see cref="BinaryStream"/> that is in memory only.
         /// </summary>
-        public BinaryStream(BufferPool pool)
-            : this(new MemoryStream(pool), false)
+        public BinaryStream(MemoryPool pool)
+            : this(new MemoryPoolStream(pool), false)
         {
-
         }
 
         /// <summary>
@@ -103,8 +107,8 @@ namespace GSF.IO.Unmanaged
         public BinaryStream(ISupportsBinaryStream stream, bool leaveOpen = true)
             : base()
         {
+            m_args = new BlockArguments();
             m_leaveOpen = leaveOpen;
-            m_temp = new byte[16];
             m_stream = stream;
             m_firstPosition = 0;
             m_current = null;
@@ -113,9 +117,9 @@ namespace GSF.IO.Unmanaged
             m_lastWrite = null;
             if (stream.RemainingSupportedIoSessions < 1)
                 throw new Exception("Stream has run out of read sessions");
-            m_mainIoSession = stream.GetNextIoSession();
+            m_mainIoSession = stream.CreateIoSession();
             //if (stream.RemainingSupportedIoSessions >= 1)
-            //    m_secondaryIoSession = stream.GetNextIoSession();
+            //    m_secondaryIoSession = stream.CreateIoSession();
         }
 
         #endregion
@@ -174,26 +178,50 @@ namespace GSF.IO.Unmanaged
             }
         }
 
+        private long GetPosition()
+        {
+            return m_firstPosition + (m_current - m_first);
+        }
+
+        private void SetPosition(long value)
+        {
+            if (m_firstPosition <= value && value < m_lastPosition)
+            {
+                m_current = m_first + (value - m_firstPosition);
+            }
+            else
+            {
+                m_firstPosition = value;
+                m_lastPosition = value;
+                m_current = null;
+                m_first = null;
+                m_lastRead = null;
+                m_lastWrite = null;
+            }
+        }
+
         /// <summary>
         /// Returns the number of bytes available at the end of the stream.
         /// </summary>
-        long RemainingReadLength
+        private long RemainingReadLength
         {
             get
             {
                 return (m_lastRead - m_current);
             }
         }
+
         /// <summary>
         /// Returns the number of bytes available at the end of the stream for writing purposes.
         /// </summary>
-        long RemainingWriteLength
+        private long RemainingWriteLength
         {
             get
             {
                 return (m_lastWrite - m_current);
             }
         }
+
         #endregion
 
         #region [ Methods ]
@@ -224,38 +252,39 @@ namespace GSF.IO.Unmanaged
         {
             if (!SupportsAnotherClone)
                 throw new Exception("Base stream does not support additional clones");
-            
+
             return new BinaryStream(m_stream, false);
         }
 
-
-        /// <summary>
-        /// Aquires the underlying block if direct read/write access is desired to increase speed.
-        /// However, once the position of this stream has been moved, this block is no longer valid.
-        /// So be careful.
-        /// </summary>
-        /// <param name="isWriting">determines if writing access is desired.</param>
-        /// <param name="buffer">the pointer to the first byte of the structure</param>
-        /// <param name="currentIndex">the index of the current position</param>
-        /// <param name="validLength">the length of the block</param>
-        public void GetRawDataBlock(bool isWriting, out byte* buffer, out int currentIndex, out int validLength)
+        public override byte* GetWritePointer(long position, int length)
         {
-            if (isWriting)
-            {
-                if (RemainingWriteLength <= 0)
-                    UpdateLocalBuffer(true);
-                buffer = m_first;
-                currentIndex = (int)(m_current - m_first);
-                validLength = (int)RemainingWriteLength;
-            }
-            else
-            {
-                if (RemainingReadLength <= 0)
-                    UpdateLocalBuffer(false);
-                buffer = m_first;
-                currentIndex = (int)(m_current - m_first);
-                validLength = (int)RemainingReadLength;
-            }
+            Position = position;
+            if (RemainingWriteLength <= 0)
+                UpdateLocalBuffer(true);
+            if (RemainingWriteLength < length)
+                throw new Exception("Cannot get the provided length.");
+            return m_current;
+        }
+
+        public override byte* GetReadPointer(long position, int length)
+        {
+            SetPosition(position);
+            if (RemainingReadLength <= 0)
+                UpdateLocalBuffer(false);
+            if (RemainingReadLength < length)
+                throw new Exception("Cannot get the provided length.");
+            return m_current;
+        }
+
+        public override byte* GetReadPointer(long position, int length, out bool supportsWriting)
+        {
+            Position = position;
+            if (RemainingReadLength <= 0)
+                UpdateLocalBuffer(false);
+            if (RemainingReadLength < length)
+                throw new Exception("Cannot get the provided length.");
+            supportsWriting = (RemainingWriteLength >= length);
+            return m_current;
         }
 
         /// <summary>
@@ -268,18 +297,18 @@ namespace GSF.IO.Unmanaged
             if (isWriting && RemainingWriteLength > 0 || !isWriting && RemainingReadLength > 0)
                 return;
 
-            IntPtr buffer;
-            long position = Position;
-            bool supportsWrite;
-            int validLength;
-
-            m_mainIoSession.GetBlock(position, isWriting, out buffer, out m_firstPosition, out validLength, out supportsWrite);
-            m_first = (byte*)buffer;
-            m_lastRead = m_first + validLength;
+            long position = GetPosition();
+            m_args.position = position;
+            m_args.isWriting = isWriting;
+            PointerVersion++;
+            m_mainIoSession.GetBlock(m_args);
+            m_firstPosition = m_args.firstPosition;
+            m_first = (byte*)m_args.firstPointer;
+            m_lastRead = m_first + m_args.length;
             m_current = m_first + (position - m_firstPosition);
-            m_lastPosition = m_firstPosition + validLength;
+            m_lastPosition = m_firstPosition + m_args.length;
 
-            if (supportsWrite)
+            if (m_args.supportsWriting)
                 m_lastWrite = m_lastRead;
             else
                 m_lastWrite = m_first;
@@ -322,26 +351,26 @@ namespace GSF.IO.Unmanaged
                 return;
             }
 
-            if (m_secondaryIoSession != null)
-            {
-                IntPtr prt;
-                long pos;
-                int secLength;
-                bool supportsWrite;
-                m_secondaryIoSession.GetBlock(destination, true, out prt, out pos, out secLength, out supportsWrite);
-                containsDestination = (pos <= destination && destination + length < pos + secLength);
+            //if (m_secondaryIoSession != null)
+            //{
+            //    IntPtr prt;
+            //    long pos;
+            //    int secLength;
+            //    bool supportsWrite;
+            //    m_secondaryIoSession.GetBlock(destination, true, out prt, out pos, out secLength, out supportsWrite);
+            //    containsDestination = (pos <= destination && destination + length < pos + secLength);
 
-                if (containsSource && containsDestination)
-                {
-                    byte* src = m_current;
-                    byte* dst = (byte*)prt + (destination - pos);
+            //    if (containsSource && containsDestination)
+            //    {
+            //        byte* src = m_current;
+            //        byte* dst = (byte*)prt + (destination - pos);
 
-                    Memory.Copy(src, dst, length);
+            //        Memory.Copy(src, dst, length);
 
-                    return;
-                }
+            //        return;
+            //    }
 
-            }
+            //}
 
             //manually perform the copy
             byte[] data = new byte[length];
@@ -603,6 +632,39 @@ namespace GSF.IO.Unmanaged
             base.Write7Bit(value);
         }
 
+        public override void Write(byte* buffer, int length)
+        {
+            if (RemainingWriteLength <= 0)
+                UpdateLocalBuffer(true);
+            if (RemainingWriteLength < length)
+            {
+                base.Write(buffer, length);
+                return;
+            }
+
+            int pos = 0;
+            while (pos + 8 <= length)
+            {
+                *(long*)(m_current + pos) = *(long*)(buffer + pos);
+                pos += 8;
+            }
+            if (pos + 4 <= length)
+            {
+                *(int*)(m_current + pos) = *(int*)(buffer + pos);
+                pos += 4;
+            }
+            if (pos + 2 <= length)
+            {
+                *(short*)(m_current + pos) = *(short*)(buffer + pos);
+                pos += 2;
+            }
+            if (pos + 1 <= length)
+            {
+                *(m_current + pos) = *(buffer + pos);
+            }
+            m_current += length;
+        }
+
         public override void Write(byte[] value, int offset, int count)
         {
             if (m_current + count <= m_lastWrite)
@@ -613,7 +675,8 @@ namespace GSF.IO.Unmanaged
             }
             Write2(value, offset, count);
         }
-        void Write2(byte[] value, int offset, int count)
+
+        private void Write2(byte[] value, int offset, int count)
         {
             while (count > 0)
             {
@@ -899,7 +962,8 @@ namespace GSF.IO.Unmanaged
             }
             return Read2(value, offset, count);
         }
-        int Read2(byte[] value, int offset, int count)
+
+        private int Read2(byte[] value, int offset, int count)
         {
             int origionalCount = count;
             while (count > 0)
@@ -955,6 +1019,5 @@ namespace GSF.IO.Unmanaged
         }
 
         #endregion
-
     }
 }

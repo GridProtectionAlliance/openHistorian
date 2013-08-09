@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>openHistorian.UnitTests</RootNamespace>
     <AssemblyName>openHistorian.UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -57,58 +57,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Archive\TestPageSizes.cs" />
-    <Compile Include="BitMath.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256TS32EncodedTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256DeltaEncodedTest.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256Test.cs" />
-    <Compile Include="Collections\KeyValue\SortedTree256TSEncodedTest.cs" />
-    <Compile Include="CompressionTest.cs" />
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="Engine\ArchiveWriters\PointStreamCacheTest.cs" />
     <Compile Include="Engine\ArchiveWriters\PrestageWriterTest.cs" />
     <Compile Include="Engine\ArchiveWriters\StageWriterTest.cs" />
     <Compile Include="Engine\ArchiveWriters\StagingFileTest.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessorTest.cs" />
-    <Compile Include="FileStructure\TransactionServiceTestFile.cs" />
-    <Compile Include="FileStructure\SubFileStreamTestFile.cs" />
-    <Compile Include="FileStructure\TransactionalEditTestFile.cs" />
-    <Compile Include="FileStructure\DiskIOEnhanced2Test.cs" />
-    <Compile Include="FileStructure\DiskIOEnhancedTest.cs" />
-    <Compile Include="FileStructure\FileHeaderBlockTest.cs" />
-    <Compile Include="FileStructure\IndexMapperTest.cs" />
-    <Compile Include="FileStructure\IndexParserTest.cs" />
-    <Compile Include="FileStructure\ShadowCopyAllocatorTest.cs" />
-    <Compile Include="FileStructure\SubFileMetaDataTest.cs" />
-    <Compile Include="FileStructure\SubFileStreamTest.cs" />
-    <Compile Include="FileStructure\TransactionalEditTest.cs" />
-    <Compile Include="FileStructure\TransactionServiceTest.cs" />
-    <Compile Include="FileStructure\IO\CustomBufferedFileStreamExtensiveTest.cs" />
-    <Compile Include="FileStructure\IO\BufferedFileTest.cs" />
-    <Compile Include="FileStructure\IO\CustomBufferedFileStream_IoQueue.cs" />
-    <Compile Include="FileStructure\IO\CustomPageReplacementTest.cs" />
-    <Compile Include="FileStructure\IO\PageListTest.cs" />
-    <Compile Include="IO\BinaryStreamTest.cs" />
-    <Compile Include="IO\BinaryStreamWrapperTest.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStreamTest.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
-    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
-    <Compile Include="IO\Unmanaged\PageMetaDataListTest.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStreamCoreTest.cs" />
+    <Compile Include="HelperFunctions.cs" />
     <Compile Include="Local\HistorianServer_Test1.cs" />
     <Compile Include="Local\HistorianServer_Test2.cs" />
     <Compile Include="Local\XmlConfigTest.cs" />
-    <Compile Include="OldCode\BufferedStreamTest.cs" />
-    <Compile Include="OldCode\Collections\BPlusTreeBaseTest.cs" />
-    <Compile Include="OldCode\Collections\BPlusTreeBasicTests.cs" />
-    <Compile Include="OldCode\Collections\UnmanagedArray.cs" />
-    <Compile Include="OldCode\FileSystem\BenchmarkPageSizes.cs" />
-    <Compile Include="OldCode\PooledMemoryStreamTest.cs" />
-    <Compile Include="OldCode\Test\NodeTest.cs" />
-    <Compile Include="OldCode\Test\NodeTestHugeSequential.cs" />
-    <Compile Include="OldCode\Test\NodeTestPageSize.cs" />
     <Compile Include="PointStreamHelpers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -123,9 +81,6 @@
     <Compile Include="Server\Database\Archive\ArchiveTest.cs" />
     <Compile Include="Server\Database\ResourceEngineTest.cs" />
     <Compile Include="Streaming\TestNetworkClients.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool.cs" />
-    <Compile Include="UnmanagedMemory\Memory.cs" />
-    <Compile Include="WinApiTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -136,24 +91,12 @@
       <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
       <Name>GSF.Unmanaged</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\openHistorian.Server\openHistorian.Server.csproj">
-      <Project>{90942a72-2538-41a0-aff4-8c338b4a5edd}</Project>
-      <Name>openHistorian.Server</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\openHistorian.Client\openHistorian.Client.csproj">
-      <Project>{b253e828-964e-4037-b2e3-b91e8e7c1159}</Project>
-      <Name>openHistorian.Client</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\openHistorian.Archive\openHistorian.Archive.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>openHistorian.Archive</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="OldCode\Specialized\" />
-    <Folder Include="Streaming\Client\" />
-    <Folder Include="Streaming\Server\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

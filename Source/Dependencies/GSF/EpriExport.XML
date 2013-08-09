@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EpriExport</name>
+    </assembly>
+    <members>
+        <member name="T:EpriExport.FileExporter">
+            <summary>
+            Represents an action adapter that exports measurements on an interval to a file that can be picked up by EPRI applications.
+            </summary>
+        </member>
+        <member name="M:EpriExport.FileExporter.Initialize">
+            <summary>
+            Intializes <see cref="T:EpriExport.FileExporter"/>.
+            </summary>
+        </member>
+        <member name="M:EpriExport.FileExporter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Process frame of time-aligned measurements that arrived within the defined lag time.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements that arrived within lag time and are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within one second of data ranging from zero to frames per second - 1.</param>
+        </member>
+        <member name="P:EpriExport.FileExporter.FileExportPath">
+            <summary>
+            Gets or sets the file export path for the EPRI export.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileExporter.ExportInterval">
+            <summary>
+            Gets or sets the interval, in seconds, at which data will be queued for concentration and then exported.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileExporter.Comments">
+            <summary>
+            Gets or sets the comments to be exported to the output file.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileExporter.ModelIdentifier">
+            <summary>
+            Gets or sets the model identifier to be exported to the output file.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileExporter.ReferenceAngleMeasurement">
+            <summary>
+            Gets or sets the key of the measurement used to adjust the value of phase angles.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileExporter.Status">
+            <summary>
+            Returns the detailed status of the <see cref="T:EpriExport.FileExporter"/>.
+            </summary>
+        </member>
+        <member name="T:EpriExport.FileImporter">
+            <summary>
+            Represents an input adapter that reads measurements from an EPRI export file.
+            </summary>
+        </member>
+        <member name="M:EpriExport.FileImporter.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:EpriExport.FileImporter"/> class.
+            </summary>
+        </member>
+        <member name="M:EpriExport.FileImporter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:EpriExport.FileImporter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:EpriExport.FileImporter.Initialize">
+            <summary>
+            Initializes this <see cref="T:EpriExport.FileImporter"/>.
+            </summary>
+        </member>
+        <member name="M:EpriExport.FileImporter.AttemptConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:EpriExport.FileImporter"/>.
+            </summary>
+        </member>
+        <member name="M:EpriExport.FileImporter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from this <see cref="T:EpriExport.FileImporter"/>.
+            </summary>
+        </member>
+        <member name="M:EpriExport.FileImporter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:EpriExport.FileImporter"/>.
+            </summary>
+            <param name="maxLength">Maximum length of the status message.</param>
+            <returns>Text of the status message.</returns>
+        </member>
+        <member name="P:EpriExport.FileImporter.ImportPath">
+            <summary>
+            Gets or sets the import path for EPRI CSV files from which measurements will be read.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileImporter.InputInterval">
+            <summary>
+            Gets or sets the interval of time between sending frames into the concentrator.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileImporter.SkipRows">
+            <summary>
+            Gets or sets number of lines to skip in the source file before the header line is encountered.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileImporter.UseHighResolutionInputTimer">
+            <summary>
+            Gets or sets flag that determines if a high-resolution precision timer should be used for CSV file based input.
+            </summary>
+            <remarks>
+            Useful when input frames need be accurately time-aligned to the local clock to better simulate
+            an input device and calculate downstream latencies.<br/>
+            This is only applicable when connection is made to a file for replay purposes.
+            </remarks>
+        </member>
+        <member name="P:EpriExport.FileImporter.MeasurementsPerInterval">
+            <summary>
+            Gets or sets the number of measurements that are read from the CSV file in each frame.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileImporter.SimulateTimestamp">
+            <summary>
+            Gets or sets a value that determines whether timestamps are
+            simulated for the purposes of real-time concentration.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileImporter.ColumnMappings">
+            <summary>
+            Defines the column mappings must defined: e.g., 0=Timestamp; 1=PPA:12; 2=PPA13.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileImporter.UseAsyncConnect">
+            <summary>
+            Gets a flag that determines if this <see cref="T:EpriExport.FileImporter"/>
+            uses an asynchronous connection.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileImporter.Status">
+            <summary>
+            Returns the detailed status of this <see cref="T:EpriExport.FileImporter"/>.
+            </summary>
+        </member>
+        <member name="P:EpriExport.FileImporter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+    </members>
+</doc>

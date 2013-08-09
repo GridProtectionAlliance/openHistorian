@@ -21,14 +21,9 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using openVisN.Framework;
 
@@ -36,9 +31,9 @@ namespace openVisN.Components
 {
     public partial class SignalGroupTextLegend : UserControl, ISubscriber
     {
-        ColorWheel m_colorWheel;
-        VisualizationFramework m_frameworkCtrl;
-        List<string> m_allGroups = new List<string>();
+        private ColorWheel m_colorWheel;
+        private VisualizationFramework m_frameworkCtrl;
+        private readonly List<string> m_allGroups = new List<string>();
 
         public SignalGroupTextLegend()
         {
@@ -48,11 +43,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue(null)
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue(null)
         ]
         public ColorWheel Colors
         {
@@ -67,11 +62,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue(null)
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue(null)
         ]
         public VisualizationFramework Framework
         {
@@ -83,7 +78,7 @@ namespace openVisN.Components
             {
                 if (!DesignMode)
                 {
-                    if (!object.ReferenceEquals(m_frameworkCtrl, value))
+                    if (!ReferenceEquals(m_frameworkCtrl, value))
                     {
                         if (m_frameworkCtrl != null)
                         {
@@ -111,20 +106,19 @@ namespace openVisN.Components
         public void GetAllDesiredSignals(HashSet<MetadataBase> activeSignals, HashSet<SignalGroup> currentlyActiveGroups)
         {
             m_allGroups.Clear();
-            foreach (var group in currentlyActiveGroups)
+            foreach (SignalGroup group in currentlyActiveGroups)
             {
                 m_allGroups.Add(group.SignalGroupName);
             }
-
-
-
         }
 
-        List<LegendEntry> m_legendData = new List<LegendEntry>();
-        class LegendEntry
+        private readonly List<LegendEntry> m_legendData = new List<LegendEntry>();
+
+        private class LegendEntry
         {
-            public string DisplayName;
-            public Pen Pen;
+            public readonly string DisplayName;
+            public readonly Pen Pen;
+
             public LegendEntry(string displayName, Pen pen)
             {
                 DisplayName = displayName;
@@ -148,7 +142,7 @@ namespace openVisN.Components
             }
         }
 
-        void m_framework_SynchronousNewQueryResults(object sender, QueryResultsEventArgs e)
+        private void m_framework_SynchronousNewQueryResults(object sender, QueryResultsEventArgs e)
         {
             m_legendData.Clear();
             for (int x = 0; x < m_allGroups.Count; x++)
@@ -156,7 +150,6 @@ namespace openVisN.Components
                 m_legendData.Add(new LegendEntry(m_allGroups[x], m_colorWheel.TryGetPen(x)));
             }
             Refresh();
-
         }
     }
 }

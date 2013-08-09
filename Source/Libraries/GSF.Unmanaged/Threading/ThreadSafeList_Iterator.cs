@@ -33,15 +33,15 @@ namespace GSF.Threading
         /// <summary>
         /// Parses through a list in a thread safe mannor.
         /// </summary>
-        class Iterator
+        private class Iterator
         {
-            ThreadSafeList<T> m_list;
-            long m_currentIndex;
-            long m_lastVersion;
-            int m_lastVersionIndex;
+            private readonly ThreadSafeList<T> m_list;
+            private long m_currentIndex;
+            private long m_lastVersion;
+            private int m_lastVersionIndex;
 
-            Wrapper m_itemCurrentlyLocked;
-            
+            private Wrapper m_itemCurrentlyLocked;
+
             public Iterator(ThreadSafeList<T> list)
             {
                 m_list = list;
@@ -108,7 +108,7 @@ namespace GSF.Threading
                 m_currentIndex = -1;
             }
 
-            int GetStartingIndex()
+            private int GetStartingIndex()
             {
                 if (m_lastVersion == m_list.m_version)
                 {

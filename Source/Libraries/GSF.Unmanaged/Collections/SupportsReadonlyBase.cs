@@ -22,11 +22,7 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 
 namespace GSF.Collections
 {
@@ -39,8 +35,12 @@ namespace GSF.Collections
     public abstract class SupportsReadonlyBase<T> : ISupportsReadonly<T>
         where T : SupportsReadonlyBase<T>
     {
-        bool m_isReadOnly;
+        private bool m_isReadOnly;
 
+        /// <summary>
+        /// Gets/Sets if this class is immutable and thus read only. Once
+        /// setting to readonly, the class becomes immutable.
+        /// </summary>
         public virtual bool IsReadOnly
         {
             get
@@ -69,7 +69,7 @@ namespace GSF.Collections
         /// Requests that member fields be set to readonly. 
         /// </summary>
         protected abstract void SetMembersAsReadOnly();
-        
+
         /// <summary>
         /// Request that member fields be cloned and marked as editable.
         /// </summary>
@@ -107,8 +107,8 @@ namespace GSF.Collections
         {
             if (IsReadOnly)
                 return (T)this;
-            
-            var copy = CloneEditable();
+
+            T copy = CloneEditable();
             copy.IsReadOnly = true;
             return copy;
         }

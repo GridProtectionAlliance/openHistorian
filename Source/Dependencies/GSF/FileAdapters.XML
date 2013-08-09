@@ -1,0 +1,302 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FileAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:FileAdapters.FileBlockReader">
+            <summary>
+            Action adapter that reads blocks of data into buffers and publishes them as measurements.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.FileBlockReader.DefaultFilePattern">
+            <summary>
+            Default value for <see cref="P:FileAdapters.FileBlockReader.FilePattern"/>.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.FileBlockReader.DefaultBlockSize">
+            <summary>
+            Default value for <see cref="P:FileAdapters.FileBlockReader.BlockSize"/>.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.FileBlockReader.DefaultWatchInterval">
+            <summary>
+            Default value for <see cref="P:FileAdapters.FileBlockReader.WatchInterval"/>.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.FileBlockReader.DefaultProcessInterval">
+            <summary>
+            Default value for <see cref="P:FileAdapters.FileBlockReader.ProcessInterval"/>.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.FileBlockReader.DefaultRetransmissionThreshold">
+            <summary>
+            Default value for <see cref="P:FileAdapters.FileBlockReader.RetransmissionThreshold"/>.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.FileBlockReader.DefaultBlockSizeAdjustment">
+            <summary>
+            Default value for <see cref="P:FileAdapters.FileBlockReader.BlockSizeAdjustment"/>.
+            </summary>
+        </member>
+        <member name="F:FileAdapters.FileBlockReader.DefaultProcessIntervalAdjustment">
+            <summary>
+            Default value for <see cref="P:FileAdapters.FileBlockReader.ProcessIntervalAdjustment"/>.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:FileAdapters.FileBlockReader"/> class.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.Initialize">
+            <summary>
+            Initializes <see cref="T:FileAdapters.FileBlockReader"/>.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:FileAdapters.FileBlockReader"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:FileAdapters.FileBlockReader"/>.</returns>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.ClearProcessedFileList">
+            <summary>
+            Empties the processed file list.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.Start">
+            <summary>
+            Starts the <see cref="T:FileAdapters.FileBlockReader"/> or restarts it if it is already running.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.Stop">
+            <summary>
+            Stops the <see cref="T:FileAdapters.FileBlockReader"/>.
+            </summary>		
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
+            <summary>
+            Queues a collection of measurements for processing.
+            </summary>
+            <param name="measurements">Measurements to queue for processing.</param>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.OnNewMeasurement(GSF.TimeSeries.IMeasurement)">
+            <summary>
+            Raises the <see cref="E:GSF.TimeSeries.Adapters.InputAdapterBase.NewMeasurements"/> event.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockReader.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:FileAdapters.FileBlockReader"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.WatchDirectory">
+            <summary>
+            Gets or sets the path to the directory to be watched for files.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.FilePattern">
+            <summary>
+            Gets or sets the pattern used to match file that appear in the watch folder.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.RetransmissionStat">
+            <summary>
+            Gets or sets the statistic that defines the number of buffer block retransmissions in the system.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.BlockSize">
+            <summary>
+            Gets or sets the size of each block of data that is read from the file.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.WatchInterval">
+            <summary>
+            Gets or sets the amount of time, in seconds, between each scan of the watch folder.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.ProcessInterval">
+            <summary>
+            Gets or sets the amount of time, in seconds, between each publication of a block of data from the active file.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.RetransmissionThreshold">
+            <summary>
+            Gets or sets the percentage of buffer blocks that can be retransmitted
+            during a reporting interval before the <see cref="T:FileAdapters.FileBlockReader"/>
+            begins throttling its buffer blocks.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.BlockSizeAdjustment">
+            <summary>
+            Gets or sets the percentage of adjustment to be applied
+            to the buffer size when throttling buffer blocks.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.ProcessIntervalAdjustment">
+            <summary>
+            Gets or sets the percentage of adjustment to be applied
+            to the process interval when throttling buffer blocks.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.AdjustedBlockSize">
+            <summary>
+            Gets the block size after making adjustments for throttling.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.AdjustedProcessInterval">
+            <summary>
+            Gets the process interval after making adjustments for throttling.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the <see cref="T:FileAdapters.FileBlockReader"/> expects, if any.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.FramesPerSecond">
+            <summary>
+            Gets or sets the frames per second to be used by the <see cref="T:GSF.TimeSeries.Adapters.FacileActionAdapterBase"/>.
+            </summary>
+            <remarks>
+            Overridden to hide base class attributes.
+            </remarks>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.LagTime">
+            <summary>
+            Gets or sets the allowed past time deviation tolerance, in seconds (can be sub-second).
+            </summary>
+            <remarks>
+            <para>Defines the time sensitivity to past measurement timestamps.</para>
+            <para>The number of seconds allowed before assuming a measurement timestamp is too old.</para>
+            <para>This becomes the amount of delay introduced by the concentrator to allow time for data to flow into the system.</para>
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">LagTime must be greater than zero, but it can be less than one.</exception>
+        </member>
+        <member name="P:FileAdapters.FileBlockReader.LeadTime">
+            <summary>
+            Gets or sets the allowed future time deviation tolerance, in seconds (can be sub-second).
+            </summary>
+            <remarks>
+            <para>Defines the time sensitivity to future measurement timestamps.</para>
+            <para>The number of seconds allowed before assuming a measurement timestamp is too advanced.</para>
+            <para>This becomes the tolerated +/- accuracy of the local clock to real-time.</para>
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">LeadTime must be greater than zero, but it can be less than one.</exception>
+        </member>
+        <member name="T:FileAdapters.FileBlockWriter">
+            <summary>
+            Output adapter that receives blocks of data as measurements and writes them to a file.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockWriter.Initialize">
+            <summary>
+            Initializes <see cref="T:FileAdapters.FileBlockWriter"/>.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockWriter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:FileAdapters.FileBlockWriter"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+        </member>
+        <member name="M:FileAdapters.FileBlockWriter.AttemptConnection">
+            <summary>
+            Attempts to connect to data output stream.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockWriter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from data output stream.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockWriter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Writes buffer blocks out to files.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.FileBlockWriter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:FileAdapters.FileBlockWriter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="P:FileAdapters.FileBlockWriter.OutputDirectory">
+            <summary>
+            Gets or sets the directory to which files are written.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockWriter.OutputIsForArchive">
+            <summary>
+            Gets the flag that determines if measurements sent to this <see cref="T:FileAdapters.FileBlockWriter"/> are destined for archival.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.FileBlockWriter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data output stream connects asynchronously.
+            </summary>
+        </member>
+        <member name="T:FileAdapters.RetransmissionStatPicker">
+            <summary>
+            Interaction logic for RetransmissionStatPicker.xaml
+            </summary>
+            <summary>
+            RetransmissionStatPicker
+            </summary>
+        </member>
+        <member name="M:FileAdapters.RetransmissionStatPicker.#ctor(GSF.TimeSeries.UI.DataModels.Adapter,System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:FileAdapters.RetransmissionStatPicker"/> class.
+            </summary>
+            <param name="fileBlockReader">The file block reader adapter to be configured.</param>
+            <param name="parameterName">Name of the connection string parameter to be modified.</param>
+        </member>
+        <member name="M:FileAdapters.RetransmissionStatPicker.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:FileAdapters.RetransmissionStatViewModel">
+            <summary>
+            View model for the <see cref="T:FileAdapters.RetransmissionStatPicker"/>.
+            </summary>
+        </member>
+        <member name="M:FileAdapters.RetransmissionStatViewModel.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:FileAdapters.RetransmissionStatViewModel"/> class.
+            </summary>
+        </member>
+        <member name="E:FileAdapters.RetransmissionStatViewModel.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.RetransmissionStatViewModel.UseFilterExpression">
+            <summary>
+            Gets or sets the flag which determines whether to use a filter
+            expression to filter measurements in the measurement picker.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.RetransmissionStatViewModel.SignalIndex">
+            <summary>
+            Gets or sets the signal index used for filtering
+            measurements in the measurement picker.
+            </summary>
+        </member>
+        <member name="P:FileAdapters.RetransmissionStatViewModel.FilterExpression">
+            <summary>
+            Gets the filter expression used for filtering
+            measurements in the measurement picker.
+            </summary>
+        </member>
+    </members>
+</doc>

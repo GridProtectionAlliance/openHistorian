@@ -24,11 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using openVisN.Framework;
 
@@ -36,7 +31,7 @@ namespace openVisN.Components
 {
     public partial class ReferenceSignalSelectionComboBox : UserControl, ISubscriber
     {
-        MetadataBase m_activeSignal;
+        private MetadataBase m_activeSignal;
 
         public ReferenceSignalSelectionComboBox()
         {
@@ -44,11 +39,11 @@ namespace openVisN.Components
             comboBox1.DisplayMember = "DisplayName";
         }
 
-        VisualizationFramework m_frameworkCtrl;
+        private VisualizationFramework m_frameworkCtrl;
 
-        class SignalWrapper
+        private class SignalWrapper
         {
-            public SignalGroup Signal;
+            public readonly SignalGroup Signal;
 
             public SignalWrapper(SignalGroup signal)
             {
@@ -68,26 +63,25 @@ namespace openVisN.Components
         {
             //m_frameworkCtrl = framework;
             comboBox1.Items.Clear();
-            foreach (var signal in framework.AllSignalGroups)
+            foreach (SignalGroup signal in framework.AllSignalGroups)
             {
                 comboBox1.Items.Add(new SignalWrapper(signal));
             }
             comboBox1.Sorted = true;
-            
         }
 
         public void GetAllDesiredSignals(HashSet<MetadataBase> activeSignals, HashSet<SignalGroup> currentlyActiveGroups)
         {
-            if (m_activeSignal!=null)
-            activeSignals.Add(m_activeSignal);
+            if (m_activeSignal != null)
+                activeSignals.Add(m_activeSignal);
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue(null)
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue(null)
         ]
         public VisualizationFramework Framework
         {
@@ -99,7 +93,7 @@ namespace openVisN.Components
             {
                 if (!DesignMode)
                 {
-                    if (!object.ReferenceEquals(m_frameworkCtrl, value))
+                    if (!ReferenceEquals(m_frameworkCtrl, value))
                     {
                         if (m_frameworkCtrl != null)
                         {

@@ -23,10 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace GSF.Threading
 {
@@ -39,6 +35,7 @@ namespace GSF.Threading
             : base(target)
         {
         }
+
         public bool TryInvoke()
         {
             return TryInvokeInternal(null);
@@ -54,11 +51,11 @@ namespace GSF.Threading
             : base(target)
         {
         }
+
         public bool TryInvoke(T obj)
         {
             return TryInvokeInternal(new object[] {obj});
         }
-        
     }
 
     /// <summary>
@@ -74,7 +71,7 @@ namespace GSF.Threading
 
         public bool TryInvoke(object sender, T e)
         {
-            return TryInvokeInternal(new object[] { sender, e });
+            return TryInvokeInternal(new object[] {sender, e});
         }
     }
 }

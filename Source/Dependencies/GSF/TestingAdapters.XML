@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TestingAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:TestingAdapters.RandomValueInputAdapter">
+            <summary>
+            Represents a class used to stream in random values for input measurements.
+            </summary>
+            <remarks>
+            <para>
+            Example connection string using manually defined measurements:<br/>
+            <c>outputMeasurements={P3:1345,60.0,1.0;P3:1346;P3:1347}</c><br/>
+            When defined manually outputMeasurements are defined as "ArchiveSource:PointID,Adder,Multiplier",
+            the adder and multiplier are optional defaulting to 0.0 and 1.0 respectively.
+            <br/>
+            </para>
+            <para>
+            Example connection string using measurements defined in a <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.DataSource"/> table:<br/>
+            <c>outputMeasurements={FILTER ActiveMeasurements WHERE SignalType IN ('IPHA','VPHA') AND Phase='+'}</c><br/>
+            <br/>
+            Basic filtering syntax is as follows:<br/>
+            <br/>
+                {FILTER &lt;TableName&gt; WHERE &lt;Expression&gt; [ORDER BY &lt;SortField&gt;]}<br/>
+            <br/>
+            Source tables are expected to have at least the following fields:<br/>
+            <list type="table">
+                <listheader>
+                    <term>Name</term>
+                    <term>Type</term>
+                    <description>Description.</description>
+                </listheader>
+                <item>
+                    <term>ID</term>
+                    <term>NVARCHAR</term>
+                    <description>Measurement key formatted as: ArchiveSource:PointID.</description>
+                </item>
+                <item>
+                    <term>PointTag</term>
+                    <term>NVARCHAR</term>
+                    <description>Point tag of measurement.</description>
+                </item>
+                <item>
+                    <term>Adder</term>
+                    <term>FLOAT</term>
+                    <description>Adder to apply to value, if any (default to 0.0).</description>
+                </item>
+                <item>
+                    <term>Multiplier</term>
+                    <term>FLOAT</term>
+                    <description>Multipler to apply to value, if any (default to 1.0).</description>
+                </item>
+            </list>
+            </para>
+            <para>
+            Note that the random value produced for the points will be a number between 0 to 1, use the Adder and Multipler
+            to narrow down the range for your point. For example, to produce random frequency values between 59.95 and 60.05
+            you would use the following point definition:<br/>
+            <c>outputMeasurements={LocalDevArchive:2,59.95,0.1}</c>
+            </para>
+            </remarks>
+        </member>
+        <member name="F:TestingAdapters.RandomValueInputAdapter.DefaultPointsToSend">
+            <summary>
+            Specifies the default value for the <see cref="F:TestingAdapters.RandomValueInputAdapter.DefaultPointsToSend"/> property.
+            </summary>
+        </member>
+        <member name="F:TestingAdapters.RandomValueInputAdapter.DefaultInterpointDelay">
+            <summary>
+            Specifies the default value for the <see cref="P:TestingAdapters.RandomValueInputAdapter.InterpointDelay"/> property.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.RandomValueInputAdapter.#ctor">
+            <summary>
+            Creates a new <see cref="T:TestingAdapters.RandomValueInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.RandomValueInputAdapter.Initialize">
+            <summary>
+            Intializes <see cref="T:TestingAdapters.RandomValueInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.RandomValueInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:TestingAdapters.RandomValueInputAdapter"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
+        </member>
+        <member name="M:TestingAdapters.RandomValueInputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to data input source.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.RandomValueInputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from data input source.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.RandomValueInputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data input connects asynchronously.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.RandomValueInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.RandomValueInputAdapter.Name">
+            <summary>
+            Gets or sets the name of this <see cref="T:TestingAdapters.RandomValueInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.RandomValueInputAdapter.PointsToSend">
+            <summary>
+            Gets or sets number of test points to send.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.RandomValueInputAdapter.InterpointDelay">
+            <summary>
+            Gets or sets number of milliseconds between points.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.RandomValueInputAdapter.Status">
+            <summary>
+            Returns the detailed status of the data input source.
+            </summary>
+        </member>
+        <member name="T:TestingAdapters.VirtualInputAdapter">
+            <summary>
+            Represents a virtual input adapter used for testing purposes - no data gets produced.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.VirtualInputAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:TestingAdapters.VirtualInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.VirtualInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:TestingAdapters.VirtualInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.VirtualInputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:TestingAdapters.VirtualInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.VirtualInputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect to this <see cref="T:TestingAdapters.VirtualInputAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.VirtualInputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if this <see cref="T:TestingAdapters.VirtualInputAdapter"/> uses an asynchronous connection.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.VirtualInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="T:TestingAdapters.VirtualOutputAdapter">
+            <summary>
+            Represents a virtual historian output adapter used for testing purposes - no data gets archived.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.VirtualOutputAdapter.Initialize">
+            <summary>
+            Initializes <see cref="T:TestingAdapters.VirtualOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.VirtualOutputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:TestingAdapters.VirtualOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.VirtualOutputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from this <see cref="T:TestingAdapters.VirtualOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.VirtualOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Serializes measurements to data output stream.
+            </summary>
+        </member>
+        <member name="M:TestingAdapters.VirtualOutputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:TestingAdapters.VirtualOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.VirtualOutputAdapter.OutputIsForArchive">
+            <summary>
+            Returns a flag that determines if measurements sent to this <see cref="T:TestingAdapters.VirtualOutputAdapter"/> are
+            destined for archival.
+            </summary>
+        </member>
+        <member name="P:TestingAdapters.VirtualOutputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if this <see cref="T:TestingAdapters.VirtualOutputAdapter"/> uses an asynchronous connection.
+            </summary>
+        </member>
+    </members>
+</doc>

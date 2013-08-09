@@ -1,0 +1,628 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.ServiceModel</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.ServiceModel.Activation.SecureServiceHostFactory">
+            <summary>
+            A service host factory for WCF Services that enables role-based security using <see cref="T:GSF.ServiceModel.SecurityPolicy"/>.
+            </summary>
+            <see cref="T:GSF.ServiceModel.SecurityPolicy"/>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureServiceHostFactory.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureServiceHostFactory"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureServiceHostFactory.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureServiceHostFactory"/> class.
+            </summary>
+            <param name="protocol">Protocol used by the service.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureServiceHostFactory.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.Activation.SecureServiceHostFactory"/> class.
+            </summary>
+            <param name="protocol">Protocol used by the service.</param>
+            <param name="address">Address of the service.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureServiceHostFactory.CreateServiceHost(System.Type,System.Uri[])">
+            <summary>
+            Creates a new <see cref="T:System.ServiceModel.ServiceHost"/> from the URI.
+            </summary>
+            <param name="serviceType">Specifies the type of WCF service to host.</param>
+            <param name="baseAddresses">An array of base addresses for the service.</param>
+            <returns>New <see cref="T:System.ServiceModel.ServiceHost"/>.</returns>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.PublishMetadata">
+            <summary>
+            Gets or sets a boolean value that indicates whether service metadata is to be published.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.DisableSecurity">
+            <summary>
+            Gets or sets a boolean value that indicates whether security on the service is to be disabled. 
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceModel.IPolicyRetriever">
+            <summary>
+            Defines a web service interface to allow policy retrieval for cross-domain access from
+            Silverlight and Flash browser controls.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.IPolicyRetriever.GetSilverlightPolicy">
+            <summary>
+            Gets policy stream for Silverlight applications.
+            </summary>
+            <returns>Stream containing clientaccesspolicy.xml.</returns>
+        </member>
+        <member name="M:GSF.ServiceModel.IPolicyRetriever.GetFlashPolicy">
+            <summary>
+            Gets policy stream for Flash applications.
+            </summary>
+            <returns>Stream containing crossdomain.xml.</returns>
+        </member>
+        <member name="T:GSF.ServiceModel.ISelfHostingService">
+            <summary>
+            Defines a web service that can send and receive data over REST (Representational State Transfer) interface.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceModel.ISelfHostingService.ServiceHostCreated">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceModel.ISelfHostingService.ServiceHost"/> has been created with the specified <see cref="P:GSF.ServiceModel.ISelfHostingService.Endpoints"/>.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceModel.ISelfHostingService.ServiceHostStarted">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceModel.ISelfHostingService.ServiceHost"/> can process requests via all of its endpoints.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceModel.ISelfHostingService.ServiceProcessException">
+            <summary>
+            Occurs when an <see cref="T:System.Exception"/> is encountered when processing a request.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.ISelfHostingService.Endpoints">
+            <summary>
+            Gets or sets a semicolon delimited list of URIs where the web service can be accessed.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.ISelfHostingService.Contract">
+            <summary>
+            Gets or sets the <see cref="P:System.Type.FullName"/> of the contract interface implemented by the web service.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.ISelfHostingService.Singleton">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="P:GSF.ServiceModel.ISelfHostingService.ServiceHost"/> will use the current instance of the web service for processing 
+            requests or base the web service instance creation on <see cref="T:System.ServiceModel.InstanceContextMode"/> specified in its <see cref="T:System.ServiceModel.ServiceBehaviorAttribute"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.ISelfHostingService.SecurityPolicy">
+            <summary>
+            Gets or sets the <see cref="P:System.Type.FullName"/> of <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/> to be used for securing all web service <see cref="P:GSF.ServiceModel.ISelfHostingService.Endpoints"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.ISelfHostingService.PublishMetadata">
+            <summary>
+            Gets or sets a boolean value that indicates whether web service metadata is to made available at all web service <see cref="P:GSF.ServiceModel.ISelfHostingService.Endpoints"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.ISelfHostingService.ServiceHost">
+            <summary>
+            Gets the <see cref="P:GSF.ServiceModel.ISelfHostingService.ServiceHost"/> hosting the web service.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceModel.NamespaceDoc">
+            <summary>
+            Contains classes and interfaces that provide the basic infrastructure for writting web services.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceModel.Activation.SecureDataServiceHostFactory">
+            <summary>
+            A service host factory for WCF Data Services that enables role-based security using <see cref="T:GSF.ServiceModel.SecurityPolicy"/>.
+            </summary>
+            <see cref="T:GSF.ServiceModel.SecurityPolicy"/>
+        </member>
+        <member name="M:GSF.ServiceModel.Activation.SecureDataServiceHostFactory.CreateServiceHost(System.Type,System.Uri[])">
+            <summary>
+            Creates a new <see cref="T:System.Data.Services.DataServiceHost"/> from the URI.
+            </summary>
+            <param name="serviceType">Specifies the type of WCF service to host.</param>
+            <param name="baseAddresses">An array of base addresses for the service.</param>
+            <returns>New <see cref="T:System.Data.Services.DataServiceHost"/>.</returns>
+        </member>
+        <member name="T:GSF.ServiceModel.SecurityPolicy">
+            <summary>
+            Represents an <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy">authorization policy</see> that can be used by WCF services for enabling role-based security.
+            </summary>
+            <example>
+            Common config file entries:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="GSF.Configuration.CategorizedSettingsSection, GSF.Core" />
+              </configSections>
+              <categorizedSettings>
+                <securityProvider>
+                  <add name="ApplicationName" value="" description="Name of the application being secured as defined in the backend security datastore."
+                    encrypted="false" />
+                  <add name="ConnectionString" value="" description="Connection string to be used for connection to the backend security datastore."
+                    encrypted="false" />
+                  <add name="ProviderType" value="GSF.Security.LdapSecurityProvider, GSF.Security"
+                    description="The type to be used for enforcing security." encrypted="false" />
+                  <add name="IncludedResources" value="*/*.*=*" description="Semicolon delimited list of resources to be secured along with role names."
+                    encrypted="false" />
+                  <add name="ExcludedResources" value="*/SecurityService.svc*"
+                    description="Semicolon delimited list of resources to be excluded from being secured."
+                    encrypted="false" />
+                  <add name="NotificationSmtpServer" value="localhost" description="SMTP server to be used for sending out email notification messages."
+                    encrypted="false" />
+                  <add name="NotificationSenderEmail" value="sender@company.com" description="Email address of the sender of email notification messages." 
+                    encrypted="false" />
+                </securityProvider>
+                <activeDirectory>
+                  <add name="PrivilegedDomain" value="" description="Domain of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedUserName" value="" description="Username of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedPassword" value="" description="Password of privileged domain user account."
+                    encrypted="true" />
+                </activeDirectory>
+              </categorizedSettings>
+            </configuration>
+            ]]>
+            </code>
+            Internal WCF service configuration:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <system.serviceModel>
+                <services>
+                  <service name="WcfService1.Service1" behaviorConfiguration="serviceBehavior">
+                    <endpoint address="" contract="WcfService1.IService1" binding="webHttpBinding" 
+                              bindingConfiguration="endpointBinding" behaviorConfiguration="endpointBehavior" />
+                  </service>
+                </services>
+                <behaviors>
+                  <endpointBehaviors>
+                    <behavior name="endpointBehavior">
+                      <webHttp/>
+                    </behavior>
+                  </endpointBehaviors>
+                  <serviceBehaviors>
+                    <behavior name="serviceBehavior">
+                      <serviceAuthorization principalPermissionMode="Custom">
+                        <authorizationPolicies>
+                          <add policyType="GSF.ServiceModel.SecurityPolicy, GSF.ServiceModel" />
+                        </authorizationPolicies>
+                      </serviceAuthorization>
+                    </behavior>
+                  </serviceBehaviors>
+                </behaviors>
+                <bindings>
+                  <webHttpBinding>
+                    <binding name="endpointBinding">
+                      <security mode="TransportCredentialOnly">
+                        <transport clientCredentialType="Windows"/>
+                      </security>
+                    </binding>
+                  </webHttpBinding>
+                </bindings>
+                <serviceHostingEnvironment aspNetCompatibilityEnabled="false" />
+              </system.serviceModel>
+            </configuration>
+            ]]>
+            </code>
+            External WCF service configuration:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <system.web>
+                <httpModules>
+                  <add name="SecurityModule" type="GSF.ServiceModel.SecurityModule, GSF.ServiceModel" />
+                </httpModules>
+              </system.web>
+              <system.serviceModel>
+                <services>
+                  <service name="WcfService1.Service1" behaviorConfiguration="serviceBehavior">
+                    <endpoint address="" contract="WcfService1.IService1" binding="webHttpBinding" 
+                              bindingConfiguration="endpointBinding" behaviorConfiguration="endpointBehavior"/>
+                  </service>
+                </services>
+                <behaviors>
+                  <endpointBehaviors>
+                    <behavior name="endpointBehavior">
+                      <webHttp/>
+                    </behavior>
+                  </endpointBehaviors>
+                  <serviceBehaviors>
+                    <behavior name="serviceBehavior">
+                      <serviceAuthorization principalPermissionMode="Custom">
+                        <authorizationPolicies>
+                          <add policyType="GSF.ServiceModel.SecurityPolicy, GSF.ServiceModel" />
+                        </authorizationPolicies>
+                      </serviceAuthorization>
+                    </behavior>
+                  </serviceBehaviors>
+                </behaviors>
+                <bindings>
+                  <webHttpBinding>
+                    <binding name="endpointBinding">
+                      <security mode="None" />
+                    </binding>
+                  </webHttpBinding>
+                </bindings>
+                <serviceHostingEnvironment aspNetCompatibilityEnabled="true" />
+              </system.serviceModel>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+            <seealso cref="T:GSF.Security.ISecurityProvider"/>
+        </member>
+        <member name="M:GSF.ServiceModel.SecurityPolicy.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceModel.SecurityPolicy"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SecurityPolicy.Evaluate(System.IdentityModel.Policy.EvaluationContext,System.Object@)">
+            <summary>
+            Evaluates the <paramref name="evaluationContext"/> and initializes security.
+            </summary>
+            <param name="evaluationContext">An <see cref="T:System.IdentityModel.Policy.EvaluationContext"/> object.</param>
+            <param name="state">Custom state of the <see cref="T:GSF.ServiceModel.SecurityPolicy"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GSF.ServiceModel.SecurityPolicy.GetResourceName">
+            <summary>
+            Gets the name of resource being accessed.
+            </summary>
+            <returns><see cref="P:System.ServiceModel.OperationContext.IncomingMessageHeaders"/>.<see cref="P:System.ServiceModel.Channels.MessageHeaders.To"/>.<see cref="P:System.Uri.PathAndQuery"/> property value.</returns>
+        </member>
+        <member name="P:GSF.ServiceModel.SecurityPolicy.Id">
+            <summary>
+            Gets the identifier of this <see cref="T:GSF.ServiceModel.SecurityPolicy"/> instance.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.SecurityPolicy.Issuer">
+            <summary>
+            Gets a claim set that represents the issuer of this <see cref="T:GSF.ServiceModel.SecurityPolicy"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceModel.SelfHostingService">
+            <summary>
+            A base class for web service that can send and receive data over REST (Representational State Transfer) interface.
+            </summary>
+            <example>
+            This example shows how to create a WCF service derived from <see cref="T:GSF.ServiceModel.SelfHostingService"/> that is capable of hosting itself:
+            <code>
+            using System.ServiceModel;
+            using System.ServiceModel.Web;
+            using GSF.ServiceModel;
+            
+            namespace Services
+            {
+                [ServiceContract()]
+                public interface IService : ISelfHostingService
+                {
+                    [OperationContract(), WebGet(UriTemplate = "/hello/{name}")]
+                    string Hello(string name);
+                }
+            
+                public class Service : SelfHostingService, IService
+                {
+                    public string Hello(string name)
+                    {
+                        return string.Format("Hello {0}!", name);
+                    }
+                }
+            }
+            </code>
+            This example shows how to activate a WCF service derived from <see cref="T:GSF.ServiceModel.SelfHostingService"/> that is capable of hosting itself:
+            <code>
+            using System;
+            using System.ServiceModel;
+            using System.ServiceModel.Description;
+            using System.ServiceModel.Web;
+            using Services;
+            using GSF.ServiceModel;
+            
+            class Program
+            {
+                static void Main(string[] args)
+                {
+                    // Initialize web service.
+                    Service service = new Service();
+                    service.PublishMetadata = true;
+                    service.Endpoints = "http.soap11://localhost:4500/soap; http.rest://localhost:4500/rest";
+                    service.Initialize();
+            
+                    // Show web service status.
+                    if (service.ServiceHost.State == CommunicationState.Opened)
+                    {
+                        Console.WriteLine("\r\n{0} is running:", service.GetType().Name);
+                        foreach (ServiceEndpoint endpoint in service.ServiceHost.Description.Endpoints)
+                        {
+                            Console.WriteLine("- {0} ({1})", endpoint.Address, endpoint.Binding.GetType().Name);
+                        }
+                        Console.Write("\r\nPress Enter key to stop...");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\r\n{0} could not be started", service.GetType().Name);
+                    }
+            
+                    // Shutdown.
+                    Console.ReadLine();
+                    service.Dispose();
+                }
+            }
+            </code>
+            This example shows how to host a WCF service derived from <see cref="T:GSF.ServiceModel.SelfHostingService"/> inside ASP.NET:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <system.serviceModel>
+                <services>
+                  <service name="Services.Service">
+                    <endpoint address="soap" contract="Services.IService" binding="basicHttpBinding"/>
+                    <endpoint address="rest" contract="Services.IService" binding="webHttpBinding" behaviorConfiguration="restBehavior"/>
+                  </service>
+                </services>
+                <behaviors>
+                  <serviceBehaviors>
+                    <behavior>
+                      <serviceMetadata httpGetEnabled="true"/>
+                    </behavior>
+                  </serviceBehaviors>
+                  <endpointBehaviors>
+                    <behavior name="restBehavior">
+                      <webHttp helpEnabled="true"/>
+                    </behavior>
+                  </endpointBehaviors>
+                </behaviors>
+                <serviceHostingEnvironment multipleSiteBindingsEnabled="true">
+                  <serviceActivations>
+                    <add relativeAddress="Service.svc" service="Services.Service, Services"/>
+                  </serviceActivations>
+                </serviceHostingEnvironment>
+              </system.serviceModel>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.#ctor">
+            <summary>
+            Initializes a new instance of the web service.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.Finalize">
+            <summary>
+            Releases the unmanaged resources before the web service is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.Initialize">
+            <summary>
+            Initializes the web service.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.SaveSettings">
+            <summary>
+            Saves web service settings to the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.LoadSettings">
+            <summary>
+            Loads saved web service settings from the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.GetUnusedPort">
+            <summary>
+            Get an unused port number.
+            </summary>
+            <returns>An <see cref="T:System.Int32"/> value.</returns>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.GetServiceAddress">
+            <summary>
+            Gets an address where the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> will host the service.
+            </summary>
+            <returns>A <see cref="T:System.String"/> value.</returns>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.InitializeServiceHost">
+            <summary>
+            Initializes the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.GetSilverlightPolicy">
+            <summary>
+            Gets policy stream for Silverlight applications.
+            </summary>
+            <returns>Stream containing clientaccesspolicy.xml.</returns>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.GetFlashPolicy">
+            <summary>
+            Gets policy stream for Flash applications.
+            </summary>
+            <returns>Stream containing crossdomain.xml.</returns>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the web service and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.OnServiceHostCreated">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostCreated"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.OnServiceHostStarted">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostStarted"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.SelfHostingService.OnServiceProcessException(System.Exception)">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceProcessException"/> event.
+            </summary>
+            <param name="exception"><see cref="T:System.Exception"/> to sent to <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceProcessException"/> event.</param>
+        </member>
+        <member name="E:GSF.ServiceModel.SelfHostingService.ServiceHostCreated">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> has been created with the specified <see cref="P:GSF.ServiceModel.SelfHostingService.Endpoints"/>.
+            </summary>
+            <remarks>
+            When <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostCreated"/> event is fired, changes like adding new endpoints can be made to the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/>.
+            </remarks>
+        </member>
+        <member name="E:GSF.ServiceModel.SelfHostingService.ServiceHostStarted">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> has can process requests via all of its endpoints.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceModel.SelfHostingService.ServiceProcessException">
+            <summary>
+            Occurs when an <see cref="T:System.Exception"/> is encountered when processing a request.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`1.Argument"/> is the exception encountered when processing a request.
+            </remarks>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the web service is currently enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.Endpoints">
+            <summary>
+            Gets or sets a semicolon delimited list of URIs where the web service can be accessed.
+            </summary>
+            <remarks>
+            Set <see cref="P:GSF.ServiceModel.SelfHostingService.Endpoints"/> to a null or empty string to disable web service hosting. Refer to <see cref="M:GSF.ServiceModel.Service.CreateServiceBinding(System.String@,System.Boolean)"/> 
+            for a list of supported URI formats.
+            </remarks>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.Contract">
+            <summary>
+            Gets or sets the <see cref="P:System.Type.FullName"/> of the contract interface implemented by the web service.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.Singleton">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> will use the current instance of the web service for processing 
+            requests or base the web service instance creation on <see cref="T:System.ServiceModel.InstanceContextMode"/> specified in its <see cref="T:System.ServiceModel.ServiceBehaviorAttribute"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.SecurityPolicy">
+            <summary>
+            Gets or sets the <see cref="P:System.Type.FullName"/> of <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy"/> to be used for securing all web service <see cref="P:GSF.ServiceModel.SelfHostingService.Endpoints"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.PublishMetadata">
+            <summary>
+            Gets or sets a boolean value that indicates whether web service metadata is to made available at all web service <see cref="P:GSF.ServiceModel.SelfHostingService.Endpoints"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.AllowCrossDomainAccess">
+            <summary>
+            Gets or sets flag that indicates if web services will enable cross-domain access for Silverlight and Flash applications. 
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.AllowedDomainList">
+            <summary>
+            Gets or sets comma separated list of allowed domains when <see cref="P:GSF.ServiceModel.SelfHostingService.AllowCrossDomainAccess"/> is <c>true</c>. Use * for domain wildcards, e.g., *.consoto.com.
+            </summary>
+            <remarks>
+            To allow all domains just set this property to "*".
+            </remarks>
+        </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.ServiceHost">
+            <summary>
+            Gets the <see cref="T:System.ServiceModel.Web.WebServiceHost"/> hosting the web service.
+            </summary>
+            <remarks>
+            By default, the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> only has <see cref="T:System.ServiceModel.WebHttpBinding"/> endpoint at the <see cref="P:GSF.ServiceModel.SelfHostingService.Endpoints"/>. 
+            Additional endpoints can be added to the <see cref="P:GSF.ServiceModel.SelfHostingService.ServiceHost"/> when <see cref="E:GSF.ServiceModel.SelfHostingService.ServiceHostCreated"/> event is fired.
+            </remarks>
+        </member>
+        <member name="T:GSF.ServiceModel.Service">
+            <summary>
+            Defines helper methods related to WCF-based web services.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.Service.CreateServiceBinding(System.String@,System.Boolean)">
+            <summary>
+            Creates a <see cref="T:System.ServiceModel.Channels.Binding"/> based on the specified <paramref name="address"/>.
+            </summary>
+            <param name="address">The URI that is used to determine the type of <see cref="T:System.ServiceModel.Channels.Binding"/> to be created.</param>
+            <param name="enableSecurity">A boolean value that indicated whether security is to be enabled on the <see cref="T:System.ServiceModel.Channels.Binding"/>.</param>
+            <returns>An <see cref="T:System.ServiceModel.Channels.Binding"/> object if a valid <paramref name="address"/> is specified; otherwise null.</returns>
+            <remarks>
+            This list shows all valid address schemes that can be specified in the <paramref name="address"/>:
+            <list type="table">
+                <listheader>
+                    <term>Address Scheme</term>
+                    <description>Usage</description>
+                </listheader>
+                <item>
+                    <term><b>http://</b> or <b>http.soap11://</b></term>
+                    <description>An <paramref name="address"/> of <b>http.soap11://localhost:2929</b> will create an <see cref="T:System.ServiceModel.BasicHttpBinding"/> and update the <paramref name="address"/> to <b>http://localhost:2929</b>.</description>
+                </item>
+                <item>
+                    <term><b>http.soap12://</b></term>
+                    <description>An <paramref name="address"/> of <b>http.soap12://localhost:2929</b> will create an <see cref="T:System.ServiceModel.WSHttpBinding"/> and update the <paramref name="address"/> to <b>http://localhost:2929</b>.</description>
+                </item>
+                <item>
+                    <term><b>http.duplex://</b></term>
+                    <description>An <paramref name="address"/> of <b>http.duplex://localhost:2929</b> will create an <see cref="T:System.ServiceModel.WSDualHttpBinding"/> and update the <paramref name="address"/> to <b>http://localhost:2929</b>.</description>
+                </item>
+                <item>
+                    <term><b>http.rest://</b></term>
+                    <description>An <paramref name="address"/> of <b>http.rest://localhost:2929</b> will create an <see cref="T:System.ServiceModel.WebHttpBinding"/> and update the <paramref name="address"/> to <b>http://localhost:2929</b>.</description>
+                </item>
+                <item>
+                    <term><b>net.tcp://</b></term>
+                    <description>An <paramref name="address"/> of <b>net.tcp://localhost:2929</b> will create an <see cref="T:System.ServiceModel.NetTcpBinding"/> and leave the <paramref name="address"/> unchanged.</description>
+                </item>
+                <item>
+                    <term><b>net.p2p://</b></term>
+                    <description>An <paramref name="address"/> of <b>net.p2p://localhost:2929</b> will create an <see cref="T:System.ServiceModel.NetPeerTcpBinding"/> and leave the <paramref name="address"/> unchanged.</description>
+                </item>
+                <item>
+                    <term><b>net.pipe://</b></term>
+                    <description>An <paramref name="address"/> of <b>net.pipe://localhost:2929</b> will create an <see cref="T:System.ServiceModel.NetNamedPipeBinding"/> and leave the <paramref name="address"/> unchanged.</description>
+                </item>
+                <item>
+                    <term><b>net.msmq://</b></term>
+                    <description>An <paramref name="address"/> of <b>net.msmq://localhost:2929</b> will create an <see cref="T:System.ServiceModel.NetMsmqBinding"/> and leave the <paramref name="address"/> unchanged.</description>
+                </item>
+            </list>
+            <para>
+            The <paramref name="enableSecurity"/> parameter value is ignored Mono deployments since security bindings are not implemented.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.ServiceModel.Service.GetAuthenticationSchemes(System.Uri)">
+            <summary>
+            Gets the security setting of the hosting environment (For example: IIS web site or virtual directory).
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceModel.Service.GetServiceContract(System.Type)">
+            <summary>
+            Gets the contract that the service implements.
+            </summary>
+            <param name="serviceType"><see cref="T:System.Type"/> of the service.</param>
+            <returns><see cref="T:System.Type"/> of the service contract if found, otherwise null.</returns>
+        </member>
+    </members>
+</doc>

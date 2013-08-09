@@ -29,19 +29,18 @@ namespace GSF.Threading
 {
     public partial class ScheduledTask
     {
-
         /// <summary>
         /// The guts of the Scheduled Task
         /// </summary>
-        class Internal
+        private class Internal
         {
-            enum NextAction
+            private enum NextAction
             {
                 RunAgain,
                 Quit
             }
 
-            static class State
+            private static class State
             {
                 public const int NotRunning = 0;
                 public const int ScheduledToRunAfterDelay = 1;
@@ -54,13 +53,13 @@ namespace GSF.Threading
                 public const int Disposed = 8;
             }
 
-            ScheduledTaskEventArgs m_callbackArgs;
-            CustomThreadBase m_thread;
-            ManualResetEvent m_hasQuit;
-            StateMachine m_state;
-            WeakAction m_callback;
-            volatile int m_delayRequested;
-            volatile bool m_disposing;
+            private ScheduledTaskEventArgs m_callbackArgs;
+            private readonly CustomThreadBase m_thread;
+            private readonly ManualResetEvent m_hasQuit;
+            private readonly StateMachine m_state;
+            private readonly WeakAction m_callback;
+            private volatile int m_delayRequested;
+            private volatile bool m_disposing;
 
             /// <summary>
             /// Creates a task that can be manually scheduled to run.
@@ -250,10 +249,9 @@ namespace GSF.Threading
                 }
             }
 
-
             #region [  The Worker Thread  ]
 
-            void InternalBeginRunOnTimer()
+            private void InternalBeginRunOnTimer()
             {
                 SpinWait wait = new SpinWait();
                 while (true)
@@ -288,7 +286,7 @@ namespace GSF.Threading
                 }
             }
 
-            NextAction CheckAfterExecuteAction()
+            private NextAction CheckAfterExecuteAction()
             {
                 //Process State Machine:
                 SpinWait wait = new SpinWait();
@@ -335,7 +333,6 @@ namespace GSF.Threading
                             break;
                         default:
                             throw new Exception("Should never be in this state.");
-
                     }
                     if (m_disposing)
                     {
@@ -345,9 +342,7 @@ namespace GSF.Threading
                     }
                     wait.SpinOnce();
                 }
-
             }
-
 
             #endregion
 
@@ -368,7 +363,7 @@ namespace GSF.Threading
                 DisposeMethod(false);
             }
 
-            void DisposeMethod(bool waitForExit)
+            private void DisposeMethod(bool waitForExit)
             {
                 SpinWait wait = new SpinWait();
 
@@ -426,12 +421,11 @@ namespace GSF.Threading
             }
 
 
-            void CallDisposeCallback()
+            private void CallDisposeCallback()
             {
                 m_callbackArgs = new ScheduledTaskEventArgs(false, true, false);
                 m_callback.TryInvoke();
             }
         }
-
     }
 }

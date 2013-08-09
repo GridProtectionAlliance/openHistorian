@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using openHistorian;
+using openHistorian.Collections;
 
 namespace openHistorianServiceHost
 {
-    class HistorianHost : IDisposable
+    internal class HistorianHost : IDisposable
     {
-        HistorianServer m_server;
+        private readonly HistorianServer m_server;
 
         public HistorianHost()
         {
-            Directory.GetFiles(@"G:\HistorianData\","*.d2").ToList().ForEach(File.Delete);
+            Directory.GetFiles(@"G:\HistorianData\", "*.d2").ToList().ForEach(File.Delete);
 
-            var serverOptions = new HistorianServerOptions();
+            HistorianDatabaseInstance serverOptions = new HistorianDatabaseInstance();
             serverOptions.IsNetworkHosted = true;
-            serverOptions.NetworkPort = 54996;
-            serverOptions.IsReadOnly = false;
-            serverOptions.Paths.Add(@"G:\HistorianData\");
+            serverOptions.ConnectionString = "port=54996";
+            serverOptions.InMemoryArchive = false;
+            serverOptions.Paths = new[] { @"G:\HistorianData\" };
 
             m_server = new HistorianServer(serverOptions);
         }
@@ -62,10 +61,9 @@ namespace openHistorianServiceHost
                 }
                 finally
                 {
-                    m_disposed = true;  // Prevent duplicate dispose.
+                    m_disposed = true; // Prevent duplicate dispose.
                 }
             }
         }
-
     }
 }

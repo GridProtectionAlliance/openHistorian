@@ -1,17 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using openHistorian.Collections;
+﻿using NUnit.Framework;
 
 namespace GSF.Collections.Test
 {
     [TestFixture()]
     public class ResourceQueueCollectionTest
     {
-
         [Test()]
         public void Test()
         {
@@ -27,8 +20,6 @@ namespace GSF.Collections.Test
             Assert.AreEqual("250", queue[250].Dequeue());
             Assert.AreEqual("0", queue[250].Dequeue());
             Assert.AreEqual("250", queue[250].Dequeue());
-
         }
-
     }
 }

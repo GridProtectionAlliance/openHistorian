@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
+using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 using openHistorian.Engine;
-using openHistorian.Server;
-using openHistorian.Server.Database;
 using openHistorian.Archive;
 
 namespace openHistorian.Local
@@ -48,6 +49,7 @@ namespace openHistorian.Local
                     db.Write(x, 0, 0, 0);
                 }
                 db.SoftCommit();
+                Thread.Sleep(300);
                 using (var dbr = db.OpenDataReader())
                 {
                     Assert.IsTrue(dbr.Read(0, 1000).Count() == 1000);
@@ -59,12 +61,12 @@ namespace openHistorian.Local
                         db.Write(x, 0, 0, 0);
                     }
                     db.SoftCommit();
+                    Thread.Sleep(300);
 
                     Assert.IsTrue(rdr.Count() == 100);
                 }
                 using (var dbr = db.OpenDataReader())
                 {
-
                     Assert.IsTrue(dbr.Read(900, 2000).Count() == 1101);
                 }
             }
@@ -163,7 +165,7 @@ namespace openHistorian.Local
             if (File.Exists(name))
                 File.Delete(name);
 
-            using (var af = ArchiveFile.CreateFile(name))
+            using (var af = ArchiveFile.CreateFile(name).CreateOrOpenArchiveFile<HistorianKey,HistorianValue>(CreateFixedSizeNode.TypeGuid))
             {
                 using (var edit = af.BeginEdit())
                 {

@@ -1,29 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using NPlot;
+using openHistorian.Data.Query;
 using openVisN;
-using openVisN.Calculations;
 using openVisN.Framework;
-using openHistorian.Data.Types;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
 namespace frameworkVisN
 {
     public partial class FrmMain : Form, ISubscriber
     {
-        double minX, maxX, minY, maxY;
-        PlotSurface2D LastPlotInteraction;
-        static class ColorWheel
+        private double minX, maxX, minY, maxY;
+        private PlotSurface2D LastPlotInteraction;
+
+        private static class ColorWheel
         {
-            static int index = 0;
-            static List<Pen> m_pens;
+            private static int index = 0;
+            private static readonly List<Pen> m_pens;
+
             static ColorWheel()
             {
                 m_pens = new List<Pen>();
@@ -39,19 +35,21 @@ namespace frameworkVisN
                 m_pens.Add(new Pen(Color.Gray, 2));
                 m_pens.Add(new Pen(Color.DarkGreen, 2));
             }
+
             public static Pen GetPen()
             {
                 return m_pens[index++ % m_pens.Count];
             }
+
             public static void Reset()
             {
                 index = 0;
             }
         }
 
-        class SignalWrapper
+        private class SignalWrapper
         {
-            public SignalGroup Signal;
+            public readonly SignalGroup Signal;
 
             public SignalWrapper(SignalGroup signal)
             {
@@ -67,20 +65,20 @@ namespace frameworkVisN
             }
         }
 
-        SubscriptionFramework m_framework;
-        List<Guid> m_frequencySignals = new List<Guid>();
-        List<Guid> m_voltageAngleSignals = new List<Guid>();
+        private readonly SubscriptionFramework m_framework;
+        private readonly List<Guid> m_frequencySignals = new List<Guid>();
+        private readonly List<Guid> m_voltageAngleSignals = new List<Guid>();
 
         public FrmMain()
         {
             InitializeComponent();
-            m_framework = new SubscriptionFramework(new string[] { @"H:\August 2012.d2" });
+            m_framework = new SubscriptionFramework(new string[] {@"H:\August 2012.d2"});
             m_framework.AddSubscriber(this);
             m_framework.Updater.SynchronousNewQueryResults += m_framework_NewQueryResults;
             ChkAllSignals.DisplayMember = "DisplayName";
         }
 
-        void m_framework_NewQueryResults(object sender, QueryResultsEventArgs e)
+        private void m_framework_NewQueryResults(object sender, QueryResultsEventArgs e)
         {
             if (InvokeRequired)
             {
@@ -89,7 +87,7 @@ namespace frameworkVisN
             }
 
             long points = 0;
-            foreach (var pt in e.Results.Values)
+            foreach (SignalDataBase pt in e.Results.Values)
                 points += pt.Count;
 
             LblPointCount.Text = "Point Count: " + points.ToString();
@@ -99,7 +97,7 @@ namespace frameworkVisN
             LastPlotInteraction = null;
         }
 
-        void PlotChart(QueryResultsEventArgs e, PlotSurface2D plot, List<Guid> signals, bool cacheAxis)
+        private void PlotChart(QueryResultsEventArgs e, PlotSurface2D plot, List<Guid> signals, bool cacheAxis)
         {
             if (cacheAxis)
             {
@@ -108,13 +106,13 @@ namespace frameworkVisN
                 maxY = plot.YAxis1.WorldMax;
                 minY = plot.YAxis1.WorldMin;
 
-                foreach (var drawing in plot.Drawables.ToArray())
+                foreach (IDrawable drawing in plot.Drawables.ToArray())
                     plot.Remove(drawing, false);
 
                 ColorWheel.Reset();
                 foreach (Guid freq in signals)
                 {
-                    var data = e.Results[freq];
+                    SignalDataBase data = e.Results[freq];
 
                     List<double> y = new List<double>(data.Count);
                     List<double> x = new List<double>(data.Count);
@@ -153,7 +151,7 @@ namespace frameworkVisN
                 ColorWheel.Reset();
                 foreach (Guid freq in signals)
                 {
-                    var data = e.Results[freq];
+                    SignalDataBase data = e.Results[freq];
 
                     List<double> y = new List<double>(data.Count);
                     List<double> x = new List<double>(data.Count);
@@ -186,7 +184,7 @@ namespace frameworkVisN
         public void Initialize(SubscriptionFramework framework)
         {
             ChkAllSignals.Items.Clear();
-            foreach (var signal in framework.AllSignalGroups)
+            foreach (SignalGroup signal in framework.AllSignalGroups)
             {
                 ChkAllSignals.Items.Add(new SignalWrapper(signal));
             }
@@ -199,7 +197,7 @@ namespace frameworkVisN
             MetadataBase signalReference = null;
             m_frequencySignals.Clear();
             m_voltageAngleSignals.Clear();
-            foreach (var group in currentlyActiveGroups)
+            foreach (SignalGroup group in currentlyActiveGroups)
             {
                 SinglePhasorTerminal calc = group as SinglePhasorTerminal;
                 if (calc != null)
@@ -220,7 +218,6 @@ namespace frameworkVisN
                     //activeSignals.Add(calc.VoltageAngle);
                 }
             }
-
         }
 
         private void ChkAllSignals_ItemCheck(object sender, ItemCheckEventArgs e)

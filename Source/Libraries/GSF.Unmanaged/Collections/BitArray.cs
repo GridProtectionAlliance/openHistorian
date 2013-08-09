@@ -35,16 +35,16 @@ namespace GSF.Collections
     {
         #region [ Members ]
 
-        const int BitsPerElementShift = 6;
-        const int BitsPerElementMask = BitsPerElement - 1;
-        const int BitsPerElement = sizeof(long) * 8;
+        private const int BitsPerElementShift = 6;
+        private const int BitsPerElementMask = BitsPerElement - 1;
+        private const int BitsPerElement = sizeof(long) * 8;
 
-        long[] m_array;
-        int m_count;
-        int m_setCount;
-        int m_lastFoundClearedIndex;
-        int m_lastFoundSetIndex;
-        bool m_initialState;
+        private long[] m_array;
+        private int m_count;
+        private int m_setCount;
+        private int m_lastFoundClearedIndex;
+        private int m_lastFoundSetIndex;
+        private bool m_initialState;
 
         #endregion
 
@@ -55,16 +55,16 @@ namespace GSF.Collections
         /// </summary>
         /// <param name="initialState">Set to true to initial will all elements set.  False to have all elements cleared.</param>
         public BitArray(bool initialState) :
-            this(BitsPerElement, initialState)
+            this(initialState, BitsPerElement)
         {
         }
 
         /// <summary>
         /// Initializes <see cref="BitArray"/>.
         /// </summary>
-        /// <param name="count">The number of bit positions to support</param>
         /// <param name="initialState">Set to true to initial will all elements set.  False to have all elements cleared.</param>
-        public BitArray(int count, bool initialState)
+        /// <param name="count">The number of bit positions to support</param>
+        public BitArray(bool initialState, int count)
         {
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count");
@@ -83,6 +83,7 @@ namespace GSF.Collections
             }
             else
             {
+                //.NET initializes all memory with zeroes.
                 m_setCount = 0;
             }
             m_count = count;
@@ -93,6 +94,11 @@ namespace GSF.Collections
 
         #region [ Properties ]
 
+        /// <summary>
+        /// Gets/Sets individual bits in this array.
+        /// </summary>
+        /// <param name="index">the bit position to get.</param>
+        /// <returns></returns>
         public bool this[int index]
         {
             get
@@ -109,7 +115,7 @@ namespace GSF.Collections
         }
 
         /// <summary>
-        /// Gets the number of items in the array.
+        /// Gets the number of bits this array contains.
         /// </summary>
         public int Count
         {
@@ -164,13 +170,13 @@ namespace GSF.Collections
         public void SetBit(int index)
         {
             if (index < 0 || index >= m_count)
-                throw new ArgumentOutOfRangeException("index");
-            long bit = 1L << (index & BitsPerElementMask);
-            if ((m_array[index >> BitsPerElementShift] & bit) == 0) //if bit is cleared
+                throw new ArgumentOutOfRangeException("index", "Must be between 0 and the number of elements in the list.");
+            long subBit = 1L << (index & BitsPerElementMask);
+            if ((m_array[index >> BitsPerElementShift] & subBit) == 0) //if bit is cleared
             {
                 m_lastFoundSetIndex = 0;
                 m_setCount++;
-                m_array[index >> BitsPerElementShift] |= bit;
+                m_array[index >> BitsPerElementShift] |= subBit;
             }
         }
 
@@ -197,12 +203,12 @@ namespace GSF.Collections
         {
             if (index < 0 || index >= m_count)
                 throw new ArgumentOutOfRangeException("index");
-            long bit = 1L << (index & BitsPerElementMask);
-            if ((m_array[index >> BitsPerElementShift] & bit) == 0) //if bit is cleared
+            long subBit = 1L << (index & BitsPerElementMask);
+            if ((m_array[index >> BitsPerElementShift] & subBit) == 0) //if bit is cleared
             {
                 m_lastFoundSetIndex = 0;
                 m_setCount++;
-                m_array[index >> BitsPerElementShift] |= bit;
+                m_array[index >> BitsPerElementShift] |= subBit;
                 return true;
             }
             return false;
@@ -238,6 +244,12 @@ namespace GSF.Collections
             }
         }
 
+        /// <summary>
+        /// Determines if any of the provided bits are set.
+        /// </summary>
+        /// <param name="index">the starting index</param>
+        /// <param name="length">the length of the run</param>
+        /// <returns></returns>
         public bool AreBitsSet(int index, int length)
         {
             for (int x = index; x < index + length; x++)
@@ -248,6 +260,12 @@ namespace GSF.Collections
             return true;
         }
 
+        /// <summary>
+        /// Determines if any of the provided bits are cleared.
+        /// </summary>
+        /// <param name="index">the starting index</param>
+        /// <param name="length">the length of the run</param>
+        /// <returns></returns>
         public bool AreBitsCleared(int index, int length)
         {
             for (int x = index; x < index + length; x++)
@@ -320,7 +338,6 @@ namespace GSF.Collections
             {
                 SetCapacity(Math.Max(m_array.Length * BitsPerElement * 2, capacity));
             }
-
         }
 
         /// <summary>
@@ -338,7 +355,7 @@ namespace GSF.Collections
                 if (m_array[x] != -1)
                 {
                     //int position = HelperFunctions.FindFirstClearedBit(m_array[x]) + (x << 5); ;
-                    int position = BitMath.CountTrailingOnes((ulong)m_array[x]) + (x << BitsPerElementShift); ;
+                    int position = BitMath.CountTrailingOnes((ulong)m_array[x]) + (x << BitsPerElementShift);
                     m_lastFoundClearedIndex = position;
                     if (m_lastFoundClearedIndex >= m_count)
                         return -1;
@@ -362,7 +379,7 @@ namespace GSF.Collections
                 //If the result is not -1, then use this element
                 if (m_array[x] != 0)
                 {
-                    int position = BitMath.CountTrailingZeros((ulong)m_array[x]) + (x << BitsPerElementShift); ;
+                    int position = BitMath.CountTrailingZeros((ulong)m_array[x]) + (x << BitsPerElementShift);
                     m_lastFoundSetIndex = position;
                     if (m_lastFoundSetIndex >= m_count)
                         return -1;
@@ -372,6 +389,12 @@ namespace GSF.Collections
             return -1;
         }
 
+        /// <summary>
+        /// Copies the contents of this bit array to another bit array.
+        /// Array must be the exact same size.
+        /// </summary>
+        /// <param name="otherArray">the array to copy the data to</param>
+        /// <exception cref="Exception">Occurs when the two arrays are not identical in size.</exception>
         public void CopyTo(BitArray otherArray)
         {
             if (otherArray.Count != Count)
@@ -384,6 +407,10 @@ namespace GSF.Collections
             otherArray.m_setCount = m_setCount;
         }
 
+        /// <summary>
+        /// Yields a list of all bits that are set.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<int> GetAllSetBits()
         {
             int count = m_array.Length;
@@ -402,6 +429,10 @@ namespace GSF.Collections
             }
         }
 
+        /// <summary>
+        /// Yields a list of all bits that are cleared.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<int> GetAllClearedBits()
         {
             int count = m_array.Length;
@@ -421,6 +452,5 @@ namespace GSF.Collections
         }
 
         #endregion
-
     }
 }

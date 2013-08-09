@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  AsyncWorkerBackground.cs - Gbtc
+//  StateMachine.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -31,7 +31,7 @@ namespace GSF.Threading
     /// </summary>
     public class StateMachine
     {
-        int m_state;
+        private int m_state;
 
         public StateMachine(int initialState)
         {
@@ -99,6 +99,5 @@ namespace GSF.Threading
         {
             return machine.State;
         }
-
     }
 }

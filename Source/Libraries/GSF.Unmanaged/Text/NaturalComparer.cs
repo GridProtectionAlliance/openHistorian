@@ -24,12 +24,12 @@
 // Origional Source From http://www.codeproject.com/Articles/22517/Natural-Sort-Comparer
 // Licensed under The Code Project Open License (CPOL)
 
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
 namespace GSF.Text
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text.RegularExpressions;
-
     public class NaturalComparer : Comparer<string>, IDisposable
     {
         private Dictionary<string, string[]> table;

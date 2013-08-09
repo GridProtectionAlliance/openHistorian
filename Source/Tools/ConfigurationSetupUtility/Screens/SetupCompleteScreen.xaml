@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="ConfigurationSetupUtility.Screens.SetupCompleteScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}">
+    <DockPanel>
+        <Label Content="Configuration setup complete" Margin="10" HorizontalContentAlignment="Center" DockPanel.Dock="Top" FontSize="16" FontWeight="Bold" />
+        <StackPanel DockPanel.Dock="Bottom">
+            <TextBlock Name="textBlock1" Text="The configuration setup is complete. Click Finish to exit the Configuration Setup Utility." TextAlignment="Center" TextWrapping="Wrap" Margin="20,0,20,10" />
+            <StackPanel HorizontalAlignment="Center">
+                <CheckBox Content="Start the openHistorian" Height="18" IsChecked="True" Name="m_serviceStartCheckBox" />
+                <CheckBox Content="Start the openHistorian Manager" Height="18" IsChecked="True" Name="m_managerStartCheckBox" />
+            </StackPanel>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

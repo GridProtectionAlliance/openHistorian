@@ -29,29 +29,24 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Drawing;
-
 namespace NPlot
 {
+    /// <summary>
+    /// Defines the interface for objects that (a) can draw a representation of 
+    /// themselves in the legend and (b) can recommend a good axis to draw themselves
+    /// against.
+    /// </summary>
+    public interface IPlot : IDrawable
+    {
+        /// <summary>
+        /// The method used to set the default abscissa axis.
+        /// </summary>
+        DateTimeAxis SuggestXAxis();
 
-	/// <summary>
-	/// Defines the interface for objects that (a) can draw a representation of 
-	/// themselves in the legend and (b) can recommend a good axis to draw themselves
-	/// against.
-	/// </summary>
-	public interface IPlot : IDrawable
-	{	
-		
-		/// <summary>
-		/// The method used to set the default abscissa axis.
-		/// </summary>
-		DateTimeAxis SuggestXAxis();
 
-		
-		/// <summary>
-		/// The method used to set the default ordinate axis.
-		/// </summary>
-		LinearAxis SuggestYAxis();
-
-	}
+        /// <summary>
+        /// The method used to set the default ordinate axis.
+        /// </summary>
+        LinearAxis SuggestYAxis();
+    }
 }

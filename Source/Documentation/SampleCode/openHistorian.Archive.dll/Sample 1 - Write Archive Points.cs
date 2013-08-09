@@ -1,10 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using NUnit.Framework;
-using openHistorian;
 using openHistorian.Archive;
-using openHistorian.Collections.KeyValue;
+using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 
 namespace SampleCode.openHistorian.Archive.dll
 {
@@ -13,17 +11,17 @@ namespace SampleCode.openHistorian.Archive.dll
         public void WriteDataToAFile()
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
-            CompressionMethod method = CompressionMethod.None;
-
-            using (ArchiveFile file = ArchiveFile.CreateFile(fileName, method))
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.CreateFile(fileName).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
             {
-                using (ArchiveFile.Editor editor = file.BeginEdit())
+                using (ArchiveTable<HistorianKey, HistorianValue>.Editor editor = file.BeginEdit())
                 {
-                    ulong time = (ulong)DateTime.Now.Ticks;
-                    ulong key = 1ul;
-                    ulong quality = 0;
-                    ulong value = 25;
-                    editor.AddPoint(time, key, quality, value); //2 x 64-bit keys and 2 x 64-bit values. All are UInt64 values.
+                    key.Timestamp = (ulong)DateTime.Now.Ticks;
+                    key.PointID = 1ul;
+                    value.Value1 = 0;
+                    value.Value2 = 25;
+                    editor.AddPoint(key, value);
                     editor.Commit();
                 }
             }
@@ -33,19 +31,19 @@ namespace SampleCode.openHistorian.Archive.dll
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
-            using (ArchiveFile file = ArchiveFile.OpenFile(fileName, AccessMode.ReadOnly))
+            using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.OpenFile(fileName, isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
             {
-                using (ArchiveFileReadSnapshot readSnapshot = file.BeginRead())
+                using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> readSnapshot = file.BeginRead())
                 {
-                    ITreeScanner256 scanner = readSnapshot.GetTreeScanner();
+                    TreeScannerBase<HistorianKey, HistorianValue> scanner = readSnapshot.GetTreeScanner();
 
                     //Seeks to the beginning of the tree since {0,0} is the lowest possible value that can be stored in the tree.
-                    scanner.SeekToKey(0ul, 0ul);
+                    scanner.SeekToStart();
 
                     ulong time, key, quality, value;
-                    while (scanner.Read(out time, out key, out quality, out value))
+                    while (scanner.Read())
                     {
-                        Console.WriteLine("{0} - {1} - {2} - {3}", time, key, quality, value);
+                        Console.WriteLine("{0} - {1} - {2} - {3}", scanner.CurrentKey.Timestamp, scanner.CurrentKey.PointID, scanner.CurrentValue.Value1, scanner.CurrentValue.Value2);
                     }
                 }
             }
@@ -54,16 +52,18 @@ namespace SampleCode.openHistorian.Archive.dll
         public void AppendDataToAnExistingFile()
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
 
-            using (ArchiveFile file = ArchiveFile.OpenFile(fileName, AccessMode.ReadWrite))
+            using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.OpenFile(fileName, isReadOnly: false).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
             {
-                using (ArchiveFile.Editor editor = file.BeginEdit())
+                using (ArchiveTable<HistorianKey, HistorianValue>.Editor editor = file.BeginEdit())
                 {
-                    ulong time = (ulong)DateTime.Now.Ticks;
-                    ulong key = 1ul;
-                    ulong quality = 0;
-                    ulong value = 25;
-                    editor.AddPoint(time, key, quality, value); //2 x 64-bit keys and 2 x 64-bit values. All are UInt64 values.
+                    key.Timestamp = (ulong)DateTime.Now.Ticks;
+                    key.PointID = 1ul;
+                    value.Value1 = 0;
+                    value.Value2 = 25;
+                    editor.AddPoint(key, value); //2 x 64-bit keys and 2 x 64-bit values. All are UInt64 values.
                     editor.Commit();
                 }
             }
@@ -72,24 +72,31 @@ namespace SampleCode.openHistorian.Archive.dll
         public void RollbackChangesToAFile()
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
 
-            using (ArchiveFile file = ArchiveFile.OpenFile(fileName, AccessMode.ReadWrite))
+            using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.OpenFile(fileName, isReadOnly: false).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
             {
-                using (ArchiveFile.Editor editor = file.BeginEdit())
+                using (ArchiveTable<HistorianKey, HistorianValue>.Editor editor = file.BeginEdit())
                 {
-                    ulong time = (ulong)DateTime.Now.Ticks;
-                    ulong key = 1ul;
-                    ulong quality = 0;
-                    ulong value = 25;
-                    editor.AddPoint(time, key, quality, value); //2 x 64-bit keys and 2 x 64-bit values. All are UInt64 values.
+                    key.Timestamp = (ulong)DateTime.Now.Ticks;
+                    key.PointID = 1ul;
+                    value.Value1 = 0;
+                    value.Value2 = 25;
+                    editor.AddPoint(key, value); //2 x 64-bit keys and 2 x 64-bit values. All are UInt64 values.
                     editor.Commit();
                 }
 
-                using (ArchiveFile.Editor editor = file.BeginEdit())
+                using (ArchiveTable<HistorianKey, HistorianValue>.Editor editor = file.BeginEdit())
                 {
+                    key.Timestamp = 1;
+                    key.PointID = 0;
+                    value.Value1 = 2;
+                    value.Value2 = 3;
                     for (uint x = 0; x < 1000; x++)
                     {
-                        editor.AddPoint(1, x, 2, 3);
+                        key.PointID = x;
+                        editor.AddPoint(key, value);
                     }
                     editor.Rollback(); //These changes will not be written to the disk
                 }
@@ -100,30 +107,27 @@ namespace SampleCode.openHistorian.Archive.dll
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
-            using (ArchiveFile file = ArchiveFile.OpenFile(fileName, AccessMode.ReadWrite))
+            using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.OpenFile(fileName, isReadOnly: false).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
             {
-                ArchiveFileSnapshotInfo snapshotInfo = file.AcquireReadSnapshot();
+                ArchiveTableSnapshotInfo<HistorianKey, HistorianValue> snapshotInfo = file.AcquireReadSnapshot();
 
-                using (ArchiveFileReadSnapshot reader1 = snapshotInfo.CreateReadSnapshot())
-                using (ArchiveFileReadSnapshot reader2 = snapshotInfo.CreateReadSnapshot())
+                using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> reader1 = snapshotInfo.CreateReadSnapshot())
+                using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> reader2 = snapshotInfo.CreateReadSnapshot())
                 {
-                    ITreeScanner256 scanner1 = reader1.GetTreeScanner();
-                    ITreeScanner256 scanner2 = reader2.GetTreeScanner();
+                    TreeScannerBase<HistorianKey, HistorianValue> scanner1 = reader1.GetTreeScanner();
+                    TreeScannerBase<HistorianKey, HistorianValue> scanner2 = reader2.GetTreeScanner();
 
                     //Seeks to the beginning of the tree since {0,0} is the lowest possible value that can be stored in the tree.
-                    scanner1.SeekToKey(0ul, 0ul);
-                    scanner2.SeekToKey(0ul, 0ul);
+                    scanner1.SeekToStart();
+                    scanner2.SeekToStart();
 
-                    ulong time1, key1, quality1, value1;
-                    ulong time2, key2, quality2, value2;
-
-                    while (scanner1.Read(out time1, out key1, out quality1, out value1) &
-                       scanner2.Read(out time2, out key2, out quality2, out value2))
+                    while (scanner1.Read() &
+                           scanner2.Read())
                     {
-                        Assert.AreEqual(time1, time2);
-                        Assert.AreEqual(key1, key2);
-                        Assert.AreEqual(quality1, quality2);
-                        Assert.AreEqual(value1, value2);
+                        Assert.AreEqual(scanner1.CurrentKey.Timestamp, scanner2.CurrentKey.Timestamp);
+                        Assert.AreEqual(scanner1.CurrentKey.PointID, scanner2.CurrentKey.PointID);
+                        Assert.AreEqual(scanner1.CurrentValue.Value1, scanner2.CurrentValue.Value1);
+                        Assert.AreEqual(scanner1.CurrentValue.Value2, scanner2.CurrentValue.Value2);
                     }
                 }
             }
@@ -133,28 +137,28 @@ namespace SampleCode.openHistorian.Archive.dll
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
-            using (ArchiveFile file = ArchiveFile.OpenFile(fileName, AccessMode.ReadWrite))
+            using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.OpenFile(fileName, isReadOnly: false).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
             {
-                using (ArchiveFile.Editor writer = file.BeginEdit())
-                using (ArchiveFileReadSnapshot reader = file.BeginRead())
+                using (ArchiveTable<HistorianKey, HistorianValue>.Editor writer = file.BeginEdit())
+                using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> reader = file.BeginRead())
                 {
-                    ITreeScanner256 scanner = reader.GetTreeScanner();
+                    TreeScannerBase<HistorianKey, HistorianValue> scanner = reader.GetTreeScanner();
 
                     //Seeks to the beginning of the tree since {0,0} is the lowest possible value that can be stored in the tree.
-                    scanner.SeekToKey(0ul, 0ul);
+                    scanner.SeekToStart();
 
                     ulong time, key, quality, value;
 
-                    while (scanner.Read(out time, out key, out quality, out value))
+                    while (scanner.Read())
                     {
-                        writer.AddPoint(time + 1, key, quality, value + 1);
+                        scanner.CurrentKey.Timestamp++;
+                        scanner.CurrentValue.Value2++;
+                        writer.AddPoint(scanner.CurrentKey, scanner.CurrentValue);
                     }
 
                     writer.Commit();
                 }
             }
         }
-
-
     }
 }

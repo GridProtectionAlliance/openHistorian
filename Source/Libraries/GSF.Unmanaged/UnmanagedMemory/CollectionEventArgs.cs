@@ -33,13 +33,13 @@ namespace GSF.UnmanagedMemory
         Emergency,
         Critical
     }
-    
+
     /// <summary>
     /// This contains information about the collection that is requested from the system.
     /// </summary>
     public class CollectionEventArgs : EventArgs
     {
-        Func<int, bool> m_releasePage;
+        private readonly Func<int, bool> m_releasePage;
 
         /// <summary>
         /// When <see cref="CollectionMode"/> is <see cref="BufferPoolCollectionMode.Emergency"/> or 
@@ -47,12 +47,20 @@ namespace GSF.UnmanagedMemory
         /// that need to be released by all of the objects. This value will automatically decrement
         /// every time a page has been released.
         /// </summary>
-        public int DesiredPageReleaseCount { get; private set; }
+        public int DesiredPageReleaseCount
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// The mode for the collection
         /// </summary>
-        public BufferPoolCollectionMode CollectionMode { get; private set; }
+        public BufferPoolCollectionMode CollectionMode
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Creates a new <see cref="CollectionEventArgs"/>.
@@ -78,6 +86,5 @@ namespace GSF.UnmanagedMemory
                 DesiredPageReleaseCount--;
             }
         }
-
     }
 }

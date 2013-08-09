@@ -1,0 +1,1320 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.ServiceProcess</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.ServiceProcess.ClientHelper">
+            <summary>
+            Component that provides client-side functionality to <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ClientHelper.DefaultUsername">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ClientHelper.Username"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ClientHelper.DefaultPassword">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ClientHelper.Password"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ClientHelper.DefaultPersistSettings">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ClientHelper.PersistSettings"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ClientHelper.DefaultSettingsCategory">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ClientHelper.SettingsCategory"/> property.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientHelper"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientHelper"/> class.
+            </summary>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.ServiceProcess.ClientHelper"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.Initialize">
+            <summary>
+            Initializes the <see cref="T:GSF.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.ServiceProcess.ClientHelper.Initialize"/> is to be called by user-code directly only if the <see cref="T:GSF.ServiceProcess.ClientHelper"/> is not consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.BeginInit">
+            <summary>
+            Performs necessary operations before the <see cref="T:GSF.ServiceProcess.ClientHelper"/> properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.ServiceProcess.ClientHelper.BeginInit"/> should never be called by user-code directly. This method exists solely for use 
+            by the designer if the <see cref="T:GSF.ServiceProcess.ClientHelper"/> is consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.EndInit">
+            <summary>
+            Performs necessary operations after the <see cref="T:GSF.ServiceProcess.ClientHelper"/> properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.ServiceProcess.ClientHelper.EndInit"/> should never be called by user-code directly. This method exists solely for use 
+            by the designer if the <see cref="T:GSF.ServiceProcess.ClientHelper"/> is consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.SaveSettings">
+            <summary>
+            Saves settings for the <see cref="T:GSF.ServiceProcess.ClientHelper"/> to the config file if the <see cref="P:GSF.ServiceProcess.ClientHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.ServiceProcess.ClientHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.LoadSettings">
+            <summary>
+            Loads saved settings for the <see cref="T:GSF.ServiceProcess.ClientHelper"/> from the config file if the <see cref="P:GSF.ServiceProcess.ClientHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.ServiceProcess.ClientHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.Connect">
+            <summary>
+            Connects <see cref="P:GSF.ServiceProcess.ClientHelper.RemotingClient"/> to <see cref="P:GSF.ServiceProcess.ServiceHelper.RemotingServer"/> and wait until authentication is complete.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.Disconnect">
+            <summary>
+            Disconnects <see cref="P:GSF.ServiceProcess.ClientHelper.RemotingClient"/> from <see cref="P:GSF.ServiceProcess.ServiceHelper.RemotingServer"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.SendRequest(System.String)">
+            <summary>
+            Sends a request to the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> using <see cref="P:GSF.ServiceProcess.ClientHelper.RemotingClient"/>.
+            </summary>
+            <param name="request">Request text to be sent.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.SendRequest(GSF.ServiceProcess.ClientRequest)">
+            <summary>
+            Sends a request to the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> using <see cref="P:GSF.ServiceProcess.ClientHelper.RemotingClient"/>.
+            </summary>
+            <param name="request"><see cref="T:GSF.ServiceProcess.ClientRequest"/> object to be sent.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.OnReceivedServiceUpdate(GSF.UpdateType,System.String)">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ClientHelper.ReceivedServiceUpdate"/> event.
+            </summary>
+            <param name="type">One of the <see cref="T:GSF.UpdateType"/> values.</param>
+            <param name="update">Update message received.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.OnReceivedServiceResponse(GSF.ServiceProcess.ServiceResponse)">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ClientHelper.ReceivedServiceResponse"/> event.
+            </summary>
+            <param name="response"><see cref="T:GSF.ServiceProcess.ServiceResponse"/> received.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.OnServiceStateChanged(GSF.ObjectState{GSF.ServiceProcess.ServiceState})">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ClientHelper.ServiceStateChanged"/> event.
+            </summary>
+            <param name="state">New <see cref="T:GSF.ServiceProcess.ServiceState"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.OnProcessStateChanged(GSF.ObjectState{GSF.ServiceProcess.ServiceProcessState})">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ClientHelper.ProcessStateChanged"/> event.
+            </summary>
+            <param name="state">New <see cref="T:GSF.ServiceProcess.ServiceProcessState"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.OnAuthenticationSuccess">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ClientHelper.AuthenticationSuccess"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.OnAuthenticationFailure">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ClientHelper.AuthenticationFailure"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.OnTelnetSessionEstablished">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ClientHelper.TelnetSessionEstablished"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.OnTelnetSessionTerminated">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ClientHelper.TelnetSessionTerminated"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.ServiceProcess.ClientHelper"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.PretendRequest(System.String)">
+            <summary>
+            Returns an <see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> object for the specified <paramref name="requestCommand"/> that can be used 
+            to invoke <see cref="P:GSF.ServiceProcess.ServiceHelper.ClientRequestHandlers"/> manually as if the request was sent by a <see cref="T:GSF.ServiceProcess.ClientHelper"/> remotely.
+            </summary>
+            <param name="requestCommand">Command for which an <see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> object is to be created.</param>
+            <returns>An <see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> object.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientHelper.TryParseActionableResponse(GSF.ServiceProcess.ServiceResponse,System.String@,System.Boolean@)">
+            <summary>
+            Attempts to parse an actionable reponse sent from the service.
+            </summary>
+            <param name="serviceResponse"><see cref="T:GSF.ServiceProcess.ServiceResponse"/> to test for actionable response.</param>
+            <param name="sourceCommand">Command that invoked <paramref name="serviceResponse"/>.</param>
+            <param name="responseSuccess">Boolean success state of <paramref name="serviceResponse"/>.</param>
+            <returns><c>true</c> if actionable response was able to be parsed successfully; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="E:GSF.ServiceProcess.ClientHelper.ReceivedServiceUpdate">
+            <summary>
+            Occurs when a status update is received from the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ClientHelper.ReceivedServiceResponse">
+            <summary>
+            Occurs when a custom <see cref="T:GSF.ServiceProcess.ServiceResponse"/> is received from the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ClientHelper.ServiceStateChanged">
+            <summary>
+            Occurs when the state of the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> is changed.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ClientHelper.ProcessStateChanged">
+            <summary>
+            Occurs when the state of a <see cref="T:GSF.ServiceProcess.ServiceProcess"/> is changed.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ClientHelper.AuthenticationSuccess">
+            <summary>
+            Occurs when the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> successfully authenticates the <see cref="T:GSF.ServiceProcess.ClientHelper"/>.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ClientHelper.AuthenticationFailure">
+            <summary>
+            Occurs when the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> fails to authenticate the <see cref="T:GSF.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <remarks>
+            Set <see cref="P:System.ComponentModel.CancelEventArgs.Cancel"/> to <b>true</b> to continue with connection attempts even after authentication fails. 
+            This can be useful for re-authenticating the <see cref="T:GSF.ServiceProcess.ClientHelper"/> using different <see cref="P:GSF.ServiceProcess.ClientHelper.Username"/> and <see cref="P:GSF.ServiceProcess.ClientHelper.Password"/>.
+            </remarks>
+        </member>
+        <member name="E:GSF.ServiceProcess.ClientHelper.TelnetSessionEstablished">
+            <summary>
+            Occurs when a telnet session has been established.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ClientHelper.TelnetSessionTerminated">
+            <summary>
+            Occurs when a telnet session has been terminated.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientHelper.RemotingClient">
+            <summary>
+            Gets or sets the <see cref="T:GSF.Communication.ClientBase"/> object used for communicating with the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientHelper.Username">
+            <summary>
+            Gets or sets the username of the <see cref="T:GSF.ServiceProcess.ClientHelper"/>'s user to be used for authenticating with the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being specified is a null string.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientHelper.Password">
+            <summary>
+            Gets or sets the password of the <see cref="T:GSF.ServiceProcess.ClientHelper"/>'s user to be used for authenticating with the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being specified is a null string.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientHelper.PersistSettings">
+            <summary>
+            Gets or sets a boolean value that indicates whether the settings of <see cref="T:GSF.ServiceProcess.ClientHelper"/> are to be saved to the config file.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientHelper.SettingsCategory">
+            <summary>
+            Gets or sets the category under which the settings of <see cref="T:GSF.ServiceProcess.ClientHelper"/> are to be saved to the config file if the <see cref="P:GSF.ServiceProcess.ClientHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientHelper.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.ServiceProcess.ClientHelper"/> is currently enabled.
+            </summary>
+            <remarks>
+            <see cref="P:GSF.ServiceProcess.ClientHelper.Enabled"/> property is not be set by user-code directly.
+            </remarks>
+        </member>
+        <member name="T:GSF.ServiceProcess.ClientInfo">
+            <summary>
+            Represents information about a client using <see cref="T:GSF.ServiceProcess.ClientHelper"/> for connecting to a Windows Service that uses <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <remarks>
+            <see cref="T:GSF.ServiceProcess.ClientInfo"/> can be serialized and deserialized using <see cref="T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"/> only.
+            </remarks>
+            <seealso cref="T:GSF.ServiceProcess.ClientHelper"/>
+            <seealso cref="T:GSF.ServiceProcess.ServiceHelper"/>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientInfo.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientInfo"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientInfo.#ctor(GSF.ServiceProcess.ClientHelper)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientInfo"/> class.
+            </summary>
+            <param name="parent">An <see cref="T:GSF.ServiceProcess.ClientHelper"/> object.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientInfo.SetClientUser(System.Security.Principal.IPrincipal)">
+            <summary>
+            Updates the <see cref="P:GSF.ServiceProcess.ClientInfo.ClientUser"/>.
+            </summary>
+            <param name="user">New <see cref="T:System.Security.Principal.IPrincipal"/> object to be assigned to <see cref="P:GSF.ServiceProcess.ClientInfo.ClientUser"/>.</param>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.ClientID">
+            <summary>
+            Gets the identifier of the remote client application.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.ClientType">
+            <summary>
+            Gets the <see cref="T:GSF.ApplicationType"/> of the remote client application.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.ClientName">
+            <summary>
+            Gets the friendly name of the remote client application.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.ClientUser">
+            <summary>
+            Gets the <see cref="T:System.Security.Principal.IPrincipal"/> of the remote client application's user.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.ClientUserCredentials">
+            <summary>
+            Gets the credentials in 'username:password' format for authenticating the remote client application's user if a valid <see cref="P:GSF.ServiceProcess.ClientInfo.ClientUser"/> is not available.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.MachineName">
+            <summary>
+            Gets the name of the machine running the remote client application.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientInfo.ConnectedAt">
+            <summary>
+            Gets or sets the <see cref="T:System.DateTime"/> when the remote client application connected to the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ClientRequest">
+            <summary>
+            Represents a request sent by <see cref="T:GSF.ServiceProcess.ClientHelper"/> to <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <seealso cref="T:GSF.ServiceProcess.ClientHelper"/>
+            <seealso cref="T:GSF.ServiceProcess.ServiceHelper"/>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientRequest.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientRequest"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientRequest.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientRequest"/> class.
+            </summary>
+            <param name="command">Command text for the <see cref="T:GSF.ServiceProcess.ClientRequest"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientRequest.#ctor(System.String,GSF.Console.Arguments)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientRequest"/> class.
+            </summary>
+            <param name="command">Command text for the <see cref="T:GSF.ServiceProcess.ClientRequest"/>.</param>
+            <param name="arguments"><see cref="P:GSF.ServiceProcess.ClientRequest.Arguments"/> for the <paramref name="command"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientRequest.ToString">
+            <summary>
+            Returns the <see cref="T:System.String"/> that represents the <see cref="T:GSF.ServiceProcess.ClientRequest"/>.
+            </summary>
+            <returns>A <see cref="T:System.String"/> that represents the <see cref="T:GSF.ServiceProcess.ClientRequest"/>.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientRequest.Parse(System.String)">
+            <summary>
+            Converts <see cref="T:System.String"/> to a <see cref="T:GSF.ServiceProcess.ClientRequest"/>.
+            </summary>
+            <param name="text">Text to be converted to a <see cref="T:GSF.ServiceProcess.ClientRequest"/>.</param>
+            <returns><see cref="T:GSF.ServiceProcess.ClientRequest"/> object if parsing is successful; otherwise null.</returns>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequest.Command">
+            <summary>
+            Gets or sets the command text for the <see cref="T:GSF.ServiceProcess.ClientRequest"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is either a null or empty string.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequest.Arguments">
+            <summary>
+            Gets or sets the <see cref="P:GSF.ServiceProcess.ClientRequest.Arguments"/> for the <see cref="P:GSF.ServiceProcess.ClientRequest.Command"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequest.Attachments">
+            <summary>
+            Gets a list of attachments for the <see cref="T:GSF.ServiceProcess.ClientRequest"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ClientRequestHandler">
+            <summary>
+            Represents a handler for <see cref="T:GSF.ServiceProcess.ClientRequest"/>s sent by <see cref="T:GSF.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <seealso cref="T:GSF.ServiceProcess.ClientHelper"/>
+            <seealso cref="T:GSF.ServiceProcess.ClientRequest"/>
+            <seealso cref="T:GSF.ServiceProcess.ServiceHelper"/>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientRequestHandler.#ctor(System.String,System.String,System.Action{GSF.ServiceProcess.ClientRequestInfo})">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> class.
+            </summary>
+            <param name="requestCommand">Command text that the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> will process.</param>
+            <param name="requestDescription">Description of the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/>.</param>
+            <param name="handlerMethod"><see cref="T:System.Delegate"/> method that will be invoked for processing the <paramref name="requestCommand"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientRequestHandler.#ctor(System.String,System.String,System.Action{GSF.ServiceProcess.ClientRequestInfo},System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> class.
+            </summary>
+            <param name="requestCommand">Command text that the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> will process.</param>
+            <param name="requestDescription">Description of the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/>.</param>
+            <param name="handlerMethod"><see cref="T:System.Delegate"/> method that will be invoked for processing the <paramref name="requestCommand"/>.</param>
+            <param name="isAdvertised">true if the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> is to be published by the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>; otherwise false.</param>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequestHandler.Command">
+            <summary>
+            Gets the command text that the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> will process.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequestHandler.CommandDescription">
+            <summary>
+            Gets the description of the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequestHandler.HandlerMethod">
+            <summary>
+            Gets the <see cref="T:System.Delegate"/> method that gets invoked for processing the <see cref="P:GSF.ServiceProcess.ClientRequestHandler.Command"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequestHandler.IsAdvertised">
+            <summary>
+            Gets a boolean value that indicates whether the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> will be published by the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ClientRequestInfo">
+            <summary>
+            Represents information about a <see cref="T:GSF.ServiceProcess.ClientRequest"/> sent by <see cref="T:GSF.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <seealso cref="T:GSF.ServiceProcess.ClientInfo"/>
+            <seealso cref="T:GSF.ServiceProcess.ClientRequest"/>
+        </member>
+        <member name="M:GSF.ServiceProcess.ClientRequestInfo.#ctor(GSF.ServiceProcess.ClientInfo,GSF.ServiceProcess.ClientRequest)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> class.
+            </summary>
+            <param name="sender"><see cref="T:GSF.ServiceProcess.ClientInfo"/> object of the <paramref name="request"/> sender.</param>
+            <param name="request"><see cref="T:GSF.ServiceProcess.ClientRequest"/> object sent by the <paramref name="sender"/>.</param>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequestInfo.Sender">
+            <summary>
+            Gets or sets the <see cref="T:GSF.ServiceProcess.ClientInfo"/> object of the <see cref="P:GSF.ServiceProcess.ClientRequestInfo.Request"/> sender.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequestInfo.Request">
+            <summary>
+            Gets or sets the <see cref="T:GSF.ServiceProcess.ClientRequest"/> object sent by the <see cref="P:GSF.ServiceProcess.ClientRequestInfo.Sender"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ClientRequestInfo.ReceivedAt">
+            <summary>
+            Gets or sets the <see cref="T:System.DateTime"/> when the <see cref="P:GSF.ServiceProcess.ClientRequestInfo.Request"/> was received from the <see cref="P:GSF.ServiceProcess.ClientRequestInfo.Sender"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.NamespaceDoc">
+            <summary>
+            Contains classes used to simplify and standardize development and operation of Windows services that are remotely manageable.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ServiceState">
+            <summary>
+            Indicates the state of a Windows Service.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceState.Started">
+            <summary>
+            Service has started.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceState.Stopped">
+            <summary>
+            Service has stopped.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceState.Paused">
+            <summary>
+            Service has paused.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceState.Resumed">
+            <summary>
+            Service has resumed.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceState.Shutdown">
+            <summary>
+            Service has shutdown.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ServiceHelper">
+            <summary>
+            Component that provides added functionality to a Windows Service.
+            </summary>
+            <seealso cref="T:GSF.ServiceProcess.ServiceProcess"/>
+            <seealso cref="T:GSF.ServiceProcess.ServiceResponse"/>
+            <seealso cref="T:GSF.ServiceProcess.ClientInfo"/>
+            <seealso cref="T:GSF.ServiceProcess.ClientRequest"/>
+            <seealso cref="T:GSF.ServiceProcess.ClientRequestHandler"/>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultLogStatusUpdates">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.LogStatusUpdates"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultMaxStatusUpdatesLength">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.MaxStatusUpdatesLength"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultMaxStatusUpdatesFrequency">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.MaxStatusUpdatesFrequency"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultMonitorServiceHealth">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.MonitorServiceHealth"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultHealthMonitorInterval">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.HealthMonitorInterval"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultRequestHistoryLimit">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.RequestHistoryLimit"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultSupportTelnetSessions">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.SupportTelnetSessions"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultSupportSystemCommands">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.SupportSystemCommands"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultSecureRemoteInteractions">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.SecureRemoteInteractions"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultPersistSettings">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.PersistSettings"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceHelper.DefaultSettingsCategory">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceProcess.ServiceHelper.SettingsCategory"/> property.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.#ctor(System.ComponentModel.IContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> class.
+            </summary>
+            <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.Initialize">
+            <summary>
+            Initializes the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.ServiceProcess.ServiceHelper.Initialize"/> is to be called by user-code directly only if the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> 
+            object is not consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.BeginInit">
+            <summary>
+            Performs necessary operations before the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.ServiceProcess.ServiceHelper.BeginInit"/> should never be called by user-code directly. This method exists solely for use 
+            by the designer if the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> is consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.EndInit">
+            <summary>
+            Performs necessary operations after the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> properties are initialized.
+            </summary>
+            <remarks>
+            <see cref="M:GSF.ServiceProcess.ServiceHelper.EndInit"/> should never be called by user-code directly. This method exists solely for use 
+            by the designer if the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> is consumed through the designer surface of the IDE.
+            </remarks>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.SaveSettings">
+            <summary>
+            Saves settings of the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> to the config file if the <see cref="P:GSF.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.ServiceProcess.ServiceHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.SaveSettings(System.Boolean)">
+            <summary>
+            Saves settings of the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> to the config file if the <see cref="P:GSF.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <param name="includeServiceComponents">A boolean value that indicates whether the settings of <see cref="P:GSF.ServiceProcess.ServiceHelper.ServiceComponents"/> are to be saved.</param>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.ServiceProcess.ServiceHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.LoadSettings">
+            <summary>
+            Loads saved settings of the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> from the config file if the <see cref="P:GSF.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.Configuration.ConfigurationErrorsException"><see cref="P:GSF.ServiceProcess.ServiceHelper.SettingsCategory"/> has a value of null or empty string.</exception>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.LoadSettings(System.Boolean)">
+            <summary>
+            Loads saved settings of the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> from the config file if the <see cref="P:GSF.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <param name="includeServiceComponents">A boolean value that indicates whether the settings of <see cref="P:GSF.ServiceProcess.ServiceHelper.ServiceComponents"/> are to be loaded.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnStart(System.String[])">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnStart(System.String[])"/> method of <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+            <param name="args">Array of type <see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnStop">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnStop"/> method of <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnPause">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnPause"/> method of <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnResume">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnContinue"/> method of <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnShutdown">
+            <summary>
+            To be called from the <see cref="M:System.ServiceProcess.ServiceBase.OnShutdown"/> method of <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.SendResponse(GSF.ServiceProcess.ServiceResponse)">
+            <summary>
+            Sends the specified <paramref name="response"/> to all <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+            <param name="response">The <see cref="T:GSF.ServiceProcess.ServiceResponse"/> to be sent to all <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.SendResponse(System.Guid,GSF.ServiceProcess.ServiceResponse)">
+            <summary>
+            Sends the specified <paramref name="response"/> to the specified <paramref name="client"/> only.
+            </summary>
+            <param name="client">ID of the client to whom the <paramref name="response"/> is to be sent.</param>
+            <param name="response">The <see cref="T:GSF.ServiceProcess.ServiceResponse"/> to be sent to the <paramref name="client"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.SendResponse(System.Guid,GSF.ServiceProcess.ServiceResponse,System.Boolean)">
+            <summary>
+            Sends the specified <paramref name="response"/> to the specified <paramref name="client"/> only.
+            </summary>
+            <param name="client">ID of the client to whom the <paramref name="response"/> is to be sent.</param>
+            <param name="response">The <see cref="T:GSF.ServiceProcess.ServiceResponse"/> to be sent to the <paramref name="client"/>.</param>
+            <param name="async">Flag to determine whether to wait for the send operations to complete.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.SendActionableResponse(GSF.ServiceProcess.ClientRequestInfo,System.Boolean,System.Object,System.String,System.Object[])">
+            <summary>
+            Sends an actionable response to client along with an optional formatted message and attachment.
+            </summary>
+            <param name="requestInfo"><see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
+            <param name="success">Flag that determines if this response to client request was a success.</param>
+            <param name="attachment">Attachment to send with response.</param>
+            <param name="status">Formatted status message to send with response.</param>
+            <param name="args">Arguments of the formatted status message.</param>
+            <remarks>
+            This method is used to send an actionable client response that can be used for responding to an event after a command has been issued.
+            </remarks>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.UpdateStatus(GSF.UpdateType,System.String,System.Object[])">
+            <summary>
+            Provides a status update to all <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+            <param name="message">Text message to be transmitted to all <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.</param>
+            <param name="type">One of the <see cref="T:GSF.UpdateType"/> values.</param>
+            <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.UpdateStatus(System.Guid,GSF.UpdateType,System.String,System.Object[])">
+            <summary>
+            Provides a status update to the specified <paramref name="client"/>.
+            </summary>
+            <param name="client">ID of the client to whom the <paramref name="message"/> is to be sent.</param>
+            <param name="type">One of the <see cref="T:GSF.UpdateType"/> values.</param>
+            <param name="message">Text message to be transmitted to the <paramref name="client"/>.</param>
+            <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.UpdateStatusAppendLine(GSF.UpdateType,System.String,System.Object[])">
+            <summary>
+            Provides a line terminated status update to all <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+            <param name="message">Text message to be transmitted to all <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.</param>
+            <param name="type">One of the <see cref="T:GSF.UpdateType"/> values.</param>
+            <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.UpdateStatusAppendLine(System.Guid,GSF.UpdateType,System.String,System.Object[])">
+            <summary>
+            Provides a line terminated status update to the specified <paramref name="client"/>.
+            </summary>
+            <param name="client">ID of the client to whom the <paramref name="message"/> is to be sent.</param>
+            <param name="type">One of the <see cref="T:GSF.UpdateType"/> values.</param>
+            <param name="message">Text message to be transmitted to the <paramref name="client"/>.</param>
+            <param name="args">Arguments to be used for formatting the <paramref name="message"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.AddProcess(System.Action{System.String,System.Object[]},System.String)">
+            <summary>
+            Adds a new <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <param name="processExecutionMethod">The <see cref="T:System.Delegate"/> to be invoked the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> is started.</param>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> being added.</param>
+            <returns>true if the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> does not already exist and is added, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.AddProcess(System.Action{System.String,System.Object[]},System.String,System.Object[])">
+            <summary>
+            Adds a new <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <param name="processExecutionMethod">The <see cref="T:System.Delegate"/> to be invoked the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> is started.</param>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> being added.</param>
+            <param name="processArguments">Arguments to be passed in to the <paramref name="processExecutionMethod"/> during execution.</param>
+            <returns>true if the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> does not already exist and is added, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.RemoveProcess(System.String)">
+            <summary>
+            Removes an existing <see cref="T:GSF.ServiceProcess.ServiceProcess"/> from the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to be removed.</param>
+            <returns>true if the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> exists and is removed, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.AddScheduledProcess(System.Action{System.String,System.Object[]},System.String,System.String)">
+            <summary>
+            Adds a new <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> that executes on a schedule.
+            </summary>
+            <param name="processExecutionMethod">The <see cref="T:System.Delegate"/> to be invoked the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> is started.</param>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> being added.</param>
+            <param name="processSchedule"><see cref="T:GSF.Scheduling.Schedule"/> for the execution of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.</param>
+            <returns>true if the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> does not exist already and is added and scheduled, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.AddScheduledProcess(System.Action{System.String,System.Object[]},System.String,System.Object[],System.String)">
+            <summary>
+            Adds a new <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> that executes on a schedule.
+            </summary>
+            <param name="processExecutionMethod">The <see cref="T:System.Delegate"/> to be invoked the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> is started.</param>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> being added.</param>
+            <param name="processArguments">Arguments to be passed in to the <paramref name="processExecutionMethod"/> during execution.</param>
+            <param name="processSchedule"><see cref="T:GSF.Scheduling.Schedule"/> for the execution of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.</param>
+            <returns>true if the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> does not exist already and is added and scheduled, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.RemoveScheduledProcess(System.String)">
+            <summary>
+            Removes an existing <see cref="T:GSF.ServiceProcess.ServiceProcess"/> from the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> that is scheduled for automatic execution.
+            </summary>
+            <param name="processName">Name of the scheduled <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to be removed.</param>
+            <returns>true is the scheduled <see cref="T:GSF.ServiceProcess.ServiceProcess"/> is removed, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.ScheduleProcess(System.String,System.String)">
+            <summary>
+            Schedules an existing <see cref="T:GSF.ServiceProcess.ServiceProcess"/> for automatic execution.
+            </summary>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to be scheduled.</param>
+            <param name="scheduleRule">Rule that defines the execution pattern of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.</param>
+            <returns>true if the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> exists and is scheduled, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.ScheduleProcess(System.String,System.String,System.Boolean)">
+            <summary>
+            Schedules an existing <see cref="T:GSF.ServiceProcess.ServiceProcess"/> for automatic execution.
+            </summary>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to be scheduled.</param>
+            <param name="scheduleRule">Rule that defines the execution pattern of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.</param>
+            <param name="updateExistingSchedule">true if the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> is to be re-scheduled; otherwise false.</param>
+            <returns>true if the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> exists and is scheduled or re-scheduled, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.UnscheduleProcess(System.String)">
+            <summary>
+            Unschedules an existing <see cref="T:GSF.ServiceProcess.ServiceProcess"/> scheduled for automatic execution.
+            </summary>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to be unscheduled.</param>
+            <returns>true if the scheduled <see cref="T:GSF.ServiceProcess.ServiceProcess"/> is unscheduled, otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.FindProcess(System.String)">
+            <summary>
+            Returns the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> for the specified <paramref name="processName"/>.
+            </summary>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> to be retrieved.</param>
+            <returns><see cref="T:GSF.ServiceProcess.ServiceProcess"/> object if found; otherwise null.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.FindConnectedClient(System.Guid)">
+            <summary>
+            Returns the <see cref="T:GSF.ServiceProcess.ClientInfo"/> object for the specified <paramref name="clientID"/>.
+            </summary>
+            <param name="clientID">ID of the client whose <see cref="T:GSF.ServiceProcess.ClientInfo"/> object is to be retrieved.</param>
+            <returns><see cref="T:GSF.ServiceProcess.ClientInfo"/> object if found; otherwise null.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.FindClientRequestHandler(System.String)">
+            <summary>
+            Returns the <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> object for the specified <paramref name="handlerCommand"/>.
+            </summary>
+            <param name="handlerCommand">Request type whose <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> object is to be retrieved.</param>
+            <returns><see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> object if found; otherwise null.</returns>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnServiceStarting(System.String[])">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ServiceStarting"/> event.
+            </summary>
+            <param name="args">Arguments to be sent to <see cref="E:GSF.ServiceProcess.ServiceHelper.ServiceStarting"/> event.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnServiceStarted">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ServiceStarted"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnServiceStopping">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ServiceStopping"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnServiceStopped">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ServiceStopped"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnServicePausing">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ServicePausing"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnServicePaused">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ServicePaused"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnServiceResuming">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ServiceResuming"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnServiceResumed">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ServiceResumed"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnSystemShutdown">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.SystemShutdown"/> event.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnReceivedClientRequest(GSF.ServiceProcess.ClientRequest,GSF.ServiceProcess.ClientInfo)">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ReceivedClientRequest"/> event.
+            </summary>
+            <param name="request">The <see cref="T:GSF.ServiceProcess.ClientRequest"/> that was received.</param>
+            <param name="requestSender">The <see cref="T:GSF.ServiceProcess.ClientInfo"/> object of the <paramref name="request"/> sender.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.OnProcessStateChanged(System.String,GSF.ServiceProcess.ServiceProcessState)">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceHelper.ProcessStateChanged"/> event.
+            </summary>
+            <param name="processName">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> whose state changed.</param>
+            <param name="processState">New <see cref="T:GSF.ServiceProcess.ServiceProcessState"/> of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceHelper.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ServiceStarting">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/> is starting.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ServiceStarted">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/> has started.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ServiceStopping">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/> is stopping.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ServiceStopped">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/> has stopped.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ServicePausing">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/> is pausing.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ServicePaused">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/> has paused.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ServiceResuming">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/> is resuming.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ServiceResumed">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/> has resumed.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.SystemShutdown">
+            <summary>
+            Occurs when the system is being shutdown.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ReceivedClientRequest">
+            <summary>
+            Occurs when a request is received from one of the <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the remote client that sent the request.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="T:GSF.ServiceProcess.ClientRequest"/> sent by the remote client.
+            </remarks>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceHelper.ProcessStateChanged">
+            <summary>
+            Occurs when the state of a defiend <see cref="T:GSF.ServiceProcess.ServiceProcess"/> changes.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the <see cref="P:GSF.ServiceProcess.ServiceProcess.Name"/>.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is the <see cref="P:GSF.ServiceProcess.ServiceProcess.CurrentState"/>
+            </remarks>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.LogStatusUpdates">
+            <summary>
+            Gets or sets a boolean value that indicates whether messages sent using <see cref="M:GSF.ServiceProcess.ServiceHelper.UpdateStatus(GSF.UpdateType,System.String,System.Object[])"/> 
+            or <see cref="M:GSF.ServiceProcess.ServiceHelper.UpdateStatus(System.Guid,GSF.UpdateType,System.String,System.Object[])"/> are to be logged to the <see cref="P:GSF.ServiceProcess.ServiceHelper.StatusLog"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.MaxStatusUpdatesLength">
+            <summary>
+            Gets or sets the maximum numbers of characters allowed in update status messages without getting suppressed from being displayed.
+            </summary>
+            <exception cref="T:System.ArgumentException">The value being assigned is negative or zero.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.MaxStatusUpdatesFrequency">
+            <summary>
+            Gets or sets the maximum number of status update messages that can be issued in a second without getting suppressed from being displayed.
+            </summary>
+            <exception cref="T:System.ArgumentException">The value being assigned is negative or zero.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.MonitorServiceHealth">
+            <summary>
+            Gets or sets a boolean value that indicates whether the health of the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/> is to be monitored.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.HealthMonitorInterval">
+            <summary>
+            Gets or sets the interval, in seconds, over which to sample the performance monitor for health statistics.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.RequestHistoryLimit">
+            <summary>
+            Gets or sets the maximum number of <see cref="T:GSF.ServiceProcess.ClientRequest"/> entries to be maintained in the <see cref="P:GSF.ServiceProcess.ServiceHelper.ClientRequestHistory"/>.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">The value being assigned is zero or negative.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.SupportTelnetSessions">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> will have support for remote telnet-like sessions.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.SupportSystemCommands">
+            <summary>
+            Gets or sets a boolean value that indicates whether <see cref="T:GSF.ServiceProcess.ServiceHelper"/> commands will have support for system-level access (-system switch).
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.SecureRemoteInteractions">
+            <summary>
+            Gets or sets a boolean value that indicates whether <see cref="T:GSF.ServiceProcess.ServiceHelper"/> will secure remote interactions from <see cref="T:GSF.ServiceProcess.ClientHelper"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.PersistSettings">
+            <summary>
+            Gets or sets a boolean value that indicates whether the settings of <see cref="T:GSF.ServiceProcess.ServiceHelper"/> are to be saved to the config file.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.SettingsCategory">
+            <summary>
+            Gets or sets the category under which the settings of <see cref="T:GSF.ServiceProcess.ServiceHelper"/> are to be saved to the config file 
+            if the <see cref="P:GSF.ServiceProcess.ServiceHelper.PersistSettings"/> property is set to true.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.ParentService">
+            <summary>
+            Gets or sets the <see cref="T:System.ServiceProcess.ServiceBase"/> to which the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> will provided added functionality.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.RemotingServer">
+            <summary>
+            Gets or sets the <see cref="T:GSF.Communication.ServerBase"/> component used for communicating with <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.ProcessScheduler">
+            <summary>
+            Gets the <see cref="T:GSF.Scheduling.ScheduleManager"/> component used for scheduling defined <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.StatusLog">
+            <summary>
+            Gets the <see cref="T:GSF.IO.LogFile"/> component used for logging status messages to a text file.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.ErrorLogger">
+            <summary>
+            Gets the <see cref="P:GSF.ServiceProcess.ServiceHelper.ErrorLogger"/> component used for logging errors encountered in the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> is currently enabled.
+            </summary>
+            <remarks>
+            <see cref="P:GSF.ServiceProcess.ServiceHelper.Enabled"/> property is not be set by user-code directly.
+            </remarks>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.Processes">
+            <summary>
+            Gets a list of <see cref="T:GSF.ServiceProcess.ServiceProcess"/> defined in the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.RemoteClients">
+            <summary>
+            Gets a list of <see cref="T:GSF.ServiceProcess.ClientInfo"/> for remote clients connected to the <see cref="P:GSF.ServiceProcess.ServiceHelper.RemotingServer"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.ClientRequestHistory">
+            <summary>
+            Gets a list of <see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> for requests made by <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.ClientRequestHandlers">
+            <summary>
+            Gets a list of <see cref="T:GSF.ServiceProcess.ClientRequestHandler"/> registered for handling requests from <see cref="P:GSF.ServiceProcess.ServiceHelper.RemoteClients"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.ServiceComponents">
+            <summary>
+            Gets a list of components that implement the <see cref="T:GSF.ISupportLifecycle"/> interface used by the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.PerformanceMonitor">
+            <summary>
+            Gets the <see cref="P:GSF.ServiceProcess.ServiceHelper.PerformanceMonitor"/> object used for monitoring the health of the <see cref="P:GSF.ServiceProcess.ServiceHelper.ParentService"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.Name">
+            <summary>
+            Gets the unique identifier of the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceHelper.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.RecoverAction">
+            <summary>
+            Defines the recover action to be performed upon service failure.
+            </summary>
+            <remarks>
+            Enum values correspond to Win32 equivalents.
+            </remarks>
+        </member>
+        <member name="F:GSF.ServiceProcess.RecoverAction.None">
+            <summary>
+            No action.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.RecoverAction.Restart">
+            <summary>
+            Restart the service.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.RecoverAction.Reboot">
+            <summary>
+            Reboot the computer.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.RecoverAction.RunCommand">
+            <summary>
+            Run a command.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ServiceInstallerEx">
+            <summary>
+            Defines an extended service installer class that can define service failure actions at install time.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceInstallerEx.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.ServiceProcess.ServiceInstallerEx"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceInstallerEx.DefineRecoverAction(GSF.ServiceProcess.RecoverAction,System.Int32)">
+            <summary>
+            Defines a new recover action to be performed upon service failure.
+            </summary>
+            <param name="recoverAction"><see cref="T:GSF.ServiceProcess.RecoverAction"/> to execute upon service failure.</param>
+            <param name="delay">The time to wait before performing the specified <paramref name="recoverAction"/>, in milliseconds.</param>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceInstallerEx.FailResetPeriod">
+            <summary>
+            Sets the time after which to reset the failure count to zero if there are no failures, in seconds.
+            Specify <see cref="F:System.Threading.Timeout.Infinite"/> to indicate that this value should never be reset.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceInstallerEx.FailRebootMessage">
+            <summary>
+            Sets the service fail reboot message.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceInstallerEx.FailRunCommand">
+            <summary>
+            Sets the service fail run command.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceInstallerEx.ExecuteActionsOnNonCrashErrors">
+            <summary>
+            Sets flag that determines when failure actions are to be executed.
+            </summary>
+            <remarks>
+            <para>
+            If this member is <c>true</c> and the service has configured failure actions, the failure actions are queued if the service process
+            terminates without reporting a status of SERVICE_STOPPED or if it enters the SERVICE_STOPPED state but the exit code returned in the
+            SERVICE_STATUS structure is not ERROR_SUCCESS (0).
+            </para>
+            <para>
+            If this member is <c>false</c> and the service has configured failure actions, the failure actions are queued only if the service
+            terminates without reporting a status of SERVICE_STOPPED.
+            </para>
+            <para>
+            This setting is ignored unless the service has configured failure actions.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceInstallerEx.StartOnInstall">
+            <summary>
+            Sets the boolean value to configure the service to start after it is installed.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceInstallerEx.StartTimeout">
+            <summary>
+            Sets the service start timeout in milliseconds.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ServiceProcessState">
+            <summary>
+            Indicates the current state of <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceProcessState.Unprocessed">
+            <summary>
+            <see cref="T:GSF.ServiceProcess.ServiceProcess"/> has not been started.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceProcessState.Processing">
+            <summary>
+            <see cref="T:GSF.ServiceProcess.ServiceProcess"/> is currently executing.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceProcessState.Processed">
+            <summary>
+            <see cref="T:GSF.ServiceProcess.ServiceProcess"/> has completed processing.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceProcessState.Aborted">
+            <summary>
+            <see cref="T:GSF.ServiceProcess.ServiceProcess"/> was aborted.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceProcess.ServiceProcessState.Exception">
+            <summary>
+            <see cref="T:GSF.ServiceProcess.ServiceProcess"/> stopped due to exception.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ServiceProcess">
+            <summary>
+            Represents a process that executes asynchronously inside a <see cref="T:GSF.ServiceProcess.ServiceHelper"/>.
+            </summary>
+            <seealso cref="T:GSF.ServiceProcess.ServiceHelper"/>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceProcess.#ctor(System.Action{System.String,System.Object[]},System.String,System.Object[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> class.
+            </summary>
+            <param name="executionMethod"><see cref="T:System.Delegate"/> that gets invoked when <see cref="M:GSF.ServiceProcess.ServiceProcess.Start"/> is called.</param>
+            <param name="name">Name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.</param>
+            <param name="arguments">Arguments to be passed in to the <paramref name="executionMethod"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceProcess.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceProcess.Start">
+            <summary>
+            Starts the execution of <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceProcess.Start(System.Object[])">
+            <summary>
+            Starts the execution of <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.
+            </summary>
+            <param name="arguments">Arguments to be passed in to the <see cref="P:GSF.ServiceProcess.ServiceProcess.ExecutionMethod"/>.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceProcess.Abort">
+            <summary>
+            Stops the execution of <see cref="T:GSF.ServiceProcess.ServiceProcess"/> if it executing.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceProcess.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceProcess.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceProcess.OnStateChanged">
+            <summary>
+            Raises the <see cref="E:GSF.ServiceProcess.ServiceProcess.StateChanged"/> event.
+            </summary>
+        </member>
+        <member name="E:GSF.ServiceProcess.ServiceProcess.StateChanged">
+            <summary>
+            Occurs when the <see cref="P:GSF.ServiceProcess.ServiceProcess.CurrentState"/> of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> changes.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceProcess.Name">
+            <summary>
+            Gets or sets the name of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is a null or empty string.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceProcess.Arguments">
+            <summary>
+            Gets or sets the arguments to be passed in to the <see cref="P:GSF.ServiceProcess.ServiceProcess.ExecutionMethod"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceProcess.ExecutionMethod">
+            <summary>
+            Gets or sets the <see cref="T:System.Delegate"/> that gets invoked when <see cref="M:GSF.ServiceProcess.ServiceProcess.Start"/> is called.
+            </summary>
+            <remarks>
+            Argument1 gets the <see cref="P:GSF.ServiceProcess.ServiceProcess.Name"/> of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.<br/>
+            Argument2 gets the <see cref="P:GSF.ServiceProcess.ServiceProcess.Arguments"/> of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.
+            </remarks>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceProcess.CurrentState">
+            <summary>
+            Gets the current <see cref="T:GSF.ServiceProcess.ServiceProcessState"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceProcess.ExecutionStartTime">
+            <summary>
+            Gets the <see cref="T:System.DateTime"/> when execution of <see cref="T:GSF.ServiceProcess.ServiceProcess"/> last started.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceProcess.ExecutionStopTime">
+            <summary>
+            Gets the <see cref="T:System.DateTime"/> when execution of <see cref="T:GSF.ServiceProcess.ServiceProcess"/> last completed.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceProcess.LastExecutionTime">
+            <summary>
+            Gets the <see cref="T:GSF.Units.Time"/> taken by the <see cref="T:GSF.ServiceProcess.ServiceProcess"/> during the last execution.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceProcess.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:GSF.ServiceProcess.ServiceProcess"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ServiceResponse">
+            <summary>
+            Represents a response sent by the <see cref="T:GSF.ServiceProcess.ServiceHelper"/> to a <see cref="T:GSF.ServiceProcess.ClientRequest"/> from the <see cref="T:GSF.ServiceProcess.ClientHelper"/>.
+            </summary>
+            <seealso cref="T:GSF.ServiceProcess.ServiceHelper"/>
+            <seealso cref="T:GSF.ServiceProcess.ClientHelper"/>
+            <seealso cref="T:GSF.ServiceProcess.ClientRequest"/>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ServiceResponse"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceResponse.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ServiceResponse"/> class.
+            </summary>
+            <param name="type">Type of the <see cref="T:GSF.ServiceProcess.ServiceResponse"/> in plain text.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceResponse.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceProcess.ServiceResponse"/> class.
+            </summary>
+            <param name="type">Type of the <see cref="T:GSF.ServiceProcess.ServiceResponse"/> in plain-text.</param>
+            <param name="message">Message associated with the <see cref="T:GSF.ServiceProcess.ServiceResponse"/>.</param>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceResponse.Type">
+            <summary>
+            Gets or sets the plain-text type of the <see cref="T:GSF.ServiceProcess.ServiceResponse"/>.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">The value being assigned is either a null or empty string.</exception>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceResponse.Message">
+            <summary>
+            Gets or sets the palin-text message associated with the <see cref="T:GSF.ServiceProcess.ServiceResponse"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceProcess.ServiceResponse.Attachments">
+            <summary>
+            Gets a list of serializable attachments of the <see cref="T:GSF.ServiceProcess.ServiceResponse"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

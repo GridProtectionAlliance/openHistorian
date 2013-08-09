@@ -1,18 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace NPlot
 {
     public class LineData
     {
-        IList<double> m_x;
-        IList<double> m_y;
-        public double MaxValueX { get; private set; }
-        public double MaxValueY { get; private set; }
-        public double MinValueX { get; private set; }
-        public double MinValueY { get; private set; }
-        public int Count { get; private set; }
+        private readonly IList<double> m_x;
+        private readonly IList<double> m_y;
+
+        public double MaxValueX
+        {
+            get;
+            private set;
+        }
+
+        public double MaxValueY
+        {
+            get;
+            private set;
+        }
+
+        public double MinValueX
+        {
+            get;
+            private set;
+        }
+
+        public double MinValueY
+        {
+            get;
+            private set;
+        }
+
+        public int Count
+        {
+            get;
+            private set;
+        }
 
         public LineData(IList<double> x, IList<double> y)
         {
@@ -50,6 +76,7 @@ namespace NPlot
         {
             return new PointD(m_x[i], m_y[i]);
         }
+
         public void Get(int i, out double x, out double y)
         {
             x = m_x[i];
@@ -62,19 +89,18 @@ namespace NPlot
         /// <param name="sb">StringBuilder to write to.</param>
         /// <param name="region">Only write out data in this region if onlyInRegion is true.</param>
         /// <param name="onlyInRegion">If true, only data in region is written, else all data is written.</param>
-        public void WriteData(System.Text.StringBuilder sb, RectangleD region, bool onlyInRegion)
+        public void WriteData(StringBuilder sb, RectangleD region, bool onlyInRegion)
         {
             for (int i = 0; i < Count; ++i)
             {
                 if (!(onlyInRegion &&
-                       (Get(i).X >= region.X && Get(i).X <= region.X + region.Width) &&
-                       (Get(i).Y >= region.Y && Get(i).Y <= region.Y + region.Height)))
+                      (Get(i).X >= region.X && Get(i).X <= region.X + region.Width) &&
+                      (Get(i).Y >= region.Y && Get(i).Y <= region.Y + region.Height)))
                     continue;
 
                 sb.Append(Get(i).ToString());
                 sb.Append("\r\n");
             }
         }
-
     }
 }

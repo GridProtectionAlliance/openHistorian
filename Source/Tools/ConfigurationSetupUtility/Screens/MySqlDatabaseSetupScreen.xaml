@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="ConfigurationSetupUtility.Screens.MySqlDatabaseSetupScreen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="350" MaxWidth="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=FrameworkElement, AncestorLevel=1}, Path=ActualWidth}" IsVisibleChanged="MySqlDatabaseSetupScreen_IsVisibleChanged">
+    <DockPanel>
+        <Label Content="Set up a MySQL database" DockPanel.Dock="Top" FontSize="16" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="10" />
+        <StackPanel DockPanel.Dock="Bottom">
+            <TextBlock Margin="20,0,20,5" TextAlignment="Center" TextWrapping="Wrap" Name="m_mySqlDatabaseInstructionTextBlock">
+                Please enter the needed information about the<LineBreak />MySQL database you would like to create.
+            </TextBlock>
+            <Grid HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Label Content="Host name:" HorizontalAlignment="Left" Margin="0,0,5,0" VerticalAlignment="Stretch" />
+                <Label Content="Database name:" Grid.Row="1" HorizontalAlignment="Left" Margin="0,0,5,0" VerticalAlignment="Stretch" />
+                <Label Content="Admin user name:" Grid.Row="2" HorizontalAlignment="Left" Margin="0,0,5,0" VerticalAlignment="Stretch" Name="m_userNameLabel" />
+                <Label Content="Admin password:" Grid.Row="3" HorizontalAlignment="Left" Margin="0,0,5,0" VerticalAlignment="Stretch" Name="m_passwordLabel" />
+                <TextBox Grid.Column="1" HorizontalAlignment="Left" Name="m_hostNameTextBox" Text="localhost" TextChanged="HostNameTextBox_TextChanged" VerticalAlignment="Center" Width="150" LostFocus="m_hostNameTextBox_LostFocus" />
+                <TextBox Grid.Column="1" Grid.Row="1" Height="23" HorizontalAlignment="Left" Name="m_databaseNameTextBox" Text="openHistorian" TextChanged="DatabaseNameTextBox_TextChanged" VerticalAlignment="Center" Width="150" />
+                <TextBox Grid.Column="1" Grid.Row="2" Height="23" HorizontalAlignment="Left" Name="m_adminUserNameTextBox" TextChanged="AdminUserNameTextBox_TextChanged" VerticalAlignment="Center" Width="150" />
+                <PasswordBox Grid.Column="1" Grid.Row="3" Height="23" HorizontalAlignment="Left" Name="m_adminPasswordTextBox" PasswordChanged="AdminPasswordTextBox_PasswordChanged" VerticalAlignment="Center" Width="150" />
+                <Button Content="Test Connection" Height="20" HorizontalAlignment="Center" Margin="5,5,0,5" VerticalAlignment="Top" Width="100" Grid.Row="4" Grid.Column="2" FontSize="11" Click="TestConnectionButton_Click" />
+                <CheckBox Checked="CreateNewUserCheckBox_Checked" Content="Create new database user" Grid.ColumnSpan="2" Grid.Row="5" HorizontalAlignment="Left" Margin="5,20,0,5" Name="m_createNewUserCheckBox" Unchecked="CreateNewUserCheckBox_Unchecked" VerticalAlignment="Top" />
+                <Label Content="User name:" Grid.Row="6" Height="26" HorizontalAlignment="Left" IsEnabled="{Binding ElementName=m_createNewUserCheckBox, Path=IsChecked}" VerticalAlignment="Bottom" Name="m_newUserNameLabel" />
+                <Label Content="Password:" Grid.Row="7" HorizontalAlignment="Left" IsEnabled="{Binding ElementName=m_createNewUserCheckBox, Path=IsChecked}" Margin="0,0,5,0" Name="m_newUserPasswordLabel" />
+                <TextBox Grid.Column="1" Grid.Row="6" Height="23" HorizontalAlignment="Left" IsEnabled="{Binding ElementName=m_createNewUserCheckBox, Path=IsChecked}" Name="m_newUserNameTextBox" TextChanged="NewUserNameTextBox_TextChanged" VerticalAlignment="Center" Width="150" />
+                <PasswordBox Grid.Column="1" Grid.Row="7" Height="23" HorizontalAlignment="Left" IsEnabled="{Binding ElementName=m_createNewUserCheckBox, Path=IsChecked}" Name="m_newUserPasswordTextBox" PasswordChanged="NewUserPasswordTextBox_PasswordChanged" VerticalAlignment="Center" Width="150" />
+            </Grid>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

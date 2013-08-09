@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MongoAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:MongoAdapters.MeasurementWrapper">
+            <summary>
+            A wrapper object used for easy insertion to and retrieval from a MongoDB database.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MeasurementWrapper.#ctor">
+            <summary>
+            Creates an empty instance of the <see cref="T:MongoAdapters.MeasurementWrapper"/> class.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MeasurementWrapper.#ctor(GSF.TimeSeries.IMeasurement)">
+            <summary>
+            Creates a new instance of the <see cref="T:MongoAdapters.MeasurementWrapper"/> class.
+            </summary>
+            <param name="measurement">The measurement to be wrapped by the wrapper.</param>
+        </member>
+        <member name="M:MongoAdapters.MeasurementWrapper.GetMeasurement">
+            <summary>
+            Returns a new measurement equivalent to the one being wrapped.
+            </summary>
+            <returns>The wrapped measurement.</returns>
+        </member>
+        <member name="P:MongoAdapters.MeasurementWrapper.Adder">
+            <summary>
+            The adder used to adjust the value of the measurement.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MeasurementWrapper.ID">
+            <summary>
+            The identification number of the measurement.
+            PointIDs are unsigned integers, but MongoDB needs to store
+            them as signed integers.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MeasurementWrapper.Multiplier">
+            <summary>
+            The multiplier used to adjust the value of the measurement.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MeasurementWrapper.SignalID">
+            <summary>
+            String representation of the measurement's signal ID.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MeasurementWrapper.Source">
+            <summary>
+            The source of the measurement.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MeasurementWrapper.TagName">
+            <summary>
+            The measurement's tag name.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MeasurementWrapper.Timestamp">
+            <summary>
+            The timestamp associated with the measurement.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MeasurementWrapper.Value">
+            <summary>
+            The value of the measurement, before applying the adder and multiplier.
+            </summary>
+        </member>
+        <member name="T:MongoAdapters.MongoInputAdapter">
+            <summary>
+            Represents an input adapter that reads measurements from a MongoDB database.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoInputAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:MongoAdapters.MongoInputAdapter"/> class.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:MongoAdapters.MongoInputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:MongoAdapters.MongoInputAdapter.Initialize">
+            <summary>
+            Initializes the <see cref="T:MongoAdapters.MongoInputAdapter"/> using settings from the connection string.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoInputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to MongoDB.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoInputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from MongoDB.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns a short message describing the current status of the adapter.
+            </summary>
+            <param name="maxLength">The maximum length of the status message.</param>
+            <returns>The short status message.</returns>
+        </member>
+        <member name="P:MongoAdapters.MongoInputAdapter.DatabaseName">
+            <summary>
+            Gets or sets the name of the MongoDB database.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoInputAdapter.CollectionName">
+            <summary>
+            Gets or sets the name of the measurement collection.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoInputAdapter.Server">
+            <summary>
+            Gets or sets the server on which the MongoDB daemon is running.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoInputAdapter.Port">
+            <summary>
+            Gets or sets the port on which the MongoDB daemon is listening.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoInputAdapter.FramesPerSecond">
+            <summary>
+            Gets or sets the rate at which frames are sent to the concentrator.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoInputAdapter.SimulateRealTime">
+            <summary>
+            Gets or sets a value that determines whether timestamps are simulated for real-time concentration.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoInputAdapter.UseAsyncConnect">
+            <summary>
+            Returns false; this adapter connects to MongoDB synchronously.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="T:MongoAdapters.MongoOutputAdapter">
+            <summary>
+            Represents an output adapter that archives measurements to a MongoDB database.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoOutputAdapter.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:MongoAdapters.MongoOutputAdapter"/> class.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoOutputAdapter.Initialize">
+            <summary>
+            Initializes the <see cref="T:MongoAdapters.MongoOutputAdapter"/> using settings from the connection string.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoOutputAdapter.AttemptConnection">
+            <summary>
+            Attempts to connect to MongoDB.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoOutputAdapter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from MongoDB.
+            </summary>
+        </member>
+        <member name="M:MongoAdapters.MongoOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Stores a collection of measurements in the MongoDB database.
+            </summary>
+            <param name="measurements">The measurements to be stored in the MongoDB database.</param>
+        </member>
+        <member name="M:MongoAdapters.MongoOutputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns a short message describing the current status of the adapter.
+            </summary>
+            <param name="maxLength">The maximum length of the status message.</param>
+            <returns>The short status message.</returns>
+        </member>
+        <member name="P:MongoAdapters.MongoOutputAdapter.DatabaseName">
+            <summary>
+            Gets or sets the name of the MongoDB database.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoOutputAdapter.CollectionName">
+            <summary>
+            Gets or sets the name of the measurement collection.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoOutputAdapter.Server">
+            <summary>
+            Gets or sets the server on which the MongoDB daemon is running.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoOutputAdapter.Port">
+            <summary>
+            Gets or sets the port on which the MongoDB daemon is listening.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoOutputAdapter.OutputIsForArchive">
+            <summary>
+            Returns true; the measurements are archived by this adapter into a MongoDB database.
+            </summary>
+        </member>
+        <member name="P:MongoAdapters.MongoOutputAdapter.UseAsyncConnect">
+            <summary>
+            Returns false; this adapter connects to MongoDB synchronously.
+            </summary>
+        </member>
+    </members>
+</doc>

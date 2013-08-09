@@ -1,0 +1,809 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.ServiceBus</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.ServiceBus.ClientInfo">
+            <summary>
+            Represents information about a client connected to the <see cref="T:GSF.ServiceBus.ServiceBusService"/> to produce/consume <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.ClientInfo.SessionId">
+            <summary>
+            Gets or sets the session identifier of the client.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.ClientInfo.ConnectedAt">
+            <summary>
+            Gets or sets the UTC <see cref="T:System.DateTime"/> when the client connected to the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.ClientInfo.MessagesProduced">
+            <summary>
+            Gets or sets the total number of <see cref="T:GSF.ServiceBus.Message"/>s produced by the client.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.ClientInfo.MessagesConsumed">
+            <summary>
+            Gets or sets the total number of <see cref="T:GSF.ServiceBus.Message"/>s consumed by the client.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.ClientInfo.OperationContext">
+            <summary>
+            Gets or sets the <see cref="F:GSF.ServiceBus.ClientInfo.OperationContext"/> object of the client.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.ClientInfo.#ctor(System.ServiceModel.OperationContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceBus.ClientInfo"/> class.
+            </summary>
+            <param name="context">An <see cref="F:GSF.ServiceBus.ClientInfo.OperationContext"/> object of the client.</param>
+        </member>
+        <member name="M:GSF.ServiceBus.ClientInfo.Equals(System.Object)">
+            <summary>
+            Determines if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:GSF.ServiceBus.ClientInfo"/> object.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:GSF.ServiceBus.ClientInfo"/> object.</param>
+            <returns>true if both <see cref="T:System.Object"/>s  are equal; otherwise false.</returns>
+        </member>
+        <member name="M:GSF.ServiceBus.ClientInfo.GetHashCode">
+            <summary>
+            Gets a hash value for the current <see cref="T:GSF.ServiceBus.ClientInfo"/> object.
+            </summary>
+            <returns>An <see cref="T:System.Int32"/> value.</returns>
+        </member>
+        <member name="T:GSF.ServiceBus.IServiceBusService">
+            <summary>
+            Defines a service bus for event-based messaging between disjoint systems.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.IServiceBusService.Register(GSF.ServiceBus.RegistrationRequest)">
+            <summary>
+            Registers with the <see cref="T:GSF.ServiceBus.ServiceBusService"/> to produce or consume <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+            <param name="request">An <see cref="T:GSF.ServiceBus.RegistrationRequest"/> containing registration data.</param>
+        </member>
+        <member name="M:GSF.ServiceBus.IServiceBusService.Unregister(GSF.ServiceBus.RegistrationRequest)">
+            <summary>
+            Unregisters a previous registration with the <see cref="T:GSF.ServiceBus.ServiceBusService"/> to produce or consume <see cref="T:GSF.ServiceBus.Message"/>s
+            </summary>
+            <param name="request">The <see cref="T:GSF.ServiceBus.RegistrationRequest"/> used when registering.</param>
+        </member>
+        <member name="M:GSF.ServiceBus.IServiceBusService.Publish(GSF.ServiceBus.Message)">
+            <summary>
+            Sends the <paramref name="message"/> to the <see cref="T:GSF.ServiceBus.ServiceBusService"/> for distribution amongst its registered consumers.
+            </summary>
+            <param name="message">The <see cref="T:GSF.ServiceBus.Message"/> that is to be distributed.</param>
+        </member>
+        <member name="M:GSF.ServiceBus.IServiceBusService.GetLatestMessage(GSF.ServiceBus.RegistrationRequest)">
+            <summary>
+            Gets the latest <see cref="T:GSF.ServiceBus.Message"/> distributed to the subscribers of the specified <paramref name="topic"/>.
+            </summary>
+            <param name="topic">The topic <see cref="T:GSF.ServiceBus.RegistrationRequest"/> used when registering.</param>
+            <returns>The latest <see cref="T:GSF.ServiceBus.Message"/> distributed to the <paramref name="topic"/> subscribers.</returns>
+        </member>
+        <member name="M:GSF.ServiceBus.IServiceBusService.GetClients">
+            <summary>
+            Gets a list of all clients connected to the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+            <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> of <see cref="T:GSF.ServiceBus.ClientInfo"/> objects.</returns>
+        </member>
+        <member name="M:GSF.ServiceBus.IServiceBusService.GetQueues">
+            <summary>
+            Gets a list of all <see cref="F:GSF.ServiceBus.MessageType.Queue"/>s registered on the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+            <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> of <see cref="T:GSF.ServiceBus.RegistrationInfo"/> objects.</returns>
+        </member>
+        <member name="M:GSF.ServiceBus.IServiceBusService.GetTopics">
+            <summary>
+            Gets a list of all <see cref="F:GSF.ServiceBus.MessageType.Topic"/>s registered on the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+            <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> of <see cref="T:GSF.ServiceBus.RegistrationInfo"/> objects.</returns>
+        </member>
+        <member name="T:GSF.ServiceBus.IServiceBusServiceCallback">
+            <summary>
+            Defines a callback contract that must be implemented by clients of <see cref="T:GSF.ServiceBus.ServiceBusService"/> for receiving <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.IServiceBusServiceCallback.ProcessMessage(GSF.ServiceBus.Message)">
+            <summary>
+            Invoked when a new <see cref="T:GSF.ServiceBus.Message"/> is received from the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+            <param name="message"><see cref="T:GSF.ServiceBus.Message"/> received from the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.</param>
+        </member>
+        <member name="T:GSF.ServiceBus.MessageType">
+            <summary>
+            Indicates how a <see cref="T:GSF.ServiceBus.Message"/> is distributed by the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.MessageType.Topic">
+            <summary>
+            <see cref="T:GSF.ServiceBus.Message"/> is distributed to all of its registered consumers.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.MessageType.Queue">
+            <summary>
+            <see cref="T:GSF.ServiceBus.Message"/> is distributed to the first of all its registered consumers.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceBus.Message">
+            <summary>
+            Represents a message that can be used to exchange information between processes using <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.Message.Time">
+            <summary>
+            Gets or sets the <see cref="T:System.DateTime"/> when this <see cref="T:GSF.ServiceBus.Message"/> was created.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.Message.Type">
+            <summary>
+            Gets or sets the <see cref="T:GSF.ServiceBus.MessageType">Type</see> of this <see cref="T:GSF.ServiceBus.Message"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.Message.Name">
+            <summary>
+            Gets or sets the identifier of this <see cref="T:GSF.ServiceBus.Message"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.Message.Format">
+            <summary>
+            Gets or sets the format of the <see cref="F:GSF.ServiceBus.Message.Content"/> in this <see cref="T:GSF.ServiceBus.Message"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.Message.Content">
+            <summary>
+            Gets or sets the actual payload of this <see cref="T:GSF.ServiceBus.Message"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceBus.ServiceBusSecurityPolicy">
+            <summary>
+            Represents an <see cref="T:System.IdentityModel.Policy.IAuthorizationPolicy">authorization policy</see> that can be used for enabling role-based security on <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+            <example>
+            This example shows the required config file entries when securing <see cref="T:GSF.ServiceBus.ServiceBusService"/>:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="GSF.Configuration.CategorizedSettingsSection, GSF.Core" />
+              </configSections>
+              <categorizedSettings>
+                <securityProvider>
+                  <add name="ApplicationName" value="" description="Name of the application being secured as defined in the backend security datastore."
+                    encrypted="false" />
+                  <add name="ConnectionString" value="" description="Connection string to be used for connection to the backend security datastore."
+                    encrypted="false" />
+                  <add name="ProviderType" value="GSF.Security.LdapSecurityProvider, GSF.Security"
+                    description="The type to be used for enforcing security." encrypted="false" />
+                  <add name="IncludedResources" value="Topic.Name=*;Queue.Name=*" description="Semicolon delimited list of resources to be secured along with role names."
+                    encrypted="false" />
+                  <add name="ExcludedResources" value="*/mex;*/Publish;*/GetClients;*/GetQueues;*/GetTopics;*/SecurityService.svc/*"
+                    description="Semicolon delimited list of resources to be excluded from being secured."
+                    encrypted="false" />
+                  <add name="NotificationSmtpServer" value="localhost" description="SMTP server to be used for sending out email notification messages."
+                    encrypted="false" />
+                  <add name="NotificationSenderEmail" value="sender@company.com" description="Email address of the sender of email notification messages." 
+                    encrypted="false" />
+                </securityProvider>
+                <activeDirectory>
+                  <add name="PrivilegedDomain" value="" description="Domain of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedUserName" value="" description="Username of privileged domain user account."
+                    encrypted="false" />
+                  <add name="PrivilegedPassword" value="" description="Password of privileged domain user account."
+                    encrypted="true" />
+                </activeDirectory>
+              </categorizedSettings>
+            </configuration>
+            ]]>
+            </code>
+            </example>
+            <seealso cref="T:GSF.ServiceBus.ServiceBusService"/>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusSecurityPolicy.GetResourceName">
+            <summary>
+            Gets the name of resource being accessed.
+            </summary>
+            <returns>
+            <see cref="T:GSF.ServiceBus.Message"/>.<see cref="F:GSF.ServiceBus.Message.Name"/> property value for <see cref="M:GSF.ServiceBus.ServiceBusService.Publish(GSF.ServiceBus.Message)"/> operations, 
+            otherwise <see cref="P:System.ServiceModel.Channels.MessageHeaders.Action"/> property value for all other operations.
+            </returns>
+        </member>
+        <member name="T:GSF.ServiceBus.MessageProcessingMode">
+            <summary>
+            Indicates how the distribution of <see cref="T:GSF.ServiceBus.Message"/>s is processed by the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.MessageProcessingMode.Parallel">
+            <summary>
+            <see cref="T:GSF.ServiceBus.Message"/> distribution is processed in parallel for increased distribution performance.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.MessageProcessingMode.Sequential">
+            <summary>
+            <see cref="T:GSF.ServiceBus.Message"/> distribution is processed sequentially to preserve <see cref="T:GSF.ServiceBus.Message"/> ordering.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceBus.ServiceBusService">
+            <summary>
+            A service bus for event-based messaging between disjoint systems.
+            </summary>
+            <example>
+            This example shows how to host <see cref="T:GSF.ServiceBus.ServiceBusService"/> inside a console application:
+            <code>
+            using System;
+            using System.ServiceModel;
+            using System.ServiceModel.Description;
+            using System.Threading;
+            using GSF;
+            using GSF.ServiceBus;
+            
+            class Program
+            {
+                static void Main(string[] args)
+                {
+                    // Prompt for security option.
+                    Console.Write("Enable security (Y/N): ");
+                    bool enableSecurity = Console.ReadLine().ParseBoolean();
+            
+                    // Initialize service bus.
+                    ServiceBusService service = new ServiceBusService();
+                    service.Singleton = true;
+                    service.PublishMetadata = true;
+                    service.PersistSettings = false;
+                    service.Endpoints = "http.duplex://localhost:4501; net.tcp://locahost:4502";
+                    if (enableSecurity)
+                        service.SecurityPolicy = typeof(ServiceBusSecurityPolicy).FullName;
+                    service.Initialize();
+            
+                    // Show service bus status.
+                    if (service.ServiceHost.State == CommunicationState.Opened)
+                    {
+                        Console.WriteLine("\r\n{0} is running:", service.GetType().Name);
+                        foreach (ServiceEndpoint endpoint in service.ServiceHost.Description.Endpoints)
+                        {
+                            Console.WriteLine("- {0} ({1})", endpoint.Address, endpoint.Binding.GetType().Name);
+                        }
+            
+                        new Thread(delegate() 
+                            {
+                                while (service.ServiceHost.State == CommunicationState.Opened)
+                                {
+                                    Console.WriteLine();
+                                    Console.WriteLine();
+                                    Console.WriteLine("Status of {0}:", service.Name);
+                                    Console.WriteLine(service.Status);
+                                    Console.Write("Press Enter key to stop...");
+            
+                                    Thread.Sleep(5000);
+                                }
+                            }).Start();
+                    }
+                    else
+                    {
+                        Console.WriteLine("\r\n{0} could not be started", service.GetType().Name);
+                    }
+            
+                    // Shutdown.
+                    Console.ReadLine();
+                    service.Dispose();
+                }
+            }
+            </code>
+            This example shows how to host <see cref="T:GSF.ServiceBus.ServiceBusService"/> inside a web application:
+            <code>
+            <![CDATA[
+            <?xml version="1.0"?>
+            <configuration>
+              <configSections>
+                <section name="categorizedSettings" type="GSF.Configuration.CategorizedSettingsSection, GSF.Core" />
+              </configSections>
+              <categorizedSettings>
+                <serviceBusService>
+                  <add name="Endpoints" value="" description="Semicolon delimited list of URIs where the web service can be accessed."
+                    encrypted="false" />
+                  <add name="Contract" value="GSF.ServiceBus.IServiceBusService, GSF.ServiceBus"
+                    description="Assembly qualified name of the contract interface implemented by the web service."
+                    encrypted="false" />
+                  <add name="Singleton" value="True" description="True if the web service is singleton; otherwise False."
+                    encrypted="false" />
+                  <add name="SecurityPolicy" value="" description="Assembly qualified name of the authorization policy to be used for securing the web service."
+                    encrypted="false" />
+                  <add name="PublishMetadata" value="True" description="True if the web service metadata is to be published at all the endpoints; otherwise False."
+                    encrypted="false" />
+                  <add name="BufferThreshold" value="-1" description="Maximum number of messages that can be queued for distribution before the oldest ones are discarded."
+                    encrypted="false" />
+                  <add name="ProcessingMode" value="Sequential" description="Processing mode (Parallel; Sequential) to be used for the distribution of messages."
+                    encrypted="false" />
+                </serviceBusService>
+              </categorizedSettings>
+              <system.serviceModel>
+                <services>
+                  <service name="GSF.ServiceBus.ServiceBusService">
+                    <endpoint address="" contract="GSF.ServiceBus.IServiceBusService" binding="wsDualHttpBinding" />
+                  </service>
+                </services>
+                <behaviors>
+                  <serviceBehaviors>
+                    <behavior>
+                      <serviceMetadata httpGetEnabled="true" />
+                      <serviceDebug includeExceptionDetailInFaults="false" />
+                    </behavior>
+                  </serviceBehaviors>
+                </behaviors>
+                <serviceHostingEnvironment multipleSiteBindingsEnabled="true">
+                  <serviceActivations>
+                    <add relativeAddress="ServiceBusService.svc" service="GSF.ServiceBus.ServiceBusService, GSF.ServiceBus" />
+                  </serviceActivations>
+                </serviceHostingEnvironment>
+              </system.serviceModel>
+            </configuration>
+            ]]>
+            </code>
+            This example shows how to publish <see cref="T:GSF.ServiceBus.Message"/>s to <see cref="T:GSF.ServiceBus.ServiceBusService"/>:
+            <code>
+            using System;
+            using System.ServiceModel;
+            using System.Threading;
+            
+            class Program : IServiceBusServiceCallback
+            {
+                static void Main(string[] args)
+                {
+                    // NOTE: Service reference to the service bus service must be added to generate the service proxy.
+            
+                    // Initialize auto-generated service bus service proxy.
+                    InstanceContext callbackContext = new InstanceContext(new Program());
+                    ServiceBusServiceClient serviceBusService = new ServiceBusServiceClient(callbackContext, "NetTcpBinding_IServiceBusService");
+            
+                    // Create registration request for publishing messages.
+                    RegistrationRequest registration = new RegistrationRequest();
+                    registration.MessageType = MessageType.Topic;
+                    registration.MessageName = "Topic.Frequency";
+                    registration.RegistrationType = RegistrationType.Produce;
+                    serviceBusService.Register(registration);
+            
+                    // Start publishing messages to the bus asynchronously.
+                    new Thread(delegate() 
+                        {
+                            Message message = new Message();
+                            message.Type = registration.MessageType;
+                            message.Name = registration.MessageName;
+                            message.Format = "application/octet-stream";
+            
+                            Random random = new Random(59);
+                            while (serviceBusService.State == CommunicationState.Opened)
+                            {
+                                message.Time = DateTime.UtcNow;
+                                message.Content = BitConverter.GetBytes(random.Next(61));
+                                serviceBusService.Publish(message);
+            
+                                Thread.Sleep(5000);
+                            }
+                        }).Start();
+            
+                    // Shutdown.
+                    Console.Write("Press Enter key to stop...");
+                    Console.ReadLine();
+                    serviceBusService.Close();
+                }
+            
+                public void ProcessMessage(Message message)
+                {
+                    // This method will not be invoked since we are not consuming messages.
+                    throw new NotSupportedException();
+                }
+            }
+            </code>
+            This example shows how to subscribe to <see cref="T:GSF.ServiceBus.ServiceBusService"/> for receiving <see cref="T:GSF.ServiceBus.Message"/>s:
+            <code>
+            using System;
+            using System.ServiceModel;
+            
+            class Program : IServiceBusServiceCallback
+            {
+                static void Main(string[] args)
+                {
+                    // NOTE: Service reference to the service bus service must be added to generate the service proxy.
+            
+                    // Initialize auto-generated service bus service proxy.
+                    InstanceContext callbackContext = new InstanceContext(new Program());
+                    ServiceBusServiceClient serviceBusService = new ServiceBusServiceClient(callbackContext, "NetTcpBinding_IServiceBusService");
+            
+                    // Subscribe with service bus service to receive messages.
+                    RegistrationRequest registration = new RegistrationRequest();
+                    registration.MessageType = MessageType.Topic;
+                    registration.MessageName = "Topic.Frequency";
+                    registration.RegistrationType = RegistrationType.Consume;
+                    serviceBusService.Register(registration);
+            
+                    // Shutdown.
+                    Console.WriteLine("Press Enter key to stop...");
+                    Console.WriteLine();
+                    Console.ReadLine();
+                    serviceBusService.Close();
+                }
+            
+                public void ProcessMessage(Message message)
+                {
+                    if (message.Format != "application/octet-stream")
+                        Console.WriteLine("Message format '{0}' is not supported", message.Format);
+                    else
+                        Console.WriteLine("Message received: {0} Hz", BitConverter.ToInt32(message.Content, 0));
+                }
+            }
+            </code>
+            This example shows how to monitor <see cref="T:GSF.ServiceBus.ServiceBusService"/> remotely:
+            <code>
+            using System;
+            using System.ServiceModel;
+            using System.Threading;
+            using GSF;
+            
+            class Program : IServiceBusServiceCallback
+            {
+                static void Main(string[] args)
+                {
+                    // NOTE: Service reference to the service bus service must be added to generate the service proxy.
+            
+                    // Initialize auto-generated service bus service proxy.
+                    InstanceContext callbackContext = new InstanceContext(new Program());
+                    ServiceBusServiceClient serviceBusService = new ServiceBusServiceClient(callbackContext, "NetTcpBinding_IServiceBusService");
+                    serviceBusService.ChannelFactory.Open();
+            
+                    // Start querying service bus service status asynchronously.
+                    new Thread(delegate()
+                    {
+                        while (serviceBusService.State == CommunicationState.Opened)
+                        {
+                            Console.Clear();
+                            Console.WriteLine(new string('-', 79));
+                            Console.WriteLine("|" + "Service Bus Status".CenterText(77) + "|");
+                            Console.WriteLine(new string('-', 79));
+                            Console.WriteLine();
+            
+                            // Show clients.
+                            Console.Write("Client ID".PadRight(25));
+                            Console.Write(" ");
+                            Console.Write("Connected".PadRight(21));
+                            Console.Write(" ");
+                            Console.Write("Msg. Produced".PadRight(15));
+                            Console.Write(" ");
+                            Console.Write("Msg. Consumed".PadRight(15));
+                            Console.WriteLine();
+                            Console.Write(new string('-', 25));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 21));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.WriteLine();
+                            foreach (ClientInfo client in serviceBusService.GetClients())
+                            {
+                                Console.Write(client.SessionId.TruncateRight(25).PadRight(25));
+                                Console.Write(" ");
+                                Console.Write(client.ConnectedAt.ToString("MM/dd/yy hh:mm:ss tt").PadRight(21));
+                                Console.Write(" ");
+                                Console.Write(client.MessagesProduced.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(client.MessagesConsumed.ToString().PadRight(15));
+                                Console.WriteLine();
+                            }
+                            Console.WriteLine();
+            
+                            // Show queues.
+                            Console.Write("Queue Name".PadRight(25));
+                            Console.Write(" ");
+                            Console.Write("Producers".PadRight(10));
+                            Console.Write(" ");
+                            Console.Write("Consumers".PadRight(10));
+                            Console.Write(" ");
+                            Console.Write("Msg. Received".PadRight(15));
+                            Console.Write(" ");
+                            Console.Write("Msg. Processed".PadRight(15));
+                            Console.WriteLine();
+                            Console.Write(new string('-', 25));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 10));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 10));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.WriteLine();
+                            foreach (RegistrationInfo queue in serviceBusService.GetQueues())
+                            {
+                                Console.Write(queue.MessageName.PadRight(25));
+                                Console.Write(" ");
+                                Console.Write(queue.Producers.Length.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(queue.Consumers.Length.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(queue.MessagesReceived.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(queue.MessagesProcessed.ToString().PadRight(15));
+                                Console.WriteLine();
+                            }
+                            Console.WriteLine();
+            
+                            // Show topics.
+                            Console.Write("Topic Name".PadRight(25));
+                            Console.Write(" ");
+                            Console.Write("Producers".PadRight(10));
+                            Console.Write(" ");
+                            Console.Write("Consumers".PadRight(10));
+                            Console.Write(" ");
+                            Console.Write("Msg. Received".PadRight(15));
+                            Console.Write(" ");
+                            Console.Write("Msg. Processed".PadRight(15));
+                            Console.WriteLine();
+                            Console.Write(new string('-', 25));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 10));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 10));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.Write(" ");
+                            Console.Write(new string('-', 15));
+                            Console.WriteLine();
+                            foreach (RegistrationInfo topic in serviceBusService.GetTopics())
+                            {
+                                Console.Write(topic.MessageName.PadRight(25));
+                                Console.Write(" ");
+                                Console.Write(topic.Producers.Length.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(topic.Consumers.Length.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(topic.MessagesReceived.ToString().PadRight(15));
+                                Console.Write(" ");
+                                Console.Write(topic.MessagesProcessed.ToString().PadRight(15));
+                                Console.WriteLine();
+                            }
+                            Console.WriteLine();
+                            Console.Write("Press Enter key to stop...");
+            
+                            Thread.Sleep(5000);
+                        }
+                    }).Start();
+            
+                    // Shutdown.
+                    Console.ReadLine();
+                    serviceBusService.Close();
+                }
+            
+                public void ProcessMessage(Message message)
+                {
+                    // This method will not be invoked since we are not consuming messages.
+                    throw new NotSupportedException();
+                }
+            }
+            </code>
+            </example>
+            <seealso cref="T:GSF.ServiceBus.Message"/>
+            <seealso cref="T:GSF.ServiceBus.ClientInfo"/>
+            <seealso cref="T:GSF.ServiceBus.RegistrationInfo"/>
+            <seealso cref="T:GSF.ServiceBus.RegistrationRequest"/>
+            <seealso cref="T:GSF.ServiceBus.ServiceBusSecurityPolicy"/>
+        </member>
+        <member name="F:GSF.ServiceBus.ServiceBusService.DefaultBufferThreshold">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceBus.ServiceBusService.BufferThreshold"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.ServiceBusService.DefaultProcessingMode">
+            <summary>
+            Specifies the default value for the <see cref="P:GSF.ServiceBus.ServiceBusService.ProcessingMode"/> property.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceBus.ServiceBusService"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.Initialize">
+            <summary>
+            Initializes the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+            <exception cref="T:System.NotSupportedException">The specified <see cref="P:GSF.ServiceBus.ServiceBusService.ProcessingMode"/> is not supported.</exception>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.SaveSettings">
+            <summary>
+            Saves <see cref="T:GSF.ServiceBus.ServiceBusService"/> settings to the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.LoadSettings">
+            <summary>
+            Loads saved <see cref="T:GSF.ServiceBus.ServiceBusService"/> settings from the config file if the <see cref="P:GSF.Adapters.Adapter.PersistSettings"/> property is set to true.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.Register(GSF.ServiceBus.RegistrationRequest)">
+            <summary>
+            Registers with the <see cref="T:GSF.ServiceBus.ServiceBusService"/> to produce or consume <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+            <param name="request">An <see cref="T:GSF.ServiceBus.RegistrationRequest"/> containing registration data.</param>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.Unregister(GSF.ServiceBus.RegistrationRequest)">
+            <summary>
+            Unregisters a previous registration with the <see cref="T:GSF.ServiceBus.ServiceBusService"/> to produce or consume <see cref="T:GSF.ServiceBus.Message"/>s
+            </summary>
+            <param name="request">The <see cref="T:GSF.ServiceBus.RegistrationRequest"/> used when registering.</param>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.Publish(GSF.ServiceBus.Message)">
+            <summary>
+            Sends the <paramref name="message"/> to the <see cref="T:GSF.ServiceBus.ServiceBusService"/> for distribution amongst its registered consumers.
+            </summary>
+            <param name="message">The <see cref="T:GSF.ServiceBus.Message"/> that is to be distributed.</param>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.GetLatestMessage(GSF.ServiceBus.RegistrationRequest)">
+            <summary>
+            Gets the latest <see cref="T:GSF.ServiceBus.Message"/> distributed to the subscribers of the specified <paramref name="topic"/>.
+            </summary>
+            <param name="topic">The topic <see cref="T:GSF.ServiceBus.RegistrationRequest"/> used when registering.</param>
+            <returns>The latest <see cref="T:GSF.ServiceBus.Message"/> distributed to the <paramref name="topic"/> subscribers.</returns>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.GetClients">
+            <summary>
+            Gets a list of all clients connected to the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+            <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> of <see cref="T:GSF.ServiceBus.ClientInfo"/> objects.</returns>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.GetQueues">
+            <summary>
+            Gets a list of all <see cref="F:GSF.ServiceBus.MessageType.Queue"/>s registered on the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+            <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> of <see cref="T:GSF.ServiceBus.RegistrationInfo"/> objects.</returns>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.GetTopics">
+            <summary>
+            Gets a list of all <see cref="F:GSF.ServiceBus.MessageType.Topic"/>s registered on the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+            <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> of <see cref="T:GSF.ServiceBus.RegistrationInfo"/> objects.</returns>
+        </member>
+        <member name="M:GSF.ServiceBus.ServiceBusService.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.ServiceBus.ServiceBusService"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="P:GSF.ServiceBus.ServiceBusService.Enabled">
+            <summary>
+            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.ServiceBus.ServiceBusService"/> is currently enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceBus.ServiceBusService.Status">
+            <summary>
+            Gets the descriptive status of the <see cref="T:GSF.ServiceBus.ServiceBusService"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceBus.ServiceBusService.BufferThreshold">
+            <summary>
+            Gets or sets the maximum number of <see cref="T:GSF.ServiceBus.Message"/>s that can be buffered for distribution by the <see cref="T:GSF.ServiceBus.ServiceBusService"/> before the 
+            the oldest buffered <see cref="T:GSF.ServiceBus.Message"/>s are discarded to keep memory consumption in check by avoiding <see cref="T:GSF.ServiceBus.Message"/> flooding.
+            </summary>
+            <remarks>Set <see cref="P:GSF.ServiceBus.ServiceBusService.BufferThreshold"/> to -1 to disable discarding of <see cref="T:GSF.ServiceBus.Message"/>s.</remarks>
+        </member>
+        <member name="P:GSF.ServiceBus.ServiceBusService.ProcessingMode">
+            <summary>
+            Gets or sets the <see cref="T:GSF.ServiceBus.MessageProcessingMode"/> used by the <see cref="T:GSF.ServiceBus.ServiceBusService"/> for processing <see cref="T:GSF.ServiceBus.Message"/> distribution.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceBus.NamespaceDoc">
+            <summary>
+            Contains WCF web services that facilitate secure inter-process messaging.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceBus.RegistrationInfo">
+            <summary>
+            Represents information about a registration with the <see cref="T:GSF.ServiceBus.ServiceBusService"/> to produce/consume <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationInfo.MessageType">
+            <summary>
+            Gets or sets the type for <see cref="T:GSF.ServiceBus.Message"/>s being produced/consumed.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationInfo.MessageName">
+            <summary>
+            Gets or sets the name for <see cref="T:GSF.ServiceBus.Message"/>s being produced/consumed. 
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationInfo.MessagesReceived">
+            <summary>
+            Gets or sets the total number of <see cref="T:GSF.ServiceBus.Message"/>s received.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationInfo.MessagesProcessed">
+            <summary>
+            Gets or sets the total number of <see cref="T:GSF.ServiceBus.Message"/>s distributed.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationInfo.Producers">
+            <summary>
+            Gets or sets the list of clients producing the <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationInfo.Consumers">
+            <summary>
+            Gets or sets the list of clients consuming the <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationInfo.LatestMessage">
+            <summary>
+            Gets or sets the latest <see cref="T:GSF.ServiceBus.Message"/> distributed to the subscribers.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationInfo.ProducersLock">
+            <summary>
+            Gets the <see cref="T:System.Threading.ReaderWriterLockSlim"/> to be used for synchronized access to <see cref="F:GSF.ServiceBus.RegistrationInfo.Producers"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationInfo.ConsumersLock">
+            <summary>
+            Gets the <see cref="T:System.Threading.ReaderWriterLockSlim"/> to be used for synchronized access to <see cref="F:GSF.ServiceBus.RegistrationInfo.Consumers"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.RegistrationInfo.#ctor(GSF.ServiceBus.RegistrationRequest)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.ServiceBus.RegistrationInfo"/> class.
+            </summary>
+            <param name="request">An <see cref="T:GSF.ServiceBus.RegistrationRequest"/> object.</param>
+        </member>
+        <member name="M:GSF.ServiceBus.RegistrationInfo.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.ServiceBus.RegistrationInfo"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.RegistrationInfo.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.ServiceBus.RegistrationInfo"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceBus.RegistrationInfo.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.ServiceBus.RegistrationInfo"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="T:GSF.ServiceBus.RegistrationType">
+            <summary>
+            Indicates the intent of the <see cref="T:GSF.ServiceBus.RegistrationRequest"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationType.Produce">
+            <summary>
+            Register to produce <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+        </member>
+        <member name="F:GSF.ServiceBus.RegistrationType.Consume">
+            <summary>
+            Register to consume <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+        </member>
+        <member name="T:GSF.ServiceBus.RegistrationRequest">
+            <summary>
+            Represents a request to register with the <see cref="T:GSF.ServiceBus.ServiceBusService"/> to produce or consume <see cref="T:GSF.ServiceBus.Message"/>s.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceBus.RegistrationRequest.RegistrationType">
+            <summary>
+            Gets or sets the <see cref="P:GSF.ServiceBus.RegistrationRequest.RegistrationType">type</see> of this <see cref="T:GSF.ServiceBus.RegistrationRequest"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceBus.RegistrationRequest.MessageType">
+            <summary>
+            Gets or sets the <see cref="F:GSF.ServiceBus.Message.Type"/> of the <see cref="T:GSF.ServiceBus.Message"/> this <see cref="T:GSF.ServiceBus.RegistrationRequest"/> is for.
+            </summary>
+        </member>
+        <member name="P:GSF.ServiceBus.RegistrationRequest.MessageName">
+            <summary>
+            Gets or sets the <see cref="F:GSF.ServiceBus.Message.Name"/> of the <see cref="T:GSF.ServiceBus.Message"/> this <see cref="T:GSF.ServiceBus.RegistrationRequest"/> is for.
+            </summary>
+        </member>
+    </members>
+</doc>

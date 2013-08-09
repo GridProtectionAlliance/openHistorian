@@ -1,10 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using openHistorian.Collections;
+﻿using NUnit.Framework;
 
 namespace GSF.Collections.Test
 {
@@ -15,7 +9,7 @@ namespace GSF.Collections.Test
         public void Test()
         {
             int x = 0;
-            ResourceQueue<string> queue = new ResourceQueue<string>(() => (x++).ToString(),3,4);
+            ResourceQueue<string> queue = new ResourceQueue<string>(() => (x++).ToString(), 3, 4);
 
             x = 10;
 
@@ -44,6 +38,5 @@ namespace GSF.Collections.Test
             Assert.AreEqual(queue.Dequeue(), "4");
             Assert.AreEqual(queue.Dequeue(), "13");
         }
-
     }
 }

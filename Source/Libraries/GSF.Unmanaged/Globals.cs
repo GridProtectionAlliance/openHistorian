@@ -31,12 +31,11 @@ namespace GSF
     /// </summary>
     public static class Globals
     {
-        public static BufferPool BufferPool;
+        public static MemoryPool MemoryPool;
 
         static Globals()
         {
-            BufferPool = new BufferPool(65536);
+            MemoryPool = new MemoryPool(65536);
         }
-
     }
 }

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>openHistorian</RootNamespace>
     <AssemblyName>openHistorian.Client</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -38,6 +38,12 @@
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>GridProtectionAlliance.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,7 +63,6 @@
     <Compile Include="HistorianClient.cs" />
     <Compile Include="HistorianDatabaseCollection.cs" />
     <Compile Include="IHistorianDatabaseCollection.cs" />
-    <Compile Include="IHistorianDataReader.cs" />
     <Compile Include="IHistorianDatabase.cs" />
     <Compile Include="IHistorian.cs" />
     <Compile Include="IPointStream.cs" />
@@ -77,11 +82,17 @@
     <Compile Include="Queues\FileBackedHistorianInputQueue.cs" />
     <Compile Include="Queues\HistorianInputQueue.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="GridProtectionAlliance.pfx" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GSF.Unmanaged\GSF.Unmanaged.csproj">
       <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
       <Name>GSF.Unmanaged</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\openHistorian.Archive\openHistorian.Archive.csproj">
+      <Project>{040E2AE7-021B-435A-ADBF-06D07EE0A67D}</Project>
+      <Name>openHistorian.Archive</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

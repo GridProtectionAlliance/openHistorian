@@ -37,8 +37,8 @@ namespace GSF.Communications
     /// </remarks>
     public class LinearBuffer
     {
-        byte[] m_buffer;
-        int m_position;
+        private readonly byte[] m_buffer;
+        private int m_position;
 
         public LinearBuffer(int capacity)
         {
@@ -57,6 +57,7 @@ namespace GSF.Communications
                 return m_position;
             }
         }
+
         /// <summary>
         /// Gets the number of bytes that can be written to this <see cref="CircularBuffer"/>.
         /// </summary>
@@ -108,6 +109,7 @@ namespace GSF.Communications
             Array.Copy(buffer, offset, m_buffer, m_position, count);
             m_position += count;
         }
+
         /// <summary>
         /// Clears all of the data in the buffer
         /// </summary>

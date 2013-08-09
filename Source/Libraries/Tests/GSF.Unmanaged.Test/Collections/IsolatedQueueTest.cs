@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using NUnit.Framework;
 
-namespace GSF.Collections
+namespace GSF.Collections.Test
 {
     [TestFixture]
     public class IsolatedQueueTest
     {
-        IsolatedQueue<int> m_collection;
-        const int cnt = 1000000;
-        ManualResetEvent m_wait;
+        private IsolatedQueue<int> m_collection;
+        private const int cnt = 1000000;
+        private ManualResetEvent m_wait;
+
         [Test]
         public void Test()
         {
@@ -36,7 +34,7 @@ namespace GSF.Collections
             m_wait.WaitOne();
         }
 
-        void RunTwo(object state)
+        private void RunTwo(object state)
         {
             m_wait.Set();
             SpinWait wait = new SpinWait();
@@ -63,6 +61,5 @@ namespace GSF.Collections
             m_wait.Set();
             Assert.AreEqual(count, cnt);
         }
-
     }
 }

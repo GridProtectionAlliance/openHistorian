@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="{A38EFA18-A0C5-4902-9D06-EC57FA89F623}" Name="openHistorian" Language="1033" Version="!(bind.FileVersion.openHistorian.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{5E79FA87-5D8B-4BE9-9B30-EF30FDE3933B}">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER">
+      <!-- openHistorian -->
+      <Feature Id="openHistorianFeature" Title="openHistorian">
+        <ComponentGroupRef Id="openHistorianComponents" />
+        <ComponentGroupRef Id="AdapterComponents" />
+        <ComponentGroupRef Id="GSFDependencyComponents" />
+        <ComponentGroupRef Id="SQLiteDependencyComponents" />
+        <ComponentGroupRef Id="MySQLScriptComponents" />
+        <ComponentGroupRef Id="OracleScriptComponents" />
+        <ComponentGroupRef Id="SQLServerScriptComponents" />
+        <ComponentGroupRef Id="SQLiteScriptComponents" />
+        <ComponentRef Id="Sample1344"/>
+      </Feature>
+
+      <!-- openHistorian Manager -->
+      <Feature Id="openHistorianManagerFeature" Title="openHistorian Manager">
+        <ComponentGroupRef Id="openHistorianManagerComponents" />
+        <ComponentGroupRef Id="AdapterComponents" />
+        <ComponentGroupRef Id="GSFDependencyComponents" />
+        <ComponentGroupRef Id="MicrosoftDependencyComponents" />
+        <ComponentGroupRef Id="SQLiteDependencyComponents" />
+        <ComponentRef Id="makecert"/>
+      </Feature>
+
+      <!-- openHistorian Console -->
+      <Feature Id="openHistorianConsoleFeature" Title="openHistorian Console">
+        <ComponentGroupRef Id="openHistorianConsoleComponents" />
+        <ComponentGroupRef Id="GSFDependencyComponents" />
+      </Feature>
+
+      <!-- openHistorian Tools -->
+      <Feature Id="openHistorianToolsFeature" Title="Tools">
+        <Feature Id="ConfigCrypterFeature" Title="Config Crypter">
+          <ComponentGroupRef Id="ConfigCrypterComponents" />
+        </Feature>
+        <Feature Id="ConfigurationEditorFeature" Title="Configuration Editor">
+          <ComponentGroupRef Id="ConfigurationEditorComponents" />
+        </Feature>
+
+        <ComponentGroupRef Id="GSFDependencyComponents" />
+      </Feature>
+
+      <ComponentRef Id="InstallFolderPermissions"/>
+      <ComponentRef Id="Registry" />
+      <ComponentRef Id="Cleanup" />
+    </Feature>
+
+    <!-- User Interface -->
+    <UI>
+      <UIRef Id="WixUI_FeatureTree" />
+      <UIRef Id="WixUI_ErrorProgressText" />
+      <DialogRef Id="CompanyInfoDialog" />
+      <DialogRef Id="ServiceAccountDialog" />
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="ServiceAccountDialog"><![CDATA[&openHistorianFeature=3]]></Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[NOT(&openHistorianFeature=3)]]></Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CompanyInfoDialog">(NOT Installed OR WixUI_InstallMode = "Change") AND <![CDATA[&openHistorianFeature=3]]></Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">(NOT Installed OR WixUI_InstallMode = "Change") AND <![CDATA[NOT(&openHistorianFeature=3)]]></Publish>
+    </UI>
+
+    <Icon Id="openHistorianManager.ico.exe" SourceFile="$(var.openHistorianManager.TargetPath)" />
+    <Icon Id="openHistorianConsole.ico.exe" SourceFile="$(var.openHistorianConsole.TargetPath)" />
+    <Icon Id="ConfigurationSetupUtility.ico.exe" SourceFile="$(var.ConfigurationSetupUtility.TargetPath)" />
+    <Icon Id="ConfigCrypter.ico.exe" SourceFile="$(var.ProjectDir)\ConfigCrypter.exe" />
+    <Icon Id="ConfigurationEditor.ico.exe" SourceFile="$(var.ProjectDir)\ConfigurationEditor.exe" />
+
+    <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
+    <Property Id="SERVICEPASSWORD" Hidden="yes" />
+    <Property Id="HTTPSERVICEPORTS" Value="6055,6056,6155,6156,5020" />
+    <Property Id="COMPANYNAME" Value="Grid Protection Alliance" />
+    <Property Id="COMPANYACRONYM" Value="GPA" />
+    <SetProperty Id="SERVICEACCOUNT" Value="NT SERVICE\[SERVICENAME]" After="LaunchConditions" Sequence="first" />
+    <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\openHistorianSetupBanner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\openHistorianSetupDialog.bmp" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\INSTALL_LICENSE.rtf" />
+
+    <!-- Custom Actions -->
+    <Binary Id="InstallerActions" SourceFile="$(var.SolutionDir)\Dependencies\GSF\GSF.InstallerActions.CA.dll" />
+    <CustomAction Id="AuthenticateServiceAccountAction" BinaryKey="InstallerActions" DllEntry="AuthenticateServiceAccountAction" Execute="immediate" />
+    <CustomAction Id="CompanyInfoAction.SetProperty" Property="CompanyInfoAction" Value="SERVICENAME=[SERVICENAME];INSTALLDIR=[INSTALLFOLDER];COMPANYNAME=[COMPANYNAME];COMPANYACRONYM=[COMPANYACRONYM]" />
+    <CustomAction Id="CompanyInfoAction" BinaryKey="InstallerActions" DllEntry="CompanyInfoAction" Execute="deferred" Impersonate="no" />
+    <CustomAction Id="ConfigureServiceAction.SetProperty" Property="ConfigureServiceAction" Value="SERVICENAME=[SERVICENAME]" />
+    <CustomAction Id="ConfigureServiceAction" BinaryKey="InstallerActions" DllEntry="ConfigureServiceAction" Execute="deferred" Impersonate="no" />
+    <CustomAction Id="ServiceAccountAction.SetProperty" Property="ServiceAccountAction" Value="SERVICENAME=[SERVICENAME];SERVICEACCOUNT=[SERVICEACCOUNT];HTTPSERVICEPORTS=[HTTPSERVICEPORTS]" />
+    <CustomAction Id="ServiceAccountAction" BinaryKey="InstallerActions" DllEntry="ServiceAccountAction" Execute="deferred" Impersonate="no" />
+
+    <InstallExecuteSequence>
+      <Custom Action="CompanyInfoAction.SetProperty" After="InstallFiles">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
+      <Custom Action="CompanyInfoAction" After="CompanyInfoAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
+      <Custom Action="ConfigureServiceAction.SetProperty" After="InstallServices">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
+      <Custom Action="ConfigureServiceAction" After="ConfigureServiceAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
+      <Custom Action="ServiceAccountAction.SetProperty" After="ConfigureServiceAction">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
+      <Custom Action="ServiceAccountAction" After="ServiceAccountAction.SetProperty">NOT REMOVE AND <![CDATA[&openHistorianFeature=3]]></Custom>
+    </InstallExecuteSequence>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <?if $(var.Platform) = x64 ?>
+      <Directory Id="ProgramFiles64Folder">
+        <!-- C:\Program Files\openHistorian -->
+        <Directory Id="INSTALLFOLDER" Name="openHistorian">
+          <Component Id="InstallFolderPermissions" Guid="{F54F753D-C6A6-45D4-B9AA-E9B20CD68FA1}">
+            <CreateFolder>
+              <util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
+            </CreateFolder>
+          </Component>
+          
+          <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
+            <Directory Id="MYSQLSCRIPTSFOLDER" Name="MySQL" />
+            <Directory Id="ORACLESCRIPTSFOLDER" Name="Oracle" />
+            <Directory Id="SQLSERVERSCRIPTSFOLDER" Name="SQL Server" />
+            <Directory Id="SQLITESCRIPTSFOLDER" Name="SQLite" />
+          </Directory>
+        </Directory>
+      </Directory>
+      <?else ?>
+      <Directory Id="ProgramFilesFolder">
+        <!-- C:\Program Files (x86)\openHistorian -->
+        <Directory Id="INSTALLFOLDER" Name="openHistorian">
+          <Component Id="InstallFolderPermissions" Guid="{F54F753D-C6A6-45D4-B9AA-E9B20CD68FA1}">
+            <CreateFolder>
+              <util:PermissionEx User="[SERVICENAME] Admins" CreateFile="yes" CreateChild="yes" GenericRead="yes" GenericWrite="yes" GenericExecute="yes" Delete="yes" DeleteChild="yes" />
+            </CreateFolder>
+          </Component>
+          
+          <Directory Id="DATABASESCRIPTSFOLDER" Name="Database Scripts">
+            <Directory Id="MYSQLSCRIPTSFOLDER" Name="MySQL" />
+            <Directory Id="ORACLESCRIPTSFOLDER" Name="Oracle" />
+            <Directory Id="SQLSERVERSCRIPTSFOLDER" Name="SQL Server" />
+            <Directory Id="SQLITESCRIPTSFOLDER" Name="SQLite" />
+          </Directory>
+        </Directory>
+      </Directory>
+      <?endif ?>
+
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="openHistorian" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <!-- Applications -->
+      <ComponentGroupRef Id="openHistorianComponents" />
+      <ComponentGroupRef Id="openHistorianManagerComponents" />
+      <ComponentGroupRef Id="openHistorianConsoleComponents" />
+      <ComponentGroupRef Id="openHistorianToolsComponents" />
+
+      <!-- Libraries -->
+      <ComponentGroupRef Id="AdapterComponents" />
+      <ComponentGroupRef Id="GSFDependencyComponents" />
+      <ComponentGroupRef Id="MicrosoftDependencyComponents" />
+      <ComponentGroupRef Id="SQLiteDependencyComponents" />
+
+      <!-- Database Scripts -->
+      <ComponentGroupRef Id="MySQLScriptComponents" />
+      <ComponentGroupRef Id="OracleScriptComponents" />
+      <ComponentGroupRef Id="SQLServerScriptComponents" />
+      <ComponentGroupRef Id="SQLiteScriptComponents" />
+
+      <!-- Makecert -->
+      <Component Id="makecert">
+        <File Id="makecert.exe" Name="makecert.exe" Source="$(var.ProjectDir)\makecert.exe" />
+      </Component>
+
+      <!-- Sample Data -->
+      <Component Id="Sample1344">
+        <File Id="Sample1344.PmuCapture" Name="Sample1344.PmuCapture" Source="$(var.openHistorian.ProjectDir)\Sample1344.PmuCapture" />
+      </Component>
+
+      <!-- Registry Settings -->
+      <Component Id="Registry" Guid="{F74C123C-C923-4B04-813B-05E81397C764}">
+        <RegistryKey Id="REG_GridProtectionAlliance" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance" ForceCreateOnInstall="yes" />
+        <RegistryKey Id="REG_GridProtectionAlliance.openHistorian" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" ForceCreateOnInstall="yes" />
+        <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.InstallPath" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" Name="InstallPath" Value="[INSTALLFOLDER]" Type="string" />
+        <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.Revision" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" Name="Revision" Value="[ProductVersion]" Type="string" />
+        <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.TargetBitSize" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" Name="TargetBitSize" Value="64bit" Type="string" />
+      </Component>
+
+      <!-- Cleanup -->
+      <Component Id="Cleanup" Guid="{C8EBB158-C708-4C94-87C1-F5DBC77D7BDE}">
+        <CreateFolder />
+        <RemoveFolder Id="RemoveMySQLScriptsFolder" Directory="MYSQLSCRIPTSFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveOracleScriptsFolder" Directory="ORACLESCRIPTSFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveSQLServerScriptsFolder" Directory="SQLSERVERSCRIPTSFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveSQLiteScriptsFolder" Directory="SQLITESCRIPTSFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveDatabaseScriptsFolder" Directory="DATABASESCRIPTSFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RemoveFolder Id="RemoveInstallFolder" Directory="INSTALLFOLDER" On="uninstall" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- openHistorian -->
+    <ComponentGroup Id="openHistorianComponents" Directory="INSTALLFOLDER">
+      <Component Id="openHistorian">
+        <File Id="openHistorian.exe" Name="$(var.openHistorian.TargetFileName)" Source="$(var.openHistorian.TargetPath)" />
+        <ServiceInstall Id="openHistorianService" Name="openHistorian" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Type="ownProcess" Start="auto" ErrorControl="normal" Description="Provides processing for streaming time-series data in real-time including phasor data concentration services for synchrophasor applications." />
+        <ServiceControl Id="openHistorianServiceControl" Name="openHistorian" Stop="both" Remove="uninstall" />
+      </Component>
+      <Component Id="openHistorianConfig" Permanent="yes">
+        <File Id="openHistorian.exe.config" Name="$(var.openHistorian.TargetFileName).config" Source="$(var.openHistorian.TargetPath).config" />
+      </Component>
+      <Component Id="GSF.Unmanaged">
+        <File Id="GSF.Unmanaged.dll" Name="$(var.GSF.Unmanaged.TargetFileName)" Source="$(var.GSF.Unmanaged.TargetPath)" />
+      </Component>
+      <Component Id="openHistorian.Core">
+        <File Id="openHistorian.Core.dll" Name="$(var.openHistorian.Core.TargetFileName)" Source="$(var.openHistorian.Core.TargetPath)" />
+      </Component>
+      <Component Id="openHistorian.Adapters">
+        <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" />
+      </Component>
+      <Component Id="ConfigurationSetupUtility">
+        <File Id="ConfigurationSetupUtility.exe" Name="$(var.ConfigurationSetupUtility.TargetFileName)" Source="$(var.ConfigurationSetupUtility.TargetPath)" />
+        <Shortcut Id="ConfigurationSetupUtilityStartMenuShortcut" Name="Configuration Setup Utility" Icon="ConfigurationSetupUtility.ico.exe" Description="Utility used to set up openHistorian service configuration database." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="ConfigurationSetupUtilityConfig">
+        <File Id="ConfigurationSetupUtility.exe.config" Name="$(var.ConfigurationSetupUtility.TargetFileName).config" Source="$(var.ConfigurationSetupUtility.TargetPath).config" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- openHistorian Manager -->
+    <ComponentGroup Id="openHistorianManagerComponents" Directory="INSTALLFOLDER">
+      <Component Id="openHistorianManager">
+        <File Id="openHistorianManager.exe" Name="$(var.openHistorianManager.TargetFileName)" Source="$(var.openHistorianManager.TargetPath)" />
+        <Shortcut Id="openHistorianManagerStartMenuShortcut" Name="openHistorian Manager" Icon="openHistorianManager.ico.exe" Description="Manager application for the openHistorian service." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="openHistorianManagerConfig">
+        <File Id="openHistorianManager.exe.config" Name="$(var.openHistorianManager.TargetFileName).config" Source="$(var.openHistorianManager.TargetPath).config" />
+      </Component>
+      <Component Id="openHistorianManagerMenu">
+        <File Id="Menu.xml" Name="Menu.xml" Source="$(var.openHistorianManager.ProjectDir)\Menu.xml" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- openHistorian Console -->
+    <ComponentGroup Id="openHistorianConsoleComponents" Directory="INSTALLFOLDER">
+      <Component Id="openHistorianConsole">
+        <File Id="openHistorianConsole.exe" Name="$(var.openHistorianConsole.TargetFileName)" Source="$(var.openHistorianConsole.TargetPath)" />
+        <Shortcut Id="openHistorianConsoleStartMenuShortcut" Name="openHistorian Console" Icon="openHistorianConsole.ico.exe" Description="Console application to monitor the openHistorian service." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="openHistorianConsoleConfig">
+        <File Id="openHistorianConsole.exe.config" Name="$(var.openHistorianConsole.TargetFileName).config" Source="$(var.openHistorianConsole.TargetPath).config" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- openHistorian Tools -->
+    <ComponentGroup Id="openHistorianToolsComponents" Directory="INSTALLFOLDER">
+      <ComponentGroupRef Id="ConfigCrypterComponents" />
+      <ComponentGroupRef Id="ConfigurationEditorComponents" />
+    </ComponentGroup>
+
+    <ComponentGroup Id="ConfigCrypterComponents" Directory="INSTALLFOLDER">
+      <Component Id="ConfigCrypter">
+        <File Id="ConfigCrypter.exe" Name="ConfigCrypter.exe" Source="$(var.ProjectDir)\ConfigCrypter.exe" />
+        <Shortcut Id="ConfigurationCrypterStartMenuShortcut" Name="Cipher Key Manager" Icon="ConfigCrypter.ico.exe" Description="Tool used to manage cryptographic cipher keys." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="ConfigCrypterConfig">
+        <File Id="ConfigCrypter.exe.config" Name="ConfigCrypter.exe.config" Source="$(var.ProjectDir)\ConfigCrypter.exe.config" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="ConfigurationEditorComponents" Directory="INSTALLFOLDER">
+      <Component Id="ConfigurationEditor">
+        <File Id="ConfigurationEditor.exe" Name="ConfigurationEditor.exe" Source="$(var.ProjectDir)\ConfigurationEditor.exe" />
+        <Shortcut Id="ConfigurationEditorStartMenuShortcut" Name="XML Configuration Editor" Icon="ConfigurationEditor.ico.exe" Description="Tool used edit the XML configuration file for the openHistorian service and its components." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
+      <Component Id="ConfigurationEditorConfig">
+        <File Id="ConfigurationEditor.exe.config" Name="ConfigurationEditor.exe.config" Source="$(var.ProjectDir)\ConfigurationEditor.exe.config" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Adapters -->
+    <ComponentGroup Id="AdapterComponents" Directory="INSTALLFOLDER">
+      <Component Id="AdoAdapters">
+        <File Id="AdoAdapters.dll" Name="AdoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\AdoAdapters.dll" />
+      </Component>
+      <Component Id="Ciloci.Flee">
+        <File Id="Ciloci.Flee.dll" Name="Ciloci.Flee.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Ciloci.Flee.dll" />
+      </Component>
+      <Component Id="Comtrade">
+        <File Id="Comtrade.dll" Name="Comtrade.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Comtrade.dll" />
+      </Component>
+      <Component Id="CsvAdapters">
+        <File Id="CsvAdapters.dll" Name="CsvAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\CsvAdapters.dll" />
+      </Component>
+      <Component Id="DataQualityMonitoring">
+        <File Id="DataQualityMonitoring.dll" Name="DataQualityMonitoring.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DataQualityMonitoring.dll" />
+      </Component>
+      <Component Id="Dnp3Adapters">
+        <File Id="Dnp3Adapters.dll" Name="Dnp3Adapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Dnp3Adapters.dll" />
+      </Component>
+      <Component Id="DynamicCalculator">
+        <File Id="DynamicCalculator.dll" Name="DynamicCalculator.dll" Source="$(var.SolutionDir)\Dependencies\GSF\DynamicCalculator.dll" />
+      </Component>
+      <Component Id="EpriExport">
+        <File Id="EpriExport.dll" Name="EpriExport.dll" Source="$(var.SolutionDir)\Dependencies\GSF\EpriExport.dll" />
+      </Component>
+      <Component Id="Hadoop.Replication">
+        <File Id="Hadoop.Replication.dll" Name="Hadoop.Replication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Hadoop.Replication.dll" />
+      </Component>
+      <Component Id="HistorianAdapters">
+        <File Id="HistorianAdapters.dll" Name="HistorianAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\HistorianAdapters.dll" />
+      </Component>
+      <Component Id="ICCPExport">
+        <File Id="ICCPExport.dll" Name="ICCPExport.dll" Source="$(var.SolutionDir)\Dependencies\GSF\ICCPExport.dll" />
+      </Component>
+      <Component Id="MongoAdapters">
+        <File Id="MongoAdapters.dll" Name="MongoAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoAdapters.dll" />
+      </Component>
+      <Component Id="MongoDB">
+        <File Id="MongoDB.dll" Name="MongoDB.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoDB.dll" />
+      </Component>
+      <Component Id="MongoDB.GridFS">
+        <File Id="MongoDB.GridFS.dll" Name="MongoDB.GridFS.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MongoDB.GridFS.dll" />
+      </Component>
+      <Component Id="MySqlAdapters">
+        <File Id="MySqlAdapters.dll" Name="MySqlAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\MySqlAdapters.dll" />
+      </Component>
+      <Component Id="OneSecondFrequencyAverager">
+        <File Id="OneSecondFrequencyAverager.dll" Name="OneSecondFrequencyAverager.dll" Source="$(var.SolutionDir)\Dependencies\GSF\OneSecondFrequencyAverager.dll" />
+      </Component>
+      <Component Id="PhasorProtocolAdapters">
+        <File Id="PhasorProtocolAdapters.dll" Name="PhasorProtocolAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PhasorProtocolAdapters.dll" />
+      </Component>
+      <Component Id="PowerCalculations">
+        <File Id="PowerCalculations.dll" Name="PowerCalculations.dll" Source="$(var.SolutionDir)\Dependencies\GSF\PowerCalculations.dll" />
+      </Component>
+      <Component Id="TestingAdapters">
+        <File Id="TestingAdapters.dll" Name="TestingAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\TestingAdapters.dll" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- GSF Dependencies -->
+    <ComponentGroup Id="GSFDependencyComponents" Directory="INSTALLFOLDER">
+      <Component Id="GSF.Communication">
+        <File Id="GSF.Communication.dll" Name="GSF.Communication.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Communication.dll" />
+      </Component>
+      <Component Id="GSF.Core">
+        <File Id="GSF.Core.dll" Name="GSF.Core.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Core.dll" />
+      </Component>
+      <Component Id="GSF.Historian">
+        <File Id="GSF.Historian.dll" Name="GSF.Historian.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Historian.dll" />
+      </Component>
+      <Component Id="GSF.Net">
+        <File Id="GSF.Net.dll" Name="GSF.Net.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Net.dll" />
+      </Component>
+      <Component Id="GSF.PhasorProtocols">
+        <File Id="GSF.PhasorProtocols.dll" Name="GSF.PhasorProtocols.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.dll" />
+      </Component>
+      <Component Id="GSF.PhasorProtocols.UI">
+        <File Id="GSF.PhasorProtocols.UI.dll" Name="GSF.PhasorProtocols.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.UI.dll" />
+      </Component>
+      <Component Id="GSF.PhasorProtocols.UI.WPF">
+        <File Id="GSF.PhasorProtocols.UI.WPF.dll" Name="GSF.PhasorProtocols.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.PhasorProtocols.UI.WPF.dll" />
+      </Component>
+      <Component Id="GSF.Security">
+        <File Id="GSF.Security.dll" Name="GSF.Security.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Security.dll" />
+      </Component>
+      <Component Id="GSF.ServiceBus">
+        <File Id="GSF.ServiceBus.dll" Name="GSF.ServiceBus.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceBus.dll" />
+      </Component>
+      <Component Id="GSF.ServiceModel">
+        <File Id="GSF.ServiceModel.dll" Name="GSF.ServiceModel.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceModel.dll" />
+      </Component>
+      <Component Id="GSF.ServiceProcess">
+        <File Id="GSF.ServiceProcess.dll" Name="GSF.ServiceProcess.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.ServiceProcess.dll" />
+      </Component>
+      <Component Id="GSF.TimeSeries">
+        <File Id="GSF.TimeSeries.dll" Name="GSF.TimeSeries.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.dll" />
+      </Component>
+      <Component Id="GSF.TimeSeries.Transport.UI">
+        <File Id="GSF.TimeSeries.Transport.UI.dll" Name="GSF.TimeSeries.Transport.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.Transport.UI.dll" />
+      </Component>
+      <Component Id="GSF.TimeSeries.Transport.UI.WPF">
+        <File Id="GSF.TimeSeries.Transport.UI.WPF.dll" Name="GSF.TimeSeries.Transport.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.Transport.UI.WPF.dll" />
+      </Component>
+      <Component Id="GSF.TimeSeries.UI">
+        <File Id="GSF.TimeSeries.UI.dll" Name="GSF.TimeSeries.UI.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.UI.dll" />
+      </Component>
+      <Component Id="GSF.TimeSeries.UI.WPF">
+        <File Id="GSF.TimeSeries.UI.WPF.dll" Name="GSF.TimeSeries.UI.WPF.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.TimeSeries.UI.WPF.dll" />
+      </Component>
+      <Component Id="GSF.Web">
+        <File Id="GSF.Web.dll" Name="GSF.Web.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Web.dll" />
+      </Component>
+      <Component Id="GSF.Windows">
+        <File Id="GSF.Windows.dll" Name="GSF.Windows.dll" Source="$(var.SolutionDir)\Dependencies\GSF\GSF.Windows.dll" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Microsoft Dependencies -->
+    <ComponentGroup Id="MicrosoftDependencyComponents" Directory="INSTALLFOLDER">
+      <Component Id="DynamicDataDisplay">
+        <File Id="DynamicDataDisplay.dll" Name="DynamicDataDisplay.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\D3\DynamicDataDisplay.dll" />
+      </Component>
+      <Component Id="System.Windows.Controls.DataVisualization.Toolkit">
+        <File Id="System.Windows.Controls.DataVisualization.Toolkit.dll" Name="System.Windows.Controls.DataVisualization.Toolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\System.Windows.Controls.DataVisualization.Toolkit.dll" />
+      </Component>
+      <Component Id="System.Windows.Controls.Input.Toolkit">
+        <File Id="System.Windows.Controls.Input.Toolkit.dll" Name="System.Windows.Controls.Input.Toolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\System.Windows.Controls.Input.Toolkit.dll" />
+      </Component>
+      <Component Id="System.Windows.Controls.Layout.Toolkit">
+        <File Id="System.Windows.Controls.Layout.Toolkit.dll" Name="System.Windows.Controls.Layout.Toolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\System.Windows.Controls.Layout.Toolkit.dll" />
+      </Component>
+      <Component Id="WPFToolkit">
+        <File Id="WPFToolkit.dll" Name="WPFToolkit.dll" Source="$(var.SolutionDir)\Dependencies\Microsoft\WPF\WPFToolkit.dll" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- SQLite Dependencies -->
+    <ComponentGroup Id="SQLiteDependencyComponents" Directory="INSTALLFOLDER">
+      <Component Id="System.Data.SQLite">
+        <File Id="System.Data.SQLite.dll" Name="System.Data.SQLite.dll" Source="$(var.SolutionDir)\Dependencies\SQLite\System.Data.SQLite.dll" />
+      </Component>
+      <Component Id="System.Data.SQLite.Linq">
+        <File Id="System.Data.SQLite.Linq.dll" Name="System.Data.SQLite.Linq.dll" Source="$(var.SolutionDir)\Dependencies\SQLite\System.Data.SQLite.Linq.dll" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- MySQL Scripts -->
+    <ComponentGroup Id="MySQLScriptComponents" Directory="MYSQLSCRIPTSFOLDER">
+      <Component Id="MySQLAuditLog">
+        <File Id="MySQLAuditLog.sql" Name="AuditLog.sql" Source="$(var.SolutionDir)\Data\MySQL\AuditLog.sql" />
+      </Component>
+      <Component Id="MySQLInitialDataSet">
+        <File Id="MySQLInitialDataSet.sql" Name="InitialDataSet.sql" Source="$(var.SolutionDir)\Data\MySQL\InitialDataSet.sql" />
+      </Component>
+      <Component Id="MySQLopenHistorian">
+        <File Id="MySQLopenHistorian.sql" Name="openHistorian.sql" Source="$(var.SolutionDir)\Data\MySQL\openHistorian.sql" />
+      </Component>
+      <Component Id="MySQLSampleDataSet">
+        <File Id="MySQLSampleDataSet.sql" Name="SampleDataSet.sql" Source="$(var.SolutionDir)\Data\MySQL\SampleDataSet.sql" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Oracle Scripts -->
+    <ComponentGroup Id="OracleScriptComponents" Directory="ORACLESCRIPTSFOLDER">
+      <Component Id="OracleAuditLog">
+        <File Id="OracleAuditLog.sql" Name="AuditLog.sql" Source="$(var.SolutionDir)\Data\Oracle\AuditLog.sql" />
+      </Component>
+      <Component Id="OracleInitialDataSet">
+        <File Id="OracleInitialDataSet.sql" Name="InitialDataSet.sql" Source="$(var.SolutionDir)\Data\Oracle\InitialDataSet.sql" />
+      </Component>
+      <Component Id="OracleopenHistorian">
+        <File Id="OracleopenHistorian.sql" Name="openHistorian.sql" Source="$(var.SolutionDir)\Data\Oracle\openHistorian.sql" />
+      </Component>
+      <Component Id="OracleSampleDataSet">
+        <File Id="OracleSampleDataSet.sql" Name="SampleDataSet.sql" Source="$(var.SolutionDir)\Data\Oracle\SampleDataSet.sql" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- SQL Server Scripts -->
+    <ComponentGroup Id="SQLServerScriptComponents" Directory="SQLSERVERSCRIPTSFOLDER">
+      <Component Id="SQLServerAuditLog">
+        <File Id="SQLServerAuditLog.sql" Name="AuditLog.sql" Source="$(var.SolutionDir)\Data\SQL Server\AuditLog.sql" />
+      </Component>
+      <Component Id="SQLServerInitialDataSet">
+        <File Id="SQLServerInitialDataSet.sql" Name="InitialDataSet.sql" Source="$(var.SolutionDir)\Data\SQL Server\InitialDataSet.sql" />
+      </Component>
+      <Component Id="SQLServeropenHistorian">
+        <File Id="SQLServeropenHistorian.sql" Name="openHistorian.sql" Source="$(var.SolutionDir)\Data\SQL Server\openHistorian.sql" />
+      </Component>
+      <Component Id="SQLServerSampleDataSet">
+        <File Id="SQLServerSampleDataSet.sql" Name="SampleDataSet.sql" Source="$(var.SolutionDir)\Data\SQL Server\SampleDataSet.sql" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- SQLite Scripts -->
+    <ComponentGroup Id="SQLiteScriptComponents" Directory="SQLITESCRIPTSFOLDER">
+      <Component Id="sqlite3">
+        <File Id="sqlite3.exe" Name="sqlite3.exe" Source="$(var.SolutionDir)\Data\SQLite\sqlite3.exe" />
+      </Component>
+      <Component Id="SQLiteInitialDataSetDB">
+        <File Id="SQLiteInitialDataSet.db" Name="openHistorian-InitialDataSet.db" Source="$(var.SolutionDir)\Data\SQLite\openHistorian-InitialDataSet.db" />
+      </Component>
+      <Component Id="SQLiteopenHistorianDB">
+        <File Id="SQLiteopenHistorian.db" Name="openHistorian.db" Source="$(var.SolutionDir)\Data\SQLite\openHistorian.db" />
+      </Component>
+      <Component Id="SQLiteSampleDataSetDB">
+        <File Id="SQLiteSampleDataSet.db" Name="openHistorian-SampleDataSet.db" Source="$(var.SolutionDir)\Data\SQLite\openHistorian-SampleDataSet.db" />
+      </Component>
+      <Component Id="SQLiteInitialDataSet">
+        <File Id="SQLiteInitialDataSet.sql" Name="InitialDataSet.sql" Source="$(var.SolutionDir)\Data\SQLite\InitialDataSet.sql" />
+      </Component>
+      <Component Id="SQLiteopenHistorian">
+        <File Id="SQLiteopenHistorian.sql" Name="openHistorian.sql" Source="$(var.SolutionDir)\Data\SQLite\openHistorian.sql" />
+      </Component>
+      <Component Id="SQLiteSampleDataSet">
+        <File Id="SQLiteSampleDataSet.sql" Name="SampleDataSet.sql" Source="$(var.SolutionDir)\Data\SQLite\SampleDataSet.sql" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <!-- Custom Dialogs -->
+  <Fragment>
+    <UI>
+      <!-- ServiceAccount Dialog -->
+      <Dialog Id="ServiceAccountDialog" Width="370" Height="270" Title="[ProductName] Setup">
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\WixUI_Font_Title}Service Account</Text>
+        </Control>
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Enter the [ProductName] service account.</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="ServiceAccountLabel" Type="Text" X="45" Y="73" Width="100" Height="15" TabSkip="no" Text="&amp;Service Account:" />
+        <Control Id="ServiceAccountEdit" Type="Edit" X="45" Y="85" Width="220" Height="18" Property="SERVICEACCOUNT" Text="{80}" />
+        <Control Id="ServicePasswordLabel" Type="Text" X="45" Y="113" Width="100" Height="15" TabSkip="no" Text="&amp;Service Password:" />
+        <Control Id="ServicePasswordEdit" Type="Edit" X="45" Y="125" Width="220" Height="18" Property="SERVICEPASSWORD" Text="{80}" Password="yes" />
+        <Control Id="ServicePasswordInfo" Type="Text" X="45" Y="153" Width="280" Height="30" Transparent="yes" NoPrefix="yes">
+          <Text>NOTE: If the service account is LocalSystem or begins with NT AUTHORITY or NT SERVICE you may leave the password field blank.</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+          <Publish Event="NewDialog" Value="CustomizeDlg">1</Publish>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+          <Publish Event="DoAction" Value="AuthenticateServiceAccountAction">1</Publish>
+          <Publish Event="NewDialog" Value="ServiceAccountErrorDialog">NOT SERVICEAUTHENTICATED</Publish>
+          <Publish Event="NewDialog" Value="CompanyInfoDialog">SERVICEAUTHENTICATED</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+      </Dialog>
+
+      <!-- ServiceAccountError Dialog -->
+      <Dialog Id="ServiceAccountErrorDialog" Width="370" Height="270" Title="[ProductName] Setup">
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\WixUI_Font_Title}Service Account</Text>
+        </Control>
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Error authenticating the service account.</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="InfoLabel" Type="Text" X="45" Y="73" Width="280" Height="60" TabSkip="no">
+          <Text>The service account entered could not be authorized. The username or password may have been entered incorrectly. To correct this, please click the "Back" button to go back to the previous step. To ignore this error and proceed with the installation, click the "Next" button.</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Back">
+          <Publish Event="NewDialog" Value="ServiceAccountDialog">1</Publish>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+          <Publish Event="NewDialog" Value="CompanyInfoDialog">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+      </Dialog>
+
+      <!-- CompanyInfo Dialog -->
+      <Dialog Id="CompanyInfoDialog" Width="370" Height="270" Title="[ProductName] Setup">
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\WixUI_Font_Title}Company Information</Text>
+        </Control>
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Enter information for the company using [ProductName].</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="CompanyNameLabel" Type="Text" X="45" Y="73" Width="100" Height="15" TabSkip="no" Text="&amp;Company Name:" />
+        <Control Id="CompanyNameEdit" Type="Edit" X="45" Y="85" Width="220" Height="18" Property="COMPANYNAME" Text="{80}" />
+        <Control Id="CompanyAcronymLabel" Type="Text" X="45" Y="113" Width="100" Height="15" TabSkip="no" Text="&amp;Company Acronym:" />
+        <Control Id="CompanyAcronymEdit" Type="Edit" X="45" Y="125" Width="220" Height="18" Property="COMPANYACRONYM" Text="{80}" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
+          <Publish Event="NewDialog" Value="ServiceAccountDialog">1</Publish>
+        </Control>
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
+          <Publish Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+      </Dialog>
+    </UI>
+  </Fragment>
+</Wix>

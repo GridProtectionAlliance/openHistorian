@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace NPlot
 {
     public static class StepTimer
     {
-        static Dictionary<string, Stopwatch> AllStopwatches;
+        private static readonly Dictionary<string, Stopwatch> AllStopwatches;
 
         static StepTimer()
         {
@@ -24,7 +21,7 @@ namespace NPlot
                 {
                     AllStopwatches.Add(name, new Stopwatch());
                 }
-                var sw = AllStopwatches[name];
+                Stopwatch sw = AllStopwatches[name];
                 sw.Start();
                 return sw;
             }
@@ -43,22 +40,23 @@ namespace NPlot
         public static string GetResults()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var kvp in AllStopwatches)
+            foreach (KeyValuePair<string, Stopwatch> kvp in AllStopwatches)
             {
                 sb.AppendLine(kvp.Key + '\t' + kvp.Value.Elapsed.TotalMilliseconds.ToString());
             }
             return sb.ToString();
         }
+
         public static string GetResultsPercent()
         {
             double total = 0;
-            foreach (var kvp in AllStopwatches)
+            foreach (KeyValuePair<string, Stopwatch> kvp in AllStopwatches)
             {
                 total += kvp.Value.Elapsed.TotalMilliseconds;
             }
 
             StringBuilder sb = new StringBuilder();
-            foreach (var kvp in AllStopwatches)
+            foreach (KeyValuePair<string, Stopwatch> kvp in AllStopwatches)
             {
                 sb.AppendLine(kvp.Key + '\t' + (kvp.Value.Elapsed.TotalMilliseconds / total).ToString("0.0%"));
             }

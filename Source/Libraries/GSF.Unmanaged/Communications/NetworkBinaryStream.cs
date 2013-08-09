@@ -22,21 +22,19 @@
 //
 //******************************************************************************************************
 
-using System.Threading;
 using System;
-using System.Net.Sockets;
-using System.Net;
 using System.IO;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace GSF.Communications
 {
-
     public class NetworkBinaryStream : Stream
     {
-        CircularBuffer m_receiveBuffer = new CircularBuffer(2000);
-        LinearBuffer m_sendBuffer = new LinearBuffer(2000);
-        Socket m_socket;
-        byte[] m_tmpBuffer = new byte[1500];
+        private readonly CircularBuffer m_receiveBuffer = new CircularBuffer(2000);
+        private readonly LinearBuffer m_sendBuffer = new LinearBuffer(2000);
+        private Socket m_socket;
+        private readonly byte[] m_tmpBuffer = new byte[1500];
 
         public NetworkBinaryStream(Socket socket, int timeout = -1)
             : base()
@@ -209,10 +207,9 @@ namespace GSF.Communications
                 {
                 }
             }
-
         }
 
-        void Send(byte[] buffer, int offset, int count)
+        private void Send(byte[] buffer, int offset, int count)
         {
             if (!Connected)
                 throw new Exception("Not Connected");
@@ -228,7 +225,7 @@ namespace GSF.Communications
             }
         }
 
-        int Receive(byte[] buffer, int offset, int count)
+        private int Receive(byte[] buffer, int offset, int count)
         {
             if (!Connected)
                 throw new Exception("Not Connected");
@@ -249,5 +246,4 @@ namespace GSF.Communications
             }
         }
     }
-
 }

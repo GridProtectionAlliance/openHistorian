@@ -31,7 +31,6 @@ namespace GSF.IO.Unmanaged
 {
     public partial class BufferedFileStream
     {
-
         public static long BytesWritten = 0;
         public static long BytesRead = 0;
 
@@ -39,16 +38,16 @@ namespace GSF.IO.Unmanaged
         /// Manages the I/O for the file stream
         /// Also provides a way to synchronize calls to the FileStream.
         /// </summary>
-        unsafe internal class IoQueue
+        internal unsafe class IoQueue
         {
-            int m_bufferPoolSize;
-            int m_dirtyPageSize;
-            BufferedFileStream m_baseStream;
-            FileStream m_stream;
-            ResourceQueue<byte[]> m_bufferQueue;
-            object m_syncRoot;
+            private readonly int m_bufferPoolSize;
+            private readonly int m_dirtyPageSize;
+            private BufferedFileStream m_baseStream;
+            private readonly FileStream m_stream;
+            private readonly ResourceQueue<byte[]> m_bufferQueue;
+            private readonly object m_syncRoot;
 
-            static ResourceQueueCollection<int, byte[]> s_resourceList;
+            private static readonly ResourceQueueCollection<int, byte[]> s_resourceList;
 
             static IoQueue()
             {
@@ -92,7 +91,7 @@ namespace GSF.IO.Unmanaged
             {
                 position = position & ~(long)(m_bufferPoolSize - 1);
 
-                var buffer = m_bufferQueue.Dequeue();
+                byte[] buffer = m_bufferQueue.Dequeue();
                 IAsyncResult results;
                 lock (m_syncRoot)
                 {
@@ -115,10 +114,10 @@ namespace GSF.IO.Unmanaged
             /// <param name="waitForWriteToDisk">True to wait for a complete commit to disk before returning from this function.</param>
             public void Write(PageMetaDataList.PageMetaData[] pagesToWrite, bool waitForWriteToDisk)
             {
-                var buffer = m_bufferQueue.Dequeue();
+                byte[] buffer = m_bufferQueue.Dequeue();
                 int dirtyPagesPerBlock = (m_bufferPoolSize / m_dirtyPageSize);
                 ulong allPagesAreDirty = BitMath.CreateBitMask(dirtyPagesPerBlock);
-                foreach (var block in pagesToWrite)
+                foreach (PageMetaDataList.PageMetaData block in pagesToWrite)
                 {
                     if (block.IsDirtyFlags == allPagesAreDirty) //if all pages need to be written, one can shortcut
                     {
@@ -162,8 +161,6 @@ namespace GSF.IO.Unmanaged
                 if (waitForWriteToDisk)
                     WinApi.FlushFileBuffers(m_stream.SafeFileHandle);
             }
-
-
         }
     }
 }

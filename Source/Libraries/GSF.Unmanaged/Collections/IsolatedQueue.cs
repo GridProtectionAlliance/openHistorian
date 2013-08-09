@@ -21,13 +21,6 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-
 namespace GSF.Collections
 {
     /// <summary>
@@ -43,13 +36,13 @@ namespace GSF.Collections
     public class IsolatedQueue<T>
         where T : struct
     {
-        ContinuousQueue<IsolatedNode<T>> m_blocks;
-        ResourceQueue<IsolatedNode<T>> m_pooledNodes;
+        private readonly ContinuousQueue<IsolatedNode<T>> m_blocks;
+        private readonly ResourceQueue<IsolatedNode<T>> m_pooledNodes;
 
-        IsolatedNode<T> m_currentHead;
-        IsolatedNode<T> m_currentTail;
+        private IsolatedNode<T> m_currentHead;
+        private IsolatedNode<T> m_currentTail;
 
-        int m_unitCount;
+        private readonly int m_unitCount;
 
         public IsolatedQueue()
         {
@@ -121,6 +114,4 @@ namespace GSF.Collections
             }
         }
     }
-
-
 }

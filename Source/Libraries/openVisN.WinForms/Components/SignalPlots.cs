@@ -25,9 +25,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 using NPlot;
+using openHistorian.Data.Query;
 using openVisN.Framework;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
@@ -35,22 +35,22 @@ namespace openVisN.Components
 {
     public partial class SignalPlots : UserControl, ISubscriber
     {
-        bool m_ignoreNextUpdate;
-        object m_token = new object();
-        double m_scalingFactor = 1;
-        string m_signalTypeToPlot = "";
-        string m_plotTitle = "";
-        ColorWheel m_colorWheel;
+        private bool m_ignoreNextUpdate;
+        private readonly object m_token = new object();
+        private double m_scalingFactor = 1;
+        private string m_signalTypeToPlot = "";
+        private string m_plotTitle = "";
+        private ColorWheel m_colorWheel;
 
-        List<KeyValuePair<int, Guid>> m_signals = new List<KeyValuePair<int, Guid>>();
+        private readonly List<KeyValuePair<int, Guid>> m_signals = new List<KeyValuePair<int, Guid>>();
 
-        VisualizationFramework m_frameworkCtrl;
+        private VisualizationFramework m_frameworkCtrl;
 
-        PlotSurface2D.Interactions.HorizontalDrag HorizontalDrag = new PlotSurface2D.Interactions.HorizontalDrag();
-        PlotSurface2D.Interactions.VerticalDrag VerticalDrag = new PlotSurface2D.Interactions.VerticalDrag();
-        PlotSurface2D.Interactions.AxisDragX AxisDragX = new PlotSurface2D.Interactions.AxisDragX(true);
-        PlotSurface2D.Interactions.AxisDragY AxisDragY = new PlotSurface2D.Interactions.AxisDragY(true);
-        PlotSurface2D.Interactions.MouseWheelZoom MouseWheelZoom = new PlotSurface2D.Interactions.MouseWheelZoom();
+        private readonly PlotSurface2D.Interactions.HorizontalDrag HorizontalDrag = new PlotSurface2D.Interactions.HorizontalDrag();
+        private readonly PlotSurface2D.Interactions.VerticalDrag VerticalDrag = new PlotSurface2D.Interactions.VerticalDrag();
+        private readonly PlotSurface2D.Interactions.AxisDragX AxisDragX = new PlotSurface2D.Interactions.AxisDragX(true);
+        private readonly PlotSurface2D.Interactions.AxisDragY AxisDragY = new PlotSurface2D.Interactions.AxisDragY(true);
+        private readonly PlotSurface2D.Interactions.MouseWheelZoom MouseWheelZoom = new PlotSurface2D.Interactions.MouseWheelZoom();
 
         public SignalPlots()
         {
@@ -61,7 +61,6 @@ namespace openVisN.Components
 
         public void Initialize(SubscriptionFramework framework)
         {
-
             //chkAllSignals.Items.Clear();
             //foreach (var signal in framework.AllSignalGroups)
             //{
@@ -75,9 +74,9 @@ namespace openVisN.Components
             MetadataBase signalReference = null;
             m_signals.Clear();
             int index = 0;
-            foreach (var group in currentlyActiveGroups)
+            foreach (SignalGroup group in currentlyActiveGroups)
             {
-                var signal = group.TryGetSignal(m_signalTypeToPlot);
+                MetadataBase signal = group.TryGetSignal(m_signalTypeToPlot);
                 if (signal != null)
                 {
                     m_signals.Add(new KeyValuePair<int, Guid>(index, signal.UniqueId));
@@ -108,11 +107,10 @@ namespace openVisN.Components
                 maxDate = new DateTime((long)plotSurface2D1.XAxis1.WorldMax);
                 m_frameworkCtrl.Framework.ChangeDateRange(minDate, maxDate, m_token);
             }
-
         }
 
 
-        void m_framework_ParallelWithControlLockNewQueryResults(object sender, QueryResultsEventArgs e)
+        private void m_framework_ParallelWithControlLockNewQueryResults(object sender, QueryResultsEventArgs e)
         {
             //Debug Code
             //if (InvokeRequired)
@@ -123,12 +121,11 @@ namespace openVisN.Components
             }
             catch (Exception)
             {
-                
             }
             m_ignoreNextUpdate = false;
         }
 
-        void PlotChart(QueryResultsEventArgs e, PlotSurface2D plot, List<KeyValuePair<int, Guid>> signals, bool cacheAxis)
+        private void PlotChart(QueryResultsEventArgs e, PlotSurface2D plot, List<KeyValuePair<int, Guid>> signals, bool cacheAxis)
         {
             if (cacheAxis)
             {
@@ -140,12 +137,12 @@ namespace openVisN.Components
                 maxY = plot.YAxis1.WorldMax;
                 minY = plot.YAxis1.WorldMin;
 
-                foreach (var drawing in plot.Drawables.ToArray())
+                foreach (IDrawable drawing in plot.Drawables.ToArray())
                     plot.Remove(drawing, false);
 
                 foreach (KeyValuePair<int, Guid> freq in signals)
                 {
-                    var data = e.Results[freq.Value];
+                    SignalDataBase data = e.Results[freq.Value];
 
                     List<double> y = new List<double>(data.Count);
                     List<double> x = new List<double>(data.Count);
@@ -181,7 +178,7 @@ namespace openVisN.Components
 
                 foreach (KeyValuePair<int, Guid> freq in signals)
                 {
-                    var data = e.Results[freq.Value];
+                    SignalDataBase data = e.Results[freq.Value];
 
                     List<double> y = new List<double>(data.Count);
                     List<double> x = new List<double>(data.Count);
@@ -212,8 +209,7 @@ namespace openVisN.Components
         }
 
 
-
-        void AddInteractions()
+        private void AddInteractions()
         {
             plotSurface2D1.AddInteraction(HorizontalDrag);
             plotSurface2D1.AddInteraction(VerticalDrag);
@@ -223,11 +219,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue(null)
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue(null)
         ]
         public VisualizationFramework Framework
         {
@@ -239,7 +235,7 @@ namespace openVisN.Components
             {
                 if (!DesignMode)
                 {
-                    if (!object.ReferenceEquals(m_frameworkCtrl, value))
+                    if (!ReferenceEquals(m_frameworkCtrl, value))
                     {
                         if (m_frameworkCtrl != null)
                         {
@@ -255,7 +251,7 @@ namespace openVisN.Components
             }
         }
 
-        void UpdaterOnExecutionModeChanged(object sender, ExecutionModeEventArgs executionMode)
+        private void UpdaterOnExecutionModeChanged(object sender, ExecutionModeEventArgs executionMode)
         {
             if (executionMode.Mode == ExecutionMode.Manual)
             {
@@ -270,11 +266,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue("")
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue("")
         ]
         public string SignalTypeToPlot
         {
@@ -289,11 +285,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue("")
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue("")
         ]
         public string PlotTitle
         {
@@ -309,11 +305,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue(1.0)
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue(1.0)
         ]
         public double ScalingFactor
         {
@@ -328,11 +324,11 @@ namespace openVisN.Components
         }
 
         [
-        Bindable(true),
-        Browsable(true),
-        Category("Framework"),
-        Description("The framework component that this control will use."),
-        DefaultValue(null)
+            Bindable(true),
+            Browsable(true),
+            Category("Framework"),
+            Description("The framework component that this control will use."),
+            DefaultValue(null)
         ]
         public ColorWheel Colors
         {

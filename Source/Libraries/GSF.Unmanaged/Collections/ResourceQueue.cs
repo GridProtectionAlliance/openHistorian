@@ -27,7 +27,6 @@ using System.Collections.Generic;
 
 namespace GSF.Collections
 {
-
     /// <summary>
     /// Provides a thread safe queue that acts as a quazi buffer pool. 
     /// </summary>
@@ -35,10 +34,10 @@ namespace GSF.Collections
     public class ResourceQueue<T>
         where T : class
     {
-        object m_syncRoot;
-        Queue<T> m_queue;
-        Func<T> m_instanceObject;
-        int m_maximumCount;
+        private readonly object m_syncRoot;
+        private readonly Queue<T> m_queue;
+        private readonly Func<T> m_instanceObject;
+        private readonly int m_maximumCount;
 
 
         /// <summary>
@@ -65,6 +64,7 @@ namespace GSF.Collections
                 m_queue.Enqueue(m_instanceObject());
             }
         }
+
         /// <summary>
         /// Removes an item from the queue. If one does not exist, one is created.
         /// </summary>
@@ -93,6 +93,5 @@ namespace GSF.Collections
                 }
             }
         }
-
     }
 }

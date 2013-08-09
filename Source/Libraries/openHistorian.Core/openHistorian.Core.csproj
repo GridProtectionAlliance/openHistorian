@@ -1,0 +1,421 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{040E2AE7-021B-435A-ADBF-06D07EE0A67D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>openHistorian</RootNamespace>
+    <AssemblyName>openHistorian.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Build\Output\Debug\Library\openHistorian.Core\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\..\Build\Output\Debug\Library\openHistorian.Core\openHistorian.Core.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Build\Output\Release\Library\openHistorian.Core\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.Core\openHistorian.Core.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\Build\Output\Debug\Library\openHistorian.Core\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\..\..\Build\Output\Debug\Library\openHistorian.Core\openHistorian.Core.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\..\..\Build\Output\Release\Library\openHistorian.Core\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.Core\openHistorian.Core.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GSF.Core">
+      <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Historian">
+      <HintPath>..\..\Dependencies\GSF\GSF.Historian.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.TimeSeries, Version=2.0.68.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Archive\ArchiveTable`2.cs" />
+    <Compile Include="Archive\ArchiveTableReadSnapshot`2.cs" />
+    <Compile Include="Archive\ArchiveTableSnapshotInfo`2.cs" />
+    <Compile Include="Archive\ArchiveTable`2_Editor.cs" />
+    <Compile Include="Archive\ArchiveFile.cs" />
+    <Compile Include="Archive\SortedTreeContainer`2.cs" />
+    <Compile Include="Archive\SortedTreeContainerEdit`2.cs" />
+    <Compile Include="Collections\256\ITreeScanner256.cs" />
+    <Compile Include="Collections\256\KeyValue256.cs" />
+    <Compile Include="Collections\Generic\CustomCompression\CreateHistorianCompressionTs.cs" />
+    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionTs.cs" />
+    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionTsScanner.cs" />
+    <Compile Include="Collections\Generic\CustomCompression\CreateHistorianCompressionDelta.cs" />
+    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionDelta.cs" />
+    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionDeltaScanner.cs" />
+    <Compile Include="Collections\NullTreeScanner%272.cs" />
+    <Compile Include="Collections\256\NullTreeScanner256.cs" />
+    <Compile Include="Collections\256\SortedTree256.cs" />
+    <Compile Include="Collections\256\SortedTree256CompressionDeltaEncoded.cs" />
+    <Compile Include="Collections\256\SortedTree256CompressionNone.cs" />
+    <Compile Include="Collections\256\SortedTree256CompressionTS2Encoded.cs" />
+    <Compile Include="Collections\256\SortedTree256CompressionTSEncoded.cs" />
+    <Compile Include="Collections\256\StreamInsertHelper.cs" />
+    <Compile Include="Collections\256\TreeScannerEnsureSequential.cs" />
+    <Compile Include="Collections\Box.cs" />
+    <Compile Include="Collections\Generic\FixedSizeNode\CreateFixedSizeNode.cs" />
+    <Compile Include="Collections\Generic\FixedSizeNode\FixedSizeNode%272.cs" />
+    <Compile Include="Collections\Generic\FixedSizeNode\FixedSizeNodeScanner%272.cs" />
+    <Compile Include="Collections\Generic\Initialization\CreateKeyMethodBase.cs" />
+    <Compile Include="Collections\Generic\Initialization\CreateTreeNodeBase.cs" />
+    <Compile Include="Collections\Generic\Initialization\CreateValueMethodBase.cs" />
+    <Compile Include="Collections\Generic\Initialization\RegisterSortedTreeTypes.cs" />
+    <Compile Include="Collections\Generic\Initialization\SortedTree.cs" />
+    <Compile Include="Collections\Generic\Initialization\SparseIndexType.cs" />
+    <Compile Include="Collections\Generic\Initialization\TreeNodeInitializer%272.cs" />
+    <Compile Include="Collections\Generic\Node%271.cs" />
+    <Compile Include="Collections\Generic\SortedTree%272.cs" />
+    <Compile Include="Collections\Generic\SortedTreeStruct%272.cs" />
+    <Compile Include="Collections\Generic\SparseIndex%271.cs" />
+    <Compile Include="Collections\Generic\TreeKeyMethodsBase%271.cs" />
+    <Compile Include="Collections\Generic\TreeNodeBase%272.cs" />
+    <Compile Include="Collections\Generic\TreeNodeBase_Abstract%272.cs" />
+    <Compile Include="Collections\Generic\TreeNodeBase_Get%272.cs" />
+    <Compile Include="Collections\Generic\TreeNodeBase_Insert%272.cs" />
+    <Compile Include="Collections\Generic\TreeNodeBase_Remove%272.cs" />
+    <Compile Include="Collections\Generic\TreeNodeBase_Update%272.cs" />
+    <Compile Include="Collections\Generic\TreeScannerBase%272.cs" />
+    <Compile Include="Collections\Generic\TreeScannerCoreBase%272.cs" />
+    <Compile Include="Collections\Generic\TreeStream%272.cs" />
+    <Compile Include="Collections\Generic\TreeValueMethodsBase%271.cs" />
+    <Compile Include="Collections\Generic\ZeroNode\CreateZeroNode.cs" />
+    <Compile Include="Collections\Generic\EncodedNode\EncodedNodeBase%272.cs" />
+    <Compile Include="Collections\Generic\EncodedNode\EncodedNodeScannerBase%272.cs" />
+    <Compile Include="Collections\Generic\ZeroNode\ZeroNode%272.cs" />
+    <Compile Include="Collections\Generic\ZeroNode\ZeroNodeScanner%272.cs" />
+    <Compile Include="Collections\OldCode\SortedTree256DeltaEncoded.cs" />
+    <Compile Include="Collections\OldCode\SortedTree256TS32Encoded.cs" />
+    <Compile Include="Collections\OldCode\SortedTree256TSEncoded.cs" />
+    <Compile Include="Collections\OldCode\UnionScanner256.cs" />
+    <Compile Include="Collections\Types\HistorianValueBase.cs" />
+    <Compile Include="Collections\Types\HistorianKey.cs" />
+    <Compile Include="Collections\Types\HistorianKeyBase.cs" />
+    <Compile Include="Collections\Types\HistorianValue.cs" />
+    <Compile Include="Collections\Types\MethodsHistorianKey.cs" />
+    <Compile Include="Collections\Types\MethodsHistorianValue.cs" />
+    <Compile Include="Collections\Types\MethodsUint128.cs" />
+    <Compile Include="Collections\Types\MethodsUint32.cs" />
+    <Compile Include="Communications\ProcessClient%272.cs" />
+    <Compile Include="Communications\RemoteHistorian%272.cs" />
+    <Compile Include="Communications\RemoteHistorian%272_Database.cs" />
+    <Compile Include="Communications\RemoteHistorian%272_DataReader.cs" />
+    <Compile Include="Communications\SocketHistorian%272.cs" />
+    <Compile Include="DataReaderOptions.cs" />
+    <Compile Include="Data\PeriodicScanner.cs" />
+    <Compile Include="Data\Query\GetFrameMethods.cs" />
+    <Compile Include="Data\Query\GetDataReaderMethods.cs" />
+    <Compile Include="Data\Query\GetSignalMethods.cs" />
+    <Compile Include="Data\Query\GetSignalsWithCalculationsMethods.cs" />
+    <Compile Include="Data\Query\GetTableMethods.cs" />
+    <Compile Include="Data\Query\HistorianQuery.cs" />
+    <Compile Include="Data\Query\ISignalCalculation.cs" />
+    <Compile Include="Data\Query\ISignalWithType.cs" />
+    <Compile Include="Data\SignalData.cs" />
+    <Compile Include="Data\SignalDataBase.cs" />
+    <Compile Include="Data\SignalDataSingle.cs" />
+    <Compile Include="Data\SignalDataUnknown.cs" />
+    <Compile Include="Data\Types\TypeBase.cs" />
+    <Compile Include="Data\Types\TypeDouble.cs" />
+    <Compile Include="Data\Types\TypeSingle.cs" />
+    <Compile Include="Engine\ArchiveDatabaseEngine%272.cs" />
+    <Compile Include="Engine\ArchiveTableSummary%272.cs" />
+    <Compile Include="Engine\ArchiveInitializer%272.cs" />
+    <Compile Include="Engine\ArchiveList%272.cs" />
+    <Compile Include="Engine\ArchiveList%272_Editor.cs" />
+    <Compile Include="Engine\ArchiveListRemovalStatus%272.cs" />
+    <Compile Include="Engine\ArchiveListSnapshot%272.cs" />
+    <Compile Include="Engine\ArchiveReader%272.cs" />
+    <Compile Include="Engine\ArchiveWriters\PointStreamCache%272.cs" />
+    <Compile Include="Engine\ArchiveWriters\PrestageWriter%272.cs" />
+    <Compile Include="Engine\ArchiveWriters\RolloverArgs%272.cs" />
+    <Compile Include="Engine\ArchiveWriters\StageWriter%272.cs" />
+    <Compile Include="Engine\ArchiveWriters\StagingFile%272.cs" />
+    <Compile Include="Engine\ArchiveWriters\TransactionalBlocking%272.cs" />
+    <Compile Include="Engine\ArchiveWriters\WriteProcessor%272.cs" />
+    <Compile Include="Engine\ArchiveWriters\WriteProcessorSettings%272.cs" />
+    <Compile Include="Engine\Configuration\DatabaseSettings.cs" />
+    <Compile Include="Engine\DatabaseConfig.cs" />
+    <Compile Include="FileStructure\BlockType.cs" />
+    <Compile Include="FileStructure\FileHeaderBlock.cs" />
+    <Compile Include="FileStructure\FileHeaderBlockRecovery.cs" />
+    <Compile Include="FileStructure\FileStructureConstants.cs" />
+    <Compile Include="FileStructure\IndexMapper.cs" />
+    <Compile Include="FileStructure\IndexParser.cs" />
+    <Compile Include="FileStructure\IO\BufferedFile.cs" />
+    <Compile Include="FileStructure\IO\BufferedFile_IoQueue.cs" />
+    <Compile Include="FileStructure\IO\BufferedFile_IoSession.cs" />
+    <Compile Include="FileStructure\IO\DiskIo.cs" />
+    <Compile Include="FileStructure\IO\DiskIoSession.cs" />
+    <Compile Include="FileStructure\IO\DiskIoSessionExtension.cs" />
+    <Compile Include="FileStructure\IO\DiskMedium.cs" />
+    <Compile Include="FileStructure\IO\Footer.cs" />
+    <Compile Include="FileStructure\IO\IDiskMedium.cs" />
+    <Compile Include="FileStructure\IO\MemoryPoolFile.cs" />
+    <Compile Include="FileStructure\IO\MemoryFile_IoSession.cs" />
+    <Compile Include="FileStructure\Murmur3.cs" />
+    <Compile Include="FileStructure\IO\PageList.cs" />
+    <Compile Include="FileStructure\IO\PageLock.cs" />
+    <Compile Include="FileStructure\IO\PageReplacementAlgorithm.cs" />
+    <Compile Include="FileStructure\ShadowCopyAllocator.cs" />
+    <Compile Include="FileStructure\SubFileDiskIoSessionPool.cs" />
+    <Compile Include="FileStructure\SubFileMetaData.cs" />
+    <Compile Include="FileStructure\SubFileName.cs" />
+    <Compile Include="FileStructure\SubFileStream.cs" />
+    <Compile Include="FileStructure\SubFileStream_IoSession.cs" />
+    <Compile Include="FileStructure\TransactionalEdit.cs" />
+    <Compile Include="FileStructure\TransactionalFileStructure.cs" />
+    <Compile Include="FileStructure\TransactionalRead.cs" />
+    <Compile Include="FileStructure\TransactionService.cs" />
+    <Compile Include="HistorianClient%272.cs" />
+    <Compile Include="HistorianDatabaseCollection%272.cs" />
+    <Compile Include="HistorianDatabaseEngine.cs" />
+    <Compile Include="HistorianDatabaseInstance.cs" />
+    <Compile Include="HistorianDataReaderBase%272.cs" />
+    <Compile Include="HistorianServer%272.cs" />
+    <Compile Include="IHistorian.cs" />
+    <Compile Include="IHistorianDatabase%272.cs" />
+    <Compile Include="IHistorianDatabaseCollection%272.cs" />
+    <Compile Include="OldCode\OldFormat\OldHistorianReader.cs" />
+    <Compile Include="QueryFilterTimestamp.cs" />
+    <Compile Include="QueryFilterPointId.cs" />
+    <Compile Include="OldCode\Local\ConfigHistorian.cs" />
+    <Compile Include="OldCode\Local\ConfigDatabase.cs" />
+    <Compile Include="OldCode\Local\HistorianServer_HistorianDatabase.cs" />
+    <Compile Include="OldCode\Local\HistorianServer_DatabaseConfig.cs" />
+    <Compile Include="OldCode\Local\HistorianServer_HistorianManage.cs" />
+    <Compile Include="OldCode\Local\HistorianDataReader.cs" />
+    <Compile Include="OldCode\Local\Historian.cs" />
+    <Compile Include="OldCode\Local\Historian_HistorianReadWrite.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
+    <Compile Include="OldCode\Local\ConfigNode.cs" />
+    <Compile Include="OldCode\Local\XmlConfig.cs" />
+    <Compile Include="OldCode\ContinuousBuffer.cs" />
+    <Compile Include="OldCode\DataPoint.cs" />
+    <Compile Include="OldCode\ArchiveWriter_Old.cs" />
+    <Compile Include="OldCode\IO\IStreamingTransport.cs" />
+    <Compile Include="OldCode\Streaming\Client\ClientSocket.cs" />
+    <Compile Include="OldCode\Streaming\IInboundBuffer.cs" />
+    <Compile Include="OldCode\Streaming\ITransportStreaming.cs" />
+    <Compile Include="OldCode\Streaming\IOutboundBuffer.cs" />
+    <Compile Include="OldCode\Streaming\Server\ProcessDatabaseInstance.cs" />
+    <Compile Include="OldCode\Streaming\Server\ITransportHost.cs" />
+    <Compile Include="OldCode\Streaming\Server\ProcessAuthentication.cs" />
+    <Compile Include="OldCode\Streaming\Server\ProcessDisconnect.cs" />
+    <Compile Include="OldCode\Streaming\Server\ITransportCommand.cs" />
+    <Compile Include="OldCode\Streaming\Server\ProcessArchivePoints.cs" />
+    <Compile Include="OldCode\Streaming\Server\ProcessClientStream.cs" />
+    <Compile Include="OldCode\Streaming\Server\ProcessKeepAlive.cs" />
+    <Compile Include="OldCode\Streaming\Server\ServerSocket.cs" />
+    <Compile Include="OldCode\Collections\BPlusTree.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeBase.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeInternalNodeBase.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeLeafNodeBase.cs" />
+    <Compile Include="OldCode\Collections\IBPlusTreeType.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\MemoryMethod.cs" />
+    <Compile Include="OldCode\Collections\Specialized\BPlusTreeLongLong.cs" />
+    <Compile Include="OldCode\Collections\Specialized\BPlusTreeTSD.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeTypes\DateTimeLong.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeTypes\IntegerFloat.cs" />
+    <Compile Include="OldCode\Collections\BPlusTreeTypes\Long.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\UnmanagedArray.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old2.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_old.cs" />
+    <Compile Include="OldCode\OldCompressionCode\Compression_old.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32Static.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressBlockUIn32_2.cs" />
+    <Compile Include="OldCode\OldCompressionCode\Compression_old1.cs" />
+    <Compile Include="OldCode\OldCompressionCode\CompressionTest_Old.cs" />
+    <Compile Include="OldCode\PooledBufferedStream.cs" />
+    <Compile Include="OldCode\MemoryBuffer\BufferedStream.cs" />
+    <Compile Include="OldCode\MemoryBuffer\MemoryUnit.cs" />
+    <Compile Include="OldCode\MemoryBuffer\IMemoryBuffer.cs" />
+    <Compile Include="OldCode\MemoryBuffer\MemoryBufferTwoBufferCLOCK.cs" />
+    <Compile Include="OldCode\PointStream\PointWriter.cs" />
+    <Compile Include="OldCode\PointStream\SinglePointMessage.cs" />
+    <Compile Include="OldCode\PointStream\StreamCommands.cs" />
+    <Compile Include="OldCode\PointStream\StreamWriter.cs" />
+    <Compile Include="OldCode\PointStream\StreamReader.cs" />
+    <Compile Include="OldCode\PointStream\Test\OpenPDCOutputAdapter.cs" />
+    <Compile Include="OldCode\PointTypes\Definition.cs" />
+    <Compile Include="OldCode\PointTypes\Float16Type.cs" />
+    <Compile Include="OldCode\PointTypes\Float32Type.cs" />
+    <Compile Include="OldCode\PointTypes\Float64Type.cs" />
+    <Compile Include="OldCode\PointTypes\PointDataTypes.cs" />
+    <Compile Include="OldCode\PointTypes\TypeBase.cs" />
+    <Compile Include="OldCode\PointTypes\EmptyType.cs" />
+    <Compile Include="OldCode\PointTypes\UInteger32Type.cs" />
+    <Compile Include="OldCode\PointStream\PointReader.cs" />
+    <Compile Include="OldCode\PointTypes\DateTimeType.cs" />
+    <Compile Include="OldCode\PooledMemoryStream.cs" />
+    <Compile Include="OldCode\IO\BinaryStream.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\BufferPoolKernel.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\BufferPoolKernel_Settings.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\BufferPoolKernel_List.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPool.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPoolAllocationList.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPoolCollectionEngine.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPoolSettings.cs" />
+    <Compile Include="OldCode\UnmanagedMemory\WinApi.cs" />
+    <Compile Include="OldCode\FileSystem\Test\DiskIOUnbufferedTest.cs" />
+    <Compile Include="OldCode\FileSystem\Test\DiskIOMemoryStreamTest.cs" />
+    <Compile Include="OldCode\FileSystem\DiskIOBase.cs" />
+    <Compile Include="OldCode\FileSystem\Test\DiskIOTest.cs" />
+    <Compile Include="OldCode\FileSystem\DiskIOUnbuffered.cs" />
+    <Compile Include="OldCode\FileSystem\DiskIOMemoryStream.cs" />
+    <Compile Include="OldCode\TimeSeriesDataStructure\BuildPointArchiveSolution.cs" />
+    <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\Method1.cs" />
+    <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompression.cs" />
+    <Compile Include="OldCode\TimeSeriesDataStructure\CompressionMethods\PatternCompressorTest.cs" />
+    <Compile Include="OldCode\IO\ISupportsBinaryStream.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queues\FileBackedHistorianInputQueue.cs" />
+    <Compile Include="Queues\HistorianInputQueue.cs" />
+    <Compile Include="Statistics.cs" />
+    <Compile Include="Stats.cs" />
+    <Compile Include="Streaming\StreamMux.cs" />
+    <Compile Include="Utility\ConvertArchiveFile.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="ClassDiagram1.cd" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GSF.Unmanaged\GSF.Unmanaged.csproj">
+      <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
+      <Name>GSF.Unmanaged</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"
+IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetDir)$(TargetName).pdb" "$(TargetDir)..\..\Applications\openHistorian"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

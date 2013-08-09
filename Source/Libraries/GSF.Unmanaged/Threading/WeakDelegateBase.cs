@@ -30,7 +30,8 @@ namespace GSF.Threading
     public abstract class WeakDelegateBase<T> : WeakReference
         where T : class
     {
-        MethodInfo m_method;
+        private readonly MethodInfo m_method;
+
         protected WeakDelegateBase(Delegate target)
             : base((target == null) ? null : target.Target)
         {
@@ -69,10 +70,5 @@ namespace GSF.Threading
 
             return (m_method == obj.m_method) && ReferenceEquals(Target, obj.Target);
         }
-
-
-
-
-
     }
 }

@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MenuDataItems xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- MenuDataItem Icon="" MenuText="_Home" Description="System Overview" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.HomeUserControl"/ -->
+  <MenuDataItem Icon="" MenuText="_Home" Description="System Overview" Roles="*" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.HomeUserControl" />
+  <MenuDataItem Icon="" MenuText="_Inputs" Description="Manage Historian Inputs" Roles="*" UserControlAssembly="" UserControlPath="">
+    <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="_Browse Input Devices" Description="Browse Devices" Roles="*" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.DeviceListUserControl" />
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="Add _New Device Based Input" Description="Add New Device Configuration" Roles="Administrator,Editor" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.DeviceUserControl" />
+      <MenuDataItem Icon="" MenuText="Manage Custom _Inputs" Description="Manage Custom Input Adapters" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CustomInputAdapterUserControl" />
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="Synchrophasor Device _Wizard" Description="Synchrophasor Device Configuration Wizard" Roles="Administrator,Editor" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.InputWizardUserControl" />
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="_Subscription Based Inputs" Description="Manage Gateway Subscriptions" Roles="*" UserControlAssembly="" UserControlPath="">
+        <SubMenuItems>
+          <MenuDataItem Icon="" MenuText="_Create Internal Subscription" Description="Create Subscription to Internal Gateway Publisher" Roles="Administrator,Editor" UserControlAssembly="GSF.TimeSeries.Transport.UI.WPF.dll" UserControlPath="GSF.TimeSeries.Transport.UI.UserControls.InternalSubscriptionUserControl"/>
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="_Measurement Subscriptions" Description="Manage Local Measurement Subscriptions from External Gateways" Roles="*" UserControlAssembly="GSF.TimeSeries.Transport.UI.WPF.dll" UserControlPath="GSF.TimeSeries.Transport.UI.UserControls.SubscribeMeasurementUserControl"/>
+          <MenuDataItem Icon="" MenuText="_Create Authorization Request" Description="Create Authorization Request for Access to External Gateway" Roles="Administrator,Editor" UserControlAssembly="GSF.TimeSeries.Transport.UI.WPF.dll" UserControlPath="GSF.TimeSeries.Transport.UI.UserControls.SubscriberRequestUserControl"/>
+        </SubMenuItems>
+      </MenuDataItem>
+    </SubMenuItems>
+  </MenuDataItem>
+  <MenuDataItem Icon="" MenuText="_Outputs" Description="Manage Historian Outputs" Roles="*" UserControlAssembly="" UserControlPath="">
+    <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="_Historian Instances" Description="Manage Historian Instances" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.HistorianUserControl" />
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="Manage Custom _Outputs" Description="Manage Custom Output Adapters" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CustomOutputAdapterUserControl" />
+    </SubMenuItems>
+  </MenuDataItem>
+  <MenuDataItem Icon="" MenuText="_Actions" Description="Manage Historian Actions" Roles="*" UserControlAssembly="" UserControlPath="">
+    <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="_Alarm Configuration" Description="Manage Alarm Configuration" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.AlarmUserControl" />
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="Manage _Custom Actions" Description="Manage Custom Action Adapters" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CustomActionAdapterUserControl" />
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="_Data Publisher Configuration" Description="Manage Data Publishers" Roles="*" UserControlAssembly="" UserControlPath="">
+        <SubMenuItems>
+          <MenuDataItem Icon="" MenuText="_Authorize Subscribers" Description="Manage Authorized Subscribers" Roles="*" UserControlAssembly="GSF.TimeSeries.Transport.UI.WPF.dll" UserControlPath="GSF.TimeSeries.Transport.UI.UserControls.SubscriberUserControl"/>
+          <MenuDataItem Icon="" MenuText="_Subscriber Measurement Access" Description="Manage Subscriber Measurement Access" Roles="*" UserControlAssembly="GSF.TimeSeries.Transport.UI.WPF.dll" UserControlPath="GSF.TimeSeries.Transport.UI.UserControls.SubscriberMeasurementUserControl"/>
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="Measurement _Groups" Description="Manage Subscriber Measurement Groups" Roles="*" UserControlAssembly="GSF.TimeSeries.Transport.UI.WPF.dll" UserControlPath="GSF.TimeSeries.Transport.UI.UserControls.MeasurementGroupUserControl"/>
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="Monitor Su_bscription Status" Description="Subscriber Status" Roles="*" UserControlAssembly="GSF.TimeSeries.Transport.UI.WPF.dll" UserControlPath="GSF.TimeSeries.Transport.UI.UserControls.SubscriberStatusUserControl"/>
+        </SubMenuItems>
+      </MenuDataItem>
+    </SubMenuItems>
+  </MenuDataItem>
+  <MenuDataItem Icon="" MenuText="Meta_data" Description="Manage Historian Metadata" Roles="*" UserControlAssembly="" UserControlPath="">
+    <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="_Measurements" Description="Manage Measurements" Roles="*" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.PhasorMeasurementUserControl"/>
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="_Companies" Description="Manage Companies" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CompanyUserControl" />
+      <MenuDataItem Icon="" MenuText="_Vendors" Description="Manage Vendors" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.VendorUserControl" />
+      <MenuDataItem Icon="" MenuText="Vendor _Devices" Description="Manage Vendor Devices" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.VendorDeviceUserControl" />
+    </SubMenuItems>
+  </MenuDataItem>
+  <MenuDataItem Icon="" MenuText="_Monitoring" Description="Monitor Historian Components" Roles="*" UserControlAssembly="" UserControlPath="">
+    <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="View _Alarm Status" Description="View Alarm Status" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.AlarmStatusUserControl"/>
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="_Graph Measurements" Description="Graph Real-time Measurements" Roles="*" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.InputStatusMonitorUserControl"/>
+      <MenuDataItem Icon="" MenuText="Monitor _Device Outputs" Description="Monitor Device Outputs" Roles="*" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.RealTimeMeasurementUserControl"/>
+      <MenuDataItem Icon="" MenuText="_Stream Statistics" Description="Stream Statistics" Roles="*" UserControlAssembly="GSF.PhasorProtocols.UI.WPF.dll" UserControlPath="GSF.PhasorProtocols.UI.UserControls.RealTimeStatisticUserControl"/>
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="_Remote System Console" Description="Remote System Console" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.MonitoringUserControl" />
+      <MenuDataItem Icon="" MenuText="_Error Log" Description="Error Log" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.ErrorLogUserControl" />
+    </SubMenuItems>
+  </MenuDataItem> 
+  <MenuDataItem Icon="" MenuText="_System" Description="Manage System Settings" Roles="*" UserControlAssembly="" UserControlPath="">
+    <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="Manage _Nodes" Description="Manage Nodes" Roles="Administrator" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.NodeUserControl" />
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="Configure _Security" Description="Manager Security" Roles="Administrator" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.SecurityUserControl" />
+      <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+      <MenuDataItem Icon="" MenuText="_View Iaon Tree" Description="View Iaon Tree" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.IaonTreeUserControl"/>
+    </SubMenuItems>
+  </MenuDataItem>
+</MenuDataItems>
