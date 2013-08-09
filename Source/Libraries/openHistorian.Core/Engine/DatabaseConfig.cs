@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine
 {
@@ -64,15 +65,39 @@ namespace openHistorian.Engine
             get;
             private set;
         }
+        public Guid CompressionMethod { get; set; }
 
         public DatabaseConfig(WriterMode writerMode, params string[] paths)
         {
+            CompressionMethod = CreateFixedSizeNode.TypeGuid;
+            if (writerMode == WriterMode.OnDisk)
+                CompressionMethod = CreateHistorianCompressionTs.TypeGuid;
+
             Paths = new PathList();
             WriterMode = writerMode;
             foreach (string path in paths)
             {
                 Paths.AddPath(path, writerMode == WriterMode.OnDisk);
             }
+        }
+
+        public List<string> GetAttachedFiles()
+        {
+            var attachedFiles = new List<string>();
+
+            foreach (string path in Paths.GetPaths())
+            {
+                if (File.Exists(path))
+                {
+                    attachedFiles.Add(path);
+                }
+                else if (Directory.Exists(path))
+                {
+                    attachedFiles.AddRange(Directory.GetFiles(path, "*.d2", SearchOption.TopDirectoryOnly));
+                }
+            }
+
+            return attachedFiles;
         }
     }
 

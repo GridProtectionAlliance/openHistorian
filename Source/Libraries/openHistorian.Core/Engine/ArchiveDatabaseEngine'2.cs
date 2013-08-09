@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
 using openHistorian.Engine.ArchiveWriters;
-using openHistorian.Engine.Configuration;
 
 namespace openHistorian.Engine
 {
@@ -57,20 +56,16 @@ namespace openHistorian.Engine
         }
 
         public ArchiveDatabaseEngine(DatabaseConfig settings)
-            : this(new DatabaseSettings(settings), settings)
-        {
-        }
-
-        internal ArchiveDatabaseEngine(DatabaseSettings settings, DatabaseConfig config)
         {
             m_pendingDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
-            m_archiveList = new ArchiveList<TKey, TValue>(settings.AttachedFiles);
+            m_archiveList = new ArchiveList<TKey, TValue>(settings.GetAttachedFiles());
 
-            if (config.WriterMode != WriterMode.None)
+            if (settings.WriterMode != WriterMode.None)
             {
-                WriteProcessorSettings<TKey, TValue> writeSettings = WriteProcessorSettings<TKey, TValue>.CreateFromSettings(config, m_archiveList);
+                WriteProcessorSettings<TKey, TValue> writeSettings = WriteProcessorSettings<TKey, TValue>.CreateFromSettings(settings, m_archiveList);
                 m_archiveWriter = new WriteProcessor<TKey, TValue>(writeSettings, m_archiveList);
             }
+
         }
 
         #endregion

@@ -212,7 +212,6 @@
     <Compile Include="Engine\ArchiveWriters\TransactionalBlocking%272.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessor%272.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessorSettings%272.cs" />
-    <Compile Include="Engine\Configuration\DatabaseSettings.cs" />
     <Compile Include="Engine\DatabaseConfig.cs" />
     <Compile Include="FileStructure\BlockType.cs" />
     <Compile Include="FileStructure\FileHeaderBlock.cs" />

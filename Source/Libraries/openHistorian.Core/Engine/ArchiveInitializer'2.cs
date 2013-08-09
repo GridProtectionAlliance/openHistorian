@@ -28,7 +28,6 @@ using System.IO;
 using System.Linq;
 using GSF;
 using openHistorian.Archive;
-using openHistorian.Engine.Configuration;
 
 namespace openHistorian.Engine
 {
