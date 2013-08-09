@@ -43,12 +43,12 @@ namespace openHistorian.Engine.ArchiveWriters
         public static WriteProcessorSettings<TKey, TValue> CreateFromSettings(DatabaseConfig config, ArchiveList<TKey, TValue> list)
         {
             if (config.WriterMode == WriterMode.InMemory)
-                return CreateInMemory(list);
+                return CreateInMemory(config, list);
             else
-                return CreateOnDisk(list, config.Paths.GetSavePaths().ToList());
+                return CreateOnDisk(config, list);
         }
 
-        public static WriteProcessorSettings<TKey, TValue> CreateInMemory(ArchiveList<TKey, TValue> list)
+        static WriteProcessorSettings<TKey, TValue> CreateInMemory(DatabaseConfig config, ArchiveList<TKey, TValue> list)
         {
             WriteProcessorSettings<TKey, TValue> settings = new WriteProcessorSettings<TKey, TValue>();
 
@@ -80,13 +80,14 @@ namespace openHistorian.Engine.ArchiveWriters
                 RolloverInterval = 100 * 1000,
                 RolloverSize = 100 * 1000 * 1000,
                 MaximumAllowedSize = 100 * 1000 * 1000,
-                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(CreateFixedSizeNode.TypeGuid))
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod))
             };
             return settings;
         }
 
-        public static WriteProcessorSettings<TKey, TValue> CreateOnDisk(ArchiveList<TKey, TValue> list, List<string> paths)
+        static WriteProcessorSettings<TKey, TValue> CreateOnDisk(DatabaseConfig config, ArchiveList<TKey, TValue> list)
         {
+            var paths = config.Paths.GetSavePaths().ToList();
             WriteProcessorSettings<TKey, TValue> settings = new WriteProcessorSettings<TKey, TValue>();
 
             settings.Prestage = new PrestageSettings()
@@ -118,8 +119,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 RolloverInterval = 15 * 60 * 1000,
                 RolloverSize = 1000 * 1000 * 1000,
                 MaximumAllowedSize = 2000 * 1000 * 1000,
-                //StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, CreateFixedSizeNode.TypeGuid, "Stage2"))
-                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, CreateHistorianCompressionTs.TypeGuid, "Stage2"))
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage2"))
             };
             return settings;
         }

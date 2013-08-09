@@ -188,11 +188,12 @@ namespace openHistorian.FileStructure.IO
             m_queue.WriteToDisk(m_fileStructureBlockSize * ((header.SnapshotSequenceNumber & 7) + 2), bytes, m_fileStructureBlockSize);
             m_queue.FlushFileBuffers();
 
+            long startPos;
+
             //Copy recently committed data to the buffer pool
             if ((m_lengthOfCommittedData & (m_diskBlockSize - 1)) != 0) //Only if there is a split page.
             {
-                
-                long startPos = m_lengthOfCommittedData & (~(long)(m_diskBlockSize - 1));
+                startPos = m_lengthOfCommittedData & (~(long)(m_diskBlockSize - 1));
                 //Finish filling up the split page in the buffer.
                 lock (m_syncRoot)
                 {
@@ -208,27 +209,31 @@ namespace openHistorian.FileStructure.IO
                         Memory.Copy(ptrSrc, ptrDest, length);
                     }
                 }
+                startPos += m_diskBlockSize;
+            }
+            else
+            {
+                startPos = m_lengthOfCommittedData;
+            }
+
+            while (startPos < lengthOfAllData)
+            {
+                //If the address doesn't exist in the current list. Read it from the disk.
+                int poolPageIndex;
+                IntPtr poolAddress;
+                m_pool.AllocatePage(out poolPageIndex, out poolAddress);
+                m_writeBuffer.CopyTo(startPos, poolAddress, m_diskBlockSize);
+                Footer.WriteChecksumResultsToFooter(poolAddress, m_fileStructureBlockSize, m_diskBlockSize);
+
+                bool wasPageAdded;
+                lock (m_syncRoot)
+                {
+                    wasPageAdded = m_pageReplacementAlgorithm.TryAddPage(startPos, poolAddress, poolPageIndex);
+                }
+                if (!wasPageAdded)
+                    m_pool.ReleasePage(poolPageIndex);
 
                 startPos += m_diskBlockSize;
-                while (startPos < lengthOfAllData)
-                {
-                    //If the address doesn't exist in the current list. Read it from the disk.
-                    int poolPageIndex;
-                    IntPtr poolAddress;
-                    m_pool.AllocatePage(out poolPageIndex, out poolAddress);
-                    m_writeBuffer.CopyTo(startPos, poolAddress, m_diskBlockSize);
-                    Footer.WriteChecksumResultsToFooter(poolAddress, m_fileStructureBlockSize, m_diskBlockSize);
-
-                    bool wasPageAdded;
-                    lock (m_syncRoot)
-                    {
-                        wasPageAdded = m_pageReplacementAlgorithm.TryAddPage(startPos, poolAddress, poolPageIndex);
-                    }
-                    if (!wasPageAdded)
-                        m_pool.ReleasePage(poolPageIndex);
-
-                    startPos += m_diskBlockSize;
-                }
             }
 
             m_lengthOfCommittedData = lengthOfAllData;
