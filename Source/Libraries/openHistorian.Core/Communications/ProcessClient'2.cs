@@ -40,16 +40,14 @@ namespace openHistorian.Communications
 
         public delegate void SocketErrorEventHandler(Exception ex);
 
-        private NetworkBinaryStream m_netStream;
-        private readonly BinaryStreamWrapper m_stream;
+        private NetworkBinaryStream2 m_stream;
         private readonly IHistorianDatabaseCollection<TKey, TValue> m_historian;
         private IHistorianDatabase<TKey, TValue> m_historianDatabase;
         private HistorianDataReaderBase<TKey, TValue> m_historianReaderBase;
 
-        public ProcessClient(NetworkBinaryStream netStream, IHistorianDatabaseCollection<TKey, TValue> historian)
+        public ProcessClient(NetworkBinaryStream2 netStream, IHistorianDatabaseCollection<TKey, TValue> historian)
         {
-            m_netStream = netStream;
-            m_stream = new BinaryStreamWrapper(m_netStream);
+            m_stream = netStream;
             m_historian = historian;
         }
 
@@ -85,13 +83,12 @@ namespace openHistorian.Communications
             {
                 try
                 {
-                    m_netStream.Disconnect();
-                    m_netStream.Close();
+                    m_stream.Disconnect();
                 }
                 catch (Exception ex)
                 {
                 }
-                m_netStream = null;
+                m_stream = null;
             }
         }
 
@@ -188,22 +185,28 @@ namespace openHistorian.Communications
 
             TKey oldKey = new TKey();
             TValue oldValue = new TValue();
+            int loop = 0;
             while (scanner.Read())
             {
                 m_stream.Write(true);
                 scanner.CurrentKey.WriteCompressed(m_stream, oldKey);
                 scanner.CurrentValue.WriteCompressed(m_stream, oldValue);
-                if (m_netStream.AvailableReadBytes > 0)
+                loop++;
+                if (loop > 1000)
                 {
-                    m_stream.Write(false);
-                    m_netStream.Flush();
-                    return;
+                    loop = 0;
+                    if (m_stream.AvailableReadBytes > 0)
+                    {
+                        m_stream.Write(false);
+                        m_stream.Flush();
+                        return;
+                    }
                 }
                 scanner.CurrentKey.CopyTo(oldKey);
                 scanner.CurrentValue.CopyTo(oldValue);
             }
             m_stream.Write(false);
-            m_netStream.Flush();
+            m_stream.Flush();
         }
 
         private void ProcessWrite()
@@ -220,8 +223,8 @@ namespace openHistorian.Communications
 
         public void Dispose()
         {
-            if (m_netStream.Connected)
-                m_netStream.Disconnect();
+            if (m_stream.Connected)
+                m_stream.Disconnect();
         }
     }
 }

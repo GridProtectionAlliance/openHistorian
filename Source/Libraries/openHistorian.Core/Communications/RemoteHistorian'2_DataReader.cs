@@ -57,7 +57,7 @@ namespace openHistorian.Communications
                 key1.Save(m_client.m_stream);
                 key2.Save(m_client.m_stream);
                 readerOptions.Save(m_client.m_stream);
-                m_client.m_netStream.Flush();
+                m_client.m_stream.Flush();
                 return new PointReader(m_client, () => m_reader = null);
             }
 
@@ -69,7 +69,7 @@ namespace openHistorian.Communications
                         m_reader.Cancel();
 
                     m_client.m_stream.Write((byte)ServerCommand.DisconnectReader);
-                    m_client.m_netStream.Flush();
+                    m_client.m_stream.Flush();
                     m_onDispose();
                 }
             }
@@ -108,7 +108,7 @@ namespace openHistorian.Communications
                     if (m_completed)
                         return;
                     m_client.m_stream.Write((byte)ServerCommand.CancelRead);
-                    m_client.m_netStream.Flush();
+                    m_client.m_stream.Flush();
                     //flush the rest of the data off of the receive queue.
                     while (m_client.m_stream.ReadBoolean())
                     {

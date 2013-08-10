@@ -24,6 +24,8 @@
 //
 //******************************************************************************************************
 
+//#define GetBaseMethodCallCount
+
 using System;
 using System.Text;
 
@@ -31,6 +33,34 @@ namespace GSF.IO
 {
     public abstract unsafe class BinaryStreamBase : IDisposable
     {
+
+#if GetBaseMethodCallCount
+        static public long[] CallMethods = new long[100];
+        public enum Method
+            : int
+        {
+            Copy,
+            InsertBytes,
+            RemoveBytes,
+            WriteSByte,
+            WriteBool,
+            WriteUInt16,
+            WriteUInt32,
+            WriteUInt64,
+            WriteByte,
+            WriteInt16,
+            WriteInt32,
+            WriteInt64,
+            WriteSingle,
+            WriteDouble,
+            WriteDateTime,
+            WriteDecimal,
+            WriteGuid,
+            Write7BitUInt,
+            Write7BitULong
+        }
+#endif
+
         private readonly byte[] m_buffer = new byte[16];
 
         #region [ Abstract Code ]
@@ -129,6 +159,11 @@ namespace GSF.IO
         /// <param name="length"></param>
         public virtual void Copy(long source, long destination, int length)
         {
+
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.Copy]++;
+#endif
+
             byte[] data = new byte[length];
             long oldPos = Position;
             Position = source;
@@ -162,6 +197,9 @@ namespace GSF.IO
         /// </remarks>
         public virtual void InsertBytes(int numberOfBytes, int lengthOfValidDataToShift)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.InsertBytes]++;
+#endif
             byte[] data = new byte[lengthOfValidDataToShift];
             long oldPos = Position;
             Read(data, 0, lengthOfValidDataToShift);
@@ -184,6 +222,9 @@ namespace GSF.IO
         /// </remarks>
         public virtual void RemoveBytes(int numberOfBytes, int lengthOfValidDataToShift)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.RemoveBytes]++;
+#endif
             byte[] data = new byte[lengthOfValidDataToShift];
             long oldPos = Position;
             Position = oldPos + numberOfBytes;
@@ -195,11 +236,17 @@ namespace GSF.IO
 
         public virtual void Write(sbyte value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteSByte]++;
+#endif
             Write((byte)value);
         }
 
         public virtual void Write(bool value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteBool]++;
+#endif
             if (value)
                 Write((byte)1);
             else
@@ -208,27 +255,43 @@ namespace GSF.IO
 
         public virtual void Write(ushort value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteUInt16]++;
+#endif
             Write((short)value);
         }
 
+
         public virtual void Write(uint value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteUInt32]++;
+#endif
             Write((int)value);
         }
 
         public virtual void Write(ulong value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteUInt64]++;
+#endif
             Write((long)value);
         }
 
         public virtual void Write(byte value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteByte]++;
+#endif
             m_buffer[0] = value;
             Write(m_buffer, 0, 1);
         }
 
         public virtual void Write(short value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteInt16]++;
+#endif
             fixed (byte* lp = m_buffer)
             {
                 *(short*)lp = value;
@@ -238,6 +301,9 @@ namespace GSF.IO
 
         public virtual void Write(int value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteInt32]++;
+#endif
             fixed (byte* lp = m_buffer)
             {
                 *(int*)lp = value;
@@ -247,6 +313,9 @@ namespace GSF.IO
 
         public virtual void Write(float value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteSingle]++;
+#endif
             fixed (byte* lp = m_buffer)
             {
                 *(float*)lp = value;
@@ -256,6 +325,9 @@ namespace GSF.IO
 
         public virtual void Write(long value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteInt64]++;
+#endif
             fixed (byte* lp = m_buffer)
             {
                 *(long*)lp = value;
@@ -265,6 +337,9 @@ namespace GSF.IO
 
         public virtual void Write(double value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteDouble]++;
+#endif
             fixed (byte* lp = m_buffer)
             {
                 *(double*)lp = value;
@@ -274,6 +349,9 @@ namespace GSF.IO
 
         public virtual void Write(DateTime value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteDateTime]++;
+#endif
             fixed (byte* lp = m_buffer)
             {
                 *(long*)lp = value.Ticks;
@@ -283,6 +361,9 @@ namespace GSF.IO
 
         public virtual void Write(decimal value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteDecimal]++;
+#endif
             fixed (byte* lp = m_buffer)
             {
                 *(decimal*)lp = value;
@@ -292,6 +373,9 @@ namespace GSF.IO
 
         public virtual void Write(Guid value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.WriteGuid]++;
+#endif
             fixed (byte* lp = m_buffer)
             {
                 *(Guid*)lp = value;
@@ -359,11 +443,17 @@ namespace GSF.IO
 
         public virtual void Write7Bit(uint value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.Write7BitUInt]++;
+#endif
             Compression.Write7Bit(Write, value);
         }
 
         public virtual void Write7Bit(ulong value)
         {
+#if GetBaseMethodCallCount
+            CallMethods[(int)Method.Write7BitULong]++;
+#endif
             Compression.Write7Bit(Write, value);
         }
 

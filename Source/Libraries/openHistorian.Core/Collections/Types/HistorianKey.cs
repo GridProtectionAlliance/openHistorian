@@ -85,6 +85,9 @@ namespace openHistorian.Collections
 
         public override void WriteCompressed(BinaryStreamBase stream, HistorianKey previousKey)
         {
+            //stream.Write(Timestamp);
+            //stream.Write(PointID);
+            //stream.Write(EntryNumber);
             stream.Write7Bit(previousKey.Timestamp ^ Timestamp);
             stream.Write7Bit(previousKey.PointID ^ PointID);
             stream.Write7Bit(previousKey.EntryNumber ^ EntryNumber);
@@ -92,6 +95,9 @@ namespace openHistorian.Collections
 
         public override void ReadCompressed(BinaryStreamBase stream, HistorianKey previousKey)
         {
+            //Timestamp = stream.ReadUInt64();
+            //PointID = stream.ReadUInt64();
+            //EntryNumber = stream.ReadUInt64();
             Timestamp = stream.Read7BitUInt64() ^ previousKey.Timestamp;
             PointID = stream.Read7BitUInt64() ^ previousKey.PointID;
             EntryNumber = stream.Read7BitUInt64() ^ previousKey.EntryNumber;

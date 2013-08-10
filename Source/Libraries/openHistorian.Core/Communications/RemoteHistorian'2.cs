@@ -40,18 +40,16 @@ namespace openHistorian.Communications
         where TValue : HistorianValueBase<TValue>, new()
     {
         private TcpClient m_client;
-        private readonly NetworkBinaryStream m_netStream;
-        private readonly BinaryStreamWrapper m_stream;
+        private readonly NetworkBinaryStream2 m_stream;
         private HistorianDatabase m_historianDatabase;
 
         public RemoteHistorian(IPEndPoint server)
         {
             m_client = new TcpClient();
             m_client.Connect(server);
-            m_netStream = new NetworkBinaryStream(m_client.Client);
-            m_stream = new BinaryStreamWrapper(m_netStream);
+            m_stream = new NetworkBinaryStream2(m_client.Client);
             m_stream.Write(1122334455667788990L);
-            m_netStream.Flush();
+            m_stream.Flush();
         }
 
         public IHistorianDatabase<TKey, TValue> this[string databaseName]
@@ -63,7 +61,7 @@ namespace openHistorian.Communications
 
                 m_stream.Write((byte)ServerCommand.ConnectToDatabase);
                 m_stream.Write(databaseName);
-                m_netStream.Flush();
+                m_stream.Flush();
                 m_historianDatabase = new HistorianDatabase(this, () => m_historianDatabase = null);
                 return m_historianDatabase;
             }
@@ -80,7 +78,7 @@ namespace openHistorian.Communications
                 m_historianDatabase.Dispose();
 
             m_stream.Write((byte)ServerCommand.Disconnect);
-            m_netStream.Flush();
+            m_stream.Flush();
 
             if (m_client != null)
                 m_client.Close();

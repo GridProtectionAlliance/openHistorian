@@ -55,7 +55,7 @@ namespace openHistorian.Communications
                     throw new Exception("Only one datareader can process at a time when using sockets.");
 
                 m_client.m_stream.Write((byte)ServerCommand.OpenReader);
-                m_client.m_netStream.Flush();
+                m_client.m_stream.Flush();
 
                 m_historianReader = new HistorianDataReader(m_client, () => m_historianReader = null);
                 return m_historianReader;
@@ -80,7 +80,7 @@ namespace openHistorian.Communications
                     points.CurrentValue.CopyTo(oldValue);
                 }
                 m_client.m_stream.Write(false);
-                m_client.m_netStream.Flush();
+                m_client.m_stream.Flush();
             }
 
             public void Write(TKey key, TValue value)
@@ -95,7 +95,7 @@ namespace openHistorian.Communications
                 key.WriteCompressed(m_client.m_stream, oldKey);
                 value.WriteCompressed(m_client.m_stream, oldValue);
                 m_client.m_stream.Write(false);
-                m_client.m_netStream.Flush();
+                m_client.m_stream.Flush();
             }
 
             public void SoftCommit()
@@ -126,7 +126,7 @@ namespace openHistorian.Communications
                         m_historianReader.Close();
 
                     m_client.m_stream.Write((byte)ServerCommand.DisconnectDatabase);
-                    m_client.m_netStream.Flush();
+                    m_client.m_stream.Flush();
                     m_onDispose();
                 }
             }

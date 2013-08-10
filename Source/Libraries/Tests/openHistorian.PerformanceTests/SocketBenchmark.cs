@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using GSF.IO;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Archive;
@@ -29,7 +30,7 @@ namespace SampleCode.openHistorian.Server.dll
             {
                 IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();
 
-                for (ulong x = 0; x < 1000000; x++)
+                for (ulong x = 0; x < 10000000; x++)
                 {
                     key.Timestamp = x;
                     database.Write(key, value);
@@ -57,24 +58,30 @@ namespace SampleCode.openHistorian.Server.dll
                 DebugStopwatch sw = new DebugStopwatch();
                 double time = sw.TimeEvent(() =>
                     {
+                        int count=0;
                         using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                         {
                             IHistorianDatabase<HistorianKey, HistorianValue> database = client.GetDatabase();//.GetDatabase();
                             //IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
                             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                             {
-                                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100000000, new ulong[] { 0 });
+                                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 1000000000);
                                 while (stream.Read())
                                 {
-
+                                    count++;
                                 }
                             }
                             database.Disconnect();
                         }
                     });
 
-                Console.WriteLine((1.0 / time).ToString() + " Million PPS");
+                Console.WriteLine((10.0 / time).ToString() + " Million PPS");
             }
+
+            //for (int x = 0; x < 15; x++)
+            //{
+            //    Console.WriteLine(BinaryStreamBase.CallMethods[x] + "\t" + ((BinaryStreamBase.Method)(x)).ToString());
+            //}
         }
 
         [Test]

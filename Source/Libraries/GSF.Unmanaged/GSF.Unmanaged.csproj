@@ -72,6 +72,8 @@
     <Compile Include="Collections\SupportsReadonlyAutoBase.cs" />
     <Compile Include="Collections\SupportsReadonlyBase.cs" />
     <Compile Include="Communications\CircularBuffer.cs" />
+    <Compile Include="Communications\NetworkBinaryStreamUncached.cs" />
+    <Compile Include="Communications\NetworkBinaryStream2.cs" />
     <Compile Include="Communications\LinearBuffer.cs" />
     <Compile Include="Communications\NetworkBinaryStream.cs" />
     <Compile Include="Compression.cs" />

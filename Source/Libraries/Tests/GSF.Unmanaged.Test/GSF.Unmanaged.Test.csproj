@@ -89,6 +89,7 @@
     <Compile Include="Collections\LargeArray.cs" />
     <Compile Include="Collections\ResourceQueue.cs" />
     <Compile Include="Collections\ResourceQueueCollection.cs" />
+    <Compile Include="Communications\NetworkBinaryStream_Test.cs" />
     <Compile Include="CompressionTest.cs" />
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="HelperFunctions.cs" />
