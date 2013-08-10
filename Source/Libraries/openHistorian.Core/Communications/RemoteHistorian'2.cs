@@ -28,6 +28,9 @@ using System.Net.Sockets;
 using GSF.Communications;
 using GSF.IO;
 using openHistorian.Collections;
+using openHistorian.Collections.Generic;
+using openHistorian.Communications.Compression;
+using openHistorian.Communications.Initialization;
 
 namespace openHistorian.Communications
 {
@@ -42,13 +45,14 @@ namespace openHistorian.Communications
         private TcpClient m_client;
         private readonly NetworkBinaryStream2 m_stream;
         private HistorianDatabase m_historianDatabase;
+        KeyValueStreamCompressionBase<TKey, TValue> m_compressionMode;
 
         public RemoteHistorian(IPEndPoint server)
         {
             m_client = new TcpClient();
             m_client.Connect(server);
             m_stream = new NetworkBinaryStream2(m_client.Client);
-            m_stream.Write(1122334455667788990L);
+            m_stream.Write(1122334455667788991L);
             m_stream.Flush();
         }
 
@@ -58,7 +62,12 @@ namespace openHistorian.Communications
             {
                 if (m_historianDatabase != null)
                     throw new Exception("Can only connect to one database at a time.");
+                //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateFixedSizeStream.TypeGuid);
+                //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateCompressedStream.TypeGuid);
+                m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateHistorianCompressedStream.TypeGuid);
 
+                m_stream.Write((byte)ServerCommand.SetCompressionMode);
+                m_stream.Write(m_compressionMode.CompressionType);
                 m_stream.Write((byte)ServerCommand.ConnectToDatabase);
                 m_stream.Write(databaseName);
                 m_stream.Flush();

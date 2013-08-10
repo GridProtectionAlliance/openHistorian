@@ -72,14 +72,17 @@ namespace openHistorian.Communications
 
                 while (points.Read())
                 {
-                    m_client.m_stream.Write(true);
-                    points.CurrentKey.WriteCompressed(m_client.m_stream, oldKey);
-                    points.CurrentValue.WriteCompressed(m_client.m_stream, oldValue);
+                    m_client.m_compressionMode.Encode(m_client.m_stream, oldKey, oldValue, points.CurrentKey, points.CurrentValue);
+
+                    //m_client.m_stream.Write(true);
+                    //points.CurrentKey.WriteCompressed(m_client.m_stream, oldKey);
+                    //points.CurrentValue.WriteCompressed(m_client.m_stream, oldValue);
 
                     points.CurrentKey.CopyTo(oldKey);
                     points.CurrentValue.CopyTo(oldValue);
                 }
-                m_client.m_stream.Write(false);
+                m_client.m_compressionMode.WriteEndOfStream(m_client.m_stream);
+                //m_client.m_stream.Write(false);
                 m_client.m_stream.Flush();
             }
 
@@ -91,10 +94,13 @@ namespace openHistorian.Communications
                 TKey oldKey = new TKey();
                 TValue oldValue = new TValue();
                 m_client.m_stream.Write((byte)ServerCommand.Write);
-                m_client.m_stream.Write(true);
-                key.WriteCompressed(m_client.m_stream, oldKey);
-                value.WriteCompressed(m_client.m_stream, oldValue);
-                m_client.m_stream.Write(false);
+                m_client.m_compressionMode.Encode(m_client.m_stream, oldKey, oldValue, key, value);
+                m_client.m_compressionMode.WriteEndOfStream(m_client.m_stream);
+                
+                //m_client.m_stream.Write(true);
+                //key.WriteCompressed(m_client.m_stream, oldKey);
+                //value.WriteCompressed(m_client.m_stream, oldValue);
+                //m_client.m_stream.Write(false);
                 m_client.m_stream.Flush();
             }
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IHistorian.cs - Gbtc
+//  RegisterKeyValueStreamCompressionTypes.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,44 +16,33 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  9/14/2012 - Steven E. Chisholm
+//  8/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//  12/8/2012 - Steven E. Chisholm
-//       Major change to the Interface by breaking out database/server features. 
-//
+//     
 //******************************************************************************************************
 
-namespace openHistorian
+//******************************************************************************************************
+// This is where types for the KeyValueStreamCompression should be placed for registering. 
+//******************************************************************************************************
+
+using openHistorian.Communications.Compression;
+
+namespace openHistorian.Communications.Initialization
 {
-
-    #region [ Enumerations ]
-
-    /// <summary>
-    /// Server commands
-    /// </summary>
-    public enum ServerCommand : byte
+    internal static class RegisterKeyValueStreamCompressionTypes
     {
-        ConnectToDatabase,
-        OpenReader,
-        DisconnectDatabase,
-        DisconnectReader,
-        Disconnect,
-        Read,
-        CancelRead,
-        Write,
-        SetCompressionMode,
-    }
+        private static bool s_compressedStreamHasBeenCalled = false;
+        
+        internal static void RegisterKeyValueStreamTypes()
+        {
+            if (s_compressedStreamHasBeenCalled)
+                return;
+            s_compressedStreamHasBeenCalled = true;
 
-    /// <summary>
-    /// Server response
-    /// </summary>
-    public enum ServerResponse : byte
-    {
-        Success,
-        Error,
-        DataPacket,
-        ProcessingComplete
+            KeyValueStreamCompression.Register(new CreateFixedSizeStream());
+            KeyValueStreamCompression.Register(new CreateCompressedStream());
+            KeyValueStreamCompression.Register(new CreateHistorianCompressedStream());
+            
+        }
     }
-
-    #endregion
 }

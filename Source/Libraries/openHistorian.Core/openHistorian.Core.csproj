@@ -160,6 +160,16 @@
     <Compile Include="Collections\Types\MethodsHistorianValue.cs" />
     <Compile Include="Collections\Types\MethodsUint128.cs" />
     <Compile Include="Collections\Types\MethodsUint32.cs" />
+    <Compile Include="Communications\Compression\HistorianCompressedStream.cs" />
+    <Compile Include="Communications\Compression\CreateHistorianCompressedStream.cs" />
+    <Compile Include="Communications\Compression\CreateCompressedStream.cs" />
+    <Compile Include="Communications\Compression\CompressedStream.cs" />
+    <Compile Include="Communications\Compression\CreateFixedSizeStream.cs" />
+    <Compile Include="Communications\Compression\FixedSizeStream.cs" />
+    <Compile Include="Communications\Initialization\CreateKeyValueStreamCompressionBase.cs" />
+    <Compile Include="Communications\Initialization\RegisterKeyValueStreamCompressionTypes.cs" />
+    <Compile Include="Communications\Initialization\KeyValueStreamCompression.cs" />
+    <Compile Include="Communications\Initialization\KeyValueStreamCompressionBase.cs" />
     <Compile Include="Communications\ProcessClient%272.cs" />
     <Compile Include="Communications\RemoteHistorian%272.cs" />
     <Compile Include="Communications\RemoteHistorian%272_Database.cs" />

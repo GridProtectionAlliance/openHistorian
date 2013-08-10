@@ -78,7 +78,6 @@ namespace openHistorian.Communications
                 : TreeStream<TKey, TValue>
             {
                 private bool m_completed;
-                private ulong m_key1 = 0, m_key2 = 0, m_value1 = 0, m_value2 = 0;
                 private readonly RemoteHistorian<TKey, TValue> m_client;
                 private readonly Action m_onComplete;
 
@@ -90,10 +89,11 @@ namespace openHistorian.Communications
 
                 public override bool Read()
                 {
-                    if (!m_completed && m_client.m_stream.ReadBoolean())
+                    
+                    if (!m_completed && m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey, CurrentValue, CurrentKey,CurrentValue))
                     {
-                        CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);
-                        CurrentValue.ReadCompressed(m_client.m_stream, CurrentValue);
+                        //CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);
+                        //CurrentValue.ReadCompressed(m_client.m_stream, CurrentValue);
                         return true;
                     }
                     else
@@ -110,10 +110,10 @@ namespace openHistorian.Communications
                     m_client.m_stream.Write((byte)ServerCommand.CancelRead);
                     m_client.m_stream.Flush();
                     //flush the rest of the data off of the receive queue.
-                    while (m_client.m_stream.ReadBoolean())
+                    while (m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey, CurrentValue, CurrentKey, CurrentValue))
                     {
-                        CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);
-                        CurrentValue.ReadCompressed(m_client.m_stream, CurrentValue);
+                        //CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);
+                        //CurrentValue.ReadCompressed(m_client.m_stream, CurrentValue);
                     }
                     Complete();
                 }

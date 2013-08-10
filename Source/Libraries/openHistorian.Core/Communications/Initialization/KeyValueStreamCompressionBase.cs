@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IHistorian.cs - Gbtc
+//  KeyValueStreamCompressionBase.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,44 +16,34 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  9/14/2012 - Steven E. Chisholm
+//  8/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//  12/8/2012 - Steven E. Chisholm
-//       Major change to the Interface by breaking out database/server features. 
+//       
 //
 //******************************************************************************************************
 
-namespace openHistorian
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using GSF.IO;
+using openHistorian.Collections;
+
+namespace openHistorian.Communications.Initialization
 {
-
-    #region [ Enumerations ]
-
-    /// <summary>
-    /// Server commands
-    /// </summary>
-    public enum ServerCommand : byte
+    public abstract class KeyValueStreamCompressionBase<TKey, TValue>
+        where TKey : HistorianKeyBase<TKey>, new()
+        where TValue : HistorianValueBase<TValue>, new()
     {
-        ConnectToDatabase,
-        OpenReader,
-        DisconnectDatabase,
-        DisconnectReader,
-        Disconnect,
-        Read,
-        CancelRead,
-        Write,
-        SetCompressionMode,
-    }
 
-    /// <summary>
-    /// Server response
-    /// </summary>
-    public enum ServerResponse : byte
-    {
-        Success,
-        Error,
-        DataPacket,
-        ProcessingComplete
-    }
+        public abstract Guid CompressionType { get; }
 
-    #endregion
+        public abstract void WriteEndOfStream(BinaryStreamBase stream);
+
+        public abstract void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
+
+        public abstract unsafe bool TryDecode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
+
+    }
 }

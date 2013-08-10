@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IHistorian.cs - Gbtc
+//  CreateCompressedStream.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,44 +16,58 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  9/14/2012 - Steven E. Chisholm
+//  8/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//  12/8/2012 - Steven E. Chisholm
-//       Major change to the Interface by breaking out database/server features. 
+//       
 //
 //******************************************************************************************************
 
-namespace openHistorian
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using openHistorian.Collections.Generic;
+using openHistorian.Communications.Initialization;
+
+namespace openHistorian.Communications.Compression
 {
-
-    #region [ Enumerations ]
-
-    /// <summary>
-    /// Server commands
-    /// </summary>
-    public enum ServerCommand : byte
+    class CreateCompressedStream
+        : CreateKeyValueStreamCompressionBase
     {
-        ConnectToDatabase,
-        OpenReader,
-        DisconnectDatabase,
-        DisconnectReader,
-        Disconnect,
-        Read,
-        CancelRead,
-        Write,
-        SetCompressionMode,
-    }
 
-    /// <summary>
-    /// Server response
-    /// </summary>
-    public enum ServerResponse : byte
-    {
-        Success,
-        Error,
-        DataPacket,
-        ProcessingComplete
-    }
+        // {E7E8A378-340E-47DF-B29F-E65361AB32AB}
+        public readonly static Guid TypeGuid = new Guid(0xe7e8a378, 0x340e, 0x47df, 0xb2, 0x9f, 0xe6, 0x53, 0x61, 0xab, 0x32, 0xab);
 
-    #endregion
+
+
+        public override Type KeyTypeIfFixed
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public override Type ValueTypeIfFixed
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public override Guid GetTypeGuid
+        {
+            get
+            {
+                return TypeGuid;
+            }
+        }
+
+        public override KeyValueStreamCompressionBase<TKey, TValue> Create<TKey, TValue>()
+        {
+            return new CompressedStream<TKey, TValue>();
+        }
+    }
 }
