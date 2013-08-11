@@ -21,6 +21,8 @@
 //     
 //******************************************************************************************************
 
+//#define GetTreeKeyMethodsCallCount
+
 using System;
 using System.IO;
 using GSF.IO;
@@ -40,6 +42,46 @@ namespace openHistorian.Collections.Generic
         : CreateKeyMethodBase<TKey>
         where TKey : class, new()
     {
+
+#if GetTreeKeyMethodsCallCount
+        public static void ClearStats()
+        {
+            CallMethods = new long[100];
+        }
+
+        static public long[] CallMethods = new long[100];
+        public enum Method
+            : int
+        {
+            WriteMax,
+            WriteMin,
+            WriteNull,
+            Copy,
+            ReadBinaryStreamBase,
+            ReadBinaryReader,
+            WriteBinaryWriter,
+            WriteBinaryStreamBase,
+            BinarySearch,
+            BinarySearch2,
+            IsBetween,
+            IsLessThanOrEqualTo,
+            IsLessThan,
+            IsNotEqual,
+            IsGreaterThan,
+            IsGreaterThanPointer,
+            IsGreaterThanPointer2,
+            IsGreaterThanOrEqualTo,
+            IsEqual,
+            IsEqualPointer,
+            CompareToPointer,
+            CompareToPointer2,
+            Create
+
+        }
+#endif
+
+
+
         protected TKey m_tempKey = new TKey();
         public int m_lastFoundIndex;
 
@@ -70,24 +112,36 @@ namespace openHistorian.Collections.Generic
 
         public virtual unsafe void WriteMax(byte* stream)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.WriteMax]++;
+#endif
             SetMax(m_tempKey);
             Write(stream, m_tempKey);
         }
 
         public virtual unsafe void WriteMin(byte* stream)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.WriteMin]++;
+#endif
             SetMin(m_tempKey);
             Write(stream, m_tempKey);
         }
 
         public virtual unsafe void WriteNull(byte* stream)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.WriteNull]++;
+#endif
             Clear(m_tempKey);
             Write(stream, m_tempKey);
         }
 
         public virtual unsafe void Copy(TKey source, TKey destination)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.Copy]++;
+#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, source);
             Read(ptr, destination);
@@ -95,6 +149,9 @@ namespace openHistorian.Collections.Generic
 
         public virtual unsafe void Read(BinaryStreamBase stream, TKey data)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.ReadBinaryStreamBase]++;
+#endif
             byte* ptr = stackalloc byte[Size];
             stream.Read(ptr, Size);
             Read(ptr, data);
@@ -102,6 +159,9 @@ namespace openHistorian.Collections.Generic
 
         public virtual unsafe void Read(BinaryReader reader, TKey data)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.ReadBinaryReader]++;
+#endif
             byte* ptr = stackalloc byte[Size];
             for (int x = 0; x < Size; x++)
             {
@@ -112,6 +172,9 @@ namespace openHistorian.Collections.Generic
 
         public virtual unsafe void Write(BinaryWriter writer, TKey data)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.WriteBinaryWriter]++;
+#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, data);
             for (int x = 0; x < Size; x++)
@@ -122,6 +185,9 @@ namespace openHistorian.Collections.Generic
 
         public virtual unsafe void Write(BinaryStreamBase stream, TKey data)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.WriteBinaryStreamBase]++;
+#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, data);
             stream.Write(ptr, Size);
@@ -129,6 +195,9 @@ namespace openHistorian.Collections.Generic
 
         public virtual unsafe int BinarySearch(byte* pointer, TKey key, int recordCount, int keyValueSize)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.BinarySearch]++;
+#endif
             TKey compareKey = m_tempKey;
             if (m_lastFoundIndex == recordCount - 1)
             {
@@ -153,6 +222,9 @@ namespace openHistorian.Collections.Generic
 
         protected virtual unsafe int BinarySearch2(byte* pointer, TKey key, int recordCount, int keyPointerSize)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.BinarySearch2]++;
+#endif
             if (recordCount == 0)
                 return ~0;
             TKey compareKey = m_tempKey;
@@ -228,70 +300,110 @@ namespace openHistorian.Collections.Generic
             return ~searchLowerBoundsIndex;
         }
 
+
         public virtual bool IsBetween(TKey lowerBounds, TKey key, TKey upperBounds)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsBetween]++;
+#endif
             return IsLessThanOrEqualTo(lowerBounds, key) && IsLessThan(key, upperBounds);
         }
 
         public virtual bool IsLessThanOrEqualTo(TKey left, TKey right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsLessThanOrEqualTo]++;
+#endif
             return CompareTo(left, right) <= 0;
         }
 
         public virtual bool IsLessThan(TKey left, TKey right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsLessThan]++;
+#endif
             return CompareTo(left, right) < 0;
         }
 
         public virtual bool IsNotEqual(TKey left, TKey right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsNotEqual]++;
+#endif
             return CompareTo(left, right) != 0;
         }
 
         public virtual bool IsGreaterThan(TKey left, TKey right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsGreaterThan]++;
+#endif
             return CompareTo(left, right) > 0;
         }
 
         public virtual unsafe bool IsGreaterThan(TKey left, byte* right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsGreaterThanPointer]++;
+#endif
             return CompareTo(left, right) > 0;
         }
 
         public virtual unsafe bool IsGreaterThan(byte* left, TKey right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsGreaterThanPointer2]++;
+#endif
             return CompareTo(left, right) > 0;
         }
 
         public virtual bool IsGreaterThanOrEqualTo(TKey left, TKey right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsGreaterThanOrEqualTo]++;
+#endif
             return CompareTo(left, right) >= 0;
         }
 
         public virtual bool IsEqual(TKey left, TKey right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsEqual]++;
+#endif
             return CompareTo(left, right) == 0;
         }
 
         public virtual unsafe bool IsEqual(TKey left, byte* right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.IsEqualPointer]++;
+#endif
             return CompareTo(left, right) == 0;
         }
 
         public virtual unsafe int CompareTo(TKey left, byte* right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.CompareToPointer]++;
+#endif
             Read(right, m_tempKey);
             return CompareTo(left, m_tempKey);
         }
 
         public virtual unsafe int CompareTo(byte* left, TKey right)
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.CompareToPointer2]++;
+#endif
             Read(left, m_tempKey);
             return CompareTo(m_tempKey, right);
         }
 
         public override TreeKeyMethodsBase<TKey> Create()
         {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.Create]++;
+#endif
             TreeKeyMethodsBase<TKey> obj = (TreeKeyMethodsBase<TKey>)MemberwiseClone();
             obj.m_tempKey = new TKey();
             return obj;

@@ -38,6 +38,63 @@ namespace SampleCode.openHistorian.Server.dll
 
                 database.HardCommit();
             }
+
+            //Console.WriteLine("KeyMethodsBase calls");
+            //for (int x = 0; x < 23; x++)
+            //{
+            //    Console.WriteLine(TreeKeyMethodsBase<HistorianKey>.CallMethods[x] + "\t" + ((TreeKeyMethodsBase<HistorianKey>.Method)(x)).ToString());
+            //}
+            //Console.WriteLine("ValueMethodsBase calls");
+            //for (int x = 0; x < 5; x++)
+            //{
+            //    Console.WriteLine(TreeValueMethodsBase<HistorianValue>.CallMethods[x] + "\t" + ((TreeValueMethodsBase<HistorianValue>.Method)(x)).ToString());
+            //}
+        }
+
+        [Test]
+        public void BenchmarkWriteSpeed()
+        {
+            DebugStopwatch sw = new DebugStopwatch();
+
+            double time;
+            double count = 0;
+
+            using (ArchiveFile file = ArchiveFile.CreateInMemory())
+            {
+                var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid);
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
+
+                time = sw.TimeEvent(() =>
+                {
+                    //TreeKeyMethodsBase<HistorianKey>.ClearStats();
+                    //TreeValueMethodsBase<HistorianKey>.ClearStats();
+                    count = 0;
+                    using (var scan = table.BeginEdit())
+                    {
+                        for (uint x = 0; x < 10000000; x++)
+                        {
+                            key.PointID = x;
+                            scan.AddPoint(key, value);
+                            count++;
+                        }
+                        scan.Rollback();
+                    }
+                });
+            }
+
+            Console.WriteLine((count / 1000000 / time).ToString() + " Million PPS");
+
+            //Console.WriteLine("KeyMethodsBase calls");
+            //for (int x = 0; x < 23; x++)
+            //{
+            //    Console.WriteLine(TreeKeyMethodsBase<HistorianKey>.CallMethods[x] + "\t" + ((TreeKeyMethodsBase<HistorianKey>.Method)(x)).ToString());
+            //}
+            //Console.WriteLine("ValueMethodsBase calls");
+            //for (int x = 0; x < 5; x++)
+            //{
+            //    Console.WriteLine(TreeValueMethodsBase<HistorianValue>.CallMethods[x] + "\t" + ((TreeValueMethodsBase<HistorianValue>.Method)(x)).ToString());
+            //}
         }
 
         [Test]
@@ -62,8 +119,8 @@ namespace SampleCode.openHistorian.Server.dll
                         count = 0;
                         using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                         {
-                            IHistorianDatabase<HistorianKey, HistorianValue> database = client.GetDatabase();//.GetDatabase();
-                            //IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
+                            //IHistorianDatabase<HistorianKey, HistorianValue> database = client.GetDatabase();//.GetDatabase();
+                            IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
                             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                             {
                                 //TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue, new ulong[] { 2 });
@@ -80,6 +137,16 @@ namespace SampleCode.openHistorian.Server.dll
                 Console.WriteLine((count / 1000000 / time).ToString() + " Million PPS");
             }
 
+            //Console.WriteLine("KeyMethodsBase calls");
+            //for (int x = 0; x < 23; x++)
+            //{
+            //    Console.WriteLine(TreeKeyMethodsBase<HistorianKey>.CallMethods[x] + "\t" + ((TreeKeyMethodsBase<HistorianKey>.Method)(x)).ToString());
+            //}
+            //Console.WriteLine("ValueMethodsBase calls");
+            //for (int x = 0; x < 5; x++)
+            //{
+            //    Console.WriteLine(TreeValueMethodsBase<HistorianValue>.CallMethods[x] + "\t" + ((TreeValueMethodsBase<HistorianValue>.Method)(x)).ToString());
+            //}
             //for (int x = 0; x < 15; x++)
             //{
             //    Console.WriteLine(BinaryStreamBase.CallMethods[x] + "\t" + ((BinaryStreamBase.Method)(x)).ToString());
@@ -115,6 +182,17 @@ namespace SampleCode.openHistorian.Server.dll
                     });
             }
             Console.WriteLine((count / 1000000 / time).ToString() + " Million PPS");
+
+            //Console.WriteLine("KeyMethodsBase calls");
+            //for (int x = 0; x < 23; x++)
+            //{
+            //    Console.WriteLine(TreeKeyMethodsBase<HistorianKey>.CallMethods[x] + "\t" + ((TreeKeyMethodsBase<HistorianKey>.Method)(x)).ToString());
+            //}
+            //Console.WriteLine("ValueMethodsBase calls");
+            //for (int x = 0; x < 5; x++)
+            //{
+            //    Console.WriteLine(TreeValueMethodsBase<HistorianValue>.CallMethods[x] + "\t" + ((TreeValueMethodsBase<HistorianValue>.Method)(x)).ToString());
+            //}
         }
     }
 }

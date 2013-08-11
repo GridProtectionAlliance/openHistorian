@@ -90,7 +90,7 @@ namespace openHistorian.Communications
                 public override bool Read()
                 {
                     
-                    if (!m_completed && m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey, CurrentValue, CurrentKey,CurrentValue))
+                    if (!m_completed && m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey,CurrentValue))
                     {
                         //CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);
                         //CurrentValue.ReadCompressed(m_client.m_stream, CurrentValue);
@@ -110,7 +110,7 @@ namespace openHistorian.Communications
                     m_client.m_stream.Write((byte)ServerCommand.CancelRead);
                     m_client.m_stream.Flush();
                     //flush the rest of the data off of the receive queue.
-                    while (m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey, CurrentValue, CurrentKey, CurrentValue))
+                    while (m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey, CurrentValue))
                     {
                         //CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);
                         //CurrentValue.ReadCompressed(m_client.m_stream, CurrentValue);

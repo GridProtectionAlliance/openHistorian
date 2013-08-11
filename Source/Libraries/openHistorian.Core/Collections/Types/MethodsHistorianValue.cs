@@ -58,6 +58,13 @@ namespace openHistorian.Collections
             data.Value3 = *(ulong*)(stream + 16);
         }
 
+        public override unsafe void Copy(HistorianValue source, HistorianValue destination)
+        {
+            destination.Value1 = source.Value1;
+            destination.Value2 = source.Value2;
+            destination.Value3 = source.Value3;
+        }
+
         public override Guid GenericTypeGuid
         {
             get

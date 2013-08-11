@@ -193,11 +193,7 @@ namespace openHistorian.Communications
             int loop = 0;
             while (scanner.Read())
             {
-
                 m_compressionMode.Encode(m_stream, oldKey, oldValue, scanner.CurrentKey, scanner.CurrentValue);
-                //m_stream.Write(true);
-                //scanner.CurrentKey.WriteCompressed(m_stream, oldKey);
-                //scanner.CurrentValue.WriteCompressed(m_stream, oldValue);
                 loop++;
                 if (loop > 1000)
                 {
@@ -205,7 +201,6 @@ namespace openHistorian.Communications
                     if (m_stream.AvailableReadBytes > 0)
                     {
                         m_compressionMode.WriteEndOfStream(m_stream);
-                        //m_stream.Write(false);
                         m_stream.Flush();
                         return;
                     }
@@ -215,7 +210,6 @@ namespace openHistorian.Communications
             }
 
             m_compressionMode.WriteEndOfStream(m_stream);
-            //m_stream.Write(false);
             m_stream.Flush();
         }
 
@@ -224,10 +218,8 @@ namespace openHistorian.Communications
             TKey key = new TKey();
             TValue value = new TValue();
 
-            while (m_compressionMode.TryDecode(m_stream, key, value, key, value))
+            while (m_compressionMode.TryDecode(m_stream, key, value))
             {
-                //key.ReadCompressed(m_stream, key);
-                //value.ReadCompressed(m_stream, value);
                 m_historianDatabase.Write(key, value);
             }
         }

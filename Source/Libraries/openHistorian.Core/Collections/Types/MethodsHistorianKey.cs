@@ -76,6 +76,89 @@ namespace openHistorian.Collections
             return 0;
         }
 
+        //public override bool IsLessThan(HistorianKey left, HistorianKey right)
+        //{
+        //    if (left.Timestamp == right.Timestamp)
+        //    {
+        //        if (left.PointID == right.PointID)
+        //        {
+        //            return left.EntryNumber < right.EntryNumber;
+        //        }
+        //        return left.PointID < right.PointID;
+        //    }
+        //    return left.Timestamp < right.Timestamp;
+        //}
+        //public override bool IsLessThan(HistorianKey left, HistorianKey right)
+        //{
+        //    return left.Timestamp < right.Timestamp
+        //        || (left.Timestamp == right.Timestamp && left.PointID < right.PointID)
+        //        || (left.Timestamp == right.Timestamp && left.PointID == right.PointID && left.EntryNumber < right.EntryNumber);
+        //}
+
+        //public override bool IsLessThan(HistorianKey left, HistorianKey right)
+        //{
+        //    if (left.Timestamp != right.Timestamp)
+        //        return left.Timestamp < right.Timestamp;
+        //    if (left.PointID != right.PointID)
+        //        return left.PointID < right.PointID;
+        //    return left.EntryNumber < right.EntryNumber;
+
+        //    //return left.Timestamp < right.Timestamp
+        //    //    || (left.Timestamp == right.Timestamp && left.PointID < right.PointID)
+        //    //    || (left.Timestamp == right.Timestamp && left.PointID == right.PointID && left.EntryNumber < right.EntryNumber);
+        //}
+
+        //public override bool IsLessThanOrEqualTo(HistorianKey left, HistorianKey right)
+        //{
+        //    if (left.Timestamp != right.Timestamp)
+        //        return left.Timestamp < right.Timestamp;
+        //    if (left.PointID != right.PointID)
+        //        return left.PointID < right.PointID;
+        //    return left.EntryNumber <= right.EntryNumber;
+
+        //    //return left.Timestamp < right.Timestamp
+        //    //    || (left.Timestamp == right.Timestamp && left.PointID < right.PointID)
+        //    //    || (left.Timestamp == right.Timestamp && left.PointID == right.PointID && left.EntryNumber < right.EntryNumber);
+        //}
+
+        //public override bool IsLessThanOrEqualTo(HistorianKey left, HistorianKey right)
+        //{
+        //    return left.Timestamp < right.Timestamp
+        //        || (left.Timestamp == right.Timestamp && left.PointID < right.PointID)
+        //        || (left.Timestamp == right.Timestamp && left.PointID == right.PointID && left.EntryNumber <= right.EntryNumber);
+        //}
+
+        //public override bool IsLessThanOrEqualTo(HistorianKey left, HistorianKey right)
+        //{
+        //    if (left.Timestamp < right.Timestamp)
+        //        return true;
+        //    if (left.Timestamp > right.Timestamp)
+        //        return false;
+        //    if (left.PointID < right.PointID)
+        //        return true;
+        //    if (left.PointID > right.PointID)
+        //        return false;
+        //    if (left.EntryNumber < right.EntryNumber)
+        //        return true;
+        //    if (left.EntryNumber > right.EntryNumber)
+        //        return false;
+        //    return true;
+        //}
+
+        //public override bool IsBetween(HistorianKey lowerBounds, HistorianKey key, HistorianKey upperBounds)
+        //{
+        //    //ulong key1 = key.Timestamp;
+        //    //ulong key2 = key.PointID;
+        //    //ulong key3 = key.EntryNumber;
+
+        //    //if (lowerBounds.Timestamp < key1)
+        //    //    return false;
+        //    //if (key1 > upperBounds.Timestamp)
+        //    //    return false;
+
+        //    return IsLessThanOrEqualTo(lowerBounds, key) && IsLessThan(key, upperBounds);
+        //}
+
         public override unsafe void Write(byte* stream, HistorianKey data)
         {
             *(ulong*)stream = data.Timestamp;
@@ -90,6 +173,18 @@ namespace openHistorian.Collections
             data.EntryNumber = *(ulong*)(stream + 16);
         }
 
+        public override unsafe void Copy(HistorianKey source, HistorianKey destination)
+        {
+            destination.Timestamp = source.Timestamp;
+            destination.PointID = source.PointID;
+            destination.EntryNumber = source.EntryNumber;
+        }
+
+        //public override unsafe void Read(GSF.IO.BinaryStreamBase stream, HistorianKey data)
+        //{
+            
+        //}
+
         public override Guid GenericTypeGuid
         {
             get
@@ -98,13 +193,7 @@ namespace openHistorian.Collections
             }
         }
 
-        //public override bool IsBetween(HistorianKey lowerBounds, HistorianKey key, HistorianKey upperBounds)
-        //{
-        //    ulong key1 = key.Value1;
-        //    ulong key2 = key.Value2;
-        //    return (lowerBounds.Value1 < key1 || (lowerBounds.Value1 == key1 && lowerBounds.Value2 <= key2)) &&
-        //           (key1 < upperBounds.Value1 || (key1 == upperBounds.Value1 && key2 < upperBounds.Value2));
-        //}
+    
 
         //public override bool IsLessThan(HistorianKey left, HistorianKey right)
         //{

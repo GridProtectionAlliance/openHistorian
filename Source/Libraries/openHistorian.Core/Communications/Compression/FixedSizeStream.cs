@@ -58,12 +58,12 @@ namespace openHistorian.Communications.Compression
             currentValue.Write(stream);
         }
 
-        public override unsafe bool TryDecode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
+        public override unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value)
         {
             if (!stream.ReadBoolean())
                 return false;
-            currentKey.Read(stream);
-            currentValue.Read(stream);
+            key.Read(stream);
+            value.Read(stream);
             return true;
         }
     }

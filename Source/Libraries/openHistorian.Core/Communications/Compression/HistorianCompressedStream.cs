@@ -115,7 +115,7 @@ namespace openHistorian.Communications.Compression
                 stream.Write((uint)currentValue.Value3);
         }
 
-        public override unsafe bool TryDecode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey currentKey, HistorianValue currentValue)
+        public override unsafe bool TryDecode(BinaryStreamBase stream, HistorianKey key, HistorianValue value)
         {
             byte code = stream.ReadByte();
             if (code == 255)
@@ -125,55 +125,55 @@ namespace openHistorian.Communications.Compression
             {
                 if (code < 64)
                 {
-                    currentKey.Timestamp = prevKey.Timestamp;
-                    currentKey.PointID = prevKey.PointID ^ code;
-                    currentKey.EntryNumber = 0;
-                    currentValue.Value1 = 0;
-                    currentValue.Value2 = 0;
-                    currentValue.Value3 = 0;
+                    key.Timestamp = key.Timestamp;
+                    key.PointID = key.PointID ^ code;
+                    key.EntryNumber = 0;
+                    value.Value1 = 0;
+                    value.Value2 = 0;
+                    value.Value3 = 0;
                 }
                 else
                 {
-                    currentKey.Timestamp = prevKey.Timestamp;
-                    currentKey.PointID = prevKey.PointID ^ code ^ 64;
-                    currentKey.EntryNumber = 0;
-                    currentValue.Value1 = stream.ReadUInt32();
-                    currentValue.Value2 = 0;
-                    currentValue.Value3 = 0;
+                    key.Timestamp = key.Timestamp;
+                    key.PointID = key.PointID ^ code ^ 64;
+                    key.EntryNumber = 0;
+                    value.Value1 = stream.ReadUInt32();
+                    value.Value2 = 0;
+                    value.Value3 = 0;
                 }
                 return true;
             }
 
             if ((code & 64) != 0) //T is set
-                currentKey.Timestamp = prevKey.Timestamp ^ stream.Read7BitUInt64();
+                key.Timestamp = key.Timestamp ^ stream.Read7BitUInt64();
             else
-                currentKey.Timestamp = prevKey.Timestamp;
+                key.Timestamp = key.Timestamp;
 
-            currentKey.PointID = prevKey.PointID ^ stream.Read7BitUInt64();
+            key.PointID = key.PointID ^ stream.Read7BitUInt64();
 
             if ((code & 32) != 0) //E is set)
-                currentKey.EntryNumber = currentKey.EntryNumber ^ stream.Read7BitUInt64();
+                key.EntryNumber = key.EntryNumber ^ stream.Read7BitUInt64();
             else
-                currentKey.EntryNumber = 0;
+                key.EntryNumber = 0;
 
             if ((code & 16) != 0) //V1 High is set)
-                currentValue.Value1 = stream.ReadUInt64();
+                value.Value1 = stream.ReadUInt64();
             else if ((code & 8) != 0) //V1 low is set)
-                currentValue.Value1 = stream.ReadUInt32();
+                value.Value1 = stream.ReadUInt32();
             else
-                currentValue.Value1 = 0;
+                value.Value1 = 0;
 
             if ((code & 4) != 0) //V2 is set)
-                currentValue.Value2 = stream.ReadUInt64();
+                value.Value2 = stream.ReadUInt64();
             else
-                currentValue.Value2 = 0;
+                value.Value2 = 0;
 
             if ((code & 2) != 0) //V1 High is set)
-                currentValue.Value3 = stream.ReadUInt64();
+                value.Value3 = stream.ReadUInt64();
             else if ((code & 1) != 0) //V1 low is set)
-                currentValue.Value3 = stream.ReadUInt32();
+                value.Value3 = stream.ReadUInt32();
             else
-                currentValue.Value3 = 0;
+                value.Value3 = 0;
 
             return true;
         }

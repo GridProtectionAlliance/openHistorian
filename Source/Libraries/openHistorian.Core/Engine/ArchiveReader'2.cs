@@ -144,7 +144,6 @@ namespace openHistorian.Engine
                         if (m_key2.ContainsKey(m_currentScanner.CurrentKey.PointID))
                         {
                             Stats.PointsReturned++;
-                            SetKeyValueReferences(m_currentScanner.CurrentKey, m_currentScanner.CurrentValue);
                             return true;
                         }
                         goto TryAgain;
@@ -194,11 +193,15 @@ namespace openHistorian.Engine
                     TKey key = new TKey();
                     key.Timestamp = m_startKey;
                     m_currentScanner.SeekToKey(key);
+                    SetKeyValueReferences(m_currentScanner.CurrentKey, m_currentScanner.CurrentValue);
+
                     Stats.SeeksRequested++;
                 }
                 else
                 {
                     m_currentScanner = NullTreeScanner<TKey, TValue>.Instance;
+                    SetKeyValueReferences(m_currentScanner.CurrentKey, m_currentScanner.CurrentValue);
+
                     return false;
                 }
                 return true;
@@ -219,6 +222,8 @@ namespace openHistorian.Engine
                     m_currentInstance = null;
                 }
                 m_currentScanner = NullTreeScanner<TKey, TValue>.Instance;
+                SetKeyValueReferences(m_currentScanner.CurrentKey, m_currentScanner.CurrentValue);
+
                 while (m_tables.Count > 0)
                 {
                     KeyValuePair<int, ArchiveTableSummary<TKey, TValue>> kvp = m_tables.Dequeue();

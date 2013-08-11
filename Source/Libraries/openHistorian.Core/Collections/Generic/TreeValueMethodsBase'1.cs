@@ -21,6 +21,8 @@
 //     
 //******************************************************************************************************
 
+//#define GetTreeValueMethodsCallCount
+
 using GSF.IO;
 
 namespace openHistorian.Collections.Generic
@@ -38,6 +40,25 @@ namespace openHistorian.Collections.Generic
         : CreateValueMethodBase<TValue>
         where TValue : class, new()
     {
+
+#if GetTreeValueMethodsCallCount
+        public static void ClearStats()
+        {
+            CallMethods = new long[100];
+        }
+        static public long[] CallMethods = new long[100];
+        public enum Method
+            : int
+        {
+            Copy,
+            ReadBinaryStreamBase,
+            WriteBinaryStreamBase,
+            IsEqual,
+            Create
+
+        }
+#endif
+
         protected TreeValueMethodsBase()
         {
             Size = GetSize();
@@ -57,6 +78,9 @@ namespace openHistorian.Collections.Generic
 
         public virtual unsafe void Copy(TValue source, TValue destination)
         {
+#if GetTreeValueMethodsCallCount
+            CallMethods[(int)Method.Copy]++;
+#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, source);
             Read(ptr, destination);
@@ -66,12 +90,18 @@ namespace openHistorian.Collections.Generic
 
         public override TreeValueMethodsBase<TValue> Create()
         {
+#if GetTreeValueMethodsCallCount
+            CallMethods[(int)Method.Create]++;
+#endif
             TreeValueMethodsBase<TValue> obj = (TreeValueMethodsBase<TValue>)MemberwiseClone();
             return obj;
         }
-
+        
         public virtual unsafe bool IsEqual(TValue value, TValue value2)
         {
+#if GetTreeValueMethodsCallCount
+            CallMethods[(int)Method.IsEqual]++;
+#endif
             byte* buffer1 = stackalloc byte[Size];
             byte* buffer2 = stackalloc byte[Size];
             Write(buffer1, value);
@@ -84,6 +114,9 @@ namespace openHistorian.Collections.Generic
 
         public virtual unsafe void Write(BinaryStreamBase stream, TValue data)
         {
+#if GetTreeValueMethodsCallCount
+            CallMethods[(int)Method.WriteBinaryStreamBase]++;
+#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, data);
             stream.Write(ptr, Size);
@@ -91,6 +124,9 @@ namespace openHistorian.Collections.Generic
 
         public virtual unsafe void Read(BinaryStreamBase stream, TValue data)
         {
+#if GetTreeValueMethodsCallCount
+            CallMethods[(int)Method.ReadBinaryStreamBase]++;
+#endif
             byte* ptr = stackalloc byte[Size];
             stream.Read(ptr, Size);
             Read(ptr, data);

@@ -111,6 +111,36 @@ namespace openHistorian.Data.Query
             }
             return results;
         }
+
+        /// <summary>
+        /// Queries the provided signals within a the provided time window [Inclusive]
+        /// </summary>
+        /// <param name="database"></param>
+        /// <param name="startTime">the lower bound of the time</param>
+        /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
+        /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
+        /// <returns></returns>
+        public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, IEnumerable<ulong> signals)
+        {
+            SortedList<DateTime, FrameData> results = new SortedList<DateTime, FrameData>();
+
+            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+            {
+                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(timestamps, signals);
+                while (stream.Read())
+                {
+                    DateTime timestamp = new DateTime((long)stream.CurrentKey.Timestamp);
+                    FrameData frame;
+                    if (!results.TryGetValue(timestamp, out frame))
+                    {
+                        frame = new FrameData();
+                        results.Add(timestamp, frame);
+                    }
+                    frame.Points.Add(stream.CurrentKey.PointID, stream.CurrentValue.ToStruct());
+                }
+            }
+            return results;
+        }
         
     }
 }
