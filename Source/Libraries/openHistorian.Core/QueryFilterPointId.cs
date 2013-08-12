@@ -97,6 +97,14 @@ namespace openHistorian
             return filter;
         }
 
+        public bool IsUniverseFilter
+        {
+            get
+            {
+                return (this as UniverseFilter) != null;
+            }
+        }
+
         public abstract bool ContainsKey(ulong key);
 
         protected abstract void WriteToStream(BinaryStreamBase stream);

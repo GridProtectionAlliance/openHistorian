@@ -187,13 +187,11 @@ namespace openHistorian.Communications
             DataReaderOptions readerOptions = new DataReaderOptions(m_stream);
 
             TreeStream<TKey, TValue> scanner = m_historianReaderBase.Read(key1Parser, key2Parser, readerOptions);
-
-            TKey oldKey = new TKey();
-            TValue oldValue = new TValue();
+            m_compressionMode.ResetEncoder();
             int loop = 0;
             while (scanner.Read())
             {
-                m_compressionMode.Encode(m_stream, oldKey, oldValue, scanner.CurrentKey, scanner.CurrentValue);
+                m_compressionMode.Encode(m_stream, scanner.CurrentKey, scanner.CurrentValue);
                 loop++;
                 if (loop > 1000)
                 {
@@ -205,8 +203,6 @@ namespace openHistorian.Communications
                         return;
                     }
                 }
-                scanner.CurrentKey.CopyTo(oldKey);
-                scanner.CurrentValue.CopyTo(oldValue);
             }
 
             m_compressionMode.WriteEndOfStream(m_stream);
@@ -217,7 +213,7 @@ namespace openHistorian.Communications
         {
             TKey key = new TKey();
             TValue value = new TValue();
-
+            m_compressionMode.ResetEncoder();
             while (m_compressionMode.TryDecode(m_stream, key, value))
             {
                 m_historianDatabase.Write(key, value);

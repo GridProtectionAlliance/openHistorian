@@ -41,9 +41,11 @@ namespace openHistorian.Communications.Initialization
 
         public abstract void WriteEndOfStream(BinaryStreamBase stream);
 
-        public abstract void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
+        public abstract void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue);
 
         public abstract unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value);
+
+        public abstract void ResetEncoder();
 
     }
 }

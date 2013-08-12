@@ -32,30 +32,17 @@ namespace openHistorian.Collections.Generic
         where TValue : class, new()
     {
         private int m_nextOffset;
-        private int m_currentOffset;
         private int m_currentIndex;
         private bool m_skipNextRead;
-        private readonly TKey m_nullKey;
-        private readonly TValue m_nullValue;
-        private readonly TKey m_currentKey;
-        private readonly TValue m_currentValue;
-        private readonly TKey m_prevKey;
-        private readonly TValue m_prevValue;
 
         protected EncodedNodeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
             : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods)
         {
-            m_currentKey = new TKey();
-            m_currentValue = new TValue();
-            m_prevKey = new TKey();
-            m_prevValue = new TValue();
-            m_nullKey = new TKey();
-            m_nullValue = new TValue();
-            keyMethods.Clear(m_nullKey);
-            valueMethods.Clear(m_nullValue);
         }
 
-        protected abstract unsafe int DecodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
+        protected abstract unsafe int DecodeRecord(byte* stream, TKey key, TValue value);
+        
+        protected abstract void ResetEncoder();
 
         protected override unsafe void ReadNext()
         {
@@ -64,14 +51,12 @@ namespace openHistorian.Collections.Generic
             else
                 Read();
             KeyIndexOfCurrentKey++;
-            KeyMethods.Copy(m_currentKey, CurrentKey);
-            ValueMethods.Copy(m_currentValue, CurrentValue);
         }
 
         protected override unsafe void FindKey(TKey key)
         {
             Reset();
-            while (Read() && KeyMethods.IsLessThan(m_currentKey, key))
+            while (Read() && KeyMethods.IsLessThan(CurrentKey, key))
                 ;
             KeyIndexOfCurrentKey = (ushort)m_currentIndex;
             m_skipNextRead = true;
@@ -80,12 +65,8 @@ namespace openHistorian.Collections.Generic
         protected override void Reset()
         {
             m_nextOffset = HeaderSize;
-            m_currentOffset = HeaderSize;
             m_currentIndex = -1;
-            KeyMethods.Clear(m_prevKey);
-            ValueMethods.Clear(m_prevValue);
-            KeyMethods.Clear(m_currentKey);
-            ValueMethods.Clear(m_currentValue);
+            ResetEncoder();
         }
 
         private unsafe bool Read()
@@ -94,16 +75,11 @@ namespace openHistorian.Collections.Generic
             {
                 throw new Exception("Read past the end of the stream");
             }
-
-            KeyMethods.Copy(m_currentKey, m_prevKey);
-            ValueMethods.Copy(m_currentValue, m_prevValue);
-            m_currentOffset = m_nextOffset;
             m_currentIndex++;
-
             if (m_currentIndex == RecordCount)
                 return false;
 
-            m_nextOffset += DecodeRecord(Pointer + m_nextOffset - HeaderSize, m_prevKey, m_prevValue, m_currentKey, m_currentValue);
+            m_nextOffset += DecodeRecord(Pointer + m_nextOffset - HeaderSize, CurrentKey, CurrentValue);
             return true;
         }
     }

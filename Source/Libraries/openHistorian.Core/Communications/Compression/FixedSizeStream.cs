@@ -51,7 +51,7 @@ namespace openHistorian.Communications.Compression
             stream.Write(false);
         }
 
-        public override void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
+        public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
             stream.Write(true);
             currentKey.Write(stream);
@@ -65,6 +65,11 @@ namespace openHistorian.Communications.Compression
             key.Read(stream);
             value.Read(stream);
             return true;
+        }
+
+        public override void ResetEncoder()
+        {
+            
         }
     }
 }

@@ -19,7 +19,7 @@ namespace openHistorian.Collections.Generic.ZeroNode
             m_buffer = new byte[MaximumStorageSize];
         }
 
-        protected override unsafe int DecodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
+        protected override unsafe int DecodeRecord(byte* stream, TKey key, TValue value)
         {
             fixed (byte* tmp = m_buffer)
             {
@@ -34,10 +34,15 @@ namespace openHistorian.Collections.Generic.ZeroNode
                     }
                 }
 
-                KeyMethods.Read(tmp, currentKey);
-                ValueMethods.Read(tmp + KeySize, currentValue);
+                KeyMethods.Read(tmp, key);
+                ValueMethods.Read(tmp + KeySize, value);
                 return nextReadPosition;
             }
+        }
+
+        protected override void ResetEncoder()
+        {
+            //No cached values to reset.
         }
 
         private int MaximumStorageSize

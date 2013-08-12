@@ -38,6 +38,15 @@ namespace openHistorian.Communications.Compression
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : HistorianValueBase<TValue>, new()
     {
+        TKey prevKey;
+        TValue prevValue;
+
+        public CompressedStream()
+        {
+            prevKey = new TKey();
+            prevValue = new TValue();
+        }
+
         public override Guid CompressionType
         {
             get
@@ -51,21 +60,33 @@ namespace openHistorian.Communications.Compression
             stream.Write(false);
         }
 
-        public override void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
+        public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
             stream.Write(true);
             currentKey.WriteCompressed(stream, prevKey);
             currentValue.WriteCompressed(stream, prevValue);
+
+            currentKey.CopyTo(prevKey);
+            currentValue.CopyTo(prevValue);
         }
 
         public override unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value)
         {
             if (!stream.ReadBoolean())
                 return false;
-            key.ReadCompressed(stream, key);
-            value.ReadCompressed(stream, value);
+            key.ReadCompressed(stream, prevKey);
+            value.ReadCompressed(stream, prevValue);
+
+            key.CopyTo(prevKey);
+            value.CopyTo(prevValue);
 
             return true;
+        }
+
+        public override void ResetEncoder()
+        {
+            prevKey.Clear();
+            prevValue.Clear();
         }
     }
 }

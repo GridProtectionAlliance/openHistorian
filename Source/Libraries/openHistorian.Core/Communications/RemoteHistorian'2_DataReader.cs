@@ -85,12 +85,13 @@ namespace openHistorian.Communications
                 {
                     m_client = client;
                     m_onComplete = onComplete;
+                    m_client.m_compressionMode.ResetEncoder();
                 }
 
                 public override bool Read()
                 {
                     
-                    if (!m_completed && m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey,CurrentValue))
+                    if (!m_completed && m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey, CurrentValue))
                     {
                         //CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);
                         //CurrentValue.ReadCompressed(m_client.m_stream, CurrentValue);

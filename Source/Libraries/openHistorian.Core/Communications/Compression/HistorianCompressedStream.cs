@@ -36,6 +36,10 @@ namespace openHistorian.Communications.Compression
     public class HistorianCompressedStream
         : KeyValueStreamCompressionBase<HistorianKey, HistorianValue>
     {
+
+        ulong prevTimestamp;
+        ulong prevPointID;
+
         public override Guid CompressionType
         {
             get
@@ -49,10 +53,10 @@ namespace openHistorian.Communications.Compression
             stream.Write((byte)255);
         }
 
-        public override void Encode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey currentKey, HistorianValue currentValue)
+        public override void Encode(BinaryStreamBase stream, HistorianKey currentKey, HistorianValue currentValue)
         {
-            if (currentKey.Timestamp == prevKey.Timestamp
-                && ((currentKey.PointID ^ prevKey.PointID) < 64)
+            if (currentKey.Timestamp == prevTimestamp
+                && ((currentKey.PointID ^ prevPointID) < 64)
                 && currentKey.EntryNumber == 0
                 && currentValue.Value1 <= uint.MaxValue //must be a 32-bit value
                 && currentValue.Value2 == 0
@@ -60,19 +64,21 @@ namespace openHistorian.Communications.Compression
             {
                 if (currentValue.Value1 == 0)
                 {
-                    stream.Write((byte)((currentKey.PointID ^ prevKey.PointID)));
+                    stream.Write((byte)((currentKey.PointID ^ prevPointID)));
                 }
                 else
                 {
-                    stream.Write((byte)((currentKey.PointID ^ prevKey.PointID) | 64));
+                    stream.Write((byte)((currentKey.PointID ^ prevPointID) | 64));
                     stream.Write((uint)currentValue.Value1);
                 }
+                prevTimestamp = currentKey.Timestamp;
+                prevPointID = currentKey.PointID;
                 return;
             }
 
             byte code = 128;
 
-            if (currentKey.Timestamp != prevKey.Timestamp)
+            if (currentKey.Timestamp != prevTimestamp)
                 code |= 64;
 
             if (currentKey.EntryNumber != 0)
@@ -93,13 +99,13 @@ namespace openHistorian.Communications.Compression
 
             stream.Write(code);
 
-            if (currentKey.Timestamp != prevKey.Timestamp)
-                stream.Write7Bit(currentKey.Timestamp ^ prevKey.Timestamp);
+            if (currentKey.Timestamp != prevTimestamp)
+                stream.Write7Bit(currentKey.Timestamp ^ prevTimestamp);
 
-            stream.Write7Bit(currentKey.PointID ^ prevKey.PointID);
+            stream.Write7Bit(currentKey.PointID ^ prevPointID);
 
             if (currentKey.EntryNumber != 0)
-                stream.Write7Bit(prevKey.EntryNumber ^ currentKey.EntryNumber);
+                stream.Write7Bit(currentKey.EntryNumber);
 
             if (currentValue.Value1 > uint.MaxValue)
                 stream.Write(currentValue.Value1);
@@ -113,6 +119,9 @@ namespace openHistorian.Communications.Compression
                 stream.Write(currentValue.Value3);
             else if (currentValue.Value3 > 0)
                 stream.Write((uint)currentValue.Value3);
+
+            prevTimestamp = currentKey.Timestamp;
+            prevPointID = currentKey.PointID;
         }
 
         public override unsafe bool TryDecode(BinaryStreamBase stream, HistorianKey key, HistorianValue value)
@@ -125,8 +134,8 @@ namespace openHistorian.Communications.Compression
             {
                 if (code < 64)
                 {
-                    key.Timestamp = key.Timestamp;
-                    key.PointID = key.PointID ^ code;
+                    key.Timestamp = prevTimestamp;
+                    key.PointID = prevPointID ^ code;
                     key.EntryNumber = 0;
                     value.Value1 = 0;
                     value.Value2 = 0;
@@ -134,25 +143,27 @@ namespace openHistorian.Communications.Compression
                 }
                 else
                 {
-                    key.Timestamp = key.Timestamp;
-                    key.PointID = key.PointID ^ code ^ 64;
+                    key.Timestamp = prevTimestamp;
+                    key.PointID = prevPointID ^ code ^ 64;
                     key.EntryNumber = 0;
                     value.Value1 = stream.ReadUInt32();
                     value.Value2 = 0;
                     value.Value3 = 0;
                 }
+                prevTimestamp = key.Timestamp;
+                prevPointID = key.PointID;
                 return true;
             }
 
             if ((code & 64) != 0) //T is set
-                key.Timestamp = key.Timestamp ^ stream.Read7BitUInt64();
+                key.Timestamp = prevTimestamp ^ stream.Read7BitUInt64();
             else
-                key.Timestamp = key.Timestamp;
+                key.Timestamp = prevTimestamp;
 
-            key.PointID = key.PointID ^ stream.Read7BitUInt64();
+            key.PointID = prevPointID ^ stream.Read7BitUInt64();
 
             if ((code & 32) != 0) //E is set)
-                key.EntryNumber = key.EntryNumber ^ stream.Read7BitUInt64();
+                key.EntryNumber = stream.Read7BitUInt64();
             else
                 key.EntryNumber = 0;
 
@@ -174,8 +185,16 @@ namespace openHistorian.Communications.Compression
                 value.Value3 = stream.ReadUInt32();
             else
                 value.Value3 = 0;
+            prevTimestamp = key.Timestamp;
+            prevPointID = key.PointID;
 
             return true;
+        }
+
+        public override void ResetEncoder()
+        {
+            prevTimestamp = 0;
+            prevPointID = 0;
         }
     }
 }

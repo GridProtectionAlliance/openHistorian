@@ -77,6 +77,7 @@ namespace openHistorian.Engine
             private ulong m_stopKey;
             private readonly QueryFilterTimestamp m_key1;
             private readonly QueryFilterPointId m_key2;
+            bool m_isKey2Universal;
             private bool m_timedOut;
             private long m_pointCount;
 
@@ -98,6 +99,7 @@ namespace openHistorian.Engine
 
                 m_key1 = key1;
                 m_key2 = key2;
+                m_isKey2Universal = key2.IsUniverseFilter;
                 m_startKey = key1.FirstTime;
                 m_stopKey = key1.LastTime;
                 m_snapshot = snapshot;
@@ -138,10 +140,10 @@ namespace openHistorian.Engine
                     Cancel();
                 if (m_currentScanner.Read())
                 {
-                    if (m_currentScanner.CurrentKey.Timestamp <= m_stopKey)
+                    if (CurrentKey.Timestamp <= m_stopKey)
                     {
                         Stats.PointsScanned++;
-                        if (m_key2.ContainsKey(m_currentScanner.CurrentKey.PointID))
+                        if (m_isKey2Universal || m_key2.ContainsKey(CurrentKey.PointID))
                         {
                             Stats.PointsReturned++;
                             return true;
