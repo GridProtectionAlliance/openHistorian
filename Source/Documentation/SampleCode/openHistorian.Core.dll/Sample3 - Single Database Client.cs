@@ -18,22 +18,34 @@ namespace SampleCode.openHistorian.Server.dll
             HistorianDatabaseInstance db = new HistorianDatabaseInstance();
             db.IsNetworkHosted = false;
             db.InMemoryArchive = false;
+            db.ConnectionString = "port=12345";
             db.Paths = new[] { @"c:\temp\Scada\" };
 
-            HistorianKey key = new HistorianKey();
-            HistorianValue value = new HistorianValue();
+            var key = new HistorianKey();
+            var value = new HistorianValue();
 
-            using (HistorianServer server = new HistorianServer(db))
+            using (var server = new HistorianServer(db))
             {
-                IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();
+                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                clientOptions.NetworkPort = 12345;
+                clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                for (ulong x = 0; x < 10000; x++)
+                using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                 {
-                    key.Timestamp = x;
-                    database.Write(key, value);
+                    var database = client.GetDatabase();
+
+                    for (ulong x = 0; x < 1000; x++)
+                    {
+                        key.Timestamp = x;
+                        database.Write(key, value);
+                    }
+
+                    database.HardCommit();
+                    System.Threading.Thread.Sleep(1200);
+                    database.Disconnect();
                 }
 
-                database.HardCommit();
+
             }
         }
 
@@ -48,17 +60,18 @@ namespace SampleCode.openHistorian.Server.dll
             using (HistorianServer server = new HistorianServer(db))
             {
                 HistorianClientOptions clientOptions = new HistorianClientOptions();
-                clientOptions.IsReadOnly = true;
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+                using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                 {
-                    IHistorianDatabase<HistorianKey, HistorianValue> database = client.GetDatabase();
-                    using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+                    var database = client.GetDatabase();
+                    using (var reader = database.OpenDataReader())
                     {
-                        TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
-                        stream.Cancel();
+                        var stream = reader.Read(0, 1000);
+                        while (stream.Read())
+                            Console.WriteLine(stream.CurrentKey.Timestamp);
+
                     }
                     database.Disconnect();
                 }

@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using System;
 using GSF.IO;
 
 namespace openHistorian.Collections
@@ -110,6 +111,10 @@ namespace openHistorian.Collections
             EntryNumber = 0;
         }
 
+        /// <summary>
+        /// Creates a clone of the HistorianKey
+        /// </summary>
+        /// <returns></returns>
         public HistorianKey Clone()
         {
             HistorianKey key = new HistorianKey();
@@ -117,6 +122,21 @@ namespace openHistorian.Collections
             key.PointID = PointID;
             key.EntryNumber = EntryNumber;
             return key;
+        }
+
+        /// <summary>
+        /// Conviently type cast the Timestamp as <see cref="DateTime"/>.
+        /// </summary>
+        public DateTime TimestampAsDate
+        {
+            get
+            {
+               return new DateTime((long)Timestamp); 
+            }
+            set
+            {
+                Timestamp = (ulong)value.Ticks;
+            }
         }
     }
 }

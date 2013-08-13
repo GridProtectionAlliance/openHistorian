@@ -15,19 +15,18 @@ namespace SampleCode.openHistorian.Server.dll
         {
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
+            var key = new HistorianKey();
+            var value = new HistorianValue();
+
+            var db = new HistorianDatabaseInstance();
             db.IsNetworkHosted = false;
             db.InMemoryArchive = false;
             db.Paths = new[] { @"c:\temp\Scada\" };
 
-            using (HistorianServer server = new HistorianServer(db))
+            using (var server = new HistorianServer(db))
             {
-                IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();
-
-                HistorianKey key = new HistorianKey();
-                HistorianValue value = new HistorianValue();
-
-                for (ulong x = 0; x < 10000; x++)
+                var database = server.GetDefaultDatabase();
+                for (ulong x = 0; x < 1000; x++)
                 {
                     key.Timestamp = x;
                     database.Write(key, value);
@@ -40,19 +39,21 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void TestReadData()
         {
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.InMemoryArchive = true;
+            var db = new HistorianDatabaseInstance();
+            db.InMemoryArchive = false;
             db.ConnectionString = "port=1234";
             db.Paths = new[] { @"c:\temp\Scada\" };
 
-            using (HistorianServer server = new HistorianServer(db))
+            using (var server = new HistorianServer(db))
             {
-                IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();
-
-                using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+                var database = server.GetDefaultDatabase();
+                using (var reader = database.OpenDataReader())
                 {
-                    TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
-                    stream.Cancel();
+                    var stream = reader.Read(10, 800 - 1);
+                    while (stream.Read())
+                    {
+                        Console.WriteLine(stream.CurrentKey.Timestamp);
+                    }
                 }
             }
         }

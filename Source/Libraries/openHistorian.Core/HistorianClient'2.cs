@@ -98,7 +98,7 @@ namespace openHistorian
 
         void IHistorianDatabase<TKey, TValue>.HardCommit()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         /// <summary>

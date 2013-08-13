@@ -50,11 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="openHistorian.Archive.dll\Sample 1 - Write Archive Points.cs" />
-    <Compile Include="openHistorian.Server.dll\Sample4 - Single Database Client.cs" />
-    <Compile Include="openHistorian.Server.dll\Sample3 - Single Database Client.cs" />
-    <Compile Include="openHistorian.Server.dll\Sample2 - Multi Database Server.cs" />
-    <Compile Include="openHistorian.Server.dll\Sample1 - Single Database Server.cs" />
+    <Compile Include="openHistorian.Core.dll\Sample 1 - Write Archive Points.cs" />
+    <Compile Include="openHistorian.Core.dll\Sample4 - Multi Database Client.cs" />
+    <Compile Include="openHistorian.Core.dll\Sample3 - Single Database Client.cs" />
+    <Compile Include="openHistorian.Core.dll\Sample2 - Multi Database Server.cs" />
+    <Compile Include="openHistorian.Core.dll\Sample1 - Single Database Server.cs" />
+    <Compile Include="openHistorian.Core.dll\User Forum Demo Code.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -70,7 +71,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="openHistorian.Archive.dll\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

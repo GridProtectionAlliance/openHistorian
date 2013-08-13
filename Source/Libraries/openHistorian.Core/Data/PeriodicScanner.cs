@@ -31,8 +31,14 @@ namespace openHistorian.Data
     {
         private TimeSpan m_windowTolerance;
 
-        private readonly List<ulong> m_downSampleRates;
+        private readonly List<long> m_downSampleRates;
+        private readonly List<long> m_downSampleTicks;
+        const decimal DecimalTicksPerDay = TimeSpan.TicksPerDay;
 
+        /// <summary>
+        /// Creates a periodic scanner
+        /// </summary>
+        /// <param name="samplesPerSecond"></param>
         public PeriodicScanner(int samplesPerSecond)
             : this(samplesPerSecond, new TimeSpan(TimeSpan.TicksPerSecond / samplesPerSecond / 4))
         {
@@ -41,15 +47,16 @@ namespace openHistorian.Data
         public PeriodicScanner(int samplesPerSecond, TimeSpan windowTolerance)
         {
             m_windowTolerance = windowTolerance;
-            m_downSampleRates = new List<ulong>();
+            m_downSampleRates = new List<long>();
+            m_downSampleTicks = new List<long>();
             CalculateDownSampleRates(samplesPerSecond);
         }
 
-        public ulong SuggestSamplesPerDay(DateTime startTime, DateTime endTime, uint sampleCount)
+        public long SuggestSamplesPerDay(DateTime startTime, DateTime endTime, uint sampleCount)
         {
             double days = (endTime - startTime).TotalDays;
 
-            ulong sampleRate = m_downSampleRates.FirstOrDefault((x) => sampleCount <= x * days);
+            long sampleRate = m_downSampleRates.FirstOrDefault((x) => sampleCount <= x * days);
             if (sampleRate == 0)
                 sampleRate = m_downSampleRates.Last();
 
@@ -58,15 +65,16 @@ namespace openHistorian.Data
 
         public QueryFilterTimestamp GetParser(DateTime startTime, DateTime endTime, uint sampleCount)
         {
-            return GetParser(startTime, endTime, SuggestSamplesPerDay(startTime, endTime, sampleCount));
+            return GetParser(startTime, endTime, (ulong)SuggestSamplesPerDay(startTime, endTime, sampleCount));
         }
 
         public QueryFilterTimestamp GetParser(DateTime startTime, DateTime endTime, ulong samplesPerDay)
         {
-            startTime = RoundDownToNearestSample(startTime, samplesPerDay);
-            endTime = RoundUpToNearestSample(endTime, samplesPerDay);
+            long interval = (long)(TimeSpan.TicksPerDay / samplesPerDay);
 
-            ulong interval = (TimeSpan.TicksPerDay / samplesPerDay);
+            long startTime2 = RoundDownToNearestSample(startTime.Ticks, (long)samplesPerDay, interval);
+            long endTime2 = RoundUpToNearestSample(endTime.Ticks, (long)samplesPerDay, interval);
+
             ulong bigInterval;
 
             uint count = 1;
@@ -82,60 +90,79 @@ namespace openHistorian.Data
                 }
                 count++;
             }
-            return QueryFilterTimestamp.CreateFromIntervalData((ulong)startTime.Ticks, (ulong)endTime.Ticks, bigInterval, interval, (ulong)m_windowTolerance.Ticks);
+            return QueryFilterTimestamp.CreateFromIntervalData((ulong)startTime2, (ulong)endTime2, bigInterval, (ulong)interval, (ulong)m_windowTolerance.Ticks);
         }
 
-        private DateTime RoundDownToNearestSample(DateTime startTime, ulong samplesPerDay)
+        /// <summary>
+        /// Rounds the provided timestamp down to the nearest valid time sample.
+        /// </summary>
+        /// <param name="startTime">the timestamp in ticks</param>
+        /// <param name="samplesPerDay">the number of samples per day.</param>
+        /// <param name="interval">the interval in ticks</param>
+        /// <returns></returns>
+        private long RoundDownToNearestSample(long startTime, long samplesPerDay, long interval)
         {
-            long interval = (long)(TimeSpan.TicksPerDay / samplesPerDay);
-            if (interval * (long)samplesPerDay == TimeSpan.TicksPerDay)
+            if (interval * samplesPerDay == TimeSpan.TicksPerDay)
             {
-                return new DateTime(startTime.Ticks - startTime.Ticks % interval);
+                return startTime - (startTime % interval);
             }
             else
             {
-                //Not exact, but close enough. 
-                decimal interval2 = (decimal)TimeSpan.TicksPerDay / (decimal)samplesPerDay;
+                //Not exact, but close enough.
+                //ToDo: Consider the error if using double precision instead of decimal.
+                long dateTicks = startTime - startTime % TimeSpan.TicksPerDay;
+                long timeTicks = startTime - dateTicks; //timeticks cannot be more than 864 billion.
 
-                long dateTicks = startTime.Ticks - startTime.Ticks % TimeSpan.TicksPerDay;
-                long timeTicks = startTime.Ticks - dateTicks; //timeticks cannot be more than 864 billion.
-
+                decimal interval2 = DecimalTicksPerDay / samplesPerDay;
                 decimal overBy = timeTicks % interval2;
 
-                long timeTicks2 = timeTicks - (long)overBy;
-
-                DateTime rv = new DateTime(dateTicks + timeTicks2);
-                return rv;
+                return dateTicks + timeTicks - (long)overBy;
             }
         }
 
-        private DateTime RoundUpToNearestSample(DateTime startTime, ulong samplesPerDay)
+        /// <summary>
+        /// Rounds the provided timestamp up to the nearest valid time sample.
+        /// </summary>
+        /// <param name="startTime">the timestamp in ticks</param>
+        /// <param name="samplesPerDay">the number of samples per day.</param>
+        /// <param name="interval">the interval in ticks</param>
+        /// <returns></returns>
+        private long RoundUpToNearestSample(long startTime, long samplesPerDay, long interval)
         {
-            //ToDo: actually round up
-            long interval = (long)(TimeSpan.TicksPerDay / samplesPerDay);
-            if (interval * (long)samplesPerDay == TimeSpan.TicksPerDay)
+            if (interval * samplesPerDay == TimeSpan.TicksPerDay)
             {
-                return new DateTime(startTime.Ticks - startTime.Ticks % interval);
+                long delta = startTime % interval;
+                if (delta == 0)
+                    return startTime;
+                else
+                    return startTime - delta + interval;
             }
             else
             {
-                //Not exact, but close enough. 
-                decimal interval2 = (decimal)TimeSpan.TicksPerDay / (decimal)samplesPerDay;
+                //Not exact, but close enough.
+                //ToDo: Consider the error if using double precision instead of decimal.
+                long dateTicks = startTime - startTime % TimeSpan.TicksPerDay;
+                long timeTicks = startTime - dateTicks; //timeticks cannot be more than 864 billion.
 
-                long dateTicks = startTime.Ticks - startTime.Ticks % TimeSpan.TicksPerDay;
-                long timeTicks = startTime.Ticks - dateTicks; //timeticks cannot be more than 864 billion.
-
+                decimal interval2 = DecimalTicksPerDay / samplesPerDay;
                 decimal overBy = timeTicks % interval2;
 
-                long timeTicks2 = timeTicks - (long)overBy;
-
-                DateTime rv = new DateTime(dateTicks + timeTicks2);
-                return rv;
+                if (overBy == 0)
+                    return dateTicks + timeTicks;
+                else
+                    return dateTicks + timeTicks - (long)overBy + interval;
             }
         }
 
+        /// <summary>
+        /// Gets all of the factors for the <see cref="number"/>.
+        /// </summary>
+        /// <param name="number">must be greater than or equal to 1</param>
+        /// <returns></returns>
         private List<int> FactorNumber(int number)
         {
+            if (number < 1)
+                throw new ArgumentOutOfRangeException("number", "Must be greather than or equal to 1");
             List<int> factors = new List<int>();
             for (int x = 1; x * x <= number; x++)
             {
@@ -150,16 +177,20 @@ namespace openHistorian.Data
             return factors;
         }
 
+        /// <summary>
+        /// Populates <see cref="m_downSampleRates"/> and <see cref="m_downSampleTicks"/> with all of the necessary valid downsample rates
+        /// </summary>
+        /// <param name="samplesPerSecond">Must be greater than or equal to 1</param>
         private void CalculateDownSampleRates(int samplesPerSecond)
         {
-            m_downSampleRates.Add(1);
-            m_downSampleRates.Add(2);
+            m_downSampleRates.Add(1); //1 sample per day
+            m_downSampleRates.Add(2); //2 sampes per day
             m_downSampleRates.Add(3);
             m_downSampleRates.Add(4);
             m_downSampleRates.Add(6);
             m_downSampleRates.Add(8);
             m_downSampleRates.Add(12);
-            m_downSampleRates.Add(24);
+            m_downSampleRates.Add(24); //1 sample per hour
             m_downSampleRates.Add(24 * 2);
             m_downSampleRates.Add(24 * 3);
             m_downSampleRates.Add(24 * 4);
@@ -170,7 +201,7 @@ namespace openHistorian.Data
             m_downSampleRates.Add(24 * 15);
             m_downSampleRates.Add(24 * 20);
             m_downSampleRates.Add(24 * 30);
-            m_downSampleRates.Add(24 * 60);
+            m_downSampleRates.Add(24 * 60); //1 sample per hour
             m_downSampleRates.Add(24 * 60 * 2);
             m_downSampleRates.Add(24 * 60 * 3);
             m_downSampleRates.Add(24 * 60 * 4);
@@ -181,12 +212,18 @@ namespace openHistorian.Data
             m_downSampleRates.Add(24 * 60 * 15);
             m_downSampleRates.Add(24 * 60 * 20);
             m_downSampleRates.Add(24 * 60 * 30);
-            m_downSampleRates.Add(24 * 60 * 60);
+            m_downSampleRates.Add(24 * 60 * 60); //1 sample per second
+
 
             List<int> factors = FactorNumber(samplesPerSecond);
             for (int x = 1; x < factors.Count; x++)
             {
-                m_downSampleRates.Add(24uL * 60uL * 60uL * (ulong)factors[x]);
+                m_downSampleRates.Add(24L * 60L * 60L * factors[x]);
+            }
+
+            foreach (long rate in m_downSampleRates)
+            {
+                m_downSampleTicks.Add(TimeSpan.TicksPerDay / rate);
             }
         }
     }

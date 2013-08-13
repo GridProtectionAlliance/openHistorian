@@ -101,26 +101,26 @@ namespace openHistorian.Collections.Generic.CustomCompression
 
                 key.PointID++;
                 key.EntryNumber = 0;
-                value.AsFloat = 60.1f;
+                value.AsSingle = 60.1f;
                 value.Value2 = 0;
                 value.Value3 = 0;
                 tree.Add(key, value);
                 tree.Get(key1, value);
                 tree.Get(key, value);
-                Assert.AreEqual(60.1f, value.AsFloat);
+                Assert.AreEqual(60.1f, value.AsSingle);
                 Assert.AreEqual(0ul, value.Value2);
                 Assert.AreEqual(0ul, value.Value3);
 
 
                 key.PointID++;
                 key.EntryNumber = 0;
-                value.AsFloat = -60.1f;
+                value.AsSingle = -60.1f;
                 value.Value2 = 0;
                 value.Value3 = 0;
                 tree.Add(key, value);
                 tree.Get(key1, value);
                 tree.Get(key, value);
-                Assert.AreEqual(-60.1f, value.AsFloat);
+                Assert.AreEqual(-60.1f, value.AsSingle);
                 Assert.AreEqual(0ul, value.Value2);
                 Assert.AreEqual(0ul, value.Value3);
 

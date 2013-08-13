@@ -22,6 +22,8 @@
 //******************************************************************************************************
 
 
+using System;
+using System.Text;
 using GSF;
 using GSF.IO;
 
@@ -32,9 +34,37 @@ namespace openHistorian.Collections
         public ulong Value1;
         public ulong Value2;
         public ulong Value3;
-        public unsafe float ToSingle()
+     
+        public float AsSingle
         {
-            return BitMath.ConvertToSingle(Value1);
+            get
+            {
+                return BitMath.ConvertToSingle(Value1);
+            }
+            set
+            {
+                Value1 = BitMath.ConvertToUInt64(value);
+            }
+        }
+
+        public string AsString
+        {
+            get
+            {
+                byte[] data = new byte[16];
+                BitConverter.GetBytes(Value1).CopyTo(data, 0);
+                BitConverter.GetBytes(Value2).CopyTo(data, 8);
+                return ASCIIEncoding.ASCII.GetString(data);
+            }
+            set
+            {
+                if (value.Length > 16)
+                    throw new OverflowException("String cannot be larger than 16 characters");
+                byte[] data = new byte[16];
+                ASCIIEncoding.ASCII.GetBytes(value).CopyTo(data, 0);
+                Value1 = BitConverter.ToUInt64(data, 0);
+                Value2 = BitConverter.ToUInt64(data, 8);
+            }
         }
     }
 
@@ -115,7 +145,7 @@ namespace openHistorian.Collections
                 };
         }
 
-        public float AsFloat
+        public float AsSingle
         {
             get
             {
@@ -124,6 +154,26 @@ namespace openHistorian.Collections
             set
             {
                 Value1 = BitMath.ConvertToUInt64(value);
+            }
+        }
+
+        public string AsString
+        {
+            get
+            {
+                byte[] data = new byte[16];
+                BitConverter.GetBytes(Value1).CopyTo(data, 0);
+                BitConverter.GetBytes(Value2).CopyTo(data, 8);
+                return ASCIIEncoding.ASCII.GetString(data);
+            }
+            set
+            {
+                if (value.Length > 16)
+                    throw new OverflowException("String cannot be larger than 16 characters");
+                byte[] data = new byte[16];
+                ASCIIEncoding.ASCII.GetBytes(value).CopyTo(data, 0);
+                Value1 = BitConverter.ToUInt64(data, 0);
+                Value2 = BitConverter.ToUInt64(data, 8);
             }
         }
     }

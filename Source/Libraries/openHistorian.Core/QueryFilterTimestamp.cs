@@ -34,6 +34,11 @@ namespace openHistorian
         {
             return new UniverseRange();
         }
+        
+        public static QueryFilterTimestamp CreateFromRange(DateTime firstTime, DateTime lastTime)
+        {
+            return new FixedRange((ulong)firstTime.Ticks, (ulong)lastTime.Ticks);
+        }
 
         public static QueryFilterTimestamp CreateFromRange(ulong firstTime, ulong lastTime)
         {

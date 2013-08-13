@@ -141,7 +141,7 @@ namespace openHistorian.Data.Query
                         allPoints.Add((ulong)point.Value);
                 }
             }
-            m_results = database.GetFrames((ulong)start.Ticks, (ulong)stop.Ticks, allPoints);
+            //m_results = database.GetFrames((ulong)start.Ticks, (ulong)stop.Ticks, allPoints);
             m_currentFrame = -1;
         }
 
