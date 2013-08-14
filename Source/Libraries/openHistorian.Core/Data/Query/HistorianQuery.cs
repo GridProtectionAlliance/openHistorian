@@ -56,7 +56,7 @@ namespace openHistorian.Data.Query
                 //var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
 
                 PeriodicScanner scanner = new PeriodicScanner(m_samplesPerSecond);
-                QueryFilterTimestamp timestamps = scanner.GetParser(startTime, endTime, 900u);
+                QueryFilterTimestamp timestamps = scanner.GetParser(startTime, endTime, 1500u);
                 DataReaderOptions options = new DataReaderOptions(TimeSpan.FromSeconds(1));
                 return db.GetSignalsWithCalculations(timestamps, signals, options);
             }

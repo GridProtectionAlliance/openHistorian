@@ -104,86 +104,7 @@ namespace openVisN
 
         private void BtnExport_Click(object sender, EventArgs e)
         {
-            QueryResultsEventArgs results = m_lastResults;
-            if (results == null)
-            {
-                MessageBox.Show("No query has been executed");
-                return;
-            }
-            using (SaveFileDialog dlg = new SaveFileDialog())
-            {
-                dlg.Filter = "CVS File|*.csv";
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    StreamWriter fs = new StreamWriter(dlg.FileName, false);
-                    fs.AutoFlush = false;
-                    SortedList<DateTime, List<double?>> list = new SortedList<DateTime, List<double?>>();
 
-                    int column = 0;
-                    foreach (SignalDataBase value in results.Results.Values)
-                    {
-                        for (int x = 0; x < value.Count; x++)
-                        {
-                            ulong date;
-                            double v;
-                            value.GetData(x, out date, out v);
-                            DateTime d = new DateTime((long)date);
-                            if (!list.ContainsKey(d))
-                            {
-                                list.Add(d, new List<double?>());
-                                for (int k = 0; k < column; k++)
-                                    list[d].Add(null);
-                            }
-                            list[d].Add(v);
-                        }
-                        foreach (List<double?> lst in list.Values)
-                        {
-                            while (lst.Count <= column)
-                                lst.Add(null);
-                        }
-                        column++;
-                    }
-
-                    List<string> name = new List<string>();
-                    Dictionary<Guid, MetadataBase> lookup = visualizationFramework1.Framework.AllSignals.ToDictionary((meta) => meta.UniqueId);
-
-                    foreach (Guid value in results.Results.Keys)
-                    {
-                        if (!lookup.ContainsKey(value))
-                        {
-                            name.Add(value.ToString());
-                        }
-                        else if (lookup[value].Name == "")
-                        {
-                            name.Add(value.ToString());
-                        }
-                        else
-                        {
-                            name.Add(lookup[value].Name);
-                        }
-                    }
-
-
-                    fs.Write("Date");
-                    name.ForEach((x) => fs.Write("," + x));
-                    fs.WriteLine();
-                    foreach (KeyValuePair<DateTime, List<double?>> kvp in list)
-                    {
-                        fs.Write(kvp.Key.ToString("yyyy.MM.dd HH:mm:ss:fff"));
-
-                        foreach (double? val in kvp.Value)
-                        {
-                            fs.Write(",");
-                            if (val.HasValue)
-                                fs.Write(val.ToString());
-                        }
-                        fs.WriteLine();
-                    }
-                    fs.Flush();
-                    fs.Close();
-                    Process.Start(dlg.FileName);
-                }
-            }
         }
 
         private void BtnConfig_Click(object sender, EventArgs e)
@@ -204,6 +125,7 @@ namespace openVisN
             visualizationFramework1.Framework.Updater.AfterQuery += UpdaterOnAfterQuery;
             visualizationFramework1.Framework.Updater.AfterExecuteQuery += UpdaterOnAfterExecuteQuery;
             visualizationFramework1.Framework.Updater.NewQueryResults += Updater_NewQueryResults;
+            BtnConnect.Enabled = false;
         }
        
     }

@@ -231,7 +231,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(272, 307);
+            this.tabPage2.Size = new System.Drawing.Size(272, 332);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Legend";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -330,7 +330,7 @@
             this.signalGroupTextLegend1.Framework = this.visualizationFramework1;
             this.signalGroupTextLegend1.Location = new System.Drawing.Point(3, 3);
             this.signalGroupTextLegend1.Name = "signalGroupTextLegend1";
-            this.signalGroupTextLegend1.Size = new System.Drawing.Size(266, 301);
+            this.signalGroupTextLegend1.Size = new System.Drawing.Size(266, 326);
             this.signalGroupTextLegend1.TabIndex = 4;
             // 
             // setTimeWindowCalendarControl1
@@ -423,7 +423,7 @@
             this.ClientSize = new System.Drawing.Size(942, 727);
             this.Controls.Add(this.toolStripContainer1);
             this.Name = "FrmMain";
-            this.Text = "Form1";
+            this.Text = "openVisN 0.9";
             this.Load += new System.EventHandler(this.FrmMain_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);

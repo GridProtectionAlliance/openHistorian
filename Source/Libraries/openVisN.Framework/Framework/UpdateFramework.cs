@@ -129,8 +129,8 @@ namespace openVisN.Framework
 
         void OnError(object sender, UnhandledExceptionEventArgs e)
         {
-            string data = e.ExceptionObject.ToString();
-            File.WriteAllText("c:\\error.txt",data);
+            //string data = e.ExceptionObject.ToString();
+            //File.WriteAllText("c:\\error.txt",data);
         }
 
         public void Start(HistorianQuery query)
