@@ -29,7 +29,7 @@ namespace SampleCode.openHistorian.Server.dll
                 HistorianClientOptions clientOptions = new HistorianClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
-
+                
                 using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                 {
                     var database = client.GetDatabase();

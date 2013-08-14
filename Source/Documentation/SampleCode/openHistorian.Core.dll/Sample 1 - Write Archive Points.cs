@@ -58,7 +58,7 @@ namespace SampleCode.openHistorian.Archive.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
             using (var file = ArchiveFile.OpenFile(fileName, isReadOnly: false))
-            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             using (var editor = table.BeginEdit())
             {
                 key.TimestampAsDate = DateTime.Now;
@@ -109,6 +109,8 @@ namespace SampleCode.openHistorian.Archive.dll
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             {
                 var snapshotInfo = table.AcquireReadSnapshot();
+
+                
                 using (var reader1 = snapshotInfo.CreateReadSnapshot())
                 using (var reader2 = snapshotInfo.CreateReadSnapshot())
                 {
@@ -141,8 +143,8 @@ namespace SampleCode.openHistorian.Archive.dll
             using (var file = ArchiveFile.OpenFile(fileName, isReadOnly: false))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             {
-                using (ArchiveTable<HistorianKey, HistorianValue>.Editor writer = table.BeginEdit())
-                using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> reader = table.BeginRead())
+                using (var writer = table.BeginEdit())
+                using (var reader = table.BeginRead())
                 {
                     var scanner = reader.GetTreeScanner();
                     scanner.SeekToStart();
