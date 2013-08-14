@@ -68,6 +68,8 @@ namespace openHistorian
             return this;
         }
 
+
+
         /// <summary>
         /// Opens a stream connection that can be used to read 
         /// and write data to the current historian database.

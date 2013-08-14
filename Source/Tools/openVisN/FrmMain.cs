@@ -1,243 +1,210 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.NetworkInformation;
+using System.Text;
 using System.Data;
 using System.Threading;
 using System.Windows.Forms;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Transport;
+using NPlot;
+using openHistorian;
+using openHistorian.Data.Query;
+using openVisN;
+using openVisN.Framework;
+using openVisN.Library;
+using openVisN.Properties;
+using ServerCommand = GSF.TimeSeries.Transport.ServerCommand;
 
 namespace openVisN
 {
     public partial class FrmMain : Form
     {
-        /// <summary>
-        /// Retrieves current meta-data from openHistorian using GEP
-        /// </summary>
-        private sealed class MetadataRetriever : IDisposable
-        {
-            #region [ Members ]
 
-            // Fields
-            private DataSubscriber m_subscriber;
-            private DataSet m_metadata;
-            private Exception m_processException;
-            private ManualResetEventSlim m_waitHandle;
-            private bool m_disposed;
-
-            #endregion
-
-            #region [ Constructors ]
-
-            /// <summary>
-            /// Creates a new <see cref="MetadataRetriever"/> instance with the specified <paramref name="connectionString"/>.
-            /// </summary>
-            /// <param name="connectionString">GEP connection string for openHistorian.</param>
-            private MetadataRetriever(string connectionString)
-            {
-                m_subscriber = new DataSubscriber
-                {
-                    ConnectionString = connectionString,
-                    ReceiveInternalMetadata = true,
-                    ReceiveExternalMetadata = true,
-                    OperationalModes = OperationalModes.UseCommonSerializationFormat | OperationalModes.CompressMetadata
-                };
-
-                // Attach to needed subscriber events
-                m_subscriber.ProcessException += m_subscriber_ProcessException;
-                m_subscriber.ConnectionEstablished += m_subscriber_ConnectionEstablished;
-                m_subscriber.MetaDataReceived += m_subscriber_MetaDataReceived;
-
-                // Initialize the subscriber
-                m_subscriber.Initialize();
-
-                // Create a wait handle to allow time to receive meta-data
-                m_waitHandle = new ManualResetEventSlim();
-
-                // Start subscriber connection cycle
-                m_subscriber.Start();
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources before the <see cref="MetadataRetriever"/> object is reclaimed by <see cref="GC"/>.
-            /// </summary>
-            ~MetadataRetriever()
-            {
-                Dispose(false);
-            }
-
-            #endregion
-
-            #region [ Methods ]
-
-            /// <summary>
-            /// Releases all the resources used by the <see cref="MetadataRetriever"/> object.
-            /// </summary>
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            /// <summary>
-            /// Releases the unmanaged resources used by the <see cref="MetadataRetriever"/> object and optionally releases the managed resources.
-            /// </summary>
-            /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            private void Dispose(bool disposing)
-            {
-                if (!m_disposed)
-                {
-                    try
-                    {
-                        // This will be done regardless of whether the object is finalized or disposed.
-
-                        if (disposing)
-                        {
-                            if ((object)m_subscriber != null)
-                            {
-                                // Detach from subscriber events
-                                m_subscriber.ProcessException -= m_subscriber_ProcessException;
-                                m_subscriber.ConnectionEstablished -= m_subscriber_ConnectionEstablished;
-                                m_subscriber.MetaDataReceived -= m_subscriber_MetaDataReceived;
-
-                                m_subscriber.Dispose();
-                                m_subscriber = null;
-                            }
-
-                            if ((object)m_waitHandle != null)
-                            {
-                                m_waitHandle.Set(); // Release any waiting threads
-                                m_waitHandle.Dispose();
-                                m_waitHandle = null;
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        m_disposed = true;  // Prevent duplicate dispose.
-                    }
-                }
-            }
-
-            /// <summary>
-            /// Gets meta-data using GEP waiting no longer than specified <paramref name="timeout"/>.
-            /// </summary>
-            /// <param name="timeout">Specifies how long to wait, in milliseconds, for meta-data.</param>
-            /// <returns>The meta-data received from the GEP publisher in <see cref="DataSet"/> format.</returns>
-            private DataSet GetMetadata(int timeout)
-            {
-                // Wait for meta-data or an exception to occur for up to the specified maximum time, then time out with an exception
-                if (!m_waitHandle.Wait(timeout))
-                    throw new TimeoutException(string.Format("Waited for {0} seconds for meta-data, but none was received.", timeout / 1000.0D));
-
-                // If meta-data was received, return it
-                if ((object)m_metadata != null)
-                    return m_metadata;
-
-                // If a processing exception occured, re-throw it
-                if ((object)m_processException != null)
-                    throw new InvalidOperationException(m_processException.Message, m_processException);
-
-                // Otherwise return null (unlikely to ever get to this return)
-                return null;
-            }
-
-            private void m_subscriber_ConnectionEstablished(object sender, EventArgs e)
-            {
-                // Request meta-data upon successful connection
-                m_subscriber.SendServerCommand(ServerCommand.MetaDataRefresh);
-            }
-
-            private void m_subscriber_MetaDataReceived(object sender, GSF.EventArgs<DataSet> e)
-            {
-                m_metadata = e.Argument;
-
-                // Release waiting threads if meta-data received
-                m_waitHandle.Set();
-            }
-
-            private void m_subscriber_ProcessException(object sender, GSF.EventArgs<Exception> e)
-            {
-                m_processException = e.Argument;
-
-                // Release waiting threads if an error occured
-                m_waitHandle.Set();
-            }
-
-            #endregion
-
-            #region [ Static ]
-
-            /// <summary>
-            /// Gets meta-data from the <paramref name="gepHost" /> waiting no longer than the specified <paramref name="timeout"/>.
-            /// </summary>
-            /// <param name="gepHost">GEP publication host and port, e.g., "192.168.1.1:6175", to connect to for meta-data.</param>
-            /// <param name="timeout">Specifies how long to wait, in milliseconds, for meta-data.</param>
-            /// <returns>The meta-data received from the GEP publisher in <see cref="DataSet"/> format.</returns>
-            public static DataSet GetMetadata(string gepHost, int timeout = Timeout.Infinite)
-            {
-                using (MetadataRetriever retriever = new MetadataRetriever("server=" + gepHost))
-                {
-                    return retriever.GetMetadata(timeout);
-                }
-            }
-
-            #endregion
-        }
-
+        SettingsManagement m_settings;
         public FrmMain()
         {
+            m_settings = new SettingsManagement(Path.GetFullPath("config.xml"));
+
             InitializeComponent();
+        }
 
-            // Do the following on button click or missing configuration, etc:
+        private void FrmMain_Load(object sender, EventArgs e)
+        {
+          
+        }
 
-            // Note that openHistorian internal publisher controls how many tables / fields to send as meta-data to subscribers (user controllable),
-            // as a result, not all fields in associated database views will be available. Below are the default SELECT filters the publisher
-            // will apply to the "MeasurementDetail", "DeviceDetail" and "PhasorDetail" database views:
+        private void Updater_NewQueryResults(object sender, QueryResultsEventArgs e)
+        {
+            m_lastResults = e;
+            long pointCount = 0;
+            foreach (SignalDataBase r in e.Results.Values)
+                pointCount += r.Count;
+            this.pointCount = pointCount;
+        }
 
-            // SELECT NodeID, UniqueID, OriginalSource, IsConcentrator, Acronym, Name, ParentAcronym, ProtocolName, FramesPerSecond, Enabled FROM DeviceDetail WHERE IsConcentrator = 0
-            // SELECT Internal, DeviceAcronym, DeviceName, SignalAcronym, ID, SignalID, PointTag, SignalReference, Description, Enabled FROM MeasurementDetail
-            // SELECT DeviceAcronym, Label, Type, Phase, SourceIndex FROM PhasorDetail
+        private QueryResultsEventArgs m_lastResults;
+        private long pointCount;
+        private readonly Stopwatch sw1 = new Stopwatch();
+        private readonly Stopwatch sw2 = new Stopwatch();
 
-            DataTable measurementTable = null;
-            DataTable deviceTable = null;
-            DataTable phasorTable = null;
+        private void UpdaterOnBeforeExecuteQuery(object sender, EventArgs eventArgs)
+        {
+            sw1.Reset();
+            sw2.Reset();
 
+            sw1.Start();
+            Stats.Clear();
+        }
+
+        private void UpdaterOnAfterExecuteQuery(object sender, EventArgs eventArgs)
+        {
             try
             {
-                DataSet metadata = MetadataRetriever.GetMetadata("localhost:6175");
+                sw2.Stop();
+                StringBuilder sb = new StringBuilder();
 
-                // Reference meta-data tables
-                measurementTable = metadata.Tables["MeasurementDetail"];
-                deviceTable = metadata.Tables["DeviceDetail"];
-                phasorTable = metadata.Tables["PhasorDetail"];
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Exception retrieving meta-data: " + ex.Message);
-            }
+                sb.Append(("Scanned: " + Stats.PointsScanned.ToString().PadRight(9)));
+                sb.Append(("" + (Stats.PointsScanned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
+                sb.Append(("| Points: " + Stats.PointsReturned.ToString().PadRight(9)));
+                sb.Append(("" + (Stats.PointsReturned / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 M/s").PadRight(9)));
+                sb.Append(("| Seek: " + Stats.SeeksRequested.ToString().PadRight(8)));
+                sb.Append(("" + (Stats.SeeksRequested / sw1.Elapsed.TotalSeconds / 1000).ToString("0 K/s").PadRight(9)));
+                sb.Append(("| Calculated: " + (pointCount - Stats.PointsReturned).ToString().PadRight(7)));
+                sb.Append(("| Queries Per Second: " + (1 / sw1.Elapsed.TotalSeconds).ToString("0.0").PadRight(9)));
 
-            if ((object)measurementTable != null)
-            {
-                // Could filter measurements if desired (e.g., no stats)
-                DataRow[] measurements = measurementTable.Select("SignalAcronym <> ' STAT'");
-
-                // Do something with measurement records
-                foreach (DataRow measurement in measurements)
+                if (pointCount < Stats.PointsReturned)
                 {
-                    Guid signalID;
-                    MeasurementKey measurementKey;
-                    string historianInstance;
-                    uint pointID;
-                    string signalType;
+                    pointCount = pointCount;
+                }
 
-                    Guid.TryParse(measurement["SignalID"].ToString(), out signalID);
-                    MeasurementKey.TryParse(measurement["ID"].ToString(), signalID, out measurementKey);
 
-                    historianInstance = measurementKey.Source;
-                    pointID = measurementKey.ID;
+                this.Invoke(new Action(() => lblStatus.Text = sb.ToString()));
+            }
+            catch (Exception)
+            {
+            }
+        }
 
-                    signalType = measurement["SignalAcronym"].ToString();
+        private void UpdaterOnAfterQuery(object sender, EventArgs eventArgs)
+        {
+            sw1.Stop();
+            sw2.Start();
+        }
+
+
+        private void BtnEvents_Click(object sender, EventArgs e)
+        {
+            FrmEvents win = new FrmEvents(visualizationFramework1);
+            win.Show();
+        }
+
+        private void BtnExport_Click(object sender, EventArgs e)
+        {
+            QueryResultsEventArgs results = m_lastResults;
+            if (results == null)
+            {
+                MessageBox.Show("No query has been executed");
+                return;
+            }
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.Filter = "CVS File|*.csv";
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    StreamWriter fs = new StreamWriter(dlg.FileName, false);
+                    fs.AutoFlush = false;
+                    SortedList<DateTime, List<double?>> list = new SortedList<DateTime, List<double?>>();
+
+                    int column = 0;
+                    foreach (SignalDataBase value in results.Results.Values)
+                    {
+                        for (int x = 0; x < value.Count; x++)
+                        {
+                            ulong date;
+                            double v;
+                            value.GetData(x, out date, out v);
+                            DateTime d = new DateTime((long)date);
+                            if (!list.ContainsKey(d))
+                            {
+                                list.Add(d, new List<double?>());
+                                for (int k = 0; k < column; k++)
+                                    list[d].Add(null);
+                            }
+                            list[d].Add(v);
+                        }
+                        foreach (List<double?> lst in list.Values)
+                        {
+                            while (lst.Count <= column)
+                                lst.Add(null);
+                        }
+                        column++;
+                    }
+
+                    List<string> name = new List<string>();
+                    Dictionary<Guid, MetadataBase> lookup = visualizationFramework1.Framework.AllSignals.ToDictionary((meta) => meta.UniqueId);
+
+                    foreach (Guid value in results.Results.Keys)
+                    {
+                        if (!lookup.ContainsKey(value))
+                        {
+                            name.Add(value.ToString());
+                        }
+                        else if (lookup[value].Name == "")
+                        {
+                            name.Add(value.ToString());
+                        }
+                        else
+                        {
+                            name.Add(lookup[value].Name);
+                        }
+                    }
+
+
+                    fs.Write("Date");
+                    name.ForEach((x) => fs.Write("," + x));
+                    fs.WriteLine();
+                    foreach (KeyValuePair<DateTime, List<double?>> kvp in list)
+                    {
+                        fs.Write(kvp.Key.ToString("yyyy.MM.dd HH:mm:ss:fff"));
+
+                        foreach (double? val in kvp.Value)
+                        {
+                            fs.Write(",");
+                            if (val.HasValue)
+                                fs.Write(val.ToString());
+                        }
+                        fs.WriteLine();
+                    }
+                    fs.Flush();
+                    fs.Close();
+                    Process.Start(dlg.FileName);
                 }
             }
         }
+
+        private void BtnConfig_Click(object sender, EventArgs e)
+        {
+            m_settings.Edit();
+        }
+
+        private void BtnConnect_Click(object sender, EventArgs e)
+        {
+            visualizationFramework1.Server = m_settings.ServerIP;
+            visualizationFramework1.Port = int.Parse(m_settings.HistorianPort);
+            visualizationFramework1.UseNetworkHistorian = true;
+            visualizationFramework1.Database = m_settings.HistorianDatabase;
+            visualizationFramework1.Start();
+            DateTime start = DateTime.UtcNow.AddMinutes(-5);
+            visualizationFramework1.Framework.ChangeDateRange(start, start.AddMinutes(5));
+            visualizationFramework1.Framework.Updater.BeforeExecuteQuery += UpdaterOnBeforeExecuteQuery;
+            visualizationFramework1.Framework.Updater.AfterQuery += UpdaterOnAfterQuery;
+            visualizationFramework1.Framework.Updater.AfterExecuteQuery += UpdaterOnAfterExecuteQuery;
+            visualizationFramework1.Framework.Updater.NewQueryResults += Updater_NewQueryResults;
+        }
+       
     }
 }

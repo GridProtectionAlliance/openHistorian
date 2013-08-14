@@ -45,10 +45,14 @@ namespace openVisN.Calculations
         protected CalculationMethod(params MetadataBase[] dependencies)
         {
             Dependencies = dependencies;
+            foreach (var point in dependencies)
+                if (point==null)
+                    throw new NullReferenceException();
         }
 
         public virtual void Calculate(IDictionary<Guid, SignalDataBase> signals)
         {
+            
         }
 
         public void AddDependentPoints(HashSet<MetadataBase> dependencies)

@@ -101,14 +101,24 @@ namespace openVisN
 
         public void CreateCalculatedSignals(MetadataBase angleReference)
         {
-            SignalScaling calcPu = new SignalScaling(Math.Sqrt(3) / ExtraData.NominalVoltage, VoltageMagnitude);
-            calcPu.GetPoints(out VoltageMagnitudePu);
+            if (VoltageMagnitude != null)
+            {
+                SignalScaling calcPu = new SignalScaling(Math.Sqrt(3) / ExtraData.NominalVoltage, VoltageMagnitude);
+                calcPu.GetPoints(out VoltageMagnitudePu);
+            }
 
-            SinglePhasorPowerSignals calc = new SinglePhasorPowerSignals(VoltageMagnitude, VoltageAngle, CurrentMagnitude, CurrentAngle);
-            calc.GetPoints(out Watt, out PowerFactor, out VoltAmpre, out VoltAmpreReactive);
+            if (VoltageAngle != null && CurrentAngle != null && CurrentMagnitude != null && VoltageMagnitude != null)
+            {
+                SinglePhasorPowerSignals calc = new SinglePhasorPowerSignals(VoltageMagnitude, VoltageAngle, CurrentMagnitude, CurrentAngle);
+                calc.GetPoints(out Watt, out PowerFactor, out VoltAmpre, out VoltAmpreReactive);
+            }
 
-            SignalAngleDifference calcRef = new SignalAngleDifference(VoltageAngle, angleReference);
-            calcRef.GetPoints(out VoltageAngleReference);
+            if (VoltageAngle != null)
+            {
+                SignalAngleDifference calcRef = new SignalAngleDifference(VoltageAngle, angleReference);
+                calcRef.GetPoints(out VoltageAngleReference);
+            }
+           
         }
 
         protected override List<KeyValuePair<string, MetadataBase>> GetAllSignalsNew()

@@ -61,7 +61,7 @@ namespace openVisN.Framework
             m_activeSignalGroups = new HashSet<SignalGroup>();
             m_activeSignals = new HashSet<MetadataBase>();
 
-            LoadSignalsAndSignalGroups();
+            ReLoadSignalsAndSignalGroups();
             m_updateFramework = new UpdateFramework();
         }
 
@@ -73,20 +73,22 @@ namespace openVisN.Framework
 
         public void Start(string[] paths)
         {
-            HistorianDatabaseCollection<HistorianKey, HistorianValue> databaseCollection = new HistorianDatabaseCollection<HistorianKey, HistorianValue>();
-            databaseCollection.Add("Default", new ArchiveDatabaseEngine<HistorianKey, HistorianValue>(WriterMode.None, paths));
-            HistorianQuery query = new HistorianQuery(databaseCollection);
-            m_updateFramework.Start(query);
-            m_updateFramework.Mode = ExecutionMode.Manual;
-            m_updateFramework.Enabled = true;
+            throw new NotImplementedException();
+            //HistorianDatabaseCollection<HistorianKey, HistorianValue> databaseCollection = new HistorianDatabaseCollection<HistorianKey, HistorianValue>();
+            //databaseCollection.Add("Default", new ArchiveDatabaseEngine<HistorianKey, HistorianValue>(WriterMode.None, paths));
+            //HistorianQuery query = new HistorianQuery(databaseCollection);
+            //m_updateFramework.Start(query);
+            //m_updateFramework.Mode = ExecutionMode.Manual;
+            //m_updateFramework.Enabled = true;
         }
 
-        public void Start(string ip, int port)
+        public void Start(string ip, int port, string database)
         {
             HistorianClientOptions options = new HistorianClientOptions();
             options.IsReadOnly = true;
             options.ServerNameOrIp = ip;
             options.NetworkPort = port;
+            options.DefaultDatabase = database;
             HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(options);
             HistorianQuery query = new HistorianQuery(client);
             m_updateFramework.Start(query);
@@ -110,7 +112,7 @@ namespace openVisN.Framework
             }
         }
 
-        private void LoadSignalsAndSignalGroups()
+        public void ReLoadSignalsAndSignalGroups()
         {
             MetadataBase angleReference;
             m_angleReference.GetPoints(out angleReference);

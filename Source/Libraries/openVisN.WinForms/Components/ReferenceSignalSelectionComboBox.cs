@@ -65,6 +65,9 @@ namespace openVisN.Components
             comboBox1.Items.Clear();
             foreach (SignalGroup signal in framework.AllSignalGroups)
             {
+                var s = signal.TryGetSignal("Voltage Angle");
+                if (s!=null)
+
                 comboBox1.Items.Add(new SignalWrapper(signal));
             }
             comboBox1.Sorted = true;

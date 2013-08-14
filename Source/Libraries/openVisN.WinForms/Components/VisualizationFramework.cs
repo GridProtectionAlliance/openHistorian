@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net.NetworkInformation;
 using openVisN.Framework;
 
 namespace openVisN.Components
@@ -32,6 +33,7 @@ namespace openVisN.Components
     {
         private readonly SubscriptionFramework m_framework;
         private string m_server = string.Empty;
+        private string m_database = string.Empty;
         private int m_port = 0;
         private bool m_useNetworkHistorian;
         private bool m_enabled;
@@ -66,7 +68,7 @@ namespace openVisN.Components
         {
             if (UseNetworkHistorian)
             {
-                m_framework.Start(Server, Port);
+                m_framework.Start(Server, Port, Database);
             }
             else
             {
@@ -178,6 +180,25 @@ namespace openVisN.Components
             set
             {
                 m_port = value;
+            }
+        }
+
+        [
+           Browsable(true),
+           Bindable(true),
+           Description("Contains the database instance name of the historian"),
+           Category("Communications"),
+           DefaultValue("")
+       ]
+        public string Database
+        {
+            get
+            {
+                return m_database;
+            }
+            set
+            {
+                m_database = value;
             }
         }
     }

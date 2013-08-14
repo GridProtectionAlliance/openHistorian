@@ -70,8 +70,9 @@ namespace winformsVisN
                 }
             }
 
-            AllSignals.DefaultPath = SignalMetaData;
-            AllSignalGroups.DefaultPath = SignalGroupFile;
+            throw new NotImplementedException();
+            //AllSignals.DefaultPath = SignalMetaData;
+            //AllSignalGroups.DefaultPath = SignalGroupFile;
             FrmEvents.DefaultFile = EventsFile;
 
             InitializeComponent();

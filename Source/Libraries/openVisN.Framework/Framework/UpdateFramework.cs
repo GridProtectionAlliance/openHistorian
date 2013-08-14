@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using GSF.Threading;
 using openHistorian.Data.Query;
@@ -121,8 +122,15 @@ namespace openVisN.Framework
             m_syncEvent.CustomEvent += m_syncEvent_CustomEvent;
             m_async = new ScheduledTask(ThreadingMode.Foreground);
             m_async.OnRunWorker += AsyncDoWork;
+            m_async.OnException += OnError;
             m_activeSignals = new List<MetadataBase>();
             m_syncRoot = new object();
+        }
+
+        void OnError(object sender, UnhandledExceptionEventArgs e)
+        {
+            string data = e.ExceptionObject.ToString();
+            File.WriteAllText("c:\\error.txt",data);
         }
 
         public void Start(HistorianQuery query)
@@ -138,7 +146,7 @@ namespace openVisN.Framework
             }
             if (ParallelWithControlLockNewQueryResults != null)
             {
-                ParallelWithControlLockNewQueryResults.ParallelRunAndWait(sender, e);
+                ParallelWithControlLockNewQueryResults(sender, e);
             }
         }
 

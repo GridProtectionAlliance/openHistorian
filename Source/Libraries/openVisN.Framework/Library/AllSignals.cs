@@ -23,7 +23,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using System.Linq;
 
 namespace openVisN.Library
 {
@@ -31,18 +33,32 @@ namespace openVisN.Library
     {
         public Guid SignalId;
         public long PointId;
-        public long DeviceId;
         public string Description;
         public string DeviceName;
+
+        public SignalBook()
+        {
+            SignalId = Guid.NewGuid();
+            PointId = -1;
+            Description = string.Empty;
+            DeviceName = Guid.NewGuid().ToString();
+        }
 
         public SignalBook(string line)
         {
             string[] parts = line.Split('\t');
             SignalId = Guid.Parse(parts[0]);
             PointId = long.Parse(parts[1]);
-            DeviceId = long.Parse(parts[2]);
             Description = parts[3].Trim();
             DeviceName = parts[4].Trim();
+        }
+
+        public SignalBook(DataRow row)
+        {
+            SignalId = IsNull(row, "SignalID", Guid.NewGuid());
+            PointId = IsNull(row, "PointID", -1L);
+            Description = IsNull(row, "Description", string.Empty);
+            DeviceName = IsNull(row, "DeviceName", Guid.NewGuid().ToString());
         }
 
         public MetadataBase MakeSignal()
@@ -52,17 +68,26 @@ namespace openVisN.Library
             else
                 return new MetadataSingle(SignalId, (ulong)PointId, DeviceName, Description);
         }
+
+        static T IsNull<T>(DataRow row, string columnName, T defaultValue)
+        {
+            if (row.IsNull(columnName))
+                return defaultValue;
+
+            return (T)row[columnName];
+        }
+
     }
 
     public class AllSignals
     {
-        public static string DefaultPath = @"C:\Unison\GPA\Demo\SignalMetadata.txt";
+        public static List<SignalBook> DefaultSignals = new List<SignalBook>();
 
         public List<SignalBook> Signals;
 
         public AllSignals()
-            : this(DefaultPath)
         {
+            Signals = DefaultSignals.ToList();
         }
 
         public AllSignals(string config)

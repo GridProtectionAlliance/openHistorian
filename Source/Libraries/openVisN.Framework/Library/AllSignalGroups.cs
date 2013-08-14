@@ -21,22 +21,18 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using System.Linq;
 
 namespace openVisN.Library
 {
     public class SignalGroupBook
     {
-        public long GroupId;
         public string GroupName;
-        public string Type;
         public double NominalVoltage;
-        public double Priority;
-        public double Longitude;
-        public double Latitude;
-        public long SectionId;
-        public string Manufacture;
         public long Im;
         public long Ia;
         public long Vm;
@@ -44,23 +40,25 @@ namespace openVisN.Library
         public long Dfdt;
         public long Freq;
         public long Status;
-        public long D1;
-        public long D2;
-        public long D3;
-        public long D4;
+
+        public SignalGroupBook()
+        {
+            GroupName = Guid.NewGuid().ToString();
+            NominalVoltage = 1;
+            Im = -1;
+            Ia = -1;
+            Vm = -1;
+            Va = -1;
+            Dfdt = -1;
+            Freq = -1;
+            Status = -1;
+        }
 
         public SignalGroupBook(string line)
         {
             string[] parts = line.Split('\t');
-            GroupId = long.Parse(parts[0]);
             GroupName = parts[1].Trim();
-            Type = parts[2].Trim();
             NominalVoltage = double.Parse(parts[3]);
-            Priority = double.Parse(parts[4]);
-            Longitude = double.Parse(parts[5]);
-            Latitude = double.Parse(parts[6]);
-            SectionId = long.Parse(parts[7]);
-            Manufacture = parts[8].Trim();
             Im = long.Parse(parts[9]);
             Ia = long.Parse(parts[10]);
             Vm = long.Parse(parts[11]);
@@ -68,10 +66,19 @@ namespace openVisN.Library
             Dfdt = long.Parse(parts[13]);
             Freq = long.Parse(parts[14]);
             Status = long.Parse(parts[15]);
-            D1 = long.Parse(parts[16]);
-            D2 = long.Parse(parts[17]);
-            D3 = long.Parse(parts[18]);
-            D4 = long.Parse(parts[19]);
+        }
+
+        public SignalGroupBook(DataRow row)
+        {
+            GroupName = IsNull(row, "GroupName", Guid.NewGuid().ToString());
+            NominalVoltage = IsNull(row, "NominalVoltage", 1.0);
+            Im = IsNull(row, "CurrentMagnitude", -1L);
+            Ia = IsNull(row, "CurrentAngle", -1L);
+            Vm = IsNull(row, "VoltageMagnitude", -1L);
+            Va = IsNull(row, "VoltageAngle", -1L);
+            Dfdt = IsNull(row, "DFDT", -1L);
+            Freq = IsNull(row, "Frequency", -1L);
+            Status = IsNull(row, "Status", -1L);
         }
 
         public SignalGroup CreateGroup(Dictionary<ulong, MetadataBase> points, MetadataBase signalReference)
@@ -85,10 +92,6 @@ namespace openVisN.Library
             AssignIfFound(Dfdt, ref signal.Dfdt, points);
             AssignIfFound(Freq, ref signal.Frequency, points);
             AssignIfFound(Status, ref signal.Status, points);
-            //AssignIfFound(D1, ref signal.Digital1, points);
-            //AssignIfFound(D2, ref signal.CurrentMagnitude, points);
-            //AssignIfFound(D3, ref signal.CurrentMagnitude, points);
-            //AssignIfFound(D4, ref signal.CurrentMagnitude, points);
             signal.ExtraData = this;
 
             signal.CreateCalculatedSignals(signalReference);
@@ -100,16 +103,24 @@ namespace openVisN.Library
             if (id >= 0 && points.ContainsKey((ulong)id))
                 category = points[(ulong)id];
         }
+
+        static T IsNull<T>(DataRow row, string columnName, T defaultValue)
+        {
+            if (row.IsNull(columnName))
+                return defaultValue;
+
+            return (T)row[columnName];
+        }
     }
 
     public class AllSignalGroups
     {
-        public static string DefaultPath = @"C:\Unison\GPA\Demo\SignalGroups.txt";
+        public static List<SignalGroupBook> DefaultSignalGroups = new List<SignalGroupBook>();
         public List<SignalGroupBook> SignalGroups;
 
         public AllSignalGroups()
-            : this(DefaultPath)
         {
+            SignalGroups = DefaultSignalGroups.ToList();
         }
 
         public AllSignalGroups(string config)

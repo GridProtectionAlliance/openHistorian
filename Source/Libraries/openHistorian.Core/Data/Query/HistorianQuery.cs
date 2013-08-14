@@ -31,16 +31,16 @@ namespace openHistorian.Data.Query
 {
     public class HistorianQuery
     {
-        private readonly IHistorianDatabaseCollection<HistorianKey, HistorianValue> m_historian;
+        private readonly HistorianClient<HistorianKey, HistorianValue> m_historian;
         private int m_samplesPerSecond = 30;
 
         public HistorianQuery(string server, int port)
         {
-            IPAddress ip = Dns.GetHostAddresses(server)[0];
-            m_historian = new RemoteHistorian<HistorianKey, HistorianValue>(new IPEndPoint(ip, port));
+            //IPAddress ip = Dns.GetHostAddresses(server)[0];
+            //m_historian = new RemoteHistorian<HistorianKey, HistorianValue>(new IPEndPoint(ip, port));
         }
 
-        public HistorianQuery(IHistorianDatabaseCollection<HistorianKey, HistorianValue> historian)
+        public HistorianQuery(HistorianClient<HistorianKey, HistorianValue> historian)
         {
             m_historian = historian;
         }
@@ -51,7 +51,8 @@ namespace openHistorian.Data.Query
             IHistorianDatabase<HistorianKey, HistorianValue> db = null;
             try
             {
-                db = m_historian["Default"];
+                db = m_historian.GetDatabase();
+               
                 //var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
 
                 PeriodicScanner scanner = new PeriodicScanner(m_samplesPerSecond);
@@ -61,8 +62,8 @@ namespace openHistorian.Data.Query
             }
             finally
             {
-                if (db != null)
-                    db.Disconnect();
+                //if (db != null)
+                //    db.Disconnect();
             }
         }
     }

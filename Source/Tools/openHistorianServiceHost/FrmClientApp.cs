@@ -66,9 +66,9 @@ namespace openHistorianServiceHost
                     ArchiveFiles.Add(l);
                 }
             }
-
-            AllSignals.DefaultPath = SignalMetaData;
-            AllSignalGroups.DefaultPath = SignalGroupFile;
+            throw new NotImplementedException();
+            //AllSignals.DefaultPath = SignalMetaData;
+            //AllSignalGroups.DefaultPath = SignalGroupFile;
 
             InitializeComponent();
 
