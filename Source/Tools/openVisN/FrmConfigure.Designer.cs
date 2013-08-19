@@ -38,12 +38,12 @@
             this.TxtGEPPort = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.BtnRefreshGroups = new System.Windows.Forms.Button();
             this.BtnClose = new System.Windows.Forms.Button();
             this.BtnSave = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgvMeasurements = new System.Windows.Forms.DataGridView();
             this.dgvTerminals = new System.Windows.Forms.DataGridView();
-            this.BtnRefreshGroups = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -166,6 +166,17 @@
             this.splitContainer1.SplitterDistance = 92;
             this.splitContainer1.TabIndex = 9;
             // 
+            // BtnRefreshGroups
+            // 
+            this.BtnRefreshGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnRefreshGroups.Location = new System.Drawing.Point(359, 63);
+            this.BtnRefreshGroups.Name = "BtnRefreshGroups";
+            this.BtnRefreshGroups.Size = new System.Drawing.Size(100, 23);
+            this.BtnRefreshGroups.TabIndex = 10;
+            this.BtnRefreshGroups.Text = "Refresh Groups";
+            this.BtnRefreshGroups.UseVisualStyleBackColor = true;
+            this.BtnRefreshGroups.Click += new System.EventHandler(this.BtnRefreshGroups_Click);
+            // 
             // BtnClose
             // 
             this.BtnClose.Location = new System.Drawing.Point(545, 63);
@@ -221,17 +232,7 @@
             this.dgvTerminals.Name = "dgvTerminals";
             this.dgvTerminals.Size = new System.Drawing.Size(631, 245);
             this.dgvTerminals.TabIndex = 0;
-            // 
-            // BtnRefreshGroups
-            // 
-            this.BtnRefreshGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnRefreshGroups.Location = new System.Drawing.Point(359, 63);
-            this.BtnRefreshGroups.Name = "BtnRefreshGroups";
-            this.BtnRefreshGroups.Size = new System.Drawing.Size(100, 23);
-            this.BtnRefreshGroups.TabIndex = 10;
-            this.BtnRefreshGroups.Text = "Refresh Groups";
-            this.BtnRefreshGroups.UseVisualStyleBackColor = true;
-            this.BtnRefreshGroups.Click += new System.EventHandler(this.BtnRefreshGroups_Click);
+            this.dgvTerminals.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgvTerminals_KeyDown);
             // 
             // FrmConfigure
             // 

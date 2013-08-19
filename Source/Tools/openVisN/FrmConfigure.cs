@@ -138,16 +138,48 @@ namespace openVisN
 
         void AddIfExists(List<object> items, string term, string type, DataTable measurements)
         {
-            DataRow[] rows = measurements.Select(string.Format("DeviceName='{0}' and SignalAcronym='{1}'",term,type));
+            DataRow[] rows = measurements.Select(string.Format("DeviceName='{0}' and SignalAcronym='{1}'", term, type));
             if (rows.Length == 1)
                 items.Add(rows[0]["PointID"]);
-            else if (rows.Length>1)
+            else if (rows.Length > 1)
                 items.Add(DBNull.Value);
             else
                 items.Add(DBNull.Value);
         }
 
+        private void dgvTerminals_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                DataObject d = dgvTerminals.GetClipboardContent();
+                Clipboard.SetDataObject(d);
+                e.Handled = true;
+            }
+            else if (e.Control && e.KeyCode == Keys.V)
+            {
+                //int row = dgvTerminals.CurrentCell.RowIndex;
+                //int col = dgvTerminals.CurrentCell.ColumnIndex;
+                string s = Clipboard.GetText();
+                foreach (string line in s.Split("\n\r".ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+                {
+                    string[] cells = line.Split('\t');
+                    m_settings.MyData.Tables["Terminals"].Rows.Add(cells);
+                 
+                    //if (dgvTerminals.Rows.Count >= row)
+                    //    dgvTerminals.Rows.Add(cells);
+                    //else
+                    //{
+                    //    int cellsSelected = cells.Length;
+                    //    for (int i = 0; i < cellsSelected; i++)
+                    //    {
+                    //        dgvTerminals[col + i, row].Value = cells[i];
+                    //    }
+                    //    row++;
+                    //}
 
+                }
 
+            }
+        }
     }
 }

@@ -97,7 +97,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(652, 680);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(652, 705);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
             // signalPlots1
@@ -109,7 +109,7 @@
             this.signalPlots1.Name = "signalPlots1";
             this.signalPlots1.PlotTitle = "Voltage Magnitude";
             this.signalPlots1.SignalTypeToPlot = "Voltage Magnitude Per Unit";
-            this.signalPlots1.Size = new System.Drawing.Size(320, 220);
+            this.signalPlots1.Size = new System.Drawing.Size(320, 229);
             this.signalPlots1.TabIndex = 0;
             // 
             // visualizationFramework1
@@ -128,7 +128,7 @@
             this.signalPlots2.Name = "signalPlots2";
             this.signalPlots2.PlotTitle = "Voltage Angle";
             this.signalPlots2.SignalTypeToPlot = "Voltage Angle Reference";
-            this.signalPlots2.Size = new System.Drawing.Size(320, 220);
+            this.signalPlots2.Size = new System.Drawing.Size(320, 229);
             this.signalPlots2.TabIndex = 0;
             // 
             // signalPlots3
@@ -136,12 +136,12 @@
             this.signalPlots3.Colors = this.colorWheel1;
             this.signalPlots3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.signalPlots3.Framework = this.visualizationFramework1;
-            this.signalPlots3.Location = new System.Drawing.Point(3, 229);
+            this.signalPlots3.Location = new System.Drawing.Point(3, 238);
             this.signalPlots3.Name = "signalPlots3";
             this.signalPlots3.PlotTitle = "MVAR";
             this.signalPlots3.ScalingFactor = 1E-06D;
-            this.signalPlots3.SignalTypeToPlot = "Current Magnitude";
-            this.signalPlots3.Size = new System.Drawing.Size(320, 220);
+            this.signalPlots3.SignalTypeToPlot = "Volt Ampre Reactive";
+            this.signalPlots3.Size = new System.Drawing.Size(320, 229);
             this.signalPlots3.TabIndex = 0;
             // 
             // signalPlots4
@@ -149,12 +149,12 @@
             this.signalPlots4.Colors = this.colorWheel1;
             this.signalPlots4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.signalPlots4.Framework = this.visualizationFramework1;
-            this.signalPlots4.Location = new System.Drawing.Point(329, 229);
+            this.signalPlots4.Location = new System.Drawing.Point(329, 238);
             this.signalPlots4.Name = "signalPlots4";
             this.signalPlots4.PlotTitle = "MW";
             this.signalPlots4.ScalingFactor = 1E-06D;
             this.signalPlots4.SignalTypeToPlot = "Watt";
-            this.signalPlots4.Size = new System.Drawing.Size(320, 220);
+            this.signalPlots4.Size = new System.Drawing.Size(320, 229);
             this.signalPlots4.TabIndex = 0;
             // 
             // signalPlots5
@@ -162,11 +162,11 @@
             this.signalPlots5.Colors = this.colorWheel1;
             this.signalPlots5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.signalPlots5.Framework = this.visualizationFramework1;
-            this.signalPlots5.Location = new System.Drawing.Point(3, 455);
+            this.signalPlots5.Location = new System.Drawing.Point(3, 473);
             this.signalPlots5.Name = "signalPlots5";
             this.signalPlots5.PlotTitle = "Frequency";
             this.signalPlots5.SignalTypeToPlot = "Frequency";
-            this.signalPlots5.Size = new System.Drawing.Size(320, 222);
+            this.signalPlots5.Size = new System.Drawing.Size(320, 229);
             this.signalPlots5.TabIndex = 0;
             // 
             // signalPlots6
@@ -174,11 +174,11 @@
             this.signalPlots6.Colors = this.colorWheel1;
             this.signalPlots6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.signalPlots6.Framework = this.visualizationFramework1;
-            this.signalPlots6.Location = new System.Drawing.Point(329, 455);
+            this.signalPlots6.Location = new System.Drawing.Point(329, 473);
             this.signalPlots6.Name = "signalPlots6";
             this.signalPlots6.PlotTitle = "DFDT";
             this.signalPlots6.SignalTypeToPlot = "DFDT";
-            this.signalPlots6.Size = new System.Drawing.Size(320, 222);
+            this.signalPlots6.Size = new System.Drawing.Size(320, 229);
             this.signalPlots6.TabIndex = 0;
             // 
             // splitContainer1
@@ -195,7 +195,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(942, 680);
+            this.splitContainer1.Size = new System.Drawing.Size(942, 705);
             this.splitContainer1.SplitterDistance = 286;
             this.splitContainer1.TabIndex = 8;
             // 
@@ -215,7 +215,7 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 104F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 172F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(286, 680);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(286, 705);
             this.tableLayoutPanel3.TabIndex = 7;
             // 
             // groupBox1
@@ -227,7 +227,7 @@
             this.groupBox1.Controls.Add(this.BtnEvents);
             this.groupBox1.Controls.Add(this.referenceSignalSelectionComboBox1);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(3, 407);
+            this.groupBox1.Location = new System.Drawing.Point(3, 432);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(280, 98);
             this.groupBox1.TabIndex = 0;
@@ -309,7 +309,7 @@
             this.tabControl1.Location = new System.Drawing.Point(3, 68);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(280, 333);
+            this.tabControl1.Size = new System.Drawing.Size(280, 358);
             this.tabControl1.TabIndex = 8;
             // 
             // tabPage1
@@ -318,7 +318,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(272, 307);
+            this.tabPage1.Size = new System.Drawing.Size(272, 332);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Select";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -329,7 +329,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(266, 301);
+            this.groupBox2.Size = new System.Drawing.Size(266, 326);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Terminals";
@@ -340,7 +340,7 @@
             this.signalGroupSelectionCheckedListBox1.Framework = this.visualizationFramework1;
             this.signalGroupSelectionCheckedListBox1.Location = new System.Drawing.Point(3, 16);
             this.signalGroupSelectionCheckedListBox1.Name = "signalGroupSelectionCheckedListBox1";
-            this.signalGroupSelectionCheckedListBox1.Size = new System.Drawing.Size(260, 282);
+            this.signalGroupSelectionCheckedListBox1.Size = new System.Drawing.Size(260, 307);
             this.signalGroupSelectionCheckedListBox1.TabIndex = 1;
             // 
             // tabPage2
@@ -368,7 +368,7 @@
             // 
             this.panel1.Controls.Add(this.setTimeWindowCalendarControl1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(3, 511);
+            this.panel1.Location = new System.Drawing.Point(3, 536);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(280, 166);
             this.panel1.TabIndex = 9;
@@ -392,7 +392,7 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(942, 680);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(942, 705);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
