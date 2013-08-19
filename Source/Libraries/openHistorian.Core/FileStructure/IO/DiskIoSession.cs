@@ -309,7 +309,7 @@ namespace openHistorian.FileStructure.IO
                 throw new ObjectDisposedException(GetType().FullName);
             if (m_diskIo.IsDisposed)
                 throw new ObjectDisposedException(typeof(DiskIo).FullName);
-            m_args.length = 0;
+            m_args.Length = 0;
             IsValid = false;
             m_diskMediumIoSession.Clear();
         }
@@ -326,22 +326,22 @@ namespace openHistorian.FileStructure.IO
         {
             long position = (long)BlockIndex * m_blockSize;
 
-            if (position >= m_args.firstPosition && position < m_args.firstPosition + m_args.length && (m_args.supportsWriting | !requestWriteAccess))
+            if (position >= m_args.FirstPosition && position < m_args.FirstPosition + m_args.Length && (m_args.SupportsWriting | !requestWriteAccess))
             {
-                Pointer = (byte*)m_args.firstPointer;
+                Pointer = (byte*)m_args.FirstPointer;
                 CachedLookups++;
             }
             else
             {
-                m_args.position = position;
-                m_args.isWriting = requestWriteAccess;
+                m_args.Position = position;
+                m_args.IsWriting = requestWriteAccess;
                 m_diskMediumIoSession.GetBlock(m_args);
-                Pointer = (byte*)m_args.firstPointer;
+                Pointer = (byte*)m_args.FirstPointer;
                 Lookups++;
             }
 
-            int offsetOfPosition = (int)(position - m_args.firstPosition);
-            if (m_args.length - offsetOfPosition < m_blockSize)
+            int offsetOfPosition = (int)(position - m_args.FirstPosition);
+            if (m_args.Length - offsetOfPosition < m_blockSize)
                 throw new Exception("stream is not lining up on page boundries");
 
             Pointer += offsetOfPosition;

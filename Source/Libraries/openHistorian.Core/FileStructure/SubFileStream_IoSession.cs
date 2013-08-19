@@ -160,7 +160,7 @@ namespace openHistorian.FileStructure
             public override void GetBlock(BlockArguments args)
             {
                 int blockDataLength = m_blockDataLength;
-                long pos = args.position;
+                long pos = args.Position;
                 if (IsDisposed || m_ioSessions.IsDisposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 if (pos < 0)
@@ -176,10 +176,10 @@ namespace openHistorian.FileStructure
                 else
                     indexPosition = (uint)((ulong)pos / (ulong)blockDataLength); //64-bit signed divide is twice as slow as 64-bit unsigned.
 
-                args.firstPosition = (long)indexPosition * blockDataLength;
-                args.length = blockDataLength;
+                args.FirstPosition = (long)indexPosition * blockDataLength;
+                args.Length = blockDataLength;
 
-                if (args.isWriting)
+                if (args.IsWriting)
                 {
                     //Writing
                     if (m_isReadOnly)
@@ -194,8 +194,8 @@ namespace openHistorian.FileStructure
                         throw new Exception("Failure to shadow copy the page.");
 
                     DataIoSession.WriteToExistingBlock(physicalBlockIndex, BlockType.DataBlock, indexPosition);
-                    args.firstPointer = (IntPtr)DataIoSession.Pointer;
-                    args.supportsWriting = true;
+                    args.FirstPointer = (IntPtr)DataIoSession.Pointer;
+                    args.SupportsWriting = true;
                 }
                 else
                 {
@@ -205,8 +205,8 @@ namespace openHistorian.FileStructure
                         throw new Exception("Page does not exist");
 
                     DataIoSession.Read(physicalBlockIndex, BlockType.DataBlock, indexPosition);
-                    args.firstPointer = (IntPtr)DataIoSession.Pointer;
-                    args.supportsWriting = !m_isReadOnly && physicalBlockIndex > m_lastEditedBlock;
+                    args.FirstPointer = (IntPtr)DataIoSession.Pointer;
+                    args.SupportsWriting = !m_isReadOnly && physicalBlockIndex > m_lastEditedBlock;
                 }
             }
 

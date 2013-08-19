@@ -267,18 +267,18 @@ namespace GSF.IO.Unmanaged
         {
             if (m_disposed)
                 throw new ObjectDisposedException("MemoryStream");
-            if (args.position < m_firstValidPosition)
+            if (args.Position < m_firstValidPosition)
                 throw new ArgumentOutOfRangeException("position", "position is before the beginning of the stream");
 
-            args.length = m_pageSize;
-            args.firstPosition = ((args.position - m_firstAddressablePosition) & m_invertMask) + m_firstAddressablePosition;
-            args.firstPointer = GetPage(args.position - m_firstAddressablePosition);
+            args.Length = m_pageSize;
+            args.FirstPosition = ((args.Position - m_firstAddressablePosition) & m_invertMask) + m_firstAddressablePosition;
+            args.FirstPointer = GetPage(args.Position - m_firstAddressablePosition);
 
-            if (args.firstPosition < m_firstValidPosition)
+            if (args.FirstPosition < m_firstValidPosition)
             {
-                args.firstPointer += (int)(m_firstValidPosition - args.firstPosition);
-                args.length -= (int)(m_firstValidPosition - args.firstPosition);
-                args.firstPosition = m_firstValidPosition;
+                args.FirstPointer += (int)(m_firstValidPosition - args.FirstPosition);
+                args.Length -= (int)(m_firstValidPosition - args.FirstPosition);
+                args.FirstPosition = m_firstValidPosition;
             }
         }
 

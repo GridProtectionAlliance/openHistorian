@@ -37,16 +37,33 @@ namespace openHistorian.FileStructure.IO
     {
         #region [ Members ]
 
+        /// <summary>
+        /// The file block header
+        /// </summary>
         private FileHeaderBlock m_header;
-        private IDiskMedium m_disk;
+        /// <summary>
+        /// The underlying disk implementation
+        /// </summary>
+        private IDiskMediumCoreFunctions m_disk;
+        /// <summary>
+        /// The number of bytes in a given block. Typically 4KB in size.
+        /// </summary>
         private readonly int m_blockSize;
+        /// <summary>
+        /// Prevents duplicate calls to dispose.
+        /// </summary>
         private bool m_disposed;
 
         #endregion
 
         #region [ Constructors ]
 
-        private DiskMedium(IDiskMedium disk, FileHeaderBlock header)
+        /// <summary>
+        /// Class is created through static methods of this class.
+        /// </summary>
+        /// <param name="disk">the underlying disk medium</param>
+        /// <param name="header">the header data to use.</param>
+        private DiskMedium(IDiskMediumCoreFunctions disk, FileHeaderBlock header)
         {
             m_header = header;
             m_disk = disk;
@@ -118,11 +135,19 @@ namespace openHistorian.FileStructure.IO
             m_header = header;
         }
 
+        /// <summary>
+        /// Creates a <see cref="BinaryStreamIoSessionBase"/> that can be used to read from this disk medium.
+        /// </summary>
+        /// <returns></returns>
         public BinaryStreamIoSessionBase CreateIoSession()
         {
             return m_disk.CreateIoSession();
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
             if (!m_disposed)
@@ -137,6 +162,12 @@ namespace openHistorian.FileStructure.IO
 
         #region [ Static ]
 
+        /// <summary>
+        /// Creates a <see cref="DiskMedium"/> that is entirely based in memory.
+        /// </summary>
+        /// <param name="pool">the <see cref="MemoryPool"/> to allocate data from</param>
+        /// <param name="fileStructureBlockSize">the block size of the file structure. Usually 4kb.</param>
+        /// <returns></returns>
         public static DiskMedium CreateMemoryFile(MemoryPool pool, int fileStructureBlockSize)
         {
             FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize);
@@ -144,20 +175,42 @@ namespace openHistorian.FileStructure.IO
             return new DiskMedium(disk, header);
         }
 
+        /// <summary>
+        /// Creates a <see cref="DiskMedium"/> from a <see cref="stream"/>. 
+        /// This will initialize the <see cref="stream"/> as an empty file structure.
+        /// </summary>
+        /// <param name="stream">An open <see cref="FileStream"/> to use. The <see cref="DiskMedium"/>
+        /// will assume ownership of this <see cref="FileStream"/>.</param>
+        /// <param name="pool">the <see cref="MemoryPool"/> to allocate data from</param>
+        /// <param name="fileStructureBlockSize">the block size of the file structure. Usually 4kb.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This will not check if the file is truely a new file. If calling this with an existing
+        /// archive file, it will overwrite the table of contents, corrupting the file.
+        /// </remarks>
         public static DiskMedium CreateFile(FileStream stream, MemoryPool pool, int fileStructureBlockSize)
         {
             FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize);
-            BufferedFile disk = new BufferedFile(stream, pool, header, true);
+            BufferedFile disk = new BufferedFile(stream, pool, header, isNewFile: true);
             return new DiskMedium(disk, header);
         }
 
+        /// <summary>
+        /// Creates a <see cref="DiskMedium"/> from a <see cref="stream"/>. 
+        /// This will read the existing header from the <see cref="stream"/>.
+        /// </summary>
+        /// <param name="stream">An open <see cref="FileStream"/> to use. The <see cref="DiskMedium"/>
+        /// will assume ownership of this <see cref="FileStream"/>.</param>
+        /// <param name="pool">The <see cref="MemoryPool"/> to allocate data from.</param>
+        /// <param name="fileStructureBlockSize">the block size of the file structure. Usually 4kb.</param>
+        /// <returns></returns>
         public static DiskMedium OpenFile(FileStream stream, MemoryPool pool, int fileStructureBlockSize)
         {
             byte[] buffer = new byte[fileStructureBlockSize];
             stream.Position = 0;
             stream.Read(buffer, 0, fileStructureBlockSize);
             FileHeaderBlock header = FileHeaderBlock.Open(buffer);
-            BufferedFile disk = new BufferedFile(stream, pool, header, false);
+            BufferedFile disk = new BufferedFile(stream, pool, header, isNewFile: false);
             return new DiskMedium(disk, header);
         }
 

@@ -174,12 +174,12 @@ namespace GSF.IO.Unmanaged
 
             lock (m_syncRoot)
             {
-                if (ioSession.TryGetSubPage(args.position, args.isWriting, out subPage))
+                if (ioSession.TryGetSubPage(args.Position, args.IsWriting, out subPage))
                 {
-                    args.firstPointer = (IntPtr)subPage.Location;
-                    args.length = subPage.Length;
-                    args.firstPosition = subPage.Position;
-                    args.supportsWriting = subPage.IsDirty;
+                    args.FirstPointer = (IntPtr)subPage.Location;
+                    args.Length = subPage.Length;
+                    args.FirstPosition = subPage.Position;
+                    args.SupportsWriting = subPage.IsDirty;
                     return;
                 }
             }
@@ -188,17 +188,17 @@ namespace GSF.IO.Unmanaged
             {
                 lock (m_syncRoot)
                 {
-                    ioSession.TryAddNewPage(args.position & ~(long)(data.Length - 1), data, 0, data.Length);
-                    ioSession.TryGetSubPage(args.position, args.isWriting, out subPage);
+                    ioSession.TryAddNewPage(args.Position & ~(long)(data.Length - 1), data, 0, data.Length);
+                    ioSession.TryGetSubPage(args.Position, args.IsWriting, out subPage);
                 }
             };
 
-            m_queue.Read(args.position, callback);
+            m_queue.Read(args.Position, callback);
 
-            args.firstPointer = (IntPtr)subPage.Location;
-            args.length = subPage.Length;
-            args.firstPosition = subPage.Position;
-            args.supportsWriting = subPage.IsDirty;
+            args.FirstPointer = (IntPtr)subPage.Location;
+            args.Length = subPage.Length;
+            args.FirstPosition = subPage.Position;
+            args.SupportsWriting = subPage.IsDirty;
             return;
         }
 

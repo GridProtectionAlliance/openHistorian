@@ -33,51 +33,52 @@ namespace openHistorian.FileStructure.IO
 {
     internal partial class BufferedFile
     {
-        public static long BytesWritten = 0;
-        public static long BytesRead = 0;
+        ///// <summary>
+        ///// Basic Statistics if I/O needs to be measured.
+        ///// </summary>
+        //public static long BytesWritten = 0;
+        ///// <summary>
+        ///// Basic Statistics if I/O needs to be measured.
+        ///// </summary>
+        //public static long BytesRead = 0;
 
         /// <summary>
         /// Manages the I/O for the file stream
         /// Also provides a way to synchronize calls to the FileStream.
+        /// This also computes checksums for all of the data.
         /// </summary>
-        internal class IoQueue
+        private class IoQueue
         {
-            private int m_bufferPoolSize;
-            private readonly int m_dirtyPageSize;
-            private BufferedFile m_baseStream;
+            /// <summary>
+            /// Needed since this class computes footer checksums.
+            /// </summary>
+            private readonly int m_fileStructureBlockSize;
             private readonly FileStream m_stream;
             private readonly ResourceQueue<byte[]> m_bufferQueue;
+
+            /// <summary>
+            /// Needed to properly synchronize Read/Write operations.
+            /// </summary>
             private readonly object m_syncRoot;
-
-            private static readonly ResourceQueueCollection<int, byte[]> s_resourceList;
-
-            static IoQueue()
-            {
-                s_resourceList = new ResourceQueueCollection<int, byte[]>((blockSize => (() => new byte[blockSize])), 10, 20);
-            }
-
+            
             /// <summary>
             /// Creates a new IoQueue
             /// </summary>
             /// <param name="stream">The filestream to use as the base stream</param>
             /// <param name="bufferPoolSize">The size of a buffer pool entry</param>
-            /// <param name="dirtyPageSize">The size of an individual dirty page</param>
-            public IoQueue(FileStream stream, int bufferPoolSize, int dirtyPageSize, BufferedFile baseStream)
+            /// <param name="fileStructureBlockSize">The size of an individual block</param>
+            public IoQueue(FileStream stream, int bufferPoolSize, int fileStructureBlockSize)
             {
                 if (bufferPoolSize < 4096)
-                    throw new ArgumentOutOfRangeException("Must be greater than 4096", "bufferPoolSize");
-                if (dirtyPageSize > bufferPoolSize)
-                    throw new ArgumentOutOfRangeException("Must not be greater than BufferPoolSize", "dirtyPageSize");
+                    throw new ArgumentOutOfRangeException("bufferPoolSize", "Must be greater than 4096");
+                if (fileStructureBlockSize > bufferPoolSize)
+                    throw new ArgumentOutOfRangeException("fileStructureBlockSize", "Must not be greater than BufferPoolSize");
                 if (!BitMath.IsPowerOfTwo(bufferPoolSize))
                     throw new ArgumentException("Must be a power of 2", "bufferPoolSize");
-                if (!BitMath.IsPowerOfTwo(dirtyPageSize))
-                    throw new ArgumentException("Must be a power of 2", "dirtyPageSize");
-                if (dirtyPageSize * 64 < bufferPoolSize)
-                    throw new ArgumentException("Cannot be greater than 64 * dirtyPageSize", "bufferPoolSize");
+                if (!BitMath.IsPowerOfTwo(fileStructureBlockSize))
+                    throw new ArgumentException("Must be a power of 2", "fileStructureBlockSize");
 
-                m_baseStream = baseStream;
-                m_bufferPoolSize = bufferPoolSize;
-                m_dirtyPageSize = dirtyPageSize;
+                m_fileStructureBlockSize = fileStructureBlockSize;
 
                 m_bufferQueue = s_resourceList.GetResourceQueue(bufferPoolSize);
                 m_syncRoot = new object();
@@ -92,15 +93,16 @@ namespace openHistorian.FileStructure.IO
             public void Read(long position, IntPtr locationToCopyData)
             {
                 byte[] buffer = m_bufferQueue.Dequeue();
-                int bytesRead = ReadBytesFromDisk(position, buffer, buffer.Length);
-                BytesRead += bytesRead;
+                int bytesRead = Read(position, buffer, buffer.Length);
+                //BytesRead += bytesRead;
                 if (bytesRead < buffer.Length)
                     Array.Clear(buffer, bytesRead, buffer.Length - bytesRead);
 
                 Marshal.Copy(buffer, 0, locationToCopyData, buffer.Length);
+                
                 m_bufferQueue.Enqueue(buffer);
 
-                Footer.WriteChecksumResultsToFooter(locationToCopyData, m_dirtyPageSize, buffer.Length);
+                Footer.WriteChecksumResultsToFooter(locationToCopyData, m_fileStructureBlockSize, buffer.Length);
             }
 
 
@@ -122,11 +124,11 @@ namespace openHistorian.FileStructure.IO
                     int streamLength;
                     stream.ReadBlock(currentPosition, out ptr, out streamLength);
                     int subLength = (int)Math.Min(streamLength, endPosition - currentPosition);
-                    Footer.ComputeChecksumAndClearFooter(ptr, m_dirtyPageSize, subLength);
+                    Footer.ComputeChecksumAndClearFooter(ptr, m_fileStructureBlockSize, subLength);
                     Marshal.Copy(ptr, buffer, 0, subLength);
-                    WriteToDisk(currentPosition, buffer, subLength);
+                    Write(currentPosition, buffer, subLength);
 
-                    BytesWritten += subLength;
+                    //BytesWritten += subLength;
                     currentPosition += subLength;
                 }
                 m_bufferQueue.Enqueue(buffer);
@@ -141,13 +143,25 @@ namespace openHistorian.FileStructure.IO
                 }
             }
 
+            /// <summary>
+            /// Flushes any temporary data to the disk. This also calls WindowsAPI function 
+            /// to have the OS flush to the disk.
+            /// </summary>
             public void FlushFileBuffers()
             {
+                //.NET's stream.Flush(FlushToDisk:=true) actually doesn't do what it says. 
+                //Therefore WinApi must be called.
                 m_stream.Flush(true);
                 WinApi.FlushFileBuffers(m_stream.SafeFileHandle);
             }
 
-            public void WriteToDisk(long position, byte[] buffer, int length)
+            /// <summary>
+            /// Writes data to the disk
+            /// </summary>
+            /// <param name="position">The starting position</param>
+            /// <param name="buffer">the byte buffer of data to write</param>
+            /// <param name="length">the number of bytes to write</param>
+            public void Write(long position, byte[] buffer, int length)
             {
                 IAsyncResult results;
                 lock (m_syncRoot)
@@ -158,17 +172,14 @@ namespace openHistorian.FileStructure.IO
                 m_stream.EndWrite(results);
             }
 
-            //public void WriteToDiskSync(long position, byte[] buffer, int length)
-            //{
-            //    IAsyncResult results;
-            //    lock (m_syncRoot)
-            //    {
-            //        m_stream.Position = position;
-            //        m_stream.Write(buffer, 0, length);
-            //    }
-            //}
-
-            public int ReadBytesFromDisk(long position, byte[] buffer, int length)
+            /// <summary>
+            /// Reads data from the disk
+            /// </summary>
+            /// <param name="position">The starting position</param>
+            /// <param name="buffer">the byte buffer of data to read</param>
+            /// <param name="length">the number of bytes to read</param>
+            /// <returns>the number of bytes read</returns>
+            public int Read(long position, byte[] buffer, int length)
             {
                 IAsyncResult results;
                 lock (m_syncRoot)
@@ -178,6 +189,21 @@ namespace openHistorian.FileStructure.IO
                 }
                 return m_stream.EndRead(results);
             }
+
+
+            /// <summary>
+            /// Queues byte[] blocks.
+            /// </summary>
+            private static readonly ResourceQueueCollection<int, byte[]> s_resourceList;
+
+            /// <summary>
+            /// Creates a resource list that everyone shares.
+            /// </summary>
+            static IoQueue()
+            {
+                s_resourceList = new ResourceQueueCollection<int, byte[]>((blockSize => (() => new byte[blockSize])), 10, 20);
+            }
+
         }
     }
 }

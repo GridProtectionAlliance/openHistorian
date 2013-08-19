@@ -16,32 +16,32 @@ namespace openHistorian.FileStructure.IO
             BinaryStreamIoSessionBase session = file.CreateIoSession();
 
             BlockArguments blockArguments = new BlockArguments();
-            blockArguments.isWriting = true;
-            blockArguments.position = 10000000;
+            blockArguments.IsWriting = true;
+            blockArguments.Position = 10000000;
             session.GetBlock(blockArguments);
 
 
             Console.WriteLine("Get Block\t" + StepTimer.Time(10, () =>
             {
-                blockArguments.position = 100000;
+                blockArguments.Position = 100000;
                 session.GetBlock(blockArguments);
-                blockArguments.position = 200000;
+                blockArguments.Position = 200000;
                 session.GetBlock(blockArguments);
-                blockArguments.position = 300000;
+                blockArguments.Position = 300000;
                 session.GetBlock(blockArguments);
-                blockArguments.position = 400000;
+                blockArguments.Position = 400000;
                 session.GetBlock(blockArguments);
-                blockArguments.position = 500000;
+                blockArguments.Position = 500000;
                 session.GetBlock(blockArguments);
-                blockArguments.position = 600000;
+                blockArguments.Position = 600000;
                 session.GetBlock(blockArguments);
-                blockArguments.position = 700000;
+                blockArguments.Position = 700000;
                 session.GetBlock(blockArguments);
-                blockArguments.position = 800000;
+                blockArguments.Position = 800000;
                 session.GetBlock(blockArguments);
-                blockArguments.position = 900000;
+                blockArguments.Position = 900000;
                 session.GetBlock(blockArguments);
-                blockArguments.position = 1000000;
+                blockArguments.Position = 1000000;
                 session.GetBlock(blockArguments);
             }));
         }

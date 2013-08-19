@@ -29,6 +29,7 @@ namespace GSF.UnmanagedMemory
 {
     /// <summary>
     /// This class allocates and pools unmanaged memory.
+    /// Designed to be internally thread safe.
     /// </summary>
     public partial class MemoryPool : IDisposable
     {

@@ -31,11 +31,18 @@ namespace openHistorian.FileStructure.IO
     /// </summary>
     internal partial class MemoryPoolFile
     {
-        // Nested Types
-        private class IoSession : BinaryStreamIoSessionBase
+        /// <summary>
+        /// An I/O session for the <see cref="MemoryPoolFile"/>.
+        /// </summary>
+        private class IoSession 
+            : BinaryStreamIoSessionBase
         {
             private readonly MemoryPoolFile m_file;
 
+            /// <summary>
+            /// Creates a new <see cref="IoSession"/>
+            /// </summary>
+            /// <param name="file">the base file</param>
             public IoSession(MemoryPoolFile file)
             {
                 m_file = file;
@@ -48,12 +55,11 @@ namespace openHistorian.FileStructure.IO
             {
             }
 
-            /// <summary>
-            /// Gets a block for the following Io session.
-            /// </summary>
+
+           
             public override void GetBlock(BlockArguments args)
             {
-                args.supportsWriting = true;
+                args.SupportsWriting = true;
                 m_file.GetBlock(args);
             }
 

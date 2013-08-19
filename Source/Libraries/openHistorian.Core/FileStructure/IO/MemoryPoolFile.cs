@@ -32,10 +32,13 @@ namespace openHistorian.FileStructure.IO
     /// Provides a in memory stream that uses pages that are pooled in the unmanaged buffer pool.
     /// </summary>
     internal partial class MemoryPoolFile
-        : MemoryPoolStreamCore, IDiskMedium
+        : MemoryPoolStreamCore, IDiskMediumCoreFunctions
     {
         #region [ Members ]
 
+        /// <summary>
+        /// A Reusable I/O session for all BinaryStreams
+        /// </summary>
         private readonly IoSession m_ioSession;
 
         #endregion
@@ -60,8 +63,9 @@ namespace openHistorian.FileStructure.IO
         #region [ Methods ]
 
         /// <summary>
-        /// Aquire an IO Session.
+        /// Creates a <see cref="BinaryStreamIoSessionBase"/> that can be used to read from this disk medium.
         /// </summary>
+        /// <returns></returns>
         public BinaryStreamIoSessionBase CreateIoSession()
         {
             if (IsDisposed)
@@ -69,12 +73,20 @@ namespace openHistorian.FileStructure.IO
             return m_ioSession;
         }
 
+        /// <summary>
+        /// Executes a commit of data. This will flush the data to the disk use the provided header data to properly
+        /// execute this function.
+        /// </summary>
+        /// <param name="header"></param>
         public void FlushWithHeader(FileHeaderBlock headerBlock)
         {
             if (IsDisposed)
                 throw new ObjectDisposedException("MemoryStream");
         }
 
+        /// <summary>
+        /// Rolls back all edits to the DiskMedium
+        /// </summary>
         public void RollbackChanges()
         {
             if (IsDisposed)

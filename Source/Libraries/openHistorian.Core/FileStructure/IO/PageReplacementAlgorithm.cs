@@ -31,10 +31,11 @@ using GSF.UnmanagedMemory;
 namespace openHistorian.FileStructure.IO
 {
     /// <summary>
-    /// A page replacement algorithm that utilizes a quasi LRU algorithm.
+    /// A page replacement algorithm that utilizes a quasi LRU algorithm. (NOT THREAD SAFE)
     /// </summary>
     /// <remarks>
     /// This class is used by <see cref="BufferedFile"/> to decide which pages should be replaced.
+    /// This class is not thread safe.
     /// </remarks>
     internal class PageReplacementAlgorithm : IDisposable
     {

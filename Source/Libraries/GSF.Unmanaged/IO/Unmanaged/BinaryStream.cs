@@ -298,17 +298,17 @@ namespace GSF.IO.Unmanaged
                 return;
 
             long position = GetPosition();
-            m_args.position = position;
-            m_args.isWriting = isWriting;
+            m_args.Position = position;
+            m_args.IsWriting = isWriting;
             PointerVersion++;
             m_mainIoSession.GetBlock(m_args);
-            m_firstPosition = m_args.firstPosition;
-            m_first = (byte*)m_args.firstPointer;
-            m_lastRead = m_first + m_args.length;
+            m_firstPosition = m_args.FirstPosition;
+            m_first = (byte*)m_args.FirstPointer;
+            m_lastRead = m_first + m_args.Length;
             m_current = m_first + (position - m_firstPosition);
-            m_lastPosition = m_firstPosition + m_args.length;
+            m_lastPosition = m_firstPosition + m_args.Length;
 
-            if (m_args.supportsWriting)
+            if (m_args.SupportsWriting)
                 m_lastWrite = m_lastRead;
             else
                 m_lastWrite = m_first;

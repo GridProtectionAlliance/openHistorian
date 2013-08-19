@@ -75,6 +75,7 @@ namespace GSF.IO.Unmanaged
         /// <summary>
         /// Gets a block for the following Io session.
         /// </summary>
+        /// <param name="args">The block request that needs to be fulfilled by this IoSession.</param>
         public abstract void GetBlock(BlockArguments args);
 
         /// <summary>
@@ -85,6 +86,10 @@ namespace GSF.IO.Unmanaged
             OnBaseStatusChanged(new IoSessionStatusChangedEventArgs(IoSessionStatusChanged.Cleared));
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public virtual void Dispose()
         {
             if (!IsDisposed)
@@ -99,39 +104,5 @@ namespace GSF.IO.Unmanaged
                 }
             }
         }
-    }
-
-    public class BlockArguments
-    {
-        /// <summary>
-        /// the block returned must contain this position
-        /// </summary>
-        public long position;
-
-        /// <summary>
-        /// indicates if the stream plans to write to this block
-        /// </summary>
-        public bool isWriting;
-
-        /// <summary>
-        /// the pointer for the first byte of the block
-        /// </summary>
-        public IntPtr firstPointer;
-
-        /// <summary>
-        /// the position that corresponds to <see cref="firstPointer"/>
-        /// </summary>
-        public long firstPosition;
-
-        /// <summary>
-        /// the length of the block
-        /// </summary>
-        public int length;
-
-        /// <summary>
-        /// notifies the calling class if this block supports 
-        /// writing without requiring this function to be called again if <see cref="isWriting"/> was set to false.
-        /// </summary>
-        public bool supportsWriting;
     }
 }

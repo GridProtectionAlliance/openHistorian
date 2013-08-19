@@ -86,6 +86,7 @@
     <Compile Include="IO\Unmanaged\BinaryStream.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionCache.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionExtensionMethods.cs" />
+    <Compile Include="IO\Unmanaged\BlockArguments.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />

@@ -29,10 +29,20 @@ namespace openHistorian.FileStructure.IO
 {
     internal partial class BufferedFile
     {
-        // Nested Types
-        private class IoSession : BinaryStreamIoSessionBase
+        /// <summary>
+        /// The <see cref="BinaryStreamIoSessionBase"/> utilized by the <see cref="BufferedFile"/>.
+        /// </summary>
+        private class IoSession 
+            : BinaryStreamIoSessionBase
         {
+            /// <summary>
+            /// The base stream
+            /// </summary>
             private readonly BufferedFile m_stream;
+
+            /// <summary>
+            /// The lock is used when doing I/O.
+            /// </summary>
             private PageLock m_pageLock;
 
             /// <summary>
@@ -88,7 +98,7 @@ namespace openHistorian.FileStructure.IO
             /// Releases the unmanaged resources used by the <see cref="IoSession"/> object and optionally releases the managed resources.
             /// </summary>
             /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-            protected virtual void Dispose(bool disposing)
+            protected void Dispose(bool disposing)
             {
                 if (!IsDisposed)
                 {

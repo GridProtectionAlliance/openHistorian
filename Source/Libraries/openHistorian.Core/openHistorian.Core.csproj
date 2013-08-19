@@ -223,7 +223,7 @@
     <Compile Include="FileStructure\IO\DiskIoSessionExtension.cs" />
     <Compile Include="FileStructure\IO\DiskMedium.cs" />
     <Compile Include="FileStructure\IO\Footer.cs" />
-    <Compile Include="FileStructure\IO\IDiskMedium.cs" />
+    <Compile Include="FileStructure\IO\IDiskMediumCoreFunctions.cs" />
     <Compile Include="FileStructure\IO\MemoryPoolFile.cs" />
     <Compile Include="FileStructure\IO\MemoryFile_IoSession.cs" />
     <Compile Include="FileStructure\Murmur3.cs" />

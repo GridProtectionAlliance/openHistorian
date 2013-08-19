@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IDiskMedium.cs - Gbtc
+//  IDiskMediumCoreFunctions.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,16 +29,34 @@ namespace openHistorian.FileStructure.IO
     /// <summary>
     /// The interface that is required construct a <see cref="DiskMedium"/> class.
     /// </summary>
-    internal interface IDiskMedium : IDisposable
+    internal interface IDiskMediumCoreFunctions 
+        : IDisposable
     {
+        /// <summary>
+        /// Creates a <see cref="BinaryStreamIoSessionBase"/> that can be used to read from this disk medium.
+        /// </summary>
+        /// <returns></returns>
         BinaryStreamIoSessionBase CreateIoSession();
 
+        /// <summary>
+        /// Gets the current number of bytes used by the file system. 
+        /// This is only intended to be an approximate figure. 
+        /// </summary>
         long Length
         {
             get;
         }
 
+        /// <summary>
+        /// Executes a commit of data. This will flush the data to the disk use the provided header data to properly
+        /// execute this function.
+        /// </summary>
+        /// <param name="header"></param>
         void FlushWithHeader(FileHeaderBlock header);
+
+        /// <summary>
+        /// Rolls back all edits to the DiskMedium
+        /// </summary>
         void RollbackChanges();
     }
 }
