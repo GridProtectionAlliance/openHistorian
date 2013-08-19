@@ -418,6 +418,11 @@
             Creates a new instance of <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> and assigns it to CurrentItem.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.MeasurementGroups.Load">
+            <summary>
+            Loads the records for the associated <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.MeasurementGroups.Save">
             <summary>
             Saves the record for the associated <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>.
@@ -597,6 +602,13 @@
             Creates a new instance of the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> class.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
+            <summary>
+            Handles ReceivedServiceResponse event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.PublisherAcronym">
             <summary>
             Gets or sets the string identifier used to identify the publisher.
@@ -670,6 +682,11 @@
             Gets or sets the path to the local certificate used to identify the subscriber.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.LocalCertificateServerPath">
+            <summary>
+            Gets or sets the path on the server to the local certificate used to identify the subscriber.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.RemoteCertificateFile">
             <summary>
             Gets or sets the path to the remote certificate used to identify the publisher.
@@ -715,7 +732,7 @@
             Gets the command that executes when the user chooses to browse for a local certificate.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.RemoteBrowseCommand">
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.ImportCertificateCommand">
             <summary>
             Gets the command that executes when the user chooses to browse for a remote certificate.
             </summary>
@@ -733,6 +750,26 @@
         <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.DefaultPort">
             <summary>
             Gets the default port based on the current security mode selection.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.ConnectivityMessageVisibility">
+            <summary>
+            Gets or sets the visibility of the connectivity message.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.AdvancedTlsSettingsPopupIsOpen">
+            <summary>
+            Gets or sets whether the advanced TLS settings popup is open.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.AdvancedTlsSettingsOpenCommand">
+            <summary>
+            Gets the command that is executed when the user chooses to view the advanced TLS settings.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.AdvancedTlsSettingsCloseCommand">
+            <summary>
+            Gets the command that is executed whent he user chooses to save adv
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers">
@@ -772,6 +809,11 @@
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.Initialize">
             <summary>
             Initialization to be done before the initial call to <see cref="M:GSF.TimeSeries.UI.PagedViewModelBase`2.Load"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.Save">
+            <summary>
+            Saves the record for the associated <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/>.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.AddAllowedMeasurements(System.Collections.Generic.ICollection{System.Guid})">

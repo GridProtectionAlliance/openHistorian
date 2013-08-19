@@ -22,6 +22,18 @@
             </summary>
             <returns>Current <see cref="T:GSF.TimeSeries.UI.DataModels.RaisedAlarm"/> list.</returns>
         </member>
+        <member name="M:GSF.TimeSeries.UI.AlarmMonitor.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or
+            resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.AlarmMonitor.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.UI.AlarmMonitor"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
         <member name="M:GSF.TimeSeries.UI.AlarmMonitor.Start">
             <summary>
             Starts the refresh timer that notifies consumer about the current alarm status.
@@ -36,18 +48,6 @@
             <summary>
             Stops the refresh timer.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.AlarmMonitor.Dispose">
-            <summary>
-            Performs application-defined tasks associated with freeing, releasing, or
-            resetting unmanaged resources.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.UI.AlarmMonitor.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.UI.AlarmMonitor"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="E:GSF.TimeSeries.UI.AlarmMonitor.RefreshedAlarms">
             <summary>

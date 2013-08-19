@@ -4418,6 +4418,20 @@
             </summary>
             <param name="totalAdded"></param>
         </member>
+        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.ParseFilterExpression(System.String,System.String@,System.String@,System.String@,System.Int32@)">
+            <summary>
+            Parses a standard FILTER styles expression into its constituent parts.
+            </summary>
+            <param name="filterExpression">Filter expression to parse.</param>
+            <param name="tableName">Name of table in filter expression.</param>
+            <param name="whereExpression">Where expression in filter expression.</param>
+            <param name="sortField">Sort field, if any, in filter expression.</param>
+            <param name="takeCount">Total row restriction, if any, in filter expression.</param>
+            <returns><c>true</c> if filter expression was successfully parsed; otherwise <c>false</c>.</returns>
+            <remarks>
+            This method can be safely called from multiple threads.
+            </remarks>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.ParseTimeTag(System.String)">
             <summary>
             Parses a string formatted as an absolute or relative time tag.
@@ -6432,6 +6446,8 @@
             Received device list should be defined as children of the "parent" server device connection similar to the way
             PMUs are defined as children of a parent PDC device connection.
             Devices and measurements contain unique Guids that should be used to key metadata updates in local repository.
+            Optional string based message can follow command that should represent client requested meta-data filtering
+            expressions, e.g.: "FILTER MeasurementDetail WHERE SignalType &lt;&gt; 'STAT'"
             </remarks>
         </member>
         <member name="F:GSF.TimeSeries.Transport.ServerCommand.Subscribe">
@@ -6922,6 +6938,12 @@
             Gets subscriber information for specified client connection.
             </summary>
             <param name="clientIndex">Enumerated index for client connection.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataPublisher.GetLocalCertificate">
+            <summary>
+            Gets the local certificate currently in use by the data publisher.
+            </summary>
+            <returns>The local certificate file read directly from the certificate file as an array of bytes.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataPublisher.ImportCertificate(System.String,System.Byte[])">
             <summary>
@@ -7575,12 +7597,20 @@
             This method makes sure only one meta-data synchronization happens at a time.
             </remarks>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.SendServerCommand(GSF.TimeSeries.Transport.ServerCommand,System.String)">
+            <summary>
+            Sends a server command to the publisher connection with associated <paramref name="message"/> data.
+            </summary>
+            <param name="commandCode"><see cref="T:GSF.TimeSeries.Transport.ServerCommand"/> to send.</param>
+            <param name="message">String based command data to send to server.</param>
+            <returns><c>true</c> if <paramref name="commandCode"/> transmission was successful; otherwise <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.SendServerCommand(GSF.TimeSeries.Transport.ServerCommand,System.Byte[])">
             <summary>
             Sends a server command to the publisher connection.
             </summary>
             <param name="commandCode"><see cref="T:GSF.TimeSeries.Transport.ServerCommand"/> to send.</param>
-            <param name="data">Command data to send.</param>
+            <param name="data">Optional command data to send.</param>
             <returns><c>true</c> if <paramref name="commandCode"/> transmission was successful; otherwise <c>false</c>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.AttemptConnection">
@@ -7747,6 +7777,19 @@
             automatically request metadata synchronization and synchronize publisher
             metadata with its own database configuration.
             </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.MetadataFilters">
+            <summary>
+            Gets or sets requested meta-data filter expressions to be applied by <see cref="T:GSF.TimeSeries.Transport.DataPublisher"/> before meta-data is sent.
+            </summary>
+            <remarks>
+            Multiple meta-data filters, such filters for different data tables, should be separated by a semicolon. Specifying fields in the filter
+            expression that do not exist in the data publisher's current meta-data set could cause filter expressions to not be applied and possibly
+            result in no meta-data being received for the specified data table.
+            </remarks>
+            <example>
+            FILTER MeasurementDetail WHERE SignalType &lt;&gt; 'STAT'; FILTER PhasorDetail WHERE Phase = '+'
+            </example>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseMillisecondResolution">
             <summary>

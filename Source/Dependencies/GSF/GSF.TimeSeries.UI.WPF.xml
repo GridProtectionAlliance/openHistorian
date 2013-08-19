@@ -1284,6 +1284,11 @@
             <see cref="T:System.Windows.DependencyProperty"/> for the <see cref="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.ShowPageSize"/> property.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.AdvancedHotkeyIsEnabledProperty">
+            <summary>
+            <see cref="T:System.Windows.DependencyProperty"/> for the <see cref="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.AdvancedHotkeyIsEnabled"/> property.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.InitializeComponent">
             <summary>
             InitializeComponent
@@ -1331,6 +1336,12 @@
             <summary>
             Gets or sets the boolean flag which determines whether
             the page size should be shown on the control.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.AdvancedHotkeyIsEnabled">
+            <summary>
+            Gets or sets the boolean flag which determines whether the
+            hotkey is enabled for displaying the advanced find popup.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.DataGridColumns">

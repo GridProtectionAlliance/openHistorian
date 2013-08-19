@@ -94,6 +94,11 @@
             Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/>DescriptionText.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.FilterExpression">
+            <summary>
+            Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> FilterExpression text.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup.CreatedOn">
             <summary>
             Gets or sets <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.MeasurementGroup"/> CreatedOn.
@@ -336,6 +341,18 @@
             <summary>
             Gets or sets the policy errors which can be ignored
             when validating <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> identity.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.ValidChainFlags">
+            <summary>
+            Gets or sets the chain flags which can be ignored
+            when validating <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> identity.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.AccessControlFilter">
+            <summary>
+            Gets or sets the filter used to determine which signals
+            this <see cref="T:GSF.TimeSeries.Transport.UI.DataModels.Subscriber"/> is allowed to subscribe to.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.UI.DataModels.Subscriber.Enabled">
