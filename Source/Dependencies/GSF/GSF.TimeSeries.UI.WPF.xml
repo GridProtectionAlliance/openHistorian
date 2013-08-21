@@ -490,6 +490,13 @@
             <param name="sortMemberPath">Member path for sorting.</param>
             <param name="sortDirection">Ascending or descending.</param>
         </member>
+        <member name="M:GSF.TimeSeries.UI.PagedViewModelBase`2.SortDataBy(System.Func{`1,System.Object},System.ComponentModel.ListSortDirection)">
+            <summary>
+            Sorts model data.
+            </summary>
+            <param name="sortSelector">Transform function for sorting.</param>
+            <param name="sortDirection">Ascending or descending.</param>
+        </member>
         <member name="E:GSF.TimeSeries.UI.PagedViewModelBase`2.PropertyChanged">
             <summary>
             Raised when a property on this object has a new value.
@@ -646,6 +653,11 @@
         <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.IsNewRecord">
             <summary>
             Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SortSelector">
+            <summary>
+            Gets or sets the function to transform the set of <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.ItemsKeys"/> for sorting.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.PagedViewModelBase`2.SortMember">
@@ -1243,6 +1255,12 @@
             <summary>
             Causes the data grid to be reloaded with a new set of data.
             </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.SortBy(System.Func{System.Guid,System.Object})">
+            <summary>
+            Causes the data grid to be sorted by the values returned by the given key selector.
+            </summary>
+            <param name="keySelector">The function to transform measurement IDs to a key to sort by.</param>
         </member>
         <member name="M:GSF.TimeSeries.UI.UserControls.MeasurementPagerUserControl.OnPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)">
             <summary>
@@ -2284,6 +2302,13 @@
             </summary>
             <param name="sortMember">The member by which to sort the data.</param>
             <param name="sortDirection">The direction in which to sort the data.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.SortDataBy(System.Func{System.Guid,System.Object},System.ComponentModel.ListSortDirection)">
+            <summary>
+            Sorts model data.
+            </summary>
+            <param name="sortSelector">Transform function for sorting.</param>
+            <param name="sortDirection">Ascending or descending.</param>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.Measurements.LoadSettings">
             <summary>

@@ -4845,7 +4845,7 @@
         </member>
         <member name="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultAllowedParsingExceptions">
             <summary>
-            Specfies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.AllowedParsingExceptions"/> property.
+            Specifies the default value for the <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.AllowedParsingExceptions"/> property.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.MultiProtocolFrameParser.DefaultParsingExceptionWindow">
@@ -5070,7 +5070,7 @@
             Occurs when an <see cref="T:System.Exception"/> is encountered during connection attempt to a device.
             </summary>
             <remarks>
-            <see cref="F:GSF.EventArgs`2.Argument1"/> is the exception that occured during the connection attempt.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the exception that occurred during the connection attempt.<br/>
             <see cref="F:GSF.EventArgs`2.Argument2"/> is the number of connections attempted so far.
             </remarks>
         </member>
@@ -5348,81 +5348,9 @@
             Gets or sets any connection specific <see cref="T:GSF.PhasorProtocols.IConnectionParameters"/> that may be applicable for the current <see cref="P:GSF.PhasorProtocols.MultiProtocolFrameParser.PhasorProtocol"/>.
             </summary>
         </member>
-        <member name="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer">
+        <member name="T:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference">
             <summary>
-            Precision input timer.
-            </summary>
-            <remarks>
-            This class is used to create highly accurate simulated data inputs aligned to the local clock.<br/>
-            One static instance of this internal class is created per encountered frame rate.
-            </remarks>
-        </member>
-        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.#ctor(System.Int32)">
-            <summary>
-            Create a new <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/> class.
-            </summary>
-            <param name="framesPerSecond">Desired frame rate for <see cref="T:GSF.PrecisionTimer"/>.</param>
-        </member>
-        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.Finalize">
-            <summary>
-            Releases the unmanaged resources before the <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/> object is reclaimed by <see cref="T:System.GC"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
-        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.AddReference">
-            <summary>
-            Adds a reference to this <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.RemoveReference">
-            <summary>
-            Removes a reference to this <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.FramesPerSecond">
-            <summary>
-            Gets frames per second for this <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.FrameMilliseconds">
-            <summary>
-            Gets array of frame millisecond times for this <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.ReferenceCount">
-            <summary>
-            Gets reference count for this <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.Resynchronizations">
-            <summary>
-            Gets number of resynchronizations that have occurred for this <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.LastFrameTime">
-            <summary>
-            Gets time of last frame, in ticks.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.FrameWaitHandle">
-            <summary>
-            Gets a reference to the frame wait handle.
-            </summary>
-        </member>
-        <member name="P:GSF.PhasorProtocols.MultiProtocolFrameParser.PrecisionInputTimer.ExceptionHandler">
-            <summary>
-            Gets or sets the function that handles exceptions
-            thrown by the precision input timer.
+            Creates an instance of a TCP server that can be shared for multiple devices (e.g., an F-NET server)
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.SharedTcpServerReference.Initialize">

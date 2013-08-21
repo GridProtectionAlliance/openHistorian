@@ -309,6 +309,11 @@
             Defines the default settings category for TimeSeriesFramework data connections.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.UI.CommonFunctions.MaxPageHistory">
+            <summary>
+            Defines the maximum number of pages to be stored in page history.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipal">
             <summary>
             Defines the current principal for the thread owning the common functions.
@@ -512,16 +517,47 @@
             <param name="source">Source of exception</param>
             <param name="ex">Exception to be logged</param>
         </member>
-        <member name="M:GSF.TimeSeries.UI.CommonFunctions.LoadUserControl(System.Object,System.String)">
+        <member name="M:GSF.TimeSeries.UI.CommonFunctions.LoadUserControl(System.String,System.Type,System.Object[])">
             <summary>
             Loads provided user control into the frame control inside main window.
             </summary>
-            <param name="userControl">User control to be loaded.</param>
             <param name="title">Title of the user control to be loaded.</param>
+            <param name="userControlType">The type of the user control to be loaded.</param>
+            <param name="constructorArgs">Parameters for the constructor of the user control.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.CommonFunctions.GoForward">
+            <summary>
+            Goes forward to the next user control in history.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.CommonFunctions.GoBack">
+            <summary>
+            Goes back to the previous user control in history.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CanGoForward">
+            <summary>
+            Gets the flag that indicates whether we can go forward to the next user control in history.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CanGoBack">
+            <summary>
+            Gets the flag that indicates whether we can go back to the previous user control in history.
+            </summary>
         </member>
         <member name="E:GSF.TimeSeries.UI.CommonFunctions.ServiceConnectionRefreshed">
             <summary>
             Used to notify main window that connection to service has changed.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.CommonFunctions.CanGoForwardChanged">
+            <summary>
+            Triggered when the flag that indicates whether we can move forward in page history changes.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.CommonFunctions.CanGoBackChanged">
+            <summary>
+            Triggered when the flag that indicates whether we can move backward in page history changes.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.CommonFunctions.Popup">
@@ -2693,7 +2729,7 @@
             Loads <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="Keys">Keys of the Measurement to be loaded from the database</param>
+            <param name="keys">Keys of the Measurement to be loaded from the database</param>
             <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Vendor"/>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModels.Vendor.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">
@@ -2789,7 +2825,7 @@
             Loads <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/> information as an <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="Keys">Keys of the Measurement to be loaded from the database</param>
+            <param name="keys">Keys of the Measurement to be loaded from the database</param>
             <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.VendorDevice"/>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModels.VendorDevice.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean)">

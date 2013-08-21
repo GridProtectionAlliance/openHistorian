@@ -840,6 +840,13 @@
             </summary>
             <param name="measurementIDs">Collection of measurements to be removed.</param>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.SubscriberHasRights(System.Guid)">
+            <summary>
+            Determines if subscriber has rights to specified <paramref name="signalID"/>.
+            </summary>
+            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
+            <returns><c>true</c> if subscriber has rights to specified <paramref name="signalID"/>; otherwise <c>false</c>.</returns>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.AddAllowedMeasurementGroup(System.Object)">
             <summary>
             Handles <see cref="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.AddAllowedMeasurementGroup(System.Object)"/>.
@@ -863,13 +870,6 @@
             Handles <see cref="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.RemoveDeniedMeasurementGroup(System.Object)"/>.
             </summary>
             <param name="parameter">Collection of measurement groups to be removed.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.SubscriberHasRights(System.Guid)">
-            <summary>
-            Determines if subscriber has rights to specified <paramref name="signalID"/>.
-            </summary>
-            <param name="signalID"><see cref="T:System.Guid"/> signal ID to lookup.</param>
-            <returns><c>true</c> if subscriber has rights to specified <paramref name="signalID"/>; otherwise <c>false</c>.</returns>
         </member>
         <member name="E:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers.MeasurementsAdded">
             <summary>

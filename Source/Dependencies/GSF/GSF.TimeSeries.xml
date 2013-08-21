@@ -5841,11 +5841,11 @@
         </member>
         <member name="M:GSF.TimeSeries.PrecisionInputTimer.Detach(GSF.TimeSeries.PrecisionInputTimer@)">
             <summary>
-            Detatch from the <see cref="T:GSF.TimeSeries.PrecisionInputTimer"/>.
+            Detach from the <see cref="T:GSF.TimeSeries.PrecisionInputTimer"/>.
             </summary>
             <param name="timer">Timer instance to detach from.</param>
             <remarks>
-            Timer reference will be set to <c>null</c> after detatch.
+            Timer reference will be set to <c>null</c> after detach.
             </remarks>
         </member>
         <member name="P:GSF.TimeSeries.PrecisionInputTimer.FramesPerSecond">
