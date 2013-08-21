@@ -177,6 +177,7 @@
     <Compile Include="Communications\SocketHistorian%272.cs" />
     <Compile Include="DataReaderOptions.cs" />
     <Compile Include="Data\PeriodicScanner.cs" />
+    <Compile Include="Data\Query\GetRawSignalMethods.cs" />
     <Compile Include="Data\Query\GetFrameMethods.cs" />
     <Compile Include="Data\Query\GetDataReaderMethods.cs" />
     <Compile Include="Data\Query\GetSignalMethods.cs" />

@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
+    <Compile Include="Collections\Generic\SortedListConstructor.cs" />
     <Compile Include="Collections\ILargeArray.cs" />
     <Compile Include="Collections\IsolatedNode.cs" />
     <Compile Include="Collections\IsolatedQueue.cs" />

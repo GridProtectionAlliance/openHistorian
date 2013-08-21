@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GSF.Collections.Generic;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
 using openHistorian.Data.Types;
@@ -32,7 +33,16 @@ namespace openHistorian.Data.Query
 {
     public class FrameData
     {
-        public SortedList<ulong, HistorianValueStruct> Points = new SortedList<ulong, HistorianValueStruct>();
+        public FrameData()
+        {
+            Points = new SortedList<ulong, HistorianValueStruct>();
+        }
+        public FrameData(List<ulong> pointId, List<HistorianValueStruct> values)
+        {
+            Points = SortedListConstructor.Create(pointId, values);
+        }
+
+        public SortedList<ulong, HistorianValueStruct> Points;
     }
 
     /// <summary>
@@ -40,6 +50,15 @@ namespace openHistorian.Data.Query
     /// </summary>
     public static class GetFrameMethods
     {
+        class FrameDataConstructor
+        {
+            public List<ulong> PointId = new List<ulong>();
+            public List<HistorianValueStruct> Values = new List<HistorianValueStruct>();
+            public FrameData ToFrameData()
+            {
+                return new FrameData(PointId,Values);
+            }
+        }
 
         /// <summary>
         /// Gets frames from the historian as individual frames.
@@ -48,7 +67,7 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, DateTime timestamp)
         {
-            return database.GetFrames(QueryFilterTimestamp.CreateFromRange(timestamp,timestamp), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
+            return database.GetFrames(QueryFilterTimestamp.CreateFromRange(timestamp, timestamp), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
         }
 
         /// <summary>
@@ -113,7 +132,42 @@ namespace openHistorian.Data.Query
         {
             return database.GetFrames(timestamps, points, DataReaderOptions.Default);
         }
-        
+
+        ///// <summary>
+        ///// Gets frames from the historian as individual frames.
+        ///// </summary>
+        ///// <param name="database">the database to use</param>
+        ///// <param name="timestamps">the timestamps to query for</param>
+        ///// <param name="points">the points to query</param>
+        ///// <param name="options">A list of query options</param>
+        ///// <returns></returns>
+        //public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points, DataReaderOptions options)
+        //{
+        //    SortedList<DateTime, FrameData> results = new SortedList<DateTime, FrameData>();
+        //    using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+        //    {
+        //        ulong lastTime = ulong.MinValue;
+        //        FrameData lastFrame = null;
+        //        TreeStream<HistorianKey, HistorianValue> stream = reader.Read(timestamps, points, options);
+        //        while (stream.Read())
+        //        {
+        //            if (lastFrame == null || stream.CurrentKey.Timestamp != lastTime)
+        //            {
+        //                lastTime = stream.CurrentKey.Timestamp;
+        //                DateTime timestamp = new DateTime((long)lastTime);
+
+        //                if (!results.TryGetValue(timestamp, out lastFrame))
+        //                {
+        //                    lastFrame = new FrameData();
+        //                    results.Add(timestamp, lastFrame);
+        //                }
+        //            }
+        //            lastFrame.Points.Add(stream.CurrentKey.PointID, stream.CurrentValue.ToStruct());
+        //        }
+        //    }
+        //    return results;
+        //}
+
         /// <summary>
         /// Gets frames from the historian as individual frames.
         /// </summary>
@@ -124,11 +178,11 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points, DataReaderOptions options)
         {
-            SortedList<DateTime, FrameData> results = new SortedList<DateTime, FrameData>();
+            SortedList<DateTime, FrameDataConstructor> results = new SortedList<DateTime, FrameDataConstructor>();
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 ulong lastTime = ulong.MinValue;
-                FrameData lastFrame = null;
+                FrameDataConstructor lastFrame = null;
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read(timestamps, points, options);
                 while (stream.Read())
                 {
@@ -139,14 +193,17 @@ namespace openHistorian.Data.Query
 
                         if (!results.TryGetValue(timestamp, out lastFrame))
                         {
-                            lastFrame = new FrameData();
+                            lastFrame = new FrameDataConstructor();
                             results.Add(timestamp, lastFrame);
                         }
                     }
-                    lastFrame.Points.Add(stream.CurrentKey.PointID, stream.CurrentValue.ToStruct());
+                    lastFrame.PointId.Add(stream.CurrentKey.PointID);
+                    lastFrame.Values.Add(stream.CurrentValue.ToStruct());
                 }
             }
-            return results;
+            List<FrameData> data = new List<FrameData>(results.Count);
+            data.AddRange(results.Values.Select(x => x.ToFrameData()));
+            return SortedListConstructor.Create(results.Keys, data);
         }
 
         /// <summary>
@@ -192,7 +249,12 @@ namespace openHistorian.Data.Query
                 }
                 else
                 {
+                    int count = bucket.Value.Sum(x => x.Points.Count);
+                    List<ulong> keys = new List<ulong>(count);
+                    List<HistorianValueStruct> values = new List<HistorianValueStruct>(count);
+
                     FrameData tempFrame = new FrameData();
+                    tempFrame.Points = new SortedList<ulong, HistorianValueStruct>();
 
                     var allFrames = new List<EnumerableHelper>();
 
@@ -204,15 +266,20 @@ namespace openHistorian.Data.Query
                     while (true)
                     {
                         EnumerableHelper lowestKey = null;
+
                         foreach (var item in allFrames)
                             lowestKey = Min(lowestKey, item);
 
                         if (lowestKey == null)
                             break;
 
-                        tempFrame.Points.Add(lowestKey.PointId, lowestKey.Value);
+                        keys.Add(lowestKey.PointId);
+                        values.Add(lowestKey.Value);
+
+                        //tempFrame.Points.Add(lowestKey.PointId, lowestKey.Value);
                         lowestKey.Read();
                     }
+                    tempFrame.Points = SortedListConstructor.Create(keys, values);
                     results.Add(bucket.Key, tempFrame);
                 }
             }

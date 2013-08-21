@@ -83,6 +83,7 @@
     <Compile Include="Collections\BitArrayTestPerformance.cs" />
     <Compile Include="Collections\BitArrayTest.cs" />
     <Compile Include="Collections\ContinuousQueueTest.cs" />
+    <Compile Include="Collections\Generic\SortedListConstructor_Test.cs" />
     <Compile Include="Collections\IsolatedQueueFileBacked.cs" />
     <Compile Include="Collections\IsolatedQueueTest.cs" />
     <Compile Include="Collections\ISupportsReadonlyTest.cs" />

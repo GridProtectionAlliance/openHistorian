@@ -46,6 +46,7 @@ namespace GSF
 
         public double TimeEvent(Action function)
         {
+            sw.Reset();
             GC.Collect();
             function();
             int count = 0;
