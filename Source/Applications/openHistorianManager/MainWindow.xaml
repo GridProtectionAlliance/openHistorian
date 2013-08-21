@@ -38,7 +38,6 @@
         </tsf:TsfPopup>
 
         <StackPanel Orientation="Vertical">
-
             <StackPanel.Resources>
                 <ResourceDictionary>
                     <ResourceDictionary.MergedDictionaries>
@@ -73,19 +72,23 @@
                     <TextBlock Text="Current Node: " Foreground="White"/>
                     <ComboBox x:Name="ComboboxNode" DisplayMemberPath="Value" SelectionChanged="ComboboxNode_SelectionChanged" Width="150"/>
                     <Ellipse x:Name="EllipseConnectionState" Fill="{StaticResource RedRadialGradientBrush}" Width="16" Height="16" Margin="2,0,5,0" />
-                    <Button x:Name="backEnabled" Width="Auto" Height="Auto" ToolTip="Go Back" Margin="0,0,5,0" Click="ButtonBack_Click" IsEnabled="{Binding ElementName=FrameContent, Path=CanGoBack}">
+                    <Button x:Name="BackButton" Width="Auto" Height="Auto" ToolTip="Go Back" Margin="0,0,5,0" Click="ButtonBack_Click" IsEnabled="False">
                         <Button.Template>
                             <ControlTemplate>
-                                <Image Source="/GSF.TimeSeries.UI;component/images/Back.png" Height="24" Width="24"/>
+                                <Grid>
+                                    <Image Source="/GSF.TimeSeries.UI;component/images/BackGray.png" Height="24" Width="24" />
+                                    <Image Source="/GSF.TimeSeries.UI;component/images/Back.png" Height="24" Width="24" Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsEnabled, Converter={StaticResource ObjectToVisibilityConverter}}" />
+                                </Grid>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <Image x:Name="backDisabled" Source="/GSF.TimeSeries.UI;component/images/BackGray.png" Margin="0,0,5,0" Height="24" Width="24" Visibility="Collapsed"/>
-                    <Image x:Name="forwardDisabled" Source="/GSF.TimeSeries.UI;component/images/ForwardGray.png" Margin="0,0,5,0" Height="24" Width="24" Visibility="Collapsed"/>
-                    <Button x:Name="forwardEnabled" Width="Auto" Height="Auto" ToolTip="Go Forward" Margin="0,0,5,0" Click="ButtonForward_Click" IsEnabled="{Binding ElementName=FrameContent, Path=CanGoForward}">
+                    <Button x:Name="ForwardButton" Width="Auto" Height="Auto" ToolTip="Go Forward" Margin="0,0,5,0" Click="ButtonForward_Click" IsEnabled="False">
                         <Button.Template>
                             <ControlTemplate>
-                                <Image Source="/GSF.TimeSeries.UI;component/images/Forward.png" Height="24" Width="24"/>
+                                <Grid>
+                                    <Image Source="/GSF.TimeSeries.UI;component/images/ForwardGray.png" Height="24" Width="24" />
+                                    <Image Source="/GSF.TimeSeries.UI;component/images/Forward.png" Height="24" Width="24" Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsEnabled, Converter={StaticResource ObjectToVisibilityConverter}}" />
+                                </Grid>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
@@ -99,31 +102,27 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                     
-                    <Menu x:Name="MenuMain" ItemsSource="{Binding}" Style="{StaticResource MenuStyle}" ItemContainerStyleSelector="{StaticResource MenuItemStyleSelector}"
-                      HorizontalAlignment="Left"/>
+                        <Menu x:Name="MenuMain" ItemsSource="{Binding}" Style="{StaticResource MenuStyle}" ItemContainerStyleSelector="{StaticResource MenuItemStyleSelector}"
+                          HorizontalAlignment="Left"/>
 
-                                <Button x:Name="ButtonHelp" ToolTip="Click for Help" Width="Auto" Padding="0" HorizontalAlignment="Right" Click="ButtonHelp_Click">
-                                    <Button.Template>
-                                        <ControlTemplate>
-                                            <Image Source="/GSF.TimeSeries.UI;component/images/Help.png" Height="20" Width="20" />
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
+                        <Button x:Name="ButtonHelp" ToolTip="Click for Help" Width="Auto" Padding="0" HorizontalAlignment="Right" Click="ButtonHelp_Click">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Image Source="/GSF.TimeSeries.UI;component/images/Help.png" Height="20" Width="20" />
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
                     </Grid>
                 </Border>
-
             </Grid>
 
-            <!--<TextBlock x:Name="TextBlockResult" Visibility="Collapsed" Foreground="#FFFFFFFF" FontWeight="Bold" VerticalAlignment="Center" Height="Auto" Margin="0,5,5,0" Padding="0"/>-->
-
-            <GroupBox x:Name="GroupBoxMain" Margin="2,-5,2,2">
+            <GroupBox x:Name="UserControlGroupBox" Margin="2,-5,2,2" MinHeight="675" FontSize="12">
                 <Border Padding="2" BorderThickness="1" Background="{StaticResource MenuBackgroundBrush}" CornerRadius="5">
-                    <Frame x:Name="FrameContent" NavigationUIVisibility="Hidden" HorizontalAlignment="Center" Width="850"/>
+                    <StackPanel Name="UserControlParentPanel">
+                        <StackPanel Name="UserControlPanel" Width="{Binding ElementName=UserControlParentPanel, Path=ActualWidth}" />
+                    </StackPanel>
                 </Border>
             </GroupBox>
-
         </StackPanel>
-        
     </Canvas>
-    
 </tsf:ResizableWindow>

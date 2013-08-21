@@ -31,7 +31,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Navigation;
 using System.Xml;
 using System.Xml.Serialization;
 using GSF.Communication;
@@ -55,10 +54,7 @@ namespace openHistorianManager
         // Fields
         private ObservableCollection<MenuDataItem> m_menuDataItems;
         private WindowsServiceClient m_windowsServiceClient;
-        private readonly LinkedList<TextBlock> m_navigationList;
-        private LinkedListNode<TextBlock> m_currentNode;
         private AlarmMonitor m_alarmMonitor;
-        private bool m_navigationProcessed;
         private readonly string m_defaultNodeID;
 
         #endregion
@@ -111,9 +107,8 @@ namespace openHistorianManager
 
             CommonFunctions.SetRetryServiceConnection(true);
             CommonFunctions.ServiceConnectionRefreshed += CommonFunctions_ServiceConnectionRefreshed;
-            m_navigationProcessed = false;
-            m_navigationList = new LinkedList<TextBlock>();
-            FrameContent.Navigated += new NavigatedEventHandler(FrameContent_Navigated);
+            CommonFunctions.CanGoForwardChanged += (sender, args) => ForwardButton.IsEnabled = CommonFunctions.CanGoForward;
+            CommonFunctions.CanGoBackChanged += (sender, args) => BackButton.IsEnabled = CommonFunctions.CanGoBack;
         }
 
         #endregion
@@ -288,78 +283,14 @@ namespace openHistorianManager
             });
         }
 
-        private void FrameContent_Navigated(object sender, NavigationEventArgs e)
-        {
-            try
-            {
-                if (!m_navigationProcessed)
-                {
-                    if (m_currentNode != null)
-                    {
-                        while (m_currentNode.Next != null)
-                            m_navigationList.Remove(m_currentNode.Next.Value);
-                    }
-                    m_navigationList.AddLast((TextBlock)GroupBoxMain.Header);
-                    m_currentNode = m_navigationList.Last;
-                }
-            }
-            catch
-            {
-            }
-            finally
-            {
-                updateButtons();
-                m_navigationProcessed = false;
-            }
-        }
-
-        private void updateButtons()
-        {
-            if (FrameContent.CanGoBack)
-            {
-                backDisabled.Visibility = Visibility.Collapsed;
-                backEnabled.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                backEnabled.Visibility = Visibility.Collapsed;
-                backDisabled.Visibility = Visibility.Visible;
-            }
-
-            if (FrameContent.CanGoForward)
-            {
-                forwardDisabled.Visibility = Visibility.Collapsed;
-                forwardEnabled.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                forwardEnabled.Visibility = Visibility.Collapsed;
-                forwardDisabled.Visibility = Visibility.Visible;
-            }
-        }
-
         private void ButtonBack_Click(object sender, RoutedEventArgs e)
         {
-            if (FrameContent.CanGoBack)
-            {
-                m_currentNode = m_currentNode.Previous;
-                m_navigationProcessed = true;
-                FrameContent.GoBack();
-                if (m_currentNode != null)
-                    GroupBoxMain.Header = m_currentNode.Value;
-            }
+            CommonFunctions.GoBack();
         }
 
         private void ButtonForward_Click(object sender, RoutedEventArgs e)
         {
-            if (FrameContent.CanGoForward)
-            {
-                m_currentNode = m_currentNode.Next;
-                m_navigationProcessed = true;
-                FrameContent.GoForward();
-                if (m_currentNode != null)
-                    GroupBoxMain.Header = m_currentNode.Value;
-            }
+            CommonFunctions.GoForward();
         }
 
         private void ButtonLogo_Click(object sender, RoutedEventArgs e)
