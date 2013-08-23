@@ -265,6 +265,11 @@
             InitializeComponent
             </summary>
         </member>
+        <member name="P:FileAdapters.RetransmissionStatPicker.ViewModel">
+            <summary>
+            Gets the retransmission view model statistic.
+            </summary>
+        </member>
         <member name="T:FileAdapters.RetransmissionStatViewModel">
             <summary>
             View model for the <see cref="T:FileAdapters.RetransmissionStatPicker"/>.

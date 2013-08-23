@@ -305,7 +305,7 @@
             Gets or sets the <see cref="T:GSF.Security.LogEventFunctionSignature"/> to use for logging security events for the <see cref="T:GSF.Security.SecurityProviderBase"/> implementation.
             </summary>
             <remarks>
-            Set <see cref="P:GSF.Security.ISecurityProvider.LogEvent"/> to <c>null</c> to use default handler, i.e., <see cref="!:EventLog.WriteEntry(string,string,EventLogEntryType,int)."/>.
+            Set <see cref="P:GSF.Security.ISecurityProvider.LogEvent"/> to <c>null</c> to use default handler, i.e., <see cref="M:System.Diagnostics.EventLog.WriteEntry(System.String,System.String,System.Diagnostics.EventLogEntryType,System.Int32)"/>.
             </remarks>
         </member>
         <member name="F:GSF.Security.SecurityProviderBase.DefaultApplicationName">
@@ -442,7 +442,7 @@
             Gets or sets the <see cref="T:GSF.Security.LogEventFunctionSignature"/> to use for logging security events for the <see cref="T:GSF.Security.SecurityProviderBase"/> implementation.
             </summary>
             <remarks>
-            Set <see cref="P:GSF.Security.SecurityProviderBase.LogEvent"/> to <c>null</c> to use default handler, i.e., <see cref="!:EventLog.WriteEntry(string,string,EventLogEntryType,int)."/>.
+            Set <see cref="P:GSF.Security.SecurityProviderBase.LogEvent"/> to <c>null</c> to use default handler, i.e., <see cref="M:System.Diagnostics.EventLog.WriteEntry(System.String,System.String,System.Diagnostics.EventLogEntryType,System.Int32)"/>.
             </remarks>
         </member>
         <member name="P:GSF.Security.SecurityProviderBase.PersistSettings">

@@ -878,6 +878,61 @@
             </summary>
             <param name="propertyName">The name of the property that was changed.</param>
         </member>
+        <member name="E:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.PropertyChanged">
+            <summary>
+            Defines an event for when a property has changed in the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.CalculatorNames">
+            <summary>
+            Gets or sets calculator names for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.VirtualDeviceNames">
+            <summary>
+            Gets or sets the virtual device names for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.IOMappings">
+            <summary>
+            Gets or sets the Input/Output mappings for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.FrequencyMeasurements">
+            <summary>
+            Gets or sets the frequency measurements for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.SelectedCalculatorName">
+            <summary>
+            Gets or sets the selected calculator name for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.SelectedVirtualDeviceName">
+            <summary>
+            Gets or sets the selected virtual device name for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.SelectedIOMapping">
+            <summary>
+            Gets or sets the selected Input/Output mapping for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.SelectedFrequencyMeasurement">
+            <summary>
+            Gets or sets the selected frequency measurement for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.AddSelectedCommand">
+            <summary>
+            Gets the add selected relay command for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.RemoveSelectedCommand">
+            <summary>
+            Gets the remove selected relay command for the <see cref="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel"/>.
+            </summary>
+        </member>
         <member name="T:GSF.PhasorProtocols.UI.ViewModels.AverageFrequencyViewModel.IOMapping">
             <summary>
             Represents a mapping between a frequency input definition

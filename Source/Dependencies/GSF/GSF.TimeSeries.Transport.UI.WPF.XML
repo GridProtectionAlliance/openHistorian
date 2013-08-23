@@ -57,6 +57,11 @@
             InternalSubscriptionUserControl
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.UserControls.InternalSubscriptionUserControl.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.TimeSeries.Transport.UI.UserControls.InternalSubscriptionUserControl"/>.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.UI.UserControls.InternalSubscriptionUserControl.InitializeComponent">
             <summary>
             InitializeComponent
@@ -602,6 +607,22 @@
             Creates a new instance of the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> class.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
             <summary>
             Handles ReceivedServiceResponse event.
@@ -769,7 +790,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.AdvancedTlsSettingsCloseCommand">
             <summary>
-            Gets the command that is executed whent he user chooses to save adv
+            Gets the command that is executed went he user chooses to save adv
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.Transport.UI.ViewModels.Subscribers">

@@ -20,12 +20,14 @@
             </summary>
             <param name="assemblyName">The name of the assembly in which the editor type resides.</param>
             <param name="typeName">The full name of the type of the editor.</param>
+            <param name="connectionString">The connection string for the custom configuration screen.</param>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.CustomConfigurationEditorAttribute.#ctor(System.Type,System.String)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.Adapters.CustomConfigurationEditorAttribute"/> class.
             </summary>
             <param name="editorType">The type of the editor.</param>
+            <param name="connectionString">The connection string for the custom configuration screen.</param>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.CustomConfigurationEditorAttribute.EditorType">
             <summary>

@@ -5089,7 +5089,7 @@
             <summary>
             Function signature that determines if an item can be currently processed.
             </summary>
-            <param name="item">Item to be checked for processing availablity.</param>
+            <param name="item">Item to be checked for processing availability.</param>
             <returns>True, if item can be processed. The default is true.</returns>
             <remarks>
             <para>Implementation of this function is optional. It is assumed that an item can be processed if this
@@ -6409,8 +6409,8 @@
             <summary>
             Function signature that determines if a key and value can be currently processed.
             </summary>
-            <param name="key">key to be checked for processing availablity.</param>
-            <param name="value">value to be checked for processing availablity.</param>
+            <param name="key">key to be checked for processing availability.</param>
+            <param name="value">value to be checked for processing availability.</param>
             <returns>True, if key and value can be processed.</returns>
             <remarks>
             <para>Implementation of this function is optional. It will be assumed that an item can be processed if this
@@ -12343,43 +12343,20 @@
             <param name="enumeration"><see cref="T:System.Enum"/> to operate on.</param>
             <returns>Formatted enumeration name of the specified value for visual display.</returns>
         </member>
-        <member name="T:GSF.ErrorManagement.ErrorDialog">
-            <summary>
-            Represents a dialog box that can be used to display detailed exception inmormation.
-            </summary>
-            <seealso cref="T:GSF.ErrorManagement.ErrorLogger"/>
-        </member>
-        <member name="M:GSF.ErrorManagement.ErrorDialog.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:GSF.ErrorManagement.ErrorDialog"/> class.
-            </summary>
-        </member>
-        <member name="F:GSF.ErrorManagement.ErrorDialog.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:GSF.ErrorManagement.ErrorDialog.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:GSF.ErrorManagement.ErrorDialog.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
         <member name="T:GSF.ErrorManagement.ErrorLogger">
              <summary>
              Represents a logger that can be used for logging handled as well as unhandled exceptions across multiple 
-             application types (Windows Application, Console Application, Windows Service, Web Application, Web Service).
+             application types (Console Application, Windows Service, Web Application, Web Service).
              </summary>
              <remarks>
+             <para>
              Adapted from exception handling code by Jeff Atwood of CodingHorror.com. Demo projects for handling unhandled
              exception in both windows and web environment by Jeff Atwood are available at The Code Project web site.
              See: http://www.codeproject.com/script/articles/list_articles.asp?userid=450027
+             </para>
+             <para>
+             Error logger with Windows Forms capabilities can be found in the GSF.Windows assembly.
+             </para>
              </remarks>
              <example>
              This example shows how to use the <see cref="T:GSF.ErrorManagement.ErrorLogger"/> component to log handled and unhandled exceptions:
@@ -12399,7 +12376,6 @@
                      s_logger.LogToFile = true;                  // Log exception info to a file.
                      s_logger.LogToEmail = true;                 // Send exception info in an e-mail.
                      s_logger.LogToEventLog = true;              // Log exception info to the event log.
-                     s_logger.LogToScreenshot = true;            // Take a screenshot of desktop on exception.
                      s_logger.ContactEmail = "dev@email.com";    // Provide an e-mail address.
                      s_logger.HandleUnhandledException = true;   // Configure to handle unhandled exceptions.
                      s_logger.PersistSettings = true;            // Save settings to the config file.
@@ -12433,11 +12409,6 @@
              </example>
              <seealso cref="T:GSF.ErrorManagement.ErrorModule"/>
         </member>
-        <member name="F:GSF.ErrorManagement.ErrorLogger.DefaultExceptionLogSize">
-            <summary>
-            Specifies the default value for the <see cref="F:GSF.ErrorManagement.ErrorLogger.DefaultExceptionLogSize"/> property.
-            </summary>
-        </member>
         <member name="F:GSF.ErrorManagement.ErrorLogger.DefaultLogToUI">
             <summary>
             Specifies the default value for the <see cref="P:GSF.ErrorManagement.ErrorLogger.LogToUI"/> property.
@@ -12463,14 +12434,14 @@
             Specifies the default value for the <see cref="P:GSF.ErrorManagement.ErrorLogger.LogToDatabase"/> property.
             </summary>
         </member>
-        <member name="F:GSF.ErrorManagement.ErrorLogger.DefaultLogToScreenshot">
-            <summary>
-            Specifies the default value for the <see cref="P:GSF.ErrorManagement.ErrorLogger.LogToScreenshot"/> property.
-            </summary>
-        </member>
         <member name="F:GSF.ErrorManagement.ErrorLogger.DefaultLogUserInfo">
             <summary>
             Specifies the default value for the <see cref="P:GSF.ErrorManagement.ErrorLogger.LogUserInfo"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.ErrorManagement.ErrorLogger.DefaultDatabaseLogSize">
+            <summary>
+            Specifies the default value for the <see cref="F:GSF.ErrorManagement.ErrorLogger.DefaultDatabaseLogSize"/> property.
             </summary>
         </member>
         <member name="F:GSF.ErrorManagement.ErrorLogger.DefaultSmtpServer">
@@ -12523,6 +12494,13 @@
             Initializes a new instance of the <see cref="T:GSF.ErrorManagement.ErrorLogger"/> class.
             </summary>
             <param name="container"><see cref="T:System.ComponentModel.IContainer"/> object that contains the <see cref="T:GSF.ErrorManagement.ErrorLogger"/>.</param>
+        </member>
+        <member name="M:GSF.ErrorManagement.ErrorLogger.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.ErrorManagement.ErrorLogger"/> object and optionally releases the 
+            managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:GSF.ErrorManagement.ErrorLogger.Initialize">
             <summary>
@@ -12578,23 +12556,18 @@
             <param name="exception">Encountered <see cref="T:System.Exception"/> whose information is to be logged.</param>
             <param name="exitApplication">true to exit the application; otherwise false.</param>
         </member>
-        <member name="M:GSF.ErrorManagement.ErrorLogger.SuppressInteractiveLogging">
-            <summary>
-            Disables <see cref="P:GSF.ErrorManagement.ErrorLogger.Loggers"/> that require interaction either directly or indirectly when logging 
-            handled <see cref="T:System.Exception"/> using the <see cref="M:GSF.ErrorManagement.ErrorLogger.Log(System.Exception)"/> method. All loggers are enabled
-            automatically after a handled <see cref="T:System.Exception"/> has been logged.
-            </summary>
-        </member>
         <member name="M:GSF.ErrorManagement.ErrorLogger.Register">
             <summary>
             Registers the <see cref="T:GSF.ErrorManagement.ErrorLogger"/> object to handle unhandled <see cref="T:System.Exception"/> if the 
             <see cref="P:GSF.ErrorManagement.ErrorLogger.HandleUnhandledException"/> property is set to true.
             </summary>
+            <returns><c>true</c> if handlers were registered; otherwise <c>false</c>.</returns>
         </member>
         <member name="M:GSF.ErrorManagement.ErrorLogger.Unregister">
             <summary>
             Unregister the <see cref="T:GSF.ErrorManagement.ErrorLogger"/> object from handling unhandled <see cref="T:System.Exception"/>.
             </summary>
+            <returns><c>true</c> if handlers were unregistered; otherwise <c>false</c>.</returns>
         </member>
         <member name="M:GSF.ErrorManagement.ErrorLogger.ExceptionToUI(System.Exception)">
             <summary>
@@ -12629,6 +12602,11 @@
             </summary>
             <param name="exception"><see cref="T:System.Exception"/> that was encountered.</param>
         </member>
+        <member name="M:GSF.ErrorManagement.ErrorLogger.GetEmailAttachments">
+            <summary>
+            Gets or sets the comma-separated or semicolon-separated list of file names to be attached to the <see cref="T:GSF.Net.Smtp.Mail"/> message.
+            </summary>
+        </member>
         <member name="M:GSF.ErrorManagement.ErrorLogger.ExceptionToEventLog(System.Exception)">
             <summary>
             Logs encountered <see cref="T:System.Exception"/> to the <see cref="T:System.Diagnostics.EventLog"/>.
@@ -12641,24 +12619,11 @@
             </summary>
             <param name="exception"><see cref="T:System.Exception"/> that was encountered.</param>
         </member>
-        <member name="M:GSF.ErrorManagement.ErrorLogger.ExceptionToScreenshot(System.Exception)">
-            <summary>
-            Takes a screenshot of the user's desktop when the <see cref="T:System.Exception"/> is encountered.
-            </summary>
-            <param name="exception"><see cref="T:System.Exception"/> that was encountered.</param>
-        </member>
         <member name="M:GSF.ErrorManagement.ErrorLogger.OnLoggingException(System.Exception)">
             <summary>
             Raises the <see cref="E:GSF.ErrorManagement.ErrorLogger.LoggingException"/> event.
             </summary>
             <param name="exception"><see cref="T:System.Exception"/> to send to <see cref="E:GSF.ErrorManagement.ErrorLogger.LoggingException"/> event.</param>
-        </member>
-        <member name="M:GSF.ErrorManagement.ErrorLogger.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.ErrorManagement.ErrorLogger"/> object and optionally releases the 
-            managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:GSF.ErrorManagement.ErrorLogger.GetErrorText">
             <summary>
@@ -12680,20 +12645,11 @@
             Default <see cref="T:System.Delegate"/> for <see cref="P:GSF.ErrorManagement.ErrorLogger.MoreInfoTextMethod"/>.
             </summary>
         </member>
-        <member name="M:GSF.ErrorManagement.ErrorLogger.RestoreLogSize(System.Data.IDbConnection)">
+        <member name="M:GSF.ErrorManagement.ErrorLogger.GetExtendedMoreInfoText(System.String)">
             <summary>
-            Deletes old <see cref="M:GSF.ErrorManagement.ErrorLogger.RestoreLogSize(System.Data.IDbConnection)"/> record from database.
+            Allows other loggers to extend "more info text".
             </summary>
-            <param name="dbConnection"><see cref="T:System.Data.IDbConnection"/> to connection to database.</param>
-        </member>
-        <member name="M:GSF.ErrorManagement.ErrorLogger.LogErrorToDatabase(System.String,System.String,System.String,System.String)">
-            <summary>
-            Logs information about an encountered exception to the backend datastore.
-            </summary>
-            <param name="source">Source of exception.</param>
-            <param name="message">Message section of the exception.</param>
-            <param name="detail">Detailed description of exception.</param>
-            <param name="type">Type of exception.</param>
+            <param name="bullet">Type of bullet to use for extended info text.</param>
         </member>
         <member name="M:GSF.ErrorManagement.ErrorLogger.GetExceptionInfo(System.Exception,System.Boolean)">
             <summary>
@@ -12771,19 +12727,15 @@
             written to the database.
             </summary>
         </member>
-        <member name="P:GSF.ErrorManagement.ErrorLogger.LogToScreenshot">
-            <summary>
-            Gets or sets a boolean value that indicates whether a screenshot of the user's desktop is to be taken
-            when an <see cref="T:System.Exception"/> is logged.
-            </summary>
-            <remarks>
-            This setting is ignored in Web Application and Web Service application types.
-            </remarks>
-        </member>
         <member name="P:GSF.ErrorManagement.ErrorLogger.LogUserInfo">
             <summary>
             Gets or sets a boolean value that indicates whether information about local user (for windows applications) 
             or remote user (for web applications) is to be logged when logging an <see cref="T:System.Exception"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.ErrorManagement.ErrorLogger.DatabaseLogSize">
+            <summary>
+            Gets or sets the maximum exception log size to maintain when logging exceptions to the database.
             </summary>
         </member>
         <member name="P:GSF.ErrorManagement.ErrorLogger.SmtpServer">
@@ -12799,7 +12751,7 @@
         </member>
         <member name="P:GSF.ErrorManagement.ErrorLogger.ContactEmail">
             <summary>
-            Gets or sets the e-mail address where e-mail messages contaning <see cref="T:System.Exception"/> information are 
+            Gets or sets the e-mail address where e-mail messages containing <see cref="T:System.Exception"/> information are 
             to be sent when the <see cref="P:GSF.ErrorManagement.ErrorLogger.LogToEmail"/> property is set to true.
             </summary>
         </member>
@@ -12884,10 +12836,16 @@
         </member>
         <member name="P:GSF.ErrorManagement.ErrorLogger.MoreInfoTextMethod">
             <summary>
-            Gets or sets the <see cref="T:System.Delegate"/> that provides text contaning detailed information about the 
+            Gets or sets the <see cref="T:System.Delegate"/> that provides text containing detailed information about the 
             encountered <see cref="T:System.Exception"/>.
             </summary>
             <exception cref="T:System.ArgumentNullException">The value being assigned is null.</exception>
+        </member>
+        <member name="P:GSF.ErrorManagement.ErrorLogger.SuppressInteractiveLogging">
+            <summary>
+            Gets or sets flag that controls if <see cref="P:GSF.ErrorManagement.ErrorLogger.Loggers"/> requiring interaction either directly or indirectly
+            when logging handled <see cref="T:System.Exception"/> using the <see cref="M:GSF.ErrorManagement.ErrorLogger.Log(System.Exception)"/> method are enabled.
+            </summary>
         </member>
         <member name="P:GSF.ErrorManagement.ErrorLogger.ApplicationName">
             <summary>
@@ -13250,6 +13208,31 @@
             <remarks>
             This function will validate that <typeparamref name="T"/> is related to <paramref name="type"/>.
             </remarks>
+        </member>
+        <member name="T:GSF.FuzzyStrings.FuzzyStringComparisonTolerance">
+            <summary>
+            Fuzzy string comparison tolerances.
+            </summary>
+        </member>
+        <member name="F:GSF.FuzzyStrings.FuzzyStringComparisonTolerance.Strong">
+            <summary>
+            Strong comparison tolerance.
+            </summary>
+        </member>
+        <member name="F:GSF.FuzzyStrings.FuzzyStringComparisonTolerance.Normal">
+            <summary>
+            Normal comparison tolerance.
+            </summary>
+        </member>
+        <member name="F:GSF.FuzzyStrings.FuzzyStringComparisonTolerance.Weak">
+            <summary>
+            Weak comparison tolerance.
+            </summary>
+        </member>
+        <member name="F:GSF.FuzzyStrings.FuzzyStringComparisonTolerance.Manual">
+            <summary>
+            Manual comparison tolerance.
+            </summary>
         </member>
         <member name="T:GSF.IdentifiableItem`2">
             <summary>
@@ -19312,6 +19295,16 @@
             Creates a new instance of the <see cref="T:GSF.Net.Security.SimplePolicyChecker"/> class.
             </summary>
         </member>
+        <member name="M:GSF.Net.Security.SimplePolicyChecker.ValidateRemoteCertificate(System.Object,System.Security.Cryptography.X509Certificates.X509Certificate,System.Security.Cryptography.X509Certificates.X509Chain,System.Net.Security.SslPolicyErrors)">
+            <summary>
+            Verifies the remote certificate used for authentication.
+            </summary>
+            <param name="sender">An object that contains state information for this validation.</param>
+            <param name="remoteCertificate">The certificate used to authenticate the remote party.</param>
+            <param name="chain">The chain of certificate authorities associated with the remote certificate.</param>
+            <param name="errors">One or more errors associated with the remote certificate.</param>
+            <returns>A flag that determines whether the specified certificate is accepted for authentication.</returns>
+        </member>
         <member name="P:GSF.Net.Security.SimplePolicyChecker.ValidPolicyErrors">
             <summary>
             Gets or sets the set of invalid policy errors.
@@ -19488,7 +19481,7 @@
         </member>
         <member name="P:GSF.Net.Smtp.Mail.Attachments">
             <summary>
-            Gets or sets the comma-separated or semicolon-seperated list of file names to be attached to the <see cref="T:GSF.Net.Smtp.Mail"/> message.
+            Gets or sets the comma-separated or semicolon-separated list of file names to be attached to the <see cref="T:GSF.Net.Smtp.Mail"/> message.
             </summary>
         </member>
         <member name="P:GSF.Net.Smtp.Mail.IsBodyHtml">
@@ -32946,214 +32939,6 @@
             </summary>
             <param name="validationErrors">Errors messages returned by one or more of the validations.</param>
             <returns><strong>true</strong> if the validation completes without errors; otherwise <strong>false</strong>.</returns>
-        </member>
-        <member name="T:GSF.Windows.Forms.FormExtensions">
-            <summary>Extensions applied to all System.Windows.Forms.Form objects.</summary>
-        </member>
-        <member name="F:GSF.Windows.Forms.FormExtensions.LastWindowSizeSettingsCategory">
-            <summary>
-            Config file category under which the window size information will be saved.
-            </summary>
-        </member>
-        <member name="F:GSF.Windows.Forms.FormExtensions.LastWindowLocationSettingsCategory">
-            <summary>
-            Config file category under which the window location information will be saved.
-            </summary>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.SaveLayout(System.Windows.Forms.Form)">
-            <summary>
-            Saves the size and location information of the specified windowsForm to the application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose size and location information is to be saved.</param>
-            <remarks>This function simply calls the SaveWindowSize and SaveWindowLocation functions using the default settings categories</remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.RestoreLayout(System.Windows.Forms.Form)">
-            <summary>
-            Restores the size and location of the specified windowsForm from the size and location information saved in the
-            application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose size and location is to be restored.</param>
-            <remarks>This function simply calls the RestoreWindowSize and RestoreWindowLocation functions using the default settings categories</remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.SaveSize(System.Windows.Forms.Form)">
-            <summary>
-            Saves the size information of the specified windowsForm to the application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose size information is to be saved.</param>
-            <remarks>This function uses the default settings category "LastWindowSize"</remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.SaveSize(System.Windows.Forms.Form,System.String)">
-            <summary>
-            Saves the size information of the specified windowsForm to the application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose size information is to be saved.</param>
-            <param name="settingsCategory">Settings category used to persist form size information</param>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.SaveLocation(System.Windows.Forms.Form)">
-            <summary>
-            Saves the location information of the specified windowsForm to the application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose location information is to be saved.</param>
-            <remarks>This function uses the default settings category "LastWindowLocation"</remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.SaveLocation(System.Windows.Forms.Form,System.String)">
-            <summary>
-            Saves the location information of the specified windowsForm to the application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose location information is to be saved.</param>
-            <param name="settingsCategory">Settings category used to persist form location information</param>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.RestoreSize(System.Windows.Forms.Form)">
-            <summary>
-            Restores the size of the specified windowsForm from the size information saved in the application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose size is to be restored.</param>
-            <remarks>This function uses the default settings category "LastWindowSize"</remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.RestoreSize(System.Windows.Forms.Form,System.String)">
-            <summary>
-            Restores the size of the specified windowsForm from the size information saved in the application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose size is to be restored.</param>
-            <param name="settingsCategory">Settings category used to persist form size information</param>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.RestoreLocation(System.Windows.Forms.Form)">
-            <summary>
-            Restores the location of the specified windowsForm from the location information saved in the application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose location is to be restored.</param>
-            <remarks>This function uses the default settings category "LastWindowLocation"</remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.FormExtensions.RestoreLocation(System.Windows.Forms.Form,System.String)">
-            <summary>
-            Restores the location of the specified windowsForm from the location information saved in the application configuration file.
-            </summary>
-            <param name="windowsForm">The Form whose location is to be restored.</param>
-            <param name="settingsCategory">Settings category used to persist form location information</param>
-        </member>
-        <member name="T:GSF.Windows.Forms.NamespaceDoc">
-            <summary>
-            Contains classes, extension functions and forms used to simplify and standardize usage of basic Windows forms.
-            </summary>
-        </member>
-        <member name="T:GSF.Windows.Forms.ScreenArea">
-            <summary>Returns screen area statistics and capture functionality for all connected screens.</summary>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture">
-            <summary>
-            Performs screen capture over all monitors.
-            </summary>
-            <returns>Captured screen image over all monitors.</returns>
-            <remarks>
-            Size captured will be for total width and height of all screens relative to their arrangement.
-            An image square will be created large enough to cover all screens for the capture.
-            </remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Drawing.Imaging.ImageFormat)">
-            <summary>
-            Performs screen capture over all monitors.
-            </summary>
-            <param name="imageFormat">Desired <see cref="T:System.Drawing.Imaging.ImageFormat"/> for captured <see cref="T:System.Drawing.Bitmap"/>.</param>
-            <returns>Captured screen image over all monitors.</returns>
-            <remarks>
-            Size captured will be for total width and height of all screens relative to their arrangement.
-            An image square will be created large enough to cover all screens for the capture.
-            </remarks>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Windows.Forms.Screen)">
-            <summary>
-            Performs screen capture for given <see cref="T:System.Windows.Forms.Screen"/>.
-            </summary>
-            <param name="captureScreen">A <see cref="T:System.Windows.Forms.Screen"/> object to capture.</param>
-            <returns>Captured screen image for given <see cref="T:System.Windows.Forms.Screen"/>.</returns>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Windows.Forms.Screen,System.Drawing.Imaging.ImageFormat)">
-            <summary>
-            Performs screen capture for given <see cref="T:System.Windows.Forms.Screen"/> and <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
-            </summary>
-            <param name="captureScreen">Desired <see cref="T:System.Windows.Forms.Screen"/> to capture</param>
-            <param name="imageFormat">Desired <see cref="T:System.Drawing.Imaging.ImageFormat"/> for captured <see cref="T:System.Drawing.Bitmap"/>.</param>
-            <returns>Captured screen image for given <see cref="T:System.Windows.Forms.Screen"/>.</returns>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Drawing.Rectangle)">
-            <summary>
-            Performs a screen capture the given <see cref="T:System.Drawing.Rectangle"/>.
-            </summary>
-            <param name="captureArea">Screen area <see cref="T:System.Drawing.Rectangle"/> to capture.</param>
-            <returns>Captured screen image for given area.</returns>
-        </member>
-        <member name="M:GSF.Windows.Forms.ScreenArea.Capture(System.Drawing.Rectangle,System.Drawing.Imaging.ImageFormat)">
-            <summary>
-            Performs a screen capture the given <see cref="T:System.Drawing.Rectangle"/> and <see cref="T:System.Drawing.Imaging.ImageFormat"/>.
-            </summary>
-            <param name="captureArea">Screen area <see cref="T:System.Drawing.Rectangle"/> to capture.</param>
-            <param name="imageFormat">Desired <see cref="T:System.Drawing.Imaging.ImageFormat"/> for captured <see cref="T:System.Drawing.Bitmap"/>.</param>
-            <returns>Captured screen image for given area.</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.LeftMostBound">
-            <summary>
-            Gets the least "x" coordinate of all screens on the system
-            </summary>
-            <returns>The smallest visible "x" screen coordinate</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.RightMostBound">
-            <summary>
-            Gets the greatest "x" coordinate of all screens on the system
-            </summary>
-            <returns>The largest visible "x" screen coordinate</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.TopMostBound">
-            <summary>
-            Gets the least "y" coordinate of all screens on the system
-            </summary>
-            <returns>The smallest visible "y" screen coordinate</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.BottomMostBound">
-            <summary>
-            Gets the greatest "y" coordinate of all screens on the system
-            </summary>
-            <returns>The largest visible "y" screen coordinate</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.MaximumWidth">
-            <summary>
-            Gets the width of the screen with the highest resolution.
-            </summary>
-            <returns>The width of the screen with the highest resolution.</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.MinimumWidth">
-            <summary>
-            Gets the width of the screen with the lowest resolution.
-            </summary>
-            <returns>The width of the screen with the lowest resolution.</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.MaximumHeight">
-            <summary>
-            Gets the height of the screen with the highest resolution.
-            </summary>
-            <returns>The height of the screen with the highest resolution.</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.MinimumHeight">
-            <summary>
-            Gets the height of the screen with the lowest resolution.
-            </summary>
-            <returns>The height of the screen with the lowest resolution.</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.TotalWidth">
-            <summary>
-            Gets the total width of all the screens relative to their arrangement.
-            </summary>
-            <returns>The total width of all the screens relative to their arrangement.</returns>
-        </member>
-        <member name="P:GSF.Windows.Forms.ScreenArea.TotalHeight">
-            <summary>
-            Gets the total height of all the screens relative to their arrangement.
-            </summary>
-            <returns>The total height of all the screens relative to their arrangement.</returns>
-        </member>
-        <member name="T:GSF.Windows.NamespaceDoc">
-            <summary>
-            Contains classes and extension functions related to .NET Windows-based platforms such as Windows Forms and WPF.
-            </summary>
         </member>
         <member name="T:GSF.Word">
             <summary>
