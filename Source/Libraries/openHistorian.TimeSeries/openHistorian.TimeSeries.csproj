@@ -4,18 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{90942A72-2538-41A0-AFF4-8C338B4A5EDD}</ProjectGuid>
+    <ProjectGuid>{7B53C942-E891-461C-B09C-49FABA82F19D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>openHistorian</RootNamespace>
-    <AssemblyName>openHistorian.Server</AssemblyName>
+    <RootNamespace>openHistorian.TimeSeries</RootNamespace>
+    <AssemblyName>openHistorian.TimeSeries</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,7 +24,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,19 +32,28 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>GridProtectionAlliance.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GSF.Core">
+      <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.Historian">
+      <HintPath>..\..\Dependencies\GSF\GSF.Historian.dll</HintPath>
+    </Reference>
+    <Reference Include="GSF.TimeSeries">
+      <HintPath>..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HistorianDatabaseEngine.cs" />
+    <Compile Include="HistorianDatabaseInstance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -54,16 +61,10 @@
       <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
       <Name>GSF.Unmanaged</Name>
     </ProjectReference>
-    <ProjectReference Include="..\openHistorian.Archive\openHistorian.Archive.csproj">
+    <ProjectReference Include="..\openHistorian.Core\openHistorian.Core.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
-      <Name>openHistorian.Archive</Name>
+      <Name>openHistorian.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="GridProtectionAlliance.pfx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Communications\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
