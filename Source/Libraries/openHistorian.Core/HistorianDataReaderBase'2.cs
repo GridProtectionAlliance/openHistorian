@@ -35,29 +35,10 @@ namespace openHistorian
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : class, new()
     {
-        public virtual TreeStream<TKey, TValue> Read(ulong timestamp)
-        {
-            return Read(QueryFilterTimestamp.CreateFromRange(timestamp, timestamp), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
-        }
-
-        public virtual TreeStream<TKey, TValue> Read(ulong firstTime, ulong lastTime)
-        {
-            return Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
-        }
-
-        public virtual TreeStream<TKey, TValue> Read(ulong firstTime, ulong lastTime, IEnumerable<ulong> pointIds)
-        {
-            return Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateFromList(pointIds.ToList()), DataReaderOptions.Default);
-        }
-
-        public virtual TreeStream<TKey, TValue> Read(QueryFilterTimestamp key1, IEnumerable<ulong> pointIds)
-        {
-            return Read(key1, QueryFilterPointId.CreateFromList(pointIds.ToList()), DataReaderOptions.Default);
-        }
-
         public abstract TreeStream<TKey, TValue> Read(QueryFilterTimestamp key1, QueryFilterPointId key2, DataReaderOptions readerOptions);
 
         public abstract void Close();
+
         public abstract void Dispose();
     }
 }

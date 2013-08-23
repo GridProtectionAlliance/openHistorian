@@ -223,9 +223,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Core", "Libra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN", "Tools\openVisN\openVisN.csproj", "{7E9282AA-CBC3-485F-99D8-7DCA3DF02748}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianShell", "Tools\openHistorianShell\openHistorianShell.csproj", "{2C71AA25-9346-4DD0-A0CD-F265F6036822}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 24
+		SccNumberOfProjects = 25
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -321,6 +323,10 @@ Global
 		SccProjectTopLevelParentUniqueName23 = openHistorian.sln
 		SccProjectName23 = Tools/openVisN
 		SccLocalPath23 = Tools\\openVisN
+		SccProjectUniqueName24 = Tools\\openHistorianShell\\openHistorianShell.csproj
+		SccProjectTopLevelParentUniqueName24 = openHistorian.sln
+		SccProjectName24 = Tools/openHistorianShell
+		SccLocalPath24 = Tools\\openHistorianShell
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -625,6 +631,18 @@ Global
 		{7E9282AA-CBC3-485F-99D8-7DCA3DF02748}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7E9282AA-CBC3-485F-99D8-7DCA3DF02748}.Release|x64.ActiveCfg = Release|Any CPU
 		{7E9282AA-CBC3-485F-99D8-7DCA3DF02748}.Release|x86.ActiveCfg = Release|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Release|x64.ActiveCfg = Release|Any CPU
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -653,6 +671,7 @@ Global
 		{2A74EACF-8291-47C7-A2ED-0D58771F24E2} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{A4C500AC-70AC-4869-8A08-E10CCD45F64F} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{7E9282AA-CBC3-485F-99D8-7DCA3DF02748} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
+		{2C71AA25-9346-4DD0-A0CD-F265F6036822} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{B2DA9C7B-24C1-449B-816D-C72F4661983E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{E2483910-5890-4F88-AF06-BE6C76EB5A9E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{02F04BA5-C387-480F-9190-E2965EAE8E7A} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}

@@ -175,6 +175,7 @@
     <Compile Include="Communications\RemoteHistorian%272_Database.cs" />
     <Compile Include="Communications\RemoteHistorian%272_DataReader.cs" />
     <Compile Include="Communications\SocketHistorian%272.cs" />
+    <Compile Include="HistorianDataReaderBaseExtensionMethods%272.cs" />
     <Compile Include="DataReaderOptions.cs" />
     <Compile Include="Data\PeriodicScanner.cs" />
     <Compile Include="Data\Query\GetRawSignalMethods.cs" />
