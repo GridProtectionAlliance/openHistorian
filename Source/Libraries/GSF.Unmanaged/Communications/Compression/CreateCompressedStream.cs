@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  HistorianInstance.cs - Gbtc
+//  CreateCompressedStream.cs - Gbtc
 //
-//  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,38 +16,53 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  07/19/2013 - Ritchie
-//       Generated original version of source code.
+//  8/10/2013 - Steven E. Chisholm
+//       Generated original version of source code. 
+//       
 //
 //******************************************************************************************************
 
-namespace openHistorian.Adapters
+using System;
+using openHistorian.Communications.Initialization;
+
+namespace openHistorian.Communications.Compression
 {
-    /// <summary>
-    /// Represents to the static singleton historian server API instance used by all adapters as initialized by the service host.
-    /// </summary>
-    /// <remarks>
-    /// For better performance, locking coordination between the archive and server components and shared memory utilization
-    /// only a single server historian API object is created, even for multiple historian "instances" hosted by this process.
-    /// </remarks>
-    public static class Common
+    class CreateCompressedStream
+        : CreateKeyValueStreamCompressionBase
     {
-        private static readonly HistorianServer s_historianServer;
 
-        static Common()
-        {
-            s_historianServer = new HistorianServer();
-        }
+        // {E7E8A378-340E-47DF-B29F-E65361AB32AB}
+        public readonly static Guid TypeGuid = new Guid(0xe7e8a378, 0x340e, 0x47df, 0xb2, 0x9f, 0xe6, 0x53, 0x61, 0xab, 0x32, 0xab);
 
-        /// <summary>
-        /// Shared instance of historian server API used by time-series adapters.
-        /// </summary>
-        public static HistorianServer HistorianServer
+
+
+        public override Type KeyTypeIfFixed
         {
             get
             {
-                return s_historianServer;
+                return null;
             }
+        }
+
+        public override Type ValueTypeIfFixed
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public override Guid GetTypeGuid
+        {
+            get
+            {
+                return TypeGuid;
+            }
+        }
+
+        public override KeyValueStreamCompressionBase<TKey, TValue> Create<TKey, TValue>()
+        {
+            return new CompressedStream<TKey, TValue>();
         }
     }
 }

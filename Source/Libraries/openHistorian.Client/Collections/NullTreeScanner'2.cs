@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  HistorianInstance.cs - Gbtc
+//  NullTreeScanner256.cs - Gbtc
 //
-//  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,38 +16,51 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  07/19/2013 - Ritchie
-//       Generated original version of source code.
-//
+//  12/1/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
+//     
 //******************************************************************************************************
 
-namespace openHistorian.Adapters
+using openHistorian.Collections.Generic;
+
+namespace openHistorian.Collections
 {
     /// <summary>
-    /// Represents to the static singleton historian server API instance used by all adapters as initialized by the service host.
+    /// Represents an empty tree scanner. 
     /// </summary>
     /// <remarks>
-    /// For better performance, locking coordination between the archive and server components and shared memory utilization
-    /// only a single server historian API object is created, even for multiple historian "instances" hosted by this process.
+    /// This can be useful to return instead of null at times. Seeks will not throw exceptions and 
+    /// scans will yield no results.
+    /// To use this class. Call the static property <see cref="Instance"/>.
     /// </remarks>
-    public static class Common
+    public class NullTreeScanner<TKey, TValue>
+        : TreeScannerCoreBase<TKey, TValue>
+        where TKey : class, new()
+        where TValue : class, new()
     {
-        private static readonly HistorianServer s_historianServer;
-
-        static Common()
+        /// <summary>
+        /// Returns a static instance of this class
+        /// </summary>
+        public static TreeScannerCoreBase<TKey, TValue> Instance
         {
-            s_historianServer = new HistorianServer();
+            get;
+            private set;
         }
 
-        /// <summary>
-        /// Shared instance of historian server API used by time-series adapters.
-        /// </summary>
-        public static HistorianServer HistorianServer
+        static NullTreeScanner()
         {
-            get
-            {
-                return s_historianServer;
-            }
+            Instance = new NullTreeScanner<TKey, TValue>();
+        }
+
+        public override bool Read()
+        {
+            IsValid = false;
+            return false;
+        }
+
+        public override unsafe void SeekToKey(TKey key)
+        {
+            IsValid = false;
         }
     }
 }

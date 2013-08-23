@@ -147,7 +147,7 @@ namespace openHistorian.Collections
         }
     }
 
-    internal class ValueMethodsUInt32
+    public class ValueMethodsUInt32
         : TreeValueMethodsBase<Box<uint>>
     {
         // {03F4BD3A-D9CF-4358-B175-A9D38BE6715A}

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  HistorianInstance.cs - Gbtc
+//  Box.cs - Gbtc
 //
-//  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,38 +16,41 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  07/19/2013 - Ritchie
-//       Generated original version of source code.
-//
+//  4/12/2013 - Steven E. Chisholm
+//       Generated original version of source code. 
+//     
 //******************************************************************************************************
 
-namespace openHistorian.Adapters
+namespace openHistorian.Collections
 {
-    /// <summary>
-    /// Represents to the static singleton historian server API instance used by all adapters as initialized by the service host.
-    /// </summary>
-    /// <remarks>
-    /// For better performance, locking coordination between the archive and server components and shared memory utilization
-    /// only a single server historian API object is created, even for multiple historian "instances" hosted by this process.
-    /// </remarks>
-    public static class Common
+    public sealed class Box<T>
+        where T : new()
     {
-        private static readonly HistorianServer s_historianServer;
-
-        static Common()
+        public Box()
+            : this(new T())
         {
-            s_historianServer = new HistorianServer();
         }
 
-        /// <summary>
-        /// Shared instance of historian server API used by time-series adapters.
-        /// </summary>
-        public static HistorianServer HistorianServer
+        public Box(T value)
         {
-            get
-            {
-                return s_historianServer;
-            }
+            Value = value;
         }
+
+        public T Value;
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Value.Equals(obj);
+        }
+
+        //public static implicit operator T(Box<T> value)
+        //{
+        //    return value.Value;
+        //}
     }
 }

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  HistorianInstance.cs - Gbtc
+//  IHistorian.cs - Gbtc
 //
-//  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,38 +16,44 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  07/19/2013 - Ritchie
-//       Generated original version of source code.
+//  9/14/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
+//  12/8/2012 - Steven E. Chisholm
+//       Major change to the Interface by breaking out database/server features. 
 //
 //******************************************************************************************************
 
-namespace openHistorian.Adapters
+namespace openHistorian
 {
+
+    #region [ Enumerations ]
+
     /// <summary>
-    /// Represents to the static singleton historian server API instance used by all adapters as initialized by the service host.
+    /// Server commands
     /// </summary>
-    /// <remarks>
-    /// For better performance, locking coordination between the archive and server components and shared memory utilization
-    /// only a single server historian API object is created, even for multiple historian "instances" hosted by this process.
-    /// </remarks>
-    public static class Common
+    public enum ServerCommand : byte
     {
-        private static readonly HistorianServer s_historianServer;
-
-        static Common()
-        {
-            s_historianServer = new HistorianServer();
-        }
-
-        /// <summary>
-        /// Shared instance of historian server API used by time-series adapters.
-        /// </summary>
-        public static HistorianServer HistorianServer
-        {
-            get
-            {
-                return s_historianServer;
-            }
-        }
+        ConnectToDatabase,
+        OpenReader,
+        DisconnectDatabase,
+        DisconnectReader,
+        Disconnect,
+        Read,
+        CancelRead,
+        Write,
+        SetCompressionMode,
     }
+
+    /// <summary>
+    /// Server response
+    /// </summary>
+    public enum ServerResponse : byte
+    {
+        Success,
+        Error,
+        DataPacket,
+        ProcessingComplete
+    }
+
+    #endregion
 }

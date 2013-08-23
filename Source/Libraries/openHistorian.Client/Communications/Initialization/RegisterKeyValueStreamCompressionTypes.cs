@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateHistorianCompressedStream.cs - Gbtc
+//  RegisterKeyValueStreamCompressionTypes.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -18,55 +18,31 @@
 //  ----------------------------------------------------------------------------------------------------
 //  8/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
+//******************************************************************************************************
+// This is where types for the KeyValueStreamCompression should be placed for registering. 
+//******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Communications.Initialization;
+using openHistorian.Communications.Compression;
 
-namespace openHistorian.Communications.Compression
+namespace openHistorian.Communications.Initialization
 {
-    class CreateHistorianCompressedStream
-        : CreateKeyValueStreamCompressionBase
+    internal static class RegisterKeyValueStreamCompressionTypes
     {
-        // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
-        public readonly static Guid TypeGuid = new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28);
-
-        public override Type KeyTypeIfFixed
+        private static bool s_compressedStreamHasBeenCalled = false;
+        
+        internal static void RegisterKeyValueStreamTypes()
         {
-            get
-            {
-                return typeof(HistorianKey);
-            }
-        }
+            if (s_compressedStreamHasBeenCalled)
+                return;
+            s_compressedStreamHasBeenCalled = true;
 
-        public override Type ValueTypeIfFixed
-        {
-            get
-            {
-                return typeof(HistorianValue);
-            }
-        }
-
-        public override Guid GetTypeGuid
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
-
-        public override KeyValueStreamCompressionBase<TKey, TValue> Create<TKey, TValue>()
-        {
-            return (KeyValueStreamCompressionBase<TKey, TValue>)(object)new HistorianCompressedStream();
+            KeyValueStreamCompression.Register(new CreateFixedSizeStream());
+            KeyValueStreamCompression.Register(new CreateCompressedStream());
+            KeyValueStreamCompression.Register(new CreateHistorianCompressedStream());
+            
         }
     }
 }

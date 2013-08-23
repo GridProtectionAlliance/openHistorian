@@ -26,9 +26,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using GSF.Communications;
-using GSF.IO;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
 using openHistorian.Communications.Compression;
 using openHistorian.Communications.Initialization;
 

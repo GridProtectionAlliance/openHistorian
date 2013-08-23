@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateFixedSizeStream.cs - Gbtc
+//  CreateHistorianCompressedStream.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,29 +22,24 @@
 //
 //******************************************************************************************************
 
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using openHistorian.Collections.Generic;
+using openHistorian.Collections;
 using openHistorian.Communications.Initialization;
 
 namespace openHistorian.Communications.Compression
 {
-    class CreateFixedSizeStream
+    class CreateHistorianCompressedStream
         : CreateKeyValueStreamCompressionBase
     {
-
-        // {8949C57A-ABF3-4CB8-9015-AA732D6A4670}
-        public readonly static Guid TypeGuid = new Guid(0x8949c57a, 0xabf3, 0x4cb8, 0x90, 0x15, 0xaa, 0x73, 0x2d, 0x6a, 0x46, 0x70);
-
+        // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
+        public readonly static Guid TypeGuid = new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28);
 
         public override Type KeyTypeIfFixed
         {
             get
             {
-                return null;
+                return typeof(HistorianKey);
             }
         }
 
@@ -52,7 +47,7 @@ namespace openHistorian.Communications.Compression
         {
             get
             {
-                return null;
+                return typeof(HistorianValue);
             }
         }
 
@@ -66,7 +61,7 @@ namespace openHistorian.Communications.Compression
 
         public override KeyValueStreamCompressionBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return new FixedSizeStream<TKey, TValue>();
+            return (KeyValueStreamCompressionBase<TKey, TValue>)(object)new HistorianCompressedStream();
         }
     }
 }

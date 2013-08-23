@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  HistorianInstance.cs - Gbtc
+//  IHistorianDatabaseCollection.cs - Gbtc
 //
-//  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,38 +16,27 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  07/19/2013 - Ritchie
-//       Generated original version of source code.
+//  12/14/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
 //
 //******************************************************************************************************
 
-namespace openHistorian.Adapters
+using openHistorian.Collections;
+
+namespace openHistorian
 {
-    /// <summary>
-    /// Represents to the static singleton historian server API instance used by all adapters as initialized by the service host.
-    /// </summary>
-    /// <remarks>
-    /// For better performance, locking coordination between the archive and server components and shared memory utilization
-    /// only a single server historian API object is created, even for multiple historian "instances" hosted by this process.
-    /// </remarks>
-    public static class Common
+    public interface IHistorianDatabaseCollection<TKey, TValue>
+        where TKey : HistorianKeyBase<TKey>, new()
+        where TValue : class, new()
     {
-        private static readonly HistorianServer s_historianServer;
-
-        static Common()
-        {
-            s_historianServer = new HistorianServer();
-        }
-
         /// <summary>
-        /// Shared instance of historian server API used by time-series adapters.
+        /// Accesses <see cref="IHistorianDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
-        public static HistorianServer HistorianServer
+        /// <param name="databaseName">Name of database instance to access.</param>
+        /// <returns><see cref="IHistorianDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        IHistorianDatabase<TKey, TValue> this[string databaseName]
         {
-            get
-            {
-                return s_historianServer;
-            }
+            get;
         }
     }
 }
