@@ -28,7 +28,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Principal;
 using System.Windows;
-using GSF.ErrorManagement;
+using GSF.Windows.ErrorManagement;
 using GSF.IO;
 using GSF.Security.Cryptography;
 
