@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="HistorianDatabaseEngine.cs" />
     <Compile Include="HistorianDatabaseInstance.cs" />
+    <Compile Include="HistorianServer%272.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

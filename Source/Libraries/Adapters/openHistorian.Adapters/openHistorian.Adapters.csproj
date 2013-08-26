@@ -84,6 +84,10 @@
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>openHistorian.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\openHistorian.TimeSeries\openHistorian.TimeSeries.csproj">
+      <Project>{7B53C942-E891-461C-B09C-49FABA82F19D}</Project>
+      <Name>openHistorian.TimeSeries</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
