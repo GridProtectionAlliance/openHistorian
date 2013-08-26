@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GSF.Core">
@@ -52,10 +54,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\PeriodicScanner.cs" />
+    <Compile Include="Data\Query\GetDataReaderMethods.cs" />
+    <Compile Include="Data\Query\GetFrameMethods.cs" />
+    <Compile Include="Data\Query\GetRawSignalMethods.cs" />
+    <Compile Include="Data\Query\GetSignalMethods.cs" />
+    <Compile Include="Data\Query\GetSignalsWithCalculationsMethods.cs" />
+    <Compile Include="Data\Query\GetTableMethods.cs" />
+    <Compile Include="Data\Query\HistorianQuery.cs" />
+    <Compile Include="Data\Query\ISignalCalculation.cs" />
+    <Compile Include="Data\Query\ISignalWithType.cs" />
+    <Compile Include="Data\SignalData.cs" />
+    <Compile Include="Data\SignalDataBase.cs" />
+    <Compile Include="Data\SignalDataSingle.cs" />
+    <Compile Include="Data\SignalDataUnknown.cs" />
+    <Compile Include="Data\Types\TypeBase.cs" />
+    <Compile Include="Data\Types\TypeDouble.cs" />
+    <Compile Include="Data\Types\TypeSingle.cs" />
     <Compile Include="HistorianDatabaseEngine.cs" />
     <Compile Include="HistorianDatabaseInstance.cs" />
     <Compile Include="HistorianServer%272.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queues\FileBackedHistorianInputQueue.cs" />
+    <Compile Include="Queues\HistorianInputQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GSF.Unmanaged\GSF.Unmanaged.csproj">

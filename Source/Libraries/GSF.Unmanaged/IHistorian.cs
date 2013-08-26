@@ -25,7 +25,6 @@
 
 namespace openHistorian
 {
-
     #region [ Enumerations ]
 
     /// <summary>
