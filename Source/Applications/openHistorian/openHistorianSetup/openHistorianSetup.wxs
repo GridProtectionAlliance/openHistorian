@@ -17,6 +17,7 @@
         <ComponentGroupRef Id="OracleScriptComponents" />
         <ComponentGroupRef Id="SQLServerScriptComponents" />
         <ComponentGroupRef Id="SQLiteScriptComponents" />
+        <ComponentRef Id="makecert"/>
         <ComponentRef Id="Sample1344"/>
       </Feature>
 
