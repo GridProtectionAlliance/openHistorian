@@ -36,14 +36,12 @@ namespace openHistorian.Collections.Generic.CustomCompression
         //public static int Stage4 = 0;
         //public static int Stage5 = 0;
 
-        private readonly byte[] m_buffer;
-        ulong prevTimestamp;
-        ulong prevPointId;
+        ulong m_prevTimestamp;
+        ulong m_prevPointId;
 
         public HistorianCompressionTsScanner(byte level, int blockSize, BinaryStreamBase stream, Func<HistorianKey, byte, uint> lookupKey, TreeKeyMethodsBase<HistorianKey> keyMethods, TreeValueMethodsBase<HistorianValue> valueMethods)
             : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods)
         {
-            m_buffer = new byte[MaximumStorageSize];
         }
 
         protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value)
@@ -61,52 +59,52 @@ namespace openHistorian.Collections.Generic.CustomCompression
             {
                 //If stage 1 (50% success)
                 //prevTimestamp = prevTimestamp;
-                prevPointId += 1 + ((code >> 4) & 0x7);
+                m_prevPointId += 1 + ((code >> 4) & 0x7);
                 key.EntryNumber = 0;
                 value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
                 value.Value2 = 0;
                 value.Value3 = 0;
-                key.Timestamp = prevTimestamp;
-                key.PointID = prevPointId;
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId;
                 return 4;
             }
             if (code < 0xC0)
             {
                 //If stage 2 (16% success)
                 //prevTimestamp = prevTimestamp;
-                prevPointId += 1 + ((code >> 4) & 0x3);
+                m_prevPointId += 1 + ((code >> 4) & 0x3);
                 key.EntryNumber = 0;
                 value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
                 value.Value2 = 0;
                 value.Value3 = 0;
-                key.Timestamp = prevTimestamp;
-                key.PointID = prevPointId;
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId;
                 return 4;
             }
             if (code < 0xD0)
             {
                 //If stage 3 (28% success)
                 //prevTimestamp = prevTimestamp;
-                prevPointId += 1 + (code & 0xF);
+                m_prevPointId += 1 + (code & 0xF);
                 key.EntryNumber = 0;
                 value.Value1 = 0;
                 value.Value2 = 0;
                 value.Value3 = 0;
-                key.Timestamp = prevTimestamp;
-                key.PointID = prevPointId;
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId;
                 return 1;
             }
             if (code < 0xE0)
             {
                 //If stage 4 (3% success)
                 //prevTimestamp = prevTimestamp;
-                prevPointId += 1 + (code & 0xF);
+                m_prevPointId += 1 + (code & 0xF);
                 key.EntryNumber = 0;
                 value.Value1 = *(uint*)(stream + 1);
                 value.Value2 = 0;
                 value.Value3 = 0;
-                key.Timestamp = prevTimestamp;
-                key.PointID = prevPointId;
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId;
                 return 5;
             }
 
@@ -115,13 +113,13 @@ namespace openHistorian.Collections.Generic.CustomCompression
             size = 1;
             if ((code & 16) != 0) //T is set
             {
-                prevTimestamp += Compression.Read7BitUInt64(stream, ref size);
-                prevPointId = Compression.Read7BitUInt64(stream, ref size);
+                m_prevTimestamp += Compression.Read7BitUInt64(stream, ref size);
+                m_prevPointId = Compression.Read7BitUInt64(stream, ref size);
             }
             else
             {
                 //prevTimestamp = prevTimestamp;
-                prevPointId += Compression.Read7BitUInt64(stream, ref size);
+                m_prevPointId += Compression.Read7BitUInt64(stream, ref size);
             }
 
 
@@ -163,26 +161,18 @@ namespace openHistorian.Collections.Generic.CustomCompression
                 value.Value3 = 0;
             }
 
-            key.Timestamp = prevTimestamp;
-            key.PointID = prevPointId;
+            key.Timestamp = m_prevTimestamp;
+            key.PointID = m_prevPointId;
             return size;
         }
 
         protected override void ResetEncoder()
         {
-            prevTimestamp = 0;
-            prevPointId = 0;
+            m_prevTimestamp = 0;
+            m_prevPointId = 0;
         }
 
-        private int MaximumStorageSize
-        {
-            get
-            {
-                return KeyValueSize + 6;
-            }
-        }
-
-        protected override unsafe byte Version
+        protected override byte Version
         {
             get
             {

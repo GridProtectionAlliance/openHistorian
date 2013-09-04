@@ -53,6 +53,14 @@ namespace openHistorian
             return reader.Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateFromList(pointIds.ToList()), DataReaderOptions.Default);
         }
 
+        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, DateTime firstTime, DateTime lastTime, IEnumerable<ulong> pointIds)
+            where TKey : HistorianKeyBase<TKey>, new()
+            where TValue : class, new()
+        {
+            return reader.Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateFromList(pointIds.ToList()), DataReaderOptions.Default);
+        }
+
+
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, QueryFilterTimestamp key1, IEnumerable<ulong> pointIds)
             where TKey : HistorianKeyBase<TKey>, new()
             where TValue : class, new()

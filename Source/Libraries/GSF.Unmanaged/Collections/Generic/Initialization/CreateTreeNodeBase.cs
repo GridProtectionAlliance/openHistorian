@@ -30,6 +30,9 @@ namespace openHistorian.Collections.Generic
     /// </summary>
     public abstract class CreateTreeNodeBase
     {
+        /// <summary>
+        /// Verifies that the abstraction implementations are valid.
+        /// </summary>
         protected CreateTreeNodeBase()
         {
             if (ValueTypeIfFixed == null && KeyTypeIfFixed != null)

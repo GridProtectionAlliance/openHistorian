@@ -30,55 +30,45 @@ namespace openHistorian.Collections.Generic.CustomCompression
     public unsafe class HistorianCompressionDeltaScanner
         : EncodedNodeScannerBase<HistorianKey, HistorianValue>
     {
-        private readonly byte[] m_buffer;
-        ulong prevTimestamp;
-        ulong prevPointId;
-        ulong prevEntryNumber;
-        ulong prevValue1;
-        ulong prevValue2;
-        ulong prevValue3;
+        ulong m_prevTimestamp;
+        ulong m_prevPointId;
+        ulong m_prevEntryNumber;
+        ulong m_prevValue1;
+        ulong m_prevValue2;
+        ulong m_prevValue3;
 
         public HistorianCompressionDeltaScanner(byte level, int blockSize, BinaryStreamBase stream, Func<HistorianKey, byte, uint> lookupKey, TreeKeyMethodsBase<HistorianKey> keyMethods, TreeValueMethodsBase<HistorianValue> valueMethods)
             : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods)
         {
-            m_buffer = new byte[MaximumStorageSize];
         }
 
         protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value)
         {
             int position = 0;
-            prevTimestamp ^= Compression.Read7BitUInt64(stream, ref position);
-            prevPointId ^= Compression.Read7BitUInt64(stream, ref position);
-            prevEntryNumber ^= Compression.Read7BitUInt64(stream, ref position);
-            prevValue1 ^= Compression.Read7BitUInt64(stream, ref position);
-            prevValue2 ^= Compression.Read7BitUInt64(stream, ref position);
-            prevValue3 ^= Compression.Read7BitUInt64(stream, ref position);
+            m_prevTimestamp ^= Compression.Read7BitUInt64(stream, ref position);
+            m_prevPointId ^= Compression.Read7BitUInt64(stream, ref position);
+            m_prevEntryNumber ^= Compression.Read7BitUInt64(stream, ref position);
+            m_prevValue1 ^= Compression.Read7BitUInt64(stream, ref position);
+            m_prevValue2 ^= Compression.Read7BitUInt64(stream, ref position);
+            m_prevValue3 ^= Compression.Read7BitUInt64(stream, ref position);
 
-            key.Timestamp = prevTimestamp;
-            key.PointID = prevPointId;
-            key.EntryNumber = prevEntryNumber;
-            value.Value1 = prevValue1;
-            value.Value2 = prevValue2;
-            value.Value3 = prevValue3;
+            key.Timestamp = m_prevTimestamp;
+            key.PointID = m_prevPointId;
+            key.EntryNumber = m_prevEntryNumber;
+            value.Value1 = m_prevValue1;
+            value.Value2 = m_prevValue2;
+            value.Value3 = m_prevValue3;
             return position;
         }
 
         protected override void ResetEncoder()
         {
-            prevTimestamp = 0;
-            prevPointId = 0;
-            prevEntryNumber = 0;
-            prevValue1 = 0;
-            prevValue2 = 0;
-            prevValue3 = 0;
-        }
-
-        private int MaximumStorageSize
-        {
-            get
-            {
-                return KeyValueSize + 6;
-            }
+            m_prevTimestamp = 0;
+            m_prevPointId = 0;
+            m_prevEntryNumber = 0;
+            m_prevValue1 = 0;
+            m_prevValue2 = 0;
+            m_prevValue3 = 0;
         }
 
         protected override unsafe byte Version

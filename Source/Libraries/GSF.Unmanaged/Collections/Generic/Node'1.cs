@@ -26,9 +26,18 @@ using GSF.IO;
 
 namespace openHistorian.Collections.Generic
 {
+    /// <summary>
+    /// Contains basic data about a node in the SortedTree.
+    /// </summary>
+    /// <typeparam name="TKey">The key that the SortedTree contains.</typeparam>
     public unsafe class Node<TKey>
         where TKey : class, new()
     {
+        /// <summary>
+        /// Occurs when the node index is changed or cleared.
+        /// </summary>
+        protected event EventHandler NodeIndexChanged;
+
         protected const int OffsetOfVersion = 0;
         protected const int OffsetOfNodeLevel = OffsetOfVersion + sizeof(byte);
         protected const int OffsetOfRecordCount = OffsetOfNodeLevel + sizeof(byte);
@@ -62,6 +71,7 @@ namespace openHistorian.Collections.Generic
         /// </summary>
         /// <param name="level"></param>
         /// <param name="keyMethods"></param>
+        /// <param name="version">The version code of the node.</param>
         protected Node(byte level, TreeKeyMethodsBase<TKey> keyMethods, byte version)
         {
             Level = level;
@@ -78,6 +88,7 @@ namespace openHistorian.Collections.Generic
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
         /// <param name="level"></param>
+        /// <param name="version">The version code of the node.</param>
         public Node(TreeKeyMethodsBase<TKey> keyMethods, BinaryStreamBase stream, int blockSize, byte level, byte version)
             : this(level, keyMethods, version)
         {
@@ -85,7 +96,7 @@ namespace openHistorian.Collections.Generic
         }
 
         /// <summary>
-        /// Initializes the node. To be called 
+        /// Initializes the node. To be called once
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
@@ -102,30 +113,9 @@ namespace openHistorian.Collections.Generic
             Clear();
         }
 
-        //public byte* Pointer
-        //{
-        //    get
-        //    {
-        //        return m_pointer;
-        //    }
-        //}
-
-        public long PointerWriteVersion
-        {
-            get
-            {
-                return m_pointerWriteVersion;
-            }
-        }
-
-        public long PointerReadVersion
-        {
-            get
-            {
-                return m_pointerReadVersion;
-            }
-        }
-
+        /// <summary>
+        /// Gets the byte offset of the upper bouds key
+        /// </summary>
         private int OffsetOfUpperBounds
         {
             get
@@ -134,6 +124,9 @@ namespace openHistorian.Collections.Generic
             }
         }
 
+        /// <summary>
+        /// Gets the byte offset of the header size.
+        /// </summary>
         protected int HeaderSize
         {
             get
@@ -142,6 +135,9 @@ namespace openHistorian.Collections.Generic
             }
         }
 
+        /// <summary>
+        /// Gets the node index of this current node.
+        /// </summary>
         public uint NodeIndex
         {
             get
@@ -150,6 +146,9 @@ namespace openHistorian.Collections.Generic
             }
         }
 
+        /// <summary>
+        /// Gets/Sets the number of records in this node.
+        /// </summary>
         public ushort RecordCount
         {
             get
@@ -163,7 +162,10 @@ namespace openHistorian.Collections.Generic
             }
         }
 
-        public ushort RemainingBytes
+        /// <summary>
+        /// Gets/Sets the number of unused bytes in the node.
+        /// </summary>
+        protected ushort RemainingBytes
         {
             get
             {
@@ -171,6 +173,9 @@ namespace openHistorian.Collections.Generic
             }
         }
 
+        /// <summary>
+        /// The number of bytes that are used in this node.
+        /// </summary>
         public ushort ValidBytes
         {
             get
@@ -184,17 +189,21 @@ namespace openHistorian.Collections.Generic
             }
         }
 
-        protected void IncrementOneRecord(int keyValueSize)
+        /// <summary>
+        /// Modifies both the <see cref="RecordCount"/> and <see cref="ValidBytes"/> in one function call.
+        /// </summary>
+        /// <param name="additionalValidBytes">the number of bytes to increase <see cref="ValidBytes"/> by</param>
+        protected void IncrementOneRecord(int additionalValidBytes)
         {
             ushort* ptr = (ushort*)(GetWritePointer() + OffsetOfRecordCount);
             m_recordCount++;
-            m_validBytes += (ushort)keyValueSize;
+            m_validBytes += (ushort)additionalValidBytes;
             ptr[0]++;
-            ptr[1] += (ushort)keyValueSize;
+            ptr[1] += (ushort)additionalValidBytes;
         }
 
         /// <summary>
-        /// The index of the left sibling. uint.MaxValue is the null case.
+        /// The index of the left sibling. <see cref="uint.MaxValue"/> is the null case.
         /// </summary>
         public uint LeftSiblingNodeIndex
         {
@@ -210,7 +219,7 @@ namespace openHistorian.Collections.Generic
         }
 
         /// <summary>
-        /// The index of the right sibling. uint.MaxValue is the null case.
+        /// The index of the right sibling. <see cref="uint.MaxValue"/> is the null case.
         /// </summary>
         public uint RightSiblingNodeIndex
         {
@@ -226,9 +235,9 @@ namespace openHistorian.Collections.Generic
         }
 
         /// <summary>
-        /// Is the index of the right sibling null. i.e. equal to uint.MaxValue
+        /// Is the index of the right sibling null. i.e. equal to <see cref="uint.MaxValue"/>
         /// </summary>
-        public bool IsRightSiblingIndexNull
+        protected bool IsRightSiblingIndexNull
         {
             get
             {
@@ -237,9 +246,9 @@ namespace openHistorian.Collections.Generic
         }
 
         /// <summary>
-        /// Is the index of the left sibling null. i.e. equal to uint.MaxValue
+        /// Is the index of the left sibling null. i.e. equal to <see cref="uint.MaxValue"/>
         /// </summary>
-        public bool IsLeftSiblingIndexNull
+        protected bool IsLeftSiblingIndexNull
         {
             get
             {
@@ -285,7 +294,7 @@ namespace openHistorian.Collections.Generic
         /// The position that points to the location right after the header which is the 
         /// start of the data within the node.
         /// </summary>
-        public long StartOfDataPosition
+        protected long StartOfDataPosition
         {
             get
             {
@@ -309,7 +318,8 @@ namespace openHistorian.Collections.Generic
         /// </summary>
         public void Clear()
         {
-            ResetPositionCached();
+            if (NodeIndexChanged != null) 
+                NodeIndexChanged(this, EventArgs.Empty);
             //InsideNodeBoundary = m_BoundsFalse;
             m_nodeIndex = uint.MaxValue;
             m_pointerReadVersion = -1;
@@ -333,7 +343,8 @@ namespace openHistorian.Collections.Generic
                 throw new Exception("Invalid Node Index");
             if (m_nodeIndex != nodeIndex)
             {
-                ResetPositionCached();
+                if (NodeIndexChanged != null) 
+                    NodeIndexChanged(this, EventArgs.Empty);
                 m_nodeIndex = nodeIndex;
                 m_pointerReadVersion = -1;
                 m_pointerWriteVersion = -1;
@@ -379,7 +390,7 @@ namespace openHistorian.Collections.Generic
         /// <param name="rightSibling"></param>
         /// <param name="lowerKey"></param>
         /// <param name="upperKey"></param>
-        public void CreateNewNode(uint nodeIndex, ushort recordCount, ushort validBytes, uint leftSibling, uint rightSibling, TKey lowerKey, TKey upperKey)
+        protected void CreateNewNode(uint nodeIndex, ushort recordCount, ushort validBytes, uint leftSibling, uint rightSibling, TKey lowerKey, TKey upperKey)
         {
             byte* ptr = Stream.GetWritePointer(nodeIndex * BlockSize, BlockSize);
             ptr[OffsetOfVersion] = Version;
@@ -427,7 +438,7 @@ namespace openHistorian.Collections.Generic
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
         /// <param name="nodeIndex"></param>
-        public void SetLeftSiblingProperty(uint nodeIndex, uint oldValue, uint newValue)
+        protected void SetLeftSiblingProperty(uint nodeIndex, uint oldValue, uint newValue)
         {
             byte* ptr = Stream.GetWritePointer(BlockSize * nodeIndex, BlockSize);
             if (ptr[OffsetOfVersion] != Version)
@@ -443,7 +454,12 @@ namespace openHistorian.Collections.Generic
                 m_leftSiblingNodeIndex = newValue;
         }
 
-        public int GetValidBytes(uint nodeIndex)
+        /// <summary>
+        /// Gets the number of valid bytes of the foreign <see cref="nodeIndex"/> without seeking this current node to it.
+        /// </summary>
+        /// <param name="nodeIndex">the node to use</param>
+        /// <returns></returns>
+        protected int GetValidBytes(uint nodeIndex)
         {
             byte* ptr = Stream.GetReadPointer(BlockSize * nodeIndex, BlockSize);
             if (ptr[OffsetOfVersion] != Version)
@@ -451,16 +467,6 @@ namespace openHistorian.Collections.Generic
             if (ptr[OffsetOfNodeLevel] != Level)
                 throw new Exception("This node is not supposed to access the underlying node level.");
             return *(ushort*)(ptr + OffsetOfValidBytes);
-        }
-
-        public ushort GetRecordCount(uint nodeIndex)
-        {
-            byte* ptr = Stream.GetReadPointer(BlockSize * nodeIndex, BlockSize);
-            if (ptr[OffsetOfVersion] != Version)
-                throw new Exception("Unknown node Version.");
-            if (ptr[OffsetOfNodeLevel] != Level)
-                throw new Exception("This node is not supposed to access the underlying node level.");
-            return *(ushort*)(ptr + OffsetOfRecordCount);
         }
 
         /// <summary>
@@ -525,10 +531,6 @@ namespace openHistorian.Collections.Generic
             m_pointerAfterHeader = m_pointer + HeaderSize;
             m_pointerReadVersion = Stream.PointerVersion;
             m_pointerWriteVersion = Stream.PointerVersion;
-        }
-
-        protected virtual void ResetPositionCached()
-        {
         }
     }
 }

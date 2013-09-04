@@ -26,6 +26,9 @@ using GSF;
 
 namespace openHistorian.Collections.Generic.CustomCompression
 {
+    /// <summary>
+    /// The Node that will be used in the SortedTree that implements a compression method.
+    /// </summary>
     public unsafe class HistorianCompressionTs
         : EncodedNodeBase<HistorianKey, HistorianValue>
     {

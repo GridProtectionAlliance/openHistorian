@@ -34,6 +34,9 @@ namespace openHistorian.Collections.Generic
     {
 
         // {F9B08E1E-2D3E-466A-A186-453064588087}
+        /// <summary>
+        /// A unique identifier for this compression method.
+        /// </summary>
         public readonly static Guid TypeGuid = new Guid(0xf9b08e1e, 0x2d3e, 0x466a, 0xa1, 0x86, 0x45, 0x30, 0x64, 0x58, 0x80, 0x87);
 
         /// <summary>

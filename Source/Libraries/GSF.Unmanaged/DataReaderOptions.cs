@@ -32,6 +32,9 @@ namespace openHistorian
     /// </summary>
     public class DataReaderOptions
     {
+        /// <summary>
+        /// Default options. Same as default constructor
+        /// </summary>
         public static DataReaderOptions Default
         {
             get;
@@ -43,6 +46,13 @@ namespace openHistorian
             Default = new DataReaderOptions();
         }
 
+        /// <summary>
+        /// Creates <see cref="DataReaderOptions"/>.
+        /// </summary>
+        /// <param name="timeout">the time before a query will end prematurely</param>
+        /// <param name="maxReturnedCount">the maximum number of Key/Values to send to the client before ending prematurely</param>
+        /// <param name="maxScanCount">the maximum number of points for the database to read before ending prematurely</param>
+        /// <param name="maxSeekCount">the maximum seeks that will occur before ending prematurely</param>
         public DataReaderOptions(TimeSpan timeout = default(TimeSpan), long maxReturnedCount = 0, long maxScanCount = 0, long maxSeekCount = 0)
         {
             Timeout = timeout;
@@ -51,6 +61,10 @@ namespace openHistorian
             MaxSeekCount = maxSeekCount;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="DataReaderOptions"/> from a stream
+        /// </summary>
+        /// <param name="stream">the stream to read from</param>
         public DataReaderOptions(BinaryStreamBase stream)
         {
             byte version = stream.ReadByte();
@@ -67,6 +81,10 @@ namespace openHistorian
             }
         }
 
+        /// <summary>
+        /// Writes this data to the <see cref="stream"/>.
+        /// </summary>
+        /// <param name="stream">the stream to write data to</param>
         public void Save(BinaryStreamBase stream)
         {
             stream.Write((byte)0);
@@ -76,24 +94,37 @@ namespace openHistorian
             stream.Write(MaxSeekCount);
         }
 
+        /// <summary>
+        /// The time before the query times out.
+        /// </summary>
         public TimeSpan Timeout
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The maximum number of points to return. 0 means no limit.
+        /// </summary>
         public long MaxReturnedCount
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The maximum number of points to scan to get the results set. 
+        /// This includes any point that was filtered
+        /// </summary>
         public long MaxScanCount
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The maximum number of seeks permitted
+        /// </summary>
         public long MaxSeekCount
         {
             get;

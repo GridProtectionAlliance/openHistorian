@@ -26,10 +26,19 @@ using GSF;
 
 namespace openHistorian.Collections.Generic.CustomCompression
 {
+    /// <summary>
+    /// The Node that will be used in the SortedTree that implements a compression method.
+    /// </summary>
     public unsafe class HistorianCompressionDelta
         : EncodedNodeBase<HistorianKey, HistorianValue>
     {
 
+        /// <summary>
+        /// Creates a new <see cref="HistorianCompressionDelta"/>
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="keyMethods"></param>
+        /// <param name="valueMethods"></param>
         public HistorianCompressionDelta(byte level, TreeKeyMethodsBase<HistorianKey> keyMethods, TreeValueMethodsBase<HistorianValue> valueMethods)
             : base(level, keyMethods, valueMethods, 2)
         {

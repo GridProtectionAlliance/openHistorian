@@ -73,7 +73,7 @@
     <Compile Include="Data\Types\TypeSingle.cs" />
     <Compile Include="HistorianDatabaseEngine.cs" />
     <Compile Include="HistorianDatabaseInstance.cs" />
-    <Compile Include="HistorianServer%272.cs" />
+    <Compile Include="HistorianServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queues\FileBackedHistorianInputQueue.cs" />
     <Compile Include="Queues\HistorianInputQueue.cs" />

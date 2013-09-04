@@ -57,6 +57,10 @@ namespace openHistorian.Collections.Generic
             m_nullValue = new TValue();
             keyMethods.Clear(m_nullKey);
             valueMethods.Clear(m_nullValue);
+
+            NodeIndexChanged += OnNodeIndexChanged;
+            ClearNodeCache();
+
         }
 
         protected override void InitializeType()
@@ -67,6 +71,15 @@ namespace openHistorian.Collections.Generic
                 throw new Exception("Tree must have at least 4 records per node. Increase the block size or decrease the size of the records.");
         }
 
+        /// <summary>
+        /// Encodes this record to the provided stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="prevKey"></param>
+        /// <param name="prevValue"></param>
+        /// <param name="currentKey"></param>
+        /// <param name="currentValue"></param>
+        /// <returns>returns the number of bytes read from the stream</returns>
         protected abstract unsafe int EncodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
 
         /// <summary>
@@ -260,7 +273,7 @@ namespace openHistorian.Collections.Generic
         {
             fixed (byte* buffer = m_buffer1)
             {
-                ResetPositionCached();
+                ClearNodeCache();
                 while (m_currentOffset < (BlockSize >> 1))
                 {
                     Read(buffer);
@@ -299,7 +312,7 @@ namespace openHistorian.Collections.Generic
                 RightSiblingNodeIndex = newNodeIndex;
                 UpperKey = dividingKey;
 
-                ResetPositionCached();
+                ClearNodeCache();
             }
         }
 
@@ -406,7 +419,7 @@ namespace openHistorian.Collections.Generic
             }
             else
             {
-                ResetPositionCached();
+                ClearNodeCache();
                 while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
                     ;
             }
@@ -424,7 +437,7 @@ namespace openHistorian.Collections.Generic
             //    Read();
             if (m_currentIndex > index)
             {
-                ResetPositionCached();
+                ClearNodeCache();
                 for (int x = 0; x <= index; x++)
                     Read(buffer);
             }
@@ -435,7 +448,12 @@ namespace openHistorian.Collections.Generic
             }
         }
 
-        protected override void ResetPositionCached()
+        protected void OnNodeIndexChanged(object sender, EventArgs e)
+        {
+            ClearNodeCache();
+        }
+
+        protected void ClearNodeCache()
         {
             m_nextOffset = HeaderSize;
             m_currentOffset = HeaderSize;

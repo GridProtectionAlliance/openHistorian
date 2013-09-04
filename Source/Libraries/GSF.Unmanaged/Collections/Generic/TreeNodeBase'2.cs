@@ -29,6 +29,11 @@ using GSF.IO;
 
 namespace openHistorian.Collections.Generic
 {
+    /// <summary>
+    /// A tree node in the SortedTree
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public abstract partial class TreeNodeBase<TKey, TValue>
         : Node<TKey>
         where TKey : class, new()
@@ -41,7 +46,6 @@ namespace openHistorian.Collections.Generic
         private Node<TKey> m_tempNode2;
         private int m_minRecordNodeBytes;
         private Func<uint> m_getNextNewNodeIndex;
-        private TKey m_tempKey;
         protected TreeValueMethodsBase<TValue> ValueMethods;
         protected SparseIndex<TKey> SparseIndex;
         private bool m_initialized;
@@ -55,7 +59,6 @@ namespace openHistorian.Collections.Generic
         {
             m_initialized = false;
             ValueMethods = valueMethods;
-            m_tempKey = new TKey();
             KeyValueSize = KeySize + ValueMethods.Size;
         }
 

@@ -23,6 +23,7 @@
 
 namespace openHistorian.Collections.Generic
 {
+
     public partial class TreeNodeBase<TKey, TValue>
     {
         protected abstract void InitializeType();

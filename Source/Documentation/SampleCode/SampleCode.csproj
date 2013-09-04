@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="openHistorian.Core.dll\Sample5 - CSV Export.cs" />
     <Compile Include="openHistorian.Core.dll\Sample 1 - Write Archive Points.cs" />
     <Compile Include="openHistorian.Core.dll\Sample4 - Multi Database Client.cs" />
     <Compile Include="openHistorian.Core.dll\Sample3 - Single Database Client.cs" />
