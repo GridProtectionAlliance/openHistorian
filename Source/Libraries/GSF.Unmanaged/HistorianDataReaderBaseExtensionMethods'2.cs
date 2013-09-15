@@ -32,36 +32,35 @@ namespace openHistorian
 {
     public static class HistorianDataReaderBaseExtensionMethods
     {
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey,TValue> reader, ulong timestamp)
+        public static KeyValueStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey,TValue> reader, ulong timestamp)
             where TKey : HistorianKeyBase<TKey>, new()
             where TValue : class, new()
         {
             return reader.Read(QueryFilterTimestamp.CreateFromRange(timestamp, timestamp), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
         }
 
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, ulong firstTime, ulong lastTime)
+        public static KeyValueStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, ulong firstTime, ulong lastTime)
             where TKey : HistorianKeyBase<TKey>, new()
             where TValue : class, new()
         {
             return reader.Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
         }
 
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, ulong firstTime, ulong lastTime, IEnumerable<ulong> pointIds)
+        public static KeyValueStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, ulong firstTime, ulong lastTime, IEnumerable<ulong> pointIds)
             where TKey : HistorianKeyBase<TKey>, new()
             where TValue : class, new()
         {
             return reader.Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateFromList(pointIds.ToList()), DataReaderOptions.Default);
         }
 
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, DateTime firstTime, DateTime lastTime, IEnumerable<ulong> pointIds)
+        public static KeyValueStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, DateTime firstTime, DateTime lastTime, IEnumerable<ulong> pointIds)
             where TKey : HistorianKeyBase<TKey>, new()
             where TValue : class, new()
         {
             return reader.Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateFromList(pointIds.ToList()), DataReaderOptions.Default);
         }
 
-
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, QueryFilterTimestamp key1, IEnumerable<ulong> pointIds)
+        public static KeyValueStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, QueryFilterTimestamp key1, IEnumerable<ulong> pointIds)
             where TKey : HistorianKeyBase<TKey>, new()
             where TValue : class, new()
         {

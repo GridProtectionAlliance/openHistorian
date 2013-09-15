@@ -102,7 +102,7 @@ namespace openHistorian
             }
         }
 
-        private IEnumerable<IDataPoint> ReadDataStream(TreeStream<HistorianKey, HistorianValue> stream)
+        private IEnumerable<IDataPoint> ReadDataStream(KeyValueStream<HistorianKey, HistorianValue> stream)
         {
             List<ArchiveDataPoint> queriedData = new List<ArchiveDataPoint>();
             ArchiveDataPoint point;

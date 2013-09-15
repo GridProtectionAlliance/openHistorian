@@ -219,7 +219,7 @@ namespace openHistorian.Collections.Generic
             return false;
         }
 
-        public void AddRange(TreeStream<TKey, TValue> stream)
+        public void AddRange(KeyValueStream<TKey, TValue> stream)
         {
             while (stream.Read())
             {

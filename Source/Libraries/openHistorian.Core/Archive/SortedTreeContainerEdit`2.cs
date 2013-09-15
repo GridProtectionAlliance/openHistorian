@@ -87,7 +87,7 @@ namespace openHistorian.Archive
             m_tree.Add(key, value);
         }
 
-        public void AddPoints(TreeStream<TKey, TValue> stream)
+        public void AddPoints(KeyValueStream<TKey, TValue> stream)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);

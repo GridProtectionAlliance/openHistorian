@@ -275,7 +275,7 @@ namespace openHistorian.Adapters
         }
 
         private class StreamPoints
-            : TreeStream<HistorianKey, HistorianValue>
+            : KeyValueStream<HistorianKey, HistorianValue>
         {
             private int m_index;
             private readonly IMeasurement[] m_measurements;

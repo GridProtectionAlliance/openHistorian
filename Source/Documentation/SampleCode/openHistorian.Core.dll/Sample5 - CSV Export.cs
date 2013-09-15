@@ -47,7 +47,7 @@ using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClien
         using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
         {
             csvStream.Write("Timestamp,PointID,Value,Quality");
-            TreeStream<HistorianKey, HistorianValue> stream = reader.Read(DateTime.MinValue, DateTime.MaxValue, new ulong[] { 1, 2, 3 });
+            KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(DateTime.MinValue, DateTime.MaxValue, new ulong[] { 1, 2, 3 });
             while (stream.Read())
             {
                 csvStream.WriteLine("{0},{1},{2},{3}", stream.CurrentKey.TimestampAsDate, stream.CurrentKey.PointID, stream.CurrentValue.AsSingle, stream.CurrentValue.Value3);

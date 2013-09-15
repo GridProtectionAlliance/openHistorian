@@ -91,10 +91,10 @@ namespace openHistorian
         #region [ Properties ]
 
         /// <summary>
-        /// Accesses <see cref="IHistorianDatabase{HistorianKey,HistorianValue}"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="IHistorianDatabase{HistorianKey,HistorianValue}"/> for given <paramref name="databaseName"/>.</returns>
+        /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
         public HistorianDatabaseEngine this[string databaseName]
         {
             get

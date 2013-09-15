@@ -32,6 +32,11 @@ using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine
 {
+    /// <summary>
+    /// A <see cref="HistorianDataReaderBase"/> that can read from a <see cref="ArchiveList"/>.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     internal class ArchiveReader<TKey, TValue>
         : HistorianDataReaderBase<TKey, TValue>
         where TKey : HistorianKeyBase<TKey>, new()
@@ -46,10 +51,17 @@ namespace openHistorian.Engine
             m_snapshot = m_list.CreateNewClientResources();
         }
 
-        public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp key1, QueryFilterPointId key2, DataReaderOptions readerOptions)
+        /// <summary>
+        /// Reads data from the historian with the provided filters.
+        /// </summary>
+        /// <param name="timestampFilter">filters for the timestamp</param>
+        /// <param name="pointIdFilter">filters for the pointId</param>
+        /// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
+        /// <returns></returns>
+        public override KeyValueStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, DataReaderOptions readerOptions)
         {
             Stats.QueriesExecuted++;
-            return new ReadStream(key1, key2, m_snapshot, readerOptions);
+            return new ReadStream(timestampFilter, pointIdFilter, m_snapshot, readerOptions);
         }
 
         /// <summary>
@@ -70,13 +82,13 @@ namespace openHistorian.Engine
         }
 
         private class ReadStream
-            : TreeStream<TKey, TValue>
+            : KeyValueStream<TKey, TValue>
         {
             private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;
             private ulong m_startKey;
             private ulong m_stopKey;
-            private readonly QueryFilterTimestamp m_key1;
-            private readonly QueryFilterPointId m_key2;
+            private readonly QueryFilterTimestamp m_timestampFilter;
+            private readonly QueryFilterPointId m_poingIdFilter;
             bool m_isKey2Universal;
             private bool m_timedOut;
             private long m_pointCount;
@@ -87,9 +99,9 @@ namespace openHistorian.Engine
             private int m_currentIndex;
             private ArchiveTableSummary<TKey, TValue> m_currentSummary;
             private ArchiveTableReadSnapshot<TKey, TValue> m_currentInstance;
-            private TreeScannerCoreBase<TKey, TValue> m_currentScanner;
+            private SeekableKeyValueStream<TKey, TValue> m_currentScanner;
 
-            public ReadStream(QueryFilterTimestamp key1, QueryFilterPointId key2, ArchiveListSnapshot<TKey, TValue> snapshot, DataReaderOptions readerOptions)
+            public ReadStream(QueryFilterTimestamp timestampFilter, QueryFilterPointId poingIdFilter, ArchiveListSnapshot<TKey, TValue> snapshot, DataReaderOptions readerOptions)
             {
                 if (readerOptions.Timeout.Ticks > 0)
                 {
@@ -97,18 +109,17 @@ namespace openHistorian.Engine
                     m_timeout.RegisterTimeout(readerOptions.Timeout, () => m_timedOut = true);
                 }
 
-                m_key1 = key1;
-                m_key2 = key2;
-                m_isKey2Universal = key2.IsUniverseFilter;
-                m_startKey = key1.FirstTime;
-                m_stopKey = key1.LastTime;
+                m_timestampFilter = timestampFilter;
+                m_poingIdFilter = poingIdFilter;
+                m_isKey2Universal = poingIdFilter.IsUniverseFilter;
+                m_startKey = timestampFilter.FirstTime;
+                m_stopKey = timestampFilter.LastTime;
                 m_snapshot = snapshot;
                 m_snapshot.UpdateSnapshot();
                 TKey startKey = new TKey();
                 TKey stopKey = new TKey();
 
                 startKey.SetMin();
-
                 stopKey.SetMax();
 
                 m_tables = new Queue<KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>>();
@@ -118,8 +129,8 @@ namespace openHistorian.Engine
                     ArchiveTableSummary<TKey, TValue> table = m_snapshot.Tables[x];
                     if (table != null)
                     {
-                        startKey.Timestamp = key1.FirstTime;
-                        stopKey.Timestamp = key1.LastTime;
+                        startKey.Timestamp = timestampFilter.FirstTime;
+                        stopKey.Timestamp = timestampFilter.LastTime;
                         if (table.Contains(startKey, stopKey))
                         {
                             m_tables.Enqueue(new KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>(x, table));
@@ -143,7 +154,7 @@ namespace openHistorian.Engine
                     if (CurrentKey.Timestamp <= m_stopKey)
                     {
                         Stats.PointsScanned++;
-                        if (m_isKey2Universal || m_key2.ContainsKey(CurrentKey.PointID))
+                        if (m_isKey2Universal || m_poingIdFilter.ContainsPointID(CurrentKey.PointID))
                         {
                             Stats.PointsReturned++;
                             return true;
@@ -151,7 +162,7 @@ namespace openHistorian.Engine
                         goto TryAgain;
                     }
 
-                    if (m_key1.GetNextWindow(out m_startKey, out m_stopKey))
+                    if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
                     {
                         TKey key = new TKey();
                         key.Timestamp = m_startKey;
@@ -182,8 +193,8 @@ namespace openHistorian.Engine
                 }
                 if (m_tables.Count > 0)
                 {
-                    m_key1.Reset();
-                    if (!m_key1.GetNextWindow(out m_startKey, out m_stopKey))
+                    m_timestampFilter.Reset();
+                    if (!m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
                     {
                         throw new Exception("No keys in the list");
                     }

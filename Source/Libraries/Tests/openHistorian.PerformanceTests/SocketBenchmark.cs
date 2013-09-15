@@ -28,7 +28,7 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();
+                HistorianDatabaseBase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();
 
                 for (ulong x = 0; x < 10000000; x++)
                 {
@@ -119,12 +119,12 @@ namespace SampleCode.openHistorian.Server.dll
                         count = 0;
                         using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                         {
-                            IHistorianDatabase<HistorianKey, HistorianValue> database = client.GetDatabase();//.GetDatabase();
+                            HistorianDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase();//.GetDatabase();
                             //IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
                             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                             {
                                 //TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue, new ulong[] { 2 });
-                                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue);
+                                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue);
                                 while (stream.Read())
                                 {
                                     count++;

@@ -55,7 +55,7 @@ namespace openHistorian.Engine.ArchiveWriters
             }
         }
 
-        public void Append(TreeStream<TKey, TValue> scan)
+        public void Append(KeyValueStream<TKey, TValue> scan)
         {
             if (m_archiveFile == null)
             {

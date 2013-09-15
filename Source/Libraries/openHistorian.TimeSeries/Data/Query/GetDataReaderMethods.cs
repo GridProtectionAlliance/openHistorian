@@ -128,7 +128,7 @@ namespace openHistorian.Data.Query
         SortedList<DateTime, FrameData> m_results;
         int m_currentFrame;
 
-        public HistorianDataPointReader(IHistorianDatabase<HistorianKey, HistorianValue> database, DateTime start, DateTime stop, TableDefinition tableDefinition)
+        public HistorianDataPointReader(HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime start, DateTime stop, TableDefinition tableDefinition)
         {
             HashSet<ulong> allPoints = new HashSet<ulong>();
             m_tableDefinition = tableDefinition;
@@ -535,13 +535,13 @@ namespace openHistorian.Data.Query
     {
 
 
-        public static IDataReader GetTable(this IHistorianDatabase<HistorianKey, HistorianValue> database, DateTime start, DateTime stop, TableDefinition tableDefinition)
+        public static IDataReader GetTable(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime start, DateTime stop, TableDefinition tableDefinition)
         {
 
             return null;
         }
 
-        public static DataTable GetDataReaderTable(this IHistorianDatabase<HistorianKey, HistorianValue> database, ulong start, ulong stop, IList<ISignalWithName> columns)
+        public static DataTable GetDataReaderTable(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong start, ulong stop, IList<ISignalWithName> columns)
         {
             if (columns.Any((x) => !x.HistorianId.HasValue))
             {

@@ -43,7 +43,7 @@ namespace openHistorian.Communications
 
         private NetworkBinaryStream2 m_stream;
         private readonly IHistorianDatabaseCollection<TKey, TValue> m_historian;
-        private IHistorianDatabase<TKey, TValue> m_historianDatabase;
+        private HistorianDatabaseBase<TKey, TValue> m_historianDatabase;
         private HistorianDataReaderBase<TKey, TValue> m_historianReaderBase;
         KeyValueStreamCompressionBase<TKey, TValue> m_compressionMode;
 
@@ -186,7 +186,7 @@ namespace openHistorian.Communications
             QueryFilterPointId key2Parser = QueryFilterPointId.CreateFromStream(m_stream);
             DataReaderOptions readerOptions = new DataReaderOptions(m_stream);
 
-            TreeStream<TKey, TValue> scanner = m_historianReaderBase.Read(key1Parser, key2Parser, readerOptions);
+            KeyValueStream<TKey, TValue> scanner = m_historianReaderBase.Read(key1Parser, key2Parser, readerOptions);
             m_compressionMode.ResetEncoder();
             int loop = 0;
             while (scanner.Read())

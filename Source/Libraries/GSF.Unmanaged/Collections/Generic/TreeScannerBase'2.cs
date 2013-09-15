@@ -26,8 +26,14 @@ using GSF.IO;
 
 namespace openHistorian.Collections.Generic
 {
+
+    /// <summary>
+    /// Base class for reading from any implementation of a sorted trees.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public abstract unsafe class TreeScannerBase<TKey, TValue>
-        : TreeScannerCoreBase<TKey, TValue>
+        : SeekableKeyValueStream<TKey, TValue>
         where TKey : class, new()
         where TValue : class, new()
     {
@@ -42,34 +48,49 @@ namespace openHistorian.Collections.Generic
 
         private readonly Func<TKey, byte, uint> m_lookupKey;
         private readonly TKey m_tempKey;
-        protected TKey LowerKey;
-        protected TKey UpperKey;
+        //private TKey m_lowerKey;
+        //private TKey m_upperKey;
         protected TreeKeyMethodsBase<TKey> KeyMethods;
         protected TreeValueMethodsBase<TValue> ValueMethods;
 
+        /// <summary>
+        /// The index of the current node.
+        /// </summary>
         protected uint NodeIndex
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The number of records in the current node.
+        /// </summary>
         protected ushort RecordCount
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The node index of the previous sibling.
+        /// uint.MaxValue means there is no sibling to the right.
+        /// </summary>
         protected uint LeftSiblingNodeIndex
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The node index of the next sibling. 
+        /// uint.MaxValue means there is no sibling to the right.
+        /// </summary>
         protected uint RightSiblingNodeIndex
         {
             get;
             private set;
         }
+
 
         private readonly byte m_version;
         private readonly byte m_level;
@@ -80,18 +101,18 @@ namespace openHistorian.Collections.Generic
         protected long PointerVersion;
         protected int KeyIndexOfCurrentKey;
         protected int HeaderSize;
-        protected int OffsetOfUpperBounds;
+        //protected int OffsetOfUpperBounds;
         protected int KeySize;
 
         protected TreeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey,
-                                  TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
+                                  TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods, byte version)
         {
             m_tempKey = new TKey();
-            m_version = Version;
+            //m_lowerKey = new TKey();
+            //m_upperKey = new TKey();
+            m_version = version;
             m_lookupKey = lookupKey;
             m_level = level;
-            LowerKey = new TKey();
-            UpperKey = new TKey();
 
             //m_currentNode = new Node(stream, blockSize);
 
@@ -101,23 +122,32 @@ namespace openHistorian.Collections.Generic
             KeySize = KeyMethods.Size;
             KeyValueSize = (KeyMethods.Size + ValueMethods.Size);
 
-            OffsetOfUpperBounds = OffsetOfLowerBounds + KeySize;
+            //OffsetOfUpperBounds = OffsetOfLowerBounds + KeySize;
             HeaderSize = OffsetOfLowerBounds + 2 * KeySize;
             m_blockSize = blockSize;
             Stream = stream;
             PointerVersion = -1;
         }
 
-        protected abstract byte Version
-        {
-            get;
-        }
-
+        /// <summary>
+        /// Using <see cref="Pointer"/> advance to the next KeyValue
+        /// </summary>
         protected abstract void ReadNext();
+
+        /// <summary>
+        /// Using <see cref="Pointer"/> advance to the search location of the provided <see cref="key"/>
+        /// </summary>
+        /// <param name="key">the key to advance to</param>
         protected abstract void FindKey(TKey key);
 
+        /// <summary>
+        /// Advances the stream to the next value. 
+        /// If before the beginning of the stream, advances to the first value
+        /// </summary>
+        /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
         public override bool Read()
         {
+            //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
             if (KeyIndexOfCurrentKey < RecordCount && Stream.PointerVersion == PointerVersion)
             {
                 ReadNext();
@@ -126,6 +156,10 @@ namespace openHistorian.Collections.Generic
             return Read2();
         }
 
+        /// <summary>
+        /// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
+        /// </summary>
+        /// <returns></returns>
         protected bool Read2()
         {
             //return false;
@@ -150,21 +184,35 @@ namespace openHistorian.Collections.Generic
             return true;
         }
 
+        /// <summary>
+        /// Seeks to the start of SortedTree.
+        /// </summary>
         public virtual void SeekToStart()
         {
             KeyMethods.SetMin(m_tempKey);
             SeekToKey(m_tempKey);
         }
 
+
+        /// <summary>
+        /// Seeks the stream to the first value greater than or equal to <see cref="key"/>
+        /// </summary>
+        /// <param name="key">the key to seek to.</param>
         public override void SeekToKey(TKey key)
         {
             LoadNode(FindLeafNodeAddress(key));
             FindKey(key);
         }
 
-        private void LoadNode(uint value)
+        /// <summary>
+        /// Loads the header data for the provided node.
+        /// </summary>
+        /// <param name="index">the node index</param>
+        private void LoadNode(uint index)
         {
-            NodeIndex = value;
+            if (index == uint.MaxValue)
+                throw new ArgumentNullException("index", "Cannot be uint.MaxValue. Which is null.");
+            NodeIndex = index;
 
             RefreshPointer();
 
@@ -176,25 +224,39 @@ namespace openHistorian.Collections.Generic
             RecordCount = *(ushort*)(ptr + OffsetOfRecordCount);
             LeftSiblingNodeIndex = *(uint*)(ptr + OffsetOfLeftSibling);
             RightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
-            KeyMethods.Read(ptr + OffsetOfLowerBounds, LowerKey);
-            KeyMethods.Read(ptr + OffsetOfUpperBounds, UpperKey);
+            //KeyMethods.Read(ptr + OffsetOfLowerBounds, m_lowerKey);
+            //KeyMethods.Read(ptr + OffsetOfUpperBounds, m_upperKey);
             KeyIndexOfCurrentKey = 0;
-            Reset();
+            OnNoadReload();
         }
 
+        /// <summary>
+        /// Gets the pointer for the provided block.
+        /// </summary>
         private void RefreshPointer()
         {
             Pointer = Stream.GetReadPointer(NodeIndex * m_blockSize, m_blockSize) + HeaderSize;
             PointerVersion = Stream.PointerVersion;
         }
 
+        /// <summary>
+        /// Gets the block index when seeking for the provided key.
+        /// </summary>
+        /// <param name="key">the key to start the search from.</param>
+        /// <returns></returns>
         protected uint FindLeafNodeAddress(TKey key)
         {
             return m_lookupKey(key, m_level);
         }
 
-        protected virtual void Reset()
+        /// <summary>
+        /// Occurs when a node's data is reset.
+        /// Derived classes can override this 
+        /// method if fields need to be reset when a node is loaded.
+        /// </summary>
+        protected virtual void OnNoadReload()
         {
+
         }
     }
 }

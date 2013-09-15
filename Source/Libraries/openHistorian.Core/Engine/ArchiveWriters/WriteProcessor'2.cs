@@ -52,7 +52,7 @@ namespace openHistorian.Engine.ArchiveWriters
             return m_prestage.Write(key, value);
         }
 
-        public long Write(TreeStream<TKey, TValue> stream)
+        public long Write(KeyValueStream<TKey, TValue> stream)
         {
             return m_prestage.Write(stream);
         }

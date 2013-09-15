@@ -40,7 +40,7 @@ namespace openHistorian.Collections.Generic.CustomCompression
         ulong m_prevPointId;
 
         public HistorianCompressionTsScanner(byte level, int blockSize, BinaryStreamBase stream, Func<HistorianKey, byte, uint> lookupKey, TreeKeyMethodsBase<HistorianKey> keyMethods, TreeValueMethodsBase<HistorianValue> valueMethods)
-            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods)
+            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, 2)
         {
         }
 
@@ -172,12 +172,5 @@ namespace openHistorian.Collections.Generic.CustomCompression
             m_prevPointId = 0;
         }
 
-        protected override byte Version
-        {
-            get
-            {
-                return 2;
-            }
-        }
     }
 }

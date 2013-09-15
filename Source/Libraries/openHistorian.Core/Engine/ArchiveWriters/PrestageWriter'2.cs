@@ -134,7 +134,7 @@ namespace openHistorian.Engine.ArchiveWriters
             return sequenceId;
         }
 
-        public long Write(TreeStream<TKey, TValue> stream)
+        public long Write(KeyValueStream<TKey, TValue> stream)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);

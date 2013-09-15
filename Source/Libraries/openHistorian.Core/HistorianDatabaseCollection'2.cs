@@ -40,11 +40,11 @@ namespace openHistorian
 
         private readonly object m_syncRoot = new object();
 
-        private readonly SortedList<string, IHistorianDatabase<TKey, TValue>> m_databases;
+        private readonly SortedList<string, HistorianDatabaseBase<TKey, TValue>> m_databases;
 
         public HistorianDatabaseCollection()
         {
-            m_databases = new SortedList<string, IHistorianDatabase<TKey, TValue>>();
+            m_databases = new SortedList<string, HistorianDatabaseBase<TKey, TValue>>();
         }
 
         //public HistorianDatabaseCollection(string configFileName)
@@ -54,11 +54,11 @@ namespace openHistorian
         //}
 
         /// <summary>
-        /// Accesses <see cref="IHistorianDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="IHistorianDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public IHistorianDatabase<TKey, TValue> this[string databaseName]
+        /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        public HistorianDatabaseBase<TKey, TValue> this[string databaseName]
         {
             get
             {
@@ -77,7 +77,7 @@ namespace openHistorian
         //    }
         //}
 
-        public void Add(string databaseName, IHistorianDatabase<TKey, TValue> database)
+        public void Add(string databaseName, HistorianDatabaseBase<TKey, TValue> database)
         {
             lock (m_syncRoot)
             {
@@ -142,7 +142,7 @@ namespace openHistorian
             if (!m_disposed)
             {
                 m_disposed = true;
-                foreach (IHistorianDatabase<TKey, TValue> db in m_databases.Values)
+                foreach (HistorianDatabaseBase<TKey, TValue> db in m_databases.Values)
                 {
                     db.Dispose();
                 }

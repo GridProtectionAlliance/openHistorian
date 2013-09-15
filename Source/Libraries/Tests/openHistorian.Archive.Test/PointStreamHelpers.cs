@@ -6,7 +6,7 @@ using openHistorian.Collections.Generic;
 namespace openHistorian
 {
     public class PointStreamSequential
-        : TreeStream<HistorianKey, HistorianValue>
+        : KeyValueStream<HistorianKey, HistorianValue>
     {
         private ulong m_start;
         private int m_count;
@@ -100,7 +100,7 @@ namespace openHistorian
         //    return x;
         //}
 
-        public static long Count<TKey, TValue>(this TreeStream<TKey, TValue> stream)
+        public static long Count<TKey, TValue>(this KeyValueStream<TKey, TValue> stream)
             where TKey : class, new()
             where TValue : class, new()
         {

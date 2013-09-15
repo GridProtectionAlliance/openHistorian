@@ -38,13 +38,13 @@ namespace openHistorian
     }
 
     public class HistorianClient<TKey, TValue>
-        : IHistorianDatabase<TKey, TValue>,
+        : HistorianDatabaseBase<TKey, TValue>,
           IHistorianDatabaseCollection<TKey, TValue>, IDisposable
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : HistorianValueBase<TValue>, new()
     {
         private readonly RemoteHistorian<TKey, TValue> m_historian;
-        private IHistorianDatabase<TKey, TValue> m_currentDatabase;
+        private HistorianDatabaseBase<TKey, TValue> m_currentDatabase;
         private readonly string m_defaultDatabase;
 
         public HistorianClient(HistorianClientOptions options)
@@ -58,7 +58,7 @@ namespace openHistorian
             m_defaultDatabase = options.DefaultDatabase;
         }
 
-        public IHistorianDatabase<TKey, TValue> GetDatabase()
+        public HistorianDatabaseBase<TKey, TValue> GetDatabase()
         {
             return this;
         }
@@ -75,30 +75,30 @@ namespace openHistorian
         /// and write data to the current historian database.
         /// </summary>
         /// <returns></returns>
-        HistorianDataReaderBase<TKey, TValue> IHistorianDatabase<TKey, TValue>.OpenDataReader()
+        public override HistorianDataReaderBase<TKey, TValue> OpenDataReader()
         {
             ConnectIfNotConnected();
             return m_currentDatabase.OpenDataReader();
         }
 
-        void IHistorianDatabase<TKey, TValue>.Write(TreeStream<TKey, TValue> points)
+        public override void Write(KeyValueStream<TKey, TValue> points)
         {
             ConnectIfNotConnected();
             m_currentDatabase.Write(points);
         }
 
-        void IHistorianDatabase<TKey, TValue>.Write(TKey key, TValue value)
+        public override void Write(TKey key, TValue value)
         {
             ConnectIfNotConnected();
             m_currentDatabase.Write(key, value);
         }
 
-        void IHistorianDatabase<TKey, TValue>.SoftCommit()
+        public override void SoftCommit()
         {
             throw new NotImplementedException();
         }
 
-        void IHistorianDatabase<TKey, TValue>.HardCommit()
+        public override void HardCommit()
         {
             //throw new NotImplementedException();
         }
@@ -106,14 +106,14 @@ namespace openHistorian
         /// <summary>
         /// Disconnects from the current database. 
         /// </summary>
-        void IHistorianDatabase<TKey, TValue>.Disconnect()
+        public override void Disconnect()
         {
             if (m_currentDatabase != null)
                 m_currentDatabase.Disconnect();
             m_currentDatabase = null;
         }
 
-        IHistorianDatabase<TKey, TValue> IHistorianDatabaseCollection<TKey, TValue>.this[string databaseName]
+        HistorianDatabaseBase<TKey, TValue> IHistorianDatabaseCollection<TKey, TValue>.this[string databaseName]
         {
             get
             {
@@ -136,7 +136,7 @@ namespace openHistorian
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        public override void Dispose()
         {
             m_historian.Disconnect();
         }

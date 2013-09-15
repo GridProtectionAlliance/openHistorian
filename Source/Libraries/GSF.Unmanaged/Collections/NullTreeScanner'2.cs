@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  NullTreeScanner256.cs - Gbtc
+//  NullTreeScanner.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -34,14 +34,14 @@ namespace openHistorian.Collections
     /// To use this class. Call the static property <see cref="Instance"/>.
     /// </remarks>
     public class NullTreeScanner<TKey, TValue>
-        : TreeScannerCoreBase<TKey, TValue>
+        : SeekableKeyValueStream<TKey, TValue>
         where TKey : class, new()
         where TValue : class, new()
     {
         /// <summary>
         /// Returns a static instance of this class
         /// </summary>
-        public static TreeScannerCoreBase<TKey, TValue> Instance
+        public static SeekableKeyValueStream<TKey, TValue> Instance
         {
             get;
             private set;

@@ -35,7 +35,7 @@ namespace openHistorian.Engine.ArchiveWriters
     /// calling <see cref="ClearAndSetWriting"/> or <see cref="SetReadingFromBeginning"/>.
     /// </summary>
     public class PointStreamCache<TKey, TValue>
-        : TreeStream<TKey, TValue>, IDisposable
+        : KeyValueStream<TKey, TValue>, IDisposable
         where TKey : class, new()
         where TValue : class, new()
     {
@@ -94,7 +94,7 @@ namespace openHistorian.Engine.ArchiveWriters
             m_valueMethods.Write(m_queue, value);
         }
 
-        public void Write(TreeStream<TKey, TValue> stream)
+        public void Write(KeyValueStream<TKey, TValue> stream)
         {
             if (m_isReading)
                 throw new Exception("Cannot write to a stream while it is being read.");

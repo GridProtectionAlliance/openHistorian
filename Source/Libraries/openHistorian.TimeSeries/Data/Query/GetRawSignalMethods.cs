@@ -48,13 +48,13 @@ namespace openHistorian.Data.Query
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, RawSignalTimeValue> GetRawSignals(this IHistorianDatabase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime endTime, IEnumerable<ulong> signals)
+        public static Dictionary<ulong, RawSignalTimeValue> GetRawSignals(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime endTime, IEnumerable<ulong> signals)
         {
             Dictionary<ulong, RawSignalTimeValue> results = signals.ToDictionary((x) => x, (x) => new RawSignalTimeValue());
 
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
-                TreeStream<HistorianKey, HistorianValue> stream = reader.Read((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
+                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
                
                 while (stream.Read())
                 {

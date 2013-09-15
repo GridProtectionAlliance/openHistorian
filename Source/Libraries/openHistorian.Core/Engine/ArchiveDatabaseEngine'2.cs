@@ -34,7 +34,7 @@ namespace openHistorian.Engine
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
     public class ArchiveDatabaseEngine<TKey, TValue>
-        : IHistorianDatabase<TKey, TValue>
+        : HistorianDatabaseBase<TKey, TValue>
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : class, new()
     {
@@ -76,7 +76,7 @@ namespace openHistorian.Engine
 
         #region [ Methods ]
 
-        public void Write(TKey key, TValue value)
+        public override void Write(TKey key, TValue value)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -87,23 +87,23 @@ namespace openHistorian.Engine
             m_archiveWriter.Write(key, value);
         }
 
-        public void Write(TreeStream<TKey, TValue> points)
+        public override void Write(KeyValueStream<TKey, TValue> points)
         {
             while (points.Read())
                 Write(points.CurrentKey, points.CurrentValue);
         }
 
-        public void SoftCommit()
+        public override void SoftCommit()
         {
             //m_archiveWriter.SoftCommit();
         }
 
-        public void HardCommit()
+        public override void HardCommit()
         {
             //m_archiveWriter.HardCommit();
         }
 
-        public void Disconnect()
+        public override void Disconnect()
         {
         }
 
@@ -112,7 +112,7 @@ namespace openHistorian.Engine
         /// and write data to the current historian database.
         /// </summary>
         /// <returns></returns>
-        public HistorianDataReaderBase<TKey, TValue> OpenDataReader()
+        public override HistorianDataReaderBase<TKey, TValue> OpenDataReader()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -124,7 +124,7 @@ namespace openHistorian.Engine
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        public override void Dispose()
         {
             if (!m_disposed)
             {

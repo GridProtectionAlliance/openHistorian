@@ -26,6 +26,11 @@ using GSF.IO;
 
 namespace openHistorian.Collections.Generic
 {
+    /// <summary>
+    /// Base class for reading from a node that is encoded and must be read sequentally through the node.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public abstract class EncodedNodeScannerBase<TKey, TValue>
         : TreeScannerBase<TKey, TValue>
         where TKey : class, new()
@@ -35,41 +40,64 @@ namespace openHistorian.Collections.Generic
         private int m_currentIndex;
         private bool m_skipNextRead;
 
-        protected EncodedNodeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
-            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods)
+        protected EncodedNodeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods, byte version)
+            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, version)
         {
         }
 
+        /// <summary>
+        /// Decodes the next record from the byte array into the provided key and value.
+        /// </summary>
+        /// <param name="stream">the start of the next record.</param>
+        /// <param name="key">the key to write to.</param>
+        /// <param name="value">the value to write to.</param>
+        /// <returns></returns>
         protected abstract unsafe int DecodeRecord(byte* stream, TKey key, TValue value);
-        
+
+        /// <summary>
+        /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.
+        /// </summary>
         protected abstract void ResetEncoder();
 
-        protected override unsafe void ReadNext()
+
+        /// <summary>
+        /// Using <see cref="TreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
+        /// </summary>
+        protected override void ReadNext()
         {
             if (m_skipNextRead)
                 m_skipNextRead = false;
             else
-                Read();
+                InternalRead();
             KeyIndexOfCurrentKey++;
         }
 
-        protected override unsafe void FindKey(TKey key)
+        /// <summary>
+        /// Using <see cref="TreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
+        /// </summary>
+        /// <param name="key">the key to advance to</param>
+        protected override void FindKey(TKey key)
         {
-            Reset();
-            while (Read() && KeyMethods.IsLessThan(CurrentKey, key))
+            OnNoadReload();
+            while (InternalRead() && KeyMethods.IsLessThan(CurrentKey, key))
                 ;
             KeyIndexOfCurrentKey = (ushort)m_currentIndex;
             m_skipNextRead = true;
         }
 
-        protected override void Reset()
+        /// <summary>
+        /// Occurs when a node's data is reset.
+        /// Derived classes can override this 
+        /// method if fields need to be reset when a node is loaded.
+        /// </summary>
+        protected override void OnNoadReload()
         {
             m_nextOffset = HeaderSize;
             m_currentIndex = -1;
             ResetEncoder();
         }
 
-        private unsafe bool Read()
+        private unsafe bool InternalRead()
         {
             if (m_currentIndex == RecordCount)
             {

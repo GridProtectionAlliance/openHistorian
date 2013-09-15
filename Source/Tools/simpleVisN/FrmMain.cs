@@ -15,7 +15,7 @@ namespace simpleVisN
 {
     public partial class FrmMain : Form
     {
-        private IHistorianDatabase<HistorianKey, HistorianValue> m_archiveFile;
+        private HistorianDatabaseBase<HistorianKey, HistorianValue> m_archiveFile;
 
         public FrmMain()
         {
@@ -65,7 +65,7 @@ namespace simpleVisN
             HashSet<ulong> keys = new HashSet<ulong>();
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = m_archiveFile.OpenDataReader())
             {
-                TreeStream<HistorianKey, HistorianValue> scanner = reader.Read(0, ulong.MaxValue);
+                KeyValueStream<HistorianKey, HistorianValue> scanner = reader.Read(0, ulong.MaxValue);
                 ulong key1, key2, value1, value2;
                 while (scanner.Read())
                 {

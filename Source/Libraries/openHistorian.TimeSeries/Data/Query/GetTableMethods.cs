@@ -52,12 +52,12 @@ namespace openHistorian.Data.Query
 
     public static class GetTableMethods
     {
-        public static DataTable GetTable(this IHistorianDatabase<HistorianKey, HistorianValue> database, ulong start, ulong stop, IDelinearlizedSignals signals)
+        public static DataTable GetTable(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong start, ulong stop, IDelinearlizedSignals signals)
         {
             return null;
         }
 
-        public static DataTable GetTable(this IHistorianDatabase<HistorianKey, HistorianValue> database, ulong start, ulong stop, IList<ISignalWithName> columns)
+        public static DataTable GetTable(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong start, ulong stop, IList<ISignalWithName> columns)
         {
             if (columns.Any((x) => !x.HistorianId.HasValue))
             {

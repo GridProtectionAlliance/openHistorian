@@ -38,7 +38,7 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(serverDatabases))
             {
-                IHistorianDatabase<HistorianKey, HistorianValue> database = server["Scada"];
+                HistorianDatabaseBase<HistorianKey, HistorianValue> database = server["Scada"];
 
                 for (ulong x = 0; x < 10000; x++)
                 {
@@ -80,10 +80,10 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(serverDatabases))
             {
-                IHistorianDatabase<HistorianKey, HistorianValue> database = server["Scada"];
+                HistorianDatabaseBase<HistorianKey, HistorianValue> database = server["Scada"];
                 using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                 {
-                    TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
+                    KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
                     stream.Cancel();
                 }
                 database.Disconnect();
@@ -91,7 +91,7 @@ namespace SampleCode.openHistorian.Server.dll
                 database = server["Synchrophasor"];
                 using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                 {
-                    TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
+                    KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
                     stream.Cancel();
                 }
                 database.Disconnect();

@@ -54,7 +54,7 @@ namespace openHistorian.Communications
             m_stream.Flush();
         }
 
-        public IHistorianDatabase<TKey, TValue> this[string databaseName]
+        public HistorianDatabaseBase<TKey, TValue> this[string databaseName]
         {
             get
             {

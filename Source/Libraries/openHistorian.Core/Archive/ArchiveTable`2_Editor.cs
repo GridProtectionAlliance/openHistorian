@@ -92,7 +92,7 @@ namespace openHistorian.Archive
                 return m_dataTree.GetDataRange();
             }
 
-            public void AddPoints(TreeStream<TKey, TValue> scanner)
+            public void AddPoints(KeyValueStream<TKey, TValue> scanner)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);

@@ -44,7 +44,7 @@ namespace openHistorian.Queues
             public ulong Value1;
             public ulong Value2;
 
-            public bool Load(TreeStream<HistorianKey, HistorianValue> stream)
+            public bool Load(KeyValueStream<HistorianKey, HistorianValue> stream)
             {
                 if (stream.Read())
                 {
@@ -62,15 +62,15 @@ namespace openHistorian.Queues
 
         private readonly object m_syncWrite;
 
-        private IHistorianDatabase<HistorianKey, HistorianValue> m_database;
+        private HistorianDatabaseBase<HistorianKey, HistorianValue> m_database;
 
         private readonly IsolatedQueue<PointData> m_blocks;
 
         private readonly ScheduledTask m_worker;
 
-        private readonly Func<IHistorianDatabase<HistorianKey, HistorianValue>> m_getDatabase;
+        private readonly Func<HistorianDatabaseBase<HistorianKey, HistorianValue>> m_getDatabase;
 
-        public HistorianInputQueue(Func<IHistorianDatabase<HistorianKey, HistorianValue>> getDatabase)
+        public HistorianInputQueue(Func<HistorianDatabaseBase<HistorianKey, HistorianValue>> getDatabase)
         {
             m_syncWrite = new object();
             m_blocks = new IsolatedQueue<PointData>();
@@ -87,7 +87,7 @@ namespace openHistorian.Queues
         /// this point stream should be high speed.
         /// </summary>
         /// <param name="stream"></param>
-        public void Enqueue(TreeStream<HistorianKey, HistorianValue> stream)
+        public void Enqueue(KeyValueStream<HistorianKey, HistorianValue> stream)
         {
             lock (m_syncWrite)
             {
@@ -147,7 +147,7 @@ namespace openHistorian.Queues
         }
 
         private class StreamPoints
-            : TreeStream<HistorianKey, HistorianValue>
+            : KeyValueStream<HistorianKey, HistorianValue>
         {
             private readonly IsolatedQueue<PointData> m_measurements;
             private bool m_canceled = false;

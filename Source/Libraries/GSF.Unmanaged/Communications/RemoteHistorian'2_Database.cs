@@ -30,7 +30,7 @@ namespace openHistorian.Communications
     public partial class RemoteHistorian<TKey, TValue>
     {
         private class HistorianDatabase
-            : IHistorianDatabase<TKey, TValue>
+            : HistorianDatabaseBase<TKey, TValue>
         {
             private bool m_disposed;
             private readonly RemoteHistorian<TKey, TValue> m_client;
@@ -49,7 +49,7 @@ namespace openHistorian.Communications
             /// and write data to the current historian database.
             /// </summary>
             /// <returns></returns>
-            public HistorianDataReaderBase<TKey, TValue> OpenDataReader()
+            public override HistorianDataReaderBase<TKey, TValue> OpenDataReader()
             {
                 if (m_historianReader != null)
                     throw new Exception("Only one datareader can process at a time when using sockets.");
@@ -61,7 +61,7 @@ namespace openHistorian.Communications
                 return m_historianReader;
             }
 
-            public void Write(TreeStream<TKey, TValue> points)
+            public override void Write(KeyValueStream<TKey, TValue> points)
             {
                 if (m_historianReader != null)
                     throw new Exception("Cannot write to the database when a reader is open when using sockets.");
@@ -79,7 +79,7 @@ namespace openHistorian.Communications
                 m_client.m_stream.Flush();
             }
 
-            public void Write(TKey key, TValue value)
+            public override void Write(TKey key, TValue value)
             {
                 if (m_historianReader != null)
                     throw new Exception("Cannot write to the database when a reader is open when using sockets.");
@@ -91,17 +91,17 @@ namespace openHistorian.Communications
                 m_client.m_stream.Flush();
             }
 
-            public void SoftCommit()
+            public override void SoftCommit()
             {
                 throw new NotImplementedException();
             }
 
-            public void HardCommit()
+            public override void HardCommit()
             {
                 throw new NotImplementedException();
             }
 
-            public void Disconnect()
+            public override void Disconnect()
             {
                 Dispose();
             }
@@ -110,7 +110,7 @@ namespace openHistorian.Communications
             /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             /// </summary>
             /// <filterpriority>2</filterpriority>
-            public void Dispose()
+            public override void Dispose()
             {
                 if (!m_disposed)
                 {

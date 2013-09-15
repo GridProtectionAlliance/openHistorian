@@ -48,7 +48,7 @@ namespace openHistorian.Data.Query
         public IDictionary<Guid, SignalDataBase> GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, IEnumerable<ISignalCalculation> signals)
         {
             //ToDo: Modify the query base on the zoom level
-            IHistorianDatabase<HistorianKey, HistorianValue> db = null;
+            HistorianDatabaseBase<HistorianKey, HistorianValue> db = null;
             try
             {
                 db = m_historian.GetDatabase();

@@ -318,7 +318,7 @@ namespace openHistorian.Collections.Generic
         /// </summary>
         public void Clear()
         {
-            if (NodeIndexChanged != null) 
+            if (NodeIndexChanged != null)
                 NodeIndexChanged(this, EventArgs.Empty);
             //InsideNodeBoundary = m_BoundsFalse;
             m_nodeIndex = uint.MaxValue;
@@ -343,7 +343,7 @@ namespace openHistorian.Collections.Generic
                 throw new Exception("Invalid Node Index");
             if (m_nodeIndex != nodeIndex)
             {
-                if (NodeIndexChanged != null) 
+                if (NodeIndexChanged != null)
                     NodeIndexChanged(this, EventArgs.Empty);
                 m_nodeIndex = nodeIndex;
                 m_pointerReadVersion = -1;

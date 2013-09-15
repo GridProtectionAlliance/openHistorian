@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IHistorianDatabase.cs - Gbtc
+//  HistorianDatabaseBase.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,7 +30,7 @@ namespace openHistorian
     /// <summary>
     /// Represents a single historian database.
     /// </summary>
-    public interface IHistorianDatabase<TKey, TValue> : IDisposable
+    public abstract class HistorianDatabaseBase<TKey, TValue> : IDisposable
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : class, new()
     {
@@ -39,20 +39,20 @@ namespace openHistorian
         /// and write data to the current historian database.
         /// </summary>
         /// <returns></returns>
-        HistorianDataReaderBase<TKey, TValue> OpenDataReader();
+        public abstract HistorianDataReaderBase<TKey, TValue> OpenDataReader();
 
         /// <summary>
         /// Writes the point stream to the database. 
         /// </summary>
         /// <param name="points"></param>
-        void Write(TreeStream<TKey, TValue> points);
+        public abstract void Write(KeyValueStream<TKey, TValue> points);
 
         /// <summary>
         /// Writes an individual point to the database.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        void Write(TKey key, TValue value);
+        public abstract void Write(TKey key, TValue value);
 
         /// <summary>
         /// Forces a soft commit on the database. A soft commit 
@@ -60,7 +60,7 @@ namespace openHistorian
         /// While soft committed, this data could be lost during an unexpected shutdown.
         /// Soft commits usually occur within microseconds. 
         /// </summary>
-        void SoftCommit();
+        public abstract void SoftCommit();
 
         /// <summary>
         /// Forces a commit to the disk subsystem. Once this returns, the data will not
@@ -68,11 +68,17 @@ namespace openHistorian
         /// Hard commits can take 100ms or longer depending on how much data has to be committed. 
         /// This requires two consecutive hardware cache flushes.
         ///  </summary>
-        void HardCommit();
+        public abstract void HardCommit();
 
         /// <summary>
         /// Disconnects from the current database. 
         /// </summary>
-        void Disconnect();
+        public abstract void Disconnect();
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public abstract void Dispose();
     }
 }

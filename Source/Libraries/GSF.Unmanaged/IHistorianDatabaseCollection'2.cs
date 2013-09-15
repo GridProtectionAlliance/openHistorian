@@ -25,16 +25,21 @@ using openHistorian.Collections;
 
 namespace openHistorian
 {
+    /// <summary>
+    /// Contains a set of named IHistorianDatabases.
+    /// </summary>
+    /// <typeparam name="TKey">They key type of the historian database. Must inherit HistorianKeyBase.</typeparam>
+    /// <typeparam name="TValue">The value type of the historian database.</typeparam>
     public interface IHistorianDatabaseCollection<TKey, TValue>
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : class, new()
     {
         /// <summary>
-        /// Accesses <see cref="IHistorianDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="IHistorianDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        IHistorianDatabase<TKey, TValue> this[string databaseName]
+        /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        HistorianDatabaseBase<TKey, TValue> this[string databaseName]
         {
             get;
         }

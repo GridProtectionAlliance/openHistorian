@@ -65,7 +65,7 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, DateTime timestamp)
+        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime timestamp)
         {
             return database.GetFrames(QueryFilterTimestamp.CreateFromRange(timestamp, timestamp), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
         }
@@ -75,7 +75,7 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime)
+        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime)
         {
             return database.GetFrames(QueryFilterTimestamp.CreateFromRange(startTime, stopTime), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
         }
@@ -85,7 +85,7 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, params ulong[] points)
+        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, params ulong[] points)
         {
             return database.GetFrames(timestamps, QueryFilterPointId.CreateFromList(points), DataReaderOptions.Default);
         }
@@ -95,7 +95,7 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, params ulong[] points)
+        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, params ulong[] points)
         {
             return database.GetFrames(QueryFilterTimestamp.CreateFromRange(startTime, stopTime), QueryFilterPointId.CreateFromList(points), DataReaderOptions.Default);
         }
@@ -105,7 +105,7 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database)
+        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database)
         {
             return database.GetFrames(QueryFilterTimestamp.CreateAllKeysValid(), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
         }
@@ -116,7 +116,7 @@ namespace openHistorian.Data.Query
         /// <param name="database">the database to use</param>
         /// <param name="timestamps">the timestamps to query for</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps)
+        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps)
         {
             return database.GetFrames(timestamps, QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
         }
@@ -128,7 +128,7 @@ namespace openHistorian.Data.Query
         /// <param name="timestamps">the timestamps to query for</param>
         /// <param name="points">the points to query</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points)
+        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points)
         {
             return database.GetFrames(timestamps, points, DataReaderOptions.Default);
         }
@@ -176,14 +176,14 @@ namespace openHistorian.Data.Query
         /// <param name="points">the points to query</param>
         /// <param name="options">A list of query options</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this IHistorianDatabase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points, DataReaderOptions options)
+        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points, DataReaderOptions options)
         {
             SortedList<DateTime, FrameDataConstructor> results = new SortedList<DateTime, FrameDataConstructor>();
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 ulong lastTime = ulong.MinValue;
                 FrameDataConstructor lastFrame = null;
-                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(timestamps, points, options);
+                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(timestamps, points, options);
                 while (stream.Read())
                 {
                     if (lastFrame == null || stream.CurrentKey.Timestamp != lastTime)

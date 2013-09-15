@@ -26,43 +26,59 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using GSF.Collections;
 using GSF.IO;
 
 namespace openHistorian
 {
-    public abstract class QueryFilterPointId
+    /// <summary>
+    /// A class that is used to filter point results based on the PointID number.
+    /// </summary>
+    public abstract partial class QueryFilterPointId
     {
         private ulong m_maxValue;
 
+        /// <summary>
+        /// Creates a filter that is a universe filter that will not filter any points.
+        /// </summary>
+        /// <returns></returns>
         public static QueryFilterPointId CreateAllKeysValid()
         {
-            return UniverseFilter.Instance;
+            return Universe.Instance;
         }
 
-        public static QueryFilterPointId CreateFromList(IEnumerable<ulong> listOfKeys)
+        /// <summary>
+        /// Creates a filter from the list of points provided.
+        /// </summary>
+        /// <param name="listOfPointIDs">contains the list of pointIDs to include in the filter. List must support multiple enumerations</param>
+        /// <returns></returns>
+        public static QueryFilterPointId CreateFromList(IEnumerable<ulong> listOfPointIDs)
         {
             QueryFilterPointId filter;
             ulong maxValue = 0;
-            if (listOfKeys.Any())
-                maxValue = listOfKeys.Max();
+            if (listOfPointIDs.Any())
+                maxValue = listOfPointIDs.Max();
 
             if (maxValue < 8 * 1024 * 64) //64KB of space, 524288
             {
-                filter = new BitArrayFilter(listOfKeys, maxValue);
+                filter = new BitArrayFilter(listOfPointIDs, maxValue);
             }
             else if (maxValue <= uint.MaxValue)
             {
-                filter = new UintHashSetFilter(listOfKeys);
+                filter = new UIntHashSet(listOfPointIDs);
             }
             else
             {
-                filter = new UlongHashSetFilter(listOfKeys);
+                filter = new ULongHashSet(listOfPointIDs);
             }
             filter.m_maxValue = maxValue;
             return filter;
         }
 
+        /// <summary>
+        /// Loads a <see cref="QueryFilterPointId"/> from the provided <see cref="stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream to load the filter from</param>
+        /// <returns></returns>
         public static QueryFilterPointId CreateFromStream(BinaryStreamBase stream)
         {
             QueryFilterPointId filter;
@@ -72,7 +88,7 @@ namespace openHistorian
             switch (version)
             {
                 case 0:
-                    return UniverseFilter.Instance;
+                    return Universe.Instance;
                 case 1:
                     maxValue = stream.ReadUInt64();
                     count = stream.ReadInt32();
@@ -82,13 +98,13 @@ namespace openHistorian
                     }
                     else
                     {
-                        filter = new UintHashSetFilter(stream, count, maxValue);
+                        filter = new UIntHashSet(stream, count);
                     }
                     break;
                 case 2:
                     maxValue = stream.ReadUInt64();
                     count = stream.ReadInt32();
-                    filter = new UlongHashSetFilter(stream, count, maxValue);
+                    filter = new ULongHashSet(stream, count);
                     break;
                 default:
                     throw new VersionNotFoundException("Unknown Version");
@@ -97,26 +113,49 @@ namespace openHistorian
             return filter;
         }
 
+        /// <summary>
+        /// Gets if this filter is the universe filter. 
+        /// </summary> 
+        /// <remarks>
+        /// This can be used to reduce function calls as <see cref="ContainsPointID"/> always
+        /// returns true on a universe filter.
+        /// </remarks>
         public bool IsUniverseFilter
         {
             get
             {
-                return (this as UniverseFilter) != null;
+                return (this as Universe) != null;
             }
         }
 
-        public abstract bool ContainsKey(ulong key);
+        /// <summary>
+        /// Determines if a pointID is contained in the filter
+        /// </summary>
+        /// <param name="pointID">the point to check for.</param>
+        /// <returns></returns>
+        public abstract bool ContainsPointID(ulong pointID);
 
+        /// <summary>
+        /// Serializes the filter to a stream
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
         protected abstract void WriteToStream(BinaryStreamBase stream);
 
+        /// <summary>
+        /// The number of points in this filter. Used to serialize to the disk.
+        /// </summary>
         protected abstract int Count
         {
             get;
         }
 
+        /// <summary>
+        /// Serializes the filter to a stream
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
         public void Save(BinaryStreamBase stream)
         {
-            if (this is UniverseFilter)
+            if (this is Universe)
             {
                 stream.Write((byte)0); //No data stored
             }
@@ -127,14 +166,14 @@ namespace openHistorian
                 stream.Write(Count);
                 WriteToStream(stream);
             }
-            else if (this is UintHashSetFilter)
+            else if (this is UIntHashSet)
             {
                 stream.Write((byte)1); //Stored as array of uint[]
                 stream.Write(m_maxValue);
                 stream.Write(Count);
                 WriteToStream(stream);
             }
-            else if (this is UlongHashSetFilter)
+            else if (this is ULongHashSet)
             {
                 stream.Write((byte)2); //Stored as array of ulong[]
                 stream.Write(m_maxValue);
@@ -147,172 +186,5 @@ namespace openHistorian
             }
         }
 
-        /// <summary>
-        /// A filter that returns true for every key
-        /// </summary>
-        private class UniverseFilter : QueryFilterPointId
-        {
-            public static UniverseFilter Instance
-            {
-                get;
-                private set;
-            }
-
-            static UniverseFilter()
-            {
-                Instance = new UniverseFilter();
-            }
-
-            public override bool ContainsKey(ulong key)
-            {
-                return true;
-            }
-
-            protected override void WriteToStream(BinaryStreamBase stream)
-            {
-            }
-
-            protected override int Count
-            {
-                get
-                {
-                    return -1;
-                }
-            }
-        }
-
-        /// <summary>
-        /// A filter that uses a <see cref="BitArray"/> to set true and false values
-        /// </summary>
-        private class BitArrayFilter : QueryFilterPointId
-        {
-            private readonly BitArray m_points;
-            private ulong m_maxValue;
-
-            public BitArrayFilter(BinaryStreamBase stream, int pointCount, ulong maxValue)
-            {
-                m_maxValue = maxValue;
-                m_points = new BitArray(false, (int)maxValue + 1);
-                while (pointCount > 0)
-                {
-                    m_points.SetBit((int)stream.ReadUInt32());
-                    pointCount--;
-                }
-            }
-
-            public BitArrayFilter(IEnumerable<ulong> points, ulong maxValue)
-            {
-                m_maxValue = maxValue;
-                m_points = new BitArray(false, (int)maxValue + 1);
-                foreach (ulong pt in points)
-                {
-                    m_points.SetBit((int)pt);
-                }
-            }
-
-            public override bool ContainsKey(ulong key)
-            {
-                return key <= m_maxValue && m_points[(int)key];
-            }
-
-            protected override void WriteToStream(BinaryStreamBase stream)
-            {
-                foreach (int x in m_points.GetAllSetBits())
-                {
-                    stream.Write((uint)x);
-                }
-            }
-
-            protected override int Count
-            {
-                get
-                {
-                    return m_points.SetCount;
-                }
-            }
-        }
-
-        private class UintHashSetFilter : QueryFilterPointId
-        {
-            private readonly HashSet<uint> m_points;
-
-            public UintHashSetFilter(BinaryStreamBase stream, int pointCount, ulong maxValue)
-            {
-                m_points = new HashSet<uint>();
-                while (pointCount > 0)
-                {
-                    m_points.Add(stream.ReadUInt32());
-                    pointCount--;
-                }
-            }
-
-            public UintHashSetFilter(IEnumerable<ulong> points)
-            {
-                m_points = new HashSet<uint>();
-                m_points.UnionWith(points.Select(x => (uint)x));
-            }
-
-            public override bool ContainsKey(ulong key)
-            {
-                return key <= uint.MaxValue && m_points.Contains((uint)key);
-            }
-
-            protected override void WriteToStream(BinaryStreamBase stream)
-            {
-                foreach (uint x in m_points)
-                {
-                    stream.Write(x);
-                }
-            }
-
-            protected override int Count
-            {
-                get
-                {
-                    return m_points.Count;
-                }
-            }
-        }
-
-        private class UlongHashSetFilter : QueryFilterPointId
-        {
-            private readonly HashSet<ulong> m_points;
-
-            public UlongHashSetFilter(BinaryStreamBase stream, int pointCount, ulong maxValue)
-            {
-                m_points = new HashSet<ulong>();
-                while (pointCount > 0)
-                {
-                    m_points.Add(stream.ReadUInt64());
-                    pointCount--;
-                }
-            }
-
-            public UlongHashSetFilter(IEnumerable<ulong> points)
-            {
-                m_points = new HashSet<ulong>(points);
-            }
-
-            public override bool ContainsKey(ulong key)
-            {
-                return m_points.Contains(key);
-            }
-
-            protected override void WriteToStream(BinaryStreamBase stream)
-            {
-                foreach (ulong x in m_points)
-                {
-                    stream.Write(x);
-                }
-            }
-
-            protected override int Count
-            {
-                get
-                {
-                    return m_points.Count;
-                }
-            }
-        }
     }
 }

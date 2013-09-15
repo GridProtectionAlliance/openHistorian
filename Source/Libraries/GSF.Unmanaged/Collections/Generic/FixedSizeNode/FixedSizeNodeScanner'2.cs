@@ -32,16 +32,8 @@ namespace openHistorian.Collections.Generic
         where TValue : class, new()
     {
         public FixedSizeNodeScanner(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
-            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods)
+            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, 1)
         {
-        }
-
-        protected override byte Version
-        {
-            get
-            {
-                return 1;
-            }
         }
 
         protected override unsafe void ReadNext()

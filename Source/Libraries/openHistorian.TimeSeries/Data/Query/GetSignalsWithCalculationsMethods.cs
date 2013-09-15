@@ -29,12 +29,12 @@ namespace openHistorian.Data.Query
 {
     public static class GetSignalsWithCalculationsMethods
     {
-        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this IHistorianDatabase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ISignalCalculation> signals)
+        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ISignalCalculation> signals)
         {
             return database.GetSignalsWithCalculations(QueryFilterTimestamp.CreateFromRange(startTime, endTime), signals, DataReaderOptions.Default);
         }
 
-        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this IHistorianDatabase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, IEnumerable<ISignalCalculation> signals, DataReaderOptions readerOptions)
+        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, IEnumerable<ISignalCalculation> signals, DataReaderOptions readerOptions)
         {
             Dictionary<ulong, SignalDataBase> queryResults = database.GetSignals(timestamps, signals, readerOptions);
 

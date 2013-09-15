@@ -13,7 +13,7 @@ namespace openHistorian.Collections.Generic.ZeroNode
         private readonly byte[] m_buffer;
 
         public ZeroNodeScanner(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
-            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods)
+            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, 2)
         {
             m_shimSize = KeyValueSize >> 3 + (((KeyValueSize & 7) == 0) ? 0 : 1);
             m_buffer = new byte[MaximumStorageSize];
@@ -53,12 +53,5 @@ namespace openHistorian.Collections.Generic.ZeroNode
             }
         }
 
-        protected override unsafe byte Version
-        {
-            get
-            {
-                return 2;
-            }
-        }
     }
 }

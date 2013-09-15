@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeScannerBase.cs - Gbtc
+//  SeekableKeyValueStream'2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,11 +23,21 @@
 
 namespace openHistorian.Collections.Generic
 {
-    public abstract unsafe class TreeScannerCoreBase<TKey, TValue>
-        : TreeStream<TKey, TValue>
+
+    /// <summary>
+    /// Provides ability to seek and stream KeyValues.
+    /// </summary>
+    /// <typeparam name="TKey">The key of the pair</typeparam>
+    /// <typeparam name="TValue">The value of the pair</typeparam>
+    public abstract class SeekableKeyValueStream<TKey, TValue>
+        : KeyValueStream<TKey, TValue>
         where TKey : class, new()
         where TValue : class, new()
     {
+        /// <summary>
+        /// Seeks the stream to the first value greater than or equal to <see cref="key"/>
+        /// </summary>
+        /// <param name="key">the key to seek to.</param>
         public abstract void SeekToKey(TKey key);
     }
 }

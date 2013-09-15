@@ -36,7 +36,7 @@ namespace openHistorianServiceHost
 
             using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
             {
-                IHistorianDatabase<HistorianKey, HistorianValue> database = client.GetDatabase();
+                HistorianDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase();
 
                 using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
                 {

@@ -48,14 +48,14 @@ namespace openHistorian.Communications
                 Close();
             }
 
-            public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp key1, QueryFilterPointId key2, DataReaderOptions readerOptions)
+            public override KeyValueStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, DataReaderOptions readerOptions)
             {
                 if (m_reader != null)
                     throw new Exception("Sockets do not support concurrent readers.");
 
                 m_client.m_stream.Write((byte)ServerCommand.Read);
-                key1.Save(m_client.m_stream);
-                key2.Save(m_client.m_stream);
+                timestampFilter.Save(m_client.m_stream);
+                pointIdFilter.Save(m_client.m_stream);
                 readerOptions.Save(m_client.m_stream);
                 m_client.m_stream.Flush();
                 return new PointReader(m_client, () => m_reader = null);
@@ -75,7 +75,7 @@ namespace openHistorian.Communications
             }
 
             private class PointReader
-                : TreeStream<TKey, TValue>
+                : KeyValueStream<TKey, TValue>
             {
                 private bool m_completed;
                 private readonly RemoteHistorian<TKey, TValue> m_client;

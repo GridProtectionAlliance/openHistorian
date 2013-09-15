@@ -23,22 +23,39 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
 
 namespace openHistorian
 {
+    /// <summary>
+    /// Creates a session that can read data from the historian.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public abstract class HistorianDataReaderBase<TKey, TValue>
         : IDisposable
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : class, new()
     {
-        public abstract TreeStream<TKey, TValue> Read(QueryFilterTimestamp key1, QueryFilterPointId key2, DataReaderOptions readerOptions);
+        /// <summary>
+        /// Reads data from the historian with the provided filters.
+        /// </summary>
+        /// <param name="timestampFilter">filters for the timestamp</param>
+        /// <param name="pointIdFilter">filters for the pointId</param>
+        /// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
+        /// <returns></returns>
+        public abstract KeyValueStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, DataReaderOptions readerOptions);
 
+        /// <summary>
+        /// Closes this reader
+        /// </summary>
         public abstract void Close();
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public abstract void Dispose();
     }
 }

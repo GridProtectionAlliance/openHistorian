@@ -88,8 +88,8 @@
     <Compile Include="Collections\Generic\TreeNodeBase_Remove%272.cs" />
     <Compile Include="Collections\Generic\TreeNodeBase_Update%272.cs" />
     <Compile Include="Collections\Generic\TreeScannerBase%272.cs" />
-    <Compile Include="Collections\Generic\TreeScannerCoreBase%272.cs" />
-    <Compile Include="Collections\Generic\TreeStream%272.cs" />
+    <Compile Include="Collections\Generic\SeekableKeyValueStream%272.cs" />
+    <Compile Include="Collections\Generic\KeyValueStream%272.cs" />
     <Compile Include="Collections\Generic\TreeValueMethodsBase%271.cs" />
     <Compile Include="Collections\Generic\ZeroNode\CreateZeroNode.cs" />
     <Compile Include="Collections\Generic\ZeroNode\ZeroNode%272.cs" />
@@ -138,6 +138,13 @@
     <Compile Include="Communications\RemoteHistorian%272_DataReader.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="CompressionMethod.cs" />
+    <Compile Include="QueryFilterTimestamp_IntervalRanges.cs" />
+    <Compile Include="QueryFilterTimestamp_FixedRange.cs" />
+    <Compile Include="QueryFilterTimestamp_UniverseRange.cs" />
+    <Compile Include="QueryFilterPointId_ULongHashSet.cs" />
+    <Compile Include="QueryFilterPointId_UIntHashSet.cs" />
+    <Compile Include="QueryFilterPointId_BitArray.cs" />
+    <Compile Include="QueryFilterPointId_Universe.cs" />
     <Compile Include="DataReaderOptions.cs" />
     <Compile Include="FileStructure\BlockType.cs" />
     <Compile Include="FileStructure\FileHeaderBlock.cs" />
@@ -175,7 +182,7 @@
     <Compile Include="HistorianDataReaderBase%272.cs" />
     <Compile Include="HistorianDataReaderBaseExtensionMethods%272.cs" />
     <Compile Include="IHistorian.cs" />
-    <Compile Include="IHistorianDatabase%272.cs" />
+    <Compile Include="HistorianDatabaseBase%272.cs" />
     <Compile Include="IHistorianDatabaseCollection%272.cs" />
     <Compile Include="IO\AsyncWriter.cs" />
     <Compile Include="IO\BinaryStreamBase.cs" />

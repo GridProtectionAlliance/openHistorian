@@ -40,7 +40,7 @@ namespace openHistorian.Engine.ArchiveWriters
             private set;
         }
 
-        public TreeStream<TKey, TValue> CurrentStream
+        public KeyValueStream<TKey, TValue> CurrentStream
         {
             get;
             private set;
@@ -52,7 +52,7 @@ namespace openHistorian.Engine.ArchiveWriters
             private set;
         }
 
-        public RolloverArgs(ArchiveTable<TKey, TValue> file, TreeStream<TKey, TValue> stream, long sequenceNumber)
+        public RolloverArgs(ArchiveTable<TKey, TValue> file, KeyValueStream<TKey, TValue> stream, long sequenceNumber)
         {
             File = file;
             CurrentStream = stream;
