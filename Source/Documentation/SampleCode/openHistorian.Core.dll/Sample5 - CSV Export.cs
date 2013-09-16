@@ -34,29 +34,29 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(serverDatabases))
             {
-HistorianClientOptions clientOptions = new HistorianClientOptions();
-clientOptions.DefaultDatabase = "PPA";
-clientOptions.NetworkPort = 38402;
-clientOptions.ServerNameOrIp = "127.0.0.1"; //IP address of server.
+                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                clientOptions.DefaultDatabase = "PPA";
+                clientOptions.NetworkPort = 38402;
+                clientOptions.ServerNameOrIp = "127.0.0.1"; //IP address of server.
 
-using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
-{
-    var database = client.GetDatabase();
-    using (var reader = database.OpenDataReader())
-    {
-        using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
-        {
-            csvStream.Write("Timestamp,PointID,Value,Quality");
-            KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(DateTime.MinValue, DateTime.MaxValue, new ulong[] { 1, 2, 3 });
-            while (stream.Read())
-            {
-                csvStream.WriteLine("{0},{1},{2},{3}", stream.CurrentKey.TimestampAsDate, stream.CurrentKey.PointID, stream.CurrentValue.AsSingle, stream.CurrentValue.Value3);
-            }
-            csvStream.Flush();
-        }
-    }
-    database.Disconnect();
-}
+                using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+                {
+                    var database = client.GetDefaultDatabase();
+                    using (var reader = database.OpenDataReader())
+                    {
+                        using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
+                        {
+                            csvStream.Write("Timestamp,PointID,Value,Quality");
+                            KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(DateTime.MinValue, DateTime.MaxValue, new ulong[] { 1, 2, 3 });
+                            while (stream.Read())
+                            {
+                                csvStream.WriteLine("{0},{1},{2},{3}", stream.CurrentKey.TimestampAsDate, stream.CurrentKey.PointID, stream.CurrentValue.AsSingle, stream.CurrentValue.Value3);
+                            }
+                            csvStream.Flush();
+                        }
+                    }
+                    database.Disconnect();
+                }
             }
         }
     }

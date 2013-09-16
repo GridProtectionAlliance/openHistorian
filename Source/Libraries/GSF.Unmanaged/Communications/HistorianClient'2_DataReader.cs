@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RemoteHistorian_DataReader.cs - Gbtc
+//  HistorianClient_DataReader.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -25,19 +25,19 @@
 using System;
 using openHistorian.Collections.Generic;
 
-namespace openHistorian.Communications
+namespace openHistorian
 {
-    public partial class RemoteHistorian<TKey, TValue>
+    public partial class HistorianClient<TKey, TValue>
     {
         private class HistorianDataReader
             : HistorianDataReaderBase<TKey, TValue>
         {
             private readonly Action m_onDispose;
-            private readonly RemoteHistorian<TKey, TValue> m_client;
+            private readonly HistorianClient<TKey, TValue> m_client;
             private PointReader m_reader;
             private bool m_closed;
 
-            public HistorianDataReader(RemoteHistorian<TKey, TValue> client, Action onDispose)
+            public HistorianDataReader(HistorianClient<TKey, TValue> client, Action onDispose)
             {
                 m_onDispose = onDispose;
                 m_client = client;
@@ -78,10 +78,10 @@ namespace openHistorian.Communications
                 : KeyValueStream<TKey, TValue>
             {
                 private bool m_completed;
-                private readonly RemoteHistorian<TKey, TValue> m_client;
+                private readonly HistorianClient<TKey, TValue> m_client;
                 private readonly Action m_onComplete;
 
-                public PointReader(RemoteHistorian<TKey, TValue> client, Action onComplete)
+                public PointReader(HistorianClient<TKey, TValue> client, Action onComplete)
                 {
                     m_client = client;
                     m_onComplete = onComplete;

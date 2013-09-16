@@ -51,7 +51,7 @@ namespace openHistorian.Data.Query
             HistorianDatabaseBase<HistorianKey, HistorianValue> db = null;
             try
             {
-                db = m_historian.GetDatabase();
+                db = m_historian.GetDefaultDatabase();
                
                 //var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
 

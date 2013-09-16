@@ -29,10 +29,10 @@ using openHistorian.Collections;
 namespace openHistorian
 {
     /// <summary>
-    /// A simple way to implement <see cref="IHistorianDatabaseCollection"/>.
+    /// A simple way to implement <see cref="HistorianCollection{TKey,TValue}"/>.
     /// </summary>
     public class HistorianDatabaseCollection<TKey, TValue>
-        : IDisposable, IHistorianDatabaseCollection<TKey, TValue>
+        : HistorianCollection<TKey, TValue>, IDisposable
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : class, new()
     {
@@ -58,7 +58,7 @@ namespace openHistorian
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public HistorianDatabaseBase<TKey, TValue> this[string databaseName]
+        public override HistorianDatabaseBase<TKey, TValue> this[string databaseName]
         {
             get
             {

@@ -251,7 +251,7 @@ namespace openHistorian.Adapters
             clientOptions.NetworkPort = Port;
             clientOptions.IsReadOnly = false;
             m_client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions);
-            m_inputQueue = new HistorianInputQueue(() => m_client.GetDatabase());
+            m_inputQueue = new HistorianInputQueue(() => m_client.GetDefaultDatabase());
         }
 
         /// <summary>

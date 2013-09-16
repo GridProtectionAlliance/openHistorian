@@ -42,12 +42,12 @@ namespace openHistorian.Communications
         public delegate void SocketErrorEventHandler(Exception ex);
 
         private NetworkBinaryStream2 m_stream;
-        private readonly IHistorianDatabaseCollection<TKey, TValue> m_historian;
+        private readonly HistorianCollection<TKey, TValue> m_historian;
         private HistorianDatabaseBase<TKey, TValue> m_historianDatabase;
         private HistorianDataReaderBase<TKey, TValue> m_historianReaderBase;
         KeyValueStreamCompressionBase<TKey, TValue> m_compressionMode;
 
-        public ProcessClient(NetworkBinaryStream2 netStream, IHistorianDatabaseCollection<TKey, TValue> historian)
+        public ProcessClient(NetworkBinaryStream2 netStream, HistorianCollection<TKey, TValue> historian)
         {
             m_stream = netStream;
             m_historian = historian;

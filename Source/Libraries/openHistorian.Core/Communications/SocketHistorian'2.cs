@@ -34,7 +34,7 @@ namespace openHistorian.Communications
     // TODO: Need the ability to dynamically add and remove database instances from the socket historian - or maybe better - just "replace" the collection it's using...
     // TODO: Initial glance looks like replacement of collection might be simple...??
     /// <summary>
-    /// Hosts a <see cref="IHistorianDatabaseCollection"/> on a network socket.
+    /// Hosts a <see cref="HistorianCollection{TKey,TValue}"/> on a network socket.
     /// </summary>
     public class SocketHistorian<TKey, TValue>
         : IDisposable
@@ -43,13 +43,13 @@ namespace openHistorian.Communications
     {
         private volatile bool m_isRunning = true;
         private TcpListener m_listener;
-        private IHistorianDatabaseCollection<TKey, TValue> m_historian;
+        private HistorianCollection<TKey, TValue> m_historian;
         private readonly bool m_ownsHistorian;
         private readonly int m_port;
         private bool m_disposed;
 
         // TODO: Replace this with a connection string instead of a port - allows easier specification of interface, etc.
-        public SocketHistorian(int port, IHistorianDatabaseCollection<TKey, TValue> historian = null)
+        public SocketHistorian(int port, HistorianCollection<TKey, TValue> historian = null)
         {
             if (historian == null)
             {

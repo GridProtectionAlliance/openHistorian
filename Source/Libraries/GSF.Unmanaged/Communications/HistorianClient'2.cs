@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RemoteHistorian.cs - Gbtc
+//  HistorianClient.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,22 +30,65 @@ using openHistorian.Collections;
 using openHistorian.Communications.Compression;
 using openHistorian.Communications.Initialization;
 
-namespace openHistorian.Communications
+namespace openHistorian
 {
+
+    public class HistorianClientOptions
+    {
+        public bool IsReadOnly = true;
+        public int NetworkPort = 38402;
+        public string ServerNameOrIp = "localhost";
+        public string DefaultDatabase = "default";
+    }
+
     /// <summary>
     /// Connects to a socket based remoted historian database collection.
     /// </summary>
-    public partial class RemoteHistorian<TKey, TValue> :
-        IHistorianDatabaseCollection<TKey, TValue>, IDisposable
+    public partial class HistorianClient<TKey, TValue> :
+        HistorianCollection<TKey, TValue>, IDisposable
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : HistorianValueBase<TValue>, new()
     {
         private TcpClient m_client;
-        private readonly NetworkBinaryStream2 m_stream;
+        private NetworkBinaryStream2 m_stream;
         private HistorianDatabase m_historianDatabase;
+        string m_historianDatabaseString;
+
         KeyValueStreamCompressionBase<TKey, TValue> m_compressionMode;
 
-        public RemoteHistorian(IPEndPoint server)
+        private readonly string m_defaultDatabase;
+
+        public HistorianClient(HistorianClientOptions options)
+        {
+            IPAddress ip;
+            if (!IPAddress.TryParse(options.ServerNameOrIp, out ip))
+            {
+                ip = Dns.GetHostAddresses(options.ServerNameOrIp)[0];
+            }
+
+            Start(new IPEndPoint(ip, options.NetworkPort));
+            m_defaultDatabase = options.DefaultDatabase;
+        }
+
+        /// <summary>
+        /// Gets the default database as defined in the constructor's options.
+        /// </summary>
+        /// <returns></returns>
+        public HistorianDatabaseBase<TKey, TValue> GetDefaultDatabase()
+        {
+            return this[m_defaultDatabase];
+        }
+
+        //protected RemoteHistorian(IPEndPoint server)
+        //{
+        //    Initialize(server);
+        //}
+
+        /// <summary>
+        /// Connects to the remote historian.
+        /// </summary>
+        /// <param name="server"></param>
+        private void Start(IPEndPoint server)
         {
             m_client = new TcpClient();
             m_client.Connect(server);
@@ -54,12 +97,23 @@ namespace openHistorian.Communications
             m_stream.Flush();
         }
 
-        public HistorianDatabaseBase<TKey, TValue> this[string databaseName]
+        /// <summary>
+        /// Accesses <see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// </summary>
+        /// <param name="databaseName">Name of database instance to access.</param>
+        /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        public override HistorianDatabaseBase<TKey, TValue> this[string databaseName]
         {
             get
             {
                 if (m_historianDatabase != null)
-                    throw new Exception("Can only connect to one database at a time.");
+                {
+                    if (m_historianDatabaseString == databaseName)
+                        return m_historianDatabase;
+
+                    throw new Exception("Can only connect to one database at a time. Please disconnect from database" + m_historianDatabaseString);
+                }
+
                 //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateFixedSizeStream.TypeGuid);
                 //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateCompressedStream.TypeGuid);
                 m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateHistorianCompressedStream.TypeGuid);
@@ -69,16 +123,18 @@ namespace openHistorian.Communications
                 m_stream.Write((byte)ServerCommand.ConnectToDatabase);
                 m_stream.Write(databaseName);
                 m_stream.Flush();
+
                 m_historianDatabase = new HistorianDatabase(this, () => m_historianDatabase = null);
+                m_historianDatabaseString = databaseName;
+
                 return m_historianDatabase;
             }
         }
 
-        public void Disconnect()
-        {
-            Dispose();
-        }
-
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
             if (m_historianDatabase != null)

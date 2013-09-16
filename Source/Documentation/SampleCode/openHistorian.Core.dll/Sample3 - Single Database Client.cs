@@ -32,7 +32,7 @@ namespace SampleCode.openHistorian.Server.dll
                 
                 using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                 {
-                    var database = client.GetDatabase();
+                    var database = client.GetDefaultDatabase();
 
                     for (ulong x = 0; x < 1000; x++)
                     {
@@ -65,7 +65,7 @@ namespace SampleCode.openHistorian.Server.dll
 
                 using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                 {
-                    var database = client.GetDatabase();
+                    var database = client.GetDefaultDatabase();
                     using (var reader = database.OpenDataReader())
                     {
                         var stream = reader.Read(0, 1000);

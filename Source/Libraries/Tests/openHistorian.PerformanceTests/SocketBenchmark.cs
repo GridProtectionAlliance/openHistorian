@@ -119,7 +119,7 @@ namespace SampleCode.openHistorian.Server.dll
                         count = 0;
                         using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                         {
-                            HistorianDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase();//.GetDatabase();
+                            HistorianDatabaseBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase();//.GetDatabase();
                             //IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
                             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                             {

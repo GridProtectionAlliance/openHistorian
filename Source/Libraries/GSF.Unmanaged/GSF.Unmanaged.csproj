@@ -133,9 +133,9 @@
     <Compile Include="Communications\NetworkBinaryStream2.cs" />
     <Compile Include="Communications\LinearBuffer.cs" />
     <Compile Include="Communications\NetworkBinaryStream.cs" />
-    <Compile Include="Communications\RemoteHistorian%272.cs" />
-    <Compile Include="Communications\RemoteHistorian%272_Database.cs" />
-    <Compile Include="Communications\RemoteHistorian%272_DataReader.cs" />
+    <Compile Include="Communications\HistorianClient%272.cs" />
+    <Compile Include="Communications\HistorianClient%272_Database.cs" />
+    <Compile Include="Communications\HistorianClient%272_DataReader.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="CompressionMethod.cs" />
     <Compile Include="QueryFilterTimestamp_IntervalRanges.cs" />
@@ -178,7 +178,6 @@
     <Compile Include="FileStructure\TransactionalRead.cs" />
     <Compile Include="FileStructure\TransactionService.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="HistorianClient%272.cs" />
     <Compile Include="HistorianDataReaderBase%272.cs" />
     <Compile Include="HistorianDataReaderBaseExtensionMethods%272.cs" />
     <Compile Include="IHistorian.cs" />

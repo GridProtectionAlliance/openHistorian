@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IHistorianDatabaseCollection.cs - Gbtc
+//  HistorianCollection.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,11 +26,11 @@ using openHistorian.Collections;
 namespace openHistorian
 {
     /// <summary>
-    /// Contains a set of named IHistorianDatabases.
+    /// Contains a set of named HistorianDatabaseBase.
     /// </summary>
     /// <typeparam name="TKey">They key type of the historian database. Must inherit HistorianKeyBase.</typeparam>
     /// <typeparam name="TValue">The value type of the historian database.</typeparam>
-    public interface IHistorianDatabaseCollection<TKey, TValue>
+    public abstract class HistorianCollection<TKey, TValue>
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : class, new()
     {
@@ -39,7 +39,7 @@ namespace openHistorian
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        HistorianDatabaseBase<TKey, TValue> this[string databaseName]
+        public abstract HistorianDatabaseBase<TKey, TValue> this[string databaseName]
         {
             get;
         }

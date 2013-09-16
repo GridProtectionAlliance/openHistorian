@@ -89,9 +89,7 @@ namespace SampleCode.openHistorian.Server.dll
 
                 using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
                 {
-                    IHistorianDatabaseCollection<HistorianKey, HistorianValue> dbCollection = client.GetDatabaseCollection();
-
-                    HistorianDatabaseBase<HistorianKey, HistorianValue> database = dbCollection["Scada"];
+                    HistorianDatabaseBase<HistorianKey, HistorianValue> database = client["Scada"];
                     using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                     {
                         KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
@@ -99,7 +97,7 @@ namespace SampleCode.openHistorian.Server.dll
                     }
                     database.Disconnect();
 
-                    database = dbCollection["Synchrophasor"];
+                    database = client["Synchrophasor"];
 
                     using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                     {

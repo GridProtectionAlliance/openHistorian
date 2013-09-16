@@ -38,7 +38,7 @@ namespace HistorianDemos
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    var sig = client.GetFrames(startTime, stopTime);
+                    var sig = client.GetDefaultDatabase().GetFrames(startTime, stopTime);
                     sw.Stop();
 
                     var sb = new StringBuilder();
@@ -79,7 +79,7 @@ namespace HistorianDemos
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    var sig = client.GetFrames(startTime, stopTime, 3736, 4466);
+                    var sig = client.GetDefaultDatabase().GetFrames(startTime, stopTime, 3736, 4466);
                     sw.Stop();
 
                     var sb = new StringBuilder();
@@ -120,7 +120,7 @@ namespace HistorianDemos
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    var sig = client.GetFrames(startTime, stopTime, 3736, 4466).RoundToTolerance(1);
+                    var sig = client.GetDefaultDatabase().GetFrames(startTime, stopTime, 3736, 4466).RoundToTolerance(1);
                     sw.Stop();
 
                     var sb = new StringBuilder();
@@ -163,7 +163,7 @@ namespace HistorianDemos
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    var sig = client.GetFrames(times, 3736, 4466).RoundToTolerance(1);
+                    var sig = client.GetDefaultDatabase().GetFrames(times, 3736, 4466).RoundToTolerance(1);
                     sw.Stop();
 
                     var sb = new StringBuilder();

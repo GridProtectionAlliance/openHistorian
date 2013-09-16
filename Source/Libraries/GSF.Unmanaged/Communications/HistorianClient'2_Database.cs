@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RemoteHistorian_Database.cs - Gbtc
+//  HistorianClient_Database.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -25,20 +25,20 @@
 using System;
 using openHistorian.Collections.Generic;
 
-namespace openHistorian.Communications
+namespace openHistorian
 {
-    public partial class RemoteHistorian<TKey, TValue>
+    public partial class HistorianClient<TKey, TValue>
     {
         private class HistorianDatabase
             : HistorianDatabaseBase<TKey, TValue>
         {
             private bool m_disposed;
-            private readonly RemoteHistorian<TKey, TValue> m_client;
+            private readonly HistorianClient<TKey, TValue> m_client;
 
             private HistorianDataReader m_historianReader;
             private readonly Action m_onDispose;
 
-            public HistorianDatabase(RemoteHistorian<TKey, TValue> client, Action onDispose)
+            public HistorianDatabase(HistorianClient<TKey, TValue> client, Action onDispose)
             {
                 m_onDispose = onDispose;
                 m_client = client;
@@ -93,12 +93,12 @@ namespace openHistorian.Communications
 
             public override void SoftCommit()
             {
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
             }
 
             public override void HardCommit()
             {
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
             }
 
             public override void Disconnect()
