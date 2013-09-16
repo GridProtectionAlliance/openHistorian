@@ -66,6 +66,7 @@
       <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg">(NOT Installed OR WixUI_InstallMode = "Change") AND <![CDATA[NOT(&openHistorianFeature=3)]]></Publish>
     </UI>
 
+    <Icon Id="openHistorian.ico.exe" SourceFile="$(var.openHistorian.TargetPath)" />
     <Icon Id="openHistorianManager.ico.exe" SourceFile="$(var.openHistorianManager.TargetPath)" />
     <Icon Id="openHistorianConsole.ico.exe" SourceFile="$(var.openHistorianConsole.TargetPath)" />
     <Icon Id="ConfigurationSetupUtility.ico.exe" SourceFile="$(var.ConfigurationSetupUtility.TargetPath)" />
@@ -81,6 +82,9 @@
     <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\openHistorianSetupBanner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\openHistorianSetupDialog.bmp" />
     <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\INSTALL_LICENSE.rtf" />
+
+    <!-- Add/Remove Programs Icon -->
+    <Property Id="ARPPRODUCTICON" Value="openHistorian.ico.exe" />
 
     <!-- Custom Actions -->
     <Binary Id="InstallerActions" SourceFile="$(var.SolutionDir)\Dependencies\GSF\GSF.InstallerActions.CA.dll" />
