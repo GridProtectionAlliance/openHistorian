@@ -912,7 +912,7 @@
         </member>
         <member name="E:GSF.ServiceProcess.ServiceHelper.ProcessStateChanged">
             <summary>
-            Occurs when the state of a defiend <see cref="T:GSF.ServiceProcess.ServiceProcess"/> changes.
+            Occurs when the state of a defined <see cref="T:GSF.ServiceProcess.ServiceProcess"/> changes.
             </summary>
             <remarks>
             <see cref="F:GSF.EventArgs`2.Argument1"/> is the <see cref="P:GSF.ServiceProcess.ServiceProcess.Name"/>.<br/>

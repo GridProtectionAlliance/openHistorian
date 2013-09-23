@@ -38,7 +38,7 @@
         </member>
         <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.PublishMetadata">
             <summary>
-            Gets or sets a boolean value that indicates whether service metadata is to be published.
+            Gets or sets a boolean value that indicates whether service meta-data is to be published.
             </summary>
         </member>
         <member name="P:GSF.ServiceModel.Activation.SecureServiceHostFactory.DisableSecurity">

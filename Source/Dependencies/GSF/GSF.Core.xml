@@ -6774,7 +6774,7 @@
             <param name="item">Object to evaluate.</param>
             <returns>Result of evaluation as a <see cref="T:System.Boolean"/>.</returns>
             <remarks>
-            Native types default to zero, not null, therefore this can be used to evaulate if an item is its default (i.e., uninitialized) value.
+            Native types default to zero, not null, therefore this can be used to evaluate if an item is its default (i.e., uninitialized) value.
             </remarks>
         </member>
         <member name="M:GSF.Common.IsReference(System.Object)">
@@ -9153,6 +9153,12 @@
             </summary>
             <param name="usePrecisionTime">Set to <c>true</c> to use precision time.</param>
             <returns>Current UTC time in implementation that is proper for connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.</returns>
+        </member>
+        <member name="M:GSF.Data.AdoDataConnection.DefaultIsloationLevel">
+            <summary>
+            Gets the default <see cref="T:System.Data.IsolationLevel"/> for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
+            </summary>
+            <returns>Default <see cref="T:System.Data.IsolationLevel"/> for the connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.</returns>
         </member>
         <member name="M:GSF.Data.AdoDataConnection.ParameterizedQueryString(System.String,System.String[])">
             <summary>

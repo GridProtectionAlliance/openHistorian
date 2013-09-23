@@ -4879,6 +4879,17 @@
             Starts the <see cref="T:GSF.PhasorProtocols.MultiProtocolFrameParser"/>.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.TryInitializeFrameParser">
+            <summary>
+            Attempts to initialize the protocol specific frame parser.
+            </summary>
+            <returns><c>true</c> if frame parser was successfully initialized; otherwise <c>false</c>.</returns>
+            <remarks>
+            Starting the multi-protocol frame parser will automatically initialize the frame parsers so calling
+            this method then will be unnecessary, however, if you are using this class just to edit custom
+            connection parameters then initializing the will be necessary.
+            </remarks>
+        </member>
         <member name="M:GSF.PhasorProtocols.MultiProtocolFrameParser.InitializeFrameParser(System.Collections.Generic.Dictionary{System.String,System.String})">
             <summary>
             Initialize frame parser.
