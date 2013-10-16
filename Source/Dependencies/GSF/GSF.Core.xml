@@ -3692,6 +3692,52 @@
             <param name="others">Other dictionaries to merge with source dictionary.</param>
             <returns>A merged collection of all unique dictionary elements, all <paramref name="others"/> merged left to the source.</returns>
         </member>
+        <member name="M:GSF.Collections.CollectionExtensions.GetOrAdd``2(System.Collections.Generic.IDictionary{``0,``1},``0,System.Func{``0,``1})">
+            <summary>
+            Adds a key/value pair to the <see cref="T:System.Collections.Generic.IDictionary`2"/> if the key does not already exist.
+            </summary>
+            <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
+            <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
+            <param name="dictionary">The dictionary to add the key/value pair to if the key does not already exist.</param>
+            <param name="key">The key to be added to the dictionary if it does not already exist.</param>
+            <param name="valueFactory">The function used to generate a value for the key.</param>
+            <returns>The value of the key in the dictionary.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.GetOrAdd``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
+            <summary>
+            Adds a key/value pair to the <see cref="T:System.Collections.Generic.IDictionary`2"/> if the key does not already exist.
+            </summary>
+            <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
+            <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
+            <param name="dictionary">The dictionary to add the key/value pair to if the key does not already exist.</param>
+            <param name="key">The key to be added to the dictionary if it does not already exist.</param>
+            <param name="value">The value to assign to the key if the key does not already exist.</param>
+            <returns>The value of the key in the dictionary.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.AddOrUpdate``2(System.Collections.Generic.IDictionary{``0,``1},``0,System.Func{``0,``1})">
+            <summary>
+            Adds a key/value pair to the <see cref="T:System.Collections.Generic.IDictionary`2"/> if the key does not already exist,
+            or updates a key/value pair in the <see cref="T:System.Collections.Generic.IDictionary`2"/> if the key already exists.
+            </summary>
+            <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
+            <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
+            <param name="dictionary">The dictionary to add the key/value pair to if the key does not already exist.</param>
+            <param name="key">The key to be added or updated.</param>
+            <param name="valueFactory">The function used to generate a value for the key.</param>
+            <returns>The value of the key in the dictionary after updating.</returns>
+        </member>
+        <member name="M:GSF.Collections.CollectionExtensions.AddOrUpdate``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
+            <summary>
+            Adds a key/value pair to the <see cref="T:System.Collections.Generic.IDictionary`2"/> if the key does not already exist,
+            or updates a key/value pair in the <see cref="T:System.Collections.Generic.IDictionary`2"/> if the key already exists.
+            </summary>
+            <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
+            <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
+            <param name="dictionary">The dictionary to add the key/value pair to if the key does not already exist.</param>
+            <param name="key">The key to be added or updated.</param>
+            <param name="value">The value to be assigned to the key.</param>
+            <returns>The value of the key in the dictionary after updating.</returns>
+        </member>
         <member name="M:GSF.Collections.CollectionExtensions.Any(System.Collections.BitArray,System.Boolean)">
             <summary>
             Returns <c>true</c> if any item in <see cref="T:System.Collections.BitArray"/> is equal to <paramref name="value"/>.
@@ -3886,7 +3932,7 @@
         </member>
         <member name="M:GSF.Collections.CollectionExtensions.Scramble``1(System.Collections.Generic.IList{``0})">
             <summary>
-            Rearranges all the elements in the list into a random order.
+            Rearranges all the elements in the list into a highly-random order.
             </summary>
             <typeparam name="TSource">The generic type of the list.</typeparam>
             <param name="source">The input list of generic types to scramble.</param>
@@ -8287,6 +8333,188 @@
             Gets the <see cref="T:GSF.Configuration.ConfigurationFile"/> object that represents the config file of the currently executing Windows or Web application.
             </summary>
         </member>
+        <member name="T:GSF.Configuration.ConnectionStringParser">
+            <summary>
+            Parses connection strings based on a settings object whose properties
+            are annotated with the <see cref="T:GSF.Configuration.SerializeSettingAttribute"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.DefaultParameterDelimiter">
+            <summary>
+            Default value for the <see cref="P:GSF.Configuration.ConnectionStringParser.ParameterDelimiter"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.DefaultKeyValueDelimiter">
+            <summary>
+            Default value for the <see cref="P:GSF.Configuration.ConnectionStringParser.KeyValueDelimiter"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.DefaultStartValueDelimiter">
+            <summary>
+            Default value for the <see cref="P:GSF.Configuration.ConnectionStringParser.StartValueDelimiter"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.DefaultEndValueDelimiter">
+            <summary>
+            Default value for the <see cref="P:GSF.Configuration.ConnectionStringParser.EndValueDelimiter"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.DefaultExplicitlySpecifyDefaults">
+            <summary>
+            Default value for the <see cref="P:GSF.Configuration.ConnectionStringParser.ExplicitlySpecifyDefaults"/> property.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.DefaultSerializeUnspecifiedProperties">
+            <summary>
+            Default value for the <see cref="P:GSF.Configuration.ConnectionStringParser.SerializeUnspecifiedProperties"/> property.
+            </summary>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Configuration.ConnectionStringParser"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser.ComposeConnectionString(System.Object)">
+            <summary>
+            Serializes the given <paramref name="settingsObject"/> into a connection string.
+            </summary>
+            <param name="settingsObject">The object whose properties are to be serialized.</param>
+            <returns>A connection string containing the serialized properties.</returns>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser.ParseConnectionString(System.String,System.Object)">
+            <summary>
+            Deserializes the connection string parameters into the given <paramref name="settingsObject"/>.
+            </summary>
+            <param name="connectionString">The connection string to be parsed.</param>
+            <param name="settingsObject">The object whose properties are to be populated with values from the connection string.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="settingsObject"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">A required connection string parameter cannot be found in the connection string.</exception>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser.GetConnectionStringProperties(System.Type)">
+            <summary>
+            Gets the set of properties which are part of the connection string.
+            </summary>
+            <param name="settingsObjectType">The type of the settings object used to look up properties via reflection.</param>
+            <returns>The set of properties which are part of the connection string.</returns>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser.ConvertToPropertyType(System.String,GSF.Configuration.ConnectionStringParser.ConnectionStringProperty)">
+            <summary>
+            Converts the given string value to the type of the given property.
+            </summary>
+            <param name="value">The string value to be converted.</param>
+            <param name="property">The property used to determine what type to convert to.</param>
+            <returns>The given string converted to the type of the given property.</returns>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser.ConvertToString(System.Object,GSF.Configuration.ConnectionStringParser.ConnectionStringProperty)">
+            <summary>
+            Converts the given object to a string.
+            </summary>
+            <param name="obj">The object to be converted.</param>
+            <param name="property">The property which defines the type of the object.</param>
+            <returns>The object converted to a string.</returns>
+        </member>
+        <member name="P:GSF.Configuration.ConnectionStringParser.ParameterDelimiter">
+            <summary>
+            Gets or sets the parameter delimiter used to
+            separate key-value pairs in the connection string.
+            </summary>
+        </member>
+        <member name="P:GSF.Configuration.ConnectionStringParser.KeyValueDelimiter">
+            <summary>
+            Gets or sets the key-value delimiter used to
+            separate keys from values in the connection string.
+            </summary>
+        </member>
+        <member name="P:GSF.Configuration.ConnectionStringParser.StartValueDelimiter">
+            <summary>
+            Gets or sets the start value delimiter used to denote the
+            start of a value in the cases where the value contains one
+            of the delimiters defined for the connection string.
+            </summary>
+        </member>
+        <member name="P:GSF.Configuration.ConnectionStringParser.EndValueDelimiter">
+            <summary>
+            Gets or sets the end value delimiter used to denote the
+            end of a value in the cases where the value contains one
+            of the delimiters defined for the connection string.
+            </summary>
+        </member>
+        <member name="P:GSF.Configuration.ConnectionStringParser.ExplicitlySpecifyDefaults">
+            <summary>
+            Gets or sets the flag that determines whether to explicitly
+            specify parameter values that match their defaults when
+            serializing settings to a connection string.
+            </summary>
+        </member>
+        <member name="P:GSF.Configuration.ConnectionStringParser.SerializeUnspecifiedProperties">
+            <summary>
+            Gets or sets the flag that determines whether to include properties which are not
+            annotated with the <see cref="T:GSF.Configuration.SerializeSettingAttribute"/> in the connection string.
+            </summary>
+        </member>
+        <member name="T:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty">
+            <summary>
+            Stores reflected information from a <see cref="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.PropertyInfo"/>
+            object used to parse connection strings.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.PropertyInfo">
+            <summary>
+            The <see cref="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.PropertyInfo"/> object.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.Converter">
+            <summary>
+            The type converter used to convert the value
+            of this property to and from a string.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.Names">
+            <summary>
+            The name of the property as it appears in the connection string.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.DefaultValue">
+            <summary>
+            The default value of the property if its value
+            is not explicitly specified in the connection string.
+            </summary>
+        </member>
+        <member name="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.Required">
+            <summary>
+            Indicates whether or not the property is required
+            to be explicitly defined in the connection string.
+            </summary>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.#ctor(System.Reflection.PropertyInfo)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty"/> class.
+            </summary>
+            <param name="propertyInfo">The <see cref="F:GSF.Configuration.ConnectionStringParser.ConnectionStringProperty.PropertyInfo"/> object.</param>
+        </member>
+        <member name="T:GSF.Configuration.ConnectionStringParser`1">
+            <summary>
+            Parses connection strings based on a settings object whose properties
+            are annotated with <typeparamref name="TParameterAttribute"/>.
+            </summary>
+            <typeparam name="TParameterAttribute">
+            The type of the attribute to search for when determining whether
+            to serialize a property to the connection string.
+            </typeparam>
+        </member>
+        <member name="M:GSF.Configuration.ConnectionStringParser`1.GetConnectionStringProperties(System.Type)">
+            <summary>
+            Gets the set of properties which are part of the connection string.
+            </summary>
+            <param name="settingsObjectType">The type of the settings object used to look up properties via reflection.</param>
+            <returns>The set of properties which are part of the connection string.</returns>
+        </member>
+        <member name="P:GSF.Configuration.ConnectionStringParser`1.SerializeUnspecifiedProperties">
+            <summary>
+            Redefined to throw an exception. This property has no meaning when
+            property serialization is determined by the existence of the typed parameter.
+            </summary>
+        </member>
         <member name="T:GSF.Configuration.EncryptSettingAttribute">
             <summary>
             Represents an attribute that determines if a property or field in a class derived from
@@ -8716,15 +8944,20 @@
             if the attribute doesn't exist the property or field name is used.
             </remarks>
         </member>
-        <member name="M:GSF.Configuration.SettingNameAttribute.#ctor(System.String)">
+        <member name="M:GSF.Configuration.SettingNameAttribute.#ctor(System.String[])">
             <summary>
             Creates a new <see cref="T:GSF.Configuration.SettingNameAttribute"/> with the specified <paramref name="name"/> value.
             </summary>
-            <param name="name">Assigns name used to serialize setting into config file.</param>
+            <param name="names">Assigns name(s) used to serialize setting into config file.</param>
         </member>
         <member name="P:GSF.Configuration.SettingNameAttribute.Name">
             <summary>
             Gets the name used to serialize field or property into config file.
+            </summary>
+        </member>
+        <member name="P:GSF.Configuration.SettingNameAttribute.Names">
+            <summary>
+            Gets the names used to serialize field or property into config file.
             </summary>
         </member>
         <member name="T:GSF.Console.Arguments">
@@ -22388,6 +22621,29 @@
             <returns><c>true</c> if <paramref name="attributes"/> was found; otherwise <c>false</c>.</returns>
             <typeparam name="TMemberInfo"><see cref="T:System.Reflection.MemberInfo"/> or derived type to get <see cref="T:System.Attribute"/> from.</typeparam>
             <typeparam name="TAttribute"><see cref="T:System.Type"/> of <see cref="T:System.Attribute"/> to attempt to retrieve.</typeparam>
+        </member>
+        <member name="M:GSF.Reflection.MemberInfoExtensions.TryGetAttribute``1(``0,System.Type,System.Attribute@)">
+            <summary>
+            Attempts to get the specified <paramref name="attribute"/> from a <see cref="T:System.Reflection.MemberInfo"/> object, returning <c>true</c> if it does.
+            </summary>
+            <param name="member">The <see cref="T:System.Reflection.MemberInfo"/> object over which to search attributes.</param>
+            <param name="attributeType">The actual type of the <see cref="T:System.Attribute"/> to look for.</param>
+            <param name="attribute">The <see cref="T:System.Attribute"/> that was found, if any.</param>
+            <returns><c>true</c> if <paramref name="attribute"/> was found; otherwise <c>false</c>.</returns>
+            <typeparam name="TMemberInfo"><see cref="T:System.Reflection.MemberInfo"/> or derived type to get <see cref="T:System.Attribute"/> from.</typeparam>
+            <remarks>
+            If more than of the same type of attribute exists on the member, only the first one is returned.
+            </remarks>
+        </member>
+        <member name="M:GSF.Reflection.MemberInfoExtensions.TryGetAttributes``1(``0,System.Type,System.Attribute[]@)">
+            <summary>
+            Attempts to get the specified <paramref name="attributes"/> from a <see cref="T:System.Reflection.MemberInfo"/> object, returning <c>true</c> if it does.
+            </summary>
+            <param name="member">The <see cref="T:System.Reflection.MemberInfo"/> object over which to search attributes.</param>
+            <param name="attributeType">The actual type of the <see cref="T:System.Attribute"/> objects to look for.</param>
+            <param name="attributes">The array of <see cref="T:System.Attribute"/> objects that were found, if any.</param>
+            <returns><c>true</c> if <paramref name="attributes"/> was found; otherwise <c>false</c>.</returns>
+            <typeparam name="TMemberInfo"><see cref="T:System.Reflection.MemberInfo"/> or derived type to get <see cref="T:System.Attribute"/> from.</typeparam>
         </member>
         <member name="T:GSF.Scheduling.Schedule">
             <summary>

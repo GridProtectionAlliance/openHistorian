@@ -104,6 +104,11 @@
             Gets or sets number of lines to skip in the source file before the header line is encountered.
             </summary>
         </member>
+        <member name="P:EpriExport.FileImporter.TimestampFormat">
+            <summary>
+            Gets or sets timestamp format for the file.
+            </summary>
+        </member>
         <member name="P:EpriExport.FileImporter.UseHighResolutionInputTimer">
             <summary>
             Gets or sets flag that determines if a high-resolution precision timer should be used for CSV file based input.
@@ -142,6 +147,106 @@
             </summary>
         </member>
         <member name="P:EpriExport.FileImporter.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="T:EpriExport.MetricImporter">
+            <summary>
+            Represents an input adapter that reads metrics from an EPRI export file.
+            </summary>
+        </member>
+        <member name="M:EpriExport.MetricImporter.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:EpriExport.MetricImporter"/> class.
+            </summary>
+        </member>
+        <member name="M:EpriExport.MetricImporter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:EpriExport.MetricImporter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:EpriExport.MetricImporter.Initialize">
+            <summary>
+            Initializes this <see cref="T:EpriExport.MetricImporter"/>.
+            </summary>
+        </member>
+        <member name="M:EpriExport.MetricImporter.AttemptConnection">
+            <summary>
+            Attempts to connect to this <see cref="T:EpriExport.MetricImporter"/>.
+            </summary>
+        </member>
+        <member name="M:EpriExport.MetricImporter.AttemptDisconnection">
+            <summary>
+            Attempts to disconnect from this <see cref="T:EpriExport.MetricImporter"/>.
+            </summary>
+        </member>
+        <member name="M:EpriExport.MetricImporter.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:EpriExport.MetricImporter"/>.
+            </summary>
+            <param name="maxLength">Maximum length of the status message.</param>
+            <returns>Text of the status message.</returns>
+        </member>
+        <member name="P:EpriExport.MetricImporter.ImportPath">
+            <summary>
+            Gets or sets the import path for EPRI CSV files from which measurements will be read.
+            </summary>
+        </member>
+        <member name="P:EpriExport.MetricImporter.InputInterval">
+            <summary>
+            Gets or sets the interval of time between sending frames into the concentrator.
+            </summary>
+        </member>
+        <member name="P:EpriExport.MetricImporter.SkipRows">
+            <summary>
+            Gets or sets number of lines to skip in the source file before the header line is encountered.
+            </summary>
+        </member>
+        <member name="P:EpriExport.MetricImporter.TimestampFormat">
+            <summary>
+            Gets or sets timestamp format for the file.
+            </summary>
+        </member>
+        <member name="P:EpriExport.MetricImporter.UseHighResolutionInputTimer">
+            <summary>
+            Gets or sets flag that determines if a high-resolution precision timer should be used for CSV file based input.
+            </summary>
+            <remarks>
+            Useful when input frames need be accurately time-aligned to the local clock to better simulate
+            an input device and calculate downstream latencies.<br/>
+            This is only applicable when connection is made to a file for replay purposes.
+            </remarks>
+        </member>
+        <member name="P:EpriExport.MetricImporter.MeasurementsPerInterval">
+            <summary>
+            Gets or sets the number of measurements that are read from the CSV file in each frame.
+            </summary>
+        </member>
+        <member name="P:EpriExport.MetricImporter.SimulateTimestamp">
+            <summary>
+            Gets or sets a value that determines whether timestamps are
+            simulated for the purposes of real-time concentration.
+            </summary>
+        </member>
+        <member name="P:EpriExport.MetricImporter.ColumnMappings">
+            <summary>
+            Defines the column mappings must defined: e.g., 1=Timestamp; 2=PPA:12; 3=PPA13.
+            </summary>
+        </member>
+        <member name="P:EpriExport.MetricImporter.UseAsyncConnect">
+            <summary>
+            Gets a flag that determines if this <see cref="T:EpriExport.MetricImporter"/>
+            uses an asynchronous connection.
+            </summary>
+        </member>
+        <member name="P:EpriExport.MetricImporter.Status">
+            <summary>
+            Returns the detailed status of this <see cref="T:EpriExport.MetricImporter"/>.
+            </summary>
+        </member>
+        <member name="P:EpriExport.MetricImporter.SupportsTemporalProcessing">
             <summary>
             Gets the flag indicating if this adapter supports temporal processing.
             </summary>

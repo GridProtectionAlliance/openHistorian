@@ -7304,6 +7304,11 @@
             Defines the default value for the <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.MetadataSynchronizationTimeout"/> property.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Transport.DataSubscriber.DefaultUseTransactionForMetadata">
+            <summary>
+            Defines the default value for the <see cref="P:GSF.TimeSeries.Transport.DataSubscriber.UseTransactionForMetadata"/> property.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
@@ -7587,7 +7592,7 @@
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.RefreshMetadata">
             <summary>
-            Initiate a metadata refresh.
+            Initiate a meta-data refresh.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.SynchronizeMetadata(System.Data.DataSet)">
@@ -7678,7 +7683,7 @@
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Transport.DataSubscriber.MetaDataReceived"/> event.
             </summary>
-            <param name="metadata">Meta-data <see cref="T:System.Data.DataSet"/> instance to send to client subscription.</param>
+            <param name="meta-data">Meta-data <see cref="T:System.Data.DataSet"/> instance to send to client subscription.</param>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnDataStartTime(GSF.Ticks)">
             <summary>
@@ -7776,8 +7781,8 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.AutoSynchronizeMetadata">
             <summary>
             Gets or sets flag that determines if <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/> should
-            automatically request metadata synchronization and synchronize publisher
-            metadata with its own database configuration.
+            automatically request meta-data synchronization and synchronize publisher
+            meta-data with its own database configuration.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.MetadataFilters">
@@ -7821,7 +7826,7 @@
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.CompressMetadata">
             <summary>
-            Gets or sets the operational mode flag to compress metadata.
+            Gets or sets the operational mode flag to compress meta-data.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.CompressSignalIndexCache">
@@ -7836,12 +7841,12 @@
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.ReceiveInternalMetadata">
             <summary>
-            Gets or sets the operational mode flag to receive internal metadata.
+            Gets or sets the operational mode flag to receive internal meta-data.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.ReceiveExternalMetadata">
             <summary>
-            Gets or sets the operational mode flag to receive external metadata.
+            Gets or sets the operational mode flag to receive external meta-data.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseCommonSerializationFormat">
@@ -7886,7 +7891,12 @@
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.MetadataSynchronizationTimeout">
             <summary>
-            Gets or sets the timeout used when executing database queries during metadata synchronization.
+            Gets or sets the timeout used when executing database queries during meta-data synchronization.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseTransactionForMetadata">
+            <summary>
+            Gets or sets flag that determines if meta-data synchronization should be performed within a transaction.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.Status">
