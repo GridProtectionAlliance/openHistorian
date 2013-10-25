@@ -138,6 +138,9 @@
     <Compile Include="Communications\HistorianClient%272_DataReader.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="CompressionMethod.cs" />
+    <Compile Include="IO\Unmanaged\UnmanagedMemoryStream.cs" />
+    <Compile Include="IO\Unmanaged\UnmanagedMemoryStreamCore.cs" />
+    <Compile Include="IO\Unmanaged\UnmanagedMemoryStream_IoSession.cs" />
     <Compile Include="QueryFilterTimestamp_IntervalRanges.cs" />
     <Compile Include="QueryFilterTimestamp_FixedRange.cs" />
     <Compile Include="QueryFilterTimestamp_UniverseRange.cs" />

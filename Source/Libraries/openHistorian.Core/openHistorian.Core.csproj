@@ -122,6 +122,7 @@
     <Compile Include="Engine\ArchiveWriters\TransactionalBlocking%272.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessor%272.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessorSettings%272.cs" />
+    <Compile Include="Engine\ArchiveReaderSequential%272.cs" />
     <Compile Include="Engine\DatabaseConfig.cs" />
     <Compile Include="HistorianDatabaseCollection%272.cs" />
     <Compile Include="HistorianDatabaseEngine.cs" />
