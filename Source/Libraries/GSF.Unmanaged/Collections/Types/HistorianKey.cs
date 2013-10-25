@@ -111,6 +111,23 @@ namespace openHistorian.Collections
             EntryNumber = 0;
         }
 
+        public override int CompareTo(HistorianKey other)
+        {
+            if (Timestamp < other.Timestamp)
+                return -1;
+            if (Timestamp > other.Timestamp)
+                return 1;
+            if (PointID < other.PointID)
+                return -1;
+            if (PointID > other.PointID)
+                return 1;
+            if (EntryNumber < other.EntryNumber)
+                return -1;
+            if (EntryNumber > other.EntryNumber)
+                return 1;
+            return 0;
+        }
+
         /// <summary>
         /// Creates a clone of the HistorianKey
         /// </summary>
@@ -131,7 +148,7 @@ namespace openHistorian.Collections
         {
             get
             {
-               return new DateTime((long)Timestamp); 
+                return new DateTime((long)Timestamp);
             }
             set
             {

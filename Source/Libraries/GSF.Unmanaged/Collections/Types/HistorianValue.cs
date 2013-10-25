@@ -34,7 +34,7 @@ namespace openHistorian.Collections
         public ulong Value1;
         public ulong Value2;
         public ulong Value3;
-     
+
         public float AsSingle
         {
             get
@@ -83,6 +83,11 @@ namespace openHistorian.Collections
         /// Should contain any kind of digital data such as Quality. Compression penality occurs when used for any other type of field.
         /// </summary>
         public ulong Value3;
+
+        public override bool IsEqualTo(HistorianValue other)
+        {
+            return Value1 == other.Value1 && Value2 == other.Value2 && Value3 == other.Value3;
+        }
 
         public override void CopyTo(HistorianValue other)
         {

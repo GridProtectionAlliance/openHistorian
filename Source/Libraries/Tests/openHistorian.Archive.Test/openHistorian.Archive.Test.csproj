@@ -75,6 +75,7 @@
     <Compile Include="Collections\Generic\FixedSizeLeaf_Test.cs" />
     <Compile Include="Collections\Generic\FixedSizeNode_Test.cs" />
     <Compile Include="Collections\Generic\KeyValueMethodsTest.cs" />
+    <Compile Include="Collections\Generic\KeyValueStreamExtension.cs" />
     <Compile Include="Collections\Generic\LeafNodeIndexerTest.cs" />
     <Compile Include="Collections\Generic\LeafNodeTest.cs" />
     <Compile Include="Collections\Generic\SortedTree_FixedSizeLeaf_Node_Test.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Collections\KeyValue\SortedTree256Test.cs" />
     <Compile Include="Data\PeriodicScannerTest.cs" />
     <Compile Include="DebugStopwatch.cs" />
+    <Compile Include="Engine\ArchiveReaderSequential_Test.cs" />
     <Compile Include="Engine\ArchiveWriters\PointStreamCacheTest.cs" />
     <Compile Include="Engine\ArchiveWriters\PrestageWriterTest.cs" />
     <Compile Include="Engine\ArchiveWriters\StageWriterTest.cs" />

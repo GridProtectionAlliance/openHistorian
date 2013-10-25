@@ -43,5 +43,21 @@ namespace openHistorian
             Assert.IsTrue(sw.Elapsed.TotalMilliseconds >= minimumTime);
             Assert.IsTrue(sw.Elapsed.TotalMilliseconds <= maximumTime);
         }
+
+        public double TimeEvent(Action function)
+        {
+            sw.Reset();
+            GC.Collect();
+            function();
+            int count = 0;
+            while (sw.Elapsed.TotalSeconds < .25)
+            {
+                sw.Start();
+                function();
+                sw.Stop();
+                count++;
+            }
+            return sw.Elapsed.TotalSeconds / count;
+        }
     }
 }

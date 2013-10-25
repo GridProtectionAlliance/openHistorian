@@ -151,6 +151,7 @@ namespace openHistorian.Collections.Generic
             if (KeyIndexOfCurrentKey < RecordCount && Stream.PointerVersion == PointerVersion)
             {
                 ReadNext();
+                IsValid = true;
                 return true;
             }
             return Read2();
@@ -170,6 +171,7 @@ namespace openHistorian.Collections.Generic
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
                     KeyMethods.Clear(CurrentKey);
+                    IsValid = false;
                     return false;
                 }
 
@@ -181,6 +183,7 @@ namespace openHistorian.Collections.Generic
             }
 
             ReadNext();
+            IsValid = true;
             return true;
         }
 

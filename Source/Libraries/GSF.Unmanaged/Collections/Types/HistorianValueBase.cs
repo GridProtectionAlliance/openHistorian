@@ -4,6 +4,7 @@ namespace openHistorian.Collections
 {
     public abstract class HistorianValueBase<TValue>
     {
+        public abstract bool IsEqualTo(TValue other);
         public abstract void CopyTo(TValue other);
         public abstract void Write(BinaryStreamBase stream);
         public abstract void Read(BinaryStreamBase stream);

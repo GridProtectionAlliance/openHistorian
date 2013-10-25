@@ -40,7 +40,7 @@ namespace openHistorian.Engine
     internal class ArchiveReaderSequential<TKey, TValue>
         : HistorianDataReaderBase<TKey, TValue>
         where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : class, new()
+        where TValue : HistorianValueBase<TValue>, new()
     {
         private readonly ArchiveList<TKey, TValue> m_list;
         private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;
@@ -94,13 +94,8 @@ namespace openHistorian.Engine
             private long m_pointCount;
 
             private TimeoutOperation m_timeout;
-            private readonly Queue<KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>> m_tables;
-
-            private int m_currentIndex;
-            private ArchiveTableSummary<TKey, TValue> m_currentSummary;
-            private ArchiveTableReadSnapshot<TKey, TValue> m_currentInstance;
-            private SeekableKeyValueStream<TKey, TValue> m_currentScanner;
-
+            private List<ArchiveTablePointEnumerator<TKey, TValue>> m_tables;
+            private ArchiveTableSequencer<TKey, TValue> m_currentTables;
             public ReadStream(QueryFilterTimestamp timestampFilter, QueryFilterPointId poingIdFilter, ArchiveListSnapshot<TKey, TValue> snapshot, DataReaderOptions readerOptions)
             {
                 if (readerOptions.Timeout.Ticks > 0)
@@ -116,13 +111,16 @@ namespace openHistorian.Engine
                 m_stopKey = timestampFilter.LastTime;
                 m_snapshot = snapshot;
                 m_snapshot.UpdateSnapshot();
+                m_currentTables = new ArchiveTableSequencer<TKey, TValue>();
+                SetKeyValueReferences(m_currentTables.CurrentKey, m_currentTables.CurrentValue);
+
                 TKey startKey = new TKey();
                 TKey stopKey = new TKey();
 
                 startKey.SetMin();
                 stopKey.SetMax();
 
-                m_tables = new Queue<KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>>();
+                m_tables = new List<ArchiveTablePointEnumerator<TKey, TValue>>();
 
                 for (int x = 0; x < m_snapshot.Tables.Count(); x++)
                 {
@@ -133,7 +131,7 @@ namespace openHistorian.Engine
                         stopKey.Timestamp = timestampFilter.LastTime;
                         if (table.Contains(startKey, stopKey))
                         {
-                            m_tables.Enqueue(new KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>(x, table));
+                            m_tables.Add(new ArchiveTablePointEnumerator<TKey, TValue>(x, table));
                         }
                         else
                         {
@@ -141,83 +139,40 @@ namespace openHistorian.Engine
                         }
                     }
                 }
-                prepareNextFile();
+
+                m_timestampFilter.Reset();
+                if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
+                {
+                    m_currentTables.PrepareNextList(m_tables, m_startKey, m_stopKey);
+                }
             }
 
             public override bool Read()
             {
-                TryAgain:
+            TryAgain:
                 if (m_timedOut)
                     Cancel();
-                if (m_currentScanner.Read())
+                else
                 {
-                    if (CurrentKey.Timestamp <= m_stopKey)
+                    if (m_currentTables.ReadNext())
                     {
                         Stats.PointsScanned++;
                         if (m_isKey2Universal || m_poingIdFilter.ContainsPointID(CurrentKey.PointID))
                         {
                             Stats.PointsReturned++;
+                            IsValid = true;
                             return true;
                         }
                         goto TryAgain;
                     }
-
                     if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
                     {
-                        TKey key = new TKey();
-                        key.Timestamp = m_startKey;
-                        Stats.SeeksRequested++;
-                        m_currentScanner.SeekToKey(key);
+                        m_currentTables.PrepareNextList(m_tables, m_startKey, m_stopKey);
                         goto TryAgain;
                     }
                 }
-                if (!prepareNextFile())
-                {
-                    if (m_timeout != null)
-                    {
-                        m_timeout.Cancel();
-                        m_timeout = null;
-                    }
-                    return false;
-                }
-                goto TryAgain;
-            }
-
-            private bool prepareNextFile()
-            {
-                if (m_currentInstance != null)
-                {
-                    m_currentInstance.Dispose();
-                    m_snapshot.Tables[m_currentIndex] = null;
-                    m_currentInstance = null;
-                }
-                if (m_tables.Count > 0)
-                {
-                    m_timestampFilter.Reset();
-                    if (!m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
-                    {
-                        throw new Exception("No keys in the list");
-                    }
-
-                    KeyValuePair<int, ArchiveTableSummary<TKey, TValue>> kvp = m_tables.Dequeue();
-                    m_currentIndex = kvp.Key;
-                    m_currentInstance = kvp.Value.ActiveSnapshotInfo.CreateReadSnapshot();
-                    m_currentScanner = m_currentInstance.GetTreeScanner();
-                    TKey key = new TKey();
-                    key.Timestamp = m_startKey;
-                    m_currentScanner.SeekToKey(key);
-                    SetKeyValueReferences(m_currentScanner.CurrentKey, m_currentScanner.CurrentValue);
-
-                    Stats.SeeksRequested++;
-                }
-                else
-                {
-                    m_currentScanner = NullTreeScanner<TKey, TValue>.Instance;
-                    SetKeyValueReferences(m_currentScanner.CurrentKey, m_currentScanner.CurrentValue);
-
-                    return false;
-                }
-                return true;
+                IsValid = false;
+                return false;
             }
 
             public void Cancel()
@@ -228,20 +183,13 @@ namespace openHistorian.Engine
                     m_timeout = null;
                 }
 
-                if (m_currentInstance != null)
+                if (m_tables != null)
                 {
-                    m_currentInstance.Dispose();
-                    m_snapshot.Tables[m_currentIndex] = null;
-                    m_currentInstance = null;
+                    m_tables.ForEach(x => x.Dispose());
+                    m_tables = null;
+                    Array.Clear(m_snapshot.Tables, 0, m_snapshot.Tables.Length);
                 }
-                m_currentScanner = NullTreeScanner<TKey, TValue>.Instance;
-                SetKeyValueReferences(m_currentScanner.CurrentKey, m_currentScanner.CurrentValue);
-
-                while (m_tables.Count > 0)
-                {
-                    KeyValuePair<int, ArchiveTableSummary<TKey, TValue>> kvp = m_tables.Dequeue();
-                    m_snapshot.Tables[kvp.Key] = null;
-                }
+                IsValid = false;
             }
         }
     }
