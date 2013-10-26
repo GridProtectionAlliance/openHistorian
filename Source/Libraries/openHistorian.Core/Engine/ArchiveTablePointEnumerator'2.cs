@@ -30,7 +30,7 @@ using openHistorian.Collections.Generic;
 namespace openHistorian.Engine
 {
     public class ArchiveTablePointEnumerator<TKey, TValue>
-        : IDisposable
+        : IDisposable, IComparable<ArchiveTablePointEnumerator<TKey, TValue>>
         where TKey : HistorianKeyBase<TKey>, new()
         where TValue : class, new()
     {
@@ -121,6 +121,17 @@ namespace openHistorian.Engine
                 m_snapshot.Dispose();
                 m_snapshot = null;
             }
+        }
+
+        public int CompareTo(ArchiveTablePointEnumerator<TKey, TValue> other)
+        {
+            if (!IsValid && !other.IsValid)
+                return 0;
+            if (!IsValid)
+                return 1;
+            if (!other.IsValid)
+                return -1;
+            return CurrentKey.CompareTo(other.CurrentKey);
         }
     }
 }

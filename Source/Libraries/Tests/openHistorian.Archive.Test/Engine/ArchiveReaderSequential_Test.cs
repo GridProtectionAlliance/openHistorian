@@ -162,6 +162,27 @@ namespace openHistorian.Engine
                 edit.Commit();
             }
         }
+        void AddData(ArchiveTable<HistorianKey, HistorianValue> table, DateTime startTime, TimeSpan stepTime, int countTime, ulong startPoint, ulong stepPoint, ulong countPoint)
+        {
+            using (var edit = table.BeginEdit())
+            {
+                var key = new HistorianKey();
+                var value = new HistorianValue();
+                key.SetMin();
+                var stepTimeTicks = (ulong)stepTime.Ticks;
+                var stopTime = (ulong)(startTime.Ticks + countTime * stepTime.Ticks);
+                for (ulong t = (ulong)startTime.Ticks; t < stopTime; t += stepTimeTicks)
+                {
+                    for (ulong v = startPoint; v < startPoint + stepPoint * countPoint; v += stepPoint)
+                    {
+                        key.Timestamp = t;
+                        key.PointID = v;
+                        edit.AddPoint(key, value);
+                    }
+                }
+                edit.Commit();
+            }
+        }
 
         [Test]
         public void BenchmarkRawFile()
@@ -223,8 +244,8 @@ namespace openHistorian.Engine
 
             var table1 = CreateTable();
             var table2 = CreateTable();
-            AddData(table1, 100, 100, Max/2);
-            AddData(table2, 101, 100, Max/2);
+            AddData(table1, 100, 100, Max / 2);
+            AddData(table2, 101, 100, Max / 2);
             using (var editor = list.AcquireEditLock())
             {
                 editor.Add(table1, false);
@@ -264,6 +285,38 @@ namespace openHistorian.Engine
                 editor.Add(table3, false);
             }
 
+            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+
+            DebugStopwatch sw = new DebugStopwatch();
+
+            double sec = sw.TimeEvent(() =>
+            {
+                var scanner = sequencer.Read();
+                while (scanner.Read())
+                {
+                }
+            });
+            Console.WriteLine(Max / sec / 1000000);
+        }
+
+        [Test]
+        public void BenchmarkRealisticSamples()
+        {
+
+            const int Max = 1000000;
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            DateTime start = DateTime.Now.Date;
+
+            for (int x = 0; x < 1000; x++)
+            {
+                var table1 = CreateTable();
+                AddData(table1, start.AddMinutes(2 * x), new TimeSpan(TimeSpan.TicksPerSecond), 60, 100, 1, Max / 60 / 1000);
+                using (var editor = list.AcquireEditLock())
+                {
+                    editor.Add(table1, false);
+                }
+            }
+            
             var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();

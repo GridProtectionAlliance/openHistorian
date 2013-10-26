@@ -127,6 +127,8 @@
     <Compile Include="Engine\ArchiveReaderSequential%272.cs" />
     <Compile Include="Engine\ArchiveTableSummaryExtensions%272.cs" />
     <Compile Include="Engine\DatabaseConfig.cs" />
+    <Compile Include="Engine\CustomSortHelper%271.cs" />
+    <Compile Include="Engine\UnionKeyValueStream%273.cs" />
     <Compile Include="HistorianDatabaseCollection%272.cs" />
     <Compile Include="HistorianDatabaseEngine.cs" />
     <Compile Include="HistorianDatabaseInstance.cs" />

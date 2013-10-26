@@ -111,8 +111,9 @@ namespace openHistorian.Engine
                 m_stopKey = timestampFilter.LastTime;
                 m_snapshot = snapshot;
                 m_snapshot.UpdateSnapshot();
-                m_currentTables = new ArchiveTableSequencer<TKey, TValue>();
-                SetKeyValueReferences(m_currentTables.CurrentKey, m_currentTables.CurrentValue);
+
+
+
 
                 TKey startKey = new TKey();
                 TKey stopKey = new TKey();
@@ -140,10 +141,13 @@ namespace openHistorian.Engine
                     }
                 }
 
+                m_currentTables = new ArchiveTableSequencer<TKey, TValue>(m_tables);
+                SetKeyValueReferences(m_currentTables.CurrentKey, m_currentTables.CurrentValue);
+
                 m_timestampFilter.Reset();
                 if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
                 {
-                    m_currentTables.PrepareNextList(m_tables, m_startKey, m_stopKey);
+                    m_currentTables.PrepareNextList(m_startKey, m_stopKey);
                 }
             }
 
@@ -167,7 +171,7 @@ namespace openHistorian.Engine
                     }
                     if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
                     {
-                        m_currentTables.PrepareNextList(m_tables, m_startKey, m_stopKey);
+                        m_currentTables.PrepareNextList(m_startKey, m_stopKey);
                         goto TryAgain;
                     }
                 }

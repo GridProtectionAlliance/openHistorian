@@ -22,6 +22,7 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using openHistorian.Collections;
 
@@ -45,94 +46,157 @@ namespace openHistorian.Engine
         /// </summary>
         public TValue CurrentValue { get; private set; }
 
-        List<ArchiveTablePointEnumerator<TKey, TValue>> m_validFiles;
+        CustomSortHelper<ArchiveTablePointEnumerator<TKey, TValue>> m_tables;
+        ArchiveTablePointEnumerator<TKey, TValue> m_firstTable;
 
-        public ArchiveTableSequencer()
+        public ArchiveTableSequencer(IEnumerable<ArchiveTablePointEnumerator<TKey, TValue>> tables)
         {
+            m_tables = new CustomSortHelper<ArchiveTablePointEnumerator<TKey, TValue>>(tables, (x, y) => x.CompareTo(y));
             CurrentKey = new TKey();
             CurrentValue = new TValue();
-            m_validFiles = new List<ArchiveTablePointEnumerator<TKey, TValue>>();
             IsValid = false;
         }
 
-        public void PrepareNextList(List<ArchiveTablePointEnumerator<TKey, TValue>> tables, ulong startTime, ulong stopTime)
+        public void PrepareNextList(ulong startTime, ulong stopTime)
         {
             Stats.SeeksRequested++;
-            m_validFiles.Clear();
-            IsValid = false;
-            foreach (var table in tables)
+            foreach (var table in m_tables.Items)
+                table.SeekToTimeWindow(startTime, stopTime);
+            m_tables.Sort();
+
+            //Remove any duplicates
+            if (m_tables.Items.Length >= 2)
             {
-                if (table.SeekToTimeWindow(startTime, stopTime))
-                    m_validFiles.Add(table);
+                if (m_tables[0].CompareTo(m_tables[1]) == 0 && m_tables[0].IsValid)
+                {
+                    //If a duplicate entry is found, advance the position of the duplicate entry
+                    RemoveDuplicatesFromList();
+                }
             }
+
+            if (m_tables.Items.Length > 0)
+                m_firstTable = m_tables[0];
+
+            IsValid = false;
         }
 
         public bool ReadNext()
         {
-            TryAgain:
-
-            //ToDo: Discard any duplicate data
-            if (m_validFiles.Count == 0)
+            if (m_firstTable == null || !m_firstTable.IsValid)
             {
                 IsValid = false;
                 return false;
             }
-            else if (m_validFiles.Count == 1)
-            {
-                if (!m_validFiles[0].IsValid)
-                {
-                    IsValid = false;
-                    return false;
-                }
-                m_validFiles[0].CurrentKey.CopyTo(CurrentKey);
-                m_validFiles[0].CurrentValue.CopyTo(CurrentValue);
-                m_validFiles[0].ReadNext();
-                IsValid = true;
-                return true;
-            }
             else
             {
-                int nextValue = -1;
-                TKey key = null;
-                for (int x = 0; x < m_validFiles.Count; x++)
+                m_firstTable.CurrentKey.CopyTo(CurrentKey);
+                m_firstTable.CurrentValue.CopyTo(CurrentValue);
+                m_firstTable.ReadNext();
+
+                if (m_tables.Items.Length >= 2)
                 {
-                    if (m_validFiles[x].IsValid)
+                    //If list is no longer in order
+                    int compare = m_firstTable.CompareTo(m_tables[1]);
+                    if (compare == 0 && m_firstTable.IsValid)
                     {
-                        if (nextValue == -1)
-                        {
-                            key = m_validFiles[x].CurrentKey;
-                            nextValue = x;
-                        }
-                        else
-                        {
-                            //No NullReferenceException due to state machine.
-                            if (key.IsGreaterThan(m_validFiles[x].CurrentKey))
-                            {
-                                key = m_validFiles[x].CurrentKey;
-                                nextValue = x;
-                            }
-                        }
+                        //If a duplicate entry is found, advance the position of the duplicate entry
+                        RemoveDuplicatesFromList();
+                    }
+                    if (compare > 0)
+                    {
+                        m_tables.SortAssumingIncreased(0);
+                        m_firstTable = m_tables[0];
                     }
                 }
-
-                if (nextValue == -1)
-                {
-                    IsValid = false;
-                    return false;
-                }
-                
-                if (IsValid && m_validFiles[nextValue].CurrentKey.IsEqualTo(CurrentKey))
-                {
-                    m_validFiles[nextValue].ReadNext();
-                    goto TryAgain;
-                }
-
-                m_validFiles[nextValue].CurrentKey.CopyTo(CurrentKey);
-                m_validFiles[nextValue].CurrentValue.CopyTo(CurrentValue);
-                m_validFiles[nextValue].ReadNext();
                 IsValid = true;
                 return true;
             }
         }
+
+        void RemoveDuplicatesFromList()
+        {
+            for (int index = 1; index < m_tables.Items.Length; index++)
+            {
+                if (m_tables[0].CompareTo(m_tables[index]) == 0)
+                {
+                    m_tables[index].ReadNext();
+                }
+                else
+                {
+                    for (int j = index; j > 0; j--)
+                        m_tables.SortAssumingIncreased(j);
+                    break;
+                }
+            }
+            //m_tables.Sort();
+        }
+
+        //public bool ReadNext()
+        //{
+        //TryAgain:
+
+        //    //ToDo: Discard any duplicate data
+        //    if (m_validFiles.Count == 0)
+        //    {
+        //        IsValid = false;
+        //        return false;
+        //    }
+        //    else if (m_validFiles.Count == 1)
+        //    {
+        //        if (!m_validFiles[0].IsValid)
+        //        {
+        //            IsValid = false;
+        //            return false;
+        //        }
+        //        m_validFiles[0].CurrentKey.CopyTo(CurrentKey);
+        //        m_validFiles[0].CurrentValue.CopyTo(CurrentValue);
+        //        m_validFiles[0].ReadNext();
+        //        IsValid = true;
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        int nextValue = -1;
+        //        TKey key = null;
+        //        for (int x = 0; x < m_validFiles.Count; x++)
+        //        {
+        //            if (m_validFiles[x].IsValid)
+        //            {
+        //                if (nextValue == -1)
+        //                {
+        //                    key = m_validFiles[x].CurrentKey;
+        //                    nextValue = x;
+        //                }
+        //                else
+        //                {
+        //                    //No NullReferenceException due to state machine.
+        //                    if (key.IsGreaterThan(m_validFiles[x].CurrentKey))
+        //                    {
+        //                        key = m_validFiles[x].CurrentKey;
+        //                        nextValue = x;
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        if (nextValue == -1)
+        //        {
+        //            IsValid = false;
+        //            return false;
+        //        }
+
+        //        if (IsValid && m_validFiles[nextValue].CurrentKey.IsEqualTo(CurrentKey))
+        //        {
+        //            m_validFiles[nextValue].ReadNext();
+        //            goto TryAgain;
+        //        }
+
+        //        m_validFiles[nextValue].CurrentKey.CopyTo(CurrentKey);
+        //        m_validFiles[nextValue].CurrentValue.CopyTo(CurrentValue);
+        //        m_validFiles[nextValue].ReadNext();
+        //        IsValid = true;
+        //        return true;
+        //    }
+        //}
     }
 }

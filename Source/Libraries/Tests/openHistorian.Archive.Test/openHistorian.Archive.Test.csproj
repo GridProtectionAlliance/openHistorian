@@ -100,6 +100,7 @@
     <Compile Include="Engine\ArchiveWriters\StageWriterTest.cs" />
     <Compile Include="Engine\ArchiveWriters\StagingFileTest.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessorTest.cs" />
+    <Compile Include="Engine\CustomSortHelper_Test.cs" />
     <Compile Include="FileStructure\BenchmarkSubFileStreamTest.cs" />
     <Compile Include="FileStructure\DiskIOEnhanced2Test.cs" />
     <Compile Include="FileStructure\DiskIOEnhancedTest.cs" />
