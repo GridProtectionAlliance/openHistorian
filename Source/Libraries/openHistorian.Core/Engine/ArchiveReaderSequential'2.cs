@@ -149,6 +149,67 @@ namespace openHistorian.Engine
                     key.Timestamp = m_startKey;
                     m_currentTables.SeekToKey(key);
                 }
+                else
+                {
+                    Cancel();
+                }
+            }
+
+            bool AdvanceTimestampFilter()
+            {
+            TryAgain:
+                if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
+                {
+                    //If the current point is a valid point.
+                    if (m_currentTables.IsValid)
+                    {
+                        //If the current point is within this window
+                        if (m_currentTables.CurrentKey.Timestamp >= m_startKey &&
+                            m_currentTables.CurrentKey.Timestamp <= m_stopKey)
+                        {
+                            IsValid = true;
+                            return true;
+                        }
+
+                        //If the current point is after this window, see to the next window.
+                        if (m_currentTables.CurrentKey.Timestamp > m_stopKey)
+                            goto TryAgain;
+                    }
+
+                    //If the current point is not valid, or is before m_startKey
+                    //Advance the scanner to the next window.
+                    TKey key = new TKey();
+                    key.SetMin();
+                    key.Timestamp = m_startKey;
+                    m_currentTables.SeekForward(key);
+
+                    //If the current point is not valid, then make it valid.
+                    if (!m_currentTables.IsValid)
+                    {
+                        if (!m_currentTables.Read())
+                        {
+                            //The read was unsuccessful, end of the stream encountered.
+                            Cancel();
+                            return false;
+                        }
+                    }
+
+                    //If the current point is within this window
+                    if (m_currentTables.CurrentKey.Timestamp >= m_startKey &&
+                        m_currentTables.CurrentKey.Timestamp <= m_stopKey)
+                    {
+                        IsValid = true;
+                        return true;
+                    }
+
+                    //If the current point is after this window, see to the next window.
+                    if (m_currentTables.CurrentKey.Timestamp > m_stopKey)
+                        goto TryAgain;
+
+                    throw new Exception("The seek behavior of the stream did not function properly");
+                }
+                Cancel();
+                return false;
             }
 
             public override bool Read()
@@ -169,26 +230,10 @@ namespace openHistorian.Engine
                         }
                         goto TryAgain;
                     }
-                    if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
+                    if (AdvanceTimestampFilter())
                     {
-                        if (m_currentTables.IsValid && m_currentTables.CurrentKey.Timestamp >= m_startKey)
-                        {
-                            IsValid = true;
-                            return true;
-                        }
-
-                        TKey key = new TKey();
-                        key.SetMin();
-                        key.Timestamp = m_startKey;
-                        m_currentTables.SeekForward(key);
-
-                        if (m_currentTables.IsValid)
-                        {
-                            IsValid = true;
-                            return true;
-                        }
-
-                        goto TryAgain;
+                        IsValid = true;
+                        return true;
                     }
                 }
                 IsValid = false;
@@ -210,6 +255,7 @@ namespace openHistorian.Engine
                     Array.Clear(m_snapshot.Tables, 0, m_snapshot.Tables.Length);
                 }
                 IsValid = false;
+                m_timedOut = true;
             }
         }
     }

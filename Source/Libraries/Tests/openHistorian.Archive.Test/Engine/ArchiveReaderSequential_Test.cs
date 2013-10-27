@@ -397,7 +397,7 @@ namespace openHistorian.Engine
                 }
             }
 
-            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
+            var filter = QueryFilterTimestamp.CreateFromIntervalData(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
             var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);

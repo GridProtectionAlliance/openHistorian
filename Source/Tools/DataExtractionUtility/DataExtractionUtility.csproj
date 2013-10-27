@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7B53C942-E891-461C-B09C-49FABA82F19D}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{8F477BB8-2277-43E3-BF0B-035B0F4F1B46}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>openHistorian.TimeSeries</RootNamespace>
-    <AssemblyName>openHistorian.TimeSeries</AssemblyName>
+    <RootNamespace>DataExtractionUtility</RootNamespace>
+    <AssemblyName>DataExtractionUtility</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -17,6 +17,7 @@
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,24 +25,19 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Build\Output\Release\Library\openHistorian.TimeSeries\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.TimeSeries\openHistorian.TimeSeries.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GSF.Core">
       <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="GSF.Historian">
-      <HintPath>..\..\Dependencies\GSF\GSF.Historian.dll</HintPath>
     </Reference>
     <Reference Include="GSF.TimeSeries">
       <HintPath>..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
@@ -52,49 +48,63 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\PeriodicScanner.cs" />
-    <Compile Include="Data\Query\GetFrameMethods_KeyValueStream.cs" />
-    <Compile Include="Data\Query\GetDataReaderMethods.cs" />
-    <Compile Include="Data\Query\GetFrameMethods_HistorianDatabaseBase.cs" />
-    <Compile Include="Data\Query\GetRawSignalMethods.cs" />
-    <Compile Include="Data\Query\GetSignalMethods.cs" />
-    <Compile Include="Data\Query\GetSignalsWithCalculationsMethods.cs" />
-    <Compile Include="Data\Query\GetTableMethods.cs" />
-    <Compile Include="Data\Query\HistorianQuery.cs" />
-    <Compile Include="Data\Query\ISignalCalculation.cs" />
-    <Compile Include="Data\Query\ISignalWithType.cs" />
-    <Compile Include="Data\SignalData.cs" />
-    <Compile Include="Data\SignalDataBase.cs" />
-    <Compile Include="Data\SignalDataSingle.cs" />
-    <Compile Include="Data\SignalDataUnknown.cs" />
-    <Compile Include="Data\Types\TypeBase.cs" />
-    <Compile Include="Data\Types\TypeDouble.cs" />
-    <Compile Include="Data\Types\TypeSingle.cs" />
-    <Compile Include="HistorianDatabaseEngine.cs" />
-    <Compile Include="HistorianDatabaseInstance.cs" />
-    <Compile Include="HistorianServer.cs" />
+    <Compile Include="FrmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmMain.Designer.cs">
+      <DependentUpon>FrmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MetaData.cs" />
+    <Compile Include="MetadataReceiver.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queues\FileBackedHistorianInputQueue.cs" />
-    <Compile Include="Queues\HistorianInputQueue.cs" />
+    <Compile Include="Resolutions.cs" />
+    <EmbeddedResource Include="FrmMain.resx">
+      <DependentUpon>FrmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GSF.Unmanaged\GSF.Unmanaged.csproj">
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\GSF.Unmanaged\GSF.Unmanaged.csproj">
       <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
       <Name>GSF.Unmanaged</Name>
     </ProjectReference>
-    <ProjectReference Include="..\openHistorian.Core\openHistorian.Core.csproj">
+    <ProjectReference Include="..\..\Libraries\openHistorian.Core\openHistorian.Core.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>openHistorian.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\openHistorian.TimeSeries\openHistorian.TimeSeries.csproj">
+      <Project>{7b53c942-e891-461c-b09c-49faba82f19d}</Project>
+      <Name>openHistorian.TimeSeries</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"
-IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetDir)$(TargetName).pdb" "$(TargetDir)..\..\Applications\openHistorian"</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

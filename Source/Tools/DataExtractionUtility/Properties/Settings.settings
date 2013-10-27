@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DataExtractionUtility.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ServerIP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="HistorianStreamingPort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">38402</Value>
+    </Setting>
+    <Setting Name="HistorianInstanceName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">PPA</Value>
+    </Setting>
+    <Setting Name="HistorianGatewayPort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6175</Value>
+    </Setting>
+    <Setting Name="CsvMaxFileSizeMB" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="CsvMaxRowCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">500000</Value>
+    </Setting>
+    <Setting Name="CsvMaximumColumnCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1024</Value>
+    </Setting>
+    <Setting Name="CsvMaxFileCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
