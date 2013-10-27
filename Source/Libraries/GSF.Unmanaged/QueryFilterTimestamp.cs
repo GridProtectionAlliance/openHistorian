@@ -42,7 +42,7 @@ namespace openHistorian
         {
             return new UniverseRange();
         }
-        
+
         /// <summary>
         /// Creates a filter over a single date range. (Inclusive list)
         /// </summary>
@@ -85,6 +85,24 @@ namespace openHistorian
         }
 
         /// <summary>
+        /// Creates a filter over a set of date ranges (Similiar to downsampled queries)
+        /// </summary>
+        /// <param name="firstTime">the first time if the query (inclusive)</param>
+        /// <param name="lastTime">the last time of the query (inclusive if contained in the intervals)</param>
+        /// <param name="interval">the exact interval</param>
+        /// <param name="tolerance">the width of every window</param>
+        /// <returns>A <see cref="QueryFilterTimestamp"/> that will be able to do this parsing</returns>
+        /// <remarks>
+        /// Example uses. FirstTime = 1/1/2013. LastTime = 1/2/2013. 
+        ///               MainInterval = 0.1 seconds. SubInterval = 0.0333333 seconds.
+        ///               Tolerance = 0.001 seconds.
+        /// </remarks>
+        public static QueryFilterTimestamp CreateFromIntervalData(ulong firstTime, ulong lastTime, ulong interval, ulong tolerance)
+        {
+            return new IntervalRanges(firstTime, lastTime, interval, interval, tolerance);
+        }
+
+        /// <summary>
         /// Creates a filter over a single date range. (Inclusive list)
         /// </summary>
         /// <param name="firstTime">the first time if the query (inclusive)</param>
@@ -102,7 +120,25 @@ namespace openHistorian
         {
             return new IntervalRanges((ulong)firstTime.Ticks, (ulong)lastTime.Ticks, (ulong)mainInterval.Ticks, (ulong)subInterval.Ticks, (ulong)tolerance.Ticks);
         }
-        
+
+        /// <summary>
+        /// Creates a filter over a single date range. (Inclusive list)
+        /// </summary>
+        /// <param name="firstTime">the first time if the query (inclusive)</param>
+        /// <param name="lastTime">the last time of the query (inclusive)</param>
+        /// <param name="interval">the exact interval to do the scan</param>
+        /// <param name="tolerance">the width of every window</param>
+        /// <returns>A <see cref="QueryFilterTimestamp"/> that will be able to do this parsing</returns>
+        /// <remarks>
+        /// Example uses. FirstTime = 1/1/2013. LastTime = 1/2/2013. 
+        ///               Interval = 0.1 seconds.
+        ///               Tolerance = 0.001 seconds.
+        /// </remarks>
+        public static QueryFilterTimestamp CreateFromIntervalData(DateTime firstTime, DateTime lastTime, TimeSpan interval, TimeSpan tolerance)
+        {
+            return new IntervalRanges((ulong)firstTime.Ticks, (ulong)lastTime.Ticks, (ulong)interval.Ticks, (ulong)interval.Ticks, (ulong)tolerance.Ticks);
+        }
+
         /// <summary>
         /// Loads a <see cref="QueryFilterTimestamp"/> from the provided <see cref="stream"/>.
         /// </summary>

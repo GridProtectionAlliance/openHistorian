@@ -36,7 +36,7 @@ namespace openHistorian.Engine
     public class ArchiveDatabaseEngine<TKey, TValue>
         : HistorianDatabaseBase<TKey, TValue>
         where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : class, new()
+        where TValue : HistorianValueBase<TValue>, new()
     {
         #region [ Members ]
 
@@ -117,7 +117,8 @@ namespace openHistorian.Engine
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return new ArchiveReader<TKey, TValue>(m_archiveList);
+            return new ArchiveReaderSequential<TKey, TValue>(m_archiveList);
+            //return new ArchiveReader<TKey, TValue>(m_archiveList);
         }
 
         /// <summary>

@@ -39,6 +39,13 @@ namespace openHistorian
             return reader.Read(QueryFilterTimestamp.CreateFromRange(timestamp, timestamp), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
         }
 
+        public static KeyValueStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader, QueryFilterTimestamp timeFilter)
+            where TKey : HistorianKeyBase<TKey>, new()
+            where TValue : class, new()
+        {
+            return reader.Read(timeFilter, QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
+        }
+
         public static KeyValueStream<TKey, TValue> Read<TKey, TValue>(this HistorianDataReaderBase<TKey, TValue> reader)
             where TKey : HistorianKeyBase<TKey>, new()
             where TValue : class, new()

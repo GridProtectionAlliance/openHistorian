@@ -81,11 +81,11 @@ namespace openHistorian
             private void Initialize(ulong start, ulong stop, ulong mainInterval, ulong subInterval, ulong tolerance)
             {
                 if (start > stop)
-                    throw new Exception();
+                    throw new ArgumentOutOfRangeException("start","start must be before stop");
                 if (mainInterval < subInterval)
-                    throw new Exception();
+                    throw new ArgumentOutOfRangeException("mainInterval","must be larger than the subinterval");
                 if (tolerance >= subInterval)
-                    throw new Exception();
+                    throw new ArgumentOutOfRangeException("tolerance","must be smaller than the subinterval");
 
                 m_start = start;
                 m_stop = stop;

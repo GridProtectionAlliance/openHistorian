@@ -55,8 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\PeriodicScanner.cs" />
+    <Compile Include="Data\Query\GetFrameMethods_KeyValueStream.cs" />
     <Compile Include="Data\Query\GetDataReaderMethods.cs" />
-    <Compile Include="Data\Query\GetFrameMethods.cs" />
+    <Compile Include="Data\Query\GetFrameMethods_HistorianDatabaseBase.cs" />
     <Compile Include="Data\Query\GetRawSignalMethods.cs" />
     <Compile Include="Data\Query\GetSignalMethods.cs" />
     <Compile Include="Data\Query\GetSignalsWithCalculationsMethods.cs" />
@@ -89,6 +90,10 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"
+IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetDir)$(TargetName).pdb" "$(TargetDir)..\..\Applications\openHistorian"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

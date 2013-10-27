@@ -7,6 +7,7 @@ using NUnit.Framework;
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Data.Query;
 
 namespace openHistorian.Engine
 {
@@ -183,6 +184,31 @@ namespace openHistorian.Engine
                 edit.Commit();
             }
         }
+        void AddDataTerminal(ArchiveTable<HistorianKey, HistorianValue> table, ulong pointID, DateTime startTime, TimeSpan stepTime, ulong startValue, ulong stepValue, int count)
+        {
+            using (var edit = table.BeginEdit())
+            {
+                var key = new HistorianKey();
+                var value = new HistorianValue();
+                key.SetMin();
+                var t = (ulong)startTime.Ticks;
+                var v = startValue;
+
+                while (count > 0)
+                {
+                    count--;
+                    key.Timestamp = t;
+                    key.PointID = pointID;
+                    value.Value1 = v;
+
+                    edit.AddPoint(key, value);
+                    t += (ulong)stepTime.Ticks;
+                    v += stepValue;
+                }
+
+                edit.Commit();
+            }
+        }
 
         [Test]
         public void BenchmarkRawFile()
@@ -316,20 +342,128 @@ namespace openHistorian.Engine
                     editor.Add(table1, false);
                 }
             }
-            
+
+            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(2000), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
             var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
-
+            int xi = 0;
             double sec = sw.TimeEvent(() =>
             {
-                var scanner = sequencer.Read();
+                var scanner = sequencer.Read(filter);
                 while (scanner.Read())
                 {
+                    xi++;
                 }
             });
             Console.WriteLine(Max / sec / 1000000);
         }
+
+        [Test]
+        public void ConsoleTest1()
+        {
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            DateTime start = DateTime.Now.Date;
+
+            for (int x = 0; x < 3; x++)
+            {
+                var table1 = CreateTable();
+                AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
+                using (var editor = list.AcquireEditLock())
+                {
+                    editor.Add(table1, false);
+                }
+            }
+
+            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
+            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var frames = sequencer.Read(filter).GetFrames();
+            WriteToConsole(frames);
+        }
+
+        [Test]
+        public void ConsoleTest2()
+        {
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            DateTime start = DateTime.Now.Date;
+
+            for (int x = 0; x < 3; x++)
+            {
+                var table1 = CreateTable();
+                AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
+                using (var editor = list.AcquireEditLock())
+                {
+                    editor.Add(table1, false);
+                }
+            }
+
+            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
+            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var frames = sequencer.Read(filter).GetFrames();
+            WriteToConsole(frames);
+        }
+
+        [Test]
+        public void ConsoleTest3()
+        {
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            DateTime start = DateTime.Now.Date;
+
+            for (int x = 0; x < 3; x++)
+            {
+                var table1 = CreateTable();
+                AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
+                using (var editor = list.AcquireEditLock())
+                {
+                    editor.Add(table1, false);
+                }
+            }
+            for (int x = 0; x < 3; x++)
+            {
+                var table1 = CreateTable();
+                AddDataTerminal(table1, (ulong)x, start, new TimeSpan(TimeSpan.TicksPerSecond), (ulong)(1000 * x), 1, 60 * 60);
+                using (var editor = list.AcquireEditLock())
+                {
+                    editor.Add(table1, false);
+                }
+            }
+
+            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
+            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var frames = sequencer.Read(filter).GetFrames();
+            WriteToConsole(frames);
+        }
+
+        void WriteToConsole(SortedList<DateTime, FrameData> frames)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            ulong?[] data = new ulong?[10];
+
+            foreach (var frame in frames)
+            {
+                Array.Clear(data, 0, data.Length);
+                foreach (var sample in frame.Value.Points)
+                {
+                    data[sample.Key] = sample.Value.Value1;
+                }
+
+                sb.Append(frame.Key.ToString());
+                sb.Append('\t');
+                foreach (var value in data)
+                {
+                    if (value.HasValue)
+                    {
+                        sb.Append(value.Value);
+                    }
+                    sb.Append('\t');
+                }
+
+                Console.WriteLine(sb.ToString());
+                sb.Clear();
+            }
+        }
+
 
     }
 }

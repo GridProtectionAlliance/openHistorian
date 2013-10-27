@@ -31,35 +31,13 @@ using openHistorian.Data.Types;
 
 namespace openHistorian.Data.Query
 {
-    public class FrameData
-    {
-        public FrameData()
-        {
-            Points = new SortedList<ulong, HistorianValueStruct>();
-        }
-        public FrameData(List<ulong> pointId, List<HistorianValueStruct> values)
-        {
-            Points = SortedListConstructor.Create(pointId, values);
-        }
-
-        public SortedList<ulong, HistorianValueStruct> Points;
-    }
+    
 
     /// <summary>
     /// Queries a historian database for a set of signals. 
     /// </summary>
-    public static class GetFrameMethods
+    public static partial class GetFrameMethods
     {
-        class FrameDataConstructor
-        {
-            public List<ulong> PointId = new List<ulong>();
-            public List<HistorianValueStruct> Values = new List<HistorianValueStruct>();
-            public FrameData ToFrameData()
-            {
-                return new FrameData(PointId,Values);
-            }
-        }
-
         /// <summary>
         /// Gets frames from the historian as individual frames.
         /// </summary>
@@ -178,32 +156,10 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points, DataReaderOptions options)
         {
-            SortedList<DateTime, FrameDataConstructor> results = new SortedList<DateTime, FrameDataConstructor>();
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
-                ulong lastTime = ulong.MinValue;
-                FrameDataConstructor lastFrame = null;
-                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(timestamps, points, options);
-                while (stream.Read())
-                {
-                    if (lastFrame == null || stream.CurrentKey.Timestamp != lastTime)
-                    {
-                        lastTime = stream.CurrentKey.Timestamp;
-                        DateTime timestamp = new DateTime((long)lastTime);
-
-                        if (!results.TryGetValue(timestamp, out lastFrame))
-                        {
-                            lastFrame = new FrameDataConstructor();
-                            results.Add(timestamp, lastFrame);
-                        }
-                    }
-                    lastFrame.PointId.Add(stream.CurrentKey.PointID);
-                    lastFrame.Values.Add(stream.CurrentValue.ToStruct());
-                }
+                return reader.Read(timestamps, points, options).GetFrames();
             }
-            List<FrameData> data = new List<FrameData>(results.Count);
-            data.AddRange(results.Values.Select(x => x.ToFrameData()));
-            return SortedListConstructor.Create(results.Keys, data);
         }
 
         /// <summary>

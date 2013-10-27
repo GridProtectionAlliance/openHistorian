@@ -86,7 +86,7 @@ namespace openVisN
 
                     signalType = measurement["SignalAcronym"].ToString();
 
-                    m_settings.MyData.Tables["Measurements"].Rows.Add((int)pointID, signalID, measurement["DeviceName"], signalType, measurement["Description"]);
+                    m_settings.MyData.Tables["Measurements"].Rows.Add((int)pointID, signalID, measurement["DeviceAcronym"], signalType, measurement["Description"]);
                 }
             }
         }

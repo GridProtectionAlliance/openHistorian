@@ -95,7 +95,7 @@ namespace openHistorian.Engine
 
             private TimeoutOperation m_timeout;
             private List<ArchiveTablePointEnumerator<TKey, TValue>> m_tables;
-            private ArchiveTableSequencer<TKey, TValue> m_currentTables;
+            private UnionSeekableKeyValueStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue> m_currentTables;
             public ReadStream(QueryFilterTimestamp timestampFilter, QueryFilterPointId poingIdFilter, ArchiveListSnapshot<TKey, TValue> snapshot, DataReaderOptions readerOptions)
             {
                 if (readerOptions.Timeout.Ticks > 0)
@@ -111,9 +111,6 @@ namespace openHistorian.Engine
                 m_stopKey = timestampFilter.LastTime;
                 m_snapshot = snapshot;
                 m_snapshot.UpdateSnapshot();
-
-
-
 
                 TKey startKey = new TKey();
                 TKey stopKey = new TKey();
@@ -141,13 +138,16 @@ namespace openHistorian.Engine
                     }
                 }
 
-                m_currentTables = new ArchiveTableSequencer<TKey, TValue>(m_tables);
+                m_currentTables = new UnionSeekableKeyValueStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue>(m_tables);
                 SetKeyValueReferences(m_currentTables.CurrentKey, m_currentTables.CurrentValue);
 
                 m_timestampFilter.Reset();
                 if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
                 {
-                    m_currentTables.PrepareNextList(m_startKey, m_stopKey);
+                    TKey key = new TKey();
+                    key.SetMin();
+                    key.Timestamp = m_startKey;
+                    m_currentTables.SeekToKey(key);
                 }
             }
 
@@ -158,7 +158,7 @@ namespace openHistorian.Engine
                     Cancel();
                 else
                 {
-                    if (m_currentTables.ReadNext())
+                    if (m_currentTables.Read() && m_currentTables.CurrentKey.Timestamp <= m_stopKey)
                     {
                         Stats.PointsScanned++;
                         if (m_isKey2Universal || m_poingIdFilter.ContainsPointID(CurrentKey.PointID))
@@ -171,7 +171,23 @@ namespace openHistorian.Engine
                     }
                     if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
                     {
-                        m_currentTables.PrepareNextList(m_startKey, m_stopKey);
+                        if (m_currentTables.IsValid && m_currentTables.CurrentKey.Timestamp >= m_startKey)
+                        {
+                            IsValid = true;
+                            return true;
+                        }
+
+                        TKey key = new TKey();
+                        key.SetMin();
+                        key.Timestamp = m_startKey;
+                        m_currentTables.SeekForward(key);
+
+                        if (m_currentTables.IsValid)
+                        {
+                            IsValid = true;
+                            return true;
+                        }
+
                         goto TryAgain;
                     }
                 }
