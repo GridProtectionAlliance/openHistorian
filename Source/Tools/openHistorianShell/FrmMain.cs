@@ -20,6 +20,7 @@ namespace openHistorianShell
             db1.Paths = TxtArchivePath.Lines;
             db1.IsNetworkHosted = true;
             db1.ConnectionString = "port=" + TxtLocalPort.Text;
+            db1.DatabaseName = "PPA";
             m_server = new HistorianServer(db1);
             BtnStart.Enabled = false;
         }

@@ -69,7 +69,7 @@ namespace openHistorian.Collections.Generic
                 m_skipNextRead = false;
             else
                 InternalRead();
-            KeyIndexOfCurrentKey++;
+            IndexOfCurrentKeyValue++;
         }
 
         /// <summary>
@@ -81,8 +81,16 @@ namespace openHistorian.Collections.Generic
             OnNoadReload();
             while (InternalRead() && KeyMethods.IsLessThan(CurrentKey, key))
                 ;
-            KeyIndexOfCurrentKey = (ushort)m_currentIndex;
-            m_skipNextRead = true;
+            if (KeyMethods.IsLessThan(CurrentKey, key))
+            {
+                IndexOfCurrentKeyValue = m_currentIndex;
+                m_skipNextRead = false;
+            }
+            else
+            {
+                IndexOfCurrentKeyValue = m_currentIndex - 1;
+                m_skipNextRead = true;
+            }
         }
 
         /// <summary>

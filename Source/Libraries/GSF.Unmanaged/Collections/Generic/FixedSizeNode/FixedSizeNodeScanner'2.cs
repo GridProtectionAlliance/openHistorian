@@ -38,8 +38,8 @@ namespace openHistorian.Collections.Generic
 
         protected override unsafe void ReadNext()
         {
-            byte* ptr = Pointer + KeyIndexOfCurrentKey * KeyValueSize;
-            KeyIndexOfCurrentKey++;
+            byte* ptr = Pointer + IndexOfCurrentKeyValue * KeyValueSize;
+            IndexOfCurrentKeyValue++;
             KeyMethods.Read(ptr, CurrentKey);
             ValueMethods.Read(ptr + KeySize, CurrentValue);
         }
@@ -49,7 +49,7 @@ namespace openHistorian.Collections.Generic
             int offset = KeyMethods.BinarySearch(Pointer, key, RecordCount, KeyValueSize);
             if (offset < 0)
                 offset = ~offset;
-            KeyIndexOfCurrentKey = (ushort)offset;
+            IndexOfCurrentKeyValue = (ushort)offset;
         }
     }
 }

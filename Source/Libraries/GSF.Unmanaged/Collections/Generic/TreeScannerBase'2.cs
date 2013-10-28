@@ -99,7 +99,10 @@ namespace openHistorian.Collections.Generic
         protected readonly BinaryStreamBase Stream;
         protected byte* Pointer;
         protected long PointerVersion;
-        protected int KeyIndexOfCurrentKey;
+        /// <summary>
+        /// The index number of the current key
+        /// </summary>
+        protected int IndexOfCurrentKeyValue;
         protected int HeaderSize;
         //protected int OffsetOfUpperBounds;
         protected int KeySize;
@@ -148,7 +151,7 @@ namespace openHistorian.Collections.Generic
         public override bool Read()
         {
             //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
-            if (KeyIndexOfCurrentKey < RecordCount && Stream.PointerVersion == PointerVersion)
+            if (IndexOfCurrentKeyValue < RecordCount && Stream.PointerVersion == PointerVersion)
             {
                 ReadNext();
                 IsValid = true;
@@ -165,7 +168,7 @@ namespace openHistorian.Collections.Generic
         {
             //return false;
             //If there are no more records in the current node.
-            if (KeyIndexOfCurrentKey >= RecordCount)
+            if (IndexOfCurrentKeyValue >= RecordCount)
             {
                 //If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
@@ -229,7 +232,7 @@ namespace openHistorian.Collections.Generic
             RightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
             //KeyMethods.Read(ptr + OffsetOfLowerBounds, m_lowerKey);
             //KeyMethods.Read(ptr + OffsetOfUpperBounds, m_upperKey);
-            KeyIndexOfCurrentKey = 0;
+            IndexOfCurrentKeyValue = 0;
             OnNoadReload();
         }
 

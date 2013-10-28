@@ -22,6 +22,7 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
@@ -139,6 +140,12 @@ namespace openHistorian.Engine
                 {
                     table.SeekToKey(key);
                     table.Read();
+                }
+                if (table.IsValid && table.CurrentKey.IsLessThan(key))
+                {
+                    table.SeekToKey(key);
+                    table.Read();
+                    throw new Exception("should never occur");
                 }
             }
             m_tables.Sort();
