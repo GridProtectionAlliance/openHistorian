@@ -7683,7 +7683,7 @@
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Transport.DataSubscriber.MetaDataReceived"/> event.
             </summary>
-            <param name="meta-data">Meta-data <see cref="T:System.Data.DataSet"/> instance to send to client subscription.</param>
+            <param name="metadata">Meta-data <see cref="T:System.Data.DataSet"/> instance to send to client subscription.</param>
         </member>
         <member name="M:GSF.TimeSeries.Transport.DataSubscriber.OnDataStartTime(GSF.Ticks)">
             <summary>
