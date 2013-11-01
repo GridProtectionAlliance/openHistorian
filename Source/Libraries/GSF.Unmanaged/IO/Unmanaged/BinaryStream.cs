@@ -99,6 +99,24 @@ namespace GSF.IO.Unmanaged
         }
 
         /// <summary>
+        /// Creates a <see cref="BinaryStream"/> that is in memory only.
+        /// </summary>
+        /// <param name="allocatesOwnMemory">true to allowcate its own memory rather than using the <see cref="MemoryPool"/>.</param>
+        public BinaryStream(bool allocatesOwnMemory)
+            : this(CreatePool(allocatesOwnMemory))
+        {
+
+        }
+
+        static ISupportsBinaryStream CreatePool(bool allocatesOwnMemory)
+        {
+            if (allocatesOwnMemory)
+                return new UnmanagedMemoryStream();
+            else
+                return new MemoryPoolStream();
+        }
+
+        /// <summary>
         /// Creates a <see cref="BinaryStream"/> that is at position 0 of the provided stream.
         /// </summary>
         /// <param name="stream">The base stream to use.</param>

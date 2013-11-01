@@ -51,7 +51,10 @@ namespace openHistorian.Engine.ArchiveWriters
         /// to complete.
         /// </summary>
         public long MaximumAllowedSize;
-
+        
+        /// <summary>
+        /// The helping functions associated with writing a stage file.
+        /// </summary>
         public StagingFile<TKey, TValue> StagingFile;
     }
 
@@ -62,6 +65,9 @@ namespace openHistorian.Engine.ArchiveWriters
         where TKey : class, new()
         where TValue : class, new()
     {
+        /// <summary>
+        /// Event that notifies that a certain sequence number has been committed.
+        /// </summary>
         public event Action<long> SequenceNumberCommitted;
 
         private bool m_stopped;
@@ -77,6 +83,11 @@ namespace openHistorian.Engine.ArchiveWriters
         private readonly StagingFile<TKey, TValue> m_stagingFile;
         private readonly ManualResetEvent m_rolloverComplete;
 
+        /// <summary>
+        /// Creates a stage writer.
+        /// </summary>
+        /// <param name="settings">the settings for this stage</param>
+        /// <param name="onRollover">delegate to call when a file is done with this stage.</param>
         public StageWriter(StageWriterSettings<TKey, TValue> settings, Action<RolloverArgs<TKey, TValue>> onRollover)
         {
             m_rolloverComplete = new ManualResetEvent(false);
@@ -92,24 +103,16 @@ namespace openHistorian.Engine.ArchiveWriters
         }
 
         /// <summary>
-        /// Gets if this stage is backed by a physical file. 
-        /// This means that any commits that occur are hard commits.
+        /// Appends this data to this stage. Also queues up for deletion if necessary.
         /// </summary>
-        public bool IsFileBacked
-        {
-            get
-            {
-                return m_stagingFile.IsFileBacked;
-            }
-        }
-
+        /// <param name="args"></param>
         public void AppendData(RolloverArgs<TKey, TValue> args)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             long currentSize;
-            ArchiveListRemovalStatus<TKey, TValue> removedFile = null;
+
             //If there is data to write then write it to the current archive.
             lock (m_syncRoot)
             {
@@ -119,7 +122,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 if (args.File == null)
                     m_stagingFile.Append(args.CurrentStream);
                 else
-                    m_stagingFile.Combine(args.File);
+                    m_stagingFile.CombineAndDelete(args.File);
                 m_lastCommitedSequenceNumber = args.SequenceNumber;
 
                 currentSize = m_stagingFile.Size;
@@ -165,7 +168,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 return;
             }
 
-            RolloverArgs<TKey, TValue> args = new RolloverArgs<TKey, TValue>(file, null, sequenceNumber);
+            RolloverArgs<TKey, TValue> args = new RolloverArgs<TKey, TValue>(file, sequenceNumber);
             m_onRollover(args);
             m_lastRolledOverSequenceNumber = sequenceNumber;
         }
@@ -189,6 +192,10 @@ namespace openHistorian.Engine.ArchiveWriters
             return m_lastCommitedSequenceNumber;
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
             if (!m_disposed)

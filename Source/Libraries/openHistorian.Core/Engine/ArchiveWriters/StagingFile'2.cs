@@ -29,6 +29,7 @@ namespace openHistorian.Engine.ArchiveWriters
 {
     /// <summary>
     /// A file contained within each stage writer that handles combining files and creating new ones.
+    /// This class is not thread safe. All calls must be coordinated.
     /// </summary>
     public class StagingFile<TKey, TValue>
         where TKey : class, new()
@@ -38,6 +39,11 @@ namespace openHistorian.Engine.ArchiveWriters
         private readonly ArchiveList<TKey, TValue> m_archiveList;
         private readonly ArchiveInitializer<TKey, TValue> m_initializer;
 
+        /// <summary>
+        /// Constructs a staging file
+        /// </summary>
+        /// <param name="archiveList">the place to store the archive files when converted</param>
+        /// <param name="initializer">the initializer that will create the archive files</param>
         public StagingFile(ArchiveList<TKey, TValue> archiveList, ArchiveInitializer<TKey, TValue> initializer)
         {
             m_initializer = initializer;
@@ -45,17 +51,23 @@ namespace openHistorian.Engine.ArchiveWriters
         }
 
         /// <summary>
-        /// Gets if the staging file is backed by a physical file.
+        /// Gets the current size of the archive file.
         /// </summary>
-        public bool IsFileBacked
+        public long Size
         {
             get
             {
-                return m_initializer.IsFileBacked;
+                if (m_archiveFile == null)
+                    return 0;
+                return m_archiveFile.BaseFile.FileSize;
             }
         }
 
-        public void Append(KeyValueStream<TKey, TValue> scan)
+        /// <summary>
+        /// Appends the entire contents of this stream to the existing archive stage.
+        /// </summary>
+        /// <param name="stream">the stream to read</param>
+        public void Append(KeyValueStream<TKey, TValue> stream)
         {
             if (m_archiveFile == null)
             {
@@ -68,7 +80,7 @@ namespace openHistorian.Engine.ArchiveWriters
             }
             using (ArchiveTable<TKey, TValue>.Editor editor = m_archiveFile.BeginEdit())
             {
-                editor.AddPoints(scan);
+                editor.AddPoints(stream);
                 editor.Commit();
             }
             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
@@ -77,7 +89,12 @@ namespace openHistorian.Engine.ArchiveWriters
             }
         }
 
-        public void Combine(ArchiveTable<TKey, TValue> file)
+        /// <summary>
+        /// Adds all of the data in <see cref="file"/> to this archive stage queues up 
+        /// this existing file for deletion.
+        /// </summary>
+        /// <param name="file">the file to read from and then delete</param>
+        public void CombineAndDelete(ArchiveTable<TKey, TValue> file)
         {
             if (m_archiveFile == null)
             {
@@ -105,6 +122,11 @@ namespace openHistorian.Engine.ArchiveWriters
             }
         }
 
+        /// <summary>
+        /// Extracts the internal <see cref="ArchiveTable"/> that was created and makes it
+        /// where if more data is added to this class, a new archivefile will be created.
+        /// </summary>
+        /// <returns>the internal archive file. null</returns>
         public ArchiveTable<TKey, TValue> GetFileAndSetNull()
         {
             if (m_archiveFile == null)
@@ -112,19 +134,6 @@ namespace openHistorian.Engine.ArchiveWriters
             ArchiveTable<TKey, TValue> file = m_archiveFile;
             m_archiveFile = null;
             return file;
-        }
-
-        /// <summary>
-        /// Gets the current size of the archive file.
-        /// </summary>
-        public long Size
-        {
-            get
-            {
-                if (m_archiveFile == null)
-                    return 0;
-                return m_archiveFile.BaseFile.FileSize;
-            }
         }
     }
 }

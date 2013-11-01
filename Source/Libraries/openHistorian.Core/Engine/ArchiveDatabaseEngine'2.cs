@@ -89,6 +89,7 @@ namespace openHistorian.Engine
 
         public override void Write(KeyValueStream<TKey, TValue> points)
         {
+            //ToDo: Prebuffer the points in the stream. It is possible that this call may be behind a slow socket interface, therefore it will lockup the writing speed.
             while (points.Read())
                 Write(points.CurrentKey, points.CurrentValue);
         }

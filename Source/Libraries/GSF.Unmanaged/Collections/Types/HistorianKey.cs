@@ -26,6 +26,9 @@ using GSF.IO;
 
 namespace openHistorian.Collections
 {
+    /// <summary>
+    /// The standard key used for the historian.
+    /// </summary>
     public class HistorianKey
         : HistorianKeyBase<HistorianKey>
     {
@@ -49,6 +52,10 @@ namespace openHistorian.Collections
         /// </remarks>
         public ulong EntryNumber;
 
+        /// <summary>
+        /// Copies the data from this class to <see cref="other"/>
+        /// </summary>
+        /// <param name="other">the destination of the copy</param>
         public override void CopyTo(HistorianKey other)
         {
             other.Timestamp = Timestamp;
@@ -56,6 +63,9 @@ namespace openHistorian.Collections
             other.EntryNumber = EntryNumber;
         }
 
+        /// <summary>
+        /// Sets all of the values in this class to their minimum value
+        /// </summary>
         public override void SetMin()
         {
             Timestamp = 0;
@@ -63,6 +73,9 @@ namespace openHistorian.Collections
             EntryNumber = 0;
         }
 
+        /// <summary>
+        /// Sets all of the values in this class to their maximum value
+        /// </summary>
         public override void SetMax()
         {
             Timestamp = ulong.MaxValue;
@@ -70,6 +83,10 @@ namespace openHistorian.Collections
             EntryNumber = ulong.MaxValue;
         }
 
+        /// <summary>
+        /// Serializes this key to the <see cref="stream"/> in a fixed sized method.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
         public override void Write(BinaryStreamBase stream)
         {
             stream.Write(Timestamp);
@@ -77,6 +94,10 @@ namespace openHistorian.Collections
             stream.Write(EntryNumber);
         }
 
+        /// <summary>
+        /// Reads data from the provided <see cref="stream"/> in a fixed size method.
+        /// </summary>
+        /// <param name="stream">the stream to read from</param>
         public override void Read(BinaryStreamBase stream)
         {
             Timestamp = stream.ReadUInt64();
@@ -84,6 +105,11 @@ namespace openHistorian.Collections
             EntryNumber = stream.ReadUInt64();
         }
 
+        /// <summary>
+        /// Serializes this key to the <see cref="stream"/> in a condensed method.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="previousKey">the previous value that was serialized</param>
         public override void WriteCompressed(BinaryStreamBase stream, HistorianKey previousKey)
         {
             //stream.Write(Timestamp);
@@ -94,6 +120,11 @@ namespace openHistorian.Collections
             stream.Write7Bit(previousKey.EntryNumber ^ EntryNumber);
         }
 
+        /// <summary>
+        /// Reads data from the provided <see cref="stream"/> in a condensed method.
+        /// </summary>
+        /// <param name="stream">the stream to read from</param>
+        /// <param name="previousKey">the previous value that was serialized</param>
         public override void ReadCompressed(BinaryStreamBase stream, HistorianKey previousKey)
         {
             //Timestamp = stream.ReadUInt64();
@@ -104,6 +135,9 @@ namespace openHistorian.Collections
             EntryNumber = stream.Read7BitUInt64() ^ previousKey.EntryNumber;
         }
 
+        /// <summary>
+        /// Sets the key to the default values.
+        /// </summary>
         public override void Clear()
         {
             Timestamp = 0;
@@ -111,6 +145,11 @@ namespace openHistorian.Collections
             EntryNumber = 0;
         }
 
+        /// <summary>
+        /// Compares the current instance to <see cref="other"/>.
+        /// </summary>
+        /// <param name="other">the key to compare to</param>
+        /// <returns></returns>
         public override int CompareTo(HistorianKey other)
         {
             if (Timestamp < other.Timestamp)

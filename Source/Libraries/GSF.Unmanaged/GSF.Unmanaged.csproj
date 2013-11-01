@@ -110,10 +110,11 @@
     <Compile Include="Collections\ResourceQueueCollection.cs" />
     <Compile Include="Collections\SupportsReadonlyAutoBase.cs" />
     <Compile Include="Collections\SupportsReadonlyBase.cs" />
+    <Compile Include="Collections\Types\HistorianValueStruct.cs" />
     <Compile Include="Collections\Types\HistorianKey.cs" />
-    <Compile Include="Collections\Types\HistorianKeyBase.cs" />
+    <Compile Include="Collections\Types\HistorianKeyBase%271.cs" />
     <Compile Include="Collections\Types\HistorianValue.cs" />
-    <Compile Include="Collections\Types\HistorianValueBase.cs" />
+    <Compile Include="Collections\Types\HistorianValueBase`1.cs" />
     <Compile Include="Collections\Types\MethodsHistorianKey.cs" />
     <Compile Include="Collections\Types\MethodsHistorianValue.cs" />
     <Compile Include="Collections\Types\MethodsUint128.cs" />

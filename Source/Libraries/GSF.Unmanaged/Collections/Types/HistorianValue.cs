@@ -29,45 +29,9 @@ using GSF.IO;
 
 namespace openHistorian.Collections
 {
-    public struct HistorianValueStruct
-    {
-        public ulong Value1;
-        public ulong Value2;
-        public ulong Value3;
-
-        public float AsSingle
-        {
-            get
-            {
-                return BitMath.ConvertToSingle(Value1);
-            }
-            set
-            {
-                Value1 = BitMath.ConvertToUInt64(value);
-            }
-        }
-
-        public string AsString
-        {
-            get
-            {
-                byte[] data = new byte[16];
-                BitConverter.GetBytes(Value1).CopyTo(data, 0);
-                BitConverter.GetBytes(Value2).CopyTo(data, 8);
-                return ASCIIEncoding.ASCII.GetString(data);
-            }
-            set
-            {
-                if (value.Length > 16)
-                    throw new OverflowException("String cannot be larger than 16 characters");
-                byte[] data = new byte[16];
-                ASCIIEncoding.ASCII.GetBytes(value).CopyTo(data, 0);
-                Value1 = BitConverter.ToUInt64(data, 0);
-                Value2 = BitConverter.ToUInt64(data, 8);
-            }
-        }
-    }
-
+    /// <summary>
+    /// The standard value used in the OpenHistorian.
+    /// </summary>
     public class HistorianValue
         : HistorianValueBase<HistorianValue>
     {
@@ -84,11 +48,20 @@ namespace openHistorian.Collections
         /// </summary>
         public ulong Value3;
 
+        /// <summary>
+        /// Is the current instance equal to <see cref="other"/>
+        /// </summary>
+        /// <param name="other">the key to compare to</param>
+        /// <returns></returns>
         public override bool IsEqualTo(HistorianValue other)
         {
             return Value1 == other.Value1 && Value2 == other.Value2 && Value3 == other.Value3;
         }
 
+        /// <summary>
+        /// Copies the data from this class to <see cref="other"/>
+        /// </summary>
+        /// <param name="other">the destination of the copy</param>
         public override void CopyTo(HistorianValue other)
         {
             other.Value1 = Value1;
@@ -96,6 +69,10 @@ namespace openHistorian.Collections
             other.Value3 = Value3;
         }
 
+        /// <summary>
+        /// Serializes this value to the <see cref="stream"/> in a fixed sized method.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
         public override void Write(BinaryStreamBase stream)
         {
             stream.Write(Value1);
@@ -103,6 +80,10 @@ namespace openHistorian.Collections
             stream.Write(Value3);
         }
 
+        /// <summary>
+        /// Reads data from the provided <see cref="stream"/> in a fixed size method.
+        /// </summary>
+        /// <param name="stream">the stream to read from</param>
         public override void Read(BinaryStreamBase stream)
         {
             Value1 = stream.ReadUInt64();
@@ -110,6 +91,11 @@ namespace openHistorian.Collections
             Value3 = stream.ReadUInt64();
         }
 
+        /// <summary>
+        /// Serializes this value to the <see cref="stream"/> in a condensed method.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="previousValue">the previous value that was serialized</param>
         public override void WriteCompressed(BinaryStreamBase stream, HistorianValue previousValue)
         {
             stream.Write7Bit(previousValue.Value1 ^ Value1);
@@ -117,6 +103,11 @@ namespace openHistorian.Collections
             stream.Write7Bit(previousValue.Value3 ^ Value3);
         }
 
+        /// <summary>
+        /// Reads data from the provided <see cref="stream"/> in a condensed method.
+        /// </summary>
+        /// <param name="stream">the stream to read from</param>
+        /// <param name="previousValue">the previous value that was serialized</param>
         public override void ReadCompressed(BinaryStreamBase stream, HistorianValue previousValue)
         {
             Value1 = stream.Read7BitUInt64() ^ previousValue.Value1;
@@ -124,6 +115,9 @@ namespace openHistorian.Collections
             Value3 = stream.Read7BitUInt64() ^ previousValue.Value3;
         }
 
+        /// <summary>
+        /// Sets the value to the default values.
+        /// </summary>
         public override void Clear()
         {
             Value1 = 0;
@@ -131,6 +125,10 @@ namespace openHistorian.Collections
             Value3 = 0;
         }
 
+        /// <summary>
+        /// Clones this instance of the class.
+        /// </summary>
+        /// <returns></returns>
         public HistorianValue Clone()
         {
             HistorianValue value = new HistorianValue();
@@ -140,9 +138,13 @@ namespace openHistorian.Collections
             return value;
         }
 
+        /// <summary>
+        /// Creates a struct from this data.
+        /// </summary>
+        /// <returns></returns>
         public HistorianValueStruct ToStruct()
         {
-            return new HistorianValueStruct()
+            return new HistorianValueStruct
                 {
                     Value1 = Value1,
                     Value2 = Value2,
@@ -150,6 +152,9 @@ namespace openHistorian.Collections
                 };
         }
 
+        /// <summary>
+        /// Type casts the <see cref="Value1"/> as a single.
+        /// </summary>
         public float AsSingle
         {
             get
@@ -162,6 +167,9 @@ namespace openHistorian.Collections
             }
         }
 
+        /// <summary>
+        /// Type casts <see cref="Value1"/> and <see cref="Value2"/> into a 16 character string.
+        /// </summary>
         public string AsString
         {
             get
@@ -169,14 +177,14 @@ namespace openHistorian.Collections
                 byte[] data = new byte[16];
                 BitConverter.GetBytes(Value1).CopyTo(data, 0);
                 BitConverter.GetBytes(Value2).CopyTo(data, 8);
-                return ASCIIEncoding.ASCII.GetString(data);
+                return Encoding.ASCII.GetString(data);
             }
             set
             {
                 if (value.Length > 16)
                     throw new OverflowException("String cannot be larger than 16 characters");
                 byte[] data = new byte[16];
-                ASCIIEncoding.ASCII.GetBytes(value).CopyTo(data, 0);
+                Encoding.ASCII.GetBytes(value).CopyTo(data, 0);
                 Value1 = BitConverter.ToUInt64(data, 0);
                 Value2 = BitConverter.ToUInt64(data, 8);
             }

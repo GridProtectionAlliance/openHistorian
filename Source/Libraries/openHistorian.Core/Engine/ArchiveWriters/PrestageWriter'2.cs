@@ -72,6 +72,11 @@ namespace openHistorian.Engine.ArchiveWriters
         private ScheduledTask m_rolloverTask;
         private readonly Action<RolloverArgs<TKey, TValue>> m_onRollover;
 
+        /// <summary>
+        /// Creates a prestage writer.
+        /// </summary>
+        /// <param name="settings">the settings for this stage</param>
+        /// <param name="onRollover">delegate to call when a file is done with this stage.</param>
         public PrestageWriter(PrestageSettings settings, Action<RolloverArgs<TKey, TValue>> onRollover)
         {
             if (settings.RolloverInterval < 10 || settings.RolloverInterval > 1000)
@@ -112,6 +117,13 @@ namespace openHistorian.Engine.ArchiveWriters
             }
         }
 
+        /// <summary>
+        /// Writes the provided key to the prestage
+        /// </summary>
+        /// <param name="key">the key to write</param>
+        /// <param name="value">the value to write</param>
+        /// <returns>the sequence number when this data will be committed</returns>
+        /// <remarks>Calls to this function are thread safe</remarks>
         public long Write(TKey key, TValue value)
         {
             if (m_disposed)
@@ -134,6 +146,12 @@ namespace openHistorian.Engine.ArchiveWriters
             return sequenceId;
         }
 
+        /// <summary>
+        /// Writes the provided stream to the prestage buffer
+        /// </summary>
+        /// <param name="stream">the stream to write</param>
+        /// <returns>the sequence number when this data will be committed</returns>
+        /// <remarks>Calls to this function are thread safe</remarks>
         public long Write(KeyValueStream<TKey, TValue> stream)
         {
             if (m_disposed)
@@ -157,6 +175,10 @@ namespace openHistorian.Engine.ArchiveWriters
             return sequenceId;
         }
 
+        /// <summary>
+        /// Automatically delays the input if too many points are being written to the historian at once.
+        /// </summary>
+        /// <param name="pointCountBefore"></param>
         private void DelayIfNeeded(int pointCountBefore)
         {
             if (pointCountBefore >= m_sleepThreadOnPointCount)
@@ -193,7 +215,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 m_activeQueue.ClearAndSetWriting();
                 stream.SetReadingFromBeginning();
 
-                args = new RolloverArgs<TKey, TValue>(null, stream, m_sequenceId);
+                args = new RolloverArgs<TKey, TValue>(stream, m_sequenceId);
             }
 
             m_onRollover(args);
@@ -232,7 +254,7 @@ namespace openHistorian.Engine.ArchiveWriters
         /// All data is then immediately flushed to the output.
         /// This method calls Dispose()
         /// </summary>
-        /// <returns></returns>
+        /// <returns>the sequence number of the last point that needs to be written to the computer.</returns>
         public long Stop()
         {
             lock (m_syncRoot)

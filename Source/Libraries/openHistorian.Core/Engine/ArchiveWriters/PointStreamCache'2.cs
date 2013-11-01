@@ -22,7 +22,6 @@
 //
 //******************************************************************************************************
 
-
 using System;
 using GSF.IO.Unmanaged;
 using openHistorian.Collections.Generic;
@@ -55,23 +54,18 @@ namespace openHistorian.Engine.ArchiveWriters
         private readonly TreeKeyMethodsBase<TKey> m_keyMethods;
         private readonly TreeValueMethodsBase<TValue> m_valueMethods;
 
+        /// <summary>
+        /// Creates a point stream cache
+        /// </summary>
         public PointStreamCache()
         {
             m_keyMethods = SortedTree.GetTreeKeyMethods<TKey>();
             m_valueMethods = SortedTree.GetTreeValueMethods<TValue>();
 
             m_sizeOfData = m_keyMethods.Size + m_valueMethods.Size;
-            m_queue = new BinaryStream();
+            m_queue = new BinaryStream(allocatesOwnMemory: true);
             m_isReading = false;
             m_pointCount = 0;
-        }
-
-        public bool IsReading
-        {
-            get
-            {
-                return m_isReading;
-            }
         }
 
         /// <summary>
@@ -85,6 +79,11 @@ namespace openHistorian.Engine.ArchiveWriters
             }
         }
 
+        /// <summary>
+        /// Writes the provided key and value to the cache
+        /// </summary>
+        /// <param name="key">the key to write</param>
+        /// <param name="value">the value to write</param>
         public void Write(TKey key, TValue value)
         {
             if (m_isReading)
@@ -94,6 +93,10 @@ namespace openHistorian.Engine.ArchiveWriters
             m_valueMethods.Write(m_queue, value);
         }
 
+        /// <summary>
+        /// Writes the provided stream to the cache
+        /// </summary>
+        /// <param name="stream">the stream to write</param>
         public void Write(KeyValueStream<TKey, TValue> stream)
         {
             if (m_isReading)

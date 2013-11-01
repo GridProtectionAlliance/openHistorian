@@ -240,7 +240,7 @@ namespace openHistorian.Engine
                 return false;
             }
 
-            public void Cancel()
+            public override void Cancel()
             {
                 if (m_timeout != null)
                 {

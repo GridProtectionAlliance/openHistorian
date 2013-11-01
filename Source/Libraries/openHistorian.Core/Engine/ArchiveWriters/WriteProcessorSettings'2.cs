@@ -21,25 +21,50 @@
 //
 //******************************************************************************************************
 
-using System.Collections.Generic;
 using System.Linq;
 using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
+    /// <summary>
+    /// Responsible for the settings that are used for writing
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public class WriteProcessorSettings<TKey, TValue>
         where TKey : class, new()
         where TValue : class, new()
     {
+        /// <summary>
+        /// The settings for the precommitted stage
+        /// </summary>
         public PrestageSettings Prestage;
+        /// <summary>
+        /// The initial committed stage (usually in memory)
+        /// </summary>
         public StageWriterSettings<TKey, TValue> Stage0;
+        /// <summary>
+        /// The first stange of data writen to the disk. Usually uncompressed since random inserts are still fast.
+        /// </summary>
         public StageWriterSettings<TKey, TValue> Stage1;
+        /// <summary>
+        /// The first compressed stage on the disk. 
+        /// </summary>
         public StageWriterSettings<TKey, TValue> Stage2;
 
+        /// <summary>
+        /// Forces the class to only be constructed via static methods.
+        /// </summary>
         private WriteProcessorSettings()
         {
         }
 
+        /// <summary>
+        /// Converts a database config into the processor settings that will be used by the archivewriter.
+        /// </summary>
+        /// <param name="config">the config base to use</param>
+        /// <param name="list">where to </param>
+        /// <returns></returns>
         public static WriteProcessorSettings<TKey, TValue> CreateFromSettings(DatabaseConfig config, ArchiveList<TKey, TValue> list)
         {
             if (config.WriterMode == WriterMode.InMemory)

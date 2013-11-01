@@ -84,14 +84,14 @@ namespace openHistorian.Archive
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            m_tree.Add(key, value);
+            m_tree.TryAdd(key, value);
         }
 
         public void AddPoints(KeyValueStream<TKey, TValue> stream)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            m_tree.AddRange(stream);
+            m_tree.TryAddRange(stream);
         }
 
         public TreeScannerBase<TKey, TValue> GetDataRange()

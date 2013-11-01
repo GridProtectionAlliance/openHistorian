@@ -227,6 +227,14 @@ namespace openHistorian.Collections.Generic
             }
         }
 
+        public void TryAddRange(KeyValueStream<TKey, TValue> stream)
+        {
+            while (stream.Read())
+            {
+                TryAdd(stream.CurrentKey, stream.CurrentValue);
+            }
+        }
+
         public bool TryRemove(TKey key)
         {
             if (LeafStorage.TryRemove(key))
