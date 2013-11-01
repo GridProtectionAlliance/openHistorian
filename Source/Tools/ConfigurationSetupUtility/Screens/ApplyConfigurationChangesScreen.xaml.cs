@@ -72,11 +72,10 @@ namespace ConfigurationSetupUtility.Screens
 
                 if (setupHistorian)
                     return m_historianSetupScreen;
-
-                if (existing && applyChangesToService)
+                else if (existing && applyChangesToService)
                     return m_nodeSelectionScreen;
-
-                return m_setupReadyScreen;
+                else
+                    return m_setupReadyScreen;
             }
         }
 
@@ -199,8 +198,10 @@ namespace ConfigurationSetupUtility.Screens
             if (!webManagerOptionEnabled)
                 m_openHistorianManagerWebCheckBox.IsChecked = false;
 
-
-            m_setupHistorianCheckBox.IsChecked = true;
+            if (initialDataScript)
+                m_setupHistorianCheckBox.IsChecked = true;
+            else
+                m_setupHistorianCheckBox.IsChecked = false;
 
             // Set up the state object with the proper initial values.
             m_state["applyChangesToService"] = m_openHistorianServiceCheckBox.IsChecked.Value;
