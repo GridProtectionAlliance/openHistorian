@@ -22,9 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.Collections.Generic.CustomCompression;
+using openHistorian.Collections.Generic;
 
-namespace openHistorian.Collections.Generic
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     /// <summary>
     /// Used to generically create a fixed size node.
@@ -83,8 +83,6 @@ namespace openHistorian.Collections.Generic
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <param name="level"></param>
-        /// <param name="keyMethod"></param>
-        /// <param name="valueMethod"></param>
         /// <returns></returns>
         public override TreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
         {

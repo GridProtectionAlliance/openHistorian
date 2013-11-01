@@ -3,6 +3,7 @@ using NUnit.Framework;
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian
 {
@@ -25,7 +26,7 @@ namespace openHistorian
             //if (File.Exists(file))
             //    File.Delete(file);
             //s_archive = new Archive(file);
-            ArchiveTable<HistorianKey, HistorianValue> s_archiveFile = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid);
+            ArchiveTable<HistorianKey, HistorianValue> s_archiveFile = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode);
             int cnt = 0;
 
 

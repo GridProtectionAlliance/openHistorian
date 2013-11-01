@@ -24,7 +24,7 @@
 using System;
 using GSF.IO;
 
-namespace openHistorian.Collections.Generic
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     /// <summary>
     /// Base class for reading from a node that is encoded and must be read sequentally through the node.

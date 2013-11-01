@@ -25,14 +25,15 @@
 using System;
 using GSF.IO;
 using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 using openHistorian.Communications.Initialization;
 
 namespace openHistorian.Communications.Compression
 {
     public class FixedSizeStream<TKey, TValue>
         : KeyValueStreamCompressionBase<TKey, TValue>
-        where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         public override Guid CompressionType
         {
@@ -50,16 +51,16 @@ namespace openHistorian.Communications.Compression
         public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
             stream.Write(true);
-            currentKey.Write(stream);
-            currentValue.Write(stream);
+            KeyMethods.Write(stream, currentKey);
+            ValueMethods.Write(stream, currentValue);
         }
 
         public override unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value)
         {
             if (!stream.ReadBoolean())
                 return false;
-            key.Read(stream);
-            value.Read(stream);
+            KeyMethods.Read(stream, key);
+            ValueMethods.Read(stream, value);
             return true;
         }
 

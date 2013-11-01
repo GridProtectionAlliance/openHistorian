@@ -2,6 +2,7 @@
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Test
 {
@@ -18,7 +19,7 @@ namespace openHistorian.Test
         [Test()]
         public void PartitionFileConstructorTest()
         {
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
             }
         }
@@ -30,7 +31,7 @@ namespace openHistorian.Test
         public void AddPointTest()
         {
 
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (ArchiveTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
                 {
@@ -48,7 +49,7 @@ namespace openHistorian.Test
         {
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 for (uint x = 0; x < 100; x++)
                 {
@@ -83,7 +84,7 @@ namespace openHistorian.Test
             key.PointID = 2;
             value.Value1 = 3;
             value.Value2 = 4;
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 ulong date = 1;
                 ulong pointId = 2;
@@ -134,7 +135,7 @@ namespace openHistorian.Test
             value.Value1 = 3;
             value.Value2 = 4;
 
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 ulong date = 1;
                 ulong pointId = 2;

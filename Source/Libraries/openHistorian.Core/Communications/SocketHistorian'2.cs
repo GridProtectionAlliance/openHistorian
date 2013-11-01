@@ -27,6 +27,7 @@ using System.Net.Sockets;
 using System.Threading;
 using GSF.Communications;
 using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 using openHistorian.Engine;
 
 namespace openHistorian.Communications
@@ -39,7 +40,7 @@ namespace openHistorian.Communications
     public class SocketHistorian<TKey, TValue>
         : IDisposable
         where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private volatile bool m_isRunning = true;
         private TcpListener m_listener;

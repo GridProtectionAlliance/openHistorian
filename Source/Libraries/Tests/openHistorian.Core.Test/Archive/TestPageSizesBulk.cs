@@ -78,7 +78,7 @@ namespace openHistorian.UnitTests.Archive
             Stopwatch sw = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
             sw.Start();
-            using (ArchiveTable<HistorianKey, HistorianValue> af = ArchiveFile.CreateInMemory(pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> af = ArchiveFile.CreateInMemory(pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
                 {
@@ -171,7 +171,7 @@ namespace openHistorian.UnitTests.Archive
                 File.Delete(fileName);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (ArchiveTable<HistorianKey, HistorianValue> af = ArchiveFile.CreateFile(fileName, pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> af = ArchiveFile.CreateFile(fileName, pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
             {
                 for (uint x = 0; x < 1000000; x++)

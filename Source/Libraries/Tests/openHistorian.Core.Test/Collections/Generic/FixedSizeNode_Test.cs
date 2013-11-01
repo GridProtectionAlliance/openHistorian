@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using GSF.IO.Unmanaged;
 using NUnit.Framework;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Collections.Generic
 {

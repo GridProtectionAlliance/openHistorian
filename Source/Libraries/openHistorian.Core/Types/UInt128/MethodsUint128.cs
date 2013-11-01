@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.IO;
 using openHistorian.Collections.Generic;
 
 namespace openHistorian.Collections
@@ -94,6 +95,18 @@ namespace openHistorian.Collections
         {
             data.Value1 = *(ulong*)stream;
             data.Value2 = *(ulong*)(stream + 8);
+        }
+        
+        public override void ReadCompressed(BinaryStreamBase stream, TreeUInt128 currentKey, TreeUInt128 previousKey)
+        {
+            currentKey.Value1 = stream.Read7BitUInt64() ^ previousKey.Value1;
+            currentKey.Value2 = stream.Read7BitUInt64() ^ previousKey.Value2;
+        }
+
+        public override void WriteCompressed(BinaryStreamBase stream, TreeUInt128 currentKey, TreeUInt128 previousKey)
+        {
+            stream.Write7Bit(previousKey.Value1 ^ currentKey.Value1);
+            stream.Write7Bit(previousKey.Value2 ^ currentKey.Value2);
         }
 
         public override Guid GenericTypeGuid
@@ -188,6 +201,18 @@ namespace openHistorian.Collections
         protected override int GetSize()
         {
             return 16;
+        }
+
+        public override void ReadCompressed(BinaryStreamBase stream, TreeUInt128 currentValue, TreeUInt128 previousValue)
+        {
+            currentValue.Value1 = stream.Read7BitUInt64() ^ previousValue.Value1;
+            currentValue.Value2 = stream.Read7BitUInt64() ^ previousValue.Value2;
+        }
+
+        public override void WriteCompressed(BinaryStreamBase stream, TreeUInt128 currentValue, TreeUInt128 previousValue)
+        {
+            stream.Write7Bit(previousValue.Value1 ^ currentValue.Value1);
+            stream.Write7Bit(previousValue.Value2 ^ currentValue.Value2);
         }
 
         public override unsafe void Write(byte* stream, TreeUInt128 data)

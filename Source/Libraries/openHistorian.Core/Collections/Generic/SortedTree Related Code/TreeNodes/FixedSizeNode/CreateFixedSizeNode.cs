@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.Collections.Generic
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     /// <summary>
     /// Used to generically create a fixed size node.

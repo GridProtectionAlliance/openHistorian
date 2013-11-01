@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Collections.Generic
 {
@@ -111,7 +112,7 @@ namespace openHistorian.Collections.Generic
         private void Initialize()
         {
             Indexer = new SparseIndex<TKey>(m_sparseIndexType);
-            LeafStorage = SortedTree.CreateTreeNode<TKey, TValue>(m_treeNodeType, 0);
+            LeafStorage = TreeNodeInitializer.CreateTreeNode<TKey, TValue>(m_treeNodeType, 0);
             Indexer.RootHasChanged += IndexerOnRootHasChanged;
             Indexer.Initialize(Stream, m_blockSize, GetNextNewNodeIndex, m_rootNodeLevel, m_rootNodeIndexAddress);
             LeafStorage.Initialize(StreamLeaf, m_blockSize, GetNextNewNodeIndex, Indexer);
@@ -365,7 +366,7 @@ namespace openHistorian.Collections.Generic
 
         public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
         {
-            return Create(stream1, stream2, blockSize, CreateFixedSizeNode.TypeGuid);
+            return Create(stream1, stream2, blockSize, SortedTree.FixedSizeNode);
         }
 
         public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize, Guid treeNodeType)
@@ -376,7 +377,7 @@ namespace openHistorian.Collections.Generic
         public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize, Guid treeNodeType)
         {
             SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream1, stream2);
-            tree.InitializeCreate(CreateFixedSizeNode.TypeGuid, treeNodeType, blockSize);
+            tree.InitializeCreate(SortedTree.FixedSizeNode, treeNodeType, blockSize);
             return tree;
         }
 

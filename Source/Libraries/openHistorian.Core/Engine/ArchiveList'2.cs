@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using GSF.Threading;
 using openHistorian.Archive;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine
 {
@@ -33,7 +34,10 @@ namespace openHistorian.Engine
     /// Manages the complete list of archive resources and the 
     /// associated reading and writing that goes along with it.
     /// </summary>
-    public partial class ArchiveList<TKey, TValue> : IDisposable
+    public partial class ArchiveList<TKey, TValue> 
+        : IDisposable
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private bool m_disposed;
         private readonly object m_syncRoot = new object();

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FixedSizeNodeScanner`2.cs - Gbtc
+//  WriteProcessorSettings.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,40 +16,46 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/26/2013 - Steven E. Chisholm
+//  1/21/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//
 //******************************************************************************************************
 
 using System;
 using GSF.IO;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Collections.Generic
 {
-    public class FixedSizeNodeScanner<TKey, TValue>
-        : TreeScannerBase<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+    public static class SortedTree
     {
-        public FixedSizeNodeScanner(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
-            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, 1)
+        public static void RegisterTreeNode(CreateTreeNodeBase treeNode)
         {
+            TreeNodeInitializer.Register(treeNode);
         }
 
-        protected override unsafe void ReadNext()
+        public static void ReadHeader(BinaryStreamBase stream, out Guid sparseIndexType, out Guid treeNodeType, out int blockSize)
         {
-            byte* ptr = Pointer + IndexOfCurrentKeyValue * KeyValueSize;
-            IndexOfCurrentKeyValue++;
-            KeyMethods.Read(ptr, CurrentKey);
-            ValueMethods.Read(ptr + KeySize, CurrentValue);
+            stream.Position = 0;
+            sparseIndexType = stream.ReadGuid();
+            treeNodeType = stream.ReadGuid();
+            blockSize = stream.ReadInt32();
         }
 
-        protected override unsafe void FindKey(TKey key)
+        public static Guid FixedSizeNode
         {
-            int offset = KeyMethods.BinarySearch(Pointer, key, RecordCount, KeyValueSize);
-            if (offset < 0)
-                offset = ~offset;
-            IndexOfCurrentKeyValue = (ushort)offset;
+            get
+            {
+                return CreateFixedSizeNode.TypeGuid;
+            }
+        }
+
+        public static Guid ZeroNode
+        {
+            get
+            {
+                return CreateZeroNode.TypeGuid;
+            }
         }
     }
 }

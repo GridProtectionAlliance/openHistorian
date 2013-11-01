@@ -7,8 +7,8 @@ namespace openHistorian.Collections.Generic
     public static class KeyValueStreamExtension
     {
         public static KeyValueStreamSequential<TKey, TValue> TestSequential<TKey, TValue>(this KeyValueStream<TKey, TValue> stream)
-            where TKey : HistorianKeyBase<TKey>, new()
-            where TValue : HistorianValueBase<TValue>, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             return new KeyValueStreamSequential<TKey, TValue>(stream);
         }
@@ -22,15 +22,19 @@ namespace openHistorian.Collections.Generic
     /// <typeparam name="TValue"></typeparam>
     public class KeyValueStreamSequential<TKey, TValue>
         : KeyValueStream<TKey, TValue>
-        where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
 
         bool m_isEndOfStream;
         KeyValueStream<TKey, TValue> m_baseStream;
+        TreeKeyMethodsBase<TKey> m_keyMethods;
+        TreeValueMethodsBase<TValue> m_valueMethods;
 
         public KeyValueStreamSequential(KeyValueStream<TKey, TValue> baseStream)
         {
+            m_keyMethods = new TKey().CreateKeyMethods();
+            m_valueMethods = new TValue().CreateValueMethods();
             m_isEndOfStream = false;
             m_baseStream = baseStream;
             IsValid = false;
@@ -57,12 +61,12 @@ namespace openHistorian.Collections.Generic
                 if (!m_baseStream.IsValid)
                     throw new Exception("Should be valid");
                 if (IsValid)
-                    if (CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))
+                    if (m_keyMethods.IsGreaterThanOrEqualTo(CurrentKey,m_baseStream.CurrentKey))// CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))
                         throw new Exception("Stream is not sequential");
 
                 IsValid = true;
-                m_baseStream.CurrentKey.CopyTo(CurrentKey);
-                m_baseStream.CurrentValue.CopyTo(CurrentValue);
+                m_keyMethods.Copy(m_baseStream.CurrentKey, CurrentKey); //m_baseStream.CurrentKey.CopyTo(CurrentKey);
+                m_valueMethods.Copy(m_baseStream.CurrentValue, CurrentValue); // m_baseStream.CurrentValue.CopyTo(CurrentValue);
                 return true;
             }
             else

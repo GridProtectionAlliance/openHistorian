@@ -23,7 +23,7 @@
 
 using System;
 
-namespace openHistorian.Collections.Generic
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     /// <summary>
     /// A base class that allows for generically constructing any number of <see cref="T:openHistorian.Collections.Generic.TreeNodeBase`2"/> implementations.

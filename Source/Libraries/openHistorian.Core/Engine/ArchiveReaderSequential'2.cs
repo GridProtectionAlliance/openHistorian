@@ -39,7 +39,7 @@ namespace openHistorian.Engine
     internal class ArchiveReaderSequential<TKey, TValue>
         : HistorianDataReaderBase<TKey, TValue>
         where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private readonly ArchiveList<TKey, TValue> m_list;
         private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;
@@ -92,11 +92,16 @@ namespace openHistorian.Engine
             private bool m_timedOut;
             private long m_pointCount;
 
+            TreeKeyMethodsBase<TKey> m_keyMethods;
+            TreeValueMethodsBase<TValue> m_valueMethods;
+
             private TimeoutOperation m_timeout;
             private List<ArchiveTablePointEnumerator<TKey, TValue>> m_tables;
             private UnionSeekableKeyValueStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue> m_currentTables;
             public ReadStream(QueryFilterTimestamp timestampFilter, QueryFilterPointId poingIdFilter, ArchiveListSnapshot<TKey, TValue> snapshot, DataReaderOptions readerOptions)
             {
+                m_keyMethods = new TKey().CreateKeyMethods();
+                m_valueMethods = new TValue().CreateValueMethods();
                 if (readerOptions.Timeout.Ticks > 0)
                 {
                     m_timeout = new TimeoutOperation();
@@ -114,8 +119,10 @@ namespace openHistorian.Engine
                 TKey startKey = new TKey();
                 TKey stopKey = new TKey();
 
-                startKey.SetMin();
-                stopKey.SetMax();
+                m_keyMethods.SetMin(startKey);
+                m_keyMethods.SetMax(stopKey);
+                //startKey.SetMin();
+                //stopKey.SetMax();
 
                 m_tables = new List<ArchiveTablePointEnumerator<TKey, TValue>>();
 
@@ -144,7 +151,7 @@ namespace openHistorian.Engine
                 if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
                 {
                     TKey key = new TKey();
-                    key.SetMin();
+                    m_keyMethods.SetMin(key); //key.SetMin();
                     key.Timestamp = m_startKey;
                     m_currentTables.SeekToKey(key);
                 }
@@ -178,7 +185,7 @@ namespace openHistorian.Engine
                     //If the current point is not valid, or is before m_startKey
                     //Advance the scanner to the next window.
                     TKey key = new TKey();
-                    key.SetMin();
+                    m_keyMethods.SetMin(key); //key.SetMin();
                     key.Timestamp = m_startKey;
                     m_currentTables.SeekForward(key);
 

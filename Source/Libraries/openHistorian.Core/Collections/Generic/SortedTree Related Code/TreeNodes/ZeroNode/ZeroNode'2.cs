@@ -23,7 +23,7 @@
 
 using GSF.UnmanagedMemory;
 
-namespace openHistorian.Collections.Generic.ZeroNode
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     public unsafe class ZeroNode<TKey, TValue>
         : EncodedNodeBase<TKey, TValue>

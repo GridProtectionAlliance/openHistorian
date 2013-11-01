@@ -25,13 +25,21 @@
 using System;
 using GSF.IO;
 using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Communications.Initialization
 {
     public abstract class KeyValueStreamCompressionBase<TKey, TValue>
-        where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
+        protected TreeKeyMethodsBase<TKey> KeyMethods;
+        protected TreeValueMethodsBase<TValue> ValueMethods;
+        protected KeyValueStreamCompressionBase()
+        {
+            KeyMethods = new TKey().CreateKeyMethods();
+            ValueMethods = new TValue().CreateValueMethods();
+        }
 
         public abstract Guid CompressionType { get; }
 

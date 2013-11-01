@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeNodeInitializer.cs - Gbtc
+//  FixedSizeNodeScanner`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,22 +21,35 @@
 //     
 //******************************************************************************************************
 
-namespace openHistorian.Collections.Generic
-{
-    public class TreeNodeInitializer<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
-    {
-        private readonly CreateTreeNodeBase m_treeNode;
+using System;
+using GSF.IO;
 
-        public TreeNodeInitializer(CreateTreeNodeBase treeNode)
+namespace openHistorian.Collections.Generic.TreeNodes
+{
+    public class FixedSizeNodeScanner<TKey, TValue>
+        : TreeScannerBase<TKey, TValue>
+        where TKey : class, new()
+        where TValue : class, new()
+    {
+        public FixedSizeNodeScanner(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
+            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, 1)
         {
-            m_treeNode = treeNode;
         }
 
-        public TreeNodeBase<TKey, TValue> CreateTreeNode(byte level)
+        protected override unsafe void ReadNext()
         {
-            return m_treeNode.Create<TKey, TValue>(level);
+            byte* ptr = Pointer + IndexOfCurrentKeyValue * KeyValueSize;
+            IndexOfCurrentKeyValue++;
+            KeyMethods.Read(ptr, CurrentKey);
+            ValueMethods.Read(ptr + KeySize, CurrentValue);
+        }
+
+        protected override unsafe void FindKey(TKey key)
+        {
+            int offset = KeyMethods.BinarySearch(Pointer, key, RecordCount, KeyValueSize);
+            if (offset < 0)
+                offset = ~offset;
+            IndexOfCurrentKeyValue = (ushort)offset;
         }
     }
 }

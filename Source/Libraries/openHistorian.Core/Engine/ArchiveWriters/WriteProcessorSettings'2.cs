@@ -89,7 +89,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 RolloverInterval = 1000,
                 RolloverSize = 1 * 1000 * 1000,
                 MaximumAllowedSize = 10 * 1000 * 1000,
-                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(CreateFixedSizeNode.TypeGuid))
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
             };
 
             settings.Stage1 = new StageWriterSettings<TKey, TValue>()
@@ -97,7 +97,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 RolloverInterval = 10 * 1000,
                 RolloverSize = 10 * 1000 * 1000,
                 MaximumAllowedSize = 100 * 1000 * 1000,
-                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(CreateFixedSizeNode.TypeGuid))
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
             };
 
             settings.Stage2 = new StageWriterSettings<TKey, TValue>()
@@ -127,7 +127,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 RolloverInterval = 1000,
                 RolloverSize = 1 * 1000 * 1000,
                 MaximumAllowedSize = 10 * 1000 * 1000,
-                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(CreateFixedSizeNode.TypeGuid))
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
             };
 
             settings.Stage1 = new StageWriterSettings<TKey, TValue>()
@@ -136,7 +136,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 RolloverSize = 50 * 1000 * 1000,
                 MaximumAllowedSize = 200 * 1000 * 1000,
                 //StagingFile = new StagingFile(list, ArchiveInitializer.CreateInMemory(CompressionMethod.None))
-                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, CreateFixedSizeNode.TypeGuid, "Stage1"))
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, SortedTree.FixedSizeNode, "Stage1"))
             };
 
             settings.Stage2 = new StageWriterSettings<TKey, TValue>()

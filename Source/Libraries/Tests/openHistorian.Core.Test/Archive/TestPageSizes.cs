@@ -121,7 +121,7 @@ namespace openHistorian.UnitTests.Archive
             Stopwatch sw = new Stopwatch();
             sw.Start();
             using (ArchiveFile af = ArchiveFile.CreateInMemory(pageSize))
-            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
                 {
@@ -176,7 +176,7 @@ namespace openHistorian.UnitTests.Archive
             Stopwatch sw = new Stopwatch();
             sw.Start();
             using (ArchiveFile af = ArchiveFile.CreateInMemory(pageSize))
-            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
                 {
@@ -240,7 +240,7 @@ namespace openHistorian.UnitTests.Archive
             Stopwatch sw = new Stopwatch();
             sw.Start();
             using (ArchiveFile af = ArchiveFile.CreateInMemory(pageSize))
-            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
             {
                 for (uint x = 0; x < 1000000; x++)

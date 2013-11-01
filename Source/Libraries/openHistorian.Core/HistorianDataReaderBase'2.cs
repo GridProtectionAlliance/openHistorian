@@ -35,7 +35,7 @@ namespace openHistorian
     /// <typeparam name="TValue"></typeparam>
     public abstract class HistorianDataReaderBase<TKey, TValue>
         : IDisposable
-        where TKey : HistorianKeyBase<TKey>, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, new()
     {
         /// <summary>

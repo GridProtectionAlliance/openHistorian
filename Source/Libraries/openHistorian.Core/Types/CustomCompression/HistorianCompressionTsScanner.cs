@@ -25,7 +25,7 @@ using System;
 using GSF;
 using GSF.IO;
 
-namespace openHistorian.Collections.Generic.CustomCompression
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     public unsafe class HistorianCompressionTsScanner
         : EncodedNodeScannerBase<HistorianKey, HistorianValue>

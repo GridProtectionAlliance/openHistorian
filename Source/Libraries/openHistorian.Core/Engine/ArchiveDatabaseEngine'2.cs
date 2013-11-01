@@ -36,7 +36,7 @@ namespace openHistorian.Engine
     public class ArchiveDatabaseEngine<TKey, TValue>
         : HistorianDatabaseBase<TKey, TValue>
         where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
 

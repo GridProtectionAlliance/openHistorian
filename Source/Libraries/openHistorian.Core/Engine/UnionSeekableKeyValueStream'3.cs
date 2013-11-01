@@ -39,14 +39,18 @@ namespace openHistorian.Engine
     public class UnionSeekableKeyValueStream<T, TKey, TValue>
         : SeekableKeyValueStream<TKey, TValue>
         where T : SeekableKeyValueStream<TKey, TValue>
-        where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         CustomSortHelper<T> m_tables;
         T m_firstTable;
+        TreeKeyMethodsBase<TKey> m_keyMethods;
+        TreeValueMethodsBase<TValue> m_valueMethods;
 
         public UnionSeekableKeyValueStream(IEnumerable<T> list)
         {
+            m_keyMethods = new TKey().CreateKeyMethods();
+            m_valueMethods = new TValue().CreateValueMethods();
             m_tables = new CustomSortHelper<T>(list, CompareStreams);
         }
 
@@ -58,7 +62,7 @@ namespace openHistorian.Engine
                 return 1;
             if (!item2.IsValid)
                 return -1;
-            return item1.CurrentKey.CompareTo(item2.CurrentKey);
+            return m_keyMethods.CompareTo(item1.CurrentKey, item2.CurrentKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
         }
 
         public override bool Read()
@@ -70,8 +74,10 @@ namespace openHistorian.Engine
             }
             else
             {
-                m_firstTable.CurrentKey.CopyTo(CurrentKey);
-                m_firstTable.CurrentValue.CopyTo(CurrentValue);
+                m_keyMethods.Copy(m_firstTable.CurrentKey, CurrentKey);
+                m_valueMethods.Copy(m_firstTable.CurrentValue, CurrentValue);
+                //m_firstTable.CurrentKey.CopyTo(CurrentKey);
+                //m_firstTable.CurrentValue.CopyTo(CurrentValue);
                 m_firstTable.Read();
 
                 if (m_tables.Items.Length >= 2)
@@ -136,12 +142,12 @@ namespace openHistorian.Engine
         {
             foreach (var table in m_tables.Items)
             {
-                if (table.IsValid && table.CurrentKey.IsLessThan(key))
+                if (table.IsValid && m_keyMethods.IsLessThan(table.CurrentKey, key)) // table.CurrentKey.IsLessThan(key))
                 {
                     table.SeekToKey(key);
                     table.Read();
                 }
-                if (table.IsValid && table.CurrentKey.IsLessThan(key))
+                if (table.IsValid && m_keyMethods.IsLessThan(table.CurrentKey, key)) // table.CurrentKey.IsLessThan(key))
                 {
                     table.SeekToKey(key);
                     table.Read();
@@ -163,7 +169,7 @@ namespace openHistorian.Engine
             if (m_tables.Items.Length > 0)
                 m_firstTable = m_tables[0];
 
-            if (CurrentKey.IsLessThan(key))
+            if (m_keyMethods.IsLessThan(CurrentKey, key))//CurrentKey.IsLessThan(key))
             {
                 IsValid = false;
             }

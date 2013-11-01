@@ -100,6 +100,10 @@ namespace openHistorian.Collections.Generic
 
         public abstract unsafe void Read(byte* stream, TKey data);
 
+        public abstract void WriteCompressed(BinaryStreamBase stream, TKey currentKey, TKey previousKey);
+        public abstract void ReadCompressed(BinaryStreamBase stream, TKey currentKey, TKey previousKey);
+
+
         protected abstract int GetSize();
 
         protected TreeKeyMethodsBase()
@@ -414,5 +418,6 @@ namespace openHistorian.Collections.Generic
             obj.m_tempKey = new TKey();
             return obj;
         }
+
     }
 }

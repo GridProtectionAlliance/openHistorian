@@ -31,7 +31,7 @@ namespace openHistorian.Collections
     /// The standard key used for the historian.
     /// </summary>
     public class HistorianKey
-        : HistorianKeyBase<HistorianKey>, ISortedTreeKey<HistorianKey>
+        : HistorianKeyBase<HistorianKey>
     {
         // These values are inherited from base class:
         ///// <summary>
@@ -54,20 +54,9 @@ namespace openHistorian.Collections
         public ulong EntryNumber;
 
         /// <summary>
-        /// Copies the data from this class to <see cref="other"/>
-        /// </summary>
-        /// <param name="other">the destination of the copy</param>
-        public override void CopyTo(HistorianKey other)
-        {
-            other.Timestamp = Timestamp;
-            other.PointID = PointID;
-            other.EntryNumber = EntryNumber;
-        }
-
-        /// <summary>
         /// Sets all of the values in this class to their minimum value
         /// </summary>
-        public override void SetMin()
+        public void SetMin()
         {
             Timestamp = 0;
             PointID = 0;
@@ -77,69 +66,17 @@ namespace openHistorian.Collections
         /// <summary>
         /// Sets all of the values in this class to their maximum value
         /// </summary>
-        public override void SetMax()
+        public void SetMax()
         {
             Timestamp = ulong.MaxValue;
             PointID = ulong.MaxValue;
             EntryNumber = ulong.MaxValue;
         }
-
-        /// <summary>
-        /// Serializes this key to the <see cref="stream"/> in a fixed sized method.
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        public override void Write(BinaryStreamBase stream)
-        {
-            stream.Write(Timestamp);
-            stream.Write(PointID);
-            stream.Write(EntryNumber);
-        }
-
-        /// <summary>
-        /// Reads data from the provided <see cref="stream"/> in a fixed size method.
-        /// </summary>
-        /// <param name="stream">the stream to read from</param>
-        public override void Read(BinaryStreamBase stream)
-        {
-            Timestamp = stream.ReadUInt64();
-            PointID = stream.ReadUInt64();
-            EntryNumber = stream.ReadUInt64();
-        }
-
-        /// <summary>
-        /// Serializes this key to the <see cref="stream"/> in a condensed method.
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        /// <param name="previousKey">the previous value that was serialized</param>
-        public override void WriteCompressed(BinaryStreamBase stream, HistorianKey previousKey)
-        {
-            //stream.Write(Timestamp);
-            //stream.Write(PointID);
-            //stream.Write(EntryNumber);
-            stream.Write7Bit(previousKey.Timestamp ^ Timestamp);
-            stream.Write7Bit(previousKey.PointID ^ PointID);
-            stream.Write7Bit(previousKey.EntryNumber ^ EntryNumber);
-        }
-
-        /// <summary>
-        /// Reads data from the provided <see cref="stream"/> in a condensed method.
-        /// </summary>
-        /// <param name="stream">the stream to read from</param>
-        /// <param name="previousKey">the previous value that was serialized</param>
-        public override void ReadCompressed(BinaryStreamBase stream, HistorianKey previousKey)
-        {
-            //Timestamp = stream.ReadUInt64();
-            //PointID = stream.ReadUInt64();
-            //EntryNumber = stream.ReadUInt64();
-            Timestamp = stream.Read7BitUInt64() ^ previousKey.Timestamp;
-            PointID = stream.Read7BitUInt64() ^ previousKey.PointID;
-            EntryNumber = stream.Read7BitUInt64() ^ previousKey.EntryNumber;
-        }
-
+        
         /// <summary>
         /// Sets the key to the default values.
         /// </summary>
-        public override void Clear()
+        public void Clear()
         {
             Timestamp = 0;
             PointID = 0;

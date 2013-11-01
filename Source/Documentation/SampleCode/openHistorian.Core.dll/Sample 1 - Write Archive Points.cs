@@ -4,6 +4,7 @@ using NUnit.Framework;
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace SampleCode.openHistorian.Archive.dll
 {
@@ -19,7 +20,7 @@ namespace SampleCode.openHistorian.Archive.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
             using (var file = ArchiveFile.CreateFile(fileName))
-            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             using (var editor = table.BeginEdit())
             {
                 key.TimestampAsDate = DateTime.Now;
@@ -77,7 +78,7 @@ namespace SampleCode.openHistorian.Archive.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
             using (var file = ArchiveFile.OpenFile(fileName, isReadOnly: false))
-            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (var editor = table.BeginEdit())
                 {

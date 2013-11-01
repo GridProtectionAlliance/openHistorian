@@ -24,15 +24,15 @@
 
 using System;
 using GSF.IO;
-using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 using openHistorian.Communications.Initialization;
 
 namespace openHistorian.Communications.Compression
 {
     public class CompressedStream<TKey, TValue>
         : KeyValueStreamCompressionBase<TKey, TValue>
-        where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         TKey prevKey;
         TValue prevValue;
@@ -59,30 +59,31 @@ namespace openHistorian.Communications.Compression
         public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
             stream.Write(true);
-            currentKey.WriteCompressed(stream, prevKey);
-            currentValue.WriteCompressed(stream, prevValue);
+            KeyMethods.WriteCompressed(stream, currentKey, prevKey);
+            ValueMethods.WriteCompressed(stream, currentValue, prevValue);
 
-            currentKey.CopyTo(prevKey);
-            currentValue.CopyTo(prevValue);
+            KeyMethods.Copy(currentKey, prevKey);
+            ValueMethods.Copy(currentValue, prevValue);
         }
 
         public override unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value)
         {
             if (!stream.ReadBoolean())
                 return false;
-            key.ReadCompressed(stream, prevKey);
-            value.ReadCompressed(stream, prevValue);
 
-            key.CopyTo(prevKey);
-            value.CopyTo(prevValue);
+            KeyMethods.ReadCompressed(stream, key, prevKey);
+            ValueMethods.ReadCompressed(stream, value, prevValue);
+
+            KeyMethods.Copy(key, prevKey);
+            ValueMethods.Copy(value, prevValue);
 
             return true;
         }
 
         public override void ResetEncoder()
         {
-            prevKey.Clear();
-            prevValue.Clear();
+            KeyMethods.Clear(prevKey);
+            ValueMethods.Clear(prevValue);
         }
     }
 }

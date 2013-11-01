@@ -25,7 +25,6 @@
 using System;
 using System.Text;
 using GSF;
-using GSF.IO;
 using openHistorian.Collections.Generic;
 
 namespace openHistorian.Collections
@@ -34,7 +33,7 @@ namespace openHistorian.Collections
     /// The standard value used in the OpenHistorian.
     /// </summary>
     public class HistorianValue
-        : HistorianValueBase<HistorianValue>, ISortedTreeValue<HistorianValue>
+        : ISortedTreeValue<HistorianValue>
     {
         /// <summary>
         /// Value 1 should be where the first 64 bits of the field is stored. For 32 bit values, use this field only.
@@ -54,72 +53,15 @@ namespace openHistorian.Collections
         /// </summary>
         /// <param name="other">the key to compare to</param>
         /// <returns></returns>
-        public override bool IsEqualTo(HistorianValue other)
+        public bool IsEqualTo(HistorianValue other)
         {
             return Value1 == other.Value1 && Value2 == other.Value2 && Value3 == other.Value3;
         }
 
         /// <summary>
-        /// Copies the data from this class to <see cref="other"/>
-        /// </summary>
-        /// <param name="other">the destination of the copy</param>
-        public override void CopyTo(HistorianValue other)
-        {
-            other.Value1 = Value1;
-            other.Value2 = Value2;
-            other.Value3 = Value3;
-        }
-
-        /// <summary>
-        /// Serializes this value to the <see cref="stream"/> in a fixed sized method.
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        public override void Write(BinaryStreamBase stream)
-        {
-            stream.Write(Value1);
-            stream.Write(Value2);
-            stream.Write(Value3);
-        }
-
-        /// <summary>
-        /// Reads data from the provided <see cref="stream"/> in a fixed size method.
-        /// </summary>
-        /// <param name="stream">the stream to read from</param>
-        public override void Read(BinaryStreamBase stream)
-        {
-            Value1 = stream.ReadUInt64();
-            Value2 = stream.ReadUInt64();
-            Value3 = stream.ReadUInt64();
-        }
-
-        /// <summary>
-        /// Serializes this value to the <see cref="stream"/> in a condensed method.
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        /// <param name="previousValue">the previous value that was serialized</param>
-        public override void WriteCompressed(BinaryStreamBase stream, HistorianValue previousValue)
-        {
-            stream.Write7Bit(previousValue.Value1 ^ Value1);
-            stream.Write7Bit(previousValue.Value2 ^ Value2);
-            stream.Write7Bit(previousValue.Value3 ^ Value3);
-        }
-
-        /// <summary>
-        /// Reads data from the provided <see cref="stream"/> in a condensed method.
-        /// </summary>
-        /// <param name="stream">the stream to read from</param>
-        /// <param name="previousValue">the previous value that was serialized</param>
-        public override void ReadCompressed(BinaryStreamBase stream, HistorianValue previousValue)
-        {
-            Value1 = stream.Read7BitUInt64() ^ previousValue.Value1;
-            Value2 = stream.Read7BitUInt64() ^ previousValue.Value2;
-            Value3 = stream.Read7BitUInt64() ^ previousValue.Value3;
-        }
-
-        /// <summary>
         /// Sets the value to the default values.
         /// </summary>
-        public override void Clear()
+        public void Clear()
         {
             Value1 = 0;
             Value2 = 0;
@@ -191,7 +133,7 @@ namespace openHistorian.Collections
             }
         }
 
-        public override TreeValueMethodsBase<HistorianValue> CreateValueMethods()
+        public TreeValueMethodsBase<HistorianValue> CreateValueMethods()
         {
             return new ValueMethodsHistorianValue();
         }

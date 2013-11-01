@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Engine
 {
@@ -69,7 +70,7 @@ namespace openHistorian.Engine
 
         public DatabaseConfig(WriterMode writerMode, params string[] paths)
         {
-            CompressionMethod = CreateFixedSizeNode.TypeGuid;
+            CompressionMethod = SortedTree.FixedSizeNode;
             if (writerMode == WriterMode.OnDisk)
                 CompressionMethod = CreateHistorianCompressionTs.TypeGuid;
 

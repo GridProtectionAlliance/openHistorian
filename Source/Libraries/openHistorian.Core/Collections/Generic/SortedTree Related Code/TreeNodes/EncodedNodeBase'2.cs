@@ -25,7 +25,7 @@ using System;
 using GSF;
 using GSF.UnmanagedMemory;
 
-namespace openHistorian.Collections.Generic
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     public abstract unsafe class EncodedNodeBase<TKey, TValue>
         : TreeNodeBase<TKey, TValue>
@@ -403,6 +403,7 @@ namespace openHistorian.Collections.Generic
         /// until the <see cref="m_currentKey"/> >= <see cref="key"/>
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="buffer"></param>
         private void SeekTo(TKey key, byte* buffer)
         {
             //ToDo: Optimize this seek algorithm
@@ -430,6 +431,7 @@ namespace openHistorian.Collections.Generic
         /// until the <see cref="m_currentKey"/> >= <see cref="key"/>
         /// </summary>
         /// <param name="index"></param>
+        /// <param name="buffer"></param>
         private void SeekTo(int index, byte* buffer)
         {
             //Reset();

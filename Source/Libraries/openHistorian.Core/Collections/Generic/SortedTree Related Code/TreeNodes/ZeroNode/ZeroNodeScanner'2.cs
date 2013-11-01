@@ -25,7 +25,7 @@ using System;
 using GSF.IO;
 using GSF.UnmanagedMemory;
 
-namespace openHistorian.Collections.Generic.ZeroNode
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     public unsafe class ZeroNodeScanner<TKey, TValue>
         : EncodedNodeScannerBase<TKey, TValue>

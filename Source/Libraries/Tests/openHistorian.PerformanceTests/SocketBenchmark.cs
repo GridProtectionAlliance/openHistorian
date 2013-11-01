@@ -6,6 +6,7 @@ using openHistorian;
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 using openHistorian.Data.Query;
 
 namespace SampleCode.openHistorian.Server.dll

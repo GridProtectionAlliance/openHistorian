@@ -25,7 +25,7 @@ using System;
 using GSF;
 using GSF.UnmanagedMemory;
 
-namespace openHistorian.Collections.Generic
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     public unsafe class FixedSizeNode<TKey, TValue>
         : TreeNodeBase<TKey, TValue>

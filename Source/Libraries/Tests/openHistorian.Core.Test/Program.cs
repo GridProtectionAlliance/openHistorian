@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
 using openHistorian.Collections.Generic.CustomCompression;
+using openHistorian.Collections.Generic.TreeNodes;
 using openHistorian.Utility;
 
 namespace winformsVisN

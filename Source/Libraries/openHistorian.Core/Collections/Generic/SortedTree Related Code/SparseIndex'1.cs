@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using GSF.IO;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Collections.Generic
 {
@@ -90,7 +91,7 @@ namespace openHistorian.Collections.Generic
         /// <param name="encodingMethod">The encoding that will be used with each node</param>
         public SparseIndex(Guid encodingMethod)
         {
-            m_initializer = SortedTree.GetTreeNodeInitializer<TKey, TreeUInt32>(encodingMethod);
+            m_initializer = TreeNodeInitializer.GetTreeNodeInitializer<TKey, TreeUInt32>(encodingMethod);
             m_key = new TKey();
             m_value = new TreeUInt32();
             m_keyMethods = m_key.CreateKeyMethods();

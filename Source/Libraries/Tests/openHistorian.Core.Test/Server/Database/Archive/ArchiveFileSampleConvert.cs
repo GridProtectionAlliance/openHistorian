@@ -4,6 +4,7 @@ using NUnit.Framework;
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.UnitTests.Server.Database.Archive
 {
@@ -20,7 +21,7 @@ namespace openHistorian.UnitTests.Server.Database.Archive
                 File.Delete("c:\\temp\\ArchiveTestFileBig.d2");
             //using (var af = ArchiveFile.CreateInMemory(CompressionMethod.TimeSeriesEncoded))
             using (ArchiveFile af = ArchiveFile.CreateFile("c:\\temp\\ArchiveTestFileBig.d2"))
-            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 Random r = new Random(3);
 
@@ -106,7 +107,7 @@ namespace openHistorian.UnitTests.Server.Database.Archive
         public void ReadFile()
         {
             using (ArchiveFile af = ArchiveFile.OpenFile("c:\\temp\\ArchiveTestFileBig.d2", isReadOnly: true))
-            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 Random r = new Random(3);
 

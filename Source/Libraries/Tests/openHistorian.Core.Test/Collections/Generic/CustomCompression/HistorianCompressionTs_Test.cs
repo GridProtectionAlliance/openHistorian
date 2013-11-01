@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GSF.IO.Unmanaged;
 using NUnit.Framework;
+using openHistorian.Collections.Generic.TreeNodes;
 using openHistorian.FileStructure;
 
 namespace openHistorian.Collections.Generic.CustomCompression
@@ -143,7 +144,7 @@ namespace openHistorian.Collections.Generic.CustomCompression
         [Test]
         public void TestSequently()
         {
-            var tree = SortedTree.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid, 0);
+            var tree = TreeNodeInitializer.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid, 0);
 
             LeafNodeTest.TestNode(tree, new SequentialTest(), 5000);
         }
@@ -151,7 +152,7 @@ namespace openHistorian.Collections.Generic.CustomCompression
         [Test]
         public void TestReverseSequently()
         {
-            var tree = SortedTree.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid, 0);
+            var tree = TreeNodeInitializer.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid, 0);
 
             LeafNodeTest.TestNode(tree, new ReverseSequentialTest(), 5000);
         }
@@ -159,7 +160,7 @@ namespace openHistorian.Collections.Generic.CustomCompression
         [Test]
         public void TestRandom()
         {
-            var tree = SortedTree.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid, 0);
+            var tree = TreeNodeInitializer.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid, 0);
 
             LeafNodeTest.TestNode(tree, new RandomTest(), 2000);
         }
@@ -167,7 +168,7 @@ namespace openHistorian.Collections.Generic.CustomCompression
         [Test]
         public void BenchmarkSequently()
         {
-            var tree = SortedTree.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid);
 
             LeafNodeTest.TestSpeed(tree, new SequentialTest(), 500, 512);
         }
@@ -175,7 +176,7 @@ namespace openHistorian.Collections.Generic.CustomCompression
         [Test]
         public void BenchmarkReverseSequently()
         {
-            var tree = SortedTree.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid);
 
             LeafNodeTest.TestSpeed(tree, new ReverseSequentialTest(), 500, 512);
         }
@@ -183,7 +184,7 @@ namespace openHistorian.Collections.Generic.CustomCompression
         [Test]
         public void BenchmarkRandom()
         {
-            var tree = SortedTree.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid);
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
         }

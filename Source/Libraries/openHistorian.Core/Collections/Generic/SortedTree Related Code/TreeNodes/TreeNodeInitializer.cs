@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTree.cs - Gbtc
+//  TreeNodeInitializer.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,13 +26,13 @@ using System.Collections.Generic;
 using System.IO;
 using GSF.IO;
 
-namespace openHistorian.Collections.Generic
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     //public delegate SortedTreeKeyMethodsBase CreateKeyMethod();
 
     //public delegate SortedTreeValueMethodsBase CreateValueMethod();
 
-    public static class SortedTree
+    public static class TreeNodeInitializer
     {
         private static readonly object s_syncRoot;
 
@@ -42,7 +42,7 @@ namespace openHistorian.Collections.Generic
 
         //static Dictionary<Type, SortedTreeValueMethodsBase> s_valueMethods;
 
-        static SortedTree()
+        static TreeNodeInitializer()
         {
             s_syncRoot = new object();
             s_treeNodeKeyValue = new Dictionary<Tuple<Guid, Type, Type>, CreateTreeNodeBase>();
@@ -52,13 +52,7 @@ namespace openHistorian.Collections.Generic
             RegisterSortedTreeTypes.RegisterTreeNodeType();
         }
 
-        public static void ReadHeader(BinaryStreamBase stream, out Guid sparseIndexType, out Guid treeNodeType, out int blockSize)
-        {
-            stream.Position = 0;
-            sparseIndexType = stream.ReadGuid();
-            treeNodeType = stream.ReadGuid();
-            blockSize = stream.ReadInt32();
-        }
+       
 
         public static void Register(CreateTreeNodeBase treeNode)
         {

@@ -82,8 +82,9 @@ namespace openHistorian.Collections.Generic
         protected abstract int GetSize();
 
         public abstract unsafe void Read(byte* stream, TValue data);
-
         public abstract unsafe void Write(byte* stream, TValue data);
+        public abstract void WriteCompressed(BinaryStreamBase stream, TValue currentValue, TValue previousValue);
+        public abstract void ReadCompressed(BinaryStreamBase stream, TValue currentValue, TValue previousValue);
 
         public virtual unsafe void Copy(TValue source, TValue destination)
         {

@@ -7,6 +7,7 @@ using NUnit.Framework;
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 using openHistorian.Data.Query;
 
 namespace openHistorian.Engine
@@ -143,7 +144,7 @@ namespace openHistorian.Engine
         ArchiveTable<HistorianKey, HistorianValue> CreateTable()
         {
             var file = ArchiveFile.CreateInMemory();
-            var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid);
+            var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode);
             return table;
         }
 

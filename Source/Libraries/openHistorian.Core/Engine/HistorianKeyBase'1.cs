@@ -46,89 +46,14 @@ namespace openHistorian.Collections
         /// The id number of the point.
         /// </summary>
         public ulong PointID;
-
-        /// <summary>
-        /// Copies the data from this class to <see cref="other"/>
-        /// </summary>
-        /// <param name="other">the destination of the copy</param>
-        public abstract void CopyTo(TKey other);
-        /// <summary>
-        /// Sets all of the values in this class to their minimum value
-        /// </summary>
-        public abstract void SetMin();
-        /// <summary>
-        /// Sets all of the values in this class to their maximum value
-        /// </summary>
-        public abstract void SetMax();
-        /// <summary>
-        /// Serializes this key to the <see cref="stream"/> in a fixed sized method.
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        public abstract void Write(BinaryStreamBase stream);
-        /// <summary>
-        /// Reads data from the provided <see cref="stream"/> in a fixed size method.
-        /// </summary>
-        /// <param name="stream">the stream to read from</param>
-        public abstract void Read(BinaryStreamBase stream);
-        /// <summary>
-        /// Serializes this key to the <see cref="stream"/> in a condensed method.
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        /// <param name="previousKey">the previous value that was serialized</param>
-        public abstract void WriteCompressed(BinaryStreamBase stream, TKey previousKey);
-        /// <summary>
-        /// Reads data from the provided <see cref="stream"/> in a condensed method.
-        /// </summary>
-        /// <param name="stream">the stream to read from</param>
-        /// <param name="previousKey">the previous value that was serialized</param>
-        public abstract void ReadCompressed(BinaryStreamBase stream, TKey previousKey);
-        /// <summary>
-        /// Sets the key to the default values.
-        /// </summary>
-        public abstract void Clear();
+       
         /// <summary>
         /// Compares the current instance to <see cref="other"/>.
         /// </summary>
         /// <param name="other">the key to compare to</param>
         /// <returns></returns>
         public abstract int CompareTo(TKey other);
-        /// <summary>
-        /// Is the current instance less than <see cref="other"/>
-        /// </summary>
-        /// <param name="other">the key to compare to</param>
-        /// <returns></returns>
-        public bool IsLessThan(TKey other)
-        {
-            return CompareTo(other) < 0;
-        }
-        /// <summary>
-        /// Is the current instance less than or equal to <see cref="other"/>
-        /// </summary>
-        /// <param name="other">the key to compare to</param>
-        /// <returns></returns>
-        public bool IsLessThanOrEqualTo(TKey other)
-        {
-            return CompareTo(other) <= 0;
-        }
-        /// <summary>
-        /// Is the current instance greater than <see cref="other"/>
-        /// </summary>
-        /// <param name="other">the key to compare to</param>
-        /// <returns></returns>
-        public bool IsGreaterThan(TKey other)
-        {
-            return CompareTo(other) > 0;
-        }
-        /// <summary>
-        /// Is the current instance greater than or equal to <see cref="other"/>
-        /// </summary>
-        /// <param name="other">the key to compare to</param>
-        /// <returns></returns>
-        public bool IsGreaterThanOrEqualTo(TKey other)
-        {
-            return CompareTo(other) >= 0;
-        }
-
+    
         /// <summary>
         /// Is the current instance equal to <see cref="other"/>
         /// </summary>

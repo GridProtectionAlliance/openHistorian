@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateCompressedStream.cs - Gbtc
+//  TreeNodeInitializer.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,54 +16,27 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/10/2013 - Steven E. Chisholm
+//  4/26/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
-using System;
-using openHistorian.Collections.Generic;
-using openHistorian.Communications.Initialization;
-
-namespace openHistorian.Communications.Compression
+namespace openHistorian.Collections.Generic.TreeNodes
 {
-    class CreateCompressedStream
-        : CreateKeyValueStreamCompressionBase
+    public class TreeNodeInitializer<TKey, TValue>
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
+        private readonly CreateTreeNodeBase m_treeNode;
 
-        // {E7E8A378-340E-47DF-B29F-E65361AB32AB}
-        public readonly static Guid TypeGuid = new Guid(0xe7e8a378, 0x340e, 0x47df, 0xb2, 0x9f, 0xe6, 0x53, 0x61, 0xab, 0x32, 0xab);
-
-
-
-        public override Type KeyTypeIfFixed
+        public TreeNodeInitializer(CreateTreeNodeBase treeNode)
         {
-            get
-            {
-                return null;
-            }
+            m_treeNode = treeNode;
         }
 
-        public override Type ValueTypeIfFixed
+        public TreeNodeBase<TKey, TValue> CreateTreeNode(byte level)
         {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override Guid GetTypeGuid
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
-
-        public override KeyValueStreamCompressionBase<TKey, TValue> Create<TKey, TValue>()
-        {
-            return new CompressedStream<TKey, TValue>();
+            return m_treeNode.Create<TKey, TValue>(level);
         }
     }
 }

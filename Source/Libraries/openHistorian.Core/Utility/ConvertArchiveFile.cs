@@ -27,6 +27,7 @@ using openHistorian.Collections;
 using GSF.IO.Unmanaged;
 using openHistorian.Archive;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Utility
 {
@@ -45,7 +46,7 @@ namespace openHistorian.Utility
             {
                 var key = new HistorianKey();
                 var value = new HistorianValue();
-                var tree0 = SortedTree<HistorianKey, HistorianValue>.Create(bs0, 4096, CreateFixedSizeNode.TypeGuid);
+                var tree0 = SortedTree<HistorianKey, HistorianValue>.Create(bs0, 4096, SortedTree.FixedSizeNode);
                 var hist = new OldHistorianReader(oldFileName);
 
                 float count = 0;

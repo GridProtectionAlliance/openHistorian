@@ -27,6 +27,7 @@ using System.Net;
 using System.Net.Sockets;
 using GSF.Communications;
 using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 using openHistorian.Communications.Compression;
 using openHistorian.Communications.Initialization;
 
@@ -47,7 +48,7 @@ namespace openHistorian
     public partial class HistorianClient<TKey, TValue> :
         HistorianCollection<TKey, TValue>, IDisposable
         where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private TcpClient m_client;
         private NetworkBinaryStream m_stream;

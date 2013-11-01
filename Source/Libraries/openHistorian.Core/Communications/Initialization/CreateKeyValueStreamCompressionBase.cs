@@ -23,6 +23,7 @@
 
 using System;
 using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Communications.Initialization
 {
@@ -73,7 +74,7 @@ namespace openHistorian.Communications.Initialization
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
         public abstract KeyValueStreamCompressionBase<TKey, TValue> Create<TKey, TValue>()
-            where TKey : HistorianKeyBase<TKey>, new()
-            where TValue : HistorianValueBase<TValue>, new();
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new();
     }
 }

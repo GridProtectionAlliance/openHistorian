@@ -22,12 +22,14 @@
 //******************************************************************************************************
 
 using System;
+using GSF.IO;
 using openHistorian.Collections.Generic;
 
 namespace openHistorian.Collections
 {
     public class KeyMethodsHistorianKey
         : TreeKeyMethodsBase<HistorianKey>
+
     {
         // {6527D41B-9D04-4BFA-8133-05273D521D46}
         public static Guid TypeGuid = new Guid(0x6527d41b, 0x9d04, 0x4bfa, 0x81, 0x33, 0x05, 0x27, 0x3d, 0x52, 0x1d, 0x46);
@@ -171,6 +173,20 @@ namespace openHistorian.Collections
             data.Timestamp = *(ulong*)stream;
             data.PointID = *(ulong*)(stream + 8);
             data.EntryNumber = *(ulong*)(stream + 16);
+        }
+
+        public override void ReadCompressed(BinaryStreamBase stream, HistorianKey currentKey, HistorianKey previousKey)
+        {
+            currentKey.Timestamp = stream.Read7BitUInt64() ^ previousKey.Timestamp;
+            currentKey.PointID = stream.Read7BitUInt64() ^ previousKey.PointID;
+            currentKey.EntryNumber = stream.Read7BitUInt64() ^ previousKey.EntryNumber;
+        }
+
+        public override void WriteCompressed(BinaryStreamBase stream, HistorianKey currentKey, HistorianKey previousKey)
+        {
+            stream.Write7Bit(previousKey.Timestamp ^ currentKey.Timestamp);
+            stream.Write7Bit(previousKey.PointID ^ currentKey.PointID);
+            stream.Write7Bit(previousKey.EntryNumber ^ currentKey.EntryNumber);
         }
 
         public override unsafe void Copy(HistorianKey source, HistorianKey destination)

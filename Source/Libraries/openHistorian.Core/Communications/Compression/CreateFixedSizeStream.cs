@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using openHistorian.Collections.Generic;
 using openHistorian.Communications.Initialization;
 
 namespace openHistorian.Communications.Compression

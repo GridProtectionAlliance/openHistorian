@@ -28,6 +28,8 @@
 // that utilizes them or an exception will be generated. 
 //******************************************************************************************************
 
+using openHistorian.Collections.Generic.TreeNodes;
+
 namespace openHistorian.Collections.Generic
 {
     /// <summary>
@@ -43,10 +45,10 @@ namespace openHistorian.Collections.Generic
                 return;
             s_treeNodeHasBeenCalled = true;
 
-            SortedTree.Register(new CreateFixedSizeNode());
-            SortedTree.Register(new CreateZeroNode());
-            SortedTree.Register(new CreateHistorianCompressionDelta());
-            SortedTree.Register(new CreateHistorianCompressionTs());
+            TreeNodeInitializer.Register(new CreateFixedSizeNode());
+            TreeNodeInitializer.Register(new CreateZeroNode());
+            TreeNodeInitializer.Register(new CreateHistorianCompressionDelta());
+            TreeNodeInitializer.Register(new CreateHistorianCompressionTs());
             //SortedTree.Register(new CreateFixedSizeNodeUint128Uint128());
             //SortedTree.Register(new CreateFixedSizeNodeUintUint());
         }

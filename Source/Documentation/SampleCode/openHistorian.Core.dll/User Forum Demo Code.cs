@@ -7,6 +7,7 @@ using openHistorian;
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 using openHistorian.Data;
 using openHistorian.Data.Query;
 
@@ -205,7 +206,7 @@ namespace HistorianDemos
             int count = 0;
 
             using (var file1 = ArchiveFile.CreateInMemory())
-            using (var table1 = file1.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+            using (var table1 = file1.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (var edit1 = table1.BeginEdit())
                 {

@@ -5,6 +5,7 @@ using openHistorian;
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorianServiceHost
 {
@@ -38,7 +39,7 @@ namespace openHistorianServiceHost
             {
                 HistorianDatabaseBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase();
 
-                using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateFixedSizeNode.TypeGuid))
+                using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
                 {
                     using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> read = file.BeginRead())
                     {

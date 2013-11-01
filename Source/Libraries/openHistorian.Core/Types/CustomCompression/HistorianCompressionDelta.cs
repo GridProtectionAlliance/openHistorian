@@ -24,7 +24,7 @@
 using System;
 using GSF;
 
-namespace openHistorian.Collections.Generic.CustomCompression
+namespace openHistorian.Collections.Generic.TreeNodes
 {
     /// <summary>
     /// The Node that will be used in the SortedTree that implements a compression method.

@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using openHistorian.Collections;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Communications.Initialization
 {
@@ -76,8 +77,8 @@ namespace openHistorian.Communications.Initialization
         }
         
         public static KeyValueStreamCompressionBase<TKey, TValue> CreateKeyValueStreamCompression<TKey, TValue>(Guid compressionMethod)
-            where TKey : HistorianKeyBase<TKey>, new()
-            where TValue : HistorianValueBase<TValue>, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             Type keyType = typeof(TKey);
             Type valueType = typeof(TValue);

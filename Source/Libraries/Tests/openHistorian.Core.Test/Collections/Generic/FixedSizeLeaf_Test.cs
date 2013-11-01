@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Collections.Generic
 {
@@ -124,7 +125,7 @@ namespace openHistorian.Collections.Generic
         [Test]
         public void TestSequently()
         {
-            TreeNodeBase<TreeUInt32, TreeUInt32> tree = SortedTree.CreateTreeNode<TreeUInt32, TreeUInt32>(CreateFixedSizeNode.TypeGuid, 0);
+            TreeNodeBase<TreeUInt32, TreeUInt32> tree = TreeNodeInitializer.CreateTreeNode<TreeUInt32, TreeUInt32>(SortedTree.FixedSizeNode, 0);
 
             LeafNodeTest.TestNode(tree, new SequentialTest(), 5000);
         }
@@ -132,7 +133,7 @@ namespace openHistorian.Collections.Generic
         [Test]
         public void TestReverseSequently()
         {
-            TreeNodeBase<TreeUInt32, TreeUInt32> tree = SortedTree.CreateTreeNode<TreeUInt32, TreeUInt32>(CreateFixedSizeNode.TypeGuid, 0);
+            TreeNodeBase<TreeUInt32, TreeUInt32> tree = TreeNodeInitializer.CreateTreeNode<TreeUInt32, TreeUInt32>(SortedTree.FixedSizeNode, 0);
 
             LeafNodeTest.TestNode(tree, new ReverseSequentialTest(), 5000);
         }
@@ -140,7 +141,7 @@ namespace openHistorian.Collections.Generic
         [Test]
         public void TestRandom()
         {
-            TreeNodeBase<TreeUInt32, TreeUInt32> tree = SortedTree.CreateTreeNode<TreeUInt32, TreeUInt32>(CreateFixedSizeNode.TypeGuid, 0);
+            TreeNodeBase<TreeUInt32, TreeUInt32> tree = TreeNodeInitializer.CreateTreeNode<TreeUInt32, TreeUInt32>(SortedTree.FixedSizeNode, 0);
 
             LeafNodeTest.TestNode(tree, new RandomTest(), 2000);
         }
@@ -148,7 +149,7 @@ namespace openHistorian.Collections.Generic
         [Test]
         public void BenchmarkSequently()
         {
-            TreeNodeInitializer<TreeUInt32, TreeUInt32> tree = SortedTree.GetTreeNodeInitializer<TreeUInt32, TreeUInt32>(CreateFixedSizeNode.TypeGuid);
+            TreeNodeInitializer<TreeUInt32, TreeUInt32> tree = TreeNodeInitializer.GetTreeNodeInitializer<TreeUInt32, TreeUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new SequentialTest(), 500, 512);
         }
@@ -156,7 +157,7 @@ namespace openHistorian.Collections.Generic
         [Test]
         public void BenchmarkReverseSequently()
         {
-            TreeNodeInitializer<TreeUInt32, TreeUInt32> tree = SortedTree.GetTreeNodeInitializer<TreeUInt32, TreeUInt32>(CreateFixedSizeNode.TypeGuid);
+            TreeNodeInitializer<TreeUInt32, TreeUInt32> tree = TreeNodeInitializer.GetTreeNodeInitializer<TreeUInt32, TreeUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new ReverseSequentialTest(), 500, 512);
         }
@@ -164,7 +165,7 @@ namespace openHistorian.Collections.Generic
         [Test]
         public void BenchmarkRandom()
         {
-            TreeNodeInitializer<TreeUInt32, TreeUInt32> tree = SortedTree.GetTreeNodeInitializer<TreeUInt32, TreeUInt32>(CreateFixedSizeNode.TypeGuid);
+            TreeNodeInitializer<TreeUInt32, TreeUInt32> tree = TreeNodeInitializer.GetTreeNodeInitializer<TreeUInt32, TreeUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
         }

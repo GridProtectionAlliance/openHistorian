@@ -2,6 +2,7 @@
 using System.Text;
 using GSF;
 using GSF.IO.Unmanaged;
+using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Collections.Generic
 {
@@ -40,7 +41,7 @@ namespace openHistorian.Collections.Generic
             using (BinaryStream bs = new BinaryStream())
             {
                 const int pageSize = 512;
-                SparseIndex<TKey> sparse = new SparseIndex<TKey>(CreateFixedSizeNode.TypeGuid);
+                SparseIndex<TKey> sparse = new SparseIndex<TKey>(SortedTree.FixedSizeNode);
                 sparse.Initialize(bs, pageSize, getNextKey, 0, 1);
                 node.Initialize(bs, pageSize, getNextKey, sparse);
                 node.CreateEmptyNode(1);
@@ -132,7 +133,7 @@ namespace openHistorian.Collections.Generic
                 {
                     nextKeyIndex = 2;
                     node = nodeInitializer.CreateTreeNode(0);
-                    SparseIndex<TKey> sparse = new SparseIndex<TKey>(CreateFixedSizeNode.TypeGuid);
+                    SparseIndex<TKey> sparse = new SparseIndex<TKey>(SortedTree.FixedSizeNode);
                     sparse.Initialize(bs, pageSize, getNextKey, 0, 1);
                     node.Initialize(bs, pageSize, getNextKey, sparse);
                     node.CreateEmptyNode(1);

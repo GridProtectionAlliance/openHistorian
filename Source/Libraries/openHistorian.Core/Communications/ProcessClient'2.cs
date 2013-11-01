@@ -34,7 +34,7 @@ namespace openHistorian.Communications
     internal class ProcessClient<TKey, TValue>
         : IDisposable
         where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : HistorianValueBase<TValue>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         public event SocketErrorEventHandler SocketError;
 
