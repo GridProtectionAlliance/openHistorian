@@ -38,4 +38,4 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("2.0.18.0")]
 [assembly: AssemblyFileVersion("2.0.18.0")]
-[assembly: InternalsVisibleTo("openHistorian.Archive.Test")]
+[assembly: InternalsVisibleTo("openHistorian.Core.Test")]

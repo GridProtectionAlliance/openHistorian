@@ -7,8 +7,8 @@
     <ProjectGuid>{69FCF69C-A782-40CF-A428-9A8B30370B7C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>openHistorian.Archive.Test</RootNamespace>
-    <AssemblyName>openHistorian.Archive.Test</AssemblyName>
+    <RootNamespace>openHistorian</RootNamespace>
+    <AssemblyName>openHistorian.Core.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -55,21 +55,27 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\GSF.Historian.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Archive\TestPageSizes.cs" />
     <Compile Include="Archive\TestPageSizesBulk.cs" />
+    <Compile Include="BitMath.cs" />
     <Compile Include="Collections\256\SortedTree256MethodsTest.cs" />
     <Compile Include="Collections\64\BinarySearchTest.cs" />
     <Compile Include="Collections\64\SortedTree64Remove_Test.cs" />
     <Compile Include="Collections\64\SortedTree64Test.cs" />
     <Compile Include="Collections\64\SortedTree64Test_New.cs" />
+    <Compile Include="Collections\BitArrayTest.cs" />
+    <Compile Include="Collections\BitArrayTestPerformance.cs" />
+    <Compile Include="Collections\ContinuousQueueTest.cs" />
     <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionTs_Test.cs" />
     <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionDelta_Test.cs" />
     <Compile Include="Collections\Generic\FixedSizeLeaf_Test.cs" />
@@ -78,10 +84,14 @@
     <Compile Include="Collections\Generic\KeyValueStreamExtension.cs" />
     <Compile Include="Collections\Generic\LeafNodeIndexerTest.cs" />
     <Compile Include="Collections\Generic\LeafNodeTest.cs" />
+    <Compile Include="Collections\Generic\SortedListConstructor_Test.cs" />
     <Compile Include="Collections\Generic\SortedTree_FixedSizeLeaf_Node_Test.cs" />
     <Compile Include="Collections\Generic\SortedTree_FixedSizeLeaf_Test.cs" />
     <Compile Include="Collections\Generic\SortedTree_SparseIndex_Node_Test.cs" />
     <Compile Include="Collections\Generic\ZeroLeafNode_Test.cs" />
+    <Compile Include="Collections\IsolatedQueueFileBacked.cs" />
+    <Compile Include="Collections\IsolatedQueueTest.cs" />
+    <Compile Include="Collections\ISupportsReadonlyTest.cs" />
     <Compile Include="Collections\KeyValue2\SortedTree256DeltaEncodedTest.cs" />
     <Compile Include="Collections\KeyValue2\SortedTree256Test.cs" />
     <Compile Include="Collections\KeyValue2\SortedTree256TS32EncodedTest.cs" />
@@ -92,6 +102,11 @@
     <Compile Include="Collections\KeyValue\SortedTree256BaseTest.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256CompareTest.cs" />
     <Compile Include="Collections\KeyValue\SortedTree256Test.cs" />
+    <Compile Include="Collections\LargeArray.cs" />
+    <Compile Include="Collections\ResourceQueue.cs" />
+    <Compile Include="Collections\ResourceQueueCollection.cs" />
+    <Compile Include="Communications\NetworkBinaryStream_Test.cs" />
+    <Compile Include="CompressionTest.cs" />
     <Compile Include="Data\PeriodicScannerTest.cs" />
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="Engine\ArchiveReaderSequential_Test.cs" />
@@ -124,6 +139,18 @@
     <Compile Include="FileStructure\TransactionServiceTest.cs" />
     <Compile Include="FileStructure\TransactionServiceTestFile.cs" />
     <Compile Include="HelperFunctions.cs" />
+    <Compile Include="IO\BinaryStreamBenchmark.cs" />
+    <Compile Include="IO\BinaryStreamTest.cs" />
+    <Compile Include="IO\BinaryStreamWrapperTest.cs" />
+    <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />
+    <Compile Include="IO\Unmanaged\BufferedFileStreamTest.cs" />
+    <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
+    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamCoreTest.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamTestPerformance.cs" />
+    <Compile Include="IO\Unmanaged\PageMetaDataListTest.cs" />
+    <Compile Include="IO\Unmanaged\UnmanagedMemoryStreamTest.cs" />
     <Compile Include="Local\HistorianServer_Test1.cs" />
     <Compile Include="Local\HistorianServer_Test2.cs" />
     <Compile Include="Local\XmlConfigTest.cs" />
@@ -142,6 +169,12 @@
     <Compile Include="Server\Database\Archive\ArchiveTest.cs" />
     <Compile Include="Server\Database\ResourceEngineTest.cs" />
     <Compile Include="Streaming\TestNetworkClients.cs" />
+    <Compile Include="Threading\ScheduledTaskTest.cs" />
+    <Compile Include="Threading\TreadSafeListTest.cs" />
+    <Compile Include="Threading\WorkerTest.cs" />
+    <Compile Include="UnmanagedMemory\BufferPool.cs" />
+    <Compile Include="UnmanagedMemory\Memory.cs" />
+    <Compile Include="WinApiTest.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

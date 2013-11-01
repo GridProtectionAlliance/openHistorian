@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using openHistorian;
 
 namespace GSF.Collections.Test
 {

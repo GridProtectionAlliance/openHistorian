@@ -79,40 +79,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitMath.cs" />
-    <Compile Include="Collections\BitArrayTestPerformance.cs" />
-    <Compile Include="Collections\BitArrayTest.cs" />
-    <Compile Include="Collections\ContinuousQueueTest.cs" />
-    <Compile Include="Collections\Generic\SortedListConstructor_Test.cs" />
-    <Compile Include="Collections\IsolatedQueueFileBacked.cs" />
-    <Compile Include="Collections\IsolatedQueueTest.cs" />
-    <Compile Include="Collections\ISupportsReadonlyTest.cs" />
-    <Compile Include="Collections\LargeArray.cs" />
-    <Compile Include="Collections\ResourceQueue.cs" />
-    <Compile Include="Collections\ResourceQueueCollection.cs" />
-    <Compile Include="Communications\NetworkBinaryStream_Test.cs" />
-    <Compile Include="CompressionTest.cs" />
-    <Compile Include="DebugStopwatch.cs" />
-    <Compile Include="HelperFunctions.cs" />
-    <Compile Include="IO\BinaryStreamBenchmark.cs" />
-    <Compile Include="IO\BinaryStreamTest.cs" />
-    <Compile Include="IO\BinaryStreamWrapperTest.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStreamTest.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
-    <Compile Include="IO\Unmanaged\UnmanagedMemoryStreamTest.cs" />
-    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStreamCoreTest.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
-    <Compile Include="IO\Unmanaged\MemoryStreamTestPerformance.cs" />
-    <Compile Include="IO\Unmanaged\PageMetaDataListTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Threading\ScheduledTaskTest.cs" />
-    <Compile Include="Threading\TreadSafeListTest.cs" />
-    <Compile Include="Threading\WorkerTest.cs" />
-    <Compile Include="UnmanagedMemory\BufferPool.cs" />
-    <Compile Include="UnmanagedMemory\Memory.cs" />
-    <Compile Include="WinApiTest.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -123,7 +90,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

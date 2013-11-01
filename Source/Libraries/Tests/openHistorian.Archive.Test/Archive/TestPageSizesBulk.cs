@@ -68,7 +68,7 @@ namespace openHistorian.UnitTests.Archive
 
         private TestResults Test(int pageSize)
         {
-            GSF.Stats.LookupKeys = 0;
+            openHistorian.Stats.LookupKeys = 0;
             DiskIoSession.ReadCount = 0;
             DiskIoSession.WriteCount = 0;
             Statistics.ChecksumCount = 0;

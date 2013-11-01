@@ -25,6 +25,7 @@ namespace openHistorian
 {
     public static class Stats
     {
+        public static long LookupKeys;
         public static long PointsReturned;
         public static long PointsScanned;
         public static long QueriesExecuted;
@@ -32,6 +33,7 @@ namespace openHistorian
 
         public static void Clear()
         {
+            LookupKeys = 0;
             PointsReturned = 0;
             PointsScanned = 0;
             QueriesExecuted = 0;
