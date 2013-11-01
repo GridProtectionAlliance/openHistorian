@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine
 {
@@ -30,8 +31,8 @@ namespace openHistorian.Engine
     /// Provides a list of resources that each system transaction could be using.
     /// </summary>
     public class ArchiveListSnapshot<TKey, TValue> : IDisposable
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private bool m_disposed;
 

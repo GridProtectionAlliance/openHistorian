@@ -35,13 +35,6 @@ namespace openHistorian.Collections.Generic
     public static class SortedTree
     {
         private static readonly object s_syncRoot;
-        private static readonly Dictionary<Guid, CreateKeyMethodBase> s_keyMethodsGuid;
-        private static readonly Dictionary<Guid, CreateValueMethodBase> s_valueMethodsGuid;
-        private static readonly Dictionary<Type, CreateKeyMethodBase> s_keyMethods;
-        private static readonly Dictionary<Type, CreateValueMethodBase> s_valueMethods;
-
-        private static readonly Dictionary<Type, Guid> s_keyGuids;
-        private static readonly Dictionary<Type, Guid> s_valueGuids;
 
         private static readonly Dictionary<Tuple<Guid, Type, Type>, CreateTreeNodeBase> s_treeNodeKeyValue;
         private static readonly Dictionary<Tuple<Guid, Type>, CreateTreeNodeBase> s_treeNodeKey;
@@ -51,22 +44,11 @@ namespace openHistorian.Collections.Generic
 
         static SortedTree()
         {
-            s_keyGuids = new Dictionary<Type, Guid>();
-            s_valueGuids = new Dictionary<Type, Guid>();
-
             s_syncRoot = new object();
             s_treeNodeKeyValue = new Dictionary<Tuple<Guid, Type, Type>, CreateTreeNodeBase>();
             s_treeNodeKey = new Dictionary<Tuple<Guid, Type>, CreateTreeNodeBase>();
             s_treeNode = new Dictionary<Guid, CreateTreeNodeBase>();
 
-            s_keyMethods = new Dictionary<Type, CreateKeyMethodBase>();
-            s_valueMethods = new Dictionary<Type, CreateValueMethodBase>();
-
-            s_keyMethodsGuid = new Dictionary<Guid, CreateKeyMethodBase>();
-            s_valueMethodsGuid = new Dictionary<Guid, CreateValueMethodBase>();
-
-            RegisterSortedTreeTypes.RegisterKeyTypes();
-            RegisterSortedTreeTypes.RegisterValueTypes();
             RegisterSortedTreeTypes.RegisterTreeNodeType();
         }
 
@@ -76,26 +58,6 @@ namespace openHistorian.Collections.Generic
             sparseIndexType = stream.ReadGuid();
             treeNodeType = stream.ReadGuid();
             blockSize = stream.ReadInt32();
-        }
-
-        public static void Register(CreateKeyMethodBase keyMethod)
-        {
-            lock (s_syncRoot)
-            {
-                s_keyMethods.Add(keyMethod.GenericType, keyMethod);
-                s_keyMethodsGuid.Add(keyMethod.GenericTypeGuid, keyMethod);
-                s_keyGuids.Add(keyMethod.GenericType, keyMethod.GenericTypeGuid);
-            }
-        }
-
-        public static void Register(CreateValueMethodBase valueMethod)
-        {
-            lock (s_syncRoot)
-            {
-                s_valueMethods.Add(valueMethod.GenericType, valueMethod);
-                s_valueMethodsGuid.Add(valueMethod.GenericTypeGuid, valueMethod);
-                s_valueGuids.Add(valueMethod.GenericType, valueMethod.GenericTypeGuid);
-            }
         }
 
         public static void Register(CreateTreeNodeBase treeNode)
@@ -121,103 +83,71 @@ namespace openHistorian.Collections.Generic
             }
         }
 
-        public static Guid GetKeyGuid<TKey>()
-            where TKey : class, new()
-        {
-            Type keyType = typeof(TKey);
-            lock (s_syncRoot)
-            {
-                return s_keyGuids[keyType];
-            }
-        }
+        //public static TreeValueMethodsBase<TValue> GetTreeValueMethods<TValue>()
+        //    where TValue : class, new()
+        //{
+        //    Type valueType = typeof(TValue);
+        //    CreateValueMethodBase<TValue> valueMethods;
+        //    object objValueMethods;
+        //    lock (s_syncRoot)
+        //    {
+        //        if (!s_valueMethods.TryGetValue(valueType, out objValueMethods))
+        //            throw new Exception("Value Type is not a registered type");
+        //    }
+        //    valueMethods = (CreateValueMethodBase<TValue>)objValueMethods;
+        //    return valueMethods.Create();
+        //}
 
-        public static Guid GetValueGuid<TValue>()
-            where TValue : class, new()
-        {
-            Type valueType = typeof(TValue);
-            lock (s_syncRoot)
-            {
-                return s_valueGuids[valueType];
-            }
-        }
-
-        public static TreeValueMethodsBase<TValue> GetTreeValueMethods<TValue>()
-            where TValue : class, new()
-        {
-            Type valueType = typeof(TValue);
-            CreateValueMethodBase valueMethods;
-            lock (s_syncRoot)
-            {
-                if (!s_valueMethods.TryGetValue(valueType, out valueMethods))
-                    throw new Exception("Value Type is not a registered type");
-            }
-            return valueMethods.Create<TValue>();
-        }
-
-        public static TreeKeyMethodsBase<TKey> GetTreeKeyMethods<TKey>()
-            where TKey : class, new()
-        {
-            Type keyType = typeof(TKey);
-            CreateKeyMethodBase keyMethods;
-            lock (s_syncRoot)
-            {
-                if (!s_keyMethods.TryGetValue(keyType, out keyMethods))
-                    throw new Exception("Key Type is not a registered type");
-            }
-            return keyMethods.Create<TKey>();
-        }
+        //public static TreeKeyMethodsBase<TKey> GetTreeKeyMethods<TKey>()
+        //    where TKey : class, new()
+        //{
+        //    Type keyType = typeof(TKey);
+        //    CreateKeyMethodBase<TKey> keyMethods;
+        //    object objKeyMethods;
+        //    lock (s_syncRoot)
+        //    {
+        //        if (!s_keyMethods.TryGetValue(keyType, out objKeyMethods))
+        //            throw new Exception("Key Type is not a registered type");
+        //    }
+        //    keyMethods = (CreateKeyMethodBase<TKey>)objKeyMethods;
+        //    return keyMethods.Create();
+        //}
 
         public static TreeNodeInitializer<TKey, TValue> GetTreeNodeInitializer<TKey, TValue>(Guid compressionMethod)
-            where TKey : class, new()
-            where TValue : class, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             Type keyType = typeof(TKey);
             Type valueType = typeof(TValue);
 
-            CreateKeyMethodBase keyMethods;
-            CreateValueMethodBase valueMethods;
             CreateTreeNodeBase treeNode;
             lock (s_syncRoot)
             {
-                if (!s_keyMethods.TryGetValue(keyType, out keyMethods))
-                    throw new Exception("Key Type is not a registered type");
-
-                if (!s_valueMethods.TryGetValue(valueType, out valueMethods))
-                    throw new Exception("Value Type is not a registered type");
-
                 if (!s_treeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
                     if (!s_treeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
                         if (!s_treeNode.TryGetValue(compressionMethod, out treeNode))
                             throw new Exception("Type is not registered");
             }
-            return new TreeNodeInitializer<TKey, TValue>(treeNode, (CreateKeyMethodBase<TKey>)keyMethods, (CreateValueMethodBase<TValue>)valueMethods);
+            return new TreeNodeInitializer<TKey, TValue>(treeNode);
         }
 
         public static TreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(Guid compressionMethod, byte level)
-            where TKey : class, new()
-            where TValue : class, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             Type keyType = typeof(TKey);
             Type valueType = typeof(TValue);
 
-            CreateKeyMethodBase keyMethods;
-            CreateValueMethodBase valueMethods;
             CreateTreeNodeBase treeNode;
             lock (s_syncRoot)
             {
-                if (!s_keyMethods.TryGetValue(keyType, out keyMethods))
-                    throw new Exception("Key Type is not a registered type");
-
-                if (!s_valueMethods.TryGetValue(valueType, out valueMethods))
-                    throw new Exception("Value Type is not a registered type");
-
                 if (!s_treeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
                     if (!s_treeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
                         if (!s_treeNode.TryGetValue(compressionMethod, out treeNode))
                             throw new Exception("Type is not registered");
             }
 
-            return treeNode.Create(level, (CreateKeyMethodBase<TKey>)keyMethods, (CreateValueMethodBase<TValue>)valueMethods);
+            return treeNode.Create<TKey, TValue>(level);
         }
     }
 }

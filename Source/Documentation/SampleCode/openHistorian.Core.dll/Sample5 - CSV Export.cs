@@ -20,7 +20,7 @@ namespace SampleCode.openHistorian.Server.dll
             db.DatabaseName = "PPA";
             db.InMemoryArchive = true;
             db.Paths = new[] { @"c:\temp\Scada\" };
-            db.ConnectionString = "port=38402";
+            db.ConnectionString = "port=38409";
 
             serverDatabases.Add(db);
 
@@ -36,7 +36,7 @@ namespace SampleCode.openHistorian.Server.dll
             {
                 HistorianClientOptions clientOptions = new HistorianClientOptions();
                 clientOptions.DefaultDatabase = "PPA";
-                clientOptions.NetworkPort = 38402;
+                clientOptions.NetworkPort = 38409;
                 clientOptions.ServerNameOrIp = "127.0.0.1"; //IP address of server.
 
                 using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))

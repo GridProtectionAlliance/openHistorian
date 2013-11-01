@@ -37,8 +37,8 @@ namespace openHistorian.Collections.Generic
     /// Trees cannot be cloned if the user plans to write to the tree.
     /// </remarks>
     public class SortedTree<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
 
@@ -62,8 +62,8 @@ namespace openHistorian.Collections.Generic
 
         internal SortedTree(BinaryStreamBase stream1, BinaryStreamBase stream2)
         {
-            KeyMethods = SortedTree.GetTreeKeyMethods<TKey>();
-            ValueMethods = SortedTree.GetTreeValueMethods<TValue>();
+            KeyMethods = new TKey().CreateKeyMethods();
+            ValueMethods = new TValue().CreateValueMethods();
             Stream = stream1;
             StreamLeaf = stream2;
             m_isInitialized = false;

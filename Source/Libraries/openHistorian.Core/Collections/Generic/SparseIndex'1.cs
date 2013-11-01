@@ -31,19 +31,19 @@ namespace openHistorian.Collections.Generic
     /// Contains information on how to parse the index nodes of the SortedTree
     /// </summary>
     public sealed class SparseIndex<TKey>
-        where TKey : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
     {
         #region [ Members ]
 
         private bool m_isInitialized;
         private int m_blockSize;
         private readonly TKey m_key;
-        private readonly Box<uint> m_value;
+        private readonly TreeUInt32 m_value;
         private BinaryStreamBase m_stream;
         private Func<uint> m_getNextNewNodeIndex;
         private readonly TreeKeyMethodsBase<TKey> m_keyMethods;
-        private TreeNodeBase<TKey, Box<uint>>[] m_nodes;
-        private readonly TreeNodeInitializer<TKey, Box<uint>> m_initializer;
+        private TreeNodeBase<TKey, TreeUInt32>[] m_nodes;
+        private readonly TreeNodeInitializer<TKey, TreeUInt32> m_initializer;
 
         /// <summary>
         /// Gets the indexed address for the root node
@@ -90,10 +90,11 @@ namespace openHistorian.Collections.Generic
         /// <param name="encodingMethod">The encoding that will be used with each node</param>
         public SparseIndex(Guid encodingMethod)
         {
-            m_initializer = SortedTree.GetTreeNodeInitializer<TKey, Box<uint>>(encodingMethod);
-            m_keyMethods = m_initializer.CreateKeyMethods();
+            m_initializer = SortedTree.GetTreeNodeInitializer<TKey, TreeUInt32>(encodingMethod);
             m_key = new TKey();
-            m_value = new Box<uint>();
+            m_value = new TreeUInt32();
+            m_keyMethods = m_key.CreateKeyMethods();
+
         }
 
         /// <summary>
@@ -140,7 +141,7 @@ namespace openHistorian.Collections.Generic
             byte nodeLevel = RootNodeLevel;
             while (true)
             {
-                TreeNodeBase<TKey, Box<uint>> currentNode = GetNode(nodeLevel);
+                TreeNodeBase<TKey, TreeUInt32> currentNode = GetNode(nodeLevel);
                 currentNode.SetNodeIndex(nodeIndexAddress);
                 currentNode.TryGetFirstRecord(m_key, m_value);
                 nodeIndexAddress = m_value.Value;
@@ -162,7 +163,7 @@ namespace openHistorian.Collections.Generic
             byte nodeLevel = RootNodeLevel;
             while (true)
             {
-                TreeNodeBase<TKey, Box<uint>> currentNode = GetNode(nodeLevel);
+                TreeNodeBase<TKey, TreeUInt32> currentNode = GetNode(nodeLevel);
                 currentNode.SetNodeIndex(nodeIndexAddress);
                 currentNode.TryGetLastRecord(m_key, m_value);
                 nodeIndexAddress = m_value.Value;
@@ -191,7 +192,7 @@ namespace openHistorian.Collections.Generic
         /// <param name="key">the key to search for.</param>
         /// <param name="level">the level of the tree </param>
         /// <returns></returns>
-        private TreeNodeBase<TKey, Box<uint>> FindNode(TKey key, int level)
+        private TreeNodeBase<TKey, TreeUInt32> FindNode(TKey key, int level)
         {
             if (level <= 0)
                 throw new ArgumentOutOfRangeException("level", "Cannot be <= 0");
@@ -199,7 +200,7 @@ namespace openHistorian.Collections.Generic
                 throw new ArgumentOutOfRangeException("level", "Cannot be greater than the root node level.");
 
             //Shortcut
-            TreeNodeBase<TKey, Box<uint>> currentNode = GetNode(level);
+            TreeNodeBase<TKey, TreeUInt32> currentNode = GetNode(level);
             if (currentNode.IsKeyInsideBounds(key))
                 return currentNode;
 
@@ -222,7 +223,7 @@ namespace openHistorian.Collections.Generic
         /// </summary>
         /// <param name="nodeLevel"></param>
         /// <returns></returns>
-        private TreeNodeBase<TKey, Box<uint>> GetNode(int nodeLevel)
+        private TreeNodeBase<TKey, TreeUInt32> GetNode(int nodeLevel)
         {
             return m_nodes[nodeLevel - 1];
         }
@@ -250,7 +251,7 @@ namespace openHistorian.Collections.Generic
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="level"></param>
-        public void UpdateValue(TKey key, Box<uint> value, byte level)
+        public void UpdateValue(TKey key, TreeUInt32 value, byte level)
         {
             if (level <= RootNodeLevel)
             {
@@ -271,7 +272,7 @@ namespace openHistorian.Collections.Generic
         {
             if (level <= RootNodeLevel)
             {
-                TreeNodeBase<TKey, Box<uint>> node = GetNode(level);
+                TreeNodeBase<TKey, TreeUInt32> node = GetNode(level);
                 if (!node.TryRemove(key))
                     throw new KeyNotFoundException();
                 if (level == RootNodeLevel)
@@ -324,7 +325,7 @@ namespace openHistorian.Collections.Generic
         {
             if (level <= RootNodeLevel)
             {
-                Box<uint> value = new Box<uint>(pointer);
+                TreeUInt32 value = new TreeUInt32(pointer);
                 GetNode(level).TryInsert(nodeKey, value);
             }
             else //A new root node needs to be created.
@@ -354,7 +355,7 @@ namespace openHistorian.Collections.Generic
             RootNodeLevel += 1;
 
             //Create the empty node
-            TreeNodeBase<TKey, Box<uint>> rootNode = GetNode(RootNodeLevel);
+            TreeNodeBase<TKey, TreeUInt32> rootNode = GetNode(RootNodeLevel);
             rootNode.CreateEmptyNode(RootNodeIndexAddress);
 
             //Insert the first entry in the root node.
@@ -377,7 +378,7 @@ namespace openHistorian.Collections.Generic
         /// <param name="count">the number of levels to include.</param>
         private void SetCapacity(int count)
         {
-            m_nodes = new TreeNodeBase<TKey, Box<uint>>[count];
+            m_nodes = new TreeNodeBase<TKey, TreeUInt32>[count];
             for (int x = 0; x < m_nodes.Length; x++)
             {
                 m_nodes[x] = m_initializer.CreateTreeNode((byte)(x + 1));

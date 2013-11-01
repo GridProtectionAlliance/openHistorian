@@ -26,8 +26,32 @@ using openHistorian.Collections.Generic;
 
 namespace openHistorian.Collections
 {
+    public class TreeUInt32
+        : ISortedTreeKey<TreeUInt32>, ISortedTreeValue<TreeUInt32>
+    {
+        public TreeUInt32()
+        {
+
+        }
+        public TreeUInt32(uint value)
+        {
+            Value = value;
+        }
+
+        public uint Value;
+
+        public TreeKeyMethodsBase<TreeUInt32> CreateKeyMethods()
+        {
+            return new KeyMethodsUInt32();
+        }
+
+        public TreeValueMethodsBase<TreeUInt32> CreateValueMethods()
+        {
+            return new ValueMethodsUInt32();
+        }
+    }
     public class KeyMethodsUInt32
-        : TreeKeyMethodsBase<Box<uint>>
+        : TreeKeyMethodsBase<TreeUInt32>
     {
         // {03F4BD3A-D9CF-4358-B175-A9D38BE6715A}
         public static Guid TypeGuid = new Guid(0x03f4bd3a, 0xd9cf, 0x4358, 0xb1, 0x75, 0xa9, 0xd3, 0x8b, 0xe6, 0x71, 0x5a);
@@ -37,32 +61,32 @@ namespace openHistorian.Collections
             return 4;
         }
 
-        public override void Clear(Box<uint> key)
+        public override void Clear(TreeUInt32 key)
         {
             key.Value = 0;
         }
 
-        public override void SetMin(Box<uint> key)
+        public override void SetMin(TreeUInt32 key)
         {
             key.Value = uint.MinValue;
         }
 
-        public override void SetMax(Box<uint> key)
+        public override void SetMax(TreeUInt32 key)
         {
             key.Value = uint.MaxValue;
         }
 
-        public override int CompareTo(Box<uint> left, Box<uint> right)
+        public override int CompareTo(TreeUInt32 left, TreeUInt32 right)
         {
             return left.Value.CompareTo(right.Value);
         }
 
-        public override unsafe void Write(byte* stream, Box<uint> data)
+        public override unsafe void Write(byte* stream, TreeUInt32 data)
         {
             *(uint*)stream = data.Value;
         }
 
-        public override unsafe void Read(byte* stream, Box<uint> data)
+        public override unsafe void Read(byte* stream, TreeUInt32 data)
         {
             data.Value = *(uint*)stream;
         }
@@ -75,12 +99,12 @@ namespace openHistorian.Collections
             }
         }
 
-        public override unsafe void Copy(Box<uint> source, Box<uint> destination)
+        public override unsafe void Copy(TreeUInt32 source, TreeUInt32 destination)
         {
             destination.Value = source.Value;
         }
 
-        public override bool IsBetween(Box<uint> lowerBounds, Box<uint> key, Box<uint> upperBounds)
+        public override bool IsBetween(TreeUInt32 lowerBounds, TreeUInt32 key, TreeUInt32 upperBounds)
         {
             uint v1 = lowerBounds.Value;
             uint v2 = key.Value;
@@ -88,18 +112,18 @@ namespace openHistorian.Collections
             return v1 <= v2 & v2 < v3;
         }
 
-        public override bool IsLessThan(Box<uint> left, Box<uint> right)
+        public override bool IsLessThan(TreeUInt32 left, TreeUInt32 right)
         {
             return left.Value < right.Value;
         }
 
-        public override bool IsLessThanOrEqualTo(Box<uint> left, Box<uint> right)
+        public override bool IsLessThanOrEqualTo(TreeUInt32 left, TreeUInt32 right)
         {
             return left.Value <= right.Value;
         }
 
         //ToDo: Origional
-        public override unsafe int BinarySearch(byte* pointer, Box<uint> key2, int recordCount, int keyValueSize)
+        public override unsafe int BinarySearch(byte* pointer, TreeUInt32 key2, int recordCount, int keyValueSize)
         {
             int lastFoundIndex = m_lastFoundIndex;
             uint key = key2.Value;
@@ -113,7 +137,7 @@ namespace openHistorian.Collections
                     return ~recordCount;
                 }
             }
-                //Shortcut for sequentially getting  
+            //Shortcut for sequentially getting  
             else if (lastFoundIndex < recordCount)
             {
                 if (key == *(uint*)(pointer + keyValueSize * (lastFoundIndex + 1)))
@@ -148,7 +172,7 @@ namespace openHistorian.Collections
     }
 
     public class ValueMethodsUInt32
-        : TreeValueMethodsBase<Box<uint>>
+        : TreeValueMethodsBase<TreeUInt32>
     {
         // {03F4BD3A-D9CF-4358-B175-A9D38BE6715A}
         public static Guid TypeGuid = new Guid(0x03f4bd3a, 0xd9cf, 0x4358, 0xb1, 0x75, 0xa9, 0xd3, 0x8b, 0xe6, 0x71, 0x5a);
@@ -158,17 +182,17 @@ namespace openHistorian.Collections
             return 4;
         }
 
-        public override unsafe void Write(byte* stream, Box<uint> data)
+        public override unsafe void Write(byte* stream, TreeUInt32 data)
         {
             *(uint*)stream = data.Value;
         }
 
-        public override void Clear(Box<uint> data)
+        public override void Clear(TreeUInt32 data)
         {
             data.Value = 0;
         }
 
-        public override unsafe void Read(byte* stream, Box<uint> data)
+        public override unsafe void Read(byte* stream, TreeUInt32 data)
         {
             data.Value = *(uint*)stream;
         }
@@ -181,7 +205,7 @@ namespace openHistorian.Collections
             }
         }
 
-        public override unsafe void Copy(Box<uint> source, Box<uint> destination)
+        public override unsafe void Copy(TreeUInt32 source, TreeUInt32 destination)
         {
             destination.Value = source.Value;
         }

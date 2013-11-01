@@ -86,9 +86,9 @@ namespace openHistorian.Collections.Generic
         /// <param name="keyMethod"></param>
         /// <param name="valueMethod"></param>
         /// <returns></returns>
-        public override TreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level, CreateKeyMethodBase<TKey> keyMethod, CreateValueMethodBase<TValue> valueMethod)
+        public override TreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
         {
-            return (TreeNodeBase<TKey, TValue>)(object)new HistorianCompressionDelta(level, keyMethod.As<HistorianKey>().Create(), valueMethod.As<HistorianValue>().Create());
+            return (TreeNodeBase<TKey, TValue>)(object)new HistorianCompressionDelta(level);
         }
     }
 }

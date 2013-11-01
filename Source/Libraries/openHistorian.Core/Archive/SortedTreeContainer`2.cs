@@ -33,8 +33,8 @@ namespace openHistorian.Archive
     /// </summary>
     internal class SortedTreeContainer<TKey, TValue>
         : IDisposable
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
 

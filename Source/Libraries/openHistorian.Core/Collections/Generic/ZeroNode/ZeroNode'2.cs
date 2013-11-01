@@ -27,13 +27,13 @@ namespace openHistorian.Collections.Generic.ZeroNode
 {
     public unsafe class ZeroNode<TKey, TValue>
         : EncodedNodeBase<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private readonly int m_shimSize;
 
-        public ZeroNode(byte level, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
-            : base(level, keyMethods, valueMethods, 2)
+        public ZeroNode(byte level)
+            : base(level, 2)
         {
             m_shimSize = KeyValueSize >> 3 + (((KeyValueSize & 7) == 0) ? 0 : 1);
         }

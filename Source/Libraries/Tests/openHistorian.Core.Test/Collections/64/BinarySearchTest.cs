@@ -83,7 +83,7 @@ namespace openHistorian.Collections
                 fixed (uint* lp = items)
                 {
                     byte* lpp = (byte*)lp;
-                    Box<uint> box = new Box<uint>();
+                    TreeUInt32 box = new TreeUInt32();
 
                     StepTimer.ITimer timer = StepTimer.Start("Lookup");
                     for (int x = 0; x < lookupList.Length; x++)

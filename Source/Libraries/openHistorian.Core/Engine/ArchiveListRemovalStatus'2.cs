@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using openHistorian.Archive;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine
 {
@@ -31,8 +32,8 @@ namespace openHistorian.Engine
     /// function to determine when a resource is no longer being used.
     /// </summary>
     public class ArchiveListRemovalStatus<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private bool m_isBeingUsed;
         private readonly ArchiveTable<TKey, TValue> m_archive;

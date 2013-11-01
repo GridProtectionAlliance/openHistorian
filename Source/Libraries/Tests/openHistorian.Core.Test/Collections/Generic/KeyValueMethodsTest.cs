@@ -13,8 +13,8 @@ namespace openHistorian.Collections.Generic
 
             //var kvm = new KeyValueMethods<uint, uint>(new BoxKeyMethodsUint32(), new BoxValueMethodsUint32());
             //Assert.AreEqual(4 + 4 + 1, kvm.MaxKeyValueSize);
-            //var key = new Box<uint>();
-            //var value = new Box<uint>();
+            //var key = new TreeUInt32();
+            //var value = new TreeUInt32();
 
             //key.Value = 5;
             //value.Value = 6;

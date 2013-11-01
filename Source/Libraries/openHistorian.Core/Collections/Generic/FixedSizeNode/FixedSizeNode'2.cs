@@ -29,13 +29,13 @@ namespace openHistorian.Collections.Generic
 {
     public unsafe class FixedSizeNode<TKey, TValue>
         : TreeNodeBase<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         protected int m_maxRecordsPerNode;
 
-        public FixedSizeNode(byte level, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
-            : base(level, keyMethods, valueMethods, 1)
+        public FixedSizeNode(byte level)
+            : base(level, 1)
         {
         }
 

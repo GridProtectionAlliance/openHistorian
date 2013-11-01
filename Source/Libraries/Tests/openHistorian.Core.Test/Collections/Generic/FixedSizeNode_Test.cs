@@ -7,110 +7,110 @@ namespace openHistorian.Collections.Generic
 {
     public static class Extension_FixedSizeNode_uint_uint
     {
-        public static uint Get(this FixedSizeNode<Box<uint>, Box<uint>> tree, uint key)
+        public static uint Get(this FixedSizeNode<TreeUInt32, TreeUInt32> tree, uint key)
         {
-            Box<uint> k = new Box<uint>(key);
-            Box<uint> v = new Box<uint>();
+            TreeUInt32 k = new TreeUInt32(key);
+            TreeUInt32 v = new TreeUInt32();
             if (!tree.TryGet(k, v))
                 throw new Exception();
             return v.Value;
         }
 
-        public static bool TryGet(this FixedSizeNode<Box<uint>, Box<uint>> tree, uint key, out uint value)
+        public static bool TryGet(this FixedSizeNode<TreeUInt32, TreeUInt32> tree, uint key, out uint value)
         {
-            Box<uint> k = new Box<uint>(key);
-            Box<uint> v = new Box<uint>();
+            TreeUInt32 k = new TreeUInt32(key);
+            TreeUInt32 v = new TreeUInt32();
             bool rv = tree.TryGet(k, v);
             value = v.Value;
             return rv;
         }
 
-        public static uint GetOrGetNext(this FixedSizeNode<Box<uint>, Box<uint>> tree, uint key)
+        public static uint GetOrGetNext(this FixedSizeNode<TreeUInt32, TreeUInt32> tree, uint key)
         {
-            Box<uint> k = new Box<uint>(key);
-            Box<uint> v = new Box<uint>();
+            TreeUInt32 k = new TreeUInt32(key);
+            TreeUInt32 v = new TreeUInt32();
             tree.GetOrGetNext(k, v);
             return v.Value;
         }
 
-        public static bool TryInsert(this FixedSizeNode<Box<uint>, Box<uint>> tree, uint key, uint value)
+        public static bool TryInsert(this FixedSizeNode<TreeUInt32, TreeUInt32> tree, uint key, uint value)
         {
-            Box<uint> k = new Box<uint>(key);
-            Box<uint> v = new Box<uint>(value);
+            TreeUInt32 k = new TreeUInt32(key);
+            TreeUInt32 v = new TreeUInt32(value);
             bool rv = tree.TryInsert(k, v);
             return rv;
         }
 
-        public static void Insert(this FixedSizeNode<Box<uint>, Box<uint>> tree, uint key, uint value)
+        public static void Insert(this FixedSizeNode<TreeUInt32, TreeUInt32> tree, uint key, uint value)
         {
-            Box<uint> k = new Box<uint>(key);
-            Box<uint> v = new Box<uint>(value);
+            TreeUInt32 k = new TreeUInt32(key);
+            TreeUInt32 v = new TreeUInt32(value);
             if (!tree.TryInsert(k, v))
                 throw new Exception();
         }
 
-        public static void GetFirstKeyValue(this FixedSizeNode<Box<uint>, Box<uint>> tree, out uint key, out uint value)
+        public static void GetFirstKeyValue(this FixedSizeNode<TreeUInt32, TreeUInt32> tree, out uint key, out uint value)
         {
-            Box<uint> k = new Box<uint>();
-            Box<uint> v = new Box<uint>();
+            TreeUInt32 k = new TreeUInt32();
+            TreeUInt32 v = new TreeUInt32();
             tree.TryGetFirstRecord(k, v);
             key = k.Value;
             value = v.Value;
         }
 
-        public static uint GetFirstKey(this FixedSizeNode<Box<uint>, Box<uint>> tree)
+        public static uint GetFirstKey(this FixedSizeNode<TreeUInt32, TreeUInt32> tree)
         {
-            Box<uint> k = new Box<uint>();
-            Box<uint> v = new Box<uint>();
+            TreeUInt32 k = new TreeUInt32();
+            TreeUInt32 v = new TreeUInt32();
             tree.TryGetFirstRecord(k, v);
             return k.Value;
         }
 
-        public static uint GetFirstValue(this FixedSizeNode<Box<uint>, Box<uint>> tree)
+        public static uint GetFirstValue(this FixedSizeNode<TreeUInt32, TreeUInt32> tree)
         {
-            Box<uint> k = new Box<uint>();
-            Box<uint> v = new Box<uint>();
+            TreeUInt32 k = new TreeUInt32();
+            TreeUInt32 v = new TreeUInt32();
             tree.TryGetFirstRecord(k, v);
             return v.Value;
         }
 
-        public static void GetLastKeyValue(this FixedSizeNode<Box<uint>, Box<uint>> tree, out uint key, out uint value)
+        public static void GetLastKeyValue(this FixedSizeNode<TreeUInt32, TreeUInt32> tree, out uint key, out uint value)
         {
-            Box<uint> k = new Box<uint>();
-            Box<uint> v = new Box<uint>();
+            TreeUInt32 k = new TreeUInt32();
+            TreeUInt32 v = new TreeUInt32();
             tree.TryGetLastRecord(k, v);
             key = k.Value;
             value = v.Value;
         }
 
-        public static uint GetLastKey(this FixedSizeNode<Box<uint>, Box<uint>> tree)
+        public static uint GetLastKey(this FixedSizeNode<TreeUInt32, TreeUInt32> tree)
         {
-            Box<uint> k = new Box<uint>();
-            Box<uint> v = new Box<uint>();
+            TreeUInt32 k = new TreeUInt32();
+            TreeUInt32 v = new TreeUInt32();
             tree.TryGetLastRecord(k, v);
             return k.Value;
         }
 
-        public static uint GetLastValue(this FixedSizeNode<Box<uint>, Box<uint>> tree)
+        public static uint GetLastValue(this FixedSizeNode<TreeUInt32, TreeUInt32> tree)
         {
-            Box<uint> k = new Box<uint>();
-            Box<uint> v = new Box<uint>();
+            TreeUInt32 k = new TreeUInt32();
+            TreeUInt32 v = new TreeUInt32();
             tree.TryGetLastRecord(k, v);
             return v.Value;
         }
 
-        public static bool KeyInsideBounds(this FixedSizeNode<Box<uint>, Box<uint>> tree, uint key)
+        public static bool KeyInsideBounds(this FixedSizeNode<TreeUInt32, TreeUInt32> tree, uint key)
         {
-            Box<uint> k = new Box<uint>(key);
+            TreeUInt32 k = new TreeUInt32(key);
             return tree.IsKeyInsideBounds(k);
         }
 
-        public static uint UpperKey(this FixedSizeNode<Box<uint>, Box<uint>> tree)
+        public static uint UpperKey(this FixedSizeNode<TreeUInt32, TreeUInt32> tree)
         {
             return tree.UpperKey.Value;
         }
 
-        public static uint LowerKey(this FixedSizeNode<Box<uint>, Box<uint>> tree)
+        public static uint LowerKey(this FixedSizeNode<TreeUInt32, TreeUInt32> tree)
         {
             return tree.LowerKey.Value;
         }
@@ -133,15 +133,15 @@ namespace openHistorian.Collections.Generic
                 nextKeyIndex++;
                 return nextKeyIndex - 1;
             };
-            Action<Box<uint>, uint, byte> addToParent = (int32, u, arg3) => int32 = int32;
-            Func<Box<uint>, uint> findLeafNode = int32 => 0;
+            Action<TreeUInt32, uint, byte> addToParent = (int32, u, arg3) => int32 = int32;
+            Func<TreeUInt32, uint> findLeafNode = int32 => 0;
 
             Stopwatch swWrite = new Stopwatch();
             Stopwatch swRead = new Stopwatch();
             using (BinaryStream bs = new BinaryStream())
             {
                 uint k, v;
-                FixedSizeNode<Box<uint>, Box<uint>> node = new FixedSizeNode<Box<uint>, Box<uint>>(0, new KeyMethodsUInt32(), new ValueMethodsUInt32());
+                FixedSizeNode<TreeUInt32, TreeUInt32> node = new FixedSizeNode<TreeUInt32, TreeUInt32>(0);
 
                 node.Initialize(bs, 1024, getNextKey, null);
 

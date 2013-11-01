@@ -36,8 +36,8 @@ namespace openHistorian.Collections.Generic
     /// <typeparam name="TValue"></typeparam>
     public abstract partial class TreeNodeBase<TKey, TValue>
         : Node<TKey>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
 
@@ -54,11 +54,11 @@ namespace openHistorian.Collections.Generic
 
         #region [ Constructors ]
 
-        protected TreeNodeBase(byte level, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods, byte version)
-            : base(level, keyMethods, version)
+        protected TreeNodeBase(byte level, byte version)
+            : base(level, version)
         {
             m_initialized = false;
-            ValueMethods = valueMethods;
+            ValueMethods = new TValue().CreateValueMethods();
             KeyValueSize = KeySize + ValueMethods.Size;
         }
 
@@ -77,8 +77,8 @@ namespace openHistorian.Collections.Generic
 
             InitializeNode(stream, blockSize);
 
-            m_tempNode1 = new Node<TKey>(KeyMethods.Create(), stream, blockSize, Level, Version);
-            m_tempNode2 = new Node<TKey>(KeyMethods.Create(), stream, blockSize, Level, Version);
+            m_tempNode1 = new Node<TKey>(stream, blockSize, Level, Version);
+            m_tempNode2 = new Node<TKey>(stream, blockSize, Level, Version);
             SparseIndex = sparseIndex;
             m_minRecordNodeBytes = BlockSize >> 2;
             m_getNextNewNodeIndex = getNextNewNodeIndex;

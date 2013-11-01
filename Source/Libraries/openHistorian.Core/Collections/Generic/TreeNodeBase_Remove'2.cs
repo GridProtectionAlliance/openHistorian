@@ -197,7 +197,7 @@ namespace openHistorian.Collections.Generic
             if (leftNode.RecordCount == 0) //Remove the left node
             {
                 //Change the existing pointer to the left node to point to the right node.
-                SparseIndex.UpdateValue(leftNode.LowerKey, new Box<uint>(rightNode.NodeIndex), (byte)(Level + 1));
+                SparseIndex.UpdateValue(leftNode.LowerKey, new TreeUInt32(rightNode.NodeIndex), (byte)(Level + 1));
                 //Now remove the unused key position
                 SparseIndex.Remove(rightNode.LowerKey, (byte)(Level + 1));
 

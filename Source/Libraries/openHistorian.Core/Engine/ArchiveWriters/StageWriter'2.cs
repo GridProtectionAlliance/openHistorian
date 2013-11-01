@@ -26,6 +26,7 @@ using System;
 using System.Threading;
 using GSF.Threading;
 using openHistorian.Archive;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
@@ -33,8 +34,8 @@ namespace openHistorian.Engine.ArchiveWriters
     /// A collection of settings for <see cref="PrestageWriter"/>.
     /// </summary>
     public struct StageWriterSettings<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         /// <summary>
         /// The time interval in milliseconds after which automatic data commits occur.
@@ -62,8 +63,8 @@ namespace openHistorian.Engine.ArchiveWriters
     /// Stage Zero is reponsible for getting archive data packaged into a user sortable transaction format.
     /// </summary>
     public class StageWriter<TKey, TValue> : IDisposable
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         /// <summary>
         /// Event that notifies that a certain sequence number has been committed.

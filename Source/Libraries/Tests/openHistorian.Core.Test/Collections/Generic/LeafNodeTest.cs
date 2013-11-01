@@ -20,8 +20,8 @@ namespace openHistorian.Collections.Generic
         private const int Max = 1000000;
 
         public static void TestNode<TKey, TValue>(TreeNodeBase<TKey, TValue> node, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count)
-            where TKey : class, new()
-            where TValue : class, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             int Max = count;
             uint rootKey = 0;
@@ -46,8 +46,8 @@ namespace openHistorian.Collections.Generic
                 node.CreateEmptyNode(1);
 
 
-                TreeKeyMethodsBase<TKey> keyMethods = SortedTree.GetTreeKeyMethods<TKey>();
-                TreeValueMethodsBase<TValue> valueMethods = SortedTree.GetTreeValueMethods<TValue>();
+                TreeKeyMethodsBase<TKey> keyMethods = new TKey().CreateKeyMethods();
+                TreeValueMethodsBase<TValue> valueMethods = new TValue().CreateValueMethods();
 
                 TKey key = new TKey();
                 TKey key2 = new TKey();
@@ -103,8 +103,8 @@ namespace openHistorian.Collections.Generic
 
 
         public static void TestSpeed<TKey, TValue>(TreeNodeInitializer<TKey, TValue> nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
-            where TKey : class, new()
-            where TValue : class, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             int Max = count;
 

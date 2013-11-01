@@ -34,8 +34,6 @@ namespace openHistorian.Engine
     /// associated reading and writing that goes along with it.
     /// </summary>
     public partial class ArchiveList<TKey, TValue> : IDisposable
-        where TKey : class, new()
-        where TValue : class, new()
     {
         private bool m_disposed;
         private readonly object m_syncRoot = new object();

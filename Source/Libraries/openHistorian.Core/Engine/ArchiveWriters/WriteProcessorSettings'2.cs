@@ -32,8 +32,8 @@ namespace openHistorian.Engine.ArchiveWriters
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     public class WriteProcessorSettings<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         /// <summary>
         /// The settings for the precommitted stage

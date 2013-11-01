@@ -32,8 +32,8 @@ namespace openHistorian.Engine.ArchiveWriters
     /// This class is not thread safe. All calls must be coordinated.
     /// </summary>
     public class StagingFile<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private ArchiveTable<TKey, TValue> m_archiveFile;
         private readonly ArchiveList<TKey, TValue> m_archiveList;

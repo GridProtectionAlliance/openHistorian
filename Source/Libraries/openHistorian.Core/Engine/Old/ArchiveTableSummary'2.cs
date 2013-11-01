@@ -32,8 +32,8 @@ namespace openHistorian.Engine
     /// along with its most recent snapshot.
     /// </summary>
     public class ArchiveTableSummary<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
 
@@ -49,7 +49,7 @@ namespace openHistorian.Engine
 
         public ArchiveTableSummary(ArchiveTable<TKey, TValue> file)
         {
-            m_keyMethods = SortedTree.GetTreeKeyMethods<TKey>();
+            m_keyMethods = new TKey().CreateKeyMethods();
             m_archiveTable = file;
             m_activeSnapshotInfo = file.AcquireReadSnapshot();
             m_firstKey = file.FirstKey;

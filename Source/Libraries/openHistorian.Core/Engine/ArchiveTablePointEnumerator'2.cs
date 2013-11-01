@@ -32,7 +32,7 @@ namespace openHistorian.Engine
     public class ArchiveTablePointEnumerator<TKey, TValue>
         : SeekableKeyValueStream<TKey, TValue>, IDisposable
         where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : class, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
 
         ArchiveTableSummary<TKey, TValue> m_table;

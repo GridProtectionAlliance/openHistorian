@@ -28,8 +28,8 @@ using openHistorian.Collections.Generic;
 namespace openHistorian.Engine.ArchiveWriters
 {
     public partial class WriteProcessor<TKey, TValue> : IDisposable
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private readonly ArchiveList<TKey, TValue> m_archiveList;
 

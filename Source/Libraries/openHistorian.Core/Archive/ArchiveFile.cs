@@ -153,12 +153,12 @@ namespace openHistorian.Archive
         /// </remarks>
         /// <returns>null if table does not exist</returns>
         public ArchiveTable<TKey, TValue> OpenTable<TKey, TValue>()
-            where TKey : class, new()
-            where TValue : class, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             return OpenTable<TKey, TValue>(GetFileName<TKey, TValue>());
         }
-      
+
         /// <summary>
         /// Opens the table for the provided file name.
         /// </summary>
@@ -167,8 +167,8 @@ namespace openHistorian.Archive
         /// <param name="fileName">the filename to open</param>
         /// <returns>null if table does not exist</returns>
         private ArchiveTable<TKey, TValue> OpenTable<TKey, TValue>(SubFileName fileName)
-            where TKey : class, new()
-            where TValue : class, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             if (!m_openedFiles.ContainsKey(fileName))
             {
@@ -188,8 +188,8 @@ namespace openHistorian.Archive
         /// <param name="storageMethod">The method of compression to utilize in this table.</param>
         /// <returns></returns>
         public ArchiveTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(Guid storageMethod)
-            where TKey : class, new()
-            where TValue : class, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             SubFileName fileName = GetFileName<TKey, TValue>();
             if (!m_openedFiles.ContainsKey(fileName))
@@ -210,17 +210,17 @@ namespace openHistorian.Archive
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
         private SubFileName GetFileName<TKey, TValue>()
-            where TKey : class, new()
-            where TValue : class, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
-            Guid keyType = SortedTree.GetKeyGuid<TKey>();
-            Guid valueType = SortedTree.GetValueGuid<TValue>();
+            Guid keyType = new TKey().CreateKeyMethods().GenericTypeGuid;
+            Guid valueType = new TValue().CreateValueMethods().GenericTypeGuid;
             return SubFileName.Create(PrimaryArchiveType, keyType, valueType);
         }
 
         private void CreateArchiveFile<TKey, TValue>(SubFileName fileName, Guid storageMethod)
-            where TKey : class, new()
-            where TValue : class, new()
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             using (TransactionalEdit trans = m_fileStructure.BeginEdit())
             {

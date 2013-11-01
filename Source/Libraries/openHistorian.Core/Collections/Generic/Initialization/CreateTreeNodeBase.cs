@@ -74,11 +74,9 @@ namespace openHistorian.Collections.Generic
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <param name="level"></param>
-        /// <param name="keyMethod"></param>
-        /// <param name="valueMethod"></param>
         /// <returns></returns>
-        public abstract TreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level, CreateKeyMethodBase<TKey> keyMethod, CreateValueMethodBase<TValue> valueMethod)
-            where TKey : class, new()
-            where TValue : class, new();
+        public abstract TreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new();
     }
 }

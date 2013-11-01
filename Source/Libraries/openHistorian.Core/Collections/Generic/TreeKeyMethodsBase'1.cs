@@ -39,7 +39,6 @@ namespace openHistorian.Collections.Generic
     /// </remarks>
     /// <typeparam name="TKey"></typeparam>
     public abstract class TreeKeyMethodsBase<TKey>
-        : CreateKeyMethodBase<TKey>
         where TKey : class, new()
     {
 
@@ -79,9 +78,7 @@ namespace openHistorian.Collections.Generic
 
         }
 #endif
-
-
-
+        
         protected TKey m_tempKey = new TKey();
         public int m_lastFoundIndex;
 
@@ -108,6 +105,15 @@ namespace openHistorian.Collections.Generic
         protected TreeKeyMethodsBase()
         {
             Size = GetSize();
+        }
+
+        /// <summary>
+        /// The Guid uniquely defining this type. 
+        /// It is important to uniquely tie 1 type to 1 guid.
+        /// </summary>
+        public abstract Guid GenericTypeGuid
+        {
+            get;
         }
 
         public virtual unsafe void WriteMax(byte* stream)
@@ -399,7 +405,7 @@ namespace openHistorian.Collections.Generic
             return CompareTo(m_tempKey, right);
         }
 
-        public override TreeKeyMethodsBase<TKey> Create()
+        public TreeKeyMethodsBase<TKey> Create()
         {
 #if GetTreeKeyMethodsCallCount
             CallMethods[(int)Method.Create]++;

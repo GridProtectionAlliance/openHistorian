@@ -27,12 +27,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using openHistorian.Archive;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine
 {
     public partial class ArchiveList<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         /// <summary>
         /// Provides a way to edit an <see cref="ArchiveList"/> since all edits must be atomic.

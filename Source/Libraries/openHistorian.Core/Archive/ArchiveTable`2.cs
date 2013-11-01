@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using openHistorian.Collections.Generic;
 using openHistorian.FileStructure;
 
 namespace openHistorian.Archive
@@ -33,8 +34,8 @@ namespace openHistorian.Archive
     /// </remarks>
     public partial class ArchiveTable<TKey, TValue>
         : IDisposable
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
 

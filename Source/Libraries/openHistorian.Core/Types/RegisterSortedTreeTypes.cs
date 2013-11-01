@@ -35,31 +35,7 @@ namespace openHistorian.Collections.Generic
     /// </summary>
     internal static class RegisterSortedTreeTypes
     {
-        private static bool s_keysHasBeenCalled = false;
-        private static bool s_valuesHasBeenCalled = false;
         private static bool s_treeNodeHasBeenCalled = false;
-
-        internal static void RegisterKeyTypes()
-        {
-            if (s_keysHasBeenCalled)
-                return;
-            s_keysHasBeenCalled = true;
-
-            SortedTree.Register(new KeyMethodsUInt32());
-            SortedTree.Register(new KeyMethodsUInt128());
-            SortedTree.Register(new KeyMethodsHistorianKey());
-        }
-
-        internal static void RegisterValueTypes()
-        {
-            if (s_valuesHasBeenCalled)
-                return;
-            s_valuesHasBeenCalled = true;
-
-            SortedTree.Register(new ValueMethodsUInt32());
-            SortedTree.Register(new ValueMethodsUInt128());
-            SortedTree.Register(new ValueMethodsHistorianValue());
-        }
 
         internal static void RegisterTreeNodeType()
         {

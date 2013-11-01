@@ -109,21 +109,21 @@
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\Box.cs" />
     <Compile Include="Collections\ContinuousQueue.cs" />
-    <Compile Include="Collections\Generic\CustomCompression\CreateHistorianCompressionDelta.cs" />
-    <Compile Include="Collections\Generic\CustomCompression\CreateHistorianCompressionTs.cs" />
-    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionDelta.cs" />
-    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionDeltaScanner.cs" />
-    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionTs.cs" />
-    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionTsScanner.cs" />
+    <Compile Include="Collections\Generic\ISortedTreeKey`1.cs" />
+    <Compile Include="Collections\Generic\ISortedTreeValue%271.cs" />
+    <Compile Include="Types\CustomCompression\CreateHistorianCompressionDelta.cs" />
+    <Compile Include="Types\CustomCompression\CreateHistorianCompressionTs.cs" />
+    <Compile Include="Types\CustomCompression\HistorianCompressionDelta.cs" />
+    <Compile Include="Types\CustomCompression\HistorianCompressionDeltaScanner.cs" />
+    <Compile Include="Types\CustomCompression\HistorianCompressionTs.cs" />
+    <Compile Include="Types\CustomCompression\HistorianCompressionTsScanner.cs" />
     <Compile Include="Collections\Generic\EncodedNode\EncodedNodeBase%272.cs" />
     <Compile Include="Collections\Generic\EncodedNode\EncodedNodeScannerBase%272.cs" />
     <Compile Include="Collections\Generic\FixedSizeNode\CreateFixedSizeNode.cs" />
     <Compile Include="Collections\Generic\FixedSizeNode\FixedSizeNode%272.cs" />
     <Compile Include="Collections\Generic\FixedSizeNode\FixedSizeNodeScanner%272.cs" />
-    <Compile Include="Collections\Generic\Initialization\CreateKeyMethodBase.cs" />
     <Compile Include="Collections\Generic\Initialization\CreateTreeNodeBase.cs" />
-    <Compile Include="Collections\Generic\Initialization\CreateValueMethodBase.cs" />
-    <Compile Include="Collections\Generic\Initialization\RegisterSortedTreeTypes.cs" />
+    <Compile Include="Types\RegisterSortedTreeTypes.cs" />
     <Compile Include="Collections\Generic\Initialization\SortedTree.cs" />
     <Compile Include="Collections\Generic\Initialization\TreeNodeInitializer%272.cs" />
     <Compile Include="Collections\Generic\KeyValueStream%272.cs" />
@@ -160,15 +160,15 @@
     <Compile Include="Collections\ResourceQueueCollection.cs" />
     <Compile Include="Collections\SupportsReadonlyAutoBase.cs" />
     <Compile Include="Collections\SupportsReadonlyBase.cs" />
-    <Compile Include="Collections\Types\HistorianKey.cs" />
-    <Compile Include="Collections\Types\HistorianKeyBase%271.cs" />
-    <Compile Include="Collections\Types\HistorianValue.cs" />
-    <Compile Include="Collections\Types\HistorianValueBase`1.cs" />
-    <Compile Include="Collections\Types\HistorianValueStruct.cs" />
-    <Compile Include="Collections\Types\MethodsHistorianKey.cs" />
-    <Compile Include="Collections\Types\MethodsHistorianValue.cs" />
-    <Compile Include="Collections\Types\MethodsUint128.cs" />
-    <Compile Include="Collections\Types\MethodsUint32.cs" />
+    <Compile Include="Types\HistorianKey\HistorianKey.cs" />
+    <Compile Include="Engine\HistorianKeyBase%271.cs" />
+    <Compile Include="Types\HistorianValue\HistorianValue.cs" />
+    <Compile Include="Engine\HistorianValueBase`1.cs" />
+    <Compile Include="Types\HistorianValue\HistorianValueStruct.cs" />
+    <Compile Include="Types\HistorianKey\MethodsHistorianKey.cs" />
+    <Compile Include="Types\HistorianValue\MethodsHistorianValue.cs" />
+    <Compile Include="Types\UInt128\MethodsUint128.cs" />
+    <Compile Include="Types\UInt32\MethodsUint32.cs" />
     <Compile Include="Communications\Old\CircularBuffer.cs" />
     <Compile Include="Communications\Compression\CompressedStream.cs" />
     <Compile Include="Communications\Compression\CreateCompressedStream.cs" />
@@ -358,6 +358,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Collections\Types\" />
     <Folder Include="OldCode\OldFormat\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

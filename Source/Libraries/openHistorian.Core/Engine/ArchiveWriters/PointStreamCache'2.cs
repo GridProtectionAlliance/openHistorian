@@ -35,8 +35,8 @@ namespace openHistorian.Engine.ArchiveWriters
     /// </summary>
     public class PointStreamCache<TKey, TValue>
         : KeyValueStream<TKey, TValue>, IDisposable
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         //ToDo: Use a managed array of ulong instead of an unmanaged queue.
         //Jagged array of course.
@@ -59,8 +59,8 @@ namespace openHistorian.Engine.ArchiveWriters
         /// </summary>
         public PointStreamCache()
         {
-            m_keyMethods = SortedTree.GetTreeKeyMethods<TKey>();
-            m_valueMethods = SortedTree.GetTreeValueMethods<TValue>();
+            m_keyMethods = new TKey().CreateKeyMethods();
+            m_valueMethods = new TValue().CreateValueMethods();
 
             m_sizeOfData = m_keyMethods.Size + m_valueMethods.Size;
             m_queue = new BinaryStream(allocatesOwnMemory: true);

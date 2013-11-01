@@ -31,7 +31,7 @@ namespace openHistorian.Collections.Generic
     /// </summary>
     /// <typeparam name="TKey">The key that the SortedTree contains.</typeparam>
     public unsafe class Node<TKey>
-        where TKey : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
     {
         /// <summary>
         /// Occurs when the node index is changed or cleared.
@@ -70,27 +70,25 @@ namespace openHistorian.Collections.Generic
         /// The constructor that is used for inheriting. Must call Initialize before using it.
         /// </summary>
         /// <param name="level"></param>
-        /// <param name="keyMethods"></param>
         /// <param name="version">The version code of the node.</param>
-        protected Node(byte level, TreeKeyMethodsBase<TKey> keyMethods, byte version)
+        protected Node(byte level, byte version)
         {
             Level = level;
-            KeyMethods = keyMethods;
+            KeyMethods = new TKey().CreateKeyMethods();
             Version = version;
-            KeySize = keyMethods.Size;
+            KeySize = KeyMethods.Size;
         }
 
         /// <summary>
         /// The constructor that is to be used to if not inheriting this object. 
         /// Automatically initializes the node.
         /// </summary>
-        /// <param name="keyMethods"></param>
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
         /// <param name="level"></param>
         /// <param name="version">The version code of the node.</param>
-        public Node(TreeKeyMethodsBase<TKey> keyMethods, BinaryStreamBase stream, int blockSize, byte level, byte version)
-            : this(level, keyMethods, version)
+        public Node(BinaryStreamBase stream, int blockSize, byte level, byte version)
+            : this(level, version)
         {
             InitializeNode(stream, blockSize);
         }

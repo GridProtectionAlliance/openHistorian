@@ -56,8 +56,8 @@ namespace openHistorian.Engine.ArchiveWriters
     /// </summary>
     public class PrestageWriter<TKey, TValue>
         : IDisposable
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private bool m_disposed;
         private bool m_stopped;

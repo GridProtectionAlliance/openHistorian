@@ -29,8 +29,8 @@ namespace openHistorian.Collections.Generic
 {
     public abstract unsafe class EncodedNodeBase<TKey, TValue>
         : TreeNodeBase<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private int m_nextOffset;
         private int m_currentOffset;
@@ -44,8 +44,8 @@ namespace openHistorian.Collections.Generic
         private byte[] m_buffer1;
         private byte[] m_buffer2;
 
-        protected EncodedNodeBase(byte level, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods, byte version)
-            : base(level, keyMethods, valueMethods, version)
+        protected EncodedNodeBase(byte level, byte version)
+            : base(level, version)
         {
             if (level != 0)
                 throw new ArgumentException("Level for this type is only supported on the leaf level.");
@@ -55,8 +55,8 @@ namespace openHistorian.Collections.Generic
             m_prevValue = new TValue();
             m_nullKey = new TKey();
             m_nullValue = new TValue();
-            keyMethods.Clear(m_nullKey);
-            valueMethods.Clear(m_nullValue);
+            KeyMethods.Clear(m_nullKey);
+            ValueMethods.Clear(m_nullValue);
 
             NodeIndexChanged += OnNodeIndexChanged;
             ClearNodeCache();

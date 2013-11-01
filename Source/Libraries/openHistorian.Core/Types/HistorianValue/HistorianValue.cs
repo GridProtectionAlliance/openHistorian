@@ -26,6 +26,7 @@ using System;
 using System.Text;
 using GSF;
 using GSF.IO;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Collections
 {
@@ -33,7 +34,7 @@ namespace openHistorian.Collections
     /// The standard value used in the OpenHistorian.
     /// </summary>
     public class HistorianValue
-        : HistorianValueBase<HistorianValue>
+        : HistorianValueBase<HistorianValue>, ISortedTreeValue<HistorianValue>
     {
         /// <summary>
         /// Value 1 should be where the first 64 bits of the field is stored. For 32 bit values, use this field only.
@@ -188,6 +189,11 @@ namespace openHistorian.Collections
                 Value1 = BitConverter.ToUInt64(data, 0);
                 Value2 = BitConverter.ToUInt64(data, 8);
             }
+        }
+
+        public override TreeValueMethodsBase<HistorianValue> CreateValueMethods()
+        {
+            return new ValueMethodsHistorianValue();
         }
     }
 }

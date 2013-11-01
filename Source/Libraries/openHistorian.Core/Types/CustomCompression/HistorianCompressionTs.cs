@@ -33,8 +33,8 @@ namespace openHistorian.Collections.Generic.CustomCompression
         : EncodedNodeBase<HistorianKey, HistorianValue>
     {
 
-        public HistorianCompressionTs(byte level, TreeKeyMethodsBase<HistorianKey> keyMethods, TreeValueMethodsBase<HistorianValue> valueMethods)
-            : base(level, keyMethods, valueMethods, 2)
+        public HistorianCompressionTs(byte level)
+            : base(level, 2)
         {
         }
 

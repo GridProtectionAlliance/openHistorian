@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Collections
 {
@@ -33,7 +34,8 @@ namespace openHistorian.Collections
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     public abstract class HistorianKeyBase<TKey>
-        : IComparable<TKey>, IEquatable<TKey>
+        : IComparable<TKey>, IEquatable<TKey>, ISortedTreeKey<TKey>
+        where TKey : class,new()
     {
         /// <summary>
         /// The timestamp stored as native ticks. 
@@ -148,5 +150,7 @@ namespace openHistorian.Collections
         {
             return IsEqualTo(other);
         }
+
+        public abstract TreeKeyMethodsBase<TKey> CreateKeyMethods();
     }
 }

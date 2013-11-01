@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Collections
 {
@@ -30,7 +31,7 @@ namespace openHistorian.Collections
     /// The standard key used for the historian.
     /// </summary>
     public class HistorianKey
-        : HistorianKeyBase<HistorianKey>
+        : HistorianKeyBase<HistorianKey>, ISortedTreeKey<HistorianKey>
     {
         // These values are inherited from base class:
         ///// <summary>
@@ -193,6 +194,11 @@ namespace openHistorian.Collections
             {
                 Timestamp = (ulong)value.Ticks;
             }
+        }
+
+        public override TreeKeyMethodsBase<HistorianKey> CreateKeyMethods()
+        {
+            return new KeyMethodsHistorianKey();
         }
     }
 }

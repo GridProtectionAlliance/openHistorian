@@ -26,14 +26,24 @@ using openHistorian.Collections.Generic;
 
 namespace openHistorian.Collections
 {
-    public class UInt128
+    public class TreeUInt128
+        : ISortedTreeKey<TreeUInt128>, ISortedTreeValue<TreeUInt128>
     {
         public ulong Value1;
         public ulong Value2;
+        public TreeKeyMethodsBase<TreeUInt128> CreateKeyMethods()
+        {
+            return new KeyMethodsUInt128();
+        }
+
+        public TreeValueMethodsBase<TreeUInt128> CreateValueMethods()
+        {
+            return new ValueMethodsUInt128();
+        }
     }
 
     public class KeyMethodsUInt128
-        : TreeKeyMethodsBase<UInt128>
+        : TreeKeyMethodsBase<TreeUInt128>
     {
         // {655BB169-45E6-4370-9E9B-417ACF445ECB}
         public static Guid TypeGuid = new Guid(0x655bb169, 0x45e6, 0x4370, 0x9e, 0x9b, 0x41, 0x7a, 0xcf, 0x44, 0x5e, 0xcb);
@@ -43,25 +53,25 @@ namespace openHistorian.Collections
             return 16;
         }
 
-        public override void Clear(UInt128 key)
+        public override void Clear(TreeUInt128 key)
         {
             key.Value1 = 0;
             key.Value2 = 0;
         }
 
-        public override void SetMin(UInt128 key)
+        public override void SetMin(TreeUInt128 key)
         {
             key.Value1 = ulong.MinValue;
             key.Value2 = ulong.MinValue;
         }
 
-        public override void SetMax(UInt128 key)
+        public override void SetMax(TreeUInt128 key)
         {
             key.Value1 = ulong.MaxValue;
             key.Value2 = ulong.MaxValue;
         }
 
-        public override int CompareTo(UInt128 left, UInt128 right)
+        public override int CompareTo(TreeUInt128 left, TreeUInt128 right)
         {
             if (left.Value1 < right.Value1)
                 return -1;
@@ -74,13 +84,13 @@ namespace openHistorian.Collections
             return 0;
         }
 
-        public override unsafe void Write(byte* stream, UInt128 data)
+        public override unsafe void Write(byte* stream, TreeUInt128 data)
         {
             *(ulong*)stream = data.Value1;
             *(ulong*)(stream + 8) = data.Value2;
         }
 
-        public override unsafe void Read(byte* stream, UInt128 data)
+        public override unsafe void Read(byte* stream, TreeUInt128 data)
         {
             data.Value1 = *(ulong*)stream;
             data.Value2 = *(ulong*)(stream + 8);
@@ -94,7 +104,7 @@ namespace openHistorian.Collections
             }
         }
 
-        public override bool IsBetween(UInt128 lowerBounds, UInt128 key, UInt128 upperBounds)
+        public override bool IsBetween(TreeUInt128 lowerBounds, TreeUInt128 key, TreeUInt128 upperBounds)
         {
             ulong key1 = key.Value1;
             ulong key2 = key.Value2;
@@ -102,18 +112,18 @@ namespace openHistorian.Collections
                    (key1 < upperBounds.Value1 || (key1 == upperBounds.Value1 && key2 < upperBounds.Value2));
         }
 
-        public override bool IsLessThan(UInt128 left, UInt128 right)
+        public override bool IsLessThan(TreeUInt128 left, TreeUInt128 right)
         {
             return left.Value1 < right.Value1 || (left.Value1 == right.Value1 && left.Value2 < right.Value2);
         }
 
-        public override bool IsLessThanOrEqualTo(UInt128 left, UInt128 right)
+        public override bool IsLessThanOrEqualTo(TreeUInt128 left, TreeUInt128 right)
         {
             return left.Value1 < right.Value1 || (left.Value1 == right.Value1 && left.Value2 <= right.Value2);
         }
 
         ////ToDo: Origional
-        public override unsafe int BinarySearch(byte* pointer, UInt128 key, int recordCount, int keyValueSize)
+        public override unsafe int BinarySearch(byte* pointer, TreeUInt128 key, int recordCount, int keyValueSize)
         {
             int lastFoundIndex = m_lastFoundIndex;
             ulong key1 = key.Value1;
@@ -132,7 +142,7 @@ namespace openHistorian.Collections
                     return ~recordCount;
                 }
             }
-                //Shortcut for sequentially getting  
+            //Shortcut for sequentially getting  
             else if (lastFoundIndex < recordCount)
             {
                 compareKey1 = *(ulong*)(pointer + keyValueSize * (lastFoundIndex + 1));
@@ -170,7 +180,7 @@ namespace openHistorian.Collections
     }
 
     internal class ValueMethodsUInt128
-        : TreeValueMethodsBase<UInt128>
+        : TreeValueMethodsBase<TreeUInt128>
     {
         // {655BB169-45E6-4370-9E9B-417ACF445ECB}
         public static Guid TypeGuid = new Guid(0x655bb169, 0x45e6, 0x4370, 0x9e, 0x9b, 0x41, 0x7a, 0xcf, 0x44, 0x5e, 0xcb);
@@ -180,19 +190,19 @@ namespace openHistorian.Collections
             return 16;
         }
 
-        public override unsafe void Write(byte* stream, UInt128 data)
+        public override unsafe void Write(byte* stream, TreeUInt128 data)
         {
             *(ulong*)stream = data.Value1;
             *(ulong*)(stream + 8) = data.Value2;
         }
 
-        public override void Clear(UInt128 data)
+        public override void Clear(TreeUInt128 data)
         {
             data.Value1 = 0;
             data.Value2 = 0;
         }
 
-        public override unsafe void Read(byte* stream, UInt128 data)
+        public override unsafe void Read(byte* stream, TreeUInt128 data)
         {
             data.Value1 = *(ulong*)stream;
             data.Value2 = *(ulong*)(stream + 8);

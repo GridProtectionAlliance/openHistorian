@@ -79,12 +79,11 @@ namespace openHistorian.Collections.Generic
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <param name="level"></param>
-        /// <param name="keyMethod"></param>
-        /// <param name="valueMethod"></param>
         /// <returns></returns>
-        public override TreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level, CreateKeyMethodBase<TKey> keyMethod, CreateValueMethodBase<TValue> valueMethod)
+        public override TreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
+ 
         {
-            return new ZeroNode<TKey, TValue>(level, keyMethod.Create(), valueMethod.Create());
+            return new ZeroNode<TKey, TValue>(level);
         }
     }
 }

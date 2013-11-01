@@ -23,6 +23,7 @@
 
 //#define GetTreeValueMethodsCallCount
 
+using System;
 using GSF.IO;
 
 namespace openHistorian.Collections.Generic
@@ -37,7 +38,6 @@ namespace openHistorian.Collections.Generic
     /// </remarks>
     /// <typeparam name="TValue"></typeparam>
     public abstract class TreeValueMethodsBase<TValue>
-        : CreateValueMethodBase<TValue>
         where TValue : class, new()
     {
 
@@ -70,6 +70,15 @@ namespace openHistorian.Collections.Generic
             private set;
         }
 
+        /// <summary>
+        /// The Guid uniquely defining this type. 
+        /// It is important to uniquely tie 1 type to 1 guid.
+        /// </summary>
+        public abstract Guid GenericTypeGuid
+        {
+            get;
+        }
+
         protected abstract int GetSize();
 
         public abstract unsafe void Read(byte* stream, TValue data);
@@ -88,7 +97,7 @@ namespace openHistorian.Collections.Generic
 
         public abstract void Clear(TValue data);
 
-        public override TreeValueMethodsBase<TValue> Create()
+        public TreeValueMethodsBase<TValue> Create()
         {
 #if GetTreeValueMethodsCallCount
             CallMethods[(int)Method.Create]++;

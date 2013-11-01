@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Collections
 {
@@ -34,7 +35,8 @@ namespace openHistorian.Collections
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     public abstract class HistorianValueBase<TValue>
-        : IEquatable<TValue>
+        : IEquatable<TValue>, ISortedTreeValue<TValue>
+        where TValue : class, new()
     {
         /// <summary>
         /// Is the current instance equal to <see cref="other"/>
@@ -86,5 +88,7 @@ namespace openHistorian.Collections
         {
             return IsEqualTo(other);
         }
+
+        public abstract TreeValueMethodsBase<TValue> CreateValueMethods();
     }
 }

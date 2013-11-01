@@ -28,6 +28,7 @@ using System.IO;
 using System.Linq;
 using GSF;
 using openHistorian.Archive;
+using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine
 {
@@ -35,8 +36,8 @@ namespace openHistorian.Engine
     /// Creates new archive files based on user settings.
     /// </summary>
     public class ArchiveInitializer<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private string m_prefix;
         private bool m_isMemoryArchive;

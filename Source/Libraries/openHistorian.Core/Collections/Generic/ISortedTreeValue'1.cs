@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeNodeInitializer.cs - Gbtc
+//  ISortedTreeValue`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,27 +16,23 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/26/2013 - Steven E. Chisholm
+//  11/1/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace openHistorian.Collections.Generic
 {
-    public class TreeNodeInitializer<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+    public interface ISortedTreeValue<TValue>
+        where TValue : class, new()
     {
-        private readonly CreateTreeNodeBase m_treeNode;
+        TreeValueMethodsBase<TValue> CreateValueMethods();
 
-        public TreeNodeInitializer(CreateTreeNodeBase treeNode)
-        {
-            m_treeNode = treeNode;
-        }
-
-        public TreeNodeBase<TKey, TValue> CreateTreeNode(byte level)
-        {
-            return m_treeNode.Create<TKey, TValue>(level);
-        }
     }
 }

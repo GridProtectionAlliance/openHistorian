@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 
+using openHistorian.Collections.Generic;
 using openHistorian.FileStructure;
 
 namespace openHistorian.Archive
@@ -30,8 +31,8 @@ namespace openHistorian.Archive
     /// transactions to have snapshot isolation of the entire data set.
     /// </summary>
     public class ArchiveTableSnapshotInfo<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
 

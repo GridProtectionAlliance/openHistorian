@@ -194,7 +194,7 @@
 //                    //scan.SeekToKey(0);
 //                    //var read = scan.GetReadDelegate;
 //                    long sum = 0;
-//                    Box<uint> KVP = scan.CurrentKey;
+//                    TreeUInt32 KVP = scan.CurrentKey;
 //                    while (scan.Read())
 //                        ;
 //                    timer.Stop();
@@ -377,7 +377,7 @@
 //                    //scan.SeekToKey(0);
 //                    //var read = scan.GetReadDelegate;
 //                    long sum = 0;
-//                    Box<uint> KVP = scan.CurrentKey;
+//                    TreeUInt32 KVP = scan.CurrentKey;
 //                    while (scan.m_baseTree.Read())
 //                    {
 //                        //sum += KVP.Key;// +KVP.Value;
