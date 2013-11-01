@@ -33,7 +33,8 @@ namespace openHistorian.FileStructure
         /// <summary>
         /// An IoSession for the sub file stream.
         /// </summary>
-        private unsafe class IoSession : BinaryStreamIoSessionBase
+        private unsafe class IoSession 
+            : BinaryStreamIoSessionBase
         {
             #region [ Members ]
 

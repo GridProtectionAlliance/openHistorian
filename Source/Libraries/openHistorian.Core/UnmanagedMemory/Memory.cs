@@ -38,7 +38,8 @@ namespace GSF.UnmanagedMemory
     /// </remarks>
     // ToDo: Consider adding support for managed memory allocation. By allocating a Byte[] and using GCHandle.Alloc() to pin the object.
     // ToDo: Support Large block allocations via the OS.
-    public sealed class Memory : IDisposable
+    public sealed class Memory 
+        : IDisposable
     {
         #region [ Members ]
 

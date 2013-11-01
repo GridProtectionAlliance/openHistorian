@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveFile_Editor.cs - Gbtc
+//  ArchiveTable`2_Editor.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //

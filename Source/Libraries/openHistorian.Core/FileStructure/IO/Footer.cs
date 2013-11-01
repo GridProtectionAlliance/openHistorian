@@ -87,7 +87,7 @@ namespace openHistorian.FileStructure.IO
         /// <remarks>This checksum is similiar to Adler</remarks>
         public static void ComputeChecksum(IntPtr data, out long checksum1, out int checksum2, int length)
         {
-            Statistics.ChecksumCount++;
+            Stats.ChecksumCount++;
             ulong a;
             ulong b;
             Murmur3.ComputeHash((byte*)data, length, out a, out b);

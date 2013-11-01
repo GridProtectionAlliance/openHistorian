@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveFileReadOnlySnapshotInstance.cs - Gbtc
+//  ArchiveTableReadSnapshot`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -89,6 +89,10 @@ namespace openHistorian.Archive
             m_dataTree.GetKeyRange(lowerBounds, upperBounds);
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
             if (!m_disposed)

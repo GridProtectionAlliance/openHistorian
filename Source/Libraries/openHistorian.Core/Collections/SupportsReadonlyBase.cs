@@ -32,7 +32,8 @@ namespace GSF.Collections
     /// In order to modify the contest of this object, a clone of the object must be created with <see cref="CloneEditable"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class SupportsReadonlyBase<T> : ISupportsReadonly<T>
+    public abstract class SupportsReadonlyBase<T> 
+        : ISupportsReadonly<T>
         where T : SupportsReadonlyBase<T>
     {
         private bool m_isReadOnly;

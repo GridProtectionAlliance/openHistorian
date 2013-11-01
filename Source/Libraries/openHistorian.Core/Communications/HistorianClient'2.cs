@@ -50,7 +50,7 @@ namespace openHistorian
         where TValue : HistorianValueBase<TValue>, new()
     {
         private TcpClient m_client;
-        private NetworkBinaryStream2 m_stream;
+        private NetworkBinaryStream m_stream;
         private HistorianDatabase m_historianDatabase;
         string m_historianDatabaseString;
 
@@ -92,7 +92,7 @@ namespace openHistorian
         {
             m_client = new TcpClient();
             m_client.Connect(server);
-            m_stream = new NetworkBinaryStream2(m_client.Client);
+            m_stream = new NetworkBinaryStream(m_client.Client);
             m_stream.Write(1122334455667788991L);
             m_stream.Flush();
         }

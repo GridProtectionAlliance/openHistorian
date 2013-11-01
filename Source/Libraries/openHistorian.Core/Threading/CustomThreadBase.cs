@@ -26,7 +26,8 @@ using System;
 
 namespace GSF.Threading
 {
-    internal abstract class CustomThreadBase : IDisposable
+    internal abstract class CustomThreadBase 
+        : IDisposable
     {
         public abstract void StartNow();
         public abstract void StartLater(int delay);

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveTable.cs - Gbtc
+//  ArchiveTable`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,9 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Data;
-using System.IO;
-using openHistorian.Collections.Generic;
 using openHistorian.FileStructure;
 
 namespace openHistorian.Archive

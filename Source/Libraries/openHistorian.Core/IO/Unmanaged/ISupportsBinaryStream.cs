@@ -28,7 +28,8 @@ namespace GSF.IO.Unmanaged
     /// <summary>
     /// Implementing this interface allows a binary stream to be attached to a buffer.
     /// </summary>
-    public interface ISupportsBinaryStream : IDisposable
+    public interface ISupportsBinaryStream 
+        : IDisposable
     {
         /// <summary>
         /// Gets the number of available simultaneous read/write sessions.

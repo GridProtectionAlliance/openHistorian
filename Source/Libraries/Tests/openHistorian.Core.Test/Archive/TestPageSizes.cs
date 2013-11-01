@@ -114,7 +114,7 @@ namespace openHistorian.UnitTests.Archive
             HistorianValue value = new HistorianValue();
             DiskIoSession.ReadCount = 0;
             DiskIoSession.WriteCount = 0;
-            Statistics.ChecksumCount = 0;
+            Stats.ChecksumCount = 0;
             DiskIoSession.Lookups = 0;
             DiskIoSession.CachedLookups = 0;
 
@@ -154,7 +154,7 @@ namespace openHistorian.UnitTests.Archive
                 Rate = (float)(1 / sw.Elapsed.TotalSeconds),
                 ReadCount = DiskIoSession.ReadCount,
                 WriteCount = DiskIoSession.WriteCount,
-                ChecksumCount = Statistics.ChecksumCount,
+                ChecksumCount = Stats.ChecksumCount,
                 Lookups = DiskIoSession.Lookups,
                 CachedLookups = DiskIoSession.CachedLookups
             };
@@ -169,7 +169,7 @@ namespace openHistorian.UnitTests.Archive
             HistorianValue value = new HistorianValue();
             DiskIoSession.ReadCount = 0;
             DiskIoSession.WriteCount = 0;
-            Statistics.ChecksumCount = 0;
+            Stats.ChecksumCount = 0;
             DiskIoSession.Lookups = 0;
             DiskIoSession.CachedLookups = 0;
 
@@ -209,7 +209,7 @@ namespace openHistorian.UnitTests.Archive
                 Rate = (float)(.1 / sw.Elapsed.TotalSeconds),
                 ReadCount = DiskIoSession.ReadCount,
                 WriteCount = DiskIoSession.WriteCount,
-                ChecksumCount = Statistics.ChecksumCount,
+                ChecksumCount = Stats.ChecksumCount,
                 Lookups = DiskIoSession.Lookups,
                 CachedLookups = DiskIoSession.CachedLookups
             };

@@ -25,7 +25,6 @@
 using System;
 using System.Diagnostics;
 using GSF.Communications;
-using GSF.IO;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
 using openHistorian.Communications.Initialization;
@@ -41,13 +40,13 @@ namespace openHistorian.Communications
 
         public delegate void SocketErrorEventHandler(Exception ex);
 
-        private NetworkBinaryStream2 m_stream;
+        private NetworkBinaryStream m_stream;
         private readonly HistorianCollection<TKey, TValue> m_historian;
         private HistorianDatabaseBase<TKey, TValue> m_historianDatabase;
         private HistorianDataReaderBase<TKey, TValue> m_historianReaderBase;
         KeyValueStreamCompressionBase<TKey, TValue> m_compressionMode;
 
-        public ProcessClient(NetworkBinaryStream2 netStream, HistorianCollection<TKey, TValue> historian)
+        public ProcessClient(NetworkBinaryStream netStream, HistorianCollection<TKey, TValue> historian)
         {
             m_stream = netStream;
             m_historian = historian;

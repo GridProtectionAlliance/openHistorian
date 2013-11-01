@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeValueMethodsBase.cs - Gbtc
+//  TreeValueMethodsBase`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //

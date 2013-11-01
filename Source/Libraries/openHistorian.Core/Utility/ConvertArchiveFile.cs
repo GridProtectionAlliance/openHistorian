@@ -23,9 +23,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using openHistorian.Collections;
 using GSF.IO.Unmanaged;
 using openHistorian.Archive;

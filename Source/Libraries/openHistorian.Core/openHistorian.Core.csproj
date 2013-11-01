@@ -125,14 +125,12 @@
     <Compile Include="Collections\Generic\Initialization\CreateValueMethodBase.cs" />
     <Compile Include="Collections\Generic\Initialization\RegisterSortedTreeTypes.cs" />
     <Compile Include="Collections\Generic\Initialization\SortedTree.cs" />
-    <Compile Include="Collections\Generic\Initialization\SparseIndexType.cs" />
     <Compile Include="Collections\Generic\Initialization\TreeNodeInitializer%272.cs" />
     <Compile Include="Collections\Generic\KeyValueStream%272.cs" />
     <Compile Include="Collections\Generic\Node%271.cs" />
     <Compile Include="Collections\Generic\SeekableKeyValueStream%272.cs" />
     <Compile Include="Collections\Generic\SortedListConstructor.cs" />
     <Compile Include="Collections\Generic\SortedTree%272.cs" />
-    <Compile Include="Collections\Generic\SortedTreeStruct%272.cs" />
     <Compile Include="Collections\Generic\SparseIndex%271.cs" />
     <Compile Include="Collections\Generic\TreeKeyMethodsBase%271.cs" />
     <Compile Include="Collections\Generic\TreeNodeBase%272.cs" />
@@ -153,7 +151,7 @@
     <Compile Include="Collections\IsolatedQueueFileBacked_FileIO.cs" />
     <Compile Include="Collections\ISupportsReadonly.cs" />
     <Compile Include="Collections\LargeArray.cs" />
-    <Compile Include="Collections\LargeUnmanagedArray.cs" />
+    <Compile Include="Collections\old\LargeUnmanagedArray.cs" />
     <Compile Include="Collections\NullableLargeArray.cs" />
     <Compile Include="Collections\NullTreeScanner%272.cs" />
     <Compile Include="Collections\ReadonlyList.cs" />
@@ -171,7 +169,7 @@
     <Compile Include="Collections\Types\MethodsHistorianValue.cs" />
     <Compile Include="Collections\Types\MethodsUint128.cs" />
     <Compile Include="Collections\Types\MethodsUint32.cs" />
-    <Compile Include="Communications\CircularBuffer.cs" />
+    <Compile Include="Communications\Old\CircularBuffer.cs" />
     <Compile Include="Communications\Compression\CompressedStream.cs" />
     <Compile Include="Communications\Compression\CreateCompressedStream.cs" />
     <Compile Include="Communications\Compression\CreateFixedSizeStream.cs" />
@@ -185,10 +183,10 @@
     <Compile Include="Communications\Initialization\KeyValueStreamCompression.cs" />
     <Compile Include="Communications\Initialization\KeyValueStreamCompressionBase.cs" />
     <Compile Include="Communications\Initialization\RegisterKeyValueStreamCompressionTypes.cs" />
-    <Compile Include="Communications\LinearBuffer.cs" />
+    <Compile Include="Communications\Old\LinearBuffer.cs" />
+    <Compile Include="Communications\Old\NetworkBinaryStream.cs" />
     <Compile Include="Communications\NetworkBinaryStream.cs" />
-    <Compile Include="Communications\NetworkBinaryStream2.cs" />
-    <Compile Include="Communications\NetworkBinaryStreamUncached.cs" />
+    <Compile Include="Communications\Old\NetworkBinaryStreamUncached.cs" />
     <Compile Include="Communications\ProcessClient%272.cs" />
     <Compile Include="Communications\SocketHistorian%272.cs" />
     <Compile Include="Compression.cs" />
@@ -196,7 +194,7 @@
     <Compile Include="DataReaderOptions.cs" />
     <Compile Include="Engine\ArchiveDatabaseEngine%272.cs" />
     <Compile Include="Engine\ArchiveTablePointEnumerator%272.cs" />
-    <Compile Include="Engine\ArchiveTableSummary%272.cs" />
+    <Compile Include="Engine\Old\ArchiveTableSummary%272.cs" />
     <Compile Include="Engine\ArchiveInitializer%272.cs" />
     <Compile Include="Engine\ArchiveList%272.cs" />
     <Compile Include="Engine\ArchiveList%272_Editor.cs" />
@@ -208,11 +206,11 @@
     <Compile Include="Engine\ArchiveWriters\RolloverArgs%272.cs" />
     <Compile Include="Engine\ArchiveWriters\StageWriter%272.cs" />
     <Compile Include="Engine\ArchiveWriters\StagingFile%272.cs" />
-    <Compile Include="Engine\ArchiveWriters\TransactionalBlocking%272.cs" />
+    <Compile Include="Engine\ArchiveWriters\Old\TransactionalBlocking%272.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessor%272.cs" />
     <Compile Include="Engine\ArchiveWriters\WriteProcessorSettings%272.cs" />
     <Compile Include="Engine\ArchiveReaderSequential%272.cs" />
-    <Compile Include="Engine\ArchiveTableSummaryExtensions%272.cs" />
+    <Compile Include="Engine\Old\ArchiveTableSummaryExtensions%272.cs" />
     <Compile Include="Engine\DatabaseConfig.cs" />
     <Compile Include="Engine\CustomSortHelper%271.cs" />
     <Compile Include="Engine\UnionSeekableKeyValueStream%273.cs" />
@@ -265,56 +263,20 @@
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionCache.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionExtensionMethods.cs" />
     <Compile Include="IO\Unmanaged\BlockArguments.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStream.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
-    <Compile Include="IO\Unmanaged\BufferedFileStream_IoSession.cs" />
+    <Compile Include="IO\Unmanaged\Old\BufferedFileStream.cs" />
+    <Compile Include="IO\Unmanaged\Old\BufferedFileStream_IoQueue.cs" />
+    <Compile Include="IO\Unmanaged\Old\BufferedFileStream_IoSession.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
-    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement.cs" />
-    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacement_IoSession.cs" />
+    <Compile Include="IO\Unmanaged\Old\LeastRecentlyUsedPageReplacement.cs" />
+    <Compile Include="IO\Unmanaged\Old\LeastRecentlyUsedPageReplacement_IoSession.cs" />
     <Compile Include="IO\Unmanaged\MemoryPoolStream.cs" />
     <Compile Include="IO\Unmanaged\MemoryPoolStreamCore.cs" />
     <Compile Include="IO\Unmanaged\MemoryPoolStream_IoSession.cs" />
-    <Compile Include="IO\Unmanaged\PageMetaDataList.cs" />
+    <Compile Include="IO\Unmanaged\Old\PageMetaDataList.cs" />
     <Compile Include="IO\Unmanaged\UnmanagedMemoryStream.cs" />
     <Compile Include="IO\Unmanaged\UnmanagedMemoryStreamCore.cs" />
     <Compile Include="IO\Unmanaged\UnmanagedMemoryStream_IoSession.cs" />
-    <Compile Include="OldCode\OldFormat\OldHistorianReader.cs" />
-    <Compile Include="OldCode\Local\ConfigHistorian.cs" />
-    <Compile Include="OldCode\Local\ConfigDatabase.cs" />
-    <Compile Include="OldCode\Local\HistorianServer_HistorianDatabase.cs" />
-    <Compile Include="OldCode\Local\HistorianServer_DatabaseConfig.cs" />
-    <Compile Include="OldCode\Local\HistorianServer_HistorianManage.cs" />
-    <Compile Include="OldCode\Local\HistorianDataReader.cs" />
-    <Compile Include="OldCode\Local\Historian.cs" />
-    <Compile Include="OldCode\Local\Historian_HistorianReadWrite.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\BufferPool.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\Memory.cs" />
-    <Compile Include="OldCode\Local\ConfigNode.cs" />
-    <Compile Include="OldCode\Local\XmlConfig.cs" />
-    <Compile Include="OldCode\ContinuousBuffer.cs" />
-    <Compile Include="OldCode\Streaming\Client\ClientSocket.cs" />
-    <Compile Include="OldCode\Streaming\IInboundBuffer.cs" />
-    <Compile Include="OldCode\Streaming\ITransportStreaming.cs" />
-    <Compile Include="OldCode\Streaming\IOutboundBuffer.cs" />
-    <Compile Include="OldCode\Streaming\Server\ProcessDatabaseInstance.cs" />
-    <Compile Include="OldCode\Streaming\Server\ITransportHost.cs" />
-    <Compile Include="OldCode\Streaming\Server\ProcessAuthentication.cs" />
-    <Compile Include="OldCode\Streaming\Server\ProcessDisconnect.cs" />
-    <Compile Include="OldCode\Streaming\Server\ITransportCommand.cs" />
-    <Compile Include="OldCode\Streaming\Server\ProcessArchivePoints.cs" />
-    <Compile Include="OldCode\Streaming\Server\ProcessClientStream.cs" />
-    <Compile Include="OldCode\Streaming\Server\ProcessKeepAlive.cs" />
-    <Compile Include="OldCode\Streaming\Server\ServerSocket.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\MemoryMethod.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\UnmanagedArray.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\BufferPoolKernel.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\BufferPoolKernel_Settings.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\BufferPoolKernel_List.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPool.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPoolAllocationList.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPoolCollectionEngine.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\BufferPool2\SubBufferPoolSettings.cs" />
-    <Compile Include="OldCode\UnmanagedMemory\WinApi.cs" />
+    <Compile Include="OldHistorianReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryFilterPointId.cs" />
     <Compile Include="QueryFilterPointId_BitArray.cs" />
@@ -325,7 +287,6 @@
     <Compile Include="QueryFilterTimestamp_FixedRange.cs" />
     <Compile Include="QueryFilterTimestamp_IntervalRanges.cs" />
     <Compile Include="QueryFilterTimestamp_UniverseRange.cs" />
-    <Compile Include="Statistics.cs" />
     <Compile Include="Stats.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="Streaming\StreamMux.cs" />
@@ -333,7 +294,7 @@
     <Compile Include="Threading\BackgroundThread.cs" />
     <Compile Include="Threading\CustomThreadBase.cs" />
     <Compile Include="Threading\ForegroundThread.cs" />
-    <Compile Include="Threading\ReaderWriterSpinLockSlim.cs" />
+    <Compile Include="Threading\Old\ReaderWriterSpinLockSlim.cs" />
     <Compile Include="Threading\ScheduledTask.cs" />
     <Compile Include="Threading\ScheduledTask_Internal.cs" />
     <Compile Include="Threading\StateMachine.cs" />
@@ -344,7 +305,7 @@
     <Compile Include="Threading\TimeoutOperation.cs" />
     <Compile Include="Threading\WeakAction.cs" />
     <Compile Include="Threading\WeakDelegateBase.cs" />
-    <Compile Include="Threading\Worker.cs" />
+    <Compile Include="Threading\Old\Worker.cs" />
     <Compile Include="UnmanagedMemory\CollectionEventArgs.cs" />
     <Compile Include="UnmanagedMemory\Memory.cs" />
     <Compile Include="UnmanagedMemory\MemoryPool.cs" />
@@ -396,7 +357,9 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="OldCode\OldFormat\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"

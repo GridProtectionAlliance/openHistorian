@@ -33,7 +33,8 @@ namespace GSF.Collections
     /// unless they implement <see cref="T:GSF.Collections.ISupportsReadonly`1"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ReadonlyList<T> : SupportsReadonlyBase<ReadonlyList<T>>, IList<T>
+    public class ReadonlyList<T> 
+        : SupportsReadonlyBase<ReadonlyList<T>>, IList<T>
     {
         private readonly bool m_isISupportsReadonlyType;
         private List<T> m_list;

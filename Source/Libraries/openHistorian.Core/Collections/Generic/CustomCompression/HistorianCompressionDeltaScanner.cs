@@ -42,6 +42,13 @@ namespace openHistorian.Collections.Generic.CustomCompression
         {
         }
 
+        /// <summary>
+        /// Decodes the next record from the byte array into the provided key and value.
+        /// </summary>
+        /// <param name="stream">the start of the next record.</param>
+        /// <param name="key">the key to write to.</param>
+        /// <param name="value">the value to write to.</param>
+        /// <returns></returns>
         protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value)
         {
             int position = 0;
@@ -61,6 +68,9 @@ namespace openHistorian.Collections.Generic.CustomCompression
             return position;
         }
 
+        /// <summary>
+        /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.
+        /// </summary>
         protected override void ResetEncoder()
         {
             m_prevTimestamp = 0;

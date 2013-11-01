@@ -28,7 +28,8 @@ using GSF.UnmanagedMemory;
 
 namespace GSF.IO.Unmanaged
 {
-    public unsafe class BinaryStream : BinaryStreamBase
+    public unsafe class BinaryStream 
+        : BinaryStreamBase
     {
         #region [ Members ]
 

@@ -228,17 +228,17 @@ namespace openHistorian.Archive
                 using (BinaryStream bs = new BinaryStream(fs))
                 {
                     int blockSize = m_fileStructure.DataBlockSize;
-                    const int MaxValue = 4096;
+                    const int maxValue = 4096;
 
-                    if (blockSize > MaxValue)
+                    if (blockSize > maxValue)
                         blockSize >>= 2;
-                    if (blockSize > MaxValue)
+                    if (blockSize > maxValue)
                         blockSize >>= 2;
-                    if (blockSize > MaxValue)
+                    if (blockSize > maxValue)
                         blockSize >>= 2;
-                    if (blockSize > MaxValue)
+                    if (blockSize > maxValue)
                         blockSize >>= 2;
-                    if (blockSize > MaxValue)
+                    if (blockSize > maxValue)
                         blockSize >>= 2;
 
                     SortedTree<TKey, TValue> tree = SortedTree<TKey, TValue>.Create(bs, blockSize, storageMethod);

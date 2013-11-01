@@ -31,7 +31,8 @@ namespace GSF.IO.Unmanaged
         Disposed
     }
 
-    public class IoSessionStatusChangedEventArgs : EventArgs
+    public class IoSessionStatusChangedEventArgs 
+        : EventArgs
     {
         public IoSessionStatusChangedEventArgs(IoSessionStatusChanged status)
         {

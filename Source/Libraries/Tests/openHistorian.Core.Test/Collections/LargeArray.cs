@@ -12,16 +12,16 @@ namespace GSF.Collections.Test
             TestArray(new LargeArray<int>());
         }
 
-        [Test]
-        public unsafe void TestLargeUnmanagedArray()
-        {
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0);
-            using (LargeUnmanagedArray<int> array = new LargeUnmanagedArray<int>(4, Globals.MemoryPool, ptr => *(int*)ptr, (ptr, v) => *(int*)ptr = v))
-            {
-                TestArray(array);
-            }
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0);
-        }
+        //[Test]
+        //public unsafe void TestLargeUnmanagedArray()
+        //{
+        //    Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0);
+        //    using (LargeUnmanagedArray<int> array = new LargeUnmanagedArray<int>(4, Globals.MemoryPool, ptr => *(int*)ptr, (ptr, v) => *(int*)ptr = v))
+        //    {
+        //        TestArray(array);
+        //    }
+        //    Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0);
+        //}
 
         public void TestArray(ILargeArray<int> array)
         {

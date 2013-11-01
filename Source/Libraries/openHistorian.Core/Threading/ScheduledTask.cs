@@ -32,7 +32,8 @@ namespace GSF.Threading
         Background
     }
 
-    public class ScheduledTaskEventArgs : EventArgs
+    public class ScheduledTaskEventArgs 
+        : EventArgs
     {
         /// <summary>
         /// True if execution is the result of an interval timing out.
@@ -73,7 +74,8 @@ namespace GSF.Threading
     /// <summary>
     /// Provides a time sceduled task that can either be canceled prematurely or told to execute early.
     /// </summary>
-    public partial class ScheduledTask : IDisposable
+    public partial class ScheduledTask 
+        : IDisposable
     {
         private volatile bool m_disposed;
         private volatile bool m_isDisposing;

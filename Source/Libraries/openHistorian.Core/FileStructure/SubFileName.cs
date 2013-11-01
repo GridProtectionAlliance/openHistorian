@@ -31,7 +31,8 @@ namespace openHistorian.FileStructure
     /// <summary>
     /// This is used to generate the file name that will be used for the sub file. 
     /// </summary>
-    public class SubFileName : IComparable<SubFileName>
+    public class SubFileName 
+        : IComparable<SubFileName>
     {
         public long RawValue1
         {

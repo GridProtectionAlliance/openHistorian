@@ -42,7 +42,8 @@ namespace openHistorian.FileStructure.IO
     /// </remarks>
     //ToDo: Consider allowing this class to scale horizontally like how the concurrent dictionary scales.
     //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
-    internal partial class BufferedFile : IDiskMediumCoreFunctions
+    internal partial class BufferedFile 
+        : IDiskMediumCoreFunctions
     {
         #region [ Members ]
 

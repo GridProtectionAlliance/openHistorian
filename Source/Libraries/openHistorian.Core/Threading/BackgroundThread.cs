@@ -27,7 +27,8 @@ using System.Threading;
 
 namespace GSF.Threading
 {
-    internal class BackgroundThread : CustomThreadBase
+    internal class BackgroundThread 
+        : CustomThreadBase
     {
         private RegisteredWaitHandle m_registeredHandle;
         private readonly Action m_callback;

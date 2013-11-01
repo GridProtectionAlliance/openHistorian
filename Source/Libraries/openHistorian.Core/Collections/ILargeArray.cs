@@ -26,7 +26,8 @@ using System;
 
 namespace GSF.Collections
 {
-    public interface ILargeArray<T> : IDisposable
+    public interface ILargeArray<T> 
+        : IDisposable
     {
         T this[int index]
         {

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeNodeBase_Get.cs - Gbtc
+//  TreeNodeBase_Get`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //

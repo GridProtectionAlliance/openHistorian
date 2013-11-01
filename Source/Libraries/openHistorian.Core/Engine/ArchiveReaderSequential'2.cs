@@ -26,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GSF.Threading;
-using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
 

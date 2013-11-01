@@ -21,33 +21,62 @@
 //     
 //******************************************************************************************************
 
+using System;
+
 namespace openHistorian.Collections
 {
+    /// <summary>
+    /// Wraps an item in a class. Similiar to a <see cref="Tuple"/> except allows assignment of the <see cref="Value"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public sealed class Box<T>
         where T : new()
     {
+        /// <summary>
+        /// Creates a new item and initializes it with it's default constructor.
+        /// </summary>
         public Box()
             : this(new T())
         {
         }
 
+        /// <summary>
+        /// Creates a new item using the provided class.
+        /// </summary>
+        /// <param name="value"></param>
         public Box(T value)
         {
             Value = value;
         }
-
+        /// <summary>
+        /// The value wrapped in this class.
+        /// </summary>
         public T Value;
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             return Value.ToString();
         }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+        /// </summary>
+        /// <returns>
+        /// true if the specified object  is equal to the current object; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current object. </param><filterpriority>2</filterpriority>
         public override bool Equals(object obj)
         {
             return Value.Equals(obj);
         }
-
+        
         //public static implicit operator T(Box<T> value)
         //{
         //    return value.Value;

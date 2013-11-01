@@ -33,7 +33,8 @@ namespace GSF.Collections
     /// This class will automatically clone any field that implements <see cref="T:GSF.Collections.ISupportsReadonly`1"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class SupportsReadonlyAutoBase<T> : SupportsReadonlyBase<T>
+    public abstract class SupportsReadonlyAutoBase<T> 
+        : SupportsReadonlyBase<T>
         where T : SupportsReadonlyAutoBase<T>
     {
         private static List<FieldInfo> s_readonlyFields;

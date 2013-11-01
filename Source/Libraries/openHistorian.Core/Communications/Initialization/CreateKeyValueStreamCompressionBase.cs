@@ -23,7 +23,6 @@
 
 using System;
 using openHistorian.Collections;
-using openHistorian.Communications;
 
 namespace openHistorian.Communications.Initialization
 {

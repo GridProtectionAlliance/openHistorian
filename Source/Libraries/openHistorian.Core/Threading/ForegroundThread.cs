@@ -27,7 +27,8 @@ using System.Threading;
 
 namespace GSF.Threading
 {
-    internal class ForegroundThread : CustomThreadBase
+    internal class ForegroundThread 
+        : CustomThreadBase
     {
         private readonly Thread m_thread;
         private readonly Action m_callback;

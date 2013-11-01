@@ -34,7 +34,8 @@ namespace openHistorian.FileStructure
     ///Provides a file stream that can be used to open a file and does all of the background work 
     ///required to translate virtual position data into physical ones.
     /// </summary>
-    public sealed partial class SubFileStream : ISupportsBinaryStream
+    public sealed partial class SubFileStream 
+        : ISupportsBinaryStream
     {
         #region [ Members ]
 

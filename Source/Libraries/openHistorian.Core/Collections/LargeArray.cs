@@ -33,7 +33,8 @@ namespace GSF.Collections
     /// will cause the garbage collection cycles to become very slow.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LargeArray<T> : ILargeArray<T>
+    public class LargeArray<T> 
+        : ILargeArray<T>
     {
         private bool m_disposed;
         private readonly int m_size;

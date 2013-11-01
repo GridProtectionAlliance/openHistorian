@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using openHistorian.Collections;
-using openHistorian.Communications;
 
 namespace openHistorian.Communications.Initialization
 {

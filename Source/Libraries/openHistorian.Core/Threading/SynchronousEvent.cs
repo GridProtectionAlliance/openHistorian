@@ -33,7 +33,8 @@ namespace GSF.Threading
     /// will be raised on the thread that constructed this class.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SynchronousEvent<T> : IDisposable
+    public class SynchronousEvent<T> 
+        : IDisposable
         where T : EventArgs
     {
         private bool m_disposed;

@@ -71,7 +71,7 @@ namespace openHistorian.UnitTests.Archive
             openHistorian.Stats.LookupKeys = 0;
             DiskIoSession.ReadCount = 0;
             DiskIoSession.WriteCount = 0;
-            Statistics.ChecksumCount = 0;
+            Stats.ChecksumCount = 0;
             DiskIoSession.Lookups = 0;
             DiskIoSession.CachedLookups = 0;
             long cnt;
@@ -101,7 +101,7 @@ namespace openHistorian.UnitTests.Archive
                 RateRead = (float)(1 / sw2.Elapsed.TotalSeconds),
                 ReadCount = DiskIoSession.ReadCount,
                 WriteCount = DiskIoSession.WriteCount,
-                ChecksumCount = Statistics.ChecksumCount,
+                ChecksumCount = Stats.ChecksumCount,
                 Lookups = DiskIoSession.Lookups,
                 CachedLookups = DiskIoSession.CachedLookups
             };

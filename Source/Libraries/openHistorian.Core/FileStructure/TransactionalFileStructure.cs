@@ -26,7 +26,8 @@ using System.IO;
 
 namespace openHistorian.FileStructure
 {
-    public sealed class TransactionalFileStructure : IDisposable
+    public sealed class TransactionalFileStructure 
+        : IDisposable
     {
         #region [ Members ]
 

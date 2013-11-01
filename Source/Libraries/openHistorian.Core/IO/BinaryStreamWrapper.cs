@@ -26,7 +26,8 @@ using System.IO;
 
 namespace GSF.IO
 {
-    public class BinaryStreamWrapper : BinaryStreamBase
+    public class BinaryStreamWrapper 
+        : BinaryStreamBase
     {
         private readonly Stream m_stream;
 

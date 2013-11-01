@@ -35,7 +35,8 @@ namespace openHistorian.FileStructure
     /// permits only a single concurrent edit of the archive system, and determines when a file
     /// can be deleted when there are no read or write transactions. It also containst the IO system.
     /// </summary>
-    internal sealed class TransactionService : IDisposable
+    internal sealed class TransactionService 
+        : IDisposable
     {
         #region [ Members ]
 

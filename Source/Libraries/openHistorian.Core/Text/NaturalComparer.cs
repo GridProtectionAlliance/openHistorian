@@ -30,37 +30,52 @@ using System.Text.RegularExpressions;
 
 namespace GSF.Text
 {
-    public class NaturalComparer : Comparer<string>, IDisposable
+    /// <summary>
+    /// Does a sort on a string that is natual to how humans look at it. 
+    /// Such as sorting numbers.
+    /// </summary>
+    public class NaturalComparer
+        : Comparer<string>
     {
-        private Dictionary<string, string[]> table;
+        private Dictionary<string, string[]> m_table;
 
+        /// <summary>
+        /// Creates a new <see cref="NaturalComparer"/>
+        /// </summary>
         public NaturalComparer()
         {
-            table = new Dictionary<string, string[]>();
+            m_table = new Dictionary<string, string[]>();
         }
 
-        public void Dispose()
-        {
-            table.Clear();
-            table = null;
-        }
-
+        /// <summary>
+        /// When overridden in a derived class, performs a comparison of two objects of the same type and returns a value indicating whether one object is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <returns>
+        /// A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>, as shown in the following table.Value Meaning Less than zero <paramref name="x"/> is less than <paramref name="y"/>.Zero <paramref name="x"/> equals <paramref name="y"/>.Greater than zero <paramref name="x"/> is greater than <paramref name="y"/>.
+        /// </returns>
+        /// <param name="x">The first object to compare.</param><param name="y">The second object to compare.</param>
         public override int Compare(string x, string y)
         {
+            if (x == null && y == null)
+                return 0;
+            if (x == null)
+                return -1;
+            if (y == null)
+                return 1;
             if (x == y)
             {
                 return 0;
             }
             string[] x1, y1;
-            if (!table.TryGetValue(x, out x1))
+            if (!m_table.TryGetValue(x, out x1))
             {
                 x1 = Regex.Split(x.Replace(" ", ""), "([0-9]+)");
-                table.Add(x, x1);
+                m_table.Add(x, x1);
             }
-            if (!table.TryGetValue(y, out y1))
+            if (!m_table.TryGetValue(y, out y1))
             {
                 y1 = Regex.Split(y.Replace(" ", ""), "([0-9]+)");
-                table.Add(y, y1);
+                m_table.Add(y, y1);
             }
 
             for (int i = 0; i < x1.Length && i < y1.Length; i++)

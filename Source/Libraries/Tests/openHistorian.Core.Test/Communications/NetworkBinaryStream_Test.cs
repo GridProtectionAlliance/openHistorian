@@ -21,8 +21,8 @@ namespace GSF.Communications
             client.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 42134));
             TcpClient server = listener.AcceptTcpClient();
 
-            var c = new NetworkBinaryStream2(client.Client);
-            var s = new NetworkBinaryStream2(server.Client);
+            var c = new NetworkBinaryStream(client.Client);
+            var s = new NetworkBinaryStream(server.Client);
 
             Random r = new Random();
             int seed = r.Next();

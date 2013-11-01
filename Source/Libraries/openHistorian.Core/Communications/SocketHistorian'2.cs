@@ -101,7 +101,7 @@ namespace openHistorian.Communications
             }
 
             Socket socket = m_listener.AcceptSocket();
-            NetworkBinaryStream2 netStream = new NetworkBinaryStream2(socket);
+            NetworkBinaryStream netStream = new NetworkBinaryStream(socket);
 
             ThreadPool.QueueUserWorkItem(ProcessDataRequests);
 
