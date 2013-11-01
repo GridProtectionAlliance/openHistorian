@@ -81,10 +81,6 @@
     <Compile Include="Queues\HistorianInputQueue.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GSF.Unmanaged\GSF.Unmanaged.csproj">
-      <Project>{b2504a65-9432-4691-a417-267fdb1a95a3}</Project>
-      <Name>GSF.Unmanaged</Name>
-    </ProjectReference>
     <ProjectReference Include="..\openHistorian.Core\openHistorian.Core.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>openHistorian.Core</Name>

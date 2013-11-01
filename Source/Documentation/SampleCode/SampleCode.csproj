@@ -60,10 +60,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\GSF.Unmanaged\GSF.Unmanaged.csproj">
-      <Project>{B2504A65-9432-4691-A417-267FDB1A95A3}</Project>
-      <Name>GSF.Unmanaged</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\openHistorian.Core\openHistorian.Core.csproj">
       <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
       <Name>openHistorian.Core</Name>
