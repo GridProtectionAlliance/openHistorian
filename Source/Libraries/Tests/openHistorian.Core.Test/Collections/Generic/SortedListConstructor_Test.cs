@@ -41,8 +41,26 @@ namespace GSF.Collections.Generic
                         var sl = SortedListConstructor.Create(keys, values);
 
                     };
+
+                //var makeList = new SortedListConstructorUnsafe<int, int>();
+                //Action add3 = () =>
+                //{
+                //    List<int> keys = new List<int>(max);
+                //    List<int> values = new List<int>(max);
+
+                //    for (int x = 0; x < max; x++)
+                //    {
+                //        keys.Add(x);
+                //        values.Add(x);
+                //    }
+
+                //    var sl = makeList.Create(keys, values);
+                //    //var sl = SortedListConstructor.CreateUnsafe(keys, values);
+
+                //};
                 Console.WriteLine("Old Method " + max + " " + sw.TimeEvent(add1) * 1000000);
                 Console.WriteLine("New Method " + max + " " + sw.TimeEvent(add2) * 1000000);
+                //Console.WriteLine("Unsafe Method " + max + " " + sw.TimeEvent(add3) * 1000000);
             }
 
 

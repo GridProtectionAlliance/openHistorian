@@ -431,7 +431,7 @@ namespace openHistorian.Collections.Generic
 
         /// <summary>
         /// This function is a special purpose function to set the right sibling of an internal node.
-        /// It is used by <see cref="Split"/>.
+        /// It is used by Split
         /// </summary>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>

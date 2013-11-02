@@ -21,17 +21,19 @@
 //     
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace openHistorian.Collections.Generic
 {
+    /// <summary>
+    /// The interface that is required to use as a key in <see cref="SortedTree"/> 
+    /// </summary>
+    /// <typeparam name="TKey">A class that has a default constructor</typeparam>
     public interface ISortedTreeKey<TKey>
         where TKey : class, new()
     {
+        /// <summary>
+        /// Creates a class that contains the necessary methods for the SortedTree.
+        /// </summary>
+        /// <returns></returns>
         TreeKeyMethodsBase<TKey> CreateKeyMethods();
     }
 }

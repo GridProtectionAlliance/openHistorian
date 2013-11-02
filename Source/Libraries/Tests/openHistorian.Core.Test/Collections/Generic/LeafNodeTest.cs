@@ -103,7 +103,7 @@ namespace openHistorian.Collections.Generic
         }
 
 
-        public static void TestSpeed<TKey, TValue>(TreeNodeInitializer<TKey, TValue> nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
+        internal static void TestSpeed<TKey, TValue>(TreeNodeInitializer<TKey, TValue> nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
             where TKey : class, ISortedTreeKey<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
         {

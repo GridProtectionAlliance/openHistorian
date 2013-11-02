@@ -28,6 +28,11 @@ namespace openHistorian.Collections.Generic
 {
     public unsafe partial class TreeNodeBase<TKey, TValue>
     {
+        /// <summary>
+        /// Updates the provided key.
+        /// </summary>
+        /// <param name="oldKey"></param>
+        /// <param name="newKey"></param>
         public void UpdateKey(TKey oldKey, TKey newKey)
         {
             if (Level == 0)
@@ -47,6 +52,11 @@ namespace openHistorian.Collections.Generic
             InternalUpdateKey(oldKey, newKey);
         }
 
+        /// <summary>
+        /// Updates the provided value
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void UpdateValue(TKey key, TValue value)
         {
             if (Level == 0)

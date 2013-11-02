@@ -33,8 +33,11 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// <summary>
         /// Verifies that the abstraction implementations are valid.
         /// </summary>
-        protected CreateTreeNodeBase()
+        protected CreateTreeNodeBase(Type keyTypeIfFixed, Type valueTypeIfFixed, Guid typeGuid)
         {
+            KeyTypeIfFixed = keyTypeIfFixed;
+            ValueTypeIfFixed = valueTypeIfFixed;
+            GetTypeGuid = typeGuid;
             if (ValueTypeIfFixed == null && KeyTypeIfFixed != null)
                 throw new Exception("Cannot fix the value type but not the key type.");
         }
@@ -43,19 +46,13 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// If this tree node type has a fixed key type, it is specified here. If this property returns null,
         /// this tree node type is not type constrained. This field must be assigned if <see cref="ValueTypeIfFixed"/> is assigned.
         /// </summary>
-        public abstract Type KeyTypeIfFixed
-        {
-            get;
-        }
+        public Type KeyTypeIfFixed { get; private set; }
 
         /// <summary>
         /// If this tree node type has a fixed value type, it is specified here. If this property returns null,
         /// this tree node type is not type constrained. This field cannot be assigned if <see cref="KeyTypeIfFixed"/> is null.
         /// </summary>
-        public abstract Type ValueTypeIfFixed
-        {
-            get;
-        }
+        public Type ValueTypeIfFixed { get; private set; }
 
         /// <summary>
         /// A guid that is specific to the underlying storage structure.
@@ -63,10 +60,7 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// <remarks>
         /// A Guid,Type,Type will uniquely define how to encode/decode a node. Therefore, mulitple types can be the same Guid.
         /// </remarks>
-        public abstract Guid GetTypeGuid
-        {
-            get;
-        }
+        public Guid GetTypeGuid { get; private set; }
 
         /// <summary>
         /// Creates a TreeNodeBase

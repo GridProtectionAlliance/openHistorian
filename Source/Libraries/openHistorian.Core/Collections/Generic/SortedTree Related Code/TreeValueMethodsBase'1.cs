@@ -57,13 +57,23 @@ namespace openHistorian.Collections.Generic
             Create
 
         }
+        public static void WriteToConsole()
+        {
+            Console.WriteLine("ValueMethodsBase calls");
+            for (int x = 0; x < 5; x++)
+            {
+                Console.WriteLine(CallMethods[x] + "\t" + ((Method)(x)).ToString());
+            }
+        }
 #endif
 
         protected TreeValueMethodsBase()
         {
             Size = GetSize();
         }
-
+        /// <summary>
+        /// The fixed size of this key
+        /// </summary>
         public int Size
         {
             get;
@@ -78,14 +88,47 @@ namespace openHistorian.Collections.Generic
         {
             get;
         }
-
+        /// <summary>
+        /// Clears the key
+        /// </summary>
+        /// <param name="data"></param>
+        public abstract void Clear(TValue data);
+        /// <summary>
+        /// Gets the size of this class when serialized
+        /// </summary>
+        /// <returns></returns>
         protected abstract int GetSize();
-
+        /// <summary>
+        /// Reads the key from the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public abstract unsafe void Read(byte* stream, TValue data);
+        /// <summary>
+        /// Writes the key to the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public abstract unsafe void Write(byte* stream, TValue data);
+        /// <summary>
+        /// Writes the <see cref="currentValue"/> as a delta from the <see cref="previousValue"/> to the provided stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="currentValue"></param>
+        /// <param name="previousValue"></param>
         public abstract void WriteCompressed(BinaryStreamBase stream, TValue currentValue, TValue previousValue);
+        /// <summary>
+        /// Reads the <see cref="currentValue"/> as a delta from the <see cref="previousValue"/> from the provided stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="currentValue"></param>
+        /// <param name="previousValue"></param>
         public abstract void ReadCompressed(BinaryStreamBase stream, TValue currentValue, TValue previousValue);
-
+        /// <summary>
+        /// Copies the source to the destination
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
         public virtual unsafe void Copy(TValue source, TValue destination)
         {
 #if GetTreeValueMethodsCallCount
@@ -95,18 +138,13 @@ namespace openHistorian.Collections.Generic
             Write(ptr, source);
             Read(ptr, destination);
         }
-
-        public abstract void Clear(TValue data);
-
-        public TreeValueMethodsBase<TValue> Create()
-        {
-#if GetTreeValueMethodsCallCount
-            CallMethods[(int)Method.Create]++;
-#endif
-            TreeValueMethodsBase<TValue> obj = (TreeValueMethodsBase<TValue>)MemberwiseClone();
-            return obj;
-        }
-        
+     
+        /// <summary>
+        /// Gets if value == value2
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="value2"></param>
+        /// <returns></returns>
         public virtual unsafe bool IsEqual(TValue value, TValue value2)
         {
 #if GetTreeValueMethodsCallCount
@@ -121,7 +159,11 @@ namespace openHistorian.Collections.Generic
                     return false;
             return true;
         }
-
+        /// <summary>
+        /// Writes the provided data to the Stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public virtual unsafe void Write(BinaryStreamBase stream, TValue data)
         {
 #if GetTreeValueMethodsCallCount
@@ -131,7 +173,11 @@ namespace openHistorian.Collections.Generic
             Write(ptr, data);
             stream.Write(ptr, Size);
         }
-
+        /// <summary>
+        /// Reads the provided key from the stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public virtual unsafe void Read(BinaryStreamBase stream, TValue data)
         {
 #if GetTreeValueMethodsCallCount

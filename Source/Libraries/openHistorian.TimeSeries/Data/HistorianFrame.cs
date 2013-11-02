@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ISortedTreeValue`1.cs - Gbtc
+//  HistorianFrame.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,26 +16,45 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/1/2013 - Steven E. Chisholm
+//  11/2/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//       
+//
 //******************************************************************************************************
 
-namespace openHistorian.Collections.Generic
-{
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using GSF.IO.Unmanaged;
+using openHistorian.Collections;
 
+namespace openHistorian.Data
+{
     /// <summary>
-    /// The interface that is required to use as a value in <see cref="SortedTree"/> 
+    /// Represents a single data concentrated frame
     /// </summary>
-    /// <typeparam name="TValue">A class that has a default constructor</typeparam>
-    public interface ISortedTreeValue<TValue>
-        where TValue : class, new()
+    public class HistorianFrame
     {
-        /// <summary>
-        /// Creates a class that contains the necessary methods for the SortedTree.
-        /// </summary>
-        /// <returns></returns>
-        TreeValueMethodsBase<TValue> CreateValueMethods();
+
+        //int m_position;
+
+        //public HistorianFrame()
+        //{
+        //    m_dataStream = new BinaryStream(allocatesOwnMemory: true);
+        //}
+
+        //public void Clear()
+        //{
+            
+        //}
+
+        //public void Add(HistorianKey key, HistorianValue value)
+        //{
+
+        //}
+
 
     }
 }

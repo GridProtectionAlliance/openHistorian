@@ -63,6 +63,7 @@
     <Compile Include="Data\Query\GetSignalMethods.cs" />
     <Compile Include="Data\Query\GetSignalsWithCalculationsMethods.cs" />
     <Compile Include="Data\Query\GetTableMethods.cs" />
+    <Compile Include="Data\HistorianFrame.cs" />
     <Compile Include="Data\Query\HistorianQuery.cs" />
     <Compile Include="Data\Query\ISignalCalculation.cs" />
     <Compile Include="Data\Query\ISignalWithType.cs" />

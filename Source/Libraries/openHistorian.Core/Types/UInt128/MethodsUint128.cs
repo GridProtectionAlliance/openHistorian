@@ -138,7 +138,7 @@ namespace openHistorian.Collections
         ////ToDo: Origional
         public override unsafe int BinarySearch(byte* pointer, TreeUInt128 key, int recordCount, int keyValueSize)
         {
-            int lastFoundIndex = m_lastFoundIndex;
+            int lastFoundIndex = LastFoundIndex;
             ulong key1 = key.Value1;
             ulong key2 = key.Value2;
             ulong compareKey1;
@@ -151,7 +151,7 @@ namespace openHistorian.Collections
                 compareKey2 = *(ulong*)(pointer + keyValueSize * lastFoundIndex + 8);
                 if (key1 > compareKey1 || (key1 == compareKey1 && key2 > compareKey2)) //Key > CompareKey
                 {
-                    m_lastFoundIndex++;
+                    LastFoundIndex++;
                     return ~recordCount;
                 }
             }
@@ -163,7 +163,7 @@ namespace openHistorian.Collections
 
                 if (key1 == compareKey1 && key2 == compareKey2)
                 {
-                    m_lastFoundIndex++;
+                    LastFoundIndex++;
                     return lastFoundIndex + 1;
                 }
             }
@@ -178,7 +178,7 @@ namespace openHistorian.Collections
                 compareKey2 = *(ulong*)(pointer + keyValueSize * currentTestIndex + 8);
                 if (key1 == compareKey1 && key2 == compareKey2) //Are Equal
                 {
-                    m_lastFoundIndex = currentTestIndex;
+                    LastFoundIndex = currentTestIndex;
                     return currentTestIndex;
                 }
                 if (key1 > compareKey1 || (key1 == compareKey1 && key2 > compareKey2)) //Key > CompareKey
@@ -187,7 +187,7 @@ namespace openHistorian.Collections
                     searchHigherBoundsIndex = currentTestIndex - 1;
             }
 
-            m_lastFoundIndex = searchLowerBoundsIndex;
+            LastFoundIndex = searchLowerBoundsIndex;
             return ~searchLowerBoundsIndex;
         }
     }

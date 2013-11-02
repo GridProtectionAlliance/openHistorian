@@ -27,21 +27,35 @@ using GSF.UnmanagedMemory;
 
 namespace openHistorian.Collections.Generic.TreeNodes
 {
+    /// <summary>
+    /// A node for a <see cref="SortedTree"/> that is encoded in a fixed width. 
+    /// This allows binary searches and faster writing.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public unsafe class FixedSizeNode<TKey, TValue>
         : TreeNodeBase<TKey, TValue>
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
-        protected int m_maxRecordsPerNode;
+        int m_maxRecordsPerNode;
 
+        /// <summary>
+        /// Creates a new class
+        /// </summary>
+        /// <param name="level">the level of this node.</param>
         public FixedSizeNode(byte level)
-            : base(level, 1)
+            : base(level, version: 1)
         {
         }
 
-        public override unsafe TreeScannerBase<TKey, TValue> CreateTreeScanner()
+        /// <summary>
+        /// Returns a tree scanner class.
+        /// </summary>
+        /// <returns></returns>
+        public override TreeScannerBase<TKey, TValue> CreateTreeScanner()
         {
-            return new FixedSizeNodeScanner<TKey, TValue>(Level, BlockSize, Stream, SparseIndex.Get, KeyMethods.Create(), ValueMethods.Create());
+            return new FixedSizeNodeScanner<TKey, TValue>(Level, BlockSize, Stream, SparseIndex.Get);
         }
 
         protected override void InitializeType()

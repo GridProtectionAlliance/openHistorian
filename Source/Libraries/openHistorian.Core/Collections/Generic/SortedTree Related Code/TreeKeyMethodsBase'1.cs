@@ -24,6 +24,7 @@
 //#define GetTreeKeyMethodsCallCount
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using GSF.IO;
 
@@ -39,6 +40,7 @@ namespace openHistorian.Collections.Generic
     /// </remarks>
     /// <typeparam name="TKey"></typeparam>
     public abstract class TreeKeyMethodsBase<TKey>
+        : IComparer<TKey> 
         where TKey : class, new()
     {
 
@@ -75,35 +77,87 @@ namespace openHistorian.Collections.Generic
             CompareToPointer,
             CompareToPointer2,
             Create
-
+        }
+        public static void WriteToConsole()
+        {
+            Console.WriteLine("KeyMethodsBase calls");
+            for (int x = 0; x < 23; x++)
+            {
+                Console.WriteLine(CallMethods[x] + "\t" + ((Method)(x)).ToString());
+            }
         }
 #endif
         
-        protected TKey m_tempKey = new TKey();
-        public int m_lastFoundIndex;
+        protected TKey TempKey = new TKey();
+       
+        protected int LastFoundIndex;
 
+        /// <summary>
+        /// The fixed size of this key
+        /// </summary>
         public int Size
         {
             get;
             private set;
         }
-
+        /// <summary>
+        /// Clears the key
+        /// </summary>
+        /// <param name="key"></param>
         public abstract void Clear(TKey key);
-
+        /// <summary>
+        /// Sets the provided key to it's minimum value
+        /// </summary>
+        /// <param name="key"></param>
         public abstract void SetMin(TKey key);
-
+        /// <summary>
+        /// Sets the privided key to it's maximum value
+        /// </summary>
+        /// <param name="key"></param>
         public abstract void SetMax(TKey key);
 
+        /// <summary>
+        /// Compares two keys together
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public abstract int CompareTo(TKey left, TKey right);
 
+        /// <summary>
+        /// Writes the key to the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public abstract unsafe void Write(byte* stream, TKey data);
 
+        /// <summary>
+        /// Reads the key from the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public abstract unsafe void Read(byte* stream, TKey data);
 
+        /// <summary>
+        /// Writes the <see cref="currentKey"/> as a delta from the <see cref="previousKey"/> to the provided stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="currentKey"></param>
+        /// <param name="previousKey"></param>
         public abstract void WriteCompressed(BinaryStreamBase stream, TKey currentKey, TKey previousKey);
+
+        /// <summary>
+        /// Reads the <see cref="currentKey"/> as a delta from the <see cref="previousKey"/> from the provided stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="currentKey"></param>
+        /// <param name="previousKey"></param>
         public abstract void ReadCompressed(BinaryStreamBase stream, TKey currentKey, TKey previousKey);
 
-
+        /// <summary>
+        /// Gets the size of this class when serialized
+        /// </summary>
+        /// <returns></returns>
         protected abstract int GetSize();
 
         protected TreeKeyMethodsBase()
@@ -120,33 +174,47 @@ namespace openHistorian.Collections.Generic
             get;
         }
 
+        /// <summary>
+        /// Writes the maximum value to the provided stream
+        /// </summary>
+        /// <param name="stream"></param>
         public virtual unsafe void WriteMax(byte* stream)
         {
 #if GetTreeKeyMethodsCallCount
             CallMethods[(int)Method.WriteMax]++;
 #endif
-            SetMax(m_tempKey);
-            Write(stream, m_tempKey);
+            SetMax(TempKey);
+            Write(stream, TempKey);
         }
-
+        /// <summary>
+        /// Writes the minimum value to the provided stream
+        /// </summary>
+        /// <param name="stream"></param>
         public virtual unsafe void WriteMin(byte* stream)
         {
 #if GetTreeKeyMethodsCallCount
             CallMethods[(int)Method.WriteMin]++;
 #endif
-            SetMin(m_tempKey);
-            Write(stream, m_tempKey);
+            SetMin(TempKey);
+            Write(stream, TempKey);
         }
-
+        /// <summary>
+        /// Writes null to the provided stream (hint: Clear state)
+        /// </summary>
+        /// <param name="stream"></param>
         public virtual unsafe void WriteNull(byte* stream)
         {
 #if GetTreeKeyMethodsCallCount
             CallMethods[(int)Method.WriteNull]++;
 #endif
-            Clear(m_tempKey);
-            Write(stream, m_tempKey);
+            Clear(TempKey);
+            Write(stream, TempKey);
         }
-
+        /// <summary>
+        /// Copies the source to the destination
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
         public virtual unsafe void Copy(TKey source, TKey destination)
         {
 #if GetTreeKeyMethodsCallCount
@@ -156,7 +224,11 @@ namespace openHistorian.Collections.Generic
             Write(ptr, source);
             Read(ptr, destination);
         }
-
+        /// <summary>
+        /// Reads the provided key from the stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public virtual unsafe void Read(BinaryStreamBase stream, TKey data)
         {
 #if GetTreeKeyMethodsCallCount
@@ -166,7 +238,11 @@ namespace openHistorian.Collections.Generic
             stream.Read(ptr, Size);
             Read(ptr, data);
         }
-
+        /// <summary>
+        /// Reads the provided key from the BinaryReader.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="data"></param>
         public virtual unsafe void Read(BinaryReader reader, TKey data)
         {
 #if GetTreeKeyMethodsCallCount
@@ -179,7 +255,11 @@ namespace openHistorian.Collections.Generic
             }
             Read(ptr, data);
         }
-
+        /// <summary>
+        /// Writes the provided data to the BinaryWriter
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="data"></param>
         public virtual unsafe void Write(BinaryWriter writer, TKey data)
         {
 #if GetTreeKeyMethodsCallCount
@@ -192,7 +272,11 @@ namespace openHistorian.Collections.Generic
                 writer.Write(ptr[x]);
             }
         }
-
+        /// <summary>
+        /// Writes the provided data to the Stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public virtual unsafe void Write(BinaryStreamBase stream, TKey data)
         {
 #if GetTreeKeyMethodsCallCount
@@ -202,34 +286,49 @@ namespace openHistorian.Collections.Generic
             Write(ptr, data);
             stream.Write(ptr, Size);
         }
-
+        /// <summary>
+        /// Does a binary search on the data to find the best location for the <see cref="key"/>
+        /// </summary>
+        /// <param name="pointer"></param>
+        /// <param name="key"></param>
+        /// <param name="recordCount"></param>
+        /// <param name="keyValueSize"></param>
+        /// <returns></returns>
         public virtual unsafe int BinarySearch(byte* pointer, TKey key, int recordCount, int keyValueSize)
         {
 #if GetTreeKeyMethodsCallCount
             CallMethods[(int)Method.BinarySearch]++;
 #endif
-            TKey compareKey = m_tempKey;
-            if (m_lastFoundIndex == recordCount - 1)
+            TKey compareKey = TempKey;
+            if (LastFoundIndex == recordCount - 1)
             {
-                Read(pointer + keyValueSize * m_lastFoundIndex, compareKey);
+                Read(pointer + keyValueSize * LastFoundIndex, compareKey);
                 if (IsGreaterThan(key, compareKey)) //Key > CompareKey
                 {
-                    m_lastFoundIndex++;
+                    LastFoundIndex++;
                     return ~recordCount;
                 }
             }
-            else if (m_lastFoundIndex < recordCount)
+            else if (LastFoundIndex < recordCount)
             {
-                Read(pointer + keyValueSize * (m_lastFoundIndex + 1), compareKey);
+                Read(pointer + keyValueSize * (LastFoundIndex + 1), compareKey);
                 if (IsEqual(key, compareKey))
                 {
-                    m_lastFoundIndex++;
-                    return m_lastFoundIndex;
+                    LastFoundIndex++;
+                    return LastFoundIndex;
                 }
             }
             return BinarySearch2(pointer, key, recordCount, keyValueSize);
         }
 
+        /// <summary>
+        /// A catch all BinarySearch.
+        /// </summary>
+        /// <param name="pointer"></param>
+        /// <param name="key"></param>
+        /// <param name="recordCount"></param>
+        /// <param name="keyPointerSize"></param>
+        /// <returns></returns>
         protected virtual unsafe int BinarySearch2(byte* pointer, TKey key, int recordCount, int keyPointerSize)
         {
 #if GetTreeKeyMethodsCallCount
@@ -237,54 +336,54 @@ namespace openHistorian.Collections.Generic
 #endif
             if (recordCount == 0)
                 return ~0;
-            TKey compareKey = m_tempKey;
+            TKey compareKey = TempKey;
             int searchLowerBoundsIndex = 0;
             int searchHigherBoundsIndex = recordCount - 1;
 
-            if (m_lastFoundIndex <= recordCount)
+            if (LastFoundIndex <= recordCount)
             {
-                m_lastFoundIndex = Math.Min(m_lastFoundIndex, recordCount - 1);
-                Read(pointer + keyPointerSize * m_lastFoundIndex, compareKey);
+                LastFoundIndex = Math.Min(LastFoundIndex, recordCount - 1);
+                Read(pointer + keyPointerSize * LastFoundIndex, compareKey);
 
                 if (IsEqual(key, compareKey)) //Are Equal
-                    return m_lastFoundIndex;
+                    return LastFoundIndex;
                 if (IsGreaterThan(key, compareKey)) //Key > CompareKey
                 {
                     //Value is greater, check the next key
-                    m_lastFoundIndex++;
+                    LastFoundIndex++;
 
                     //There is no greater key
-                    if (m_lastFoundIndex == recordCount)
+                    if (LastFoundIndex == recordCount)
                         return ~recordCount;
 
-                    Read(pointer + keyPointerSize * m_lastFoundIndex, compareKey);
+                    Read(pointer + keyPointerSize * LastFoundIndex, compareKey);
 
                     if (IsEqual(key, compareKey)) //Are Equal
-                        return m_lastFoundIndex;
+                        return LastFoundIndex;
                     if (IsGreaterThan(key, compareKey)) //Key > CompareKey
-                        searchLowerBoundsIndex = m_lastFoundIndex + 1;
+                        searchLowerBoundsIndex = LastFoundIndex + 1;
                     else
-                        return ~m_lastFoundIndex;
+                        return ~LastFoundIndex;
                 }
                 else
                 {
                     //Value is lesser, check the previous key
                     //There is no lesser key;
-                    if (m_lastFoundIndex == 0)
+                    if (LastFoundIndex == 0)
                         return ~0;
 
-                    m_lastFoundIndex--;
-                    Read(pointer + keyPointerSize * m_lastFoundIndex, compareKey);
+                    LastFoundIndex--;
+                    Read(pointer + keyPointerSize * LastFoundIndex, compareKey);
 
                     if (IsEqual(key, compareKey)) //Are Equal
-                        return m_lastFoundIndex;
+                        return LastFoundIndex;
                     if (IsGreaterThan(key, compareKey)) //Key > CompareKey
                     {
-                        m_lastFoundIndex++;
-                        return ~(m_lastFoundIndex);
+                        LastFoundIndex++;
+                        return ~(LastFoundIndex);
                     }
                     else
-                        searchHigherBoundsIndex = m_lastFoundIndex - 1;
+                        searchHigherBoundsIndex = LastFoundIndex - 1;
                 }
             }
 
@@ -296,7 +395,7 @@ namespace openHistorian.Collections.Generic
 
                 if (IsEqual(key, compareKey)) //Are Equal
                 {
-                    m_lastFoundIndex = currentTestIndex;
+                    LastFoundIndex = currentTestIndex;
                     return currentTestIndex;
                 }
                 if (IsGreaterThan(key, compareKey)) //Key > CompareKey
@@ -305,12 +404,18 @@ namespace openHistorian.Collections.Generic
                     searchHigherBoundsIndex = currentTestIndex - 1;
             }
 
-            m_lastFoundIndex = searchLowerBoundsIndex;
+            LastFoundIndex = searchLowerBoundsIndex;
 
             return ~searchLowerBoundsIndex;
         }
 
-
+        /// <summary>
+        /// Gets if lowerBounds &lt;= key &lt; upperBounds
+        /// </summary>
+        /// <param name="lowerBounds"></param>
+        /// <param name="key"></param>
+        /// <param name="upperBounds"></param>
+        /// <returns></returns>
         public virtual bool IsBetween(TKey lowerBounds, TKey key, TKey upperBounds)
         {
 #if GetTreeKeyMethodsCallCount
@@ -319,6 +424,12 @@ namespace openHistorian.Collections.Generic
             return IsLessThanOrEqualTo(lowerBounds, key) && IsLessThan(key, upperBounds);
         }
 
+        /// <summary>
+        /// Gets if left &lt;= right.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual bool IsLessThanOrEqualTo(TKey left, TKey right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -327,6 +438,12 @@ namespace openHistorian.Collections.Generic
             return CompareTo(left, right) <= 0;
         }
 
+        /// <summary>
+        /// Gets if left &lt; right.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual bool IsLessThan(TKey left, TKey right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -335,6 +452,12 @@ namespace openHistorian.Collections.Generic
             return CompareTo(left, right) < 0;
         }
 
+        /// <summary>
+        /// Gets if left != right.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual bool IsNotEqual(TKey left, TKey right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -343,6 +466,12 @@ namespace openHistorian.Collections.Generic
             return CompareTo(left, right) != 0;
         }
 
+        /// <summary>
+        /// Gets if left &gt; right.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual bool IsGreaterThan(TKey left, TKey right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -351,6 +480,12 @@ namespace openHistorian.Collections.Generic
             return CompareTo(left, right) > 0;
         }
 
+        /// <summary>
+        /// Gets if left &gt;= right.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual unsafe bool IsGreaterThan(TKey left, byte* right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -359,6 +494,12 @@ namespace openHistorian.Collections.Generic
             return CompareTo(left, right) > 0;
         }
 
+        /// <summary>
+        /// Gets if left &gt; right.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual unsafe bool IsGreaterThan(byte* left, TKey right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -366,7 +507,12 @@ namespace openHistorian.Collections.Generic
 #endif
             return CompareTo(left, right) > 0;
         }
-
+        /// <summary>
+        /// Gets if left &gt;= right.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual bool IsGreaterThanOrEqualTo(TKey left, TKey right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -374,7 +520,12 @@ namespace openHistorian.Collections.Generic
 #endif
             return CompareTo(left, right) >= 0;
         }
-
+        /// <summary>
+        /// Gets if left == right.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual bool IsEqual(TKey left, TKey right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -382,7 +533,12 @@ namespace openHistorian.Collections.Generic
 #endif
             return CompareTo(left, right) == 0;
         }
-
+        /// <summary>
+        /// Gets if left == right.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual unsafe bool IsEqual(TKey left, byte* right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -390,34 +546,47 @@ namespace openHistorian.Collections.Generic
 #endif
             return CompareTo(left, right) == 0;
         }
-
+        /// <summary>
+        /// Compares Left to Right
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual unsafe int CompareTo(TKey left, byte* right)
         {
 #if GetTreeKeyMethodsCallCount
             CallMethods[(int)Method.CompareToPointer]++;
 #endif
-            Read(right, m_tempKey);
-            return CompareTo(left, m_tempKey);
+            Read(right, TempKey);
+            return CompareTo(left, TempKey);
         }
 
+        /// <summary>
+        /// Compares Left to Right
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual unsafe int CompareTo(byte* left, TKey right)
         {
 #if GetTreeKeyMethodsCallCount
             CallMethods[(int)Method.CompareToPointer2]++;
 #endif
-            Read(left, m_tempKey);
-            return CompareTo(m_tempKey, right);
+            Read(left, TempKey);
+            return CompareTo(TempKey, right);
         }
 
-        public TreeKeyMethodsBase<TKey> Create()
+        /// <summary>
+        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <returns>
+        /// A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>, as shown in the following table.Value Meaning Less than zero<paramref name="x"/> is less than <paramref name="y"/>.Zero<paramref name="x"/> equals <paramref name="y"/>.Greater than zero<paramref name="x"/> is greater than <paramref name="y"/>.
+        /// </returns>
+        /// <param name="x">The first object to compare.</param><param name="y">The second object to compare.</param>
+        public int Compare(TKey x, TKey y)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.Create]++;
-#endif
-            TreeKeyMethodsBase<TKey> obj = (TreeKeyMethodsBase<TKey>)MemberwiseClone();
-            obj.m_tempKey = new TKey();
-            return obj;
+            return CompareTo(x, y);
         }
-
+        
     }
 }

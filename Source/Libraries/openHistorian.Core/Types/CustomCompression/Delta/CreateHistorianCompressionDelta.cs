@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  CreateHistorianCompressionTs.cs - Gbtc
+//  CreateHistorianCompressionDelta.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,54 +28,25 @@ namespace openHistorian.Collections.Generic.TreeNodes
     /// <summary>
     /// Used to generically create a fixed size node.
     /// </summary>
-    public class CreateHistorianCompressionTs
+    public class CreateHistorianCompressionDelta
         : CreateTreeNodeBase
     {
 
-        // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}
+        /// <summary>
+        /// Creates Class
+        /// </summary>
+        public CreateHistorianCompressionDelta()
+            : base(typeof(HistorianKey), typeof(HistorianValue), TypeGuid)
+        {
+            
+        }
+
+        // {F9B08E1E-2D3E-466A-A186-453064588087}
         /// <summary>
         /// A unique identifier for this compression method.
         /// </summary>
-        public readonly static Guid TypeGuid = new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7);
-
-        /// <summary>
-        /// If this tree node type has a fixed key type, it is specified here. If this property returns null,
-        /// this tree node type is not type constrained. This field must be assigned if <see cref="CreateTreeNodeBase.ValueTypeIfFixed"/> is assigned.
-        /// </summary>
-        public override Type KeyTypeIfFixed
-        {
-            get
-            {
-                return typeof(HistorianKey);
-            }
-        }
-
-        /// <summary>
-        /// If this tree node type has a fixed value type, it is specified here. If this property returns null,
-        /// this tree node type is not type constrained. This field cannot be assigned if <see cref="CreateTreeNodeBase.KeyTypeIfFixed"/> is null.
-        /// </summary>
-        public override Type ValueTypeIfFixed
-        {
-            get
-            {
-                return typeof(HistorianValue);
-            }
-        }
-
-        /// <summary>
-        /// A guid that is specific to the underlying storage structure.
-        /// </summary>
-        /// <remarks>
-        /// A Guid,Type,Type will uniquely define how to encode/decode a node. Therefore, mulitple types can be the same Guid.
-        /// </remarks>
-        public override Guid GetTypeGuid
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
-
+        public readonly static Guid TypeGuid = new Guid(0xf9b08e1e, 0x2d3e, 0x466a, 0xa1, 0x86, 0x45, 0x30, 0x64, 0x58, 0x80, 0x87);
+        
         /// <summary>
         /// Creates a TreeNodeBase
         /// </summary>
@@ -85,7 +56,7 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// <returns></returns>
         public override TreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
         {
-            return (TreeNodeBase<TKey, TValue>)(object)new HistorianCompressionTs(level);
+            return (TreeNodeBase<TKey, TValue>)(object)new HistorianCompressionDelta(level);
         }
     }
 }

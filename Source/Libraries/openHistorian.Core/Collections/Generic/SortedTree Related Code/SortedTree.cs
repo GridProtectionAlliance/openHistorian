@@ -27,21 +27,36 @@ using openHistorian.Collections.Generic.TreeNodes;
 
 namespace openHistorian.Collections.Generic
 {
+    /// <summary>
+    /// A static class for some basic functions of the sortedtree.
+    /// </summary>
     public static class SortedTree
     {
+        /// <summary>
+        /// Registers a user defined TreeNode type
+        /// </summary>
+        /// <param name="treeNode"></param>
         public static void RegisterTreeNode(CreateTreeNodeBase treeNode)
         {
             TreeNodeInitializer.Register(treeNode);
         }
-
-        public static void ReadHeader(BinaryStreamBase stream, out Guid sparseIndexType, out Guid treeNodeType, out int blockSize)
+        /// <summary>
+        /// Reads the header data.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="sparseIndexType"></param>
+        /// <param name="treeNodeType"></param>
+        /// <param name="blockSize"></param>
+        internal static void ReadHeader(BinaryStreamBase stream, out Guid sparseIndexType, out Guid treeNodeType, out int blockSize)
         {
             stream.Position = 0;
             sparseIndexType = stream.ReadGuid();
             treeNodeType = stream.ReadGuid();
             blockSize = stream.ReadInt32();
         }
-
+        /// <summary>
+        /// A node where each element is fixed in size.
+        /// </summary>
         public static Guid FixedSizeNode
         {
             get
@@ -49,13 +64,6 @@ namespace openHistorian.Collections.Generic
                 return CreateFixedSizeNode.TypeGuid;
             }
         }
-
-        public static Guid ZeroNode
-        {
-            get
-            {
-                return CreateZeroNode.TypeGuid;
-            }
-        }
+       
     }
 }

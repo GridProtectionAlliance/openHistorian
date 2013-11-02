@@ -27,6 +27,9 @@ using GSF.IO;
 
 namespace openHistorian.Collections.Generic.TreeNodes
 {
+    /// <summary>
+    /// A delta encoded scanner
+    /// </summary>
     public unsafe class HistorianCompressionDeltaScanner
         : EncodedNodeScannerBase<HistorianKey, HistorianValue>
     {
@@ -37,8 +40,15 @@ namespace openHistorian.Collections.Generic.TreeNodes
         ulong m_prevValue2;
         ulong m_prevValue3;
 
-        public HistorianCompressionDeltaScanner(byte level, int blockSize, BinaryStreamBase stream, Func<HistorianKey, byte, uint> lookupKey, TreeKeyMethodsBase<HistorianKey> keyMethods, TreeValueMethodsBase<HistorianValue> valueMethods)
-            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, 2)
+        /// <summary>
+        /// Creates a new class
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="blockSize"></param>
+        /// <param name="stream"></param>
+        /// <param name="lookupKey"></param>
+        public HistorianCompressionDeltaScanner(byte level, int blockSize, BinaryStreamBase stream, Func<HistorianKey, byte, uint> lookupKey)
+            : base(level, blockSize, stream, lookupKey, 2)
         {
         }
 
@@ -49,7 +59,7 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// <param name="key">the key to write to.</param>
         /// <param name="value">the value to write to.</param>
         /// <returns></returns>
-        protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value)
+        protected override int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value)
         {
             int position = 0;
             m_prevTimestamp ^= Compression.Read7BitUInt64(stream, ref position);

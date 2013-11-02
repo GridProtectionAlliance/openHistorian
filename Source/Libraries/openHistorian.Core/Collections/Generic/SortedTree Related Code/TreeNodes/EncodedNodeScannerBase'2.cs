@@ -33,15 +33,15 @@ namespace openHistorian.Collections.Generic.TreeNodes
     /// <typeparam name="TValue"></typeparam>
     public abstract class EncodedNodeScannerBase<TKey, TValue>
         : TreeScannerBase<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private int m_nextOffset;
         private int m_currentIndex;
         private bool m_skipNextRead;
 
-        protected EncodedNodeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods, byte version)
-            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, version)
+        protected EncodedNodeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, byte version)
+            : base(level, blockSize, stream, lookupKey, version)
         {
         }
 
@@ -80,7 +80,8 @@ namespace openHistorian.Collections.Generic.TreeNodes
         {
             OnNoadReload();
             while (InternalRead() && KeyMethods.IsLessThan(CurrentKey, key))
-                ;
+            {
+            }
             if (KeyMethods.IsLessThan(CurrentKey, key))
             {
                 IndexOfCurrentKeyValue = m_currentIndex;

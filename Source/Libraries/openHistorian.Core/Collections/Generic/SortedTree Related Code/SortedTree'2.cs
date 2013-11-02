@@ -198,17 +198,30 @@ namespace openHistorian.Collections.Generic
             SaveHeader();
         }
 
+        /// <summary>
+        /// Sets a flag that requires that the header data is no longer valid.
+        /// </summary>
         public void SetDirtyFlag()
         {
             IsDirty = true;
         }
 
+        /// <summary>
+        /// Adds the provided key/value to the Tree.
+        /// </summary>
+        /// <param name="key">the key to add</param>
+        /// <param name="value">the value to add</param>
         public void Add(TKey key, TValue value)
         {
             if (!TryAdd(key, value))
                 throw new Exception("Key already exists");
         }
-
+        /// <summary>
+        /// Attempts to add the provided key/value to the Tree.
+        /// </summary>
+        /// <param name="key">the key to add</param>
+        /// <param name="value">the value to add</param>
+        /// <returns>returns true if successful, false if a duplicate key was found</returns>
         public bool TryAdd(TKey key, TValue value)
         {
             if (LeafStorage.TryInsert(key, value))
@@ -220,6 +233,10 @@ namespace openHistorian.Collections.Generic
             return false;
         }
 
+        /// <summary>
+        /// Adds all of the points in the stream to the Tree
+        /// </summary>
+        /// <param name="stream">stream to add</param>
         public void AddRange(KeyValueStream<TKey, TValue> stream)
         {
             while (stream.Read())
@@ -227,7 +244,10 @@ namespace openHistorian.Collections.Generic
                 Add(stream.CurrentKey, stream.CurrentValue);
             }
         }
-
+        /// <summary>
+        /// Adds all of the items in the stream to this tree. Skips any dulpicate entries.
+        /// </summary>
+        /// <param name="stream">the stream to add.</param>
         public void TryAddRange(KeyValueStream<TKey, TValue> stream)
         {
             while (stream.Read())
@@ -235,7 +255,11 @@ namespace openHistorian.Collections.Generic
                 TryAdd(stream.CurrentKey, stream.CurrentValue);
             }
         }
-
+        /// <summary>
+        /// Tries to remove the following key from the tree.
+        /// </summary>
+        /// <param name="key">the key to remove</param>
+        /// <returns>true if successful, false otherwise.</returns>
         public bool TryRemove(TKey key)
         {
             if (LeafStorage.TryRemove(key))
@@ -247,17 +271,36 @@ namespace openHistorian.Collections.Generic
             return false;
         }
 
+        /// <summary>
+        /// Gets the following key from the Tree. Assignes to the value.
+        /// </summary>
+        /// <param name="key">the key to look for</param>
+        /// <param name="value">the place to store the value</param>
         public void Get(TKey key, TValue value)
         {
             if (!TryGet(key, value))
                 throw new Exception("Key does not exists");
         }
-
+        /// <summary>
+        /// Attempts to get the following key from the Tree. Assigns to the value.
+        /// </summary>
+        /// <param name="key">the key to look for</param>
+        /// <param name="value">the place to store the value</param>
+        /// <returns>True if successful, False otherwise.</returns>
         public bool TryGet(TKey key, TValue value)
         {
             return LeafStorage.TryGet(key, value);
         }
 
+        /// <summary>
+        /// Gets the lower and upper bounds of this tree.
+        /// </summary>
+        /// <param name="lowerBounds">The first key in the tree</param>
+        /// <param name="upperBounds">The final key in the tree</param>
+        /// <remarks>
+        /// If the tree contains no data. <see cref="lowerBounds"/> is set to it's maximum value
+        /// and <see cref="upperBounds"/> is set to it's minimum value.
+        /// </remarks>
         public void GetKeyRange(TKey lowerBounds, TKey upperBounds)
         {
             if (LeafStorage.TryGetFirstRecord(lowerBounds, m_tempValue) &&
@@ -281,6 +324,10 @@ namespace openHistorian.Collections.Generic
         {
         }
 
+        /// <summary>
+        /// Creates a tree scanner that can be used to seek this tree.
+        /// </summary>
+        /// <returns></returns>
         public TreeScannerBase<TKey, TValue> CreateTreeScanner()
         {
             return LeafStorage.CreateTreeScanner();
@@ -347,11 +394,21 @@ namespace openHistorian.Collections.Generic
             IsDirty = false;
         }
 
+        /// <summary>
+        /// Opens a sorted tree using the provided stream.
+        /// </summary>
+        /// <param name="stream">the stream to use to open.</param>
+        /// <returns></returns>
         public static SortedTree<TKey, TValue> Open(BinaryStreamBase stream)
         {
             return Open(stream, stream);
         }
-
+        /// <summary>
+        /// Opens a SortedTree using the provided streams. (two streams pointing to the same data source)
+        /// </summary>
+        /// <param name="stream1">the first stream</param>
+        /// <param name="stream2">the second stream</param>
+        /// <returns></returns>
         public static SortedTree<TKey, TValue> Open(BinaryStreamBase stream1, BinaryStreamBase stream2)
         {
             SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream1, stream2);
@@ -359,21 +416,46 @@ namespace openHistorian.Collections.Generic
             return tree;
         }
 
+        /// <summary>
+        /// Creates a new FixedSize SortedTree using the provided stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="blockSize"></param>
+        /// <returns></returns>
         public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize)
         {
             return Create(stream, stream, blockSize);
         }
-
+        /// <summary>
+        /// Creates a new FixedSize SortedTree using the provided streams.
+        /// </summary>
+        /// <param name="stream1"></param>
+        /// <param name="stream2"></param>
+        /// <param name="blockSize"></param>
+        /// <returns></returns>
         public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
         {
             return Create(stream1, stream2, blockSize, SortedTree.FixedSizeNode);
         }
-
+        /// <summary>
+        /// Creates a new SortedTree writing to the provided stream and using the specified compression metho for the tree node.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="blockSize"></param>
+        /// <param name="treeNodeType"></param>
+        /// <returns></returns>
         public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize, Guid treeNodeType)
         {
             return Create(stream, stream, blockSize, treeNodeType);
         }
-
+        /// <summary>
+        /// Creates a new SortedTree writing to the provided streams and using the specified compression metho for the tree node.
+        /// </summary>
+        /// <param name="stream1"></param>
+        /// <param name="stream2"></param>
+        /// <param name="blockSize"></param>
+        /// <param name="treeNodeType"></param>
+        /// <returns></returns>
         public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize, Guid treeNodeType)
         {
             SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream1, stream2);

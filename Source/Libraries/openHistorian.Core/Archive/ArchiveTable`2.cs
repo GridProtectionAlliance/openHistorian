@@ -30,8 +30,6 @@ namespace openHistorian.Archive
     /// <summary>
     /// Represents a individual self-contained table. 
     /// </summary>
-    /// <remarks>
-    /// </remarks>
     public partial class ArchiveTable<TKey, TValue>
         : IDisposable
         where TKey : class, ISortedTreeKey<TKey>, new()
@@ -45,7 +43,10 @@ namespace openHistorian.Archive
         private bool m_disposed;
         private readonly TransactionalFileStructure m_fileStructure;
         private Editor m_activeEditor;
-        public ArchiveFile BaseFile;
+        /// <summary>
+        /// Gets the archive file where this table exists.
+        /// </summary>
+        public ArchiveFile BaseFile { get; private set; }
 
         #endregion
 

@@ -28,6 +28,11 @@ namespace openHistorian.Collections.Generic
     public unsafe partial class TreeNodeBase<TKey, TValue>
     {
         //ToDO: Checked
+        /// <summary>
+        /// Tries to remove the key from the Node.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool TryRemove(TKey key)
         {
             if (ValidBytes > m_minRecordNodeBytes &&

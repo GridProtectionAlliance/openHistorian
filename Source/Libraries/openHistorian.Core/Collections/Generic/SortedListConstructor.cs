@@ -25,32 +25,41 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace GSF.Collections.Generic
 {
-
+    /// <summary>
+    /// Quickly will create a sortedList from the provided list of keys and values
+    /// </summary>
     public static class SortedListConstructor
     {
+
+        /// <summary>
+        /// Creates a sorted list from the provided keys and values.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="keys"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
         public static SortedList<TKey, TValue> Create<TKey, TValue>(ICollection<TKey> keys, ICollection<TValue> values)
         {
             return new DictionaryWrapper<TKey, TValue>(keys, values).ToSortedList();
         }
 
-        private class DictionaryWrapper<TKey,TValue> 
-            : IDictionary<TKey,TValue>
+        private class DictionaryWrapper<TKey, TValue>
+            : IDictionary<TKey, TValue>
         {
-
             public DictionaryWrapper(ICollection<TKey> keys, ICollection<TValue> values)
             {
                 Keys = keys;
                 Values = values;
             }
-
             public SortedList<TKey, TValue> ToSortedList()
             {
                 return new SortedList<TKey, TValue>(this);
             }
-
             public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
             {
                 using (var keys = Keys.GetEnumerator())
@@ -60,7 +69,6 @@ namespace GSF.Collections.Generic
                         yield return new KeyValuePair<TKey, TValue>(keys.Current, values.Current);
                 }
             }
-
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();

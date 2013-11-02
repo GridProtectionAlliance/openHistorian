@@ -85,6 +85,10 @@ namespace openHistorian.Archive
                 m_dataTree.AddPoint(key, value);
             }
 
+            /// <summary>
+            /// Opens a tree scanner for this archive file
+            /// </summary>
+            /// <returns></returns>
             public TreeScannerBase<TKey, TValue> GetRange()
             {
                 if (m_disposed)
@@ -92,6 +96,10 @@ namespace openHistorian.Archive
                 return m_dataTree.GetDataRange();
             }
 
+            /// <summary>
+            /// Adds all of the points to this archive file.
+            /// </summary>
+            /// <param name="scanner"></param>
             public void AddPoints(KeyValueStream<TKey, TValue> scanner)
             {
                 if (m_disposed)

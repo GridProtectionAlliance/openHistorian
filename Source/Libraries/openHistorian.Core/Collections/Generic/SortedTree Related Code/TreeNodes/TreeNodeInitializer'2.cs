@@ -23,7 +23,7 @@
 
 namespace openHistorian.Collections.Generic.TreeNodes
 {
-    public class TreeNodeInitializer<TKey, TValue>
+    internal class TreeNodeInitializer<TKey, TValue>
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {

@@ -331,20 +331,21 @@ namespace openHistorian.Engine
         {
 
             const int Max = 1000000;
+            const int FileCount = 1000;
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
             DateTime start = DateTime.Now.Date;
 
-            for (int x = 0; x < 1000; x++)
+            for (int x = 0; x < FileCount; x++)
             {
                 var table1 = CreateTable();
-                AddData(table1, start.AddMinutes(2 * x), new TimeSpan(TimeSpan.TicksPerSecond), 60, 100, 1, Max / 60 / 1000);
+                AddData(table1, start.AddMinutes(2 * x), new TimeSpan(TimeSpan.TicksPerSecond), 60, 100, 1, Max / 60 / FileCount);
                 using (var editor = list.AcquireEditLock())
                 {
                     editor.Add(table1, false);
                 }
             }
 
-            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(2000), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
+            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
             var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
@@ -358,6 +359,21 @@ namespace openHistorian.Engine
                 }
             });
             Console.WriteLine(Max / sec / 1000000);
+
+            //TreeKeyMethodsBase<HistorianKey>.WriteToConsole();
+            //TreeValueMethodsBase<HistorianValue>.WriteToConsole();
+
+            //Console.WriteLine("KeyMethodsBase calls");
+            //for (int x = 0; x < 23; x++)
+            //{
+            //    Console.WriteLine(TreeKeyMethodsBase<HistorianKey>.CallMethods[x] + "\t" + ((TreeKeyMethodsBase<HistorianKey>.Method)(x)).ToString());
+            //}
+            //Console.WriteLine("ValueMethodsBase calls");
+            //for (int x = 0; x < 5; x++)
+            //{
+            //    Console.WriteLine(TreeValueMethodsBase<HistorianValue>.CallMethods[x] + "\t" + ((TreeValueMethodsBase<HistorianValue>.Method)(x)).ToString());
+            //}
+
         }
 
         [Test]

@@ -6,6 +6,7 @@ using NUnit.Framework;
 using openHistorian.Archive;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
+using openHistorian.Collections.Generic.TreeNodes;
 using openHistorian.FileStructure.IO;
 
 namespace openHistorian.UnitTests.Archive
@@ -68,7 +69,7 @@ namespace openHistorian.UnitTests.Archive
 
         private TestResults Test(int pageSize)
         {
-            openHistorian.Stats.LookupKeys = 0;
+            Stats.LookupKeys = 0;
             DiskIoSession.ReadCount = 0;
             DiskIoSession.WriteCount = 0;
             Stats.ChecksumCount = 0;

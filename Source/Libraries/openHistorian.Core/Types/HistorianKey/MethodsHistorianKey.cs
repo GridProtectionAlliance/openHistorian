@@ -90,6 +90,25 @@ namespace openHistorian.Collections
         //    }
         //    return left.Timestamp < right.Timestamp;
         //}
+
+        //public override bool IsGreaterThan(HistorianKey left, HistorianKey right)
+        //{
+        //    if (left.Timestamp == right.Timestamp)
+        //    {
+        //        if (left.PointID == right.PointID)
+        //        {
+        //            return left.EntryNumber > right.EntryNumber;
+        //        }
+        //        return left.PointID > right.PointID;
+        //    }
+        //    return left.Timestamp > right.Timestamp;
+        //}
+
+        //public override unsafe bool IsEqual(HistorianKey left, HistorianKey right)
+        //{
+        //    return left.Timestamp == right.Timestamp && left.PointID == right.PointID && left.EntryNumber == right.EntryNumber;
+        //}
+
         //public override bool IsLessThan(HistorianKey left, HistorianKey right)
         //{
         //    return left.Timestamp < right.Timestamp
@@ -208,9 +227,7 @@ namespace openHistorian.Collections
                 return TypeGuid;
             }
         }
-
-    
-
+        
         //public override bool IsLessThan(HistorianKey left, HistorianKey right)
         //{
         //    return left.Value1 < right.Value1 || (left.Value1 == right.Value1 && left.Value2 < right.Value2);

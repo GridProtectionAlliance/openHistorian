@@ -34,8 +34,8 @@ namespace openHistorian.Collections.Generic
     /// <typeparam name="TValue"></typeparam>
     public abstract unsafe class TreeScannerBase<TKey, TValue>
         : SeekableKeyValueStream<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private const int OffsetOfVersion = 0;
         private const int OffsetOfNodeLevel = OffsetOfVersion + sizeof(byte);
@@ -107,8 +107,7 @@ namespace openHistorian.Collections.Generic
         //protected int OffsetOfUpperBounds;
         protected int KeySize;
 
-        protected TreeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey,
-                                  TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods, byte version)
+        protected TreeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, byte version)
         {
             m_tempKey = new TKey();
             //m_lowerKey = new TKey();
@@ -119,8 +118,8 @@ namespace openHistorian.Collections.Generic
 
             //m_currentNode = new Node(stream, blockSize);
 
-            KeyMethods = keyMethods;
-            ValueMethods = valueMethods;
+            KeyMethods = m_tempKey.CreateKeyMethods();
+            ValueMethods = new TValue().CreateValueMethods();
 
             KeySize = KeyMethods.Size;
             KeyValueSize = (KeyMethods.Size + ValueMethods.Size);

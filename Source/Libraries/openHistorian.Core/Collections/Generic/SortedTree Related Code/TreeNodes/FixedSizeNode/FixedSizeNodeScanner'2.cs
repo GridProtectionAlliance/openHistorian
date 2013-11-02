@@ -26,16 +26,31 @@ using GSF.IO;
 
 namespace openHistorian.Collections.Generic.TreeNodes
 {
+    /// <summary>
+    /// The treescanner for a fixed size node.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public class FixedSizeNodeScanner<TKey, TValue>
         : TreeScannerBase<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
-        public FixedSizeNodeScanner(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, TreeKeyMethodsBase<TKey> keyMethods, TreeValueMethodsBase<TValue> valueMethods)
-            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, 1)
+        /// <summary>
+        /// creates a new class
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="blockSize"></param>
+        /// <param name="stream"></param>
+        /// <param name="lookupKey"></param>
+        public FixedSizeNodeScanner(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey)
+            : base(level, blockSize, stream, lookupKey, version: 1)
         {
         }
 
+        /// <summary>
+        /// Using <see cref="TreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
+        /// </summary>
         protected override unsafe void ReadNext()
         {
             byte* ptr = Pointer + IndexOfCurrentKeyValue * KeyValueSize;
@@ -44,6 +59,10 @@ namespace openHistorian.Collections.Generic.TreeNodes
             ValueMethods.Read(ptr + KeySize, CurrentValue);
         }
 
+        /// <summary>
+        /// Using <see cref="TreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
+        /// </summary>
+        /// <param name="key">the key to advance to</param>
         protected override unsafe void FindKey(TKey key)
         {
             int offset = KeyMethods.BinarySearch(Pointer, key, RecordCount, KeyValueSize);

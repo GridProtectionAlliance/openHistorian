@@ -102,7 +102,7 @@ namespace openHistorian.Collections.Generic.TreeNodes
 
         public override unsafe TreeScannerBase<HistorianKey, HistorianValue> CreateTreeScanner()
         {
-            return new HistorianCompressionDeltaScanner(Level, BlockSize, Stream, SparseIndex.Get, KeyMethods.Create(), ValueMethods.Create());
+            return new HistorianCompressionDeltaScanner(Level, BlockSize, Stream, SparseIndex.Get);
         }
     }
 }

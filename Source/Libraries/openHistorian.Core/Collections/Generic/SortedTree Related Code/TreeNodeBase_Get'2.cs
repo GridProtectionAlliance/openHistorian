@@ -28,67 +28,67 @@ namespace openHistorian.Collections.Generic
 {
     public partial class TreeNodeBase<TKey, TValue>
     {
-        private TKey[] m_keys;
-        private TValue[] m_values;
+        //private TKey[] m_keys;
+        //private TValue[] m_values;
 
-        public TKey[] Keys
-        {
-            get
-            {
-                BuildKeyList();
-                return m_keys;
-            }
-        }
+        //public TKey[] Keys
+        //{
+        //    get
+        //    {
+        //        BuildKeyList();
+        //        return m_keys;
+        //    }
+        //}
 
-        public TValue[] Values
-        {
-            get
-            {
-                BuildKeyList();
-                return m_values;
-            }
-        }
+        //public TValue[] Values
+        //{
+        //    get
+        //    {
+        //        BuildKeyList();
+        //        return m_values;
+        //    }
+        //}
 
-        public void WriteNodeData(StringBuilder sb)
-        {
-            BuildKeyList();
-            sb.AppendLine(string.Format("Node Index: {0} Record Count: {1} Node Level: {2} " +
-                                        "Right Sibling: {3} Left Sibling: {4} Lower Key: {5} Upper Key: {6}", NodeIndex, RecordCount,
-                                        Level, RightSiblingNodeIndex, LeftSiblingNodeIndex, LowerKey, UpperKey));
+        //public void WriteNodeData(StringBuilder sb)
+        //{
+        //    BuildKeyList();
+        //    sb.AppendLine(string.Format("Node Index: {0} Record Count: {1} Node Level: {2} " +
+        //                                "Right Sibling: {3} Left Sibling: {4} Lower Key: {5} Upper Key: {6}", NodeIndex, RecordCount,
+        //                                Level, RightSiblingNodeIndex, LeftSiblingNodeIndex, LowerKey, UpperKey));
 
-            foreach (TKey key in m_keys)
-            {
-                sb.Append(key.ToString());
-                sb.Append("\t");
-            }
-            sb.AppendLine();
+        //    foreach (TKey key in m_keys)
+        //    {
+        //        sb.Append(key.ToString());
+        //        sb.Append("\t");
+        //    }
+        //    sb.AppendLine();
 
-            foreach (TValue value in m_values)
-            {
-                sb.Append(value.ToString());
-                sb.Append("\t");
-            }
-            sb.AppendLine();
-        }
+        //    foreach (TValue value in m_values)
+        //    {
+        //        sb.Append(value.ToString());
+        //        sb.Append("\t");
+        //    }
+        //    sb.AppendLine();
+        //}
 
-        private void BuildKeyList()
-        {
-            if (m_keys == null || m_keys.Length != RecordCount)
-            {
-                m_keys = new TKey[RecordCount];
-                m_values = new TValue[RecordCount];
+        //private void BuildKeyList()
+        //{
+        //    if (m_keys == null || m_keys.Length != RecordCount)
+        //    {
+        //        m_keys = new TKey[RecordCount];
+        //        m_values = new TValue[RecordCount];
 
-                for (int x = 0; x < RecordCount; x++)
-                {
-                    m_keys[x] = new TKey();
-                    m_values[x] = new TValue();
-                }
-            }
-            for (int x = 0; x < RecordCount; x++)
-            {
-                Read(x, m_keys[x], m_values[x]);
-            }
-        }
+        //        for (int x = 0; x < RecordCount; x++)
+        //        {
+        //            m_keys[x] = new TKey();
+        //            m_values[x] = new TValue();
+        //        }
+        //    }
+        //    for (int x = 0; x < RecordCount; x++)
+        //    {
+        //        Read(x, m_keys[x], m_values[x]);
+        //    }
+        //}
 
         #region [ Methods ]
 

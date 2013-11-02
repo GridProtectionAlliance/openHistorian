@@ -137,7 +137,7 @@ namespace openHistorian.Collections
         //ToDo: Origional
         public override unsafe int BinarySearch(byte* pointer, TreeUInt32 key2, int recordCount, int keyValueSize)
         {
-            int lastFoundIndex = m_lastFoundIndex;
+            int lastFoundIndex = LastFoundIndex;
             uint key = key2.Value;
 
             //shortcut for sequentially adding. 
@@ -145,7 +145,7 @@ namespace openHistorian.Collections
             {
                 if (key > *(uint*)(pointer + keyValueSize * lastFoundIndex)) //Key > CompareKey
                 {
-                    m_lastFoundIndex++;
+                    LastFoundIndex++;
                     return ~recordCount;
                 }
             }
@@ -154,7 +154,7 @@ namespace openHistorian.Collections
             {
                 if (key == *(uint*)(pointer + keyValueSize * (lastFoundIndex + 1)))
                 {
-                    m_lastFoundIndex++;
+                    LastFoundIndex++;
                     return lastFoundIndex + 1;
                 }
             }
@@ -169,7 +169,7 @@ namespace openHistorian.Collections
 
                 if (key == compareKey) //Are Equal
                 {
-                    m_lastFoundIndex = currentTestIndex;
+                    LastFoundIndex = currentTestIndex;
                     return currentTestIndex;
                 }
                 if (key > compareKey) //Key > CompareKey
@@ -178,7 +178,7 @@ namespace openHistorian.Collections
                     searchHigherBoundsIndex = currentTestIndex - 1;
             }
 
-            m_lastFoundIndex = searchLowerBoundsIndex;
+            LastFoundIndex = searchLowerBoundsIndex;
             return ~searchLowerBoundsIndex;
         }
     }

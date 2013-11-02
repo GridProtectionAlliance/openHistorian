@@ -281,7 +281,7 @@ namespace openHistorian.Collections.Generic.TreeNodes
 
         }
 
-        protected override unsafe int MaximumStorageSize
+        protected override int MaximumStorageSize
         {
             get
             {
@@ -297,9 +297,9 @@ namespace openHistorian.Collections.Generic.TreeNodes
             }
         }
 
-        public override unsafe TreeScannerBase<HistorianKey, HistorianValue> CreateTreeScanner()
+        public override TreeScannerBase<HistorianKey, HistorianValue> CreateTreeScanner()
         {
-            return new HistorianCompressionTsScanner(Level, BlockSize, Stream, SparseIndex.Get, KeyMethods.Create(), ValueMethods.Create());
+            return new HistorianCompressionTsScanner(Level, BlockSize, Stream, SparseIndex.Get);
         }
     }
 }

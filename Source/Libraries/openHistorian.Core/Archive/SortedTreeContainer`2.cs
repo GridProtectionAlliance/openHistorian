@@ -80,6 +80,10 @@ namespace openHistorian.Archive
             m_tree.GetKeyRange(lowerBounds, upperBounds);
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
             if (!m_disposed)

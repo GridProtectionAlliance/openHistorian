@@ -23,10 +23,14 @@
 
 using System;
 using GSF;
-using GSF.UnmanagedMemory;
 
 namespace openHistorian.Collections.Generic.TreeNodes
 {
+    /// <summary>
+    /// A TreeNode abstract class that is used for linearly encoding a class.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public abstract unsafe class EncodedNodeBase<TKey, TValue>
         : TreeNodeBase<TKey, TValue>
         where TKey : class, ISortedTreeKey<TKey>, new()
@@ -80,7 +84,7 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// <param name="currentKey"></param>
         /// <param name="currentValue"></param>
         /// <returns>returns the number of bytes read from the stream</returns>
-        protected abstract unsafe int EncodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
+        protected abstract int EncodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
 
         /// <summary>
         /// Decodes the record from the stream.
@@ -92,27 +96,21 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// <param name="currentKey">where to store the decoded key</param>
         /// <param name="currentValue">where to store the decoded value</param>
         /// <returns></returns>
-        protected abstract unsafe int DecodeRecord(byte* stream, byte* buffer, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
+        protected abstract int DecodeRecord(byte* stream, byte* buffer, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
 
+        /// <summary>
+        /// The maximum size that will ever be needed to encode or decode this data.
+        /// </summary>
         protected abstract int MaximumStorageSize
         {
             get;
         }
 
+        
         protected override void Read(int index, TValue value)
         {
             if (index == RecordCount)
                 throw new Exception();
-            //if (m_currentIndex == index)
-            //{
-            //    ValueMethods.Copy(m_currentValue, value);
-            //    return;
-            //}
-            //if (m_currentIndex - 1 == index)
-            //{
-            //    ValueMethods.Copy(m_prevValue, value);
-            //    return;
-            //}
             fixed (byte* buffer = m_buffer1)
                 SeekTo(index, buffer);
             ValueMethods.Copy(m_currentValue, value);
@@ -122,18 +120,6 @@ namespace openHistorian.Collections.Generic.TreeNodes
         {
             if (index == RecordCount)
                 throw new Exception();
-            //if (m_currentIndex == index)
-            //{
-            //    KeyMethods.Copy(m_currentKey, key);
-            //    ValueMethods.Copy(m_currentValue, value);
-            //    return;
-            //}
-            //if (m_currentIndex - 1 == index)
-            //{
-            //    KeyMethods.Copy(m_prevKey, key);
-            //    ValueMethods.Copy(m_prevValue, value);
-            //    return;
-            //}
             fixed (byte* buffer = m_buffer1)
                 SeekTo(index, buffer);
             KeyMethods.Copy(m_currentKey, key);
@@ -143,16 +129,16 @@ namespace openHistorian.Collections.Generic.TreeNodes
         protected override bool RemoveUnlessOverflow(int index)
         {
             throw new NotImplementedException();
-            if (index != (RecordCount - 1))
-            {
-                byte* start = GetWritePointerAfterHeader() + index * KeyValueSize;
-                Memory.Copy(start + KeyValueSize, start, (RecordCount - index - 1) * KeyValueSize);
-            }
+            //if (index != (RecordCount - 1))
+            //{
+            //    byte* start = GetWritePointerAfterHeader() + index * KeyValueSize;
+            //    Memory.Copy(start + KeyValueSize, start, (RecordCount - index - 1) * KeyValueSize);
+            //}
 
-            //save the header
-            RecordCount--;
-            ValidBytes -= (ushort)KeyValueSize;
-            return true;
+            ////save the header
+            //RecordCount--;
+            //ValidBytes -= (ushort)KeyValueSize;
+            //return true;
         }
 
         /// <summary>
@@ -359,41 +345,41 @@ namespace openHistorian.Collections.Generic.TreeNodes
         protected override void TransferRecordsFromRightToLeft(Node<TKey> left, Node<TKey> right, int bytesToTransfer)
         {
             throw new NotImplementedException();
-            int recordsToTransfer = (bytesToTransfer - HeaderSize) / KeyValueSize;
-            //Transfer records from Right to Left
-            long sourcePosition = right.NodePosition + HeaderSize;
-            long destinationPosition = left.NodePosition + HeaderSize + left.RecordCount * KeyValueSize;
-            Stream.Copy(sourcePosition, destinationPosition, KeyValueSize * recordsToTransfer);
+            //int recordsToTransfer = (bytesToTransfer - HeaderSize) / KeyValueSize;
+            ////Transfer records from Right to Left
+            //long sourcePosition = right.NodePosition + HeaderSize;
+            //long destinationPosition = left.NodePosition + HeaderSize + left.RecordCount * KeyValueSize;
+            //Stream.Copy(sourcePosition, destinationPosition, KeyValueSize * recordsToTransfer);
 
-            //Removes empty spaces from records on the right.
-            Stream.Position = right.NodePosition + HeaderSize;
-            Stream.RemoveBytes(recordsToTransfer * KeyValueSize, (right.RecordCount - recordsToTransfer) * KeyValueSize);
+            ////Removes empty spaces from records on the right.
+            //Stream.Position = right.NodePosition + HeaderSize;
+            //Stream.RemoveBytes(recordsToTransfer * KeyValueSize, (right.RecordCount - recordsToTransfer) * KeyValueSize);
 
-            //Update number of records.
-            left.RecordCount += (ushort)recordsToTransfer;
-            left.ValidBytes += (ushort)(recordsToTransfer * KeyValueSize);
-            right.RecordCount -= (ushort)recordsToTransfer;
-            right.ValidBytes -= (ushort)(recordsToTransfer * KeyValueSize);
+            ////Update number of records.
+            //left.RecordCount += (ushort)recordsToTransfer;
+            //left.ValidBytes += (ushort)(recordsToTransfer * KeyValueSize);
+            //right.RecordCount -= (ushort)recordsToTransfer;
+            //right.ValidBytes -= (ushort)(recordsToTransfer * KeyValueSize);
         }
 
         protected override void TransferRecordsFromLeftToRight(Node<TKey> left, Node<TKey> right, int bytesToTransfer)
         {
             throw new NotImplementedException();
-            int recordsToTransfer = (bytesToTransfer - HeaderSize) / KeyValueSize;
-            //Shift existing records to make room for copy
-            Stream.Position = right.NodePosition + HeaderSize;
-            Stream.InsertBytes(recordsToTransfer * KeyValueSize, right.RecordCount * KeyValueSize);
+            //int recordsToTransfer = (bytesToTransfer - HeaderSize) / KeyValueSize;
+            ////Shift existing records to make room for copy
+            //Stream.Position = right.NodePosition + HeaderSize;
+            //Stream.InsertBytes(recordsToTransfer * KeyValueSize, right.RecordCount * KeyValueSize);
 
-            //Transfer records from Left to Right
-            long sourcePosition = left.NodePosition + HeaderSize + (left.RecordCount - recordsToTransfer) * KeyValueSize;
-            long destinationPosition = right.NodePosition + HeaderSize;
-            Stream.Copy(sourcePosition, destinationPosition, KeyValueSize * recordsToTransfer);
+            ////Transfer records from Left to Right
+            //long sourcePosition = left.NodePosition + HeaderSize + (left.RecordCount - recordsToTransfer) * KeyValueSize;
+            //long destinationPosition = right.NodePosition + HeaderSize;
+            //Stream.Copy(sourcePosition, destinationPosition, KeyValueSize * recordsToTransfer);
 
-            //Update number of records.
-            left.RecordCount -= (ushort)recordsToTransfer;
-            left.ValidBytes -= (ushort)(recordsToTransfer * KeyValueSize);
-            right.RecordCount += (ushort)recordsToTransfer;
-            right.ValidBytes += (ushort)(recordsToTransfer * KeyValueSize);
+            ////Update number of records.
+            //left.RecordCount -= (ushort)recordsToTransfer;
+            //left.ValidBytes -= (ushort)(recordsToTransfer * KeyValueSize);
+            //right.RecordCount += (ushort)recordsToTransfer;
+            //right.ValidBytes += (ushort)(recordsToTransfer * KeyValueSize);
         }
 
         #region [ Starter Code ]
@@ -407,23 +393,23 @@ namespace openHistorian.Collections.Generic.TreeNodes
         private void SeekTo(TKey key, byte* buffer)
         {
             //ToDo: Optimize this seek algorithm
-            if (m_currentIndex == 0 && KeyMethods.IsLessThan(key, m_prevKey))
-                return;
-            if (m_currentIndex >= 0 && KeyMethods.IsLessThan(m_prevKey, key))
-            {
-                if (!KeyMethods.IsLessThan(m_currentKey, key) || m_currentIndex == RecordCount)
-                {
-                    return;
-                }
-                while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
-                    ;
-            }
-            else
-            {
-                ClearNodeCache();
-                while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
-                    ;
-            }
+            //if (m_currentIndex == 0 && KeyMethods.IsLessThan(key, m_prevKey))
+            //    return;
+            //if (m_currentIndex >= 0 && KeyMethods.IsLessThan(m_prevKey, key))
+            //{
+            //    if (!KeyMethods.IsLessThan(m_currentKey, key) || m_currentIndex == RecordCount)
+            //    {
+            //        return;
+            //    }
+            //    while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
+            //        ;
+            //}
+            //else
+            //{
+            //    ClearNodeCache();
+            //    while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
+            //        ;
+            //}
         }
 
         /// <summary>

@@ -27,6 +27,9 @@ using GSF.IO;
 
 namespace openHistorian.Collections.Generic.TreeNodes
 {
+    /// <summary>
+    /// A custom encoder that can highly compress time series data.
+    /// </summary>
     public unsafe class HistorianCompressionTsScanner
         : EncodedNodeScannerBase<HistorianKey, HistorianValue>
     {
@@ -39,14 +42,28 @@ namespace openHistorian.Collections.Generic.TreeNodes
         ulong m_prevTimestamp;
         ulong m_prevPointId;
 
-        public HistorianCompressionTsScanner(byte level, int blockSize, BinaryStreamBase stream, Func<HistorianKey, byte, uint> lookupKey, TreeKeyMethodsBase<HistorianKey> keyMethods, TreeValueMethodsBase<HistorianValue> valueMethods)
-            : base(level, blockSize, stream, lookupKey, keyMethods, valueMethods, 2)
+        /// <summary>
+        /// Creates a new class
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="blockSize"></param>
+        /// <param name="stream"></param>
+        /// <param name="lookupKey"></param>
+        public HistorianCompressionTsScanner(byte level, int blockSize, BinaryStreamBase stream, Func<HistorianKey, byte, uint> lookupKey)
+            : base(level, blockSize, stream, lookupKey, 2)
         {
         }
 
-        protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value)
+        /// <summary>
+        /// Decodes the next record from the byte array into the provided key and value.
+        /// </summary>
+        /// <param name="stream">the start of the next record.</param>
+        /// <param name="key">the key to write to.</param>
+        /// <param name="value">the value to write to.</param>
+        /// <returns></returns>
+        protected override int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value)
         {
-            int size = 0;
+            int size;
             uint code = stream[0];
             //Compression Stages:
             //  Stage 1: Big Positive Float. 
@@ -166,6 +183,9 @@ namespace openHistorian.Collections.Generic.TreeNodes
             return size;
         }
 
+        /// <summary>
+        /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.
+        /// </summary>
         protected override void ResetEncoder()
         {
             m_prevTimestamp = 0;
