@@ -393,23 +393,23 @@ namespace openHistorian.Collections.Generic.TreeNodes
         private void SeekTo(TKey key, byte* buffer)
         {
             //ToDo: Optimize this seek algorithm
-            //if (m_currentIndex == 0 && KeyMethods.IsLessThan(key, m_prevKey))
-            //    return;
-            //if (m_currentIndex >= 0 && KeyMethods.IsLessThan(m_prevKey, key))
-            //{
-            //    if (!KeyMethods.IsLessThan(m_currentKey, key) || m_currentIndex == RecordCount)
-            //    {
-            //        return;
-            //    }
-            //    while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
-            //        ;
-            //}
-            //else
-            //{
-            //    ClearNodeCache();
-            //    while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
-            //        ;
-            //}
+            if (m_currentIndex == 0 && KeyMethods.IsLessThan(key, m_prevKey))
+                return;
+            if (m_currentIndex >= 0 && KeyMethods.IsLessThan(m_prevKey, key))
+            {
+                if (!KeyMethods.IsLessThan(m_currentKey, key) || m_currentIndex == RecordCount)
+                {
+                    return;
+                }
+                while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
+                    ;
+            }
+            else
+            {
+                ClearNodeCache();
+                while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
+                    ;
+            }
         }
 
         /// <summary>

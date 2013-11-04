@@ -91,21 +91,34 @@ namespace openHistorian.Collections.Generic
             private set;
         }
 
+        /// <summary>
+        /// The pointer that is right after the header of the node.
+        /// </summary>
+        protected byte* Pointer { get; private set; }
+
+        /// <summary>
+        /// The pointer version of the <see cref="Pointer"/>. 
+        /// Compare to Stream.PointerVersion to find out if 
+        /// this pointer is current.
+        /// </summary>
+        protected long PointerVersion { get; private set; }
 
         private readonly byte m_version;
         private readonly byte m_level;
         private readonly int m_blockSize;
-        protected readonly int KeyValueSize;
         protected readonly BinaryStreamBase Stream;
-        protected byte* Pointer;
-        protected long PointerVersion;
+
         /// <summary>
-        /// The index number of the current key
+        /// The index number of the next key/value that needs to be read.
+        /// The valid range of this field is [0, RecordCount - 1]
         /// </summary>
-        protected int IndexOfCurrentKeyValue;
-        protected int HeaderSize;
+        protected int IndexOfNextKeyValue { get; private set; }
+
+        /// <summary>
+        /// The number of bytes in the header of any given node.
+        /// </summary>
+        protected int HeaderSize { get; private set; }
         //protected int OffsetOfUpperBounds;
-        protected int KeySize;
 
         protected TreeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, byte version)
         {
@@ -117,18 +130,16 @@ namespace openHistorian.Collections.Generic
             m_level = level;
 
             //m_currentNode = new Node(stream, blockSize);
-
             KeyMethods = m_tempKey.CreateKeyMethods();
             ValueMethods = new TValue().CreateValueMethods();
 
-            KeySize = KeyMethods.Size;
-            KeyValueSize = (KeyMethods.Size + ValueMethods.Size);
-
             //OffsetOfUpperBounds = OffsetOfLowerBounds + KeySize;
-            HeaderSize = OffsetOfLowerBounds + 2 * KeySize;
+            HeaderSize = OffsetOfLowerBounds + 2 * KeyMethods.Size;
             m_blockSize = blockSize;
             Stream = stream;
             PointerVersion = -1;
+            IndexOfNextKeyValue = 0;
+            RecordCount = 0;
         }
 
         /// <summary>
@@ -140,7 +151,10 @@ namespace openHistorian.Collections.Generic
         /// Using <see cref="Pointer"/> advance to the search location of the provided <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to advance to</param>
-        protected abstract void FindKey(TKey key);
+        /// <returns>
+        /// The index position of the key that was found that is greater than or equal to <see cref="key"/>
+        /// </returns>
+        protected abstract int FindKey(TKey key);
 
         /// <summary>
         /// Advances the stream to the next value. 
@@ -150,9 +164,10 @@ namespace openHistorian.Collections.Generic
         public override bool Read()
         {
             //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
-            if (IndexOfCurrentKeyValue < RecordCount && Stream.PointerVersion == PointerVersion)
+            if (IndexOfNextKeyValue < RecordCount && Stream.PointerVersion == PointerVersion)
             {
                 ReadNext();
+                IndexOfNextKeyValue++;
                 IsValid = true;
                 return true;
             }
@@ -167,24 +182,26 @@ namespace openHistorian.Collections.Generic
         {
             //return false;
             //If there are no more records in the current node.
-            if (IndexOfCurrentKeyValue >= RecordCount)
+            if (IndexOfNextKeyValue >= RecordCount)
             {
                 //If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
                     KeyMethods.Clear(CurrentKey);
+                    ValueMethods.Clear(CurrentValue);
                     IsValid = false;
                     return false;
                 }
-
                 LoadNode(RightSiblingNodeIndex);
             }
+            //if the pointer data is no longer valid, refresh the pointer
             if (Stream.PointerVersion != PointerVersion)
             {
                 RefreshPointer();
             }
-
+            //Reads the next key in the sequence.
             ReadNext();
+            IndexOfNextKeyValue++;
             IsValid = true;
             return true;
         }
@@ -198,7 +215,6 @@ namespace openHistorian.Collections.Generic
             SeekToKey(m_tempKey);
         }
 
-
         /// <summary>
         /// Seeks the stream to the first value greater than or equal to <see cref="key"/>
         /// </summary>
@@ -206,13 +222,15 @@ namespace openHistorian.Collections.Generic
         public override void SeekToKey(TKey key)
         {
             LoadNode(FindLeafNodeAddress(key));
-            FindKey(key);
+            IndexOfNextKeyValue = FindKey(key);
         }
 
         /// <summary>
         /// Loads the header data for the provided node.
         /// </summary>
         /// <param name="index">the node index</param>
+        /// <exception cref="ArgumentNullException">occurs when <see cref="index"/>
+        /// is equal to uint.MaxValue</exception>
         private void LoadNode(uint index)
         {
             if (index == uint.MaxValue)
@@ -231,7 +249,7 @@ namespace openHistorian.Collections.Generic
             RightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
             //KeyMethods.Read(ptr + OffsetOfLowerBounds, m_lowerKey);
             //KeyMethods.Read(ptr + OffsetOfUpperBounds, m_upperKey);
-            IndexOfCurrentKeyValue = 0;
+            IndexOfNextKeyValue = 0;
             OnNoadReload();
         }
 
@@ -261,7 +279,6 @@ namespace openHistorian.Collections.Generic
         /// </summary>
         protected virtual void OnNoadReload()
         {
-
         }
     }
 }

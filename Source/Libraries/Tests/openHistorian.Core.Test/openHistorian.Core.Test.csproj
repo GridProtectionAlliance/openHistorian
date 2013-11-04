@@ -109,6 +109,7 @@
     <Compile Include="CompressionTest.cs" />
     <Compile Include="Data\PeriodicScannerTest.cs" />
     <Compile Include="DebugStopwatch.cs" />
+    <Compile Include="DelMeTest.cs" />
     <Compile Include="Engine\ArchiveReaderSequential_Test.cs" />
     <Compile Include="Engine\ArchiveWriters\PointStreamCacheTest.cs" />
     <Compile Include="Engine\ArchiveWriters\PrestageWriterTest.cs" />

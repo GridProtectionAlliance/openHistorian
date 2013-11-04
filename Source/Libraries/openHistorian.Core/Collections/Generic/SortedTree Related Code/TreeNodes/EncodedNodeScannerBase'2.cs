@@ -37,12 +37,16 @@ namespace openHistorian.Collections.Generic.TreeNodes
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private int m_nextOffset;
-        private int m_currentIndex;
         private bool m_skipNextRead;
+        TKey m_prevKey;
+        TValue m_prevValue;
 
         protected EncodedNodeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, byte version)
             : base(level, blockSize, stream, lookupKey, version)
         {
+            m_prevKey = new TKey();
+            m_prevValue = new TValue();
+            m_skipNextRead = false;
         }
 
         /// <summary>
@@ -58,39 +62,56 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.
         /// </summary>
         protected abstract void ResetEncoder();
-
-
+        
         /// <summary>
         /// Using <see cref="TreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
         /// </summary>
         protected override void ReadNext()
         {
             if (m_skipNextRead)
+            {
                 m_skipNextRead = false;
+                KeyMethods.Copy(m_prevKey, CurrentKey);
+                ValueMethods.Copy(m_prevValue, CurrentValue);
+            }
             else
+            {
                 InternalRead();
-            IndexOfCurrentKeyValue++;
+            }
         }
 
         /// <summary>
         /// Using <see cref="TreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to advance to</param>
-        protected override void FindKey(TKey key)
+        protected override int FindKey(TKey key)
         {
             OnNoadReload();
-            while (InternalRead() && KeyMethods.IsLessThan(CurrentKey, key))
+            int nextReadIndex = 0;
+            bool indexFound = false;
+
+            //Find the first occurance where the key that 
+            //is read is greater than or equal to the search key.
+            //or the end of the stream is encountered.
+            while (!indexFound && nextReadIndex < RecordCount)
             {
+                nextReadIndex++;
+                InternalRead();
+                if (KeyMethods.IsGreaterThanOrEqualTo(CurrentKey, key))
+                    indexFound = true;
             }
-            if (KeyMethods.IsLessThan(CurrentKey, key))
+
+            if (indexFound)
             {
-                IndexOfCurrentKeyValue = m_currentIndex;
-                m_skipNextRead = false;
+                m_skipNextRead = true;
+                KeyMethods.Copy(CurrentKey, m_prevKey);
+                ValueMethods.Copy(CurrentValue, m_prevValue);
+                return nextReadIndex - 1;
             }
             else
             {
-                IndexOfCurrentKeyValue = m_currentIndex - 1;
-                m_skipNextRead = true;
+                m_skipNextRead = false;
+                return nextReadIndex;
             }
         }
 
@@ -101,23 +122,17 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// </summary>
         protected override void OnNoadReload()
         {
-            m_nextOffset = HeaderSize;
-            m_currentIndex = -1;
+            m_nextOffset = 0;
             ResetEncoder();
         }
 
-        private unsafe bool InternalRead()
+        /// <summary>
+        /// Executes a read of the next set of data.
+        /// </summary>
+        /// <returns></returns>
+        private unsafe void InternalRead()
         {
-            if (m_currentIndex == RecordCount)
-            {
-                throw new Exception("Read past the end of the stream");
-            }
-            m_currentIndex++;
-            if (m_currentIndex == RecordCount)
-                return false;
-
-            m_nextOffset += DecodeRecord(Pointer + m_nextOffset - HeaderSize, CurrentKey, CurrentValue);
-            return true;
+            m_nextOffset += DecodeRecord(Pointer + m_nextOffset, CurrentKey, CurrentValue);
         }
     }
 }

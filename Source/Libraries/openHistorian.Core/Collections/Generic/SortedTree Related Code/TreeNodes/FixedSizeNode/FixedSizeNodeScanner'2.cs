@@ -36,6 +36,9 @@ namespace openHistorian.Collections.Generic.TreeNodes
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
+        readonly int m_keyValueSize;
+        readonly int m_keySize;
+
         /// <summary>
         /// creates a new class
         /// </summary>
@@ -46,6 +49,8 @@ namespace openHistorian.Collections.Generic.TreeNodes
         public FixedSizeNodeScanner(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey)
             : base(level, blockSize, stream, lookupKey, version: 1)
         {
+            m_keyValueSize = (KeyMethods.Size + ValueMethods.Size);
+            m_keySize = KeyMethods.Size;
         }
 
         /// <summary>
@@ -53,22 +58,21 @@ namespace openHistorian.Collections.Generic.TreeNodes
         /// </summary>
         protected override unsafe void ReadNext()
         {
-            byte* ptr = Pointer + IndexOfCurrentKeyValue * KeyValueSize;
-            IndexOfCurrentKeyValue++;
+            byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             KeyMethods.Read(ptr, CurrentKey);
-            ValueMethods.Read(ptr + KeySize, CurrentValue);
+            ValueMethods.Read(ptr + m_keySize, CurrentValue);
         }
 
         /// <summary>
         /// Using <see cref="TreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to advance to</param>
-        protected override unsafe void FindKey(TKey key)
+        protected override unsafe int FindKey(TKey key)
         {
-            int offset = KeyMethods.BinarySearch(Pointer, key, RecordCount, KeyValueSize);
+            int offset = KeyMethods.BinarySearch(Pointer, key, RecordCount, m_keyValueSize);
             if (offset < 0)
                 offset = ~offset;
-            IndexOfCurrentKeyValue = (ushort)offset;
+            return offset;
         }
     }
 }
