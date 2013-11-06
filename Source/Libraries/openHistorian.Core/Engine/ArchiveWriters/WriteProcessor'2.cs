@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  WriteProcessor.cs - Gbtc
+//  WriteProcessor`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,7 +27,13 @@ using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine.ArchiveWriters
 {
-    public partial class WriteProcessor<TKey, TValue> : IDisposable
+    /// <summary>
+    /// Houses all of the write operations for the historian
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    public class WriteProcessor<TKey, TValue>
+        : IDisposable
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
@@ -38,6 +44,11 @@ namespace openHistorian.Engine.ArchiveWriters
         private readonly StageWriter<TKey, TValue> m_stage1;
         private readonly StageWriter<TKey, TValue> m_stage2;
 
+        /// <summary>
+        /// Creates a new class
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="list"></param>
         public WriteProcessor(WriteProcessorSettings<TKey, TValue> settings, ArchiveList<TKey, TValue> list)
         {
             m_archiveList = list;
@@ -47,16 +58,31 @@ namespace openHistorian.Engine.ArchiveWriters
             m_prestage = new PrestageWriter<TKey, TValue>(settings.Prestage, m_stage0.AppendData);
         }
 
+        /// <summary>
+        /// Writes the provided key/value to the historian.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns>the transaction code so this write can be tracked.</returns>
         public long Write(TKey key, TValue value)
         {
             return m_prestage.Write(key, value);
         }
 
+        /// <summary>
+        /// Writes the provided stream to the historian.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns>the transaction code so this write can be tracked.</returns>
         public long Write(KeyValueStream<TKey, TValue> stream)
         {
             return m_prestage.Write(stream);
         }
 
+        /// <summary>
+        /// The location where the historian files arrive once completed all the staging
+        /// </summary>
+        /// <param name="args"></param>
         private void FinalizeArchiveFile(RolloverArgs<TKey, TValue> args)
         {
             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
@@ -65,6 +91,9 @@ namespace openHistorian.Engine.ArchiveWriters
             }
         }
 
+        /// <summary>
+        /// Stops the execution of the historian in a orderly mannor.
+        /// </summary>
         public void Dispose()
         {
             m_prestage.Stop();

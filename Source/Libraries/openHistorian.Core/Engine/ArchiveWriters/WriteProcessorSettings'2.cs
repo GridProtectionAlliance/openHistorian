@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  WriteProcessorSettings.cs - Gbtc
+//  WriteProcessorSettings`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -77,14 +77,14 @@ namespace openHistorian.Engine.ArchiveWriters
         {
             WriteProcessorSettings<TKey, TValue> settings = new WriteProcessorSettings<TKey, TValue>();
 
-            settings.Prestage = new PrestageSettings()
+            settings.Prestage = new PrestageSettings
             {
                 DelayOnPointCount = 20 * 1000,
                 RolloverPointCount = 10 * 1000,
                 RolloverInterval = 100
             };
 
-            settings.Stage0 = new StageWriterSettings<TKey, TValue>()
+            settings.Stage0 = new StageWriterSettings<TKey, TValue>
             {
                 RolloverInterval = 1000,
                 RolloverSize = 1 * 1000 * 1000,
@@ -92,7 +92,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
             };
 
-            settings.Stage1 = new StageWriterSettings<TKey, TValue>()
+            settings.Stage1 = new StageWriterSettings<TKey, TValue>
             {
                 RolloverInterval = 10 * 1000,
                 RolloverSize = 10 * 1000 * 1000,
@@ -100,7 +100,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
             };
 
-            settings.Stage2 = new StageWriterSettings<TKey, TValue>()
+            settings.Stage2 = new StageWriterSettings<TKey, TValue>
             {
                 RolloverInterval = 100 * 1000,
                 RolloverSize = 100 * 1000 * 1000,
@@ -115,14 +115,14 @@ namespace openHistorian.Engine.ArchiveWriters
             var paths = config.Paths.GetSavePaths().ToList();
             WriteProcessorSettings<TKey, TValue> settings = new WriteProcessorSettings<TKey, TValue>();
 
-            settings.Prestage = new PrestageSettings()
+            settings.Prestage = new PrestageSettings
             {
                 DelayOnPointCount = 20 * 1000,
                 RolloverPointCount = 10 * 1000,
                 RolloverInterval = 100
             };
 
-            settings.Stage0 = new StageWriterSettings<TKey, TValue>()
+            settings.Stage0 = new StageWriterSettings<TKey, TValue>
             {
                 RolloverInterval = 1000,
                 RolloverSize = 1 * 1000 * 1000,
@@ -130,7 +130,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
             };
 
-            settings.Stage1 = new StageWriterSettings<TKey, TValue>()
+            settings.Stage1 = new StageWriterSettings<TKey, TValue>
             {
                 RolloverInterval = 60 * 1000,
                 RolloverSize = 50 * 1000 * 1000,
@@ -139,7 +139,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, SortedTree.FixedSizeNode, "Stage1"))
             };
 
-            settings.Stage2 = new StageWriterSettings<TKey, TValue>()
+            settings.Stage2 = new StageWriterSettings<TKey, TValue>
             {
                 RolloverInterval = 15 * 60 * 1000,
                 RolloverSize = 1000 * 1000 * 1000,

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveList.cs - Gbtc
+//  ArchiveList`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -55,12 +55,17 @@ namespace openHistorian.Engine
         /// This is used for determining when resources are no longer in use.
         /// </summary>
         private readonly List<ArchiveListSnapshot<TKey, TValue>> m_allSnapshots;
-
+        /// <summary>
+        /// The scheduled task for removing items.
+        /// </summary>
         private readonly ScheduledTask m_processRemovals;
 
         private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_filesToDelete;
         private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_filesToDispose;
 
+        /// <summary>
+        /// Creates an ArchiveList
+        /// </summary>
         public ArchiveList()
         {
             m_filesToDelete = new List<ArchiveListRemovalStatus<TKey, TValue>>();
@@ -74,23 +79,42 @@ namespace openHistorian.Engine
             m_allSnapshots = new List<ArchiveListSnapshot<TKey, TValue>>();
         }
 
+        /// <summary>
+        /// Creates an ArchiveList including all of the provided files.
+        /// </summary>
+        /// <param name="archiveFiles"></param>
         public ArchiveList(IEnumerable<string> archiveFiles)
             : this()
         {
             foreach (string file in archiveFiles)
             {
-                ArchiveFile archiveFile = ArchiveFile.OpenFile(file, isReadOnly: true);
-                ArchiveTableSummary<TKey, TValue> archiveTableSummary = new ArchiveTableSummary<TKey, TValue>(archiveFile.OpenTable<TKey, TValue>());
-                m_fileSummaries.Add(archiveTableSummary);
+                try
+                {
+                    ArchiveFile archiveFile = ArchiveFile.OpenFile(file, isReadOnly: true);
+                    var table = archiveFile.OpenTable<TKey, TValue>();
+                    if (table == null)
+                    {
+                        archiveFile.Dispose();
+                        //archiveFile.Delete(); //ToDo: Consider the consequences of deleting a file.
+                    }
+                    else
+                    {
+                        ArchiveTableSummary<TKey, TValue> archiveTableSummary = new ArchiveTableSummary<TKey, TValue>(table);
+                        m_fileSummaries.Add(archiveTableSummary);
+                    }
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
         #region [ Resource Locks ]
 
         /// <summary>
-        /// Creates an object that can be used to get updated snapshots from this <see cref="ArchiveList"/>.
+        /// Creates an object that can be used to get updated snapshots from this <see cref="ArchiveList{TKey,TValue}"/>.
         /// Client must call <see cref="IDisposable.Dispose"/> method when finished with these resources as they will not 
-        /// automatically be reclaimed by the garbage collector. Class will not be initiallized until calling <see cref="ArchiveListSnapshot.UpdateSnapshot"/>.
+        /// automatically be reclaimed by the garbage collector. Class will not be initiallized until calling <see cref="ArchiveListSnapshot{TKey,TValue}.UpdateSnapshot"/>.
         /// </summary>
         /// <returns></returns>
         public ArchiveListSnapshot<TKey, TValue> CreateNewClientResources()
@@ -104,7 +128,7 @@ namespace openHistorian.Engine
         }
 
         /// <summary>
-        /// Invoked by <see cref="ArchiveListSnapshot.Dispose"/> method.
+        /// Invoked by <see cref="ArchiveListSnapshot{TKey,TValue}.Dispose"/> method.
         /// </summary>
         /// <param name="archiveLists"></param>
         private void ReleaseClientResources(ArchiveListSnapshot<TKey, TValue> archiveLists)
@@ -116,7 +140,7 @@ namespace openHistorian.Engine
         }
 
         /// <summary>
-        /// Invoked by <see cref="ArchiveListSnapshot.UpdateSnapshot"/>.
+        /// Invoked by <see cref="ArchiveListSnapshot{TKey,TValue}.UpdateSnapshot"/>.
         /// </summary>
         /// <param name="transaction"></param>
         private void AcquireSnapshot(ArchiveListSnapshot<TKey, TValue> transaction)
@@ -129,6 +153,10 @@ namespace openHistorian.Engine
 
         #endregion
 
+        /// <summary>
+        /// Appends the status of the files in the ArchiveList to the provided <see cref="StringBuilder"/>.
+        /// </summary>
+        /// <param name="status"></param>
         public void GetFullStatus(StringBuilder status)
         {
             lock (m_syncRoot)
@@ -149,7 +177,7 @@ namespace openHistorian.Engine
                 status.AppendFormat("Files In Archive: {0} \r\n", m_fileSummaries.Count);
                 foreach (var file in m_fileSummaries)
                 {
-                    status.AppendFormat("{0} - {1} Name:{2}\r\n", file.FirstKey.ToString() , file.LastKey.ToString(), file.ArchiveTable.BaseFile.FileName);
+                    status.AppendFormat("{0} - {1} Name:{2}\r\n", file.FirstKey.ToString(), file.LastKey.ToString(), file.ArchiveTable.BaseFile.FileName);
                 }
             }
         }

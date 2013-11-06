@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PrestageWriter.cs - Gbtc
+//  PrestageWriter`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,7 +30,7 @@ using openHistorian.Collections.Generic;
 namespace openHistorian.Engine.ArchiveWriters
 {
     /// <summary>
-    /// A collection of settings for <see cref="PrestageWriter"/>.
+    /// A collection of settings for <see cref="PrestageWriter{TKey,TValue}"/>.
     /// </summary>
     public struct PrestageSettings
     {
@@ -52,8 +52,12 @@ namespace openHistorian.Engine.ArchiveWriters
     }
 
     /// <summary>
-    /// Where uncommitted data is collected before it is inserted into an archive file.
+    /// Where uncommitted data is collected before it is 
+    /// inserted into an archive file in a bulk operation.
     /// </summary>
+    /// <remarks>
+    /// This class is thread safe
+    /// </remarks>
     public class PrestageWriter<TKey, TValue>
         : IDisposable
         where TKey : class, ISortedTreeKey<TKey>, new()
@@ -189,6 +193,9 @@ namespace openHistorian.Engine.ArchiveWriters
 
         private void ProcessRollover(object sender, ScheduledTaskEventArgs e)
         {
+            //the nature of how the ScheduledTask works 
+            //gaurentees that this function will not be called concurrently
+
             //The worker can be disposed either via the Stop() method or 
             //the Dispose() method.  If via the dispose method, then
             //don't do any cleanup.
@@ -224,6 +231,7 @@ namespace openHistorian.Engine.ArchiveWriters
         /// <summary>
         /// Disposes the underlying queues contained in this class. 
         /// This method is not thread safe.
+        /// It is assumed this will be called after <see cref="Stop"/>.
         /// </summary>
         public void Dispose()
         {

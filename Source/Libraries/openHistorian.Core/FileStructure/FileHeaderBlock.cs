@@ -332,6 +332,14 @@ namespace openHistorian.FileStructure
             return node;
         }
 
+        /// <summary>
+        /// Deletes all <see cref="SubFileMetaData"/> in this archive file.
+        /// </summary>
+        public void DeleteAllSubFiles()
+        {
+            m_files.Clear();
+        }
+
         public bool ContainsSubFile(SubFileName fileName)
         {
             return m_files.Any(file => file.FileName == fileName);
@@ -538,5 +546,6 @@ namespace openHistorian.FileStructure
         }
 
         #endregion
+       
     }
 }

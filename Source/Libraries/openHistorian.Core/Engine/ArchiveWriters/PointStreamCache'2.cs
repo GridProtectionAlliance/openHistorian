@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PointStreamCache.cs - Gbtc
+//  PointStreamCache`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -33,20 +33,19 @@ namespace openHistorian.Engine.ArchiveWriters
     /// this cache will only operate in read or write mode at any given time. Change the operating mode by
     /// calling <see cref="ClearAndSetWriting"/> or <see cref="SetReadingFromBeginning"/>.
     /// </summary>
+    /// <remarks>
+    /// This class is not thread safe.
+    /// </remarks>
     public class PointStreamCache<TKey, TValue>
         : KeyValueStream<TKey, TValue>, IDisposable
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
-        //ToDo: Use a managed array of ulong instead of an unmanaged queue.
-        //Jagged array of course.
-
         //ToDo: Automatically detect size and shrink the queue if need be. 
         //This might be acomplished by keeping the size over the past 10 times
         //it has been used, and not allowing it to grow beyond 2 times
         //the average size.
 
-        private int m_sizeOfData;
         private readonly BinaryStream m_queue;
         private int m_pointCount;
         private int m_remainingPoints;
@@ -61,8 +60,6 @@ namespace openHistorian.Engine.ArchiveWriters
         {
             m_keyMethods = new TKey().CreateKeyMethods();
             m_valueMethods = new TValue().CreateValueMethods();
-
-            m_sizeOfData = m_keyMethods.Size + m_valueMethods.Size;
             m_queue = new BinaryStream(allocatesOwnMemory: true);
             m_isReading = false;
             m_pointCount = 0;
@@ -88,6 +85,7 @@ namespace openHistorian.Engine.ArchiveWriters
         {
             if (m_isReading)
                 throw new Exception("Cannot write to a stream while it is being read.");
+
             m_pointCount++;
             m_keyMethods.Write(m_queue, key);
             m_valueMethods.Write(m_queue, value);
@@ -149,17 +147,9 @@ namespace openHistorian.Engine.ArchiveWriters
         /// </summary>
         public void SetReadingFromBeginning()
         {
-            if (m_isReading)
-            {
-                m_queue.Position = 0;
-                m_remainingPoints = m_pointCount;
-            }
-            else
-            {
-                m_isReading = true;
-                m_remainingPoints = m_pointCount;
-                m_queue.Position = 0;
-            }
+            m_isReading = true;
+            m_remainingPoints = m_pointCount;
+            m_queue.Position = 0;
         }
 
         /// <summary>

@@ -287,6 +287,20 @@ namespace openHistorian.Archive
             }
         }
 
+        /// <summary>
+        /// Removes all of the subfiles in the ArchiveFile, thus emptying the file.
+        /// </summary>
+        public void EmptyFile()
+        {
+            using (var edit = m_fileStructure.BeginEdit())
+            {
+                edit.DeleteAllSubFiles();
+                edit.CommitAndDispose();
+            }
+        }
+
         #endregion
+
+       
     }
 }

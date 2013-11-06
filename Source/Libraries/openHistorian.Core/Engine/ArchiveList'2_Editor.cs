@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveList_Editor.cs - Gbtc
+//  ArchiveList`2_Editor.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,16 +27,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using openHistorian.Archive;
-using openHistorian.Collections.Generic;
 
 namespace openHistorian.Engine
 {
     public partial class ArchiveList<TKey, TValue>
-  
     {
         /// <summary>
-        /// Provides a way to edit an <see cref="ArchiveList"/> since all edits must be atomic.
-        /// WARNING: Instancing this class on an <see cref="ArchiveList"/> will lock the class
+        /// Provides a way to edit an <see cref="ArchiveList{TKey,TValue}"/> since all edits must be atomic.
+        /// WARNING: Instancing this class on an <see cref="ArchiveList{TKey,TValue}"/> will lock the class
         /// until <see cref="Dispose"/> is called. Therefore, keep locks to a minimum and always
         /// use a Using block.
         /// </summary>
@@ -46,6 +44,10 @@ namespace openHistorian.Engine
             private ArchiveList<TKey, TValue> m_collection;
             private ReadOnlyCollection<ArchiveTableSummary<TKey, TValue>> m_archiveFiles;
 
+            /// <summary>
+            /// Creates an editor for the ArchiveList
+            /// </summary>
+            /// <param name="collection"></param>
             public Editor(ArchiveList<TKey, TValue> collection)
             {
                 m_collection = collection;
@@ -103,8 +105,8 @@ namespace openHistorian.Engine
             /// <summary>
             /// Adds an archive file to the list with the given state information.
             /// </summary>
-            /// <param name="archive"></param>
-            /// <param name="isLocked"></param>
+            /// <param name="archive">the archive table to add</param>
+            /// <param name="isLocked">the item added contains a write lock on the file.</param>
             public void Add(ArchiveTable<TKey, TValue> archive, bool isLocked)
             {
                 if (m_disposed)
@@ -116,10 +118,10 @@ namespace openHistorian.Engine
             }
 
             /// <summary>
-            /// Removes the first occurnace of <see cref="archive"/> from <see cref="ArchiveList"/>.
+            /// Removes the first occurnace of <see cref="archive"/> from <see cref="ArchiveList{TKey,TValue}"/>.
             /// </summary>
             /// <param name="archive">The partition to remove</param>
-            /// <param name="listRemovalStatus">A <see cref="ArchiveListRemovalStatus"/> that can be used to determine
+            /// <param name="listRemovalStatus">A <see cref="ArchiveListRemovalStatus{TKey,TValue}"/> that can be used to determine
             /// when this resource is no longer being used and can be closed as a result.  
             /// Closing prematurely can cause erratic behaviour which may result in 
             /// data coruption and the application crashing.  Value is null if no item can be found.</param>
@@ -144,6 +146,11 @@ namespace openHistorian.Engine
                 return false;
             }
 
+            /// <summary>
+            /// Removes the supplied file from the <see cref="ArchiveList{TKey,TValue}"/> and queues it for deletion.
+            /// </summary>
+            /// <param name="archive">the file to remove and delete.</param>
+            /// <returns></returns>
             public bool RemoveAndDelete(ArchiveTable<TKey, TValue> archive)
             {
                 ArchiveListRemovalStatus<TKey, TValue> status;
@@ -154,6 +161,7 @@ namespace openHistorian.Engine
                         status.Archive.BaseFile.Delete();
                         return true;
                     }
+                    status.Archive.BaseFile.EmptyFile();
                     m_collection.m_filesToDelete.Add(status);
                     m_collection.m_processRemovals.Start(1000);
                     return true;
@@ -161,25 +169,8 @@ namespace openHistorian.Engine
                 return false;
             }
 
-            public bool RemoveAndDispose(ArchiveTable<TKey, TValue> archive)
-            {
-                ArchiveListRemovalStatus<TKey, TValue> status;
-                if (Remove(archive, out status))
-                {
-                    if (!status.IsBeingUsed)
-                    {
-                        status.Archive.Dispose();
-                        return true;
-                    }
-                    m_collection.m_filesToDispose.Add(status);
-                    m_collection.m_processRemovals.Start(1000);
-                    return true;
-                }
-                return false;
-            }
-
             /// <summary>
-            /// Releases the lock on the <see cref="ArchiveList"/>.
+            /// Releases the lock on the <see cref="ArchiveList{TKey,TValue}"/>.
             /// </summary>
             public void Dispose()
             {

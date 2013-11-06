@@ -13,6 +13,35 @@ namespace openHistorian
     [TestFixture]
     public class DelMeTest
     {
+
+        [Test]
+        public void SlowReading()
+        {
+            HistorianClientOptions clientOptions = new HistorianClientOptions();
+            clientOptions.NetworkPort = 38402;
+            clientOptions.ServerNameOrIp = "127.0.0.1";
+            clientOptions.DefaultDatabase = "PPA";
+
+            using (var server = new HistorianClient<HistorianKey,HistorianValue>(clientOptions))
+            {
+                var database = server.GetDefaultDatabase();
+                ////var reader = database.GetRawSignals(start, stop, new ulong[] { 3142011, 3142023 });
+                //var reader = database.GetRawSignals(start, stop, new ulong[] {  3142023 });
+                ////var reader = database.GetRawSignals(start, stop, new ulong[] { 3142011 });
+                //Console.WriteLine(reader.Count);
+
+                using (var reader = database.OpenDataReader())
+                {
+                    var stream = reader.Read();
+                    while (stream.Read())
+                        System.Threading.Thread.Sleep(1);
+                }
+
+
+                database.Disconnect();
+            }
+        }
+
         [Test]
         public void Test()
         {

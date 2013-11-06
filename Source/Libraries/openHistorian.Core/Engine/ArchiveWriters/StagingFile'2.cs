@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  StagingFile.cs - Gbtc
+//  StagingFile`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -75,7 +75,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
                 {
                     //Add the newly created file.
-                    edit.Add(m_archiveFile, true);
+                    edit.Add(m_archiveFile, isLocked: true);
                 }
             }
             using (ArchiveTable<TKey, TValue>.Editor editor = m_archiveFile.BeginEdit())
@@ -102,7 +102,7 @@ namespace openHistorian.Engine.ArchiveWriters
                 using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
                 {
                     //Add the newly created file.
-                    edit.Add(m_archiveFile, true);
+                    edit.Add(m_archiveFile, isLocked: true);
                 }
             }
             using (ArchiveTable<TKey, TValue>.Editor editor = m_archiveFile.BeginEdit())
@@ -123,7 +123,7 @@ namespace openHistorian.Engine.ArchiveWriters
         }
 
         /// <summary>
-        /// Extracts the internal <see cref="ArchiveTable"/> that was created and makes it
+        /// Extracts the internal <see cref="ArchiveTable{TKey,TValue}"/> that was created and makes it
         /// where if more data is added to this class, a new archivefile will be created.
         /// </summary>
         /// <returns>the internal archive file. null</returns>

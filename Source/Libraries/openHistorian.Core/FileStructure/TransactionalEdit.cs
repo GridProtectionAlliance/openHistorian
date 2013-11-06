@@ -32,7 +32,7 @@ namespace openHistorian.FileStructure
     /// Provides the state information for a transaction on the file system.
     /// </summary>
     /// <remarks>Failing to call Commit or Rollback will inhibit additional transactions to be aquired</remarks>
-    public sealed class TransactionalEdit 
+    public sealed class TransactionalEdit
         : IDisposable
     {
         #region [ Members ]
@@ -186,6 +186,17 @@ namespace openHistorian.FileStructure
             }
             throw new Exception("File does not exist");
         }
+        /// <summary>
+        /// Deletes all <see cref="SubFileMetaData"/> in this archive file.
+        /// </summary>
+        public void DeleteAllSubFiles()
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+            if (m_openedFiles.Count > 0)
+                throw new Exception("Cannot delete SubFiles if SubFileStreams are opened in the edit transaction");
+            m_fileHeaderBlock.DeleteAllSubFiles();
+        }
 
         /// <summary>
         /// This will cause the transaction to be written to the database.
@@ -259,5 +270,7 @@ namespace openHistorian.FileStructure
         }
 
         #endregion
+
+
     }
 }

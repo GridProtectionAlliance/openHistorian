@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  StageWriter.cs - Gbtc
+//  StageWriter`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -31,7 +31,7 @@ using openHistorian.Collections.Generic;
 namespace openHistorian.Engine.ArchiveWriters
 {
     /// <summary>
-    /// A collection of settings for <see cref="PrestageWriter"/>.
+    /// A collection of settings for <see cref="StageWriter{TKey,TValue}"/>.
     /// </summary>
     public struct StageWriterSettings<TKey, TValue>
         where TKey : class, ISortedTreeKey<TKey>, new()
@@ -52,7 +52,7 @@ namespace openHistorian.Engine.ArchiveWriters
         /// to complete.
         /// </summary>
         public long MaximumAllowedSize;
-        
+
         /// <summary>
         /// The helping functions associated with writing a stage file.
         /// </summary>
@@ -60,7 +60,8 @@ namespace openHistorian.Engine.ArchiveWriters
     }
 
     /// <summary>
-    /// Stage Zero is reponsible for getting archive data packaged into a user sortable transaction format.
+    /// Represents a series of stages that an archive file progresses through
+    /// in order to properly condition the data.
     /// </summary>
     public class StageWriter<TKey, TValue> : IDisposable
         where TKey : class, ISortedTreeKey<TKey>, new()
@@ -91,6 +92,8 @@ namespace openHistorian.Engine.ArchiveWriters
         /// <param name="onRollover">delegate to call when a file is done with this stage.</param>
         public StageWriter(StageWriterSettings<TKey, TValue> settings, Action<RolloverArgs<TKey, TValue>> onRollover)
         {
+            if (settings.RolloverSize > settings.MaximumAllowedSize)
+                throw new ArgumentOutOfRangeException("settings.MaximumAllowedSize", "must be greater than or equal to settings.RolloverSize");
             m_rolloverComplete = new ManualResetEvent(false);
             m_stagingFile = settings.StagingFile;
             m_rolloverInterval = settings.RolloverInterval;
@@ -106,7 +109,8 @@ namespace openHistorian.Engine.ArchiveWriters
         /// <summary>
         /// Appends this data to this stage. Also queues up for deletion if necessary.
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="args">arguments handed to this class from either the 
+        /// PrestageWriter or another StageWriter of a previous generation</param>
         public void AppendData(RolloverArgs<TKey, TValue> args)
         {
             if (m_disposed)
