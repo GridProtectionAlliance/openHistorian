@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
 using openHistorian.Engine.ArchiveWriters;
@@ -41,7 +42,7 @@ namespace openHistorian.Engine
         #region [ Members ]
 
         // Fields
-        private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_pendingDispose;
+        //private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_pendingDispose;
         private readonly WriteProcessor<TKey, TValue> m_archiveWriter;
         private readonly ArchiveList<TKey, TValue> m_archiveList;
         private volatile bool m_disposed;
@@ -57,7 +58,7 @@ namespace openHistorian.Engine
 
         public ArchiveDatabaseEngine(DatabaseConfig settings)
         {
-            m_pendingDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
+            //m_pendingDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_archiveList = new ArchiveList<TKey, TValue>(settings.GetAttachedFiles());
 
             if (settings.WriterMode != WriterMode.None)
@@ -75,6 +76,11 @@ namespace openHistorian.Engine
         #endregion
 
         #region [ Methods ]
+
+        public void GetFullStatus(StringBuilder status)
+        {
+            m_archiveList.GetFullStatus(status);
+        }
 
         public override void Write(TKey key, TValue value)
         {
@@ -136,10 +142,10 @@ namespace openHistorian.Engine
 
                 m_archiveList.Dispose();
 
-                foreach (ArchiveListRemovalStatus<TKey, TValue> status in m_pendingDispose)
-                {
-                    status.Archive.Dispose();
-                }
+                //foreach (ArchiveListRemovalStatus<TKey, TValue> status in m_pendingDispose)
+                //{
+                //    status.Archive.Dispose();
+                //}
             }
         }
 

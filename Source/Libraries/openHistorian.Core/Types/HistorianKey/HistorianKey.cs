@@ -137,5 +137,10 @@ namespace openHistorian.Collections
         {
             return new KeyMethodsHistorianKey();
         }
+
+        public override string ToString()
+        {
+            return TimestampAsDate.ToString();
+        }
     }
 }

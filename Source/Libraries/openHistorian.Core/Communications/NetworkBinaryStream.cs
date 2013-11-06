@@ -54,6 +54,14 @@ namespace GSF.Communications
             m_socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
         }
 
+        public Socket Socket
+        {
+            get
+            {
+                return m_socket;
+            }
+        }
+
         public int Timeout
         {
             get

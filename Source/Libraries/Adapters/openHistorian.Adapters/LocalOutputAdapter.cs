@@ -233,7 +233,7 @@ namespace openHistorian.Adapters
                 status.Append(m_dataServices.Status);
                 status.AppendLine();
                 status.Append(m_replicationProviders.Status);
-
+                Common.HistorianServer.GetFullStatus(status);
                 return status.ToString();
             }
         }

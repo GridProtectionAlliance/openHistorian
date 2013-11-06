@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using GSF.Threading;
 using openHistorian.Archive;
 using openHistorian.Collections.Generic;
@@ -34,7 +35,7 @@ namespace openHistorian.Engine
     /// Manages the complete list of archive resources and the 
     /// associated reading and writing that goes along with it.
     /// </summary>
-    public partial class ArchiveList<TKey, TValue> 
+    public partial class ArchiveList<TKey, TValue>
         : IDisposable
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
@@ -67,6 +68,7 @@ namespace openHistorian.Engine
             m_processRemovals = new ScheduledTask(ThreadingMode.Background);
             m_processRemovals.OnRunWorker += m_processRemovals_OnRunWorker;
             m_processRemovals.OnDispose += m_processRemovals_OnDispose;
+            m_processRemovals.OnException += m_processRemovals_OnException;
             m_lockedFiles = new List<ArchiveTable<TKey, TValue>>();
             m_fileSummaries = new List<ArchiveTableSummary<TKey, TValue>>();
             m_allSnapshots = new List<ArchiveListSnapshot<TKey, TValue>>();
@@ -126,6 +128,31 @@ namespace openHistorian.Engine
         }
 
         #endregion
+
+        public void GetFullStatus(StringBuilder status)
+        {
+            lock (m_syncRoot)
+            {
+                status.AppendFormat("Files Pending Deletion: {0} Disposal: {1}\r\n", m_filesToDelete.Count, m_filesToDispose.Count);
+                foreach (var file in m_filesToDelete)
+                {
+                    status.AppendFormat("Delete - {0}\r\n", file.Archive.BaseFile.FileName);
+                    status.AppendFormat("Is Being Used {0}\r\n", file.IsBeingUsed);
+                }
+
+                foreach (var file in m_filesToDispose)
+                {
+                    status.AppendFormat("Dispose - {0} - {1}\r\n", file.Archive.FirstKey.ToString(), file.Archive.LastKey.ToString());
+                    status.AppendFormat("Is Being Used {0}\r\n", file.IsBeingUsed);
+                }
+
+                status.AppendFormat("Files In Archive: {0} \r\n", m_fileSummaries.Count);
+                foreach (var file in m_fileSummaries)
+                {
+                    status.AppendFormat("{0} - {1} Name:{2}\r\n", file.FirstKey.ToString() , file.LastKey.ToString(), file.ArchiveTable.BaseFile.FileName);
+                }
+            }
+        }
 
         /// <summary>
         /// Returns an <see cref="IDisposable"/> class that can be used to edit the contents of this resource.
@@ -226,6 +253,11 @@ namespace openHistorian.Engine
                 m_filesToDispose.ForEach(x => x.Archive.BaseFile.Dispose());
                 m_filesToDispose.Clear();
             }
+        }
+
+        void m_processRemovals_OnException(object sender, UnhandledExceptionEventArgs e)
+        {
+            System.Diagnostics.EventLog.WriteEntry("MyEventSource", (e.ExceptionObject).ToString(), System.Diagnostics.EventLogEntryType.Error);
         }
     }
 }

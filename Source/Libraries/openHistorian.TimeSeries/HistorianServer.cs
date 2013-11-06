@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using openHistorian.Collections;
 using openHistorian.Communications;
 using openHistorian.Engine;
@@ -106,6 +107,25 @@ namespace openHistorian
         #endregion
 
         #region [ Methods ]
+
+        public void GetFullStatus(StringBuilder status)
+        {
+            status.AppendFormat("Historian Instances:");
+            foreach (var dbName in m_databases.GetDatabaseNames())
+            {
+                status.AppendFormat("DB Name:{0}\r\n", dbName);
+                this[dbName].GetFullStatus(status);
+            }
+
+            status.AppendFormat("Socket Connections");
+            foreach (var socket in m_sockets)
+            {
+                status.AppendFormat("Port:{0}\r\n", socket.Key);
+                var historian = socket.Value;
+                historian.GetFullStatus(status);
+            }
+        }
+
 
         /// <summary>
         /// Releases all the resources used by the <see cref="HistorianServer"/> object.

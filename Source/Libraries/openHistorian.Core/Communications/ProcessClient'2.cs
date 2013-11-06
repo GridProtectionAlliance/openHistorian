@@ -24,6 +24,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Text;
 using GSF.Communications;
 using openHistorian.Collections;
 using openHistorian.Collections.Generic;
@@ -50,6 +51,18 @@ namespace openHistorian.Communications
         {
             m_stream = netStream;
             m_historian = historian;
+        }
+
+        public void GetFullStatus(StringBuilder status)
+        {
+            try
+            {
+                status.AppendLine(m_stream.Socket.RemoteEndPoint.ToString());
+            }
+            catch (Exception)
+            {
+                status.AppendLine("Error getting remote endpoint");
+            }
         }
 
         /// <summary>

@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using GSF.Communications;
 using openHistorian.Collections;
@@ -80,6 +81,19 @@ namespace openHistorian.Communications
         }
 
         private readonly List<ProcessClient<TKey, TValue>> m_clients = new List<ProcessClient<TKey, TValue>>();
+
+
+        public void GetFullStatus(StringBuilder status)
+        {
+            lock (m_clients)
+            {
+                status.AppendFormat("Active Client Count: {0}\r\n", m_clients.Count);
+                foreach (var client in m_clients)
+                {
+                    client.GetFullStatus(status);
+                }
+            }
+        }
 
         public int Port
         {
