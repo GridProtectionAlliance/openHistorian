@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using GSF.SortedTreeStore;
 using NPlot;
 using openHistorian;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 using openHistorian.Data.Query;
 using openHistorian.Data.Types;
-using openHistorian.Engine;
+using GSF.SortedTreeStore.Engine;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
 namespace simpleVisN
@@ -65,7 +66,7 @@ namespace simpleVisN
             HashSet<ulong> keys = new HashSet<ulong>();
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = m_archiveFile.OpenDataReader())
             {
-                KeyValueStream<HistorianKey, HistorianValue> scanner = reader.Read(0, ulong.MaxValue);
+                TreeStream<HistorianKey, HistorianValue> scanner = reader.Read(0, ulong.MaxValue);
                 ulong key1, key2, value1, value2;
                 while (scanner.Read())
                 {

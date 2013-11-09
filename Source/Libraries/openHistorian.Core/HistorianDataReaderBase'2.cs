@@ -23,8 +23,9 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian
 {
@@ -45,7 +46,7 @@ namespace openHistorian
         /// <param name="pointIdFilter">filters for the pointId</param>
         /// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
         /// <returns></returns>
-        public abstract KeyValueStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, DataReaderOptions readerOptions);
+        public abstract TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, DataReaderOptions readerOptions);
 
         /// <summary>
         /// Closes this reader

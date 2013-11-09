@@ -24,8 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GSF.SortedTreeStore;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 using openHistorian.Data.Types;
 
 namespace openHistorian.Data.Query
@@ -54,7 +55,7 @@ namespace openHistorian.Data.Query
 
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
-                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
+                TreeStream<HistorianKey, HistorianValue> stream = reader.Read((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
                
                 while (stream.Read())
                 {

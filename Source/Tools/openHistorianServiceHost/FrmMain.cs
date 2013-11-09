@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
+using GSF.SortedTreeStore.Net;
 using openHistorian;
-using openHistorian.Archive;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Collections.Generic.TreeNodes;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace openHistorianServiceHost
 {
@@ -39,11 +40,11 @@ namespace openHistorianServiceHost
             {
                 HistorianDatabaseBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase();
 
-                using (ArchiveTable<HistorianKey, HistorianValue> file = ArchiveFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+                using (SortedTreeTable<HistorianKey, HistorianValue> file = SortedTreeFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
                 {
-                    using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> read = file.BeginRead())
+                    using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> read = file.BeginRead())
                     {
-                        TreeScannerBase<HistorianKey, HistorianValue> scan = read.GetTreeScanner();
+                        SortedTreeScannerBase<HistorianKey, HistorianValue> scan = read.GetTreeScanner();
                         scan.SeekToStart();
                         ulong key1, key2, value1, value2;
                         long count = 0;

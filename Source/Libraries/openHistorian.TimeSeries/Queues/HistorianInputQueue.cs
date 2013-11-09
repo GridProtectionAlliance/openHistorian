@@ -23,9 +23,10 @@
 
 using System;
 using GSF.Collections;
+using GSF.SortedTreeStore;
 using GSF.Threading;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Queues
 {
@@ -44,7 +45,7 @@ namespace openHistorian.Queues
             public ulong Value1;
             public ulong Value2;
 
-            public bool Load(KeyValueStream<HistorianKey, HistorianValue> stream)
+            public bool Load(TreeStream<HistorianKey, HistorianValue> stream)
             {
                 if (stream.Read())
                 {
@@ -87,7 +88,7 @@ namespace openHistorian.Queues
         /// this point stream should be high speed.
         /// </summary>
         /// <param name="stream"></param>
-        public void Enqueue(KeyValueStream<HistorianKey, HistorianValue> stream)
+        public void Enqueue(TreeStream<HistorianKey, HistorianValue> stream)
         {
             lock (m_syncWrite)
             {
@@ -147,7 +148,7 @@ namespace openHistorian.Queues
         }
 
         private class StreamPoints
-            : KeyValueStream<HistorianKey, HistorianValue>
+            : TreeStream<HistorianKey, HistorianValue>
         {
             private readonly IsolatedQueue<PointData> m_measurements;
             private bool m_canceled = false;

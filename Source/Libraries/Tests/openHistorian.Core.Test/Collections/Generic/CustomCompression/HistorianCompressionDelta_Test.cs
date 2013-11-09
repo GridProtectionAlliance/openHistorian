@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using NUnit.Framework;
-using openHistorian.Collections.Generic.TreeNodes;
+using openHistorian.Collections;
 
-namespace openHistorian.Collections.Generic.CustomCompression
+namespace GSF.SortedTreeStore.Tree.CustomCompression
 {
     internal class SequentialTest
      : TreeNodeRandomizerBase<HistorianKey, HistorianValue>

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
-using openHistorian.Archive;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.FileStructure.IO;
+using GSF.SortedTreeStore.Tree;
+using GSF.IO.FileStructure.Media;
 
 namespace openHistorian.UnitTests.Archive
 {
@@ -120,10 +120,10 @@ namespace openHistorian.UnitTests.Archive
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (ArchiveFile af = ArchiveFile.CreateInMemory(pageSize))
-            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeFile af = SortedTreeFile.CreateInMemory(pageSize))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
-                using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
+                using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
                 {
                     for (ulong x = 0; x < 1000000; x++)
                     {
@@ -175,10 +175,10 @@ namespace openHistorian.UnitTests.Archive
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (ArchiveFile af = ArchiveFile.CreateInMemory(pageSize))
-            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeFile af = SortedTreeFile.CreateInMemory(pageSize))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
-                using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
+                using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
                 {
                     for (ulong x = 0; x < 100000; x++)
                     {
@@ -239,9 +239,9 @@ namespace openHistorian.UnitTests.Archive
                 File.Delete(fileName);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (ArchiveFile af = ArchiveFile.CreateInMemory(pageSize))
-            using (ArchiveTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
-            using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
+            using (SortedTreeFile af = SortedTreeFile.CreateInMemory(pageSize))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
             {
                 for (uint x = 0; x < 1000000; x++)
                 {

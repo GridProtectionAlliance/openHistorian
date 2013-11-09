@@ -30,10 +30,11 @@ using GSF.Data;
 using GSF.Historian;
 using GSF.Historian.Files;
 using GSF.Parsing;
+using GSF.SortedTreeStore;
 using GSF.TimeSeries;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Engine;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Engine;
 using DataType = GSF.Historian.Files.DataType;
 
 namespace openHistorian
@@ -44,7 +45,8 @@ namespace openHistorian
     /// <remarks>
     /// This class implements the 1.0 historian <see cref="IArchive"/> to automatically bring in historian providers (e.g., web services).
     /// </remarks>
-    public class HistorianDatabaseEngine : ArchiveDatabaseEngine<HistorianKey, HistorianValue>, IArchive
+    public class HistorianDatabaseEngine 
+        : ArchiveDatabaseEngine<HistorianKey, HistorianValue>, IArchive
     {
         #region [ Constructors ]
 
@@ -102,7 +104,7 @@ namespace openHistorian
             }
         }
 
-        private IEnumerable<IDataPoint> ReadDataStream(KeyValueStream<HistorianKey, HistorianValue> stream)
+        private IEnumerable<IDataPoint> ReadDataStream(TreeStream<HistorianKey, HistorianValue> stream)
         {
             List<ArchiveDataPoint> queriedData = new List<ArchiveDataPoint>();
             ArchiveDataPoint point;

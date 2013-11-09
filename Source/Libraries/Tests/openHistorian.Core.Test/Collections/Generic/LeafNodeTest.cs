@@ -2,9 +2,9 @@
 using System.Text;
 using GSF;
 using GSF.IO.Unmanaged;
-using openHistorian.Collections.Generic.TreeNodes;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 
-namespace openHistorian.Collections.Generic
+namespace GSF.SortedTreeStore.Tree
 {
     public abstract class TreeNodeRandomizerBase<TKey, TValue>
         where TKey : class, new()
@@ -20,7 +20,7 @@ namespace openHistorian.Collections.Generic
     {
         private const int Max = 1000000;
 
-        public static void TestNode<TKey, TValue>(TreeNodeBase<TKey, TValue> node, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count)
+        public static void TestNode<TKey, TValue>(SortedTreeNodeBase<TKey, TValue> node, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count)
             where TKey : class, ISortedTreeKey<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
         {
@@ -47,8 +47,8 @@ namespace openHistorian.Collections.Generic
                 node.CreateEmptyNode(1);
 
 
-                TreeKeyMethodsBase<TKey> keyMethods = new TKey().CreateKeyMethods();
-                TreeValueMethodsBase<TValue> valueMethods = new TValue().CreateValueMethods();
+                SortedTreeKeyMethodsBase<TKey> keyMethods = new TKey().CreateKeyMethods();
+                SortedTreeValueMethodsBase<TValue> valueMethods = new TValue().CreateValueMethods();
 
                 TKey key = new TKey();
                 TKey key2 = new TKey();
@@ -82,7 +82,7 @@ namespace openHistorian.Collections.Generic
                     }
 
                     //Check if scanner works.
-                    TreeScannerBase<TKey, TValue> scanner = node.CreateTreeScanner();
+                    SortedTreeScannerBase<TKey, TValue> scanner = node.CreateTreeScanner();
                     scanner.SeekToStart();
                     for (int y = 0; y <= x; y++)
                     {
@@ -127,7 +127,7 @@ namespace openHistorian.Collections.Generic
 
                 TKey key = new TKey();
                 TValue value = new TValue();
-                TreeNodeBase<TKey, TValue> node = null;
+                SortedTreeNodeBase<TKey, TValue> node = null;
 
                 Console.WriteLine(StepTimer.Time(count, (sw) =>
                 {
@@ -165,7 +165,7 @@ namespace openHistorian.Collections.Generic
 
                 Console.WriteLine(StepTimer.Time(count, () =>
                 {
-                    TreeScannerBase<TKey, TValue> scanner = node.CreateTreeScanner();
+                    SortedTreeScannerBase<TKey, TValue> scanner = node.CreateTreeScanner();
                     scanner.SeekToStart();
                     while (scanner.Read())
                         ;

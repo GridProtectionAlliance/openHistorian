@@ -23,8 +23,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using GSF.SortedTreeStore;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 using openHistorian.Data.Types;
 
 namespace openHistorian.Data.Query
@@ -58,7 +59,7 @@ namespace openHistorian.Data.Query
 
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
-                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime);
+                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime);
                 ulong time, point, quality, value;
                 while (stream.Read())
                 {
@@ -88,7 +89,7 @@ namespace openHistorian.Data.Query
 
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
-                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime, signals);
+                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime, signals);
                 ulong time, point, quality, value;
                 while (stream.Read())
                 {
@@ -120,7 +121,7 @@ namespace openHistorian.Data.Query
 
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
-                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime, signals);
+                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime, signals);
                 ulong time, point, quality, value;
                 while (stream.Read())
                 {
@@ -177,7 +178,7 @@ namespace openHistorian.Data.Query
             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 QueryFilterPointId keyParser = QueryFilterPointId.CreateFromList(signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
-                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(timestamps, keyParser, readerOptions);
+                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(timestamps, keyParser, readerOptions);
                 ulong time, point, quality, value;
                 while (stream.Read())
                 {

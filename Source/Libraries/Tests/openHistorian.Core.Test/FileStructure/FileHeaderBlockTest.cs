@@ -24,10 +24,10 @@
 using System;
 using System.Linq;
 using GSF;
+using GSF.IO.FileStructure.Test;
 using NUnit.Framework;
-using openHistorian.FileStructure.Test;
 
-namespace openHistorian.FileStructure
+namespace GSF.IO.FileStructure
 {
     [TestFixture()]
     public class FileHeaderBlockTest

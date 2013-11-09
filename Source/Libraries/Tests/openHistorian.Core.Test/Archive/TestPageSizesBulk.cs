@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
-using openHistorian.Archive;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Collections.Generic.TreeNodes;
-using openHistorian.FileStructure.IO;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.IO.FileStructure.Media;
 
 namespace openHistorian.UnitTests.Archive
 {
@@ -79,9 +79,9 @@ namespace openHistorian.UnitTests.Archive
             Stopwatch sw = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
             sw.Start();
-            using (ArchiveTable<HistorianKey, HistorianValue> af = ArchiveFile.CreateInMemory(pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
-                using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
+                using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
                 {
                     for (int x = 0; x < 100; x++)
                     {
@@ -172,8 +172,8 @@ namespace openHistorian.UnitTests.Archive
                 File.Delete(fileName);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (ArchiveTable<HistorianKey, HistorianValue> af = ArchiveFile.CreateFile(fileName, pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
-            using (ArchiveTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
+            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateFile(fileName, pageSize).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
             {
                 for (uint x = 0; x < 1000000; x++)
                 {

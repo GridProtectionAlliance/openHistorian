@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace openHistorian.Engine
+namespace GSF.SortedTreeStore.Engine
 {
     [TestFixture]
     public class CustomSortHelper_Test

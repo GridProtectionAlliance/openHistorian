@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using NUnit.Framework;
-using openHistorian.Archive;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Collections.Generic.TreeNodes;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace openHistorian
 {
@@ -16,7 +16,7 @@ namespace openHistorian
             Test();
         }
 
-        private static ArchiveTable<HistorianKey, HistorianValue>.Editor s_fileEditor;
+        private static SortedTreeTable<HistorianKey, HistorianValue>.Editor s_fileEditor;
         private static int s_points;
 
         public static void Test()
@@ -26,7 +26,7 @@ namespace openHistorian
             //if (File.Exists(file))
             //    File.Delete(file);
             //s_archive = new Archive(file);
-            ArchiveTable<HistorianKey, HistorianValue> s_archiveFile = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode);
+            SortedTreeTable<HistorianKey, HistorianValue> sortedTreeFile = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode);
             int cnt = 0;
 
 
@@ -49,7 +49,7 @@ namespace openHistorian
             //}
             //long oldCount = Statistics.ChecksumCount;
 
-            TreeScannerBase<HistorianKey, HistorianValue> reader1 = s_archiveFile.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
+            SortedTreeScannerBase<HistorianKey, HistorianValue> reader1 = sortedTreeFile.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
             reader1.SeekToStart();
 
             while (reader1.Read())
@@ -57,8 +57,8 @@ namespace openHistorian
                 cnt++;
             }
 
-            s_archiveFile.Dispose();
-            s_archiveFile = null;
+            sortedTreeFile.Dispose();
+            sortedTreeFile = null;
 
             //MessageBox.Show(openHistorian.Collections.KeyValue.BasicTreeBase.PointsAdded + " " +
             //                openHistorian.Collections.KeyValue.BasicTreeBase.ShortcutsTaken);

@@ -26,16 +26,17 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
-using openHistorian.Communications;
-using openHistorian.Engine;
+using GSF.SortedTreeStore.Engine;
 
 namespace openHistorian
 {
     /// <summary>
     /// Represents a historian server instance that can be used to read and write time-series data.
     /// </summary>
-    public class HistorianServer : IDisposable
+    public class HistorianServer 
+        : IDisposable
     {
         #region [ Members ]
 

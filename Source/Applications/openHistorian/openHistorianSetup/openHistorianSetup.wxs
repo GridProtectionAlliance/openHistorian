@@ -217,8 +217,8 @@
       <Component Id="openHistorian.Core">
         <File Id="openHistorian.Core.dll" Name="$(var.openHistorian.Core.TargetFileName)" Source="$(var.openHistorian.Core.TargetPath)" />
       </Component>
-      <Component Id="openHistorian.TimeSeries">
-        <File Id="openHistorian.TimeSeries.dll" Name="$(var.openHistorian.TimeSeries.TargetFileName)" Source="$(var.openHistorian.TimeSeries.TargetPath)" />
+      <Component Id="GSF.SortedTreeStore">
+        <File Id="GSF.SortedTreeStore.dll" Name="$(var.GSF.SortedTreeStore.TargetFileName)" Source="$(var.GSF.SortedTreeStore.TargetPath)" />
       </Component>
       <Component Id="openHistorian.Adapters">
         <File Id="openHistorian.Adapters.dll" Name="$(var.openHistorian.Adapters.TargetFileName)" Source="$(var.openHistorian.Adapters.TargetPath)" />

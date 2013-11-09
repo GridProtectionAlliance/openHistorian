@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
-using openHistorian.Archive;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Collections.Generic.TreeNodes;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace openHistorian.Test
 {
@@ -19,7 +19,7 @@ namespace openHistorian.Test
         [Test()]
         public void PartitionFileConstructorTest()
         {
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
             }
         }
@@ -31,9 +31,9 @@ namespace openHistorian.Test
         public void AddPointTest()
         {
 
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
-                using (ArchiveTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
+                using (SortedTreeTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(new HistorianKey(), new HistorianValue());
                     fileEditor.Commit();
@@ -49,11 +49,11 @@ namespace openHistorian.Test
         {
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 for (uint x = 0; x < 100; x++)
                 {
-                    using (ArchiveTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
+                    using (SortedTreeTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
                     {
                         for (int y = 0; y < 10; y++)
                         {
@@ -84,14 +84,14 @@ namespace openHistorian.Test
             key.PointID = 2;
             value.Value1 = 3;
             value.Value2 = 4;
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 ulong date = 1;
                 ulong pointId = 2;
                 ulong value1 = 3;
                 ulong value2 = 4;
-                ArchiveTableSnapshotInfo<HistorianKey, HistorianValue> snap1;
-                using (ArchiveTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
+                SortedTreeTableSnapshotInfo<HistorianKey, HistorianValue> snap1;
+                using (SortedTreeTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(key,value);
                     key.Timestamp++;
@@ -99,17 +99,17 @@ namespace openHistorian.Test
                     snap1 = target.AcquireReadSnapshot();
                     fileEditor.Commit();
                 }
-                ArchiveTableSnapshotInfo<HistorianKey, HistorianValue> snap2 = target.AcquireReadSnapshot();
+                SortedTreeTableSnapshotInfo<HistorianKey, HistorianValue> snap2 = target.AcquireReadSnapshot();
 
-                using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> instance = snap1.CreateReadSnapshot())
+                using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> instance = snap1.CreateReadSnapshot())
                 {
-                    TreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
+                    SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
                     scanner.SeekToStart();
                     Assert.AreEqual(false, scanner.Read());
                 }
-                using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> instance = snap2.CreateReadSnapshot())
+                using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> instance = snap2.CreateReadSnapshot())
                 {
-                    TreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
+                    SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
                     scanner.SeekToStart();
                     Assert.AreEqual(true, scanner.Read());
                     Assert.AreEqual(1uL, scanner.CurrentKey.Timestamp);
@@ -135,30 +135,30 @@ namespace openHistorian.Test
             value.Value1 = 3;
             value.Value2 = 4;
 
-            using (ArchiveTable<HistorianKey, HistorianValue> target = ArchiveFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> target = SortedTreeFile.CreateInMemory().OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 ulong date = 1;
                 ulong pointId = 2;
                 ulong value1 = 3;
                 ulong value2 = 4;
-                ArchiveTableSnapshotInfo<HistorianKey, HistorianValue> snap1;
-                using (ArchiveTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
+                SortedTreeTableSnapshotInfo<HistorianKey, HistorianValue> snap1;
+                using (SortedTreeTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
                 {
                     fileEditor.AddPoint(key, value);
                     snap1 = target.AcquireReadSnapshot();
                     fileEditor.Rollback();
                 }
-                ArchiveTableSnapshotInfo<HistorianKey, HistorianValue> snap2 = target.AcquireReadSnapshot();
+                SortedTreeTableSnapshotInfo<HistorianKey, HistorianValue> snap2 = target.AcquireReadSnapshot();
 
-                using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> instance = snap1.CreateReadSnapshot())
+                using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> instance = snap1.CreateReadSnapshot())
                 {
-                    TreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
+                    SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
                     scanner.SeekToStart();
                     Assert.AreEqual(false, scanner.Read());
                 }
-                using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> instance = snap2.CreateReadSnapshot())
+                using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> instance = snap2.CreateReadSnapshot())
                 {
-                    TreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
+                    SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
                     scanner.SeekToStart();
                     Assert.AreEqual(false, scanner.Read());
                 }

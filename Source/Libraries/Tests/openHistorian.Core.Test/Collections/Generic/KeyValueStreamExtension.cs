@@ -1,16 +1,16 @@
 ﻿using System;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
-namespace openHistorian.Collections.Generic
+namespace GSF.SortedTreeStore.Tree
 {
     public static class KeyValueStreamExtension
     {
-        public static KeyValueStreamSequential<TKey, TValue> TestSequential<TKey, TValue>(this KeyValueStream<TKey, TValue> stream)
+        public static TreeStreamSequential<TKey, TValue> TestSequential<TKey, TValue>(this TreeStream<TKey, TValue> stream)
             where TKey : class, ISortedTreeKey<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
         {
-            return new KeyValueStreamSequential<TKey, TValue>(stream);
+            return new TreeStreamSequential<TKey, TValue>(stream);
         }
 
     }
@@ -20,18 +20,18 @@ namespace openHistorian.Collections.Generic
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class KeyValueStreamSequential<TKey, TValue>
-        : KeyValueStream<TKey, TValue>
+    public class TreeStreamSequential<TKey, TValue>
+        : TreeStream<TKey, TValue>
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
 
         bool m_isEndOfStream;
-        KeyValueStream<TKey, TValue> m_baseStream;
-        TreeKeyMethodsBase<TKey> m_keyMethods;
-        TreeValueMethodsBase<TValue> m_valueMethods;
+        TreeStream<TKey, TValue> m_baseStream;
+        SortedTreeKeyMethodsBase<TKey> m_keyMethods;
+        SortedTreeValueMethodsBase<TValue> m_valueMethods;
 
-        public KeyValueStreamSequential(KeyValueStream<TKey, TValue> baseStream)
+        public TreeStreamSequential(TreeStream<TKey, TValue> baseStream)
         {
             m_keyMethods = new TKey().CreateKeyMethods();
             m_valueMethods = new TValue().CreateValueMethods();

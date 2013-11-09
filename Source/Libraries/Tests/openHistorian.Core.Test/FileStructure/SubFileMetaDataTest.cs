@@ -27,7 +27,7 @@ using System.IO;
 using GSF;
 using NUnit.Framework;
 
-namespace openHistorian.FileStructure.Test
+namespace GSF.IO.FileStructure.Test
 {
     [TestFixture()]
     public class SubFileMetaDataTest

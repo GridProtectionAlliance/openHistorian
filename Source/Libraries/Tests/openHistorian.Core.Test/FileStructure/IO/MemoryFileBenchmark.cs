@@ -3,7 +3,7 @@ using GSF;
 using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
-namespace openHistorian.FileStructure.IO
+namespace GSF.IO.FileStructure.Media
 {
     [TestFixture]
     internal class MemoryFileBenchmark

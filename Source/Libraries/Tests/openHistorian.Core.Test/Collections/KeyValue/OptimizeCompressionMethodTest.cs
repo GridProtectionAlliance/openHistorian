@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using GSF;
 using NUnit.Framework;
 using GSF.IO.Unmanaged;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Collections
 {

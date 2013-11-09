@@ -25,9 +25,9 @@ using System;
 using System.IO;
 using openHistorian.Collections;
 using GSF.IO.Unmanaged;
-using openHistorian.Archive;
-using openHistorian.Collections.Generic;
-using openHistorian.Collections.Generic.TreeNodes;
+using GSF.SortedTreeStore.Storage;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace openHistorian.Utility
 {
@@ -70,7 +70,7 @@ namespace openHistorian.Utility
                 };
                 hist.Read(del);
 
-                using (var file1 = ArchiveFile.CreateFile(newFileName))
+                using (var file1 = SortedTreeFile.CreateFile(newFileName))
                 using (var table = file1.OpenOrCreateTable<HistorianKey,HistorianValue>(compressionMethod))
                 using (var edit1 = table.BeginEdit())
                 {

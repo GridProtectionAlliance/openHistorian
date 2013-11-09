@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace SampleCode.openHistorian.Server.dll
 {
@@ -92,7 +94,7 @@ namespace SampleCode.openHistorian.Server.dll
                     HistorianDatabaseBase<HistorianKey, HistorianValue> database = client["Scada"];
                     using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                     {
-                        KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
+                        TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
                         stream.Cancel();
                     }
                     database.Disconnect();
@@ -101,7 +103,7 @@ namespace SampleCode.openHistorian.Server.dll
 
                     using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                     {
-                        KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
+                        TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
                         stream.Cancel();
                     }
                     database.Disconnect();

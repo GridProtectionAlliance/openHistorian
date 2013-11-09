@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
-using openHistorian.Archive;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
 using openHistorian.Data.Query;
 
@@ -83,7 +84,7 @@ namespace openHistorian
             DateTime start = DateTime.Parse("4/17/2013 10:38 AM");
             DateTime stop = DateTime.Parse("4/17/2013 10:38 AM");
 
-            using (var file = ArchiveFile.OpenFile(fileName, isReadOnly: true))
+            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             using (var snapshot = table.BeginRead())
             {

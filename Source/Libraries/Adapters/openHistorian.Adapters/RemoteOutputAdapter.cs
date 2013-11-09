@@ -26,10 +26,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using GSF;
+using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Net;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 using openHistorian.Queues;
 
 namespace openHistorian.Adapters
@@ -275,7 +277,7 @@ namespace openHistorian.Adapters
         }
 
         private class StreamPoints
-            : KeyValueStream<HistorianKey, HistorianValue>
+            : TreeStream<HistorianKey, HistorianValue>
         {
             private int m_index;
             private readonly IMeasurement[] m_measurements;

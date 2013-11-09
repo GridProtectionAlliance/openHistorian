@@ -24,9 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GSF.Collections.Generic;
+using GSF.Collections;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 using openHistorian.Data.Types;
 
 namespace openHistorian.Data.Query

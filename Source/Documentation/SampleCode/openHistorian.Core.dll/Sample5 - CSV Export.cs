@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace SampleCode.openHistorian.Server.dll
 {
@@ -47,7 +49,7 @@ namespace SampleCode.openHistorian.Server.dll
                         using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
                         {
                             csvStream.Write("Timestamp,PointID,Value,Quality");
-                            KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(DateTime.MinValue, DateTime.MaxValue, new ulong[] { 1, 2, 3 });
+                            TreeStream<HistorianKey, HistorianValue> stream = reader.Read(DateTime.MinValue, DateTime.MaxValue, new ulong[] { 1, 2, 3 });
                             while (stream.Read())
                             {
                                 csvStream.WriteLine("{0},{1},{2},{3}", stream.CurrentKey.TimestampAsDate, stream.CurrentKey.PointID, stream.CurrentValue.AsSingle, stream.CurrentValue.Value3);

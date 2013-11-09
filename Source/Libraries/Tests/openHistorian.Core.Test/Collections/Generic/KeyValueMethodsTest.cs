@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace openHistorian.Collections.Generic
+namespace GSF.SortedTreeStore.Tree
 {
     [TestFixture]
     public unsafe class KeyValueMethodsTest

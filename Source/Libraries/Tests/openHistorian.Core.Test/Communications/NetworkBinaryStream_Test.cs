@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace GSF.Communications
+namespace GSF.Net
 {
     [TestFixture]
     class NetworkBinaryStream_Test

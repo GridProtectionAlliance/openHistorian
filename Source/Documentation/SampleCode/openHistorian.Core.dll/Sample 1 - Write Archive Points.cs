@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using openHistorian.Archive;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Collections.Generic.TreeNodes;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace SampleCode.openHistorian.Archive.dll
 {
@@ -19,7 +19,7 @@ namespace SampleCode.openHistorian.Archive.dll
                 File.Delete(fileName);
             var key = new HistorianKey();
             var value = new HistorianValue();
-            using (var file = ArchiveFile.CreateFile(fileName))
+            using (var file = SortedTreeFile.CreateFile(fileName))
             using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             using (var editor = table.BeginEdit())
             {
@@ -36,7 +36,7 @@ namespace SampleCode.openHistorian.Archive.dll
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
-            using (var file = ArchiveFile.OpenFile(fileName, isReadOnly: true))
+            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             using (var snapshot = table.BeginRead())
             {
@@ -58,7 +58,7 @@ namespace SampleCode.openHistorian.Archive.dll
             string fileName = @"C:\Temp\ArchiveFile.d2";
             var key = new HistorianKey();
             var value = new HistorianValue();
-            using (var file = ArchiveFile.OpenFile(fileName, isReadOnly: false))
+            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             using (var editor = table.BeginEdit())
             {
@@ -77,7 +77,7 @@ namespace SampleCode.openHistorian.Archive.dll
             string fileName = @"C:\Temp\ArchiveFile.d2";
             var key = new HistorianKey();
             var value = new HistorianValue();
-            using (var file = ArchiveFile.OpenFile(fileName, isReadOnly: false))
+            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
             using (var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (var editor = table.BeginEdit())
@@ -106,7 +106,7 @@ namespace SampleCode.openHistorian.Archive.dll
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
-            using (var file = ArchiveFile.OpenFile(fileName, isReadOnly: true))
+            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             {
                 var snapshotInfo = table.AcquireReadSnapshot();
@@ -141,7 +141,7 @@ namespace SampleCode.openHistorian.Archive.dll
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
-            using (var file = ArchiveFile.OpenFile(fileName, isReadOnly: false))
+            using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             {
                 using (var writer = table.BeginEdit())

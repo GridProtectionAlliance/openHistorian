@@ -3,7 +3,7 @@ using System.IO;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace SampleCode.openHistorian.Server.dll
 {

@@ -1,12 +1,13 @@
 ﻿using System;
-using openHistorian.Archive;
+using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian
 {
     public class PointStreamSequential
-        : KeyValueStream<HistorianKey, HistorianValue>
+        : TreeStream<HistorianKey, HistorianValue>
     {
         private ulong m_start;
         private int m_count;
@@ -100,7 +101,7 @@ namespace openHistorian
         //    return x;
         //}
 
-        public static long Count<TKey, TValue>(this KeyValueStream<TKey, TValue> stream)
+        public static long Count<TKey, TValue>(this TreeStream<TKey, TValue> stream)
             where TKey : class, new()
             where TValue : class, new()
         {
@@ -110,11 +111,11 @@ namespace openHistorian
             return x;
         }
 
-        public static long Count(this ArchiveTable<HistorianKey, HistorianValue> stream)
+        public static long Count(this SortedTreeTable<HistorianKey, HistorianValue> stream)
         {
-            using (ArchiveTableReadSnapshot<HistorianKey, HistorianValue> read = stream.BeginRead())
+            using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> read = stream.BeginRead())
             {
-                TreeScannerBase<HistorianKey, HistorianValue> scan = read.GetTreeScanner();
+                SortedTreeScannerBase<HistorianKey, HistorianValue> scan = read.GetTreeScanner();
                 scan.SeekToStart();
                 return scan.Count();
             }

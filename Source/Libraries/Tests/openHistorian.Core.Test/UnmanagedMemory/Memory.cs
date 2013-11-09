@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualBasic.Devices;
 using NUnit.Framework;
 
-namespace GSF.UnmanagedMemory.Test
+namespace GSF.IO.Unmanaged.Test
 {
     [TestFixture()]
     public class MemoryTest

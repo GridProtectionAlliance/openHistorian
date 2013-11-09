@@ -1,12 +1,14 @@
 ﻿using System;
 using System.IO;
 using GSF.IO;
+using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
 using openHistorian;
-using openHistorian.Archive;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Collections.Generic.TreeNodes;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Data.Query;
 
 namespace SampleCode.openHistorian.Server.dll
@@ -60,7 +62,7 @@ namespace SampleCode.openHistorian.Server.dll
             double time;
             double count = 0;
 
-            using (ArchiveFile file = ArchiveFile.CreateInMemory())
+            using (SortedTreeFile file = SortedTreeFile.CreateInMemory())
             {
                 var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid);
                 HistorianKey key = new HistorianKey();
@@ -125,7 +127,7 @@ namespace SampleCode.openHistorian.Server.dll
                             using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                             {
                                 //TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue, new ulong[] { 2 });
-                                KeyValueStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue);
+                                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue);
                                 while (stream.Read())
                                 {
                                     count++;
@@ -164,7 +166,7 @@ namespace SampleCode.openHistorian.Server.dll
             double time;
             double count = 0;
 
-            using (ArchiveFile file = ArchiveFile.OpenFile(path, true))
+            using (SortedTreeFile file = SortedTreeFile.OpenFile(path, true))
             {
                 var table = file.OpenTable<HistorianKey, HistorianValue>();
 

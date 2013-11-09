@@ -22,8 +22,9 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian
 {
@@ -45,7 +46,7 @@ namespace openHistorian
         /// Writes the point stream to the database. 
         /// </summary>
         /// <param name="points"></param>
-        public abstract void Write(KeyValueStream<TKey, TValue> points);
+        public abstract void Write(TreeStream<TKey, TValue> points);
 
         /// <summary>
         /// Writes an individual point to the database.

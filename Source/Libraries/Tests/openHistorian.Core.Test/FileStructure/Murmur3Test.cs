@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
-using openHistorian.FileStructure.IO;
+using GSF.IO.FileStructure.Media;
 
-namespace openHistorian.FileStructure
+namespace GSF.IO.FileStructure
 {
     [TestFixture]
     internal class Murmur3Test

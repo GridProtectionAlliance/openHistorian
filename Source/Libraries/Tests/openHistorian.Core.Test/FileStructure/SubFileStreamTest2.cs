@@ -1,9 +1,10 @@
 ﻿using System;
+using GSF.IO.FileStructure.Media;
 using GSF.IO.Unmanaged;
 using NUnit.Framework;
-using openHistorian.FileStructure.IO;
+using openHistorian;
 
-namespace openHistorian.FileStructure
+namespace GSF.IO.FileStructure
 {
     [TestFixture]
     public class SubFileStreamTest

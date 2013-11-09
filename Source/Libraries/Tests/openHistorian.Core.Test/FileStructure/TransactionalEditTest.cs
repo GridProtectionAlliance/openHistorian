@@ -23,10 +23,10 @@
 
 using System;
 using GSF;
+using GSF.IO.FileStructure.Media;
 using NUnit.Framework;
-using openHistorian.FileStructure.IO;
 
-namespace openHistorian.FileStructure.Test
+namespace GSF.IO.FileStructure.Test
 {
     [TestFixture()]
     public class TransactionalEditTest

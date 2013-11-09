@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Data.Query
 {

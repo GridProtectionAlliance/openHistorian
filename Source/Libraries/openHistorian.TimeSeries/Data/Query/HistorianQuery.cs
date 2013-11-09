@@ -24,8 +24,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
-using openHistorian.Communications;
 
 namespace openHistorian.Data.Query
 {

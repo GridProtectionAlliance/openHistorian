@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{69FCF69C-A782-40CF-A428-9A8B30370B7C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GSF</RootNamespace>
+    <AssemblyName>GSF.SortedTreeStore.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GSF.Historian, Version=2.0.68.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Historian.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Archive\TestPageSizes.cs" />
+    <Compile Include="Archive\TestPageSizesBulk.cs" />
+    <Compile Include="BitMath.cs" />
+    <Compile Include="Collections\256\SortedTree256MethodsTest.cs" />
+    <Compile Include="Collections\64\BinarySearchTest.cs" />
+    <Compile Include="Collections\64\SortedTree64Remove_Test.cs" />
+    <Compile Include="Collections\64\SortedTree64Test.cs" />
+    <Compile Include="Collections\64\SortedTree64Test_New.cs" />
+    <Compile Include="Collections\BitArrayTest.cs" />
+    <Compile Include="Collections\BitArrayTestPerformance.cs" />
+    <Compile Include="Collections\ContinuousQueueTest.cs" />
+    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionTs_Test.cs" />
+    <Compile Include="Collections\Generic\CustomCompression\HistorianCompressionDelta_Test.cs" />
+    <Compile Include="Collections\Generic\FixedSizeLeaf_Test.cs" />
+    <Compile Include="Collections\Generic\FixedSizeNode_Test.cs" />
+    <Compile Include="Collections\Generic\KeyValueMethodsTest.cs" />
+    <Compile Include="Collections\Generic\KeyValueStreamExtension.cs" />
+    <Compile Include="Collections\Generic\LeafNodeIndexerTest.cs" />
+    <Compile Include="Collections\Generic\LeafNodeTest.cs" />
+    <Compile Include="Collections\Generic\SortedListConstructor_Test.cs" />
+    <Compile Include="Collections\Generic\SortedTree_FixedSizeLeaf_Node_Test.cs" />
+    <Compile Include="Collections\Generic\SortedTree_FixedSizeLeaf_Test.cs" />
+    <Compile Include="Collections\Generic\SortedTree_SparseIndex_Node_Test.cs" />
+    <Compile Include="Collections\Generic\ZeroLeafNode_Test.cs" />
+    <Compile Include="Collections\IsolatedQueueFileBacked.cs" />
+    <Compile Include="Collections\IsolatedQueueTest.cs" />
+    <Compile Include="Collections\ISupportsReadonlyTest.cs" />
+    <Compile Include="Collections\KeyValue2\SortedTree256DeltaEncodedTest.cs" />
+    <Compile Include="Collections\KeyValue2\SortedTree256Test.cs" />
+    <Compile Include="Collections\KeyValue2\SortedTree256TS32EncodedTest.cs" />
+    <Compile Include="Collections\KeyValue2\SortedTree256TSEncodedTest.cs" />
+    <Compile Include="Collections\KeyValue\ArchiveFileTest.cs" />
+    <Compile Include="Collections\KeyValue\OptimizeCompressionMethodTest.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256BaseEnhancedTest.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256BaseTest.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256CompareTest.cs" />
+    <Compile Include="Collections\KeyValue\SortedTree256Test.cs" />
+    <Compile Include="Collections\LargeArray.cs" />
+    <Compile Include="Collections\ResourceQueue.cs" />
+    <Compile Include="Collections\ResourceQueueCollection.cs" />
+    <Compile Include="Communications\NetworkBinaryStream_Test.cs" />
+    <Compile Include="CompressionTest.cs" />
+    <Compile Include="Data\PeriodicScannerTest.cs" />
+    <Compile Include="DebugStopwatch.cs" />
+    <Compile Include="DelMeTest.cs" />
+    <Compile Include="Engine\ArchiveReaderSequential_Test.cs" />
+    <Compile Include="Engine\ArchiveWriters\PointStreamCacheTest.cs" />
+    <Compile Include="Engine\ArchiveWriters\PrestageWriterTest.cs" />
+    <Compile Include="Engine\ArchiveWriters\StageWriterTest.cs" />
+    <Compile Include="Engine\ArchiveWriters\StagingFileTest.cs" />
+    <Compile Include="Engine\ArchiveWriters\WriteProcessorTest.cs" />
+    <Compile Include="Engine\CustomSortHelper_Test.cs" />
+    <Compile Include="FileStructure\BenchmarkSubFileStreamTest.cs" />
+    <Compile Include="FileStructure\DiskIOEnhanced2Test.cs" />
+    <Compile Include="FileStructure\DiskIOEnhancedTest.cs" />
+    <Compile Include="FileStructure\FileHeaderBlockTest.cs" />
+    <Compile Include="FileStructure\IndexMapperTest.cs" />
+    <Compile Include="FileStructure\IndexParserTest.cs" />
+    <Compile Include="FileStructure\IO\BufferedFileTest.cs" />
+    <Compile Include="FileStructure\IO\CustomBufferedFileStreamExtensiveTest.cs" />
+    <Compile Include="FileStructure\IO\CustomBufferedFileStream_IoQueue.cs" />
+    <Compile Include="FileStructure\IO\CustomPageReplacementTest.cs" />
+    <Compile Include="FileStructure\IO\MemoryFileBenchmark.cs" />
+    <Compile Include="FileStructure\IO\PageListTest.cs" />
+    <Compile Include="FileStructure\Murmur3Test.cs" />
+    <Compile Include="FileStructure\ShadowCopyAllocatorTest.cs" />
+    <Compile Include="FileStructure\SubFileMetaDataTest.cs" />
+    <Compile Include="FileStructure\SubFileStreamTest.cs" />
+    <Compile Include="FileStructure\SubFileStreamTest2.cs" />
+    <Compile Include="FileStructure\SubFileStreamTestFile.cs" />
+    <Compile Include="FileStructure\TransactionalEditTest.cs" />
+    <Compile Include="FileStructure\TransactionalEditTestFile.cs" />
+    <Compile Include="FileStructure\TransactionServiceTest.cs" />
+    <Compile Include="FileStructure\TransactionServiceTestFile.cs" />
+    <Compile Include="HelperFunctions.cs" />
+    <Compile Include="IO\BinaryStreamBenchmark.cs" />
+    <Compile Include="IO\BinaryStreamTest.cs" />
+    <Compile Include="IO\BinaryStreamWrapperTest.cs" />
+    <Compile Include="IO\Unmanaged\BufferedFileStreamExtensiveTest.cs" />
+    <Compile Include="IO\Unmanaged\BufferedFileStreamTest.cs" />
+    <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
+    <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamCoreTest.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
+    <Compile Include="IO\Unmanaged\MemoryStreamTestPerformance.cs" />
+    <Compile Include="IO\Unmanaged\PageMetaDataListTest.cs" />
+    <Compile Include="IO\Unmanaged\UnmanagedMemoryStreamTest.cs" />
+    <Compile Include="Local\HistorianServer_Test1.cs" />
+    <Compile Include="Local\HistorianServer_Test2.cs" />
+    <Compile Include="Local\XmlConfigTest.cs" />
+    <Compile Include="PointStreamHelpers.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteOutputAdapterTest.cs" />
+    <Compile Include="Server\Database\ArchiveDatabaseEngineTest.cs" />
+    <Compile Include="Server\Database\ArchiveInitializerTest.cs" />
+    <Compile Include="Server\Database\ArchiveListSnapshotTest.cs" />
+    <Compile Include="Server\Database\ArchiveManagementTest.cs" />
+    <Compile Include="Server\Database\ArchiveWriterTest.cs" />
+    <Compile Include="Server\Database\ArchiveWriter_ArchiveFileTest.cs" />
+    <Compile Include="Server\Database\Archive\ArchiveFileSampleConvert.cs" />
+    <Compile Include="Server\Database\Archive\ArchiveFileTest.cs" />
+    <Compile Include="Server\Database\Archive\ArchiveTest.cs" />
+    <Compile Include="Server\Database\ResourceEngineTest.cs" />
+    <Compile Include="Streaming\TestNetworkClients.cs" />
+    <Compile Include="Threading\ScheduledTaskTest.cs" />
+    <Compile Include="Threading\TreadSafeListTest.cs" />
+    <Compile Include="Threading\WorkerTest.cs" />
+    <Compile Include="UnmanagedMemory\BufferPool.cs" />
+    <Compile Include="UnmanagedMemory\Memory.cs" />
+    <Compile Include="WinApiTest.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\openHistorian.Core\GSF.SortedTreeStore.csproj">
+      <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
+      <Name>GSF.SortedTreeStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\openHistorian.TimeSeries\openHistorian.Core.csproj">
+      <Project>{7B53C942-E891-461C-B09C-49FABA82F19D}</Project>
+      <Name>openHistorian.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

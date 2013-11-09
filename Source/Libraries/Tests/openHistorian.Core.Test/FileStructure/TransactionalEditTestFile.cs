@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using GSF;
+using GSF.IO.FileStructure.Media;
 using NUnit.Framework;
-using openHistorian.FileStructure.IO;
 
-namespace openHistorian.FileStructure.Test
+namespace GSF.IO.FileStructure.Test
 {
     [TestFixture()]
     public class TransactionalEditTestFile

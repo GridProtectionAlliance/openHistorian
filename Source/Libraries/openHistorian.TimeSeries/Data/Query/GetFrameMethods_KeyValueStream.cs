@@ -24,9 +24,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GSF.Collections.Generic;
+using GSF.Collections;
+using GSF.SortedTreeStore;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Data.Query
 {
@@ -64,7 +65,7 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="stream">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this KeyValueStream<HistorianKey, HistorianValue> stream)
+        public static SortedList<DateTime, FrameData> GetFrames(this TreeStream<HistorianKey, HistorianValue> stream)
         {
             SortedList<DateTime, FrameDataConstructor> results = new SortedList<DateTime, FrameDataConstructor>();
             ulong lastTime = ulong.MinValue;

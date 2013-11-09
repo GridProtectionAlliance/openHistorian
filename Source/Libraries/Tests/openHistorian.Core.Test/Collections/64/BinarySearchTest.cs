@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using GSF;
+using GSF.SortedTreeStore.Types;
 using NUnit.Framework;
 
 namespace openHistorian.Collections
@@ -79,11 +80,11 @@ namespace openHistorian.Collections
                 //GC.WaitForPendingFinalizers();
                 //System.Threading.Thread.Sleep(10);
 
-                KeyMethodsUInt32 bin = new KeyMethodsUInt32();
+                SortedTreeKeyMethodsUInt32 bin = new SortedTreeKeyMethodsUInt32();
                 fixed (uint* lp = items)
                 {
                     byte* lpp = (byte*)lp;
-                    TreeUInt32 box = new TreeUInt32();
+                    SortedTreeUInt32 box = new SortedTreeUInt32();
 
                     StepTimer.ITimer timer = StepTimer.Start("Lookup");
                     for (int x = 0; x < lookupList.Length; x++)

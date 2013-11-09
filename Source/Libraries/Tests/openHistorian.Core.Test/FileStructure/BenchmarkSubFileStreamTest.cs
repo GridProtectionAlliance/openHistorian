@@ -2,9 +2,9 @@
 using GSF.IO.Unmanaged;
 using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
-using openHistorian.FileStructure;
+using GSF.IO.FileStructure;
 
-namespace openHistorian.Archive.Test.FileStructure
+namespace GSF.SortedTreeStore.Storage.Test.FileStructure
 {
     [TestFixture]
     internal class BenchmarkSubFileStreamTest

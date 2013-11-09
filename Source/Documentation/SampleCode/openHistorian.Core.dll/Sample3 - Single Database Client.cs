@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
+using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace SampleCode.openHistorian.Server.dll
 {

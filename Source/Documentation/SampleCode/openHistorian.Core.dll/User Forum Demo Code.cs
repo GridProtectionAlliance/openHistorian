@@ -3,11 +3,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using GSF.IO.Unmanaged;
+using GSF.SortedTreeStore.Net;
 using openHistorian;
-using openHistorian.Archive;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Collections.Generic.TreeNodes;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Data;
 using openHistorian.Data.Query;
 
@@ -205,7 +206,7 @@ namespace HistorianDemos
 
             int count = 0;
 
-            using (var file1 = ArchiveFile.CreateInMemory())
+            using (var file1 = SortedTreeFile.CreateInMemory())
             using (var table1 = file1.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (var edit1 = table1.BeginEdit())
@@ -234,7 +235,7 @@ namespace HistorianDemos
                 using (var read = table1.BeginRead())
                 {
                     swMigrate.Start();
-                    using (var file2 = ArchiveFile.CreateFile(newFileName))
+                    using (var file2 = SortedTreeFile.CreateFile(newFileName))
                     using (var table2 = file2.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid))
                     {
                         using (var edit2 = table2.BeginEdit())

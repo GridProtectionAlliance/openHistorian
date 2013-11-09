@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GSF.IO.Unmanaged;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using NUnit.Framework;
-using openHistorian.Collections.Generic.TreeNodes;
-using openHistorian.FileStructure;
+using openHistorian.Collections;
+using GSF.IO.FileStructure;
 
-namespace openHistorian.Collections.Generic.CustomCompression
+namespace GSF.SortedTreeStore.Tree.CustomCompression
 {
 
     [TestFixture]

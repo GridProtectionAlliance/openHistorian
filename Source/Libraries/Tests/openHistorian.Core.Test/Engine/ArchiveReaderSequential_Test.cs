@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GSF.SortedTreeStore.Engine.Reader;
 using NUnit.Framework;
-using openHistorian.Archive;
+using openHistorian;
+using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
-using openHistorian.Collections.Generic;
-using openHistorian.Collections.Generic.TreeNodes;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Data.Query;
+using GSF.SortedTreeStore.Net.Compression;
 
-namespace openHistorian.Engine
+namespace GSF.SortedTreeStore.Engine
 {
     [TestFixture]
     public class ArchiveReaderSequential_Test
@@ -141,14 +144,14 @@ namespace openHistorian.Engine
         }
 
 
-        ArchiveTable<HistorianKey, HistorianValue> CreateTable()
+        SortedTreeTable<HistorianKey, HistorianValue> CreateTable()
         {
-            var file = ArchiveFile.CreateInMemory();
+            var file = SortedTreeFile.CreateInMemory();
             var table = file.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode);
             return table;
         }
 
-        void AddData(ArchiveTable<HistorianKey, HistorianValue> table, ulong start, ulong step, ulong count)
+        void AddData(SortedTreeTable<HistorianKey, HistorianValue> table, ulong start, ulong step, ulong count)
         {
             using (var edit = table.BeginEdit())
             {
@@ -164,7 +167,7 @@ namespace openHistorian.Engine
                 edit.Commit();
             }
         }
-        void AddData(ArchiveTable<HistorianKey, HistorianValue> table, DateTime startTime, TimeSpan stepTime, int countTime, ulong startPoint, ulong stepPoint, ulong countPoint)
+        void AddData(SortedTreeTable<HistorianKey, HistorianValue> table, DateTime startTime, TimeSpan stepTime, int countTime, ulong startPoint, ulong stepPoint, ulong countPoint)
         {
             using (var edit = table.BeginEdit())
             {
@@ -185,7 +188,7 @@ namespace openHistorian.Engine
                 edit.Commit();
             }
         }
-        void AddDataTerminal(ArchiveTable<HistorianKey, HistorianValue> table, ulong pointID, DateTime startTime, TimeSpan stepTime, ulong startValue, ulong stepValue, int count)
+        void AddDataTerminal(SortedTreeTable<HistorianKey, HistorianValue> table, ulong pointID, DateTime startTime, TimeSpan stepTime, ulong startValue, ulong stepValue, int count)
         {
             using (var edit = table.BeginEdit())
             {

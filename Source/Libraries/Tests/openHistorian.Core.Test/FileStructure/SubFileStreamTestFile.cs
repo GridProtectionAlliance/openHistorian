@@ -24,11 +24,11 @@
 using System;
 using System.IO;
 using GSF;
+using GSF.IO.FileStructure.Media;
 using GSF.IO.Test;
 using NUnit.Framework;
-using openHistorian.FileStructure.IO;
 
-namespace openHistorian.FileStructure.Test
+namespace GSF.IO.FileStructure.Test
 {
     /// <summary>
     /// Provides a stream that converts the virtual addresses of the internal feature files to physical address

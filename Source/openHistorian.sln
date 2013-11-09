@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winformsVisN", "Tools\winfo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianServiceHost", "Tools\openHistorianServiceHost\openHistorianServiceHost.csproj", "{FA1AA668-4C75-45C5-B483-FDE0AE2F1272}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Core.Test", "Libraries\Tests\openHistorian.Core.Test\openHistorian.Core.Test.csproj", "{69FCF69C-A782-40CF-A428-9A8B30370B7C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SortedTreeStore.Test", "Libraries\Tests\openHistorian.Core.Test\GSF.SortedTreeStore.Test.csproj", "{69FCF69C-A782-40CF-A428-9A8B30370B7C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian", "Applications\openHistorian\openHistorian\openHistorian.csproj", "{F6986F10-FC76-475B-A7D0-10315EBF4910}"
 EndProject
@@ -215,13 +215,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{55
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Adapters", "Libraries\Adapters\openHistorian.Adapters\openHistorian.Adapters.csproj", "{D170A1D6-834B-47BD-B05F-67DD4BC12F97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Core", "Libraries\openHistorian.Core\openHistorian.Core.csproj", "{040E2AE7-021B-435A-ADBF-06D07EE0A67D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GSF.SortedTreeStore", "Libraries\openHistorian.Core\GSF.SortedTreeStore.csproj", "{040E2AE7-021B-435A-ADBF-06D07EE0A67D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openVisN", "Tools\openVisN\openVisN.csproj", "{7E9282AA-CBC3-485F-99D8-7DCA3DF02748}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorianShell", "Tools\openHistorianShell\openHistorianShell.csproj", "{2C71AA25-9346-4DD0-A0CD-F265F6036822}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.TimeSeries", "Libraries\openHistorian.TimeSeries\openHistorian.TimeSeries.csproj", "{7B53C942-E891-461C-B09C-49FABA82F19D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Core", "Libraries\openHistorian.TimeSeries\openHistorian.Core.csproj", "{7B53C942-E891-461C-B09C-49FABA82F19D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.SqlClr", "Libraries\openHistorian.SqlClr\openHistorian.SqlClr.csproj", "{60FD1EB0-8434-4A38-8756-E01E7435FCF1}"
 EndProject
@@ -305,34 +305,34 @@ Global
 		SccProjectTopLevelParentUniqueName18 = openHistorian.sln
 		SccProjectName18 = Libraries/Adapters/openHistorian.Adapters
 		SccLocalPath18 = Libraries\\Adapters\\openHistorian.Adapters
-		SccProjectUniqueName19 = Libraries\\openHistorian.Core\\openHistorian.Core.csproj
+		SccProjectUniqueName19 = Tools\\openVisN\\openVisN.csproj
 		SccProjectTopLevelParentUniqueName19 = openHistorian.sln
-		SccProjectName19 = Libraries/openHistorian.Core
-		SccLocalPath19 = Libraries\\openHistorian.Core
-		SccProjectUniqueName20 = Tools\\openVisN\\openVisN.csproj
+		SccProjectName19 = Tools/openVisN
+		SccLocalPath19 = Tools\\openVisN
+		SccProjectUniqueName20 = Tools\\openHistorianShell\\openHistorianShell.csproj
 		SccProjectTopLevelParentUniqueName20 = openHistorian.sln
-		SccProjectName20 = Tools/openVisN
-		SccLocalPath20 = Tools\\openVisN
-		SccProjectUniqueName21 = Tools\\openHistorianShell\\openHistorianShell.csproj
+		SccProjectName20 = Tools/openHistorianShell
+		SccLocalPath20 = Tools\\openHistorianShell
+		SccProjectUniqueName21 = Libraries\\openHistorian.SqlClr\\openHistorian.SqlClr.csproj
 		SccProjectTopLevelParentUniqueName21 = openHistorian.sln
-		SccProjectName21 = Tools/openHistorianShell
-		SccLocalPath21 = Tools\\openHistorianShell
-		SccProjectUniqueName22 = Libraries\\openHistorian.TimeSeries\\openHistorian.TimeSeries.csproj
+		SccProjectName21 = Libraries/openHistorian.SqlClr
+		SccLocalPath21 = Libraries\\openHistorian.SqlClr
+		SccProjectUniqueName22 = Tools\\DataExtractionUtility\\DataExtractionUtility.csproj
 		SccProjectTopLevelParentUniqueName22 = openHistorian.sln
-		SccProjectName22 = Libraries/openHistorian.TimeSeries
-		SccLocalPath22 = Libraries\\openHistorian.TimeSeries
-		SccProjectUniqueName23 = Libraries\\openHistorian.SqlClr\\openHistorian.SqlClr.csproj
+		SccProjectName22 = Tools/DataExtractionUtility
+		SccLocalPath22 = Tools\\DataExtractionUtility
+		SccProjectUniqueName23 = Libraries\\openHistorian.Core\\GSF.SortedTreeStore.csproj
 		SccProjectTopLevelParentUniqueName23 = openHistorian.sln
-		SccProjectName23 = Libraries/openHistorian.SqlClr
-		SccLocalPath23 = Libraries\\openHistorian.SqlClr
-		SccProjectUniqueName24 = Tools\\DataExtractionUtility\\DataExtractionUtility.csproj
+		SccProjectName23 = Libraries/openHistorian.Core
+		SccLocalPath23 = Libraries\\openHistorian.Core
+		SccProjectUniqueName24 = Libraries\\Tests\\openHistorian.Core.Test\\GSF.SortedTreeStore.Test.csproj
 		SccProjectTopLevelParentUniqueName24 = openHistorian.sln
-		SccProjectName24 = Tools/DataExtractionUtility
-		SccLocalPath24 = Tools\\DataExtractionUtility
-		SccProjectUniqueName25 = Libraries\\Tests\\openHistorian.Core.Test\\openHistorian.Core.Test.csproj
+		SccProjectName24 = Libraries/Tests/openHistorian.Core.Test
+		SccLocalPath24 = Libraries\\Tests\\openHistorian.Core.Test
+		SccProjectUniqueName25 = Libraries\\openHistorian.TimeSeries\\openHistorian.Core.csproj
 		SccProjectTopLevelParentUniqueName25 = openHistorian.sln
-		SccProjectName25 = Libraries/Tests/openHistorian.Core.Test
-		SccLocalPath25 = Libraries\\Tests\\openHistorian.Core.Test
+		SccProjectName25 = Libraries/openHistorian.TimeSeries
+		SccLocalPath25 = Libraries\\openHistorian.TimeSeries
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi

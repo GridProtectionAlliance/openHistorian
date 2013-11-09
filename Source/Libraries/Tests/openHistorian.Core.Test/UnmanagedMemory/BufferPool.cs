@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace GSF.UnmanagedMemory.Test
+namespace GSF.IO.Unmanaged.Test
 {
     [TestFixture()]
     public class BufferPoolTest2
