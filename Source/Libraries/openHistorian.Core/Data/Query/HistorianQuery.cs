@@ -24,6 +24,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
 
@@ -31,7 +33,7 @@ namespace openHistorian.Data.Query
 {
     public class HistorianQuery
     {
-        private readonly HistorianClient<HistorianKey, HistorianValue> m_historian;
+        private readonly SortedTreeStoreClient<HistorianKey, HistorianValue> m_historian;
         private int m_samplesPerSecond = 30;
 
         public HistorianQuery(string server, int port)
@@ -40,7 +42,7 @@ namespace openHistorian.Data.Query
             //m_historian = new RemoteHistorian<HistorianKey, HistorianValue>(new IPEndPoint(ip, port));
         }
 
-        public HistorianQuery(HistorianClient<HistorianKey, HistorianValue> historian)
+        public HistorianQuery(SortedTreeStoreClient<HistorianKey, HistorianValue> historian)
         {
             m_historian = historian;
         }
@@ -48,7 +50,7 @@ namespace openHistorian.Data.Query
         public IDictionary<Guid, SignalDataBase> GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, IEnumerable<ISignalCalculation> signals)
         {
             //ToDo: Modify the query base on the zoom level
-            HistorianDatabaseBase<HistorianKey, HistorianValue> db = null;
+            SortedTreeEngineBase<HistorianKey, HistorianValue> db = null;
             try
             {
                 db = m_historian.GetDefaultDatabase();
@@ -57,7 +59,7 @@ namespace openHistorian.Data.Query
 
                 PeriodicScanner scanner = new PeriodicScanner(m_samplesPerSecond);
                 QueryFilterTimestamp timestamps = scanner.GetParser(startTime, endTime, 1500u);
-                DataReaderOptions options = new DataReaderOptions(TimeSpan.FromSeconds(1));
+                SortedTreeEngineReaderOptions options = new SortedTreeEngineReaderOptions(TimeSpan.FromSeconds(1));
                 return db.GetSignalsWithCalculations(timestamps, signals, options);
             }
             finally

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RegisterKeyValueStreamCompressionTypes.cs - Gbtc
+//  HistorianCollection.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,33 +16,33 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/10/2013 - Steven E. Chisholm
+//  12/14/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//
 //******************************************************************************************************
 
-//******************************************************************************************************
-// This is where types for the KeyValueStreamCompression should be placed for registering. 
-//******************************************************************************************************
 
-using GSF.SortedTreeStore.Net.Compression;
+using GSF.SortedTreeStore.Engine;
 
-namespace GSF.SortedTreeStore.Net.Initialization
+namespace openHistorian
 {
-    internal static class RegisterKeyValueStreamCompressionTypes
+    /// <summary>
+    /// Contains a set of named HistorianDatabaseBase.
+    /// </summary>
+    /// <typeparam name="TKey">They key type of the historian database. Must inherit HistorianKeyBase.</typeparam>
+    /// <typeparam name="TValue">The value type of the historian database.</typeparam>
+    public abstract class HistorianCollection<TKey, TValue>
+        where TKey : EngineKeyBase<TKey>, new()
+        where TValue : class, new()
     {
-        private static bool s_compressedStreamHasBeenCalled = false;
-        
-        internal static void RegisterKeyValueStreamTypes()
+        /// <summary>
+        /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// </summary>
+        /// <param name="databaseName">Name of database instance to access.</param>
+        /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        public abstract SortedTreeEngineBase<TKey, TValue> this[string databaseName]
         {
-            if (s_compressedStreamHasBeenCalled)
-                return;
-            s_compressedStreamHasBeenCalled = true;
-
-            KeyValueStreamCompression.Register(new CreateFixedSizeStream());
-            KeyValueStreamCompression.Register(new CreateCompressedStream());
-            //KeyValueStreamCompression.Register(new CreateHistorianCompressedStream());
-            
+            get;
         }
     }
 }

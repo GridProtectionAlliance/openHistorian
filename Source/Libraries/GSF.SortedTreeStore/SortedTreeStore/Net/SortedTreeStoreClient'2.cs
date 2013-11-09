@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianClient`2.cs - Gbtc
+//  SortedTreeStoreClient`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,8 +26,8 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using GSF.Net;
+using GSF.SortedTreeStore.Engine;
 using openHistorian;
-using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Net.Initialization;
@@ -46,22 +46,24 @@ namespace GSF.SortedTreeStore.Net
     /// <summary>
     /// Connects to a socket based remoted historian database collection.
     /// </summary>
-    public partial class HistorianClient<TKey, TValue> :
+    public partial class SortedTreeStoreClient<TKey, TValue> :
         HistorianCollection<TKey, TValue>, IDisposable
-        where TKey : HistorianKeyBase<TKey>, new()
+        where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private TcpClient m_client;
         private NetworkBinaryStream m_stream;
-        private HistorianDatabase m_historianDatabase;
+        private SortedTreeEngine m_sortedTreeEngine;
+        private Guid m_compressionMethod;
         string m_historianDatabaseString;
 
         KeyValueStreamCompressionBase<TKey, TValue> m_compressionMode;
 
         private readonly string m_defaultDatabase;
 
-        public HistorianClient(HistorianClientOptions options)
+        public SortedTreeStoreClient(HistorianClientOptions options, Guid compressionMethod)
         {
+            m_compressionMethod = compressionMethod;
             IPAddress ip;
             if (!IPAddress.TryParse(options.ServerNameOrIp, out ip))
             {
@@ -76,7 +78,7 @@ namespace GSF.SortedTreeStore.Net
         /// Gets the default database as defined in the constructor's options.
         /// </summary>
         /// <returns></returns>
-        public HistorianDatabaseBase<TKey, TValue> GetDefaultDatabase()
+        public SortedTreeEngineBase<TKey, TValue> GetDefaultDatabase()
         {
             return this[m_defaultDatabase];
         }
@@ -100,25 +102,25 @@ namespace GSF.SortedTreeStore.Net
         }
 
         /// <summary>
-        /// Accesses <see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public override HistorianDatabaseBase<TKey, TValue> this[string databaseName]
+        /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        public override SortedTreeEngineBase<TKey, TValue> this[string databaseName]
         {
             get
             {
-                if (m_historianDatabase != null)
+                if (m_sortedTreeEngine != null)
                 {
                     if (m_historianDatabaseString == databaseName)
-                        return m_historianDatabase;
+                        return m_sortedTreeEngine;
 
                     throw new Exception("Can only connect to one database at a time. Please disconnect from database" + m_historianDatabaseString);
                 }
 
                 //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateFixedSizeStream.TypeGuid);
                 //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateCompressedStream.TypeGuid);
-                m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateHistorianCompressedStream.TypeGuid);
+                m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(m_compressionMethod);
 
                 m_stream.Write((byte)ServerCommand.SetCompressionMode);
                 m_stream.Write(m_compressionMode.CompressionType);
@@ -126,10 +128,10 @@ namespace GSF.SortedTreeStore.Net
                 m_stream.Write(databaseName);
                 m_stream.Flush();
 
-                m_historianDatabase = new HistorianDatabase(this, () => m_historianDatabase = null);
+                m_sortedTreeEngine = new SortedTreeEngine(this, () => m_sortedTreeEngine = null);
                 m_historianDatabaseString = databaseName;
 
-                return m_historianDatabase;
+                return m_sortedTreeEngine;
             }
         }
 
@@ -139,8 +141,8 @@ namespace GSF.SortedTreeStore.Net
         /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
-            if (m_historianDatabase != null)
-                m_historianDatabase.Dispose();
+            if (m_sortedTreeEngine != null)
+                m_sortedTreeEngine.Dispose();
 
             m_stream.Write((byte)ServerCommand.Disconnect);
             m_stream.Flush();

@@ -102,7 +102,7 @@ namespace DataExtractionUtility
             clientOptions.DefaultDatabase = Settings.Default.HistorianInstanceName;
             clientOptions.NetworkPort = Settings.Default.HistorianStreamingPort;
             clientOptions.ServerNameOrIp = Settings.Default.ServerIP;
-            using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+            using (HistorianClient client = new HistorianClient(clientOptions))
             {
 
                 QueryFilterTimestamp timeFilter;

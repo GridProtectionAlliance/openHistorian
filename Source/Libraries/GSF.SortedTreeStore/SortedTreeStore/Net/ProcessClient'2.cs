@@ -26,8 +26,9 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using GSF.Net;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Engine.Reader;
 using openHistorian;
-using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Net.Initialization;
 
@@ -35,7 +36,7 @@ namespace GSF.SortedTreeStore.Net
 {
     internal class ProcessClient<TKey, TValue>
         : IDisposable
-        where TKey : HistorianKeyBase<TKey>, new()
+        where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         public event SocketErrorEventHandler SocketError;
@@ -44,8 +45,8 @@ namespace GSF.SortedTreeStore.Net
 
         private NetworkBinaryStream m_stream;
         private readonly HistorianCollection<TKey, TValue> m_historian;
-        private HistorianDatabaseBase<TKey, TValue> m_historianDatabase;
-        private HistorianDataReaderBase<TKey, TValue> m_historianReaderBase;
+        private SortedTreeEngineBase<TKey, TValue> m_sortedTreeEngine;
+        private SortedTreeEngineReaderBase<TKey, TValue> m_historianReaderBase;
         KeyValueStreamCompressionBase<TKey, TValue> m_compressionMode;
 
         public ProcessClient(NetworkBinaryStream netStream, HistorianCollection<TKey, TValue> historian)
@@ -123,7 +124,7 @@ namespace GSF.SortedTreeStore.Net
                         m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(m_stream.ReadGuid());
                         break;
                     case ServerCommand.ConnectToDatabase:
-                        if (m_historianDatabase != null)
+                        if (m_sortedTreeEngine != null)
                         {
                             //m_stream.Write((byte)ServerResponse.Error);
                             //m_stream.Write("Already connected to a database.");
@@ -131,7 +132,7 @@ namespace GSF.SortedTreeStore.Net
                             return;
                         }
                         string databaseName = m_stream.ReadString();
-                        m_historianDatabase = m_historian[databaseName];
+                        m_sortedTreeEngine = m_historian[databaseName];
                         ProcessRequestsLevel2();
                         break;
                     case ServerCommand.Disconnect:
@@ -151,12 +152,12 @@ namespace GSF.SortedTreeStore.Net
                 switch ((ServerCommand)m_stream.ReadByte())
                 {
                     case ServerCommand.OpenReader:
-                        m_historianReaderBase = m_historianDatabase.OpenDataReader();
+                        m_historianReaderBase = m_sortedTreeEngine.OpenDataReader();
                         ProcessRequestsLevel3();
                         break;
                     case ServerCommand.DisconnectDatabase:
-                        m_historianDatabase.Disconnect();
-                        m_historianDatabase = null;
+                        m_sortedTreeEngine.Disconnect();
+                        m_sortedTreeEngine = null;
                         return;
                         break;
                     case ServerCommand.Write:
@@ -197,7 +198,7 @@ namespace GSF.SortedTreeStore.Net
         {
             QueryFilterTimestamp key1Parser = QueryFilterTimestamp.CreateFromStream(m_stream);
             QueryFilterPointId key2Parser = QueryFilterPointId.CreateFromStream(m_stream);
-            DataReaderOptions readerOptions = new DataReaderOptions(m_stream);
+            SortedTreeEngineReaderOptions readerOptions = new SortedTreeEngineReaderOptions(m_stream);
 
             TreeStream<TKey, TValue> scanner = m_historianReaderBase.Read(key1Parser, key2Parser, readerOptions);
             m_compressionMode.ResetEncoder();
@@ -229,7 +230,7 @@ namespace GSF.SortedTreeStore.Net
             m_compressionMode.ResetEncoder();
             while (m_compressionMode.TryDecode(m_stream, key, value))
             {
-                m_historianDatabase.Write(key, value);
+                m_sortedTreeEngine.Write(key, value);
             }
         }
 

@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GSF.Collections;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Engine.Reader;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using openHistorian.Data.Types;
@@ -43,9 +45,9 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime timestamp)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime timestamp)
         {
-            return database.GetFrames(QueryFilterTimestamp.CreateFromRange(timestamp, timestamp), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
+            return database.GetFrames(QueryFilterTimestamp.CreateFromRange(timestamp, timestamp), QueryFilterPointId.CreateAllKeysValid(), SortedTreeEngineReaderOptions.Default);
         }
 
         /// <summary>
@@ -53,9 +55,9 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime)
         {
-            return database.GetFrames(QueryFilterTimestamp.CreateFromRange(startTime, stopTime), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
+            return database.GetFrames(QueryFilterTimestamp.CreateFromRange(startTime, stopTime), QueryFilterPointId.CreateAllKeysValid(), SortedTreeEngineReaderOptions.Default);
         }
 
         /// <summary>
@@ -63,9 +65,9 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, params ulong[] points)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, params ulong[] points)
         {
-            return database.GetFrames(timestamps, QueryFilterPointId.CreateFromList(points), DataReaderOptions.Default);
+            return database.GetFrames(timestamps, QueryFilterPointId.CreateFromList(points), SortedTreeEngineReaderOptions.Default);
         }
 
         /// <summary>
@@ -73,9 +75,9 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, params ulong[] points)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, params ulong[] points)
         {
-            return database.GetFrames(QueryFilterTimestamp.CreateFromRange(startTime, stopTime), QueryFilterPointId.CreateFromList(points), DataReaderOptions.Default);
+            return database.GetFrames(QueryFilterTimestamp.CreateFromRange(startTime, stopTime), QueryFilterPointId.CreateFromList(points), SortedTreeEngineReaderOptions.Default);
         }
 
         /// <summary>
@@ -83,9 +85,9 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database)
         {
-            return database.GetFrames(QueryFilterTimestamp.CreateAllKeysValid(), QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
+            return database.GetFrames(QueryFilterTimestamp.CreateAllKeysValid(), QueryFilterPointId.CreateAllKeysValid(), SortedTreeEngineReaderOptions.Default);
         }
 
         /// <summary>
@@ -94,9 +96,9 @@ namespace openHistorian.Data.Query
         /// <param name="database">the database to use</param>
         /// <param name="timestamps">the timestamps to query for</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps)
         {
-            return database.GetFrames(timestamps, QueryFilterPointId.CreateAllKeysValid(), DataReaderOptions.Default);
+            return database.GetFrames(timestamps, QueryFilterPointId.CreateAllKeysValid(), SortedTreeEngineReaderOptions.Default);
         }
 
         /// <summary>
@@ -106,9 +108,9 @@ namespace openHistorian.Data.Query
         /// <param name="timestamps">the timestamps to query for</param>
         /// <param name="points">the points to query</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points)
         {
-            return database.GetFrames(timestamps, points, DataReaderOptions.Default);
+            return database.GetFrames(timestamps, points, SortedTreeEngineReaderOptions.Default);
         }
 
         ///// <summary>
@@ -154,9 +156,9 @@ namespace openHistorian.Data.Query
         /// <param name="points">the points to query</param>
         /// <param name="options">A list of query options</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points, DataReaderOptions options)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, QueryFilterPointId points, SortedTreeEngineReaderOptions options)
         {
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 return reader.Read(timestamps, points, options).GetFrames();
             }

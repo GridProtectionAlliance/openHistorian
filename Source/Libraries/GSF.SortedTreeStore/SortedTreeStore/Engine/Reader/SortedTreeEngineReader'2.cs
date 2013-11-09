@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveReader.cs - Gbtc
+//  SortedTreeEngineReader`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,25 +28,24 @@ using System.Linq;
 using GSF.Threading;
 using openHistorian;
 using GSF.SortedTreeStore.Storage;
-using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Reader
 {
     /// <summary>
-    /// A <see cref="HistorianDataReaderBase{TKey,TValue}"/> that can read from a <see cref="ArchiveList{TKey,TValue}"/>.
+    /// A <see cref="SortedTreeEngineReaderBase{TKey,TValue}"/> that can read from a <see cref="ArchiveList{TKey,TValue}"/>.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    internal class ArchiveReader<TKey, TValue>
-        : HistorianDataReaderBase<TKey, TValue>
-        where TKey : HistorianKeyBase<TKey>, new()
+    internal class SortedTreeEngineReader<TKey, TValue>
+        : SortedTreeEngineReaderBase<TKey, TValue>
+        where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private readonly ArchiveList<TKey, TValue> m_list;
         private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;
 
-        public ArchiveReader(ArchiveList<TKey, TValue> list)
+        public SortedTreeEngineReader(ArchiveList<TKey, TValue> list)
         {
             m_list = list;
             m_snapshot = m_list.CreateNewClientResources();
@@ -59,7 +58,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
         /// <param name="pointIdFilter">filters for the pointId</param>
         /// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
         /// <returns></returns>
-        public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, DataReaderOptions readerOptions)
+        public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, SortedTreeEngineReaderOptions readerOptions)
         {
             Stats.QueriesExecuted++;
             return new ReadStream(timestampFilter, pointIdFilter, m_snapshot, readerOptions);
@@ -102,7 +101,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             private SortedTreeTableReadSnapshot<TKey, TValue> m_currentInstance;
             private SeekableTreeStream<TKey, TValue> m_currentScanner;
 
-            public ReadStream(QueryFilterTimestamp timestampFilter, QueryFilterPointId poingIdFilter, ArchiveListSnapshot<TKey, TValue> snapshot, DataReaderOptions readerOptions)
+            public ReadStream(QueryFilterTimestamp timestampFilter, QueryFilterPointId poingIdFilter, ArchiveListSnapshot<TKey, TValue> snapshot, SortedTreeEngineReaderOptions readerOptions)
             {
                 if (readerOptions.Timeout.Ticks > 0)
                 {

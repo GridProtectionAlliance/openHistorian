@@ -90,7 +90,7 @@ namespace openVisN.Framework
             options.ServerNameOrIp = ip;
             options.NetworkPort = port;
             options.DefaultDatabase = database;
-            HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(options);
+            HistorianClient client = new HistorianClient(options);
             HistorianQuery query = new HistorianQuery(client);
             m_updateFramework.Start(query);
             m_updateFramework.Mode = ExecutionMode.Manual;

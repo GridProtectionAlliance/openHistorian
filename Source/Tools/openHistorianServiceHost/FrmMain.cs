@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
+using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Net;
 using openHistorian;
 using GSF.SortedTreeStore.Storage;
@@ -36,9 +37,9 @@ namespace openHistorianServiceHost
             clientOptions.NetworkPort = 54996;
             clientOptions.ServerNameOrIp = "127.0.0.1";
 
-            using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+            using (HistorianClient client = new HistorianClient(clientOptions))
             {
-                HistorianDatabaseBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase();
+                SortedTreeEngineBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase();
 
                 using (SortedTreeTable<HistorianKey, HistorianValue> file = SortedTreeFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
                 {

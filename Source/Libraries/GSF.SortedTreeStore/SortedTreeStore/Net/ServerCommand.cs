@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  IHistorian.cs - Gbtc
+//  ServerCommand.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,7 +23,7 @@
 //
 //******************************************************************************************************
 
-namespace openHistorian
+namespace GSF.SortedTreeStore.Net
 {
     #region [ Enumerations ]
 

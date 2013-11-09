@@ -33,7 +33,7 @@ namespace HistorianDemos
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+                using (var client = new HistorianClient(clientOptions))
                 {
                     var startTime = new DateTime(2013, 8, 12);
                     var stopTime = startTime.AddSeconds(1);
@@ -74,7 +74,7 @@ namespace HistorianDemos
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+                using (var client = new HistorianClient(clientOptions))
                 {
                     var startTime = new DateTime(2013, 8, 12);
                     var stopTime = startTime.AddSeconds(1);
@@ -115,7 +115,7 @@ namespace HistorianDemos
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+                using (var client = new HistorianClient(clientOptions))
                 {
                     var startTime = new DateTime(2013, 8, 12);
                     var stopTime = startTime.AddSeconds(1);
@@ -156,7 +156,7 @@ namespace HistorianDemos
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+                using (var client = new HistorianClient(clientOptions))
                 {
                     var startTime = new DateTime(2013, 8, 12);
                     var stopTime = startTime.AddMinutes(50);

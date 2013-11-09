@@ -25,7 +25,6 @@
 using System;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Storage;
-using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
@@ -41,7 +40,7 @@ namespace GSF.SortedTreeStore.Engine
         SeekableTreeStream<TKey, TValue> m_scanner;
 
         /// <summary>
-        /// An index value that is used to disassociate the archive file. Passed to this class from the <see cref="ArchiveReaderSequential{TKey,TValue}"/>
+        /// An index value that is used to disassociate the archive file. Passed to this class from the <see cref="SortedTreeEngineReaderSequential{TKey,TValue}"/>
         /// </summary>
         public int Index { get; private set; }
 

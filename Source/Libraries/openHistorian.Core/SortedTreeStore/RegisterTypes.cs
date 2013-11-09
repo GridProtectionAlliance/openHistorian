@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianCollection.cs - Gbtc
+//  RegisterTypes.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,32 +16,32 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/14/2012 - Steven E. Chisholm
+//  11/9/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
 
-using openHistorian.Collections;
+using GSF.SortedTreeStore.Net.Compression;
+using GSF.SortedTreeStore.Net.Initialization;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 
-namespace openHistorian
+namespace GSF.SortedTreeStore
 {
-    /// <summary>
-    /// Contains a set of named HistorianDatabaseBase.
-    /// </summary>
-    /// <typeparam name="TKey">They key type of the historian database. Must inherit HistorianKeyBase.</typeparam>
-    /// <typeparam name="TValue">The value type of the historian database.</typeparam>
-    public abstract class HistorianCollection<TKey, TValue>
-        where TKey : HistorianKeyBase<TKey>, new()
-        where TValue : class, new()
+    public static class RegisterTypes
     {
-        /// <summary>
-        /// Accesses <see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
-        /// </summary>
-        /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public abstract HistorianDatabaseBase<TKey, TValue> this[string databaseName]
+        static RegisterTypes()
         {
-            get;
+            TreeNodeInitializer.Register(new CreateHistorianCompressionDelta());
+            TreeNodeInitializer.Register(new CreateHistorianCompressionTs());
+            KeyValueStreamCompression.Register(new CreateHistorianCompressedStream());
+        }
+
+        /// <summary>
+        /// Registers custom types with the SortedTreeStore
+        /// </summary>
+        public static void Register()
+        {
+            //Do Nothing. Code is called in the static constructor.
         }
     }
 }

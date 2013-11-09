@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  DataReaderOptions.cs - Gbtc
+//  SortedTreeEngineReaderOptions.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -25,35 +25,35 @@ using System;
 using System.Data;
 using GSF.IO;
 
-namespace openHistorian
+namespace GSF.SortedTreeStore.Engine.Reader
 {
     /// <summary>
     /// Contains the options to use for executing an individual read request.
     /// </summary>
-    public class DataReaderOptions
+    public class SortedTreeEngineReaderOptions
     {
         /// <summary>
         /// Default options. Same as default constructor
         /// </summary>
-        public static DataReaderOptions Default
+        public static SortedTreeEngineReaderOptions Default
         {
             get;
             private set;
         }
 
-        static DataReaderOptions()
+        static SortedTreeEngineReaderOptions()
         {
-            Default = new DataReaderOptions();
+            Default = new SortedTreeEngineReaderOptions();
         }
 
         /// <summary>
-        /// Creates <see cref="DataReaderOptions"/>.
+        /// Creates <see cref="SortedTreeEngineReaderOptions"/>.
         /// </summary>
         /// <param name="timeout">the time before a query will end prematurely</param>
         /// <param name="maxReturnedCount">the maximum number of Key/Values to send to the client before ending prematurely</param>
         /// <param name="maxScanCount">the maximum number of points for the database to read before ending prematurely</param>
         /// <param name="maxSeekCount">the maximum seeks that will occur before ending prematurely</param>
-        public DataReaderOptions(TimeSpan timeout = default(TimeSpan), long maxReturnedCount = 0, long maxScanCount = 0, long maxSeekCount = 0)
+        public SortedTreeEngineReaderOptions(TimeSpan timeout = default(TimeSpan), long maxReturnedCount = 0, long maxScanCount = 0, long maxSeekCount = 0)
         {
             Timeout = timeout;
             MaxReturnedCount = maxReturnedCount;
@@ -62,10 +62,10 @@ namespace openHistorian
         }
 
         /// <summary>
-        /// Creates a new <see cref="DataReaderOptions"/> from a stream
+        /// Creates a new <see cref="SortedTreeEngineReaderOptions"/> from a stream
         /// </summary>
         /// <param name="stream">the stream to read from</param>
-        public DataReaderOptions(BinaryStreamBase stream)
+        public SortedTreeEngineReaderOptions(BinaryStreamBase stream)
         {
             byte version = stream.ReadByte();
             switch (version)

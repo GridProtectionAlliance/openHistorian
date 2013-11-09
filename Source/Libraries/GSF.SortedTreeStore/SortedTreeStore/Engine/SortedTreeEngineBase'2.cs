@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianDatabaseBase.cs - Gbtc
+//  SortedTreeEngineBase`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,16 +23,18 @@
 
 using System;
 using GSF.SortedTreeStore;
-using openHistorian.Collections;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Tree;
+using openHistorian;
 
-namespace openHistorian
+namespace GSF.SortedTreeStore.Engine
 {
     /// <summary>
     /// Represents a single historian database.
     /// </summary>
-    public abstract class HistorianDatabaseBase<TKey, TValue> : IDisposable
-        where TKey : HistorianKeyBase<TKey>, new()
+    public abstract class SortedTreeEngineBase<TKey, TValue> : IDisposable
+        where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, new()
     {
         /// <summary>
@@ -40,7 +42,7 @@ namespace openHistorian
         /// and write data to the current historian database.
         /// </summary>
         /// <returns></returns>
-        public abstract HistorianDataReaderBase<TKey, TValue> OpenDataReader();
+        public abstract SortedTreeEngineReaderBase<TKey, TValue> OpenDataReader();
 
         /// <summary>
         /// Writes the point stream to the database. 

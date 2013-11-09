@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SocketHistorian`2.cs - Gbtc
+//  SortedTreeServerSocket`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,7 +28,6 @@ using System.Text;
 using System.Threading;
 using GSF.Net;
 using openHistorian;
-using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Engine;
 
@@ -39,9 +38,9 @@ namespace GSF.SortedTreeStore.Net
     /// <summary>
     /// Hosts a <see cref="HistorianCollection{TKey,TValue}"/> on a network socket.
     /// </summary>
-    public class SocketHistorian<TKey, TValue>
+    public class SortedTreeServerSocket<TKey, TValue>
         : IDisposable
-        where TKey : HistorianKeyBase<TKey>, new()
+        where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private volatile bool m_isRunning = true;
@@ -52,13 +51,13 @@ namespace GSF.SortedTreeStore.Net
         private bool m_disposed;
 
         // TODO: Replace this with a connection string instead of a port - allows easier specification of interface, etc.
-        public SocketHistorian(int port, HistorianCollection<TKey, TValue> historian = null)
+        public SortedTreeServerSocket(int port, Guid compressionMethod, HistorianCollection<TKey, TValue> historian = null)
         {
             if (historian == null)
             {
                 m_ownsHistorian = true;
                 HistorianDatabaseCollection<TKey, TValue> tmpHistorian = new HistorianDatabaseCollection<TKey, TValue>();
-                tmpHistorian.Add("Default", new ArchiveDatabaseEngine<TKey, TValue>(WriterMode.InMemory));
+                tmpHistorian.Add("Default", new SortedTreeEngine<TKey, TValue>(WriterMode.InMemory, compressionMethod));
                 m_historian = tmpHistorian;
             }
             else

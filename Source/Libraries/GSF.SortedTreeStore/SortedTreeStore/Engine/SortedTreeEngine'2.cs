@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveDatabaseEngine.cs - Gbtc
+//  SortedTreeEngine`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,7 +27,6 @@ using System.Text;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Engine.Writer;
 using openHistorian;
-using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
@@ -36,9 +35,9 @@ namespace GSF.SortedTreeStore.Engine
     /// <summary>
     /// Represents a single self contained historian that is referenced by an instance name. 
     /// </summary>
-    public class ArchiveDatabaseEngine<TKey, TValue>
-        : HistorianDatabaseBase<TKey, TValue>
-        where TKey : HistorianKeyBase<TKey>, new()
+    public class SortedTreeEngine<TKey, TValue>
+        : SortedTreeEngineBase<TKey, TValue>
+        where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
@@ -53,12 +52,12 @@ namespace GSF.SortedTreeStore.Engine
 
         #region [ Constructors ]
 
-        public ArchiveDatabaseEngine(WriterMode writer, params string[] paths)
-            : this(new DatabaseConfig(writer, paths))
+        public SortedTreeEngine(WriterMode writer, Guid compressionMethod, params string[] paths)
+            : this(new DatabaseConfig(writer, compressionMethod, paths))
         {
         }
 
-        public ArchiveDatabaseEngine(DatabaseConfig settings)
+        public SortedTreeEngine(DatabaseConfig settings)
         {
             //m_pendingDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_archiveList = new ArchiveList<TKey, TValue>(settings.GetAttachedFiles());
@@ -121,12 +120,12 @@ namespace GSF.SortedTreeStore.Engine
         /// and write data to the current historian database.
         /// </summary>
         /// <returns></returns>
-        public override HistorianDataReaderBase<TKey, TValue> OpenDataReader()
+        public override SortedTreeEngineReaderBase<TKey, TValue> OpenDataReader()
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return new ArchiveReaderSequential<TKey, TValue>(m_archiveList);
+            return new SortedTreeEngineReaderSequential<TKey, TValue>(m_archiveList);
             //return new ArchiveReader<TKey, TValue>(m_archiveList);
         }
 

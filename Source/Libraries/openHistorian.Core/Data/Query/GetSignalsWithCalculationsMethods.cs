@@ -23,18 +23,20 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Engine.Reader;
 using openHistorian.Collections;
 
 namespace openHistorian.Data.Query
 {
     public static class GetSignalsWithCalculationsMethods
     {
-        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ISignalCalculation> signals)
+        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ISignalCalculation> signals)
         {
-            return database.GetSignalsWithCalculations(QueryFilterTimestamp.CreateFromRange(startTime, endTime), signals, DataReaderOptions.Default);
+            return database.GetSignalsWithCalculations(QueryFilterTimestamp.CreateFromRange(startTime, endTime), signals, SortedTreeEngineReaderOptions.Default);
         }
 
-        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, IEnumerable<ISignalCalculation> signals, DataReaderOptions readerOptions)
+        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, IEnumerable<ISignalCalculation> signals, SortedTreeEngineReaderOptions readerOptions)
         {
             Dictionary<ulong, SignalDataBase> queryResults = database.GetSignals(timestamps, signals, readerOptions);
 

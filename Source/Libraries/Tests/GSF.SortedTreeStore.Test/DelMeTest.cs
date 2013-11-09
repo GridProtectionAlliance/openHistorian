@@ -8,7 +8,7 @@ using NUnit.Framework;
 using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
 using openHistorian.Data.Query;
-
+using GSF.SortedTreeStore.Engine.Reader;
 namespace openHistorian
 {
     [TestFixture]
@@ -23,7 +23,7 @@ namespace openHistorian
             clientOptions.ServerNameOrIp = "127.0.0.1";
             clientOptions.DefaultDatabase = "PPA";
 
-            using (var server = new HistorianClient<HistorianKey,HistorianValue>(clientOptions))
+            using (var server = new HistorianClient(clientOptions))
             {
                 var database = server.GetDefaultDatabase();
                 ////var reader = database.GetRawSignals(start, stop, new ulong[] { 3142011, 3142023 });

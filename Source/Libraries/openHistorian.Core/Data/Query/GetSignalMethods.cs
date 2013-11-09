@@ -24,6 +24,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Engine.Reader;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using openHistorian.Data.Types;
@@ -41,7 +43,7 @@ namespace openHistorian.Data.Query
         /// <param name="database"></param>
         /// <param name="time">the time to query</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong time)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong time)
         {
             return database.GetSignals(time, time);
         }
@@ -53,11 +55,11 @@ namespace openHistorian.Data.Query
         /// <param name="startTime">the lower bound of the time</param>
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime)
         {
             Dictionary<ulong, SignalDataBase> results = new Dictionary<ulong, SignalDataBase>();
 
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime);
                 ulong time, point, quality, value;
@@ -83,11 +85,11 @@ namespace openHistorian.Data.Query
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ulong> signals)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ulong> signals)
         {
             Dictionary<ulong, SignalDataBase> results = signals.ToDictionary((x) => x, (x) => (SignalDataBase)new SignalDataUnknown());
 
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime, signals);
                 ulong time, point, quality, value;
@@ -115,11 +117,11 @@ namespace openHistorian.Data.Query
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <param name="conversion">a single conversion method to use for all signals</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ulong> signals, TypeBase conversion)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ulong> signals, TypeBase conversion)
         {
             Dictionary<ulong, SignalDataBase> results = signals.ToDictionary((x) => x, (x) => (SignalDataBase)new SignalData(conversion));
 
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime, signals);
                 ulong time, point, quality, value;
@@ -146,9 +148,9 @@ namespace openHistorian.Data.Query
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ISignalWithType> signals)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ISignalWithType> signals)
         {
-            return database.GetSignals(QueryFilterTimestamp.CreateFromRange(startTime, endTime), signals, DataReaderOptions.Default);
+            return database.GetSignals(QueryFilterTimestamp.CreateFromRange(startTime, endTime), signals, SortedTreeEngineReaderOptions.Default);
         }
 
         /// <summary>
@@ -160,7 +162,7 @@ namespace openHistorian.Data.Query
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <param name="readerOptions">The options that will be used when querying this data.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, IEnumerable<ISignalWithType> signals, DataReaderOptions readerOptions)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, QueryFilterTimestamp timestamps, IEnumerable<ISignalWithType> signals, SortedTreeEngineReaderOptions readerOptions)
         {
             Dictionary<ulong, SignalDataBase> results = new Dictionary<ulong, SignalDataBase>();
 
@@ -175,7 +177,7 @@ namespace openHistorian.Data.Query
                 }
             }
 
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 QueryFilterPointId keyParser = QueryFilterPointId.CreateFromList(signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read(timestamps, keyParser, readerOptions);

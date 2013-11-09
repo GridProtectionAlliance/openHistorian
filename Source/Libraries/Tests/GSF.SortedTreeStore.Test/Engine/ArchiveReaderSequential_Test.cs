@@ -38,7 +38,7 @@ namespace GSF.SortedTreeStore.Engine
                 masterScan.SeekToStart();
                 var masterScanSequential = masterScan.TestSequential();
 
-                var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+                var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
                 var scanner = sequencer.Read().TestSequential();
 
                 while (scanner.Read())
@@ -82,7 +82,7 @@ namespace GSF.SortedTreeStore.Engine
                 masterScan.SeekToStart();
                 var masterScanSequential = masterScan.TestSequential();
 
-                var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+                var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
                 var scanner = sequencer.Read().TestSequential();
 
                 while (scanner.Read())
@@ -124,7 +124,7 @@ namespace GSF.SortedTreeStore.Engine
                 masterScan.SeekToStart();
                 var masterScanSequential = masterScan.TestSequential();
 
-                var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+                var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
                 var scanner = sequencer.Read().TestSequential();
 
                 while (scanner.Read())
@@ -252,7 +252,7 @@ namespace GSF.SortedTreeStore.Engine
                 editor.Add(table1, false);
             }
 
-            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
 
@@ -282,7 +282,7 @@ namespace GSF.SortedTreeStore.Engine
                 editor.Add(table2, false);
             }
 
-            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
 
@@ -315,7 +315,7 @@ namespace GSF.SortedTreeStore.Engine
                 editor.Add(table3, false);
             }
 
-            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
 
@@ -349,7 +349,7 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
-            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
             int xi = 0;
@@ -396,7 +396,7 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
-            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);
         }
@@ -418,7 +418,7 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = QueryFilterTimestamp.CreateFromIntervalData(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
-            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);
         }
@@ -449,7 +449,7 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
-            var sequencer = new ArchiveReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);
         }

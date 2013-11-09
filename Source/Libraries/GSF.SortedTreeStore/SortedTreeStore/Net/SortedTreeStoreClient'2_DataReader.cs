@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianClient`2_DataReader.cs - Gbtc
+//  SortedTreeStoreClient`2_DataReader.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,22 +23,23 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Tree;
 using openHistorian;
 
 namespace GSF.SortedTreeStore.Net
 {
-    public partial class HistorianClient<TKey, TValue>
+    public partial class SortedTreeStoreClient<TKey, TValue>
     {
-        private class HistorianDataReader
-            : HistorianDataReaderBase<TKey, TValue>
+        private class SortedTreeEngineReader
+            : SortedTreeEngineReaderBase<TKey, TValue>
         {
             private readonly Action m_onDispose;
-            private readonly HistorianClient<TKey, TValue> m_client;
+            private readonly SortedTreeStoreClient<TKey, TValue> m_client;
             private PointReader m_reader;
             private bool m_closed;
 
-            public HistorianDataReader(HistorianClient<TKey, TValue> client, Action onDispose)
+            public SortedTreeEngineReader(SortedTreeStoreClient<TKey, TValue> client, Action onDispose)
             {
                 m_onDispose = onDispose;
                 m_client = client;
@@ -49,7 +50,7 @@ namespace GSF.SortedTreeStore.Net
                 Close();
             }
 
-            public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, DataReaderOptions readerOptions)
+            public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, SortedTreeEngineReaderOptions readerOptions)
             {
                 if (m_reader != null)
                     throw new Exception("Sockets do not support concurrent readers.");
@@ -79,10 +80,10 @@ namespace GSF.SortedTreeStore.Net
                 : TreeStream<TKey, TValue>
             {
                 private bool m_completed;
-                private readonly HistorianClient<TKey, TValue> m_client;
+                private readonly SortedTreeStoreClient<TKey, TValue> m_client;
                 private readonly Action m_onComplete;
 
-                public PointReader(HistorianClient<TKey, TValue> client, Action onComplete)
+                public PointReader(SortedTreeStoreClient<TKey, TValue> client, Action onComplete)
                 {
                     m_client = client;
                     m_onComplete = onComplete;

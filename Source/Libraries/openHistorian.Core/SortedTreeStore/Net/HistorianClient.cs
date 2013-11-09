@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianDataReaderBase.cs - Gbtc
+//  HistorianClient.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,47 +16,40 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/29/2012 - Steven E. Chisholm
+//  11/8/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore;
+using System.Net;
+using System.Net.Sockets;
+using GSF.Net;
+using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Net.Compression;
+using GSF.SortedTreeStore.Net.Initialization;
 
-namespace openHistorian
+namespace GSF.SortedTreeStore.Net
 {
     /// <summary>
-    /// Creates a session that can read data from the historian.
+    /// Connects to a socket based remoted historian database collection.
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    public abstract class HistorianDataReaderBase<TKey, TValue>
-        : IDisposable
-        where TKey : class, ISortedTreeKey<TKey>, new()
-        where TValue : class, new()
+    public class HistorianClient :
+        SortedTreeStoreClient<HistorianKey, HistorianValue>
     {
-        /// <summary>
-        /// Reads data from the historian with the provided filters.
-        /// </summary>
-        /// <param name="timestampFilter">filters for the timestamp</param>
-        /// <param name="pointIdFilter">filters for the pointId</param>
-        /// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
-        /// <returns></returns>
-        public abstract TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, DataReaderOptions readerOptions);
+        public HistorianClient(HistorianClientOptions options)
+            : base(options,CreateHistorianCompressedStream.TypeGuid)
+        {
+          
+        }
 
-        /// <summary>
-        /// Closes this reader
-        /// </summary>
-        public abstract void Close();
+        static HistorianClient()
+        {
+            RegisterTypes.Register();
+        }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public abstract void Dispose();
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Engine.Reader;
 using NPlot;
 using openHistorian;
 using openHistorian.Collections;
@@ -16,7 +17,7 @@ namespace simpleVisN
 {
     public partial class FrmMain : Form
     {
-        private HistorianDatabaseBase<HistorianKey, HistorianValue> m_archiveFile;
+        private SortedTreeEngineBase<HistorianKey, HistorianValue> m_archiveFile;
 
         public FrmMain()
         {
@@ -55,7 +56,7 @@ namespace simpleVisN
                 dlgOpen.Filter = "openHistorian 2.0 file|*.d2";
                 if (dlgOpen.ShowDialog() == DialogResult.OK)
                 {
-                    m_archiveFile = new ArchiveDatabaseEngine<HistorianKey, HistorianValue>(WriterMode.None, dlgOpen.FileName);
+                    m_archiveFile = new HistorianDatabaseEngine(WriterMode.None, dlgOpen.FileName);
                 }
             }
             BuildListOfAllPoints();
@@ -64,7 +65,7 @@ namespace simpleVisN
         private void BuildListOfAllPoints()
         {
             HashSet<ulong> keys = new HashSet<ulong>();
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = m_archiveFile.OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = m_archiveFile.OpenDataReader())
             {
                 TreeStream<HistorianKey, HistorianValue> scanner = reader.Read(0, ulong.MaxValue);
                 ulong key1, key2, value1, value2;

@@ -32,6 +32,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     public class CreateHistorianCompressionTs
         : CreateTreeNodeBase
     {
+
         /// <summary>
         /// Creates a class
         /// </summary>

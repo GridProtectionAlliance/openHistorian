@@ -5,6 +5,7 @@ using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Engine.Reader;
 
 namespace SampleCode.openHistorian.Server.dll
 {
@@ -31,7 +32,7 @@ namespace SampleCode.openHistorian.Server.dll
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
                 
-                using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+                using (var client = new HistorianClient(clientOptions))
                 {
                     var database = client.GetDefaultDatabase();
 
@@ -64,7 +65,7 @@ namespace SampleCode.openHistorian.Server.dll
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                using (var client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+                using (var client = new HistorianClient(clientOptions))
                 {
                     var database = client.GetDefaultDatabase();
                     using (var reader = database.OpenDataReader())

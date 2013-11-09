@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Engine.Reader;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using openHistorian.Data.Types;
@@ -49,11 +51,11 @@ namespace openHistorian.Data.Query
         /// <param name="endTime">the upper bound of the time. [Inclusive]</param>
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, RawSignalTimeValue> GetRawSignals(this HistorianDatabaseBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime endTime, IEnumerable<ulong> signals)
+        public static Dictionary<ulong, RawSignalTimeValue> GetRawSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime endTime, IEnumerable<ulong> signals)
         {
             Dictionary<ulong, RawSignalTimeValue> results = signals.ToDictionary((x) => x, (x) => new RawSignalTimeValue());
 
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
                

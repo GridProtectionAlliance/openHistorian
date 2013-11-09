@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
 using openHistorian;
@@ -40,7 +42,7 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(serverDatabases))
             {
-                HistorianDatabaseBase<HistorianKey, HistorianValue> database = server["Scada"];
+                SortedTreeEngineBase<HistorianKey, HistorianValue> database = server["Scada"];
 
                 for (ulong x = 0; x < 10000; x++)
                 {
@@ -89,10 +91,10 @@ namespace SampleCode.openHistorian.Server.dll
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                using (HistorianClient<HistorianKey, HistorianValue> client = new HistorianClient<HistorianKey, HistorianValue>(clientOptions))
+                using (HistorianClient client = new HistorianClient(clientOptions))
                 {
-                    HistorianDatabaseBase<HistorianKey, HistorianValue> database = client["Scada"];
-                    using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+                    SortedTreeEngineBase<HistorianKey, HistorianValue> database = client["Scada"];
+                    using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                     {
                         TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
                         stream.Cancel();
@@ -101,7 +103,7 @@ namespace SampleCode.openHistorian.Server.dll
 
                     database = client["Synchrophasor"];
 
-                    using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+                    using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
                     {
                         TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
                         stream.Cancel();

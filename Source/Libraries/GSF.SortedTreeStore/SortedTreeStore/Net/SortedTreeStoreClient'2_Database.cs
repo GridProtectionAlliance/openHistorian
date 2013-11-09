@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianClient`2_Database.cs - Gbtc
+//  SortedTreeStoreClient`2_Database.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,23 +23,25 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Tree;
 using openHistorian;
 
 namespace GSF.SortedTreeStore.Net
 {
-    public partial class HistorianClient<TKey, TValue>
+    public partial class SortedTreeStoreClient<TKey, TValue>
     {
-        private class HistorianDatabase
-            : HistorianDatabaseBase<TKey, TValue>
+        private class SortedTreeEngine
+            : SortedTreeEngineBase<TKey, TValue>
         {
             private bool m_disposed;
-            private readonly HistorianClient<TKey, TValue> m_client;
+            private readonly SortedTreeStoreClient<TKey, TValue> m_client;
 
-            private HistorianDataReader m_historianReader;
+            private SortedTreeEngineReader m_historianReader;
             private readonly Action m_onDispose;
 
-            public HistorianDatabase(HistorianClient<TKey, TValue> client, Action onDispose)
+            public SortedTreeEngine(SortedTreeStoreClient<TKey, TValue> client, Action onDispose)
             {
                 m_onDispose = onDispose;
                 m_client = client;
@@ -50,7 +52,7 @@ namespace GSF.SortedTreeStore.Net
             /// and write data to the current historian database.
             /// </summary>
             /// <returns></returns>
-            public override HistorianDataReaderBase<TKey, TValue> OpenDataReader()
+            public override SortedTreeEngineReaderBase<TKey, TValue> OpenDataReader()
             {
                 if (m_historianReader != null)
                     throw new Exception("Only one datareader can process at a time when using sockets.");
@@ -58,7 +60,7 @@ namespace GSF.SortedTreeStore.Net
                 m_client.m_stream.Write((byte)ServerCommand.OpenReader);
                 m_client.m_stream.Flush();
 
-                m_historianReader = new HistorianDataReader(m_client, () => m_historianReader = null);
+                m_historianReader = new SortedTreeEngineReader(m_client, () => m_historianReader = null);
                 return m_historianReader;
             }
 

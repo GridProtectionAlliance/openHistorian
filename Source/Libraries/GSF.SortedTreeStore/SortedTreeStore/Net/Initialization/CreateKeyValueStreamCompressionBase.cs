@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Net.Initialization

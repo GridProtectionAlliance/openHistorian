@@ -31,6 +31,8 @@ using GSF.Historian;
 using GSF.Historian.Files;
 using GSF.Parsing;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.TimeSeries;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
@@ -40,13 +42,13 @@ using DataType = GSF.Historian.Files.DataType;
 namespace openHistorian
 {
     /// <summary>
-    /// Represents a historian specific implementation of <see cref="ArchiveDatabaseEngine{TKey,TValue}"/> for general use.
+    /// Represents a historian specific implementation of <see cref="SortedTreeEngine{TKey,TValue}"/> for general use.
     /// </summary>
     /// <remarks>
     /// This class implements the 1.0 historian <see cref="IArchive"/> to automatically bring in historian providers (e.g., web services).
     /// </remarks>
     public class HistorianDatabaseEngine 
-        : ArchiveDatabaseEngine<HistorianKey, HistorianValue>, IArchive
+        : SortedTreeEngine<HistorianKey, HistorianValue>, IArchive
     {
         #region [ Constructors ]
 
@@ -56,7 +58,7 @@ namespace openHistorian
         /// <param name="writer">Writer options.</param>
         /// <param name="paths">Write paths.</param>
         public HistorianDatabaseEngine(WriterMode writer, params string[] paths)
-            : base(writer, paths)
+            : base(writer, CreateHistorianCompressionTs.TypeGuid, paths)
         {
         }
 
@@ -86,7 +88,7 @@ namespace openHistorian
 
         IEnumerable<IDataPoint> IArchive.ReadData(IEnumerable<int> historianIDs, string startTime, string endTime)
         {
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = OpenDataReader())
             {
                 ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
                 ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
@@ -96,7 +98,7 @@ namespace openHistorian
 
         IEnumerable<IDataPoint> IArchive.ReadData(int historianID, string startTime, string endTime)
         {
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = OpenDataReader())
             {
                 ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
                 ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
@@ -365,7 +367,7 @@ namespace openHistorian
             Ticks stopTime = DateTime.UtcNow.Ticks;
             Ticks startTime = stopTime - Ticks.PerSecond * 2;
 
-            using (HistorianDataReaderBase<HistorianKey, HistorianValue> reader = OpenDataReader())
+            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = OpenDataReader())
             {
                 dataPoints = ReadDataStream(reader.Read((ulong)(long)startTime, (ulong)(long)stopTime, new[] { (ulong)historianID }));
             }

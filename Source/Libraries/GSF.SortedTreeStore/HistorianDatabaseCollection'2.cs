@@ -24,7 +24,7 @@
 
 using System;
 using System.Collections.Generic;
-using openHistorian.Collections;
+using GSF.SortedTreeStore.Engine;
 
 namespace openHistorian
 {
@@ -33,18 +33,18 @@ namespace openHistorian
     /// </summary>
     public class HistorianDatabaseCollection<TKey, TValue>
         : HistorianCollection<TKey, TValue>, IDisposable
-        where TKey : HistorianKeyBase<TKey>, new()
+        where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, new()
     {
         private bool m_disposed;
 
         private readonly object m_syncRoot = new object();
 
-        private readonly SortedList<string, HistorianDatabaseBase<TKey, TValue>> m_databases;
+        private readonly SortedList<string, SortedTreeEngineBase<TKey, TValue>> m_databases;
 
         public HistorianDatabaseCollection()
         {
-            m_databases = new SortedList<string, HistorianDatabaseBase<TKey, TValue>>();
+            m_databases = new SortedList<string, SortedTreeEngineBase<TKey, TValue>>();
         }
 
         //public HistorianDatabaseCollection(string configFileName)
@@ -54,11 +54,11 @@ namespace openHistorian
         //}
 
         /// <summary>
-        /// Accesses <see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public override HistorianDatabaseBase<TKey, TValue> this[string databaseName]
+        /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        public override SortedTreeEngineBase<TKey, TValue> this[string databaseName]
         {
             get
             {
@@ -77,7 +77,7 @@ namespace openHistorian
         //    }
         //}
 
-        public void Add(string databaseName, HistorianDatabaseBase<TKey, TValue> database)
+        public void Add(string databaseName, SortedTreeEngineBase<TKey, TValue> database)
         {
             lock (m_syncRoot)
             {
@@ -142,7 +142,7 @@ namespace openHistorian
             if (!m_disposed)
             {
                 m_disposed = true;
-                foreach (HistorianDatabaseBase<TKey, TValue> db in m_databases.Values)
+                foreach (SortedTreeEngineBase<TKey, TValue> db in m_databases.Values)
                 {
                     db.Dispose();
                 }

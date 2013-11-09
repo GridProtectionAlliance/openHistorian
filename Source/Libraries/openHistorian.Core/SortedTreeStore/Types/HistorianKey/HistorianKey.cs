@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 using System;
-using GSF.IO;
+using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Collections
@@ -31,7 +31,7 @@ namespace openHistorian.Collections
     /// The standard key used for the historian.
     /// </summary>
     public class HistorianKey
-        : HistorianKeyBase<HistorianKey>
+        : EngineKeyBase<HistorianKey>
     {
         // These values are inherited from base class:
         ///// <summary>

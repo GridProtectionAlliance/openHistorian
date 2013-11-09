@@ -23,7 +23,6 @@
 
 using System;
 using GSF.SortedTreeStore.Types;
-using openHistorian.Collections;
 
 namespace GSF.SortedTreeStore.Tree
 {

@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.SortedTreeStore.Types;
-using openHistorian.Collections;
 
 namespace GSF.SortedTreeStore.Tree
 {

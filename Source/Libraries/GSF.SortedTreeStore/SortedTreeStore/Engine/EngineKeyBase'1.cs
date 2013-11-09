@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianKeyBase'1.cs - Gbtc
+//  EngineKeyBase'1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,10 +22,9 @@
 //******************************************************************************************************
 
 using System;
-using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
-namespace openHistorian.Collections
+namespace GSF.SortedTreeStore.Engine
 {
     /// <summary>
     /// Base implementation of a historian key. 
@@ -33,7 +32,7 @@ namespace openHistorian.Collections
     /// necessary for the historian engine to operate
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public abstract class HistorianKeyBase<TKey>
+    public abstract class EngineKeyBase<TKey>
         : IComparable<TKey>, IEquatable<TKey>, ISortedTreeKey<TKey>
         where TKey : class,new()
     {

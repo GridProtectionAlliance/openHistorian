@@ -32,6 +32,7 @@ namespace GSF.SortedTreeStore.Net.Compression
     class CreateHistorianCompressedStream
         : CreateKeyValueStreamCompressionBase
     {
+     
         // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
         public readonly static Guid TypeGuid = new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28);
 

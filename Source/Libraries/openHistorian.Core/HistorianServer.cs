@@ -26,7 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Net;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Engine;
 
@@ -41,7 +43,7 @@ namespace openHistorian
         #region [ Members ]
 
         // Fields
-        private Dictionary<int, SocketHistorian<HistorianKey, HistorianValue>> m_sockets;
+        private Dictionary<int, SortedTreeServerSocket<HistorianKey, HistorianValue>> m_sockets;
         private HistorianDatabaseCollection<HistorianKey, HistorianValue> m_databases;
         private bool m_disposed;
 
@@ -58,7 +60,7 @@ namespace openHistorian
             m_databases = new HistorianDatabaseCollection<HistorianKey, HistorianValue>();
 
             // Maintain a member level list of socket connections so that they can be disposed later
-            m_sockets = new Dictionary<int, SocketHistorian<HistorianKey, HistorianValue>>();
+            m_sockets = new Dictionary<int, SortedTreeServerSocket<HistorianKey, HistorianValue>>();
         }
 
         /// <summary>
@@ -93,10 +95,10 @@ namespace openHistorian
         #region [ Properties ]
 
         /// <summary>
-        /// Accesses <see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="HistorianDatabaseBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
         public HistorianDatabaseEngine this[string databaseName]
         {
             get
@@ -156,7 +158,7 @@ namespace openHistorian
 
                         if ((object)m_sockets != null)
                         {
-                            foreach (SocketHistorian<HistorianKey, HistorianValue> socketHistorian in m_sockets.Values)
+                            foreach (SortedTreeServerSocket<HistorianKey, HistorianValue> socketHistorian in m_sockets.Values)
                             {
                                 if ((object)socketHistorian != null)
                                     socketHistorian.Dispose();
@@ -207,7 +209,7 @@ namespace openHistorian
 
                 lock (m_sockets)
                 {
-                    m_sockets.Add(databaseInstance.PortNumber, new SocketHistorian<HistorianKey, HistorianValue>(databaseInstance.PortNumber, databaseCollection));
+                    m_sockets.Add(databaseInstance.PortNumber, new SortedTreeServerSocket<HistorianKey, HistorianValue>(databaseInstance.PortNumber, CreateHistorianCompressionTs.TypeGuid, databaseCollection));
                 }
             }
         }
@@ -218,7 +220,7 @@ namespace openHistorian
         /// <param name="databaseInstance"><see cref="HistorianDatabaseInstance"/> to remove.</param>
         public void RemoveDatabaseInstance(HistorianDatabaseInstance databaseInstance)
         {
-            SocketHistorian<HistorianKey, HistorianValue> socketHistorian;
+            SortedTreeServerSocket<HistorianKey, HistorianValue> sortedTreeServerSocket;
 
             lock (m_databases.SyncRoot)
             {
@@ -234,11 +236,11 @@ namespace openHistorian
             // TODO: (or at least collection replacement)
             lock (m_sockets)
             {
-                if (m_sockets.TryGetValue(databaseInstance.PortNumber, out socketHistorian))
+                if (m_sockets.TryGetValue(databaseInstance.PortNumber, out sortedTreeServerSocket))
                 {
-                    if ((object)socketHistorian != null)
+                    if ((object)sortedTreeServerSocket != null)
                     {
-                        socketHistorian.Dispose();
+                        sortedTreeServerSocket.Dispose();
                     }
 
                     m_sockets.Remove(databaseInstance.PortNumber);
@@ -288,12 +290,17 @@ namespace openHistorian
             {
                 foreach (KeyValuePair<int, HistorianDatabaseCollection<HistorianKey, HistorianValue>> connection in socketDatabases)
                 {
-                    m_sockets.Add(connection.Key, new SocketHistorian<HistorianKey, HistorianValue>(connection.Key, connection.Value));
+                    m_sockets.Add(connection.Key, new SortedTreeServerSocket<HistorianKey, HistorianValue>(connection.Key, CreateHistorianCompressionTs.TypeGuid, connection.Value));
                 }
             }
         }
 
         #endregion
+
+        static HistorianServer()
+        {
+            RegisterTypes.Register();
+        }
     }
 
     #region [ Old Code ]

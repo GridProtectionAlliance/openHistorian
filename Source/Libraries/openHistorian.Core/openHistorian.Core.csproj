@@ -77,9 +77,26 @@
     <Compile Include="HistorianDatabaseEngine.cs" />
     <Compile Include="HistorianDatabaseInstance.cs" />
     <Compile Include="HistorianServer.cs" />
+    <Compile Include="OldHistorianReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queues\FileBackedHistorianInputQueue.cs" />
     <Compile Include="Queues\HistorianInputQueue.cs" />
+    <Compile Include="SortedTreeStore\RegisterTypes.cs" />
+    <Compile Include="SortedTreeStore\Net\Compression\CreateHistorianCompressedStream.cs" />
+    <Compile Include="SortedTreeStore\Net\Compression\HistorianCompressedStream.cs" />
+    <Compile Include="SortedTreeStore\Net\HistorianClient.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Delta\CreateHistorianCompressionDelta.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Delta\HistorianCompressionDelta.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Delta\HistorianCompressionDeltaScanner.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\CreateHistorianCompressionTs.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTs.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTsScanner.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianKey\HistorianKey.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianKey\MethodsHistorianKey.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianValue\HistorianValue.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianValue\HistorianValueStruct.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianValue\MethodsHistorianValue.cs" />
+    <Compile Include="Utility\ConvertArchiveFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">

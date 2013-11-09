@@ -68,11 +68,11 @@ namespace GSF.SortedTreeStore.Engine
         }
         public Guid CompressionMethod { get; set; }
 
-        public DatabaseConfig(WriterMode writerMode, params string[] paths)
+        public DatabaseConfig(WriterMode writerMode, Guid compressionMethod, params string[] paths)
         {
             CompressionMethod = SortedTree.FixedSizeNode;
             if (writerMode == WriterMode.OnDisk)
-                CompressionMethod = CreateHistorianCompressionTs.TypeGuid;
+                CompressionMethod = compressionMethod;
 
             Paths = new PathList();
             WriterMode = writerMode;

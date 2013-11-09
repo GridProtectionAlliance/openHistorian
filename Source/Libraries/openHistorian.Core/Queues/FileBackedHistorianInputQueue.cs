@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using GSF.Collections;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Engine;
 using GSF.Threading;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
@@ -96,13 +97,13 @@ namespace openHistorian.Queues
 
         private readonly object m_syncWrite;
 
-        private HistorianDatabaseBase<HistorianKey, HistorianValue> m_database;
+        private SortedTreeEngineBase<HistorianKey, HistorianValue> m_database;
 
         private readonly IsolatedQueueFileBacked<PointData> m_blocks;
 
         private readonly ScheduledTask m_worker;
 
-        private readonly Func<HistorianDatabaseBase<HistorianKey, HistorianValue>> m_getDatabase;
+        private readonly Func<SortedTreeEngineBase<HistorianKey, HistorianValue>> m_getDatabase;
 
         /// <summary>
         /// Creates a new <see cref="FileBackedHistorianInputQueue"/>. 
@@ -115,7 +116,7 @@ namespace openHistorian.Queues
         /// <param name="individualFileSize">The desired size of each file.</param>
         /// <remarks>The total memory used by this class will be approximately the sum of <see cref="maxInMemorySize"/> and
         /// <see cref="individualFileSize"/> while operating in file mode.</remarks>
-        public FileBackedHistorianInputQueue(Func<HistorianDatabaseBase<HistorianKey, HistorianValue>> getDatabase, string path, string filePrefix, int maxInMemorySize, int individualFileSize)
+        public FileBackedHistorianInputQueue(Func<SortedTreeEngineBase<HistorianKey, HistorianValue>> getDatabase, string path, string filePrefix, int maxInMemorySize, int individualFileSize)
         {
             m_syncWrite = new object();
             m_blocks = new IsolatedQueueFileBacked<PointData>(path, filePrefix, maxInMemorySize, individualFileSize);

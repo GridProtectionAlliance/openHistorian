@@ -27,7 +27,7 @@ using System.IO;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
-    internal static class TreeNodeInitializer
+    public static class TreeNodeInitializer
     {
         private static readonly object SyncRoot;
 
@@ -43,8 +43,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             TreeNode = new Dictionary<Guid, CreateTreeNodeBase>();
 
             Register(new CreateFixedSizeNode());
-            Register(new CreateHistorianCompressionDelta());
-            Register(new CreateHistorianCompressionTs());
+           
         }
 
         public static void Register(CreateTreeNodeBase treeNode)
