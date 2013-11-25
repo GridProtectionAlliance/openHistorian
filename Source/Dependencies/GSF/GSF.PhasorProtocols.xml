@@ -2879,6 +2879,25 @@
             Defines additional connection information such as alternate command channel from PmuConnection file.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.ConnectionSettings.#ctor">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.ConnectionSettings"/> instance.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.ConnectionSettings.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates a new <see cref="T:GSF.PhasorProtocols.ConnectionSettings"/> instance from serialization parameters.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
+            <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
+        </member>
+        <member name="M:GSF.PhasorProtocols.ConnectionSettings.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+            <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
+        </member>
         <member name="T:GSF.PhasorProtocols.CrcException">
             <summary>
             The exception that is thrown when an object's CRC check fails.

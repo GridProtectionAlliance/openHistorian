@@ -20657,7 +20657,7 @@
             <summary>
             The parser is designed as a write only stream, so this method is not implemented.
             </summary>
-            <exception cref="T:System.NotImplementedException">Cannnot read from WriteOnly stream.</exception>
+            <exception cref="T:System.NotImplementedException">Cannot read from WriteOnly stream.</exception>
             <param name="buffer">Array of <see cref="T:System.Byte"/>s.</param>
             <param name="count">An <see cref="T:System.Int32"/> value for the offset.</param>
             <param name="offset">An <see cref="T:System.Int32"/> value for the count.</param>
@@ -20670,7 +20670,7 @@
             <exception cref="T:System.NotImplementedException">WriteOnly stream has no position.</exception>
             <param name="offset">A <see cref="T:System.Int64"/> value for the offset.</param>
             <param name="origin">A <see cref="T:System.IO.SeekOrigin"/>.</param>
-            <returns>Returns a <see cref="T:System.Int64"/> value indicating the point that was seeked to.</returns>
+            <returns>Returns a <see cref="T:System.Int64"/> value indicating the point that was sought.</returns>
         </member>
         <member name="M:GSF.Parsing.BinaryImageParserBase.SetLength(System.Int64)">
             <summary>
@@ -20701,7 +20701,7 @@
             there is not enough data to represent the image return zero and base class will prepend buffer onto next incoming set of data.
             </para>
             <para>
-            Because of the expense incurred when an exception is thrown, any exceptions encounted in the derived implementations of this method
+            Because of the expense incurred when an exception is thrown, any exceptions encountered in the derived implementations of this method
             will cause the current data buffer to be discarded and a <see cref="E:GSF.Parsing.BinaryImageParserBase.ParsingException"/> event to be raised.  Doing this prevents
             exceptions from being thrown repeatedly for the same data. If your code implementation recognizes a malformed image, you can raise
             a custom event to indicate this instead of throwing as exception and keep moving through the buffer as an optimization.
@@ -20992,7 +20992,7 @@
             <summary>
             <see cref="T:GSF.Collections.AsyncQueue`1"/> handler used to publish queued outputs.
             </summary>
-            <param name="outputArgs">Event args continaing new output to publish.</param>
+            <param name="outputArgs">Event args containing new output to publish.</param>
         </member>
         <member name="M:GSF.Parsing.FrameImageParserBase`2.OnOutputTypeNotFound(`0)">
             <summary>
@@ -21018,7 +21018,7 @@
         </member>
         <member name="E:GSF.Parsing.FrameImageParserBase`2.OutputTypeNotFound">
             <summary>
-            Occurs when matching an output type for deserializing the data image cound not be found.
+            Occurs when matching an output type for deserializing the data image could not be found.
             </summary>
             <remarks>
             <see cref="F:GSF.EventArgs`1.Argument"/> is the ID of the output type that could not be found.
@@ -21266,8 +21266,8 @@
             </para>
             <para>
             It is possible for items to be queued while the flush is executing. The flush will continue to parse buffers as quickly
-            as possible until the internal buffer queue is empty. Unless the user stops queueing data to be parsed (i.e. calling the
-            <see cref="M:GSF.Parsing.MultiSourceFrameImageParserBase`3.Parse(`0,System.Byte[])"/> method), the flush call may never return (not a happy situtation on shutdown).
+            as possible until the internal buffer queue is empty. Unless the user stops queuing data to be parsed (i.e. calling the
+            <see cref="M:GSF.Parsing.MultiSourceFrameImageParserBase`3.Parse(`0,System.Byte[])"/> method), the flush call may never return (not a happy situation on shutdown).
             </para>
             <para>
             The <see cref="T:GSF.Parsing.MultiSourceFrameImageParserBase`3"/> does not clear queue prior to destruction.
@@ -21308,11 +21308,27 @@
             </summary>
             <param name="output">The object that was deserialized from binary image.</param>
         </member>
+        <member name="M:GSF.Parsing.MultiSourceFrameImageParserBase`3.OnSourceDataParsed(`0,System.Collections.Generic.IList{`2})">
+            <summary>
+            Raises the <see cref="E:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceDataParsed"/> event.
+            </summary>
+            <param name="source">Identifier for the data source.</param>
+            <param name="output">The objects that were deserialized from binary images from the <paramref name="source"/> data stream.</param>
+        </member>
         <member name="M:GSF.Parsing.MultiSourceFrameImageParserBase`3.OnDataDiscarded(System.Byte[])">
             <summary>
             Raises the <see cref="E:GSF.Parsing.BinaryImageParserBase.DataDiscarded"/> event.
             </summary>
             <param name="buffer">Source buffer that contains output that failed to parse.</param>
+        </member>
+        <member name="E:GSF.Parsing.MultiSourceFrameImageParserBase`3.SourceDataParsed">
+            <summary>
+            Occurs when a data image is deserialized successfully to one or more of the output types that the data image represents.
+            </summary>
+            <remarks>
+            <see cref="F:GSF.EventArgs`2.Argument1"/> is the ID of the source for the data image.<br/>
+            <see cref="F:GSF.EventArgs`2.Argument2"/> is a list of objects deserialized from the data image.
+            </remarks>
         </member>
         <member name="P:GSF.Parsing.MultiSourceFrameImageParserBase`3.QueuedBuffers">
             <summary>
@@ -23820,6 +23836,22 @@
             <param name="serializationFormat"><see cref="T:GSF.SerializationFormat"/> in which the <paramref name="serializedObject"/> was serialized.</param>
             <param name="deserializedObject">Deserialized <see cref="T:System.Object"/>.</param>
             <returns><c>true</c>if deserialization succeeded; otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Serialization.GetOrDefault``1(System.Runtime.Serialization.SerializationInfo,System.String,``0)">
+            <summary>
+            Gets <see cref="T:System.Runtime.Serialization.SerializationInfo"/> value for specified <paramref name="name"/>; otherwise <paramref name="defaultValue"/>.
+            </summary>
+            <typeparam name="T">Type of parameter to get from <see cref="T:System.Runtime.Serialization.SerializationInfo"/>.</typeparam>
+            <param name="info"><see cref="T:System.Runtime.Serialization.SerializationInfo"/> object that contains deserialized values.</param>
+            <param name="name">Name of deserialized parameter to retrieve.</param>
+            <param name="defaultValue">Default value to return if <paramref name="name"/> does not exist or cannot be deserialized.</param>
+            <returns>Value for specified <paramref name="name"/>; otherwise <paramref name="defaultValue"/></returns>
+            <remarks>
+            <see cref="T:System.Runtime.Serialization.SerializationInfo"/> do not have a direct way of determining if an item with a specified name exists, so when calling
+            one of the Get(n) functions you will simply get a <see cref="T:System.Runtime.Serialization.SerializationException"/> if the parameter does not exist; similarly
+            you will receive this exception if the parameter fails to properly deserialize. This extension method protects against both of
+            these failures and returns a default value if the named parameter does not exist or cannot be deserialized.
+            </remarks>
         </member>
         <member name="M:GSF.Serialization.LegacySerializationBinder.BindToType(System.String,System.String)">
             <summary>
