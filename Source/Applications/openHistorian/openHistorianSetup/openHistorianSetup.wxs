@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product Id="{A38EFA18-A0C5-4902-9D06-EC57FA89F623}" Name="openHistorian" Language="1033" Version="!(bind.FileVersion.openHistorian.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{5E79FA87-5D8B-4BE9-9B30-EF30FDE3933B}">
+  <Product Id="{A38EFA18-A0C5-4902-9D06-EC57FA89F623}" Name="openHistorian" Language="1033" Version="!(bind.FileVersion.openHistorian.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{B34DA7F9-23D9-4573-9348-1414B653341E}">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
