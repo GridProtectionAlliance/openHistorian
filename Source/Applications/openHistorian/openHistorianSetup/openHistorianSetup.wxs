@@ -184,11 +184,13 @@
 
       <!-- Registry Settings -->
       <Component Id="Registry" Guid="{F74C123C-C923-4B04-813B-05E81397C764}">
-        <RegistryKey Id="REG_GridProtectionAlliance" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance" ForceCreateOnInstall="yes" />
-        <RegistryKey Id="REG_GridProtectionAlliance.openHistorian" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" ForceCreateOnInstall="yes" />
-        <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.InstallPath" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" Name="InstallPath" Value="[INSTALLFOLDER]" Type="string" />
-        <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.Revision" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" Name="Revision" Value="[ProductVersion]" Type="string" />
-        <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.TargetBitSize" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance\openHistorian" Name="TargetBitSize" Value="64bit" Type="string" />
+        <RegistryKey Id="REG_GridProtectionAlliance" Root="HKLM" Key="SOFTWARE\Grid Protection Alliance" ForceCreateOnInstall="yes">
+          <RegistryKey Id="REG_GridProtectionAlliance.openHistorian" Key="openHistorian" ForceCreateOnInstall="yes">
+            <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.InstallPath" Name="InstallPath" Value="[INSTALLFOLDER]" Type="string" />
+            <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.Revision" Name="Revision" Value="[ProductVersion]" Type="string" />
+            <RegistryValue Id="REG_GridProtectionAlliance.openHistorian.TargetBitSize" Name="TargetBitSize" Value="64bit" Type="string" />
+          </RegistryKey>
+        </RegistryKey>
       </Component>
 
       <!-- Cleanup -->
