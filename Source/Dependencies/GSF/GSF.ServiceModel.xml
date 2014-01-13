@@ -546,6 +546,11 @@
             To allow all domains just set this property to "*".
             </remarks>
         </member>
+        <member name="P:GSF.ServiceModel.SelfHostingService.WindowsAuthentication">
+            <summary>
+            Gets or sets a boolean value that indicates whether Windows Authentication is to be enabled.
+            </summary>
+        </member>
         <member name="P:GSF.ServiceModel.SelfHostingService.ServiceEnabled">
             <summary>
             Gets or sets a boolean value that indicates whether the web service is to be enabled at startup.

@@ -5885,6 +5885,71 @@
             Gets or sets function used to handle exceptions.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.ServiceClientBase">
+            <summary>
+            Represents a client that can remotely access the time-series framework service host.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.ServiceClientBase"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.ServiceClientBase"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.Initialize">
+            <summary>
+            Initializes the remoting client, client helper, and error logger.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.Start(System.String[])">
+            <summary>
+            Handles service start event.
+            </summary>
+            <param name="args">Service start arguments.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.ServiceClientBase"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.ServiceClientBase"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_ReceivedServiceUpdate(System.Object,GSF.EventArgs{GSF.UpdateType,System.String})">
+            <summary>
+            Client helper service update reception handler.
+            </summary>
+            <param name="sender">Sending object.</param>
+            <param name="e">Event argument containing update type and associated message data.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
+            <summary>
+            Client helper service response reception handler.
+            </summary>
+            <param name="sender">Sending object.</param>
+            <param name="e">Event argument containing the service response.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_TelnetSessionEstablished(System.Object,System.EventArgs)">
+            <summary>
+            Client helper telnet session established handler.
+            </summary>
+            <param name="sender">Sending object.</param>
+            <param name="e">Event arguments, if any.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_TelnetSessionTerminated(System.Object,System.EventArgs)">
+            <summary>
+            Client helper telnet session terminated handler.
+            </summary>
+            <param name="sender">Sending object.</param>
+            <param name="e">Event arguments, if any.</param>
+        </member>
         <member name="T:GSF.TimeSeries.Statistics.StatisticCalculationFunction">
             <summary>
             Method signature for function used to calculate a statistic for a given object.
@@ -8111,67 +8176,6 @@
             Gets the length of the <see cref="T:GSF.TimeSeries.Transport.SerializableMeasurement"/>.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.ServiceClientBase">
-            <summary>
-            Represents a client that can remotely access the time-series framework service host.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceClientBase.#ctor">
-            <summary>
-            Creates a new instance of the <see cref="T:GSF.TimeSeries.ServiceClientBase"/> class.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceClientBase.Start(System.String[])">
-            <summary>
-            Handles service start event.
-            </summary>
-            <param name="args">Service start arguments.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_ReceivedServiceUpdate(System.Object,GSF.EventArgs{GSF.UpdateType,System.String})">
-            <summary>
-            Client helper service update reception handler.
-            </summary>
-            <param name="sender">Sending object.</param>
-            <param name="e">Event argument containing update type and associated message data.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
-            <summary>
-            Client helper service response reception handler.
-            </summary>
-            <param name="sender">Sending object.</param>
-            <param name="e">Event argument containing the service response.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_TelnetSessionEstablished(System.Object,System.EventArgs)">
-            <summary>
-            Client helper telnet session established handler.
-            </summary>
-            <param name="sender">Sending object.</param>
-            <param name="e">Event arguments, if any.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_TelnetSessionTerminated(System.Object,System.EventArgs)">
-            <summary>
-            Client helper telnet session terminated handler.
-            </summary>
-            <param name="sender">Sending object.</param>
-            <param name="e">Event arguments, if any.</param>
-        </member>
-        <member name="F:GSF.TimeSeries.ServiceClientBase.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceClientBase.Dispose(System.Boolean)">
-            <summary> 
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceClientBase.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.ConfigurationType">
             <summary>
             Configuration data source type enumeration.
@@ -8254,6 +8258,11 @@
             Time-series framework uses this handler to un-wire events and dispose of system objects.
             </remarks>
         </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.InitializeServiceHelper">
+            <summary>
+            Initializes the service helper.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.CacheCurrentConfiguration(System.Data.DataSet)">
             <summary>
             Caches the current system configuration.
@@ -8262,6 +8271,38 @@
             <remarks>
             This method allows caching of the current system configuration so it can be used if primary configuration source is unavailable.
             </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.TimeSeries.ServiceHostBase"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.OnStart(System.String[])">
+            <summary>
+            Handles service start event.
+            </summary>
+            <param name="args">Service startup arguments, if any.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.OnStop">
+            <summary>
+            Handles service stop event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.OnPause">
+            <summary>
+            Handles service pause event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.OnContinue">
+            <summary>
+            Handles service continue event.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.OnShutdown">
+            <summary>
+            Handles service shut down event.
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.m_iaonSession_StatusMessage(System.Object,GSF.EventArgs{System.String,GSF.UpdateType})">
             <summary>
@@ -8476,42 +8517,10 @@
             <param name="type"><see cref="T:GSF.UpdateType"/> of message to send.</param>
             <param name="args">Arguments of the formatted status message.</param>
         </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.OnStart(System.String[])">
-            <summary>
-            Handles service start event.
-            </summary>
-            <param name="args">Service startup arguments, if any.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.OnStop">
-            <summary>
-            Handles service stop event.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.OnPause">
-            <summary>
-            Handles service pause event.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.OnContinue">
-            <summary>
-            Handles service continue event.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.OnShutdown">
-            <summary>
-            Handles service shut down event.
-            </summary>
-        </member>
         <member name="F:GSF.TimeSeries.ServiceHostBase.components">
             <summary> 
             Required designer variable.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.InitializeComponent">
             <summary> 
