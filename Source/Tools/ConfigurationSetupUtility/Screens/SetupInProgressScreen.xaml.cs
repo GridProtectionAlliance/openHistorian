@@ -503,61 +503,64 @@ namespace ConfigurationSetupUtility.Screens
                         }
                         else if (useIntegratedSecurity)
                         {
-                            const string groupName = "openHistorian Admins";
+                            const string GroupName = "openHistorian Admins";
 
                             string host = sqlServerSetup.HostName.Split('\\')[0].Trim();
                             string db = sqlServerSetup.DatabaseName;
-                            string loginName;
+                            string[] loginNames;
                             bool useGroupLogin;
 
-                            useGroupLogin = UserInfo.LocalGroupExists(groupName) && (host == "." || Transport.IsLocalAddress(host));
-                            loginName = useGroupLogin ? string.Format(@"{0}\{1}", Environment.MachineName, groupName) : GetServiceAccountName();
+                            useGroupLogin = UserInfo.LocalGroupExists(GroupName) && (host == "." || Transport.IsLocalAddress(host));
+                            loginNames = new string[] { (useGroupLogin ? string.Format(@"{0}\{1}", Environment.MachineName, GroupName) : null), GetServiceAccountName() };
 
-                            if ((object)loginName != null && !loginName.Equals("LocalSystem", StringComparison.InvariantCultureIgnoreCase))
+                            foreach (string loginName in loginNames)
                             {
-                                AppendStatusMessage(string.Format("Attempting to add Windows authenticated database login for {0}...", loginName));
-
-                                sqlServerSetup.DatabaseName = "master";
-                                if (!sqlServerSetup.ExecuteStatement(string.Format("IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{0}') CREATE LOGIN [{0}] FROM WINDOWS WITH DEFAULT_DATABASE=[master]", loginName)))
+                                if ((object)loginName != null && !loginName.Equals("LocalSystem", StringComparison.InvariantCultureIgnoreCase))
                                 {
-                                    OnSetupFailed();
-                                    return;
-                                }
+                                    AppendStatusMessage(string.Format("Attempting to add Windows authenticated database login for {0}...", loginName));
 
-                                sqlServerSetup.DatabaseName = db;
-                                if (!sqlServerSetup.ExecuteStatement(string.Format("CREATE USER [{0}] FOR LOGIN [{0}]", loginName)))
-                                {
-                                    OnSetupFailed();
-                                    return;
-                                }
+                                    sqlServerSetup.DatabaseName = "master";
+                                    if (!sqlServerSetup.ExecuteStatement(string.Format("IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N'{0}') CREATE LOGIN [{0}] FROM WINDOWS WITH DEFAULT_DATABASE=[master]", loginName)))
+                                    {
+                                        OnSetupFailed();
+                                        return;
+                                    }
 
-                                if (!sqlServerSetup.ExecuteStatement("CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]"))
-                                {
-                                    OnSetupFailed();
-                                    return;
-                                }
+                                    sqlServerSetup.DatabaseName = db;
+                                    if (!sqlServerSetup.ExecuteStatement(string.Format("CREATE USER [{0}] FOR LOGIN [{0}]", loginName)))
+                                    {
+                                        OnSetupFailed();
+                                        return;
+                                    }
 
-                                if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'openHistorianAdminRole', N'{0}'", loginName)))
-                                {
-                                    OnSetupFailed();
-                                    return;
-                                }
+                                    if (!sqlServerSetup.ExecuteStatement("CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]"))
+                                    {
+                                        OnSetupFailed();
+                                        return;
+                                    }
 
-                                if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'db_datareader', N'openHistorianAdminRole'")))
-                                {
-                                    OnSetupFailed();
-                                    return;
-                                }
+                                    if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'openHistorianAdminRole', N'{0}'", loginName)))
+                                    {
+                                        OnSetupFailed();
+                                        return;
+                                    }
 
-                                if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'db_datawriter', N'openHistorianAdminRole'")))
-                                {
-                                    OnSetupFailed();
-                                    return;
-                                }
+                                    if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'db_datareader', N'openHistorianAdminRole'")))
+                                    {
+                                        OnSetupFailed();
+                                        return;
+                                    }
 
-                                UpdateProgressBar(98);
-                                AppendStatusMessage("Database login created successfully.");
-                                AppendStatusMessage(string.Empty);
+                                    if (!sqlServerSetup.ExecuteStatement(string.Format("EXEC sp_addrolemember N'db_datawriter', N'openHistorianAdminRole'")))
+                                    {
+                                        OnSetupFailed();
+                                        return;
+                                    }
+
+                                    UpdateProgressBar(98);
+                                    AppendStatusMessage("Database login created successfully.");
+                                    AppendStatusMessage(string.Empty);
+                                }
                             }
                         }
 
