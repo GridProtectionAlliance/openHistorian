@@ -517,7 +517,7 @@ namespace ConfigurationSetupUtility.Screens
                             serviceAccountName = GetServiceAccountName();
                             groupAccountName = useGroupLogin ? string.Format(@"{0}\{1}", Environment.MachineName, GroupName) : null;
 
-                            if (serviceAccountName.Equals("LocalSystem", StringComparison.InvariantCultureIgnoreCase))
+                            if ((object)serviceAccountName != null && serviceAccountName.Equals("LocalSystem", StringComparison.InvariantCultureIgnoreCase))
                                 serviceAccountName = @"NT Authority\System";
 
                             loginNames = new string[] { groupAccountName, serviceAccountName };
