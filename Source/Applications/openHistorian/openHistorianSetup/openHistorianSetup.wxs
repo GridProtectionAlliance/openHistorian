@@ -45,6 +45,9 @@
         <Feature Id="ConfigurationEditorFeature" Title="Configuration Editor">
           <ComponentGroupRef Id="ConfigurationEditorComponents" />
         </Feature>
+        <Feature Id="NoInetFixUtilFeature" Title="No-Internet Fix Utility">
+          <ComponentRef Id="NoInetFixUtil" />
+        </Feature>
 
         <ComponentGroupRef Id="GSFDependencyComponents" />
       </Feature>
@@ -72,6 +75,7 @@
     <Icon Id="ConfigurationSetupUtility.ico.exe" SourceFile="$(var.ConfigurationSetupUtility.TargetPath)" />
     <Icon Id="ConfigCrypter.ico.exe" SourceFile="$(var.ProjectDir)\ConfigCrypter.exe" />
     <Icon Id="ConfigurationEditor.ico.exe" SourceFile="$(var.ProjectDir)\ConfigurationEditor.exe" />
+    <Icon Id="NoInetFixUtil.ico.exe" SourceFile="$(var.ProjectDir)\NoInetFixUtil.exe" />
 
     <Property Id="SERVICENAME" Value="$(var.openHistorian.TargetName)" />
     <Property Id="SERVICEPASSWORD" Hidden="yes" />
@@ -263,6 +267,11 @@
     <ComponentGroup Id="openHistorianToolsComponents" Directory="INSTALLFOLDER">
       <ComponentGroupRef Id="ConfigCrypterComponents" />
       <ComponentGroupRef Id="ConfigurationEditorComponents" />
+
+      <Component Id="NoInetFixUtil">
+        <File Id="NoInetFixUtil.exe" Name="NoInetFixUtil.exe" Source="$(var.ProjectDir)\NoInetFixUtil.exe" />
+        <Shortcut Id="NoInetFixUtilStartMenuShortcut" Name="No-Internet Fix Utility" Icon="NoInetFixUtil.ico.exe" Description="Tool used to fix long timeouts on systems with no internet access available." WorkingDirectory="INSTALLFOLDER" Directory="ApplicationProgramsFolder" Advertise="yes" />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="ConfigCrypterComponents" Directory="INSTALLFOLDER">
