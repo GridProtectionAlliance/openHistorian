@@ -464,13 +464,13 @@ namespace ConfigurationSetupUtility.Screens
                             }
 
                             sqlServerSetup.DatabaseName = db;
-                            if (!sqlServerSetup.ExecuteStatement(string.Format("CREATE USER [{0}] FOR LOGIN [{0}]", user)))
+                            if (!sqlServerSetup.ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('{0}') IS NULL CREATE USER [{0}] FOR LOGIN [{0}]", user)))
                             {
                                 OnSetupFailed();
                                 return;
                             }
 
-                            if (!sqlServerSetup.ExecuteStatement("CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]"))
+                            if (!sqlServerSetup.ExecuteStatement("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NULL CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]"))
                             {
                                 OnSetupFailed();
                                 return;
@@ -507,15 +507,24 @@ namespace ConfigurationSetupUtility.Screens
 
                             string host = sqlServerSetup.HostName.Split('\\')[0].Trim();
                             string db = sqlServerSetup.DatabaseName;
-                            string[] loginNames;
+
                             bool useGroupLogin;
+                            string serviceAccountName;
+                            string groupAccountName;
+                            string[] loginNames;
 
                             useGroupLogin = UserInfo.LocalGroupExists(GroupName) && (host == "." || Transport.IsLocalAddress(host));
-                            loginNames = new string[] { (useGroupLogin ? string.Format(@"{0}\{1}", Environment.MachineName, GroupName) : null), GetServiceAccountName() };
+                            serviceAccountName = GetServiceAccountName();
+                            groupAccountName = useGroupLogin ? string.Format(@"{0}\{1}", Environment.MachineName, GroupName) : null;
+
+                            if (serviceAccountName.Equals("LocalSystem", StringComparison.InvariantCultureIgnoreCase))
+                                serviceAccountName = @"NT Authority\System";
+
+                            loginNames = new string[] { groupAccountName, serviceAccountName };
 
                             foreach (string loginName in loginNames)
                             {
-                                if ((object)loginName != null && !loginName.Equals("LocalSystem", StringComparison.InvariantCultureIgnoreCase))
+                                if ((object)loginName != null)
                                 {
                                     AppendStatusMessage(string.Format("Attempting to add Windows authenticated database login for {0}...", loginName));
 
@@ -527,13 +536,13 @@ namespace ConfigurationSetupUtility.Screens
                                     }
 
                                     sqlServerSetup.DatabaseName = db;
-                                    if (!sqlServerSetup.ExecuteStatement(string.Format("CREATE USER [{0}] FOR LOGIN [{0}]", loginName)))
+                                    if (!sqlServerSetup.ExecuteStatement(string.Format("IF DATABASE_PRINCIPAL_ID('{0}') IS NULL CREATE USER [{0}] FOR LOGIN [{0}]", loginName)))
                                     {
                                         OnSetupFailed();
                                         return;
                                     }
 
-                                    if (!sqlServerSetup.ExecuteStatement("CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]"))
+                                    if (!sqlServerSetup.ExecuteStatement("IF DATABASE_PRINCIPAL_ID('openHistorianAdminRole') IS NULL CREATE ROLE [openHistorianAdminRole] AUTHORIZATION [dbo]"))
                                     {
                                         OnSetupFailed();
                                         return;
