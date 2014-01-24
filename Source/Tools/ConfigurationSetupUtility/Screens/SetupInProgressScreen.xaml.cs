@@ -1651,10 +1651,11 @@ namespace ConfigurationSetupUtility.Screens
             }
 
             // Make sure alarm services settings exist
-            XmlNode alarmServicesNode = configFile.SelectSingleNode("configuration/categorizedSettings/alarmServicesAlarmService");
+            XmlNode alarmServicesNode = configFile.SelectSingleNode("configuration/categorizedSettings/alarmservicesAlarmService");
+
             if (serviceConfigFile && (object)alarmServicesNode == null)
             {
-                alarmServicesNode = configFile.CreateElement("alarmServicesAlarmService");
+                alarmServicesNode = configFile.CreateElement("alarmservicesAlarmService");
 
                 XmlElement addElement = configFile.CreateElement("add");
 
