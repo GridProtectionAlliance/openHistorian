@@ -229,30 +229,36 @@
             <param name="measurements">Measurements to be archived.</param>
             <exception cref="T:System.InvalidOperationException">Local archive is closed.</exception>
         </member>
-        <member name="M:HistorianAdapters.LocalOutputAdapter.ParameterizedQueryString(System.Type,System.String,System.String[])">
-            <summary>
-            Creates a parameterized query string for the underlying database type 
-            based on the given format string and the parameter names.
-            </summary>
-            <param name="adapterType">The adapter type used to determine the underlying database type.</param>
-            <param name="format">A composite format string.</param>
-            <param name="parameterNames">A string array that contains zero or more parameter names to format.</param>
-            <returns>A parameterized query string based on the given format and parameter names.</returns>
-        </member>
         <member name="P:HistorianAdapters.LocalOutputAdapter.InstanceName">
             <summary>
             Gets or sets instance name defined for this <see cref="T:HistorianAdapters.LocalOutputAdapter"/>.
-            </summary>
-        </member>
-        <member name="P:HistorianAdapters.LocalOutputAdapter.ArchivePath">
-            <summary>
-            Gets or sets the path to the archive.
             </summary>
         </member>
         <member name="P:HistorianAdapters.LocalOutputAdapter.AutoRefreshMetadata">
             <summary>
             Gets or sets a boolean indicating whether or not metadata is
             refreshed when the adapter attempts to connect to the archive.
+            </summary>
+        </member>
+        <member name="P:HistorianAdapters.LocalOutputAdapter.InputMeasurementKeys">
+            <summary>
+            Gets or sets primary keys of input measurements the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> expects, if any.
+            </summary>
+        </member>
+        <member name="P:HistorianAdapters.LocalOutputAdapter.Dependencies">
+            <summary>
+            Gets or sets the comma-separated list of adapter names that this adapter depends on.
+            </summary>
+        </member>
+        <member name="P:HistorianAdapters.LocalOutputAdapter.DependencyTimeout">
+            <summary>
+            Gets or sets the maximum time the system will wait on inter-adapter
+            dependencies before publishing queued measurements to an adapter.
+            </summary>
+        </member>
+        <member name="P:HistorianAdapters.LocalOutputAdapter.ArchivePath">
+            <summary>
+            Gets or sets the path to the archive.
             </summary>
         </member>
         <member name="P:HistorianAdapters.LocalOutputAdapter.OutputIsForArchive">

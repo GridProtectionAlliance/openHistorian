@@ -89,7 +89,7 @@
             Gets or sets a semicolon delimited list of URIs where the web service can be accessed.
             </summary>
         </member>
-        <member name="P:GSF.ServiceModel.ISelfHostingService.Contract">
+        <member name="P:GSF.ServiceModel.ISelfHostingService.ContractInterface">
             <summary>
             Gets or sets the <see cref="P:System.Type.FullName"/> of the contract interface implemented by the web service.
             </summary>
@@ -511,7 +511,7 @@
             for a list of supported URI formats.
             </remarks>
         </member>
-        <member name="P:GSF.ServiceModel.SelfHostingService.Contract">
+        <member name="P:GSF.ServiceModel.SelfHostingService.ContractInterface">
             <summary>
             Gets or sets the <see cref="P:System.Type.FullName"/> of the contract interface implemented by the web service.
             </summary>

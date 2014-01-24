@@ -1967,14 +1967,13 @@
             Time in seconds after which the block is considered inactive if no reads or writes were performed.
             </summary>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveDataBlock.#ctor(GSF.Historian.Files.ArchiveFile,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+        <member name="M:GSF.Historian.Files.ArchiveDataBlock.#ctor(GSF.Historian.Files.ArchiveFile,System.Int32,System.Int32,System.Boolean)">
             <summary>
             Initializes a new instance of the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/> class. 
             </summary>
             <param name="parent">An <see cref="T:GSF.Historian.Files.ArchiveFile"/> object.</param>
             <param name="index">0-based index of the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.</param>
             <param name="historianID">Historian identifier whose <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/> is stored in the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.</param>
-            <param name="reset">true if the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/> is to be <see cref="M:GSF.Historian.Files.ArchiveDataBlock.Reset"/>; otherwise false.</param>
             <param name="preRead">true to pre-read data to locate write cursor.</param>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveDataBlock.Read">
@@ -3126,10 +3125,11 @@
             <paramref name="startIndex"/> and <see cref="P:GSF.Historian.Files.ArchiveFileAllocationTable.BinaryLength"/> will exceed <paramref name="buffer"/> length.
             </exception>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.Save">
+        <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.Save(System.Boolean)">
             <summary>
             Saves the <see cref="T:GSF.Historian.Files.ArchiveFileAllocationTable"/> data to the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
+            <param name="forceFlush">Forces an immediate disk flush for save.</param>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveFileAllocationTable.Extend">
             <summary>
@@ -3191,7 +3191,7 @@
             </summary>
             <param name="historianID">Historian identifier for which the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/> is being requested.</param>
             <param name="dataTime"><see cref="T:GSF.Historian.TimeTag"/> of the <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/> to be written to the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>.</param>
-            <param name="blockIndex"><see cref="P:GSF.Historian.Files.ArchiveDataBlock.Index"/> of the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/> last used for writting <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s for the <paramref name="historianID"/>.</param>
+            <param name="blockIndex"><see cref="P:GSF.Historian.Files.ArchiveDataBlock.Index"/> of the <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/> last used for writing <see cref="T:GSF.Historian.Files.ArchiveDataPoint"/>s for the <paramref name="historianID"/>.</param>
             <returns><see cref="T:GSF.Historian.Files.ArchiveDataBlock"/> object if available; otherwise null if all <see cref="T:GSF.Historian.Files.ArchiveDataBlock"/>s have been allocated.</returns>
         </member>
         <member name="P:GSF.Historian.Files.ArchiveFileAllocationTable.FileStartTime">

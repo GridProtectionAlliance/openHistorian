@@ -6,11 +6,11 @@
     <members>
         <member name="T:GSF.Security.AdoSecurityProvider">
             <summary>
-            Represents an <see cref="T:GSF.Security.ISecurityProvider"/> that uses ADO.NET data source (SQL Server, MySQL, Microsoft Access etc) for its
-            backend datastore and authenticates internal users against Active Directory and external users against the database.
+            Represents an <see cref="T:GSF.Security.ISecurityProvider"/> that uses ADO.NET data source (SQL Server, MySQL, Oracle, etc.) for its
+            backend data store and authenticates internal users against Active Directory and external users against the database.
             </summary>
             <example>
-            Required config file entries:
+            Required config file entries (automatically added):
             <code>
             <![CDATA[
             <?xml version="1.0"?>
@@ -49,6 +49,63 @@
             ]]>
             </code>
             </example>
+            <remarks>
+            Minimum expected table schema for ADO Security Provider:
+            <code>
+            <![CDATA[
+            CREATE TABLE UserAccount
+            (
+                ID UNIQUEINDENTIFIER NOT NULL DEFAULT NEWID(),
+                Name VARCHAR(200) NOT NULL,
+                Password VARCHAR(200) DEFAULT NULL,
+                FirstName VARCHAR(200) DEFAULT NULL,
+                LastName VARCHAR(200) DEFAULT NULL,
+                Phone VARCHAR(200) DEFAULT NULL,
+                Email VARCHAR(200) DEFAULT NULL,
+                LockedOut TINYINT NOT NULL DEFAULT 0,
+                UseADAuthentication TINYINT NOT NULL DEFAULT 1,
+                ChangePasswordOn DATETIME DEFAULT NULL,
+                CONSTRAINT PK_UserAccount PRIMARY KEY (ID ASC),
+                CONSTRAINT IX_UserAccount UNIQUE KEY (Name)
+            );
+            
+            CREATE TABLE SecurityGroup
+            (
+                ID UNIQUEINDENTIFIER NOT NULL DEFAULT NEWID(),
+                Name VARCHAR(200) NOT NULL,
+                CONSTRAINT PK_SecurityGroup PRIMARY KEY (ID ASC),
+                CONSTRAINT IX_SecurityGroup UNIQUE KEY (Name)
+            );
+            
+            CREATE TABLE SecurityGroupUserAccount
+            (
+                SecurityGroupID UNIQUEINDENTIFIER NOT NULL,
+                UserAccountID UNIQUEINDENTIFIER NOT NULL
+            );
+            
+            CREATE TABLE ApplicationRole
+            (
+                ID UNIQUEINDENTIFIER NOT NULL DEFAULT NEWID(),
+                Name VARCHAR(200) NOT NULL,
+                NodeID UNIQUEINDENTIFIER NOT NULL,
+                CONSTRAINT PK_ApplicationRole PRIMARY KEY (ID ASC),
+                CONSTRAINT IX_ApplicationRole UNIQUE KEY (NodeID, Name)
+            );
+            
+            CREATE TABLE ApplicationRoleUserAccount
+            (
+                ApplicationRoleID UNIQUEINDENTIFIER NOT NULL,
+                UserAccountID UNIQUEINDENTIFIER NOT NULL  
+            );
+            
+            CREATE TABLE ApplicationRoleSecurityGroup
+            (
+                ApplicationRoleID UNIQUEINDENTIFIER NOT NULL,
+                SecurityGroupID UNIQUEINDENTIFIER NOT NULL  
+            );
+            ]]>
+            </code>
+            </remarks>
         </member>
         <member name="T:GSF.Security.LdapSecurityProvider">
             <summary>
@@ -110,7 +167,7 @@
             Base class for a provider of role-based security in applications.
             </summary>
             <example>
-            This examples shows how to extend <see cref="T:GSF.Security.SecurityProviderBase"/> to use a flat-file for the security datastore:
+            This examples shows how to extend <see cref="T:GSF.Security.SecurityProviderBase"/> to use a flat-file for the security data store:
             <code>
             using System.Data;
             using System.IO;
@@ -218,26 +275,26 @@
         </member>
         <member name="M:GSF.Security.ISecurityProvider.RefreshData">
             <summary>
-            Refreshes the <see cref="P:GSF.Security.ISecurityProvider.UserData"/> from the backend datastore.
+            Refreshes the <see cref="P:GSF.Security.ISecurityProvider.UserData"/> from the backend data store.
             </summary>
             <returns>true if <see cref="P:GSF.Security.ISecurityProvider.UserData"/> is refreshed, otherwise false.</returns>
         </member>
         <member name="M:GSF.Security.ISecurityProvider.UpdateData">
             <summary>
-            Updates the <see cref="P:GSF.Security.ISecurityProvider.UserData"/> in the backend datastore.
+            Updates the <see cref="P:GSF.Security.ISecurityProvider.UserData"/> in the backend data store.
             </summary>
             <returns>true if <see cref="P:GSF.Security.ISecurityProvider.UserData"/> is updated, otherwise false.</returns>
         </member>
         <member name="M:GSF.Security.ISecurityProvider.ResetPassword(System.String)">
             <summary>
-            Resets user password in the backend datastore.
+            Resets user password in the backend data store.
             </summary>
             <param name="securityAnswer">Answer to the user's security question.</param>
             <returns>true if the password is reset, otherwise false.</returns>
         </member>
         <member name="M:GSF.Security.ISecurityProvider.ChangePassword(System.String,System.String)">
             <summary>
-            Changes user password in the backend datastore.
+            Changes user password in the backend data store.
             </summary>
             <param name="oldPassword">User's current password.</param>
             <param name="newPassword">User's new password.</param>
@@ -252,12 +309,12 @@
         </member>
         <member name="P:GSF.Security.ISecurityProvider.ApplicationName">
             <summary>
-            Gets or sets the name of the application being secured as defined in the backend security datastore.
+            Gets or sets the name of the application being secured as defined in the backend security data store.
             </summary>
         </member>
         <member name="P:GSF.Security.ISecurityProvider.ConnectionString">
             <summary>
-            Gets or sets the connection string to be used for connection to the backend security datastore.
+            Gets or sets the connection string to be used for connection to the backend security data store.
             </summary>
         </member>
         <member name="P:GSF.Security.ISecurityProvider.SecurePassword">
@@ -267,7 +324,7 @@
         </member>
         <member name="P:GSF.Security.ISecurityProvider.Password">
             <summary>
-            Gets or sets <see cref="P:GSF.Security.ISecurityProvider.SecurePassword"/> as cleartext password.
+            Gets or sets <see cref="P:GSF.Security.ISecurityProvider.SecurePassword"/> as clear text password.
             </summary>
         </member>
         <member name="P:GSF.Security.ISecurityProvider.UserData">
@@ -282,7 +339,7 @@
         </member>
         <member name="P:GSF.Security.ISecurityProvider.CanUpdateData">
             <summary>
-            Geta a boolean value that indicates whether <see cref="M:GSF.Security.ISecurityProvider.UpdateData"/> operation is supported.
+            Gets a boolean value that indicates whether <see cref="M:GSF.Security.ISecurityProvider.UpdateData"/> operation is supported.
             </summary>
         </member>
         <member name="P:GSF.Security.ISecurityProvider.CanResetPassword">
@@ -333,8 +390,8 @@
             Initializes a new instance of the security provider.
             </summary>
             <param name="username">Name that uniquely identifies the user.</param>
-            <param name="canRefreshData">true if the security provider can refresh <see cref="P:GSF.Security.SecurityProviderBase.UserData"/> from the backend datastore, otherwise false.</param>
-            <param name="canUpdateData">true if the security provider can update <see cref="P:GSF.Security.SecurityProviderBase.UserData"/> in the backend datastore, otherwise false.</param>
+            <param name="canRefreshData">true if the security provider can refresh <see cref="P:GSF.Security.SecurityProviderBase.UserData"/> from the backend data store, otherwise false.</param>
+            <param name="canUpdateData">true if the security provider can update <see cref="P:GSF.Security.SecurityProviderBase.UserData"/> in the backend data store, otherwise false.</param>
             <param name="canResetPassword">true if the security provider can reset user password, otherwise false.</param>
             <param name="canChangePassword">true if the security provider can change user password, otherwise false.</param>
         </member>
@@ -434,7 +491,7 @@
         </member>
         <member name="P:GSF.Security.SecurityProviderBase.Password">
             <summary>
-            Gets or sets <see cref="P:GSF.Security.SecurityProviderBase.SecurePassword"/> as cleartext password.
+            Gets or sets <see cref="P:GSF.Security.SecurityProviderBase.SecurePassword"/> as clear text password.
             </summary>
         </member>
         <member name="P:GSF.Security.SecurityProviderBase.LogEvent">
@@ -580,7 +637,7 @@
         </member>
         <member name="M:GSF.Security.LdapSecurityProvider.ChangePassword(System.String,System.String)">
             <summary>
-            Changes user password in the backend datastore.
+            Changes user password in the backend data store.
             </summary>
             <param name="oldPassword">User's current password.</param>
             <param name="newPassword">User's new password.</param>
@@ -622,6 +679,16 @@
             Gets the original <see cref="P:GSF.Security.LdapSecurityProvider.WindowsPrincipal"/> of the user if the user exists in Active Directory.
             </summary>
         </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultPasswordRequirementsRegex">
+            <summary>
+            Default regular expression used to validate new database user passwords.
+            </summary>
+        </member>
+        <member name="F:GSF.Security.AdoSecurityProvider.DefaultPasswordRequirementsError">
+            <summary>
+            Default error message displayed when databases users fail regular expression test.
+            </summary>
+        </member>
         <member name="F:GSF.Security.AdoSecurityProvider.ProviderID">
             <summary>
             Defines the provider ID for the <see cref="T:GSF.Security.AdoSecurityProvider"/>.
@@ -638,8 +705,8 @@
             Initializes a new instance of the <see cref="T:GSF.Security.AdoSecurityProvider"/> class.
             </summary>
             <param name="username">Name that uniquely identifies the user.</param>
-            <param name="canRefreshData">true if the security provider can refresh <see cref="T:GSF.Security.UserData"/> from the backend datastore, otherwise false.</param>
-            <param name="canUpdateData">true if the security provider can update <see cref="T:GSF.Security.UserData"/> in the backend datastore, otherwise false.</param>
+            <param name="canRefreshData">true if the security provider can refresh <see cref="T:GSF.Security.UserData"/> from the backend data store, otherwise false.</param>
+            <param name="canUpdateData">true if the security provider can update <see cref="T:GSF.Security.UserData"/> in the backend data store, otherwise false.</param>
             <param name="canResetPassword">true if the security provider can reset user password, otherwise false.</param>
             <param name="canChangePassword">true if the security provider can change user password, otherwise false.</param>
         </member>
@@ -664,7 +731,7 @@
         </member>
         <member name="M:GSF.Security.AdoSecurityProvider.ChangePassword(System.String,System.String)">
             <summary>
-            Changes user password in the backend datastore.
+            Changes user password in the backend data store.
             </summary>
             <param name="oldPassword">User's current password.</param>
             <param name="newPassword">User's new password.</param>
@@ -680,7 +747,7 @@
         </member>
         <member name="M:GSF.Security.AdoSecurityProvider.LogError(System.String,System.String)">
             <summary>
-            Logs information about an encountered exception to the backend datastore.
+            Logs information about an encountered exception to the backend data store.
             </summary>
             <param name="source">Source of the exception.</param>
             <param name="message">Detailed description of the exception.</param>
@@ -692,9 +759,22 @@
             </summary>
             <returns>The LDAP path.</returns>
         </member>
+        <member name="M:GSF.Security.AdoSecurityProvider.PrepareSecurityContext(System.Data.IDbConnection)">
+            <summary>
+            Extracts the current security context from the database and kicks off a background caching operation.
+            </summary>
+            <param name="connection">Existing database connection used to extract security context.</param>
+        </member>
+        <member name="M:GSF.Security.AdoSecurityProvider.ExtractSecurityContext(System.Data.IDbConnection)">
+            <summary>
+            Extracts the current security context from the database.
+            </summary>
+            <param name="connection">Existing database connection used to extract security context.</param>
+            <returns>A new <see cref="T:System.Data.DataSet"/> containing the latest security context.</returns>
+        </member>
         <member name="P:GSF.Security.AdoSecurityProvider.CanUpdateData">
             <summary>
-            Geta a boolean value that indicates whether <see cref="M:GSF.Security.SecurityProviderBase.UpdateData"/> operation is supported.
+            Gets a boolean value that indicates whether <see cref="M:GSF.Security.SecurityProviderBase.UpdateData"/> operation is supported.
             </summary>
         </member>
         <member name="P:GSF.Security.AdoSecurityProvider.LastException">
@@ -702,10 +782,71 @@
             Gets last exception reported by the <see cref="T:GSF.Security.AdoSecurityProvider"/>.
             </summary>
         </member>
+        <member name="T:GSF.Security.AdoSecurityCache">
+            <summary>
+            Represents a secured inter-process cache for the security context needed by the <see cref="T:GSF.Security.AdoSecurityProvider"/>.
+            </summary>
+            <remarks>
+            This is a system cache that contains the last known security information loaded from the database related to users,
+            roles and groups. This cache allows the <see cref="T:GSF.Security.AdoSecurityProvider"/> to start-up without database access
+            using latest cached security context. Even though this cache contains role information for all users, it does
+            not overlap information in the <see cref="T:GSF.Security.UserRoleCache"/> since the user role cache contains role assignments
+            for a user at last login and is used for auditing.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.AdoSecurityCache.#ctor(System.Int32)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Security.AdoSecurityCache"/> with the specified number of <paramref name="maximumConcurrentLocks"/>.
+            </summary>
+            <param name="maximumConcurrentLocks">Maximum concurrent reader locks to allow.</param>
+        </member>
+        <member name="M:GSF.Security.AdoSecurityCache.Save">
+            <summary>
+            Initiates inter-process synchronized save of <see cref="P:GSF.Security.AdoSecurityCache.DataSet"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.Security.AdoSecurityCache.SaveFileData(System.IO.FileStream,System.Byte[])">
+            <summary>
+            Handles serialization of file to disk; virtual method allows customization (e.g., pre-save encryption and/or data merge).
+            </summary>
+            <param name="fileStream"><see cref="T:System.IO.FileStream"/> used to serialize data.</param>
+            <param name="fileData">File data to be serialized.</param>
+            <remarks>
+            Consumers overriding this method should not directly call <see cref="P:GSF.IO.InterprocessCache.FileData"/> property to avoid potential dead-locks.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.AdoSecurityCache.LoadFileData(System.IO.FileStream)">
+            <summary>
+            Handles deserialization of file from disk; virtual method allows customization (e.g., pre-load decryption and/or data merge).
+            </summary>
+            <param name="fileStream"><see cref="T:System.IO.FileStream"/> used to deserialize data.</param>
+            <returns>Deserialized file data.</returns>
+            <remarks>
+            Consumers overriding this method should not directly call <see cref="P:GSF.IO.InterprocessCache.FileData"/> property to avoid potential dead-locks.
+            </remarks>
+        </member>
+        <member name="M:GSF.Security.AdoSecurityCache.GetCurrentCache">
+            <summary>
+            Loads the <see cref="T:GSF.Security.AdoSecurityCache"/> for the current local user.
+            </summary>
+            <returns>Loaded instance of the <see cref="T:GSF.Security.AdoSecurityCache"/>.</returns>
+        </member>
+        <member name="P:GSF.Security.AdoSecurityCache.DataSet">
+            <summary>
+            Gets or sets the internal <see cref="P:GSF.Security.AdoSecurityCache.DataSet"/>; returned value will be a copy of the internal.
+            </summary>
+        </member>
         <member name="T:GSF.Security.UserRoleCache">
             <summary>
-            Represents a secured interprocess cache for a <see cref="T:System.Collections.Generic.Dictionary`2"/> of serialized user role information.
+            Represents a secured inter-process cache for a <see cref="T:System.Collections.Generic.Dictionary`2"/> of serialized user role information.
             </summary>
+            <remarks>
+            This is a system cache that contains the role assignments for each user that has logged in successfully. This cache is used
+            to check for changes in role assignments for a user - that is, a role change in the database that may now be different than
+            what is in the current cache. Any kind of role changes are logged as security events in the Windows event log for auditing.
+            Note that this is kept as a separate cache from the <see cref="T:GSF.Security.AdoSecurityCache"/> since the user role cache is used for
+            auditing and contains information relative to a user's roles at last login.
+            </remarks>
         </member>
         <member name="M:GSF.Security.UserRoleCache.#ctor(System.Int32)">
             <summary>
@@ -713,23 +854,23 @@
             </summary>
             <param name="maximumConcurrentLocks">Maximum concurrent reader locks to allow.</param>
         </member>
-        <member name="M:GSF.Security.UserRoleCache.TryGetUserRole(System.String,System.String@)">
+        <member name="M:GSF.Security.UserRoleCache.TryGetUserRole(System.String,System.String[]@)">
             <summary>
             Attempts to retrieve access role for given <paramref name="userName"/>.
             </summary>
             <param name="userName">User name associated with access role to retrieve.</param>
-            <param name="role">Access role to populate if found.</param>
-            <returns><c>true</c> if access role for given <paramref name="userName"/> was retrieved; otherwise <c>false</c>.</returns>
+            <param name="roles">Access roles to populate if found.</param>
+            <returns><c>true</c> if access roles for given <paramref name="userName"/> were retrieved; otherwise <c>false</c>.</returns>
         </member>
-        <member name="M:GSF.Security.UserRoleCache.SaveUserRole(System.String,System.String)">
+        <member name="M:GSF.Security.UserRoleCache.SaveUserRole(System.String,System.String[])">
             <summary>
-            Serializes the <paramref name="role"/> for the given <paramref name="userName"/> into the <see cref="T:GSF.Security.UserRoleCache"/>.
+            Serializes the <paramref name="roles"/> for the given <paramref name="userName"/> into the <see cref="T:GSF.Security.UserRoleCache"/>.
             </summary>
             <param name="userName">User name associated with access role to retrieve.</param>
-            <param name="role">Access role to update or populate.</param>
+            <param name="roles">Access roles to update or populate.</param>
             <remarks>
             <para>
-            This will add an entry into the user info cache for <paramref name="userName"/> if it doesn't exist;
+            This will add an entry into the user roles cache for <paramref name="userName"/> if it doesn't exist;
             otherwise existing entry will be updated.
             </para>
             <para>
@@ -751,7 +892,7 @@
         </member>
         <member name="M:GSF.Security.UserRoleCache.Save">
             <summary>
-            Initiates interprocess synchronized save of user role cache.
+            Initiates inter-process synchronized save of user role cache.
             </summary>
         </member>
         <member name="M:GSF.Security.UserRoleCache.SaveFileData(System.IO.FileStream,System.Byte[])">
@@ -781,7 +922,7 @@
             <param name="userName">User name to hash.</param>
             <returns>The Base64 encoded calculated SHA-2 hash of the <paramref name="userName"/> used as the key for the user roles dictionary.</returns>
             <remarks>
-            For added security, a hash of the <paramref name="userName"/> is used as the key for access roles
+            For added security, a hash of the <paramref name="userName"/> is used as the key for accessing roles
             in the user roles cache instead of the actual <paramref name="userName"/>. This method allows the
             consumer to properly calculate this hash when directly using the user data cache.
             </remarks>
@@ -799,10 +940,10 @@
         </member>
         <member name="P:GSF.Security.UserRoleCache.Item(System.String)">
             <summary>
-            Gets or sets access role for given <paramref name="userName"/>.
+            Gets or sets access roles for given <paramref name="userName"/>.
             </summary>
             <param name="userName">User name for associated access role to load or save.</param>
-            <returns>Access role for given <paramref name="userName"/> if found; otherwise <c>null</c>.</returns>
+            <returns>Access roles for given <paramref name="userName"/> if found; otherwise <c>null</c>.</returns>
         </member>
         <member name="T:GSF.Security.RestrictAccessAttribute">
             <summary>
@@ -910,9 +1051,9 @@
             A helper class that manages the caching of <see cref="T:GSF.Security.ISecurityProvider"/>s.
             </summary>
         </member>
-        <member name="F:GSF.Security.SecurityProviderCache.CachingTimeout">
+        <member name="F:GSF.Security.SecurityProviderCache.UserCacheTimeout">
             <summary>
-            Number of minutes upto which <see cref="T:GSF.Security.ISecurityProvider"/>s are to be cached.
+            Number of minutes up to which <see cref="T:GSF.Security.ISecurityProvider"/>s are to be cached.
             </summary>
         </member>
         <member name="M:GSF.Security.SecurityProviderCache.TryGetCachedProvider(System.String,GSF.Security.ISecurityProvider@)">
@@ -943,9 +1084,9 @@
             Gets the <see cref="T:GSF.Security.ISecurityProvider"/> managed by this <see cref="T:GSF.Security.SecurityProviderCache.CacheContext"/>.
             </summary>
         </member>
-        <member name="P:GSF.Security.SecurityProviderCache.CacheContext.LastAccessed">
+        <member name="P:GSF.Security.SecurityProviderCache.CacheContext.CacheCreationTime">
             <summary>
-            Gets the <see cref="T:System.DateTime"/> of when the <see cref="P:GSF.Security.SecurityProviderCache.CacheContext.Provider"/> was last accessed.
+            Gets the <see cref="T:System.DateTime"/> of when the <see cref="T:GSF.Security.SecurityProviderCache.CacheContext"/> was created.
             </summary>
         </member>
         <member name="T:GSF.Security.SecurityProviderUtility">
@@ -1008,7 +1149,7 @@
         </member>
         <member name="T:GSF.Security.UserData">
             <summary>
-            A serializable class that contains information about a user defined in the security datastore.
+            A serializable class that contains information about a user defined in the security data store.
             </summary>
         </member>
         <member name="M:GSF.Security.UserData.#ctor">
@@ -1089,12 +1230,12 @@
         </member>
         <member name="P:GSF.Security.UserData.IsDefined">
             <summary>
-            Gets a boolean value that indicates whether the user is defined in the backend security datastore.
+            Gets a boolean value that indicates whether the user is defined in the backend security data store.
             </summary>
         </member>
         <member name="P:GSF.Security.UserData.IsExternal">
             <summary>
-            Gets a boolean value that indicates whether the user is defined as an external user in the backend security datastore.
+            Gets a boolean value that indicates whether the user is defined as an external user in the backend security data store.
             </summary>
         </member>
         <member name="P:GSF.Security.UserData.IsDisabled">
@@ -1124,8 +1265,19 @@
         </member>
         <member name="T:GSF.Security.UserDataCache">
             <summary>
-            Represents a secured interprocess cache for a <see cref="T:System.Collections.Generic.Dictionary`2"/> of serialized <see cref="T:GSF.Security.UserData"/>.
+            Represents a secured inter-process cache for a <see cref="T:System.Collections.Generic.Dictionary`2"/> of serialized <see cref="T:GSF.Security.UserData"/>.
             </summary>
+            <remarks>
+            This is a personal user data cache that only contains basic LDAP information for the user. It is used to load the local and
+            Active Directory groups a user is associated with when the user no longer has access to its domain server. This can happen
+            when a laptop that is normally connected to the Active Directory domain gets shutdown then restarted without access to the
+            domain, for example, on an airplane - in this mode the user can successfully still login to the laptop to their using domain
+            account cached by Windows but the groups the user is in will no longer be accessible. If role based security happens to be
+            based on Active Directory groups, this cache will make sure the user can still have needed role based access even when the
+            domain is unavailable. This cache is maintained as a separate user cache from the system level <see cref="T:GSF.Security.AdoSecurityCache"/>
+            since the user data cache only contains group information and is used by the <see cref="T:GSF.Security.LdapSecurityProvider"/> which can be
+            used independently of the <see cref="T:GSF.Security.AdoSecurityProvider"/>.
+            </remarks>
         </member>
         <member name="M:GSF.Security.UserDataCache.#ctor(System.Int32)">
             <summary>
@@ -1166,7 +1318,7 @@
         </member>
         <member name="M:GSF.Security.UserDataCache.Save">
             <summary>
-            Initiates interprocess synchronized save of user data cache.
+            Initiates inter-process synchronized save of user data cache.
             </summary>
         </member>
         <member name="M:GSF.Security.UserDataCache.SaveFileData(System.IO.FileStream,System.Byte[])">
@@ -1217,7 +1369,7 @@
         </member>
         <member name="P:GSF.Security.UserDataCache.ProviderID">
             <summary>
-            Gets ot sets unique provider ID used to distinguish cached user data that may be different based on provider.
+            Gets or sets unique provider ID used to distinguish cached user data that may be different based on provider.
             </summary>
         </member>
     </members>

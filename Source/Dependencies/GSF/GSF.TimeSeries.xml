@@ -6183,6 +6183,12 @@
             in the ConfigurationEntity table for ActiveMeasurements.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateAccountsAndGroups(System.Data.IDbConnection,System.String)">
+            <summary>
+            Data operation to validate accounts and groups to ensure
+            that account names and group names are converted to SIDs.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateDataPublishers(System.Data.IDbConnection,System.String)">
             <summary>
             Data operation to validate and ensure there is a record in the

@@ -9418,11 +9418,10 @@
             <param name="fieldName">Name of the field which contains <see cref="T:System.Guid"/>.</param>
             <returns><see cref="T:System.Guid"/>.</returns>
         </member>
-        <member name="M:GSF.Data.AdoDataConnection.UtcNow(System.Boolean)">
+        <member name="M:GSF.Data.AdoDataConnection.UtcNow">
             <summary>
             Returns current UTC time in an implementation that is proper for connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.
             </summary>
-            <param name="usePrecisionTime">Set to <c>true</c> to use precision time.</param>
             <returns>Current UTC time in implementation that is proper for connected <see cref="T:GSF.Data.AdoDataConnection"/> database type.</returns>
         </member>
         <member name="M:GSF.Data.AdoDataConnection.DefaultIsloationLevel">
@@ -13831,6 +13830,20 @@
             <param name="propertyName">Name of the active directory property whose value is to be retrieved.</param>
             <returns><see cref="T:System.String"/> value for the specified active directory property.</returns>
         </member>
+        <member name="M:GSF.Identity.UserInfo.GetBuiltInLocalGroups">
+            <summary>
+            Returns a sorted list of the BUILTIN local groups.
+            </summary>
+            <returns>Sorted list of the BUILTIN local groups.</returns>
+            <remarks>
+            <para>
+            Names in this list do not have a "BUILTIN\" prefix.
+            </para>
+            <para>
+            This method always returns an empty string array (i.e., a string array with no elements) under Mono deployments.
+            </para>
+            </remarks>
+        </member>
         <member name="M:GSF.Identity.UserInfo.AuthenticateUser(System.String,System.String,System.String)">
              <summary>
              Authenticates the specified user credentials.
@@ -14056,7 +14069,9 @@
             <exception cref="T:System.InvalidOperationException">Could not determine if user was in local group.</exception>
             <remarks>
             This function will handle Windows service virtual accounts by specifying the complete virtual account name,
-            such as <c>@"NT SERVICE\MyService"</c>, as the <paramref name="userName"/>.
+            such as <c>@"NT SERVICE\MyService"</c>, as the <paramref name="userName"/>. This function can also detect
+            Active Directory user accounts and groups that may exist in the local group when the <paramref name="userName"/>
+            is prefixed with a domain name and a backslash "\".
             </remarks>
         </member>
         <member name="M:GSF.Identity.UserInfo.AddUserToLocalGroup(System.String,System.String)">
@@ -14071,7 +14086,9 @@
             <exception cref="T:System.InvalidOperationException">Could not add user to local group.</exception>
             <remarks>
             This function will handle Windows service virtual accounts by specifying the complete virtual account name,
-            such as <c>@"NT SERVICE\MyService"</c>, as the <paramref name="userName"/>.
+            such as <c>@"NT SERVICE\MyService"</c>, as the <paramref name="userName"/>. This function can also add
+            Active Directory user accounts and groups to the local group the when the <paramref name="userName"/> is
+            prefixed with a domain name and a backslash "\".
             </remarks>
         </member>
         <member name="M:GSF.Identity.UserInfo.RemoveUserFromLocalGroup(System.String,System.String)">
@@ -14086,7 +14103,9 @@
             <exception cref="T:System.InvalidOperationException">Could not remove user from local group.</exception>
             <remarks>
             This function will handle Windows service virtual accounts by specifying the complete virtual account name,
-            such as <c>@"NT SERVICE\MyService"</c>, as the <paramref name="userName"/>.
+            such as <c>@"NT SERVICE\MyService"</c>, as the <paramref name="userName"/>. This function can also remove
+            Active Directory user accounts and groups from the local group the when the <paramref name="userName"/> is
+            prefixed with a domain name and a backslash "\".
             </remarks>
         </member>
         <member name="M:GSF.Identity.UserInfo.AccountNameToSID(System.String)">
@@ -14115,14 +14134,6 @@
             <summary>
             Occurs when the class has been disposed.
             </summary>
-        </member>
-        <member name="P:GSF.Identity.UserInfo.Enabled">
-            <summary>
-            Gets or sets a boolean value that indicates whether the <see cref="T:GSF.Identity.UserInfo"/> object is currently enabled.
-            </summary>
-            <remarks>
-            <see cref="P:GSF.Identity.UserInfo.Enabled"/> property is not to be set by user-code directly.
-            </remarks>
         </member>
         <member name="P:GSF.Identity.UserInfo.PersistSettings">
             <summary>
@@ -14224,11 +14235,24 @@
         </member>
         <member name="P:GSF.Identity.UserInfo.Groups">
             <summary>
-            Gets the groups associated with the user.
+            Gets all the groups associated with the user - this includes local groups and Active Directory groups if applicable.
             </summary>
             <remarks>
             <para>
-            Groups names are prefixed with their associated domain or computer name.
+            Groups names are prefixed with their associated domain, computer name or BUILTIN.
+            </para>
+            <para>
+            This method always returns an empty string array (i.e., a string array with no elements) under Mono deployments.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:GSF.Identity.UserInfo.LocalGroups">
+            <summary>
+            Gets the local groups the user is a member of.
+            </summary>
+            <remarks>
+            <para>
+            Groups names are prefixed with BUILTIN or computer name.
             </para>
             <para>
             This method always returns an empty string array (i.e., a string array with no elements) under Mono deployments.
@@ -17874,11 +17898,11 @@
         </member>
         <member name="T:GSF.IO.InterprocessCache">
             <summary>
-            Represents a serialized data cache that can be saved or read from multiple applications using interprocess synchronization.
+            Represents a serialized data cache that can be saved or read from multiple applications using inter-process synchronization.
             </summary>
             <remarks>
             Note that all file data in this class gets serialized to and from memory, as such, the design intention for this class is for
-            use with smaller data sets such as serialized lists or dictionaries that need interprocess synchronized loading and saving.
+            use with smaller data sets such as serialized lists or dictionaries that need inter-process synchronized loading and saving.
             </remarks>
         </member>
         <member name="F:GSF.IO.InterprocessCache.DefaultMaximumRetryAttempts">
@@ -17920,7 +17944,7 @@
         </member>
         <member name="M:GSF.IO.InterprocessCache.Save">
             <summary>
-            Initiates interprocess synchronized cache file save.
+            Initiates inter-process synchronized cache file save.
             </summary>
             <remarks>
             Subclasses should always call <see cref="M:GSF.IO.InterprocessCache.WaitForLoad"/> before calling this method.
@@ -17928,7 +17952,7 @@
         </member>
         <member name="M:GSF.IO.InterprocessCache.Load">
             <summary>
-            Initiates interprocess synchronized cache file load.
+            Initiates inter-process synchronized cache file load.
             </summary>
             <remarks>
             Subclasses should always call <see cref="M:GSF.IO.InterprocessCache.WaitForLoad"/> before calling this method.
@@ -18007,7 +18031,7 @@
         </member>
         <member name="P:GSF.IO.InterprocessCache.FileName">
             <summary>
-            Path and file name for the cache needing interprocess synchronization.
+            Path and file name for the cache needing inter-process synchronization.
             </summary>
         </member>
         <member name="P:GSF.IO.InterprocessCache.FileData">
@@ -19043,7 +19067,7 @@
             <remarks>
             If not being used as a component (i.e., user creates their own instance of this class), this method
             must be called in order to initialize exports.  Event if used as a component this method can be
-            called at anytime to reintialize the exports with new configuration information.
+            called at anytime to reinitialize the exports with new configuration information.
             </remarks>
         </member>
         <member name="M:GSF.IO.MultipleDestinationExporter.Initialize(System.Collections.Generic.IEnumerable{GSF.IO.ExportDestination})">
@@ -19054,7 +19078,7 @@
             <remarks>
             If not being used as a component (i.e., user creates their own instance of this class), this method
             must be called in order to initialize exports.  Even if used as a component this method can be
-            called at anytime to reintialize the exports with new configuration information.
+            called at anytime to reinitialize the exports with new configuration information.
             </remarks>
         </member>
         <member name="M:GSF.IO.MultipleDestinationExporter.OnInitialized">
@@ -19597,11 +19621,6 @@
             <summary>
             Gets or sets the subject names (common names)
             of the entity that this certificate identifies.
-            </summary>
-        </member>
-        <member name="P:GSF.Net.Security.CertificateGenerator.Location">
-            <summary>
-            Gets or sets the location where this certificate is stored.
             </summary>
         </member>
         <member name="P:GSF.Net.Security.CertificateGenerator.CertificatePath">
@@ -24811,7 +24830,7 @@
         </member>
         <member name="T:GSF.Threading.InterprocessReaderWriterLock">
             <summary>
-            Represents an interprocess reader/writer lock using <see cref="T:System.Threading.Semaphore"/> and <see cref="T:System.Threading.Mutex"/> native locking mechanisms.
+            Represents an inter-process reader/writer lock using <see cref="T:System.Threading.Semaphore"/> and <see cref="T:System.Threading.Mutex"/> native locking mechanisms.
             </summary>
         </member>
         <member name="F:GSF.Threading.InterprocessReaderWriterLock.DefaultMaximumConcurrentLocks">
@@ -24824,14 +24843,14 @@
             Creates a new instance of the <see cref="T:GSF.Threading.InterprocessReaderWriterLock"/> associated with the specified
             <paramref name="name"/> that identifies a source object needing concurrency locking.
             </summary>
-            <param name="name">Identifiying name of source object needing concurrency locking (e.g., a path and file name).</param>
+            <param name="name">Identifying name of source object needing concurrency locking (e.g., a path and file name).</param>
         </member>
         <member name="M:GSF.Threading.InterprocessReaderWriterLock.#ctor(System.String,System.Int32)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.Threading.InterprocessReaderWriterLock"/> associated with the specified
             <paramref name="name"/> that identifies a source object needing concurrency locking.
             </summary>
-            <param name="name">Identifiying name of source object needing concurrency locking (e.g., a path and file name).</param>
+            <param name="name">Identifying name of source object needing concurrency locking (e.g., a path and file name).</param>
             <param name="maximumConcurrentLocks">Maximum concurrent reader locks to allow.</param>
             <remarks>
             If more reader locks are requested than the <paramref name="maximumConcurrentLocks"/>, excess reader locks will simply
@@ -24859,7 +24878,7 @@
             Tries to enter the lock in read mode.
             </summary>
             <remarks>
-            Upon successful aquistion of a read lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitReadLock"/>.
+            Upon successful acquisition of a read lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitReadLock"/>.
             One <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitReadLock"/> should be called for each <see cref="M:GSF.Threading.InterprocessReaderWriterLock.EnterReadLock"/> or <see cref="M:GSF.Threading.InterprocessReaderWriterLock.TryEnterReadLock(System.Int32)"/>.
             </remarks>
         </member>
@@ -24868,7 +24887,7 @@
             Tries to enter the lock in write mode.
             </summary>
             <remarks>
-            Upon successful aquistion of a write lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitWriteLock"/>.
+            Upon successful acquisition of a write lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitWriteLock"/>.
             One <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitWriteLock"/> should be called for each <see cref="M:GSF.Threading.InterprocessReaderWriterLock.EnterWriteLock"/> or <see cref="M:GSF.Threading.InterprocessReaderWriterLock.TryEnterWriteLock(System.Int32)"/>.
             </remarks>
         </member>
@@ -24877,7 +24896,7 @@
             Exits read mode and returns the prior read lock count.
             </summary>
             <remarks>
-            Upon successful aquistion of a read lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitReadLock"/>.
+            Upon successful acquisition of a read lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitReadLock"/>.
             One <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitReadLock"/> should be called for each <see cref="M:GSF.Threading.InterprocessReaderWriterLock.EnterReadLock"/> or <see cref="M:GSF.Threading.InterprocessReaderWriterLock.TryEnterReadLock(System.Int32)"/>.
             </remarks>
         </member>
@@ -24886,7 +24905,7 @@
             Exits write mode.
             </summary>
             <remarks>
-            Upon successful aquistion of a write lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitWriteLock"/>.
+            Upon successful acquisition of a write lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitWriteLock"/>.
             One <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitWriteLock"/> should be called for each <see cref="M:GSF.Threading.InterprocessReaderWriterLock.EnterWriteLock"/> or <see cref="M:GSF.Threading.InterprocessReaderWriterLock.TryEnterWriteLock(System.Int32)"/>.
             </remarks>
         </member>
@@ -24897,8 +24916,14 @@
             <param name="millisecondsTimeout">The number of milliseconds to wait, or -1 (<see cref="F:System.Threading.Timeout.Infinite"/>) to wait indefinitely.</param>
             <returns><c>true</c> if the calling thread entered read mode, otherwise, <c>false</c>.</returns>
             <remarks>
-            Upon successful aquistion of a read lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitReadLock"/>.
+            <para>
+            Upon successful acquisition of a read lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitReadLock"/>.
             One <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitReadLock"/> should be called for each <see cref="M:GSF.Threading.InterprocessReaderWriterLock.EnterReadLock"/> or <see cref="M:GSF.Threading.InterprocessReaderWriterLock.TryEnterReadLock(System.Int32)"/>.
+            </para>
+            <para>
+            Note that this function may wait as long as 2 * <paramref name="millisecondsTimeout"/> since the function first waits for synchronous access
+            to the semaphore, then waits again on an available semaphore slot.
+            </para>
             </remarks>
         </member>
         <member name="M:GSF.Threading.InterprocessReaderWriterLock.TryEnterWriteLock(System.Int32)">
@@ -24908,8 +24933,14 @@
             <param name="millisecondsTimeout">The number of milliseconds to wait, or -1 (<see cref="F:System.Threading.Timeout.Infinite"/>) to wait indefinitely.</param>
             <returns><c>true</c> if the calling thread entered write mode, otherwise, <c>false</c>.</returns>
             <remarks>
-            Upon successful aquistion of a write lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitWriteLock"/>.
+            <para>
+            Upon successful acquisition of a write lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitWriteLock"/>.
             One <see cref="M:GSF.Threading.InterprocessReaderWriterLock.ExitWriteLock"/> should be called for each <see cref="M:GSF.Threading.InterprocessReaderWriterLock.EnterWriteLock"/> or <see cref="M:GSF.Threading.InterprocessReaderWriterLock.TryEnterWriteLock(System.Int32)"/>.
+            </para>
+            <para>
+            Note that this function may wait as long as 2 * <paramref name="millisecondsTimeout"/> since the function first waits for synchronous access
+            to the semaphore, then waits again on an available semaphore slot.
+            </para>
             </remarks>
         </member>
         <member name="P:GSF.Threading.InterprocessReaderWriterLock.MaximumConcurrentLocks">
