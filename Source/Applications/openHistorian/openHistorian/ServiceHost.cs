@@ -30,9 +30,8 @@ namespace openHistorian
     public class ServiceHost : ServiceHostBase
     {
         public ServiceHost()
-            : base()
         {
-            InitializeComponent();
+            ServiceName = "openHistorian";
         }
 
         protected override void ServiceStartingHandler(object sender, EventArgs<string[]> e)
@@ -45,14 +44,6 @@ namespace openHistorian
 
             systemSettings.Add("CompanyName", "Grid Protection Alliance", "The name of the company who owns this instance of the openHistorian.");
             systemSettings.Add("CompanyAcronym", "GPA", "The acronym representing the company who owns this instance of the openHistorian.");
-        }
-
-        private void InitializeComponent()
-        {
-            // 
-            // ServiceHost
-            // 
-            this.ServiceName = "openHistorian";
         }
     }
 }
