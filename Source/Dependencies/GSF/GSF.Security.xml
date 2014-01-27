@@ -759,12 +759,6 @@
             </summary>
             <returns>The LDAP path.</returns>
         </member>
-        <member name="M:GSF.Security.AdoSecurityProvider.PrepareSecurityContext(System.Data.IDbConnection)">
-            <summary>
-            Extracts the current security context from the database and kicks off a background caching operation.
-            </summary>
-            <param name="connection">Existing database connection used to extract security context.</param>
-        </member>
         <member name="M:GSF.Security.AdoSecurityProvider.ExtractSecurityContext(System.Data.IDbConnection)">
             <summary>
             Extracts the current security context from the database.
