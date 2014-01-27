@@ -81,6 +81,10 @@ namespace openHistorianManager
             }
             catch (Exception ex)
             {
+                // First attempt to display a modal dialog will fail to block this
+                // thread -- modal dialog displayed by the error logger will block now
+                MessageBox.Show(ex.Message);
+
                 // Log and display error, then exit application - manager must connect to database to continue
                 m_errorLogger.Log(new InvalidOperationException(string.Format("{0} cannot connect to database: {1}", m_title, ex.Message), ex), true);
             }
