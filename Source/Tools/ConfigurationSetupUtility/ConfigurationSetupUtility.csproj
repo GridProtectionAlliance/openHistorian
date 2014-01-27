@@ -106,6 +106,10 @@
     <Reference Include="GSF.Core">
       <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
     </Reference>
+    <Reference Include="GSF.Security, Version=2.0.119.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\GSF\GSF.Security.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.TimeSeries">
       <HintPath>..\..\Dependencies\GSF\GSF.TimeSeries.dll</HintPath>
     </Reference>

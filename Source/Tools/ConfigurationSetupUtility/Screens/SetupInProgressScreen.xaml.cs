@@ -40,7 +40,6 @@ using System.Security.AccessControl;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
-using System.Web.Security;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml;
@@ -48,6 +47,7 @@ using GSF;
 using GSF.Communication;
 using GSF.Data;
 using GSF.Identity;
+using GSF.Security;
 using GSF.Security.Cryptography;
 using Microsoft.Win32;
 
@@ -1237,7 +1237,7 @@ namespace ConfigurationSetupUtility.Screens
                     updatedByParameter.ParameterName = paramChar + "updatedBy";
 
                     nameParameter.Value = accountName;
-                    passwordParameter.Value = FormsAuthentication.HashPasswordForStoringInConfigFile(@"O3990\P78f9E66b:a35_V©6M13©6~2&[" + m_state["adminPassword"].ToString(), "SHA1");
+                    passwordParameter.Value = SecurityProviderUtility.EncryptPassword(m_state["adminPassword"].ToString());
                     firstNameParameter.Value = m_state["adminUserFirstName"].ToString();
                     lastNameParameter.Value = m_state["adminUserLastName"].ToString();
                     createdByParameter.Value = Thread.CurrentPrincipal.Identity.Name;
