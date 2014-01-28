@@ -1074,6 +1074,13 @@
             <param name="provider">Security provider to return.</param>
             <returns>True if provider is cached; false otherwise.</returns>
         </member>
+        <member name="M:GSF.Security.SecurityProviderCache.ReauthenticateCurrentPrincipal">
+            <summary>
+            Attempts to reauthenticate the current thread principal
+            after their provider has been removed from the cache.
+            </summary>
+            <returns>True if the user successfully reauthenticated; false otherwise.</returns>
+        </member>
         <member name="P:GSF.Security.SecurityProviderCache.CurrentProvider">
             <summary>
             Gets or sets the <see cref="T:GSF.Security.ISecurityProvider"/> of the current user.
