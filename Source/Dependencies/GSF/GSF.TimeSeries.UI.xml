@@ -314,11 +314,6 @@
             Defines the maximum number of pages to be stored in page history.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipal">
-            <summary>
-            Defines the current principal for the thread owning the common functions.
-            </summary>
-        </member>
         <member name="F:GSF.TimeSeries.UI.CommonFunctions.CurrentUser">
             <summary>
             Defines the current user name as defined in the Thread.CurrentPrincipal.Identity.
@@ -535,6 +530,11 @@
             Goes back to the previous user control in history.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipal">
+            <summary>
+            Defines the current principal for the thread owning the common functions.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.UI.CommonFunctions.CanGoForward">
             <summary>
             Gets the flag that indicates whether we can go forward to the next user control in history.
@@ -548,6 +548,12 @@
         <member name="E:GSF.TimeSeries.UI.CommonFunctions.ServiceConnectionRefreshed">
             <summary>
             Used to notify main window that connection to service has changed.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipalRefreshed">
+            <summary>
+            Event raised when the <see cref="P:GSF.TimeSeries.UI.CommonFunctions.CurrentPrincipal"/> property changes as
+            a result of its security provider expiring from the security provider cache.
             </summary>
         </member>
         <member name="E:GSF.TimeSeries.UI.CommonFunctions.CanGoForwardChanged">

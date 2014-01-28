@@ -9,6 +9,11 @@
             Exposes <see cref="T:System.Windows.Input.ICommand"/> object to be used to handle menu item click event.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.Commands.MenuCommand.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.Commands.MenuCommand"/> class.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.Commands.MenuCommand.CanExecute(System.Object)">
             <summary>
             Evaluates if menu item should be visible to current user with access to <see cref="P:GSF.TimeSeries.UI.Commands.MenuCommand.Roles"/>.

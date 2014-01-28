@@ -5922,6 +5922,13 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
+        <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_AuthenticationSuccess(System.Object,System.EventArgs)">
+            <summary>
+            Client helper service update reception handler.
+            </summary>
+            <param name="sender">Sending object.</param>
+            <param name="e">Event argument containing update type and associated message data.</param>
+        </member>
         <member name="M:GSF.TimeSeries.ServiceClientBase.ClientHelper_ReceivedServiceUpdate(System.Object,GSF.EventArgs{GSF.UpdateType,System.String})">
             <summary>
             Client helper service update reception handler.
