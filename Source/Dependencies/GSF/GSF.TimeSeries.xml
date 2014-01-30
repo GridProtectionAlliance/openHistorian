@@ -7724,11 +7724,10 @@
             <param name="length">Length of response message.</param>
             <returns>Decoded response string.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.SynchronizeMetadata(System.Object)">
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.SynchronizeMetadata">
             <summary>
             Handles meta-data synchronization to local system.
             </summary>
-            <param name="state"><see cref="T:System.Data.DataSet"/> meta-data collection passed into state parameter.</param>
             <remarks>
             This function should only be initiated from call to <see cref="M:GSF.TimeSeries.Transport.DataSubscriber.SynchronizeMetadata(System.Data.DataSet)"/> to make
             sure only one meta-data synchronization happens at once. Users can override this method to customize

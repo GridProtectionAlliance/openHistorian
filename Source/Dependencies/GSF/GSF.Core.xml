@@ -8984,7 +8984,7 @@
         </member>
         <member name="M:GSF.Configuration.SettingNameAttribute.#ctor(System.String[])">
             <summary>
-            Creates a new <see cref="T:GSF.Configuration.SettingNameAttribute"/> with the specified <paramref name="name"/> value.
+            Creates a new <see cref="T:GSF.Configuration.SettingNameAttribute"/> with the specified <paramref name="names"/> value.
             </summary>
             <param name="names">Assigns name(s) used to serialize setting into config file.</param>
         </member>
@@ -25294,6 +25294,60 @@
             Exits read mode.
             </summary>
             <exception cref="T:System.InvalidOperationException">Cannot exit read lock when there are no readers.</exception>
+        </member>
+        <member name="T:GSF.Threading.SynchronizedOperation">
+            <summary>
+            Represents an operation that cannot run while it is already in progress.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperation.#ctor(System.Action)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.SynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperation.#ctor(System.Action,System.Action{System.Exception})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.SynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+            <param name="exceptionAction">The action to be performed if an exception is thrown from the action.</param>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperation.RunOnce">
+            <summary>
+            Executes the action on this thread or marks the
+            operation as pending if the operation is already running.
+            </summary>
+            <remarks>
+            When the operation is marked as pending, it will run again after the
+            operation that is currently running has completed. This is useful if
+            an update has invalidated the operation that is currently running and
+            will therefore need to be run again.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperation.RunOnceAsync">
+            <summary>
+            Executes the action on another thread or marks the
+            operation as pending if the operation is already running.
+            </summary>
+            <remarks>
+            When the operation is marked as pending, it will run again after the
+            operation that is currently running has completed. This is useful if
+            an update has invalidated the operation that is currently running and
+            will therefore need to be run again.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperation.TryRun">
+            <summary>
+            Attempts to execute the action on this thread.
+            Does nothing if the operation is already running.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperation.TryRunAsync">
+            <summary>
+            Attempts to execute the action on another thread.
+            Does nothing if the operation is already running.
+            </summary>
         </member>
         <member name="T:GSF.BaselineTimeInterval">
             <summary>
