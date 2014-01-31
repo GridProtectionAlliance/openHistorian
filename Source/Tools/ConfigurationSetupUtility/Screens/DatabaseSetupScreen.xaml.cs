@@ -80,13 +80,13 @@ namespace ConfigurationSetupUtility.Screens
         {
             get
             {
-                string databaseType = m_state["databaseType"].ToString();
+                string databaseType = m_state["newDatabaseType"].ToString();
 
-                if (databaseType == "sql server")
+                if (databaseType == "SQLServer")
                     return m_sqlServerDatabaseSetupScreen;
-                else if (databaseType == "mysql")
+                else if (databaseType == "MySQL")
                     return m_mySqlDatabaseSetupScreen;
-                else if (databaseType == "oracle")
+                else if (databaseType == "Oracle")
                     return m_oracleDatabaseSetupScreen;
                 else
                     return m_sqliteDatabaseSetupScreen;
@@ -189,8 +189,8 @@ namespace ConfigurationSetupUtility.Screens
                 else
                     m_newDatabaseWarning.Visibility = existingVisibility;
 
-                if (!m_state.ContainsKey("databaseType"))
-                    m_state.Add("databaseType", "sql server");
+                if (!m_state.ContainsKey("newDatabaseType"))
+                    m_state.Add("newDatabaseType", "SQLServer");
 
                 if (!m_state.ContainsKey("initialDataScript"))
                     m_state.Add("initialDataScript", true);
@@ -304,7 +304,7 @@ namespace ConfigurationSetupUtility.Screens
         private void SqlServerDatabaseRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if (m_state != null)
-                m_state["databaseType"] = "sql server";
+                m_state["newDatabaseType"] = "SQLServer";
 
             if (!m_sampleScriptChanged && m_sampleDataScriptCheckBox != null)
                 m_sampleDataScriptCheckBox.IsChecked = false;
@@ -323,7 +323,7 @@ namespace ConfigurationSetupUtility.Screens
         private void MySqlRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if (m_state != null)
-                m_state["databaseType"] = "mysql";
+                m_state["newDatabaseType"] = "MySQL";
 
             if (!m_sampleScriptChanged && m_sampleDataScriptCheckBox != null)
                 m_sampleDataScriptCheckBox.IsChecked = false;
@@ -341,7 +341,7 @@ namespace ConfigurationSetupUtility.Screens
         private void OracleRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if (m_state != null)
-                m_state["databaseType"] = "oracle";
+                m_state["newDatabaseType"] = "Oracle";
 
             if (!m_sampleScriptChanged && m_sampleDataScriptCheckBox != null)
                 m_sampleDataScriptCheckBox.IsChecked = false;
@@ -360,7 +360,7 @@ namespace ConfigurationSetupUtility.Screens
         private void SqliteRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if (m_state != null)
-                m_state["databaseType"] = "sqlite";
+                m_state["newDatabaseType"] = "SQLite";
 
             if (!m_sampleScriptChanged && m_sampleDataScriptCheckBox != null)
                 m_sampleDataScriptCheckBox.IsChecked = true;
@@ -432,7 +432,7 @@ namespace ConfigurationSetupUtility.Screens
             {
                 m_enableAuditLogCheckBox.Visibility = Visibility.Visible;
 
-                if (m_state.ContainsKey("databaseType") && m_state["databaseType"].ToString() == "sqlite")
+                if (m_state.ContainsKey("newDatabaseType") && m_state["newDatabaseType"].ToString() == "SQLite")
                     m_enableAuditLogCheckBox.Visibility = Visibility.Collapsed;
             }
             else

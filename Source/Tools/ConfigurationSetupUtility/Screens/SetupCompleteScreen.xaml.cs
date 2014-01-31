@@ -36,6 +36,7 @@ using System.Web.Security;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Xml.Linq;
 using GSF;
 using GSF.Configuration;
 using GSF.Data;
@@ -139,48 +140,42 @@ namespace ConfigurationSetupUtility.Screens
 
                         if (migrate)
                         {
+                            const string SerializedSchemaPath = "SerializedSchema.bin";
+
                             string dataFolder = FilePath.GetApplicationDataFolder();
-                            string migrationDataFolder = dataFolder + "\\..\\DataMigrationUtility";
-                            string newOleDbConnectionString = m_state["newOleDbConnectionString"].ToString();
-                            string databaseType = m_state["databaseType"].ToString().Replace(" ", "");
-                            ConfigurationFile configFile = null;
-                            CategorizedSettingsElementCollection applicationSettings = null;
+                            string dataMigrationUtilityUserSettingsFolder = dataFolder + "\\..\\DataMigrationUtility";
+                            string userSettingsFile = dataMigrationUtilityUserSettingsFolder + "\\Settings.xml";
 
-                            // Copy user-level DataMigrationUtility config file to the ConfigurationSetupUtility application folder.
-                            if (File.Exists(migrationDataFolder + "\\Settings.xml"))
-                            {
-                                if (!Directory.Exists(dataFolder))
-                                    Directory.CreateDirectory(dataFolder);
+                            string newConnectionString = m_state["newConnectionString"].ToString();
+                            string oldConnectionString = m_state.ContainsKey("oldConnectionString") ? m_state["oldConnectionString"].ToString() : string.Empty;
+                            string newDataProviderString = m_state["newDataProviderString"].ToString();
+                            string oldDataProviderString = m_state.ContainsKey("oldDataProviderString") ? m_state["oldDataProviderString"].ToString() : string.Empty;
+                            string newDatabaseType = m_state["newDatabaseType"].ToString().Replace(" ", "");
 
-                                File.Copy(migrationDataFolder + "\\Settings.xml", dataFolder + "\\Settings.xml", true);
-                            }
+                            if (!Directory.Exists(dataMigrationUtilityUserSettingsFolder))
+                                Directory.CreateDirectory(dataMigrationUtilityUserSettingsFolder);
 
-                            // Modify OleDB configuration file settings for the DataMigrationUtility.
-                            configFile = ConfigurationFile.Open("DataMigrationUtility.exe.config");
-                            applicationSettings = configFile.Settings["applicationSettings"];
-                            applicationSettings["FromDataType", true].Value = "Unspecified";
-                            applicationSettings["ToConnectionString", true].Value = newOleDbConnectionString;
-                            applicationSettings["ToDataType", true].Value = databaseType;
+                            oldConnectionString += string.Format("; dataProviderString={{ {0} }}; serializedSchema={1}", oldDataProviderString, SerializedSchemaPath);
+                            newConnectionString += string.Format("; dataProviderString={{ {0} }}; serializedSchema={1}", newDataProviderString, SerializedSchemaPath);
 
-                            if (m_state.ContainsKey("oldOleDbConnectionString"))
-                            {
-                                string oldOleDbConnectionString = m_state["oldOleDbConnectionString"].ToString();
-                                applicationSettings["FromConnectionString", true].Value = oldOleDbConnectionString;
+                            XDocument doc = new XDocument(
+                                                new XElement("settings",
+                                                    new XElement("applicationSettings",
+                                                        new XElement("add", new XAttribute("name", "FromConnectionString"),
+                                                                            new XAttribute("value", oldConnectionString)),
+                                                        new XElement("add", new XAttribute("name", "ToConnectionString"),
+                                                                            new XAttribute("value", newConnectionString)),
+                                                        new XElement("add", new XAttribute("name", "ToDataType"),
+                                                                            new XAttribute("value", newDatabaseType)),
+                                                        new XElement("add", new XAttribute("name", "UseFromConnectionForRI"),
+                                                                            new XAttribute("value", string.Empty)),
+                                                        new XElement("add", new XAttribute("name", "FromDataType"),
+                                                                            new XAttribute("value", m_state.ContainsKey("oldDatabaseType") ? m_state["oldDatabaseType"].ToString() : "Unspecified"))
+                                                    )
+                                                )
+                                            );
 
-                                if (m_state.ContainsKey("oldOleDbDataType"))
-                                    applicationSettings["FromDataType", true].Value = m_state["oldOleDbDataType"].ToString();
-                            }
-
-                            configFile.Save();
-
-                            // Copy user-level ConfigurationSetupUtility config file to DataMigrationUtility application folder.
-                            if (File.Exists(dataFolder + "\\Settings.xml"))
-                            {
-                                if (!Directory.Exists(migrationDataFolder))
-                                    Directory.CreateDirectory(migrationDataFolder);
-
-                                File.Copy(dataFolder + "\\Settings.xml", migrationDataFolder + "\\Settings.xml", true);
-                            }
+                            doc.Save(userSettingsFile);
 
                             try
                             {
@@ -482,11 +477,11 @@ namespace ConfigurationSetupUtility.Screens
 
             try
             {
-                string databaseType = m_state["databaseType"].ToString();
+                string databaseType = m_state["newDatabaseType"].ToString();
                 string connectionString = string.Empty;
                 string dataProviderString = string.Empty;
 
-                if (databaseType == "sql server")
+                if (databaseType == "SQLServer")
                 {
                     SqlServerSetup sqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
                     connectionString = sqlServerSetup.ConnectionString;
@@ -498,7 +493,7 @@ namespace ConfigurationSetupUtility.Screens
                     if (string.IsNullOrWhiteSpace(dataProviderString))
                         dataProviderString = "AssemblyName={System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089}; ConnectionType=System.Data.SqlClient.SqlConnection; AdapterType=System.Data.SqlClient.SqlDataAdapter";
                 }
-                else if (databaseType == "mysql")
+                else if (databaseType == "MySQL")
                 {
                     MySqlSetup mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
                     connectionString = mySqlSetup.ConnectionString;
@@ -511,7 +506,7 @@ namespace ConfigurationSetupUtility.Screens
                     if (string.IsNullOrWhiteSpace(dataProviderString))
                         dataProviderString = "AssemblyName={MySql.Data, Version=6.3.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d}; ConnectionType=MySql.Data.MySqlClient.MySqlConnection; AdapterType=MySql.Data.MySqlClient.MySqlDataAdapter";
                 }
-                else if (databaseType == "oracle")
+                else if (databaseType == "Oracle")
                 {
                     OracleSetup oracleSetup = m_state["oracleSetup"] as OracleSetup;
                     connectionString = oracleSetup.ConnectionString;
@@ -692,7 +687,6 @@ namespace ConfigurationSetupUtility.Screens
                             if (userIdReader.Read())
                                 adminUserID = userIdReader["ID"].ToNonNullString();
                         }
-
 
                         // Assign Administrative User to Administrator Role.
                         if (!string.IsNullOrEmpty(adminRoleID) && !string.IsNullOrEmpty(adminUserID))

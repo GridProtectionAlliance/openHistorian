@@ -220,13 +220,13 @@ namespace ConfigurationSetupUtility.Screens
         // Called when the setup utility is about to set up the database
         private void SetUpDatabase()
         {
-            string databaseType = m_state["databaseType"].ToString();
+            string databaseType = m_state["newDatabaseType"].ToString();
 
-            if (databaseType == "sql server")
+            if (databaseType == "SQLServer")
                 SetUpSqlServerDatabase();
-            else if (databaseType == "mysql")
+            else if (databaseType == "MySQL")
                 SetUpMySqlDatabase();
-            else if (databaseType == "oracle")
+            else if (databaseType == "Oracle")
                 SetUpOracleDatabase();
             else
                 SetUpSqliteDatabase();
@@ -248,7 +248,7 @@ namespace ConfigurationSetupUtility.Screens
                 mySqlSetup = m_state["mySqlSetup"] as MySqlSetup;
                 mySqlSetup.OutputDataReceived += MySqlSetup_OutputDataReceived;
                 mySqlSetup.ErrorDataReceived += MySqlSetup_ErrorDataReceived;
-                m_state["newOleDbConnectionString"] = mySqlSetup.OleDbConnectionString;
+                m_state["newConnectionString"] = mySqlSetup.ConnectionString;
                 adminUserName = mySqlSetup.UserName;
                 adminPassword = mySqlSetup.Password;
 
@@ -258,6 +258,8 @@ namespace ConfigurationSetupUtility.Screens
 
                 if (string.IsNullOrWhiteSpace(dataProviderString))
                     dataProviderString = "AssemblyName={MySql.Data, Version=6.3.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d}; ConnectionType=MySql.Data.MySqlClient.MySqlConnection; AdapterType=MySql.Data.MySqlClient.MySqlDataAdapter";
+
+                m_state["newDataProviderString"] = dataProviderString;
 
                 if (!existing || migrate)
                 {
@@ -387,7 +389,7 @@ namespace ConfigurationSetupUtility.Screens
                 sqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
                 sqlServerSetup.OutputDataReceived += SqlServerSetup_OutputDataReceived;
                 sqlServerSetup.ErrorDataReceived += SqlServerSetup_ErrorDataReceived;
-                m_state["newOleDbConnectionString"] = sqlServerSetup.OleDbConnectionString;
+                m_state["newConnectionString"] = sqlServerSetup.ConnectionString;
                 adminUserName = sqlServerSetup.UserName;
                 adminPassword = sqlServerSetup.Password;
 
@@ -401,6 +403,8 @@ namespace ConfigurationSetupUtility.Screens
                 // Check to see if user requested to use integrated authentication
                 if (m_state.ContainsKey("useSqlServerIntegratedSecurity"))
                     useIntegratedSecurity = Convert.ToBoolean(m_state["useSqlServerIntegratedSecurity"]);
+
+                m_state["newDataProviderString"] = dataProviderString;
 
                 if (!existing || migrate)
                 {
@@ -766,6 +770,9 @@ namespace ConfigurationSetupUtility.Screens
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool migrate = existing && Convert.ToBoolean(m_state["updateConfiguration"]);
 
+                m_state["newConnectionString"] = connectionString;
+                m_state["newDataProviderString"] = dataProviderString;
+
                 if (!existing || migrate)
                 {
                     bool initialDataScript = !migrate && Convert.ToBoolean(m_state["initialDataScript"]);
@@ -825,11 +832,7 @@ namespace ConfigurationSetupUtility.Screens
 
                 // Modify the openHistorian configuration file.
                 ModifyConfigFiles(connectionString, dataProviderString, false);
-
-                m_state["oldOleDbConnectionString"] = m_oldConnectionString;
-                m_state["oldOleDbDataType"] = "Unspecified";
-                m_state["newOleDbConnectionString"] = connectionString;
-
+                SaveOldConnectionString();
                 OnSetupSucceeded();
             }
             catch (Exception ex)
@@ -881,19 +884,14 @@ namespace ConfigurationSetupUtility.Screens
                 try
                 {
                     connection = (IDbConnection)Activator.CreateInstance(connectionType);
-
-                    //if (m_state["databaseType"].ToString() == "sql server")
-                    //    connection.ConnectionString = connectionString + ";pooling=false;"; // this was done to avoid connection pooling so SQL database can be deleted easily.
-                    //else
-                    //    connection.ConnectionString = connectionString;
                     connection.ConnectionString = connectionString;
                     connection.Open();
 
                     IDbCommand command = connection.CreateCommand();
 
-                    if (m_state["databaseType"].ToString() == "sql server")
+                    if (m_state["newDatabaseType"].ToString() == "SQLServer")
                         command.CommandText = string.Format("SELECT COUNT(*) FROM sys.databases WHERE name = '{0}'", databaseName);
-                    else if (m_state["databaseType"].ToString() == "oracle")
+                    else if (m_state["newDatabaseType"].ToString() == "Oracle")
                         command.CommandText = string.Format("SELECT COUNT(*) FROM all_users WHERE USERNAME = '{0}'", databaseName.ToUpper());
                     else
                         command.CommandText = string.Format("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{0}'", databaseName);
@@ -926,7 +924,7 @@ namespace ConfigurationSetupUtility.Screens
 
                     if (dropDatabase)
                     {
-                        if (m_state["databaseType"].ToString() == "sql server")
+                        if (m_state["newDatabaseType"].ToString() == "SQLServer")
                         {
                             SqlServerSetup sqlServerSetup = m_state["sqlServerSetup"] as SqlServerSetup;
                             sqlServerSetup.DatabaseName = "master";
@@ -937,7 +935,7 @@ namespace ConfigurationSetupUtility.Screens
 
                             sqlServerSetup.DatabaseName = databaseName;
                         }
-                        else if (m_state["databaseType"].ToString() == "oracle")
+                        else if (m_state["newDatabaseType"].ToString() == "Oracle")
                         {
                             OracleSetup oracleSetup = m_state["oracleSetup"] as OracleSetup;
 
@@ -1314,7 +1312,7 @@ namespace ConfigurationSetupUtility.Screens
             // Set up default node if it has not been added to in the SetupDefaultHistorian method above.            
             if (!sampleDataScript && !m_defaultNodeAdded)
             {
-                string databaseType = m_state["databaseType"].ToString();
+                string databaseType = m_state["newDatabaseType"].ToString();
 
                 IDbCommand nodeCommand = connection.CreateCommand();
                 nodeCommand.CommandText = "INSERT INTO Node(Name, CompanyID, Description, Settings, MenuType, MenuData, Master, LoadOrder, Enabled) " +
@@ -1584,7 +1582,12 @@ namespace ConfigurationSetupUtility.Screens
                     {
                         // Retrieve the old data provider string from the config file.
                         if (m_oldDataProviderString == null)
+                        {
                             m_oldDataProviderString = child.Attributes["value"].Value;
+
+                            if (serviceConfigFile)
+                                m_state["oldDataProviderString"] = m_oldDataProviderString;
+                        }
 
                         child.Attributes["value"].Value = dataProviderString;
                     }
@@ -1594,6 +1597,9 @@ namespace ConfigurationSetupUtility.Screens
                         {
                             // Retrieve the old connection string from the config file.
                             m_oldConnectionString = child.Attributes["value"].Value;
+
+                            if (serviceConfigFile)
+                                m_state["oldConnectionString"] = m_oldConnectionString;
 
                             if (Convert.ToBoolean(child.Attributes["encrypted"].Value))
                                 m_oldConnectionString = Cipher.Decrypt(m_oldConnectionString, App.CipherLookupKey, App.CryptoStrength);
@@ -1743,30 +1749,33 @@ namespace ConfigurationSetupUtility.Screens
         // Saves the old connection string as an OleDB connection string.
         private void SaveOldConnectionString()
         {
-            if (m_oldDataProviderString != null)
+            if ((object)m_oldDataProviderString != null)
             {
-                // Determine the type of connection string and convert it to OleDB.
-                if (m_oldDataProviderString.Contains("MySqlConnection"))
+                // Determine the type of connection string.
+                if (m_oldDataProviderString.Contains("System.Data.SqlClient.SqlConnection"))
+                {
+                    // Assume it's a SQL Server ODBC connection string.
+                    m_state["oldDatabaseType"] = "SQLServer";
+                }
+                else if (m_oldDataProviderString.Contains("MySql.Data.MySqlClient.MySqlConnection"))
                 {
                     // Assume it's a MySQL ODBC connection string.
-                    MySqlSetup oldConnectionStringSetup = new MySqlSetup();
-                    oldConnectionStringSetup.ConnectionString = m_oldConnectionString;
-                    m_state["oldOleDbConnectionString"] = oldConnectionStringSetup.OleDbConnectionString;
-                    m_state["oldOleDbDataType"] = "MySQL";
+                    m_state["oldDatabaseType"] = "MySQL";
                 }
-                else if (m_oldDataProviderString.Contains("OleDbConnection"))
+                else if (m_oldDataProviderString.Contains("Oracle.DataAccess.Client.OracleConnection"))
                 {
-                    // Assume it's already an OleDB connection string.
-                    m_state["oldOleDbConnectionString"] = m_oldConnectionString;
-                    m_state["oldOleDbDataType"] = "Unspecified";
+                    // Assume it's a SQL Server ODBC connection string.
+                    m_state["oldDatabaseType"] = "Oracle";
+                }
+                else if (m_oldDataProviderString.Contains("System.Data.SQLite.SQLiteConnection"))
+                {
+                    // Assume it's a SQL Server ODBC connection string.
+                    m_state["oldDatabaseType"] = "SQLite";
                 }
                 else
                 {
-                    // Assume it's a SQL Server ODBC connection string.
-                    SqlServerSetup oldConnectionStringSetup = new SqlServerSetup();
-                    oldConnectionStringSetup.ConnectionString = m_oldConnectionString;
-                    m_state["oldOleDbConnectionString"] = oldConnectionStringSetup.OleDbConnectionString;
-                    m_state["oldOleDbDataType"] = "SqlServer";
+                    // Assume it's a generic ODBC connection string.
+                    m_state["oldDatabaseType"] = "Unspecified";
                 }
             }
         }

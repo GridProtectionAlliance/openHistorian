@@ -291,13 +291,13 @@ namespace ConfigurationSetupUtility.Screens
                 return GetConnectionFromConfigFile();
             else
             {
-                string databaseType = m_state["databaseType"].ToString();
+                string databaseType = m_state["newDatabaseType"].ToString();
 
-                if (databaseType == "sql server")
+                if (databaseType == "SQLServer")
                     return GetSqlServerConnection();
-                else if (databaseType == "mysql")
+                else if (databaseType == "MySQL")
                     return GetMySqlConnection();
-                else if (databaseType == "oracle")
+                else if (databaseType == "Oracle")
                     return GetOracleConnection();
                 else
                     return GetSqliteDatabaseConnection();
