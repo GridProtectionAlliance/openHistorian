@@ -9846,435 +9846,435 @@
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar``1(``0,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
             <typeparam name="TConnection">Type of <see cref="T:System.Data.IDbConnection"/> to use.</typeparam>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar``1(``0,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
             <typeparam name="TConnection">Type of <see cref="T:System.Data.IDbConnection"/> to use.</typeparam>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.OleDb.OleDbConnection,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.OleDb.OleDbConnection,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.Odbc.OdbcConnection,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.Odbc.OdbcConnection"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.Odbc.OdbcConnection,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.Odbc.OdbcConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.SqlClient.SqlConnection,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.SqlClient.SqlConnection,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.IDbCommand,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.IDbCommand,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.OleDb.OleDbCommand,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.OleDb.OleDbCommand,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.Odbc.OdbcCommand,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.Odbc.OdbcCommand,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.SqlClient.SqlCommand,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteScalar(System.Data.SqlClient.SqlCommand,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the value in the first column 
-            of the first row in the resultset.
+            of the first row in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>Value in the first column of the first row in the resultset.</returns>
+            <returns>Value in the first column of the first row in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.OleDb.OleDbConnection,System.String)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.OleDb.OleDbConnection,System.String,System.Int32)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.OleDb.OleDbConnection,System.String,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.OleDb.OleDbConnection,System.String,System.Int32,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.Odbc.OdbcConnection,System.String)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.Odbc.OdbcConnection"/> to use for executing the SQL statement.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.Odbc.OdbcConnection,System.String,System.Int32)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.Odbc.OdbcConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.Odbc.OdbcConnection,System.String,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.Odbc.OdbcConnection,System.String,System.Int32,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.Odbc.OdbcConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.SqlClient.SqlConnection,System.String)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.SqlClient.SqlConnection,System.String,System.Int32)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.SqlClient.SqlConnection,System.String,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.SqlClient.SqlConnection,System.String,System.Int32,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.IDbConnection,System.Type,System.String,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
             <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.IDbConnection,System.Type,System.String,System.Int32,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
             <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.OleDb.OleDbCommand,System.String)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.OleDb.OleDbCommand,System.String,System.Int32)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.OleDb.OleDbCommand,System.String,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.OleDb.OleDbCommand,System.String,System.Int32,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.Odbc.OdbcCommand,System.String)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.Odbc.OdbcCommand,System.String,System.Int32)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.Odbc.OdbcCommand,System.String,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.Odbc.OdbcCommand,System.String,System.Int32,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.SqlClient.SqlCommand,System.String)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.SqlClient.SqlCommand,System.String,System.Int32)">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.SqlClient.SqlCommand,System.String,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.SqlClient.SqlCommand,System.String,System.Int32,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression -or- the parameter values to be passed into stored procedure being executed.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.IDbCommand,System.Type,System.String,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
             <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveRow(System.Data.IDbCommand,System.Type,System.String,System.Int32,System.Object[])">
             <summary>
-            Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the resultset.
+            Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataRow"/> in the result set.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
             <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="timeout">The time in seconds to wait for the SQL statement to execute.</param>
             <param name="parameters">The parameter values to be used to fill in <see cref="T:System.Data.IDbDataParameter"/> parameters identified by '@' prefix in <paramref name="sql"/> expression.</param>
-            <returns>The first <see cref="T:System.Data.DataRow"/> in the resultset.</returns>
+            <returns>The first <see cref="T:System.Data.DataRow"/> in the result set.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.OleDb.OleDbConnection,System.String)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
@@ -10283,7 +10283,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.OleDb.OleDbConnection,System.String,System.Int32,System.Int32,System.Int32)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
@@ -10295,7 +10295,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.OleDb.OleDbConnection,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
@@ -10305,7 +10305,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.OleDb.OleDbConnection,System.String,System.Int32,System.Int32,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.OleDb.OleDbConnection"/> to use for executing the SQL statement.</param>
@@ -10318,7 +10318,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.Odbc.OdbcConnection,System.String)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.Odbc.OdbcConnection"/> to use for executing the SQL statement.</param>
@@ -10327,7 +10327,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.Odbc.OdbcConnection,System.String,System.Int32,System.Int32,System.Int32)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.Odbc.OdbcConnection"/> to use for executing the SQL statement.</param>
@@ -10339,7 +10339,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.Odbc.OdbcConnection,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.Odbc.OdbcConnection"/> to use for executing the SQL statement.</param>
@@ -10349,7 +10349,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.Odbc.OdbcConnection,System.String,System.Int32,System.Int32,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.Odbc.OdbcConnection"/> to use for executing the SQL statement.</param>
@@ -10362,7 +10362,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.SqlClient.SqlConnection,System.String)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
@@ -10371,7 +10371,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.SqlClient.SqlConnection,System.String,System.Int32,System.Int32,System.Int32)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
@@ -10383,7 +10383,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.SqlClient.SqlConnection,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
@@ -10393,7 +10393,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.SqlClient.SqlConnection,System.String,System.Int32,System.Int32,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="connection">The <see cref="T:System.Data.SqlClient.SqlConnection"/> to use for executing the SQL statement.</param>
@@ -10406,7 +10406,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.IDbConnection,System.Type,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
             <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
@@ -10417,7 +10417,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.IDbConnection,System.Type,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.IDbConnection"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="connection">The <see cref="T:System.Data.IDbConnection"/> to use for executing the SQL statement.</param>
             <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
@@ -10429,7 +10429,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.OleDb.OleDbCommand,System.String)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
@@ -10438,7 +10438,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.OleDb.OleDbCommand,System.String,System.Int32,System.Int32,System.Int32)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
@@ -10450,7 +10450,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.OleDb.OleDbCommand,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
@@ -10460,7 +10460,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.OleDb.OleDbCommand,System.String,System.Int32,System.Int32,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.OleDb.OleDbCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.OleDb.OleDbCommand"/> to use for executing the SQL statement.</param>
@@ -10473,7 +10473,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.Odbc.OdbcCommand,System.String)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
@@ -10482,7 +10482,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.Odbc.OdbcCommand,System.String,System.Int32,System.Int32,System.Int32)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
@@ -10494,7 +10494,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.Odbc.OdbcCommand,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
@@ -10504,7 +10504,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.Odbc.OdbcCommand,System.String,System.Int32,System.Int32,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.Odbc.OdbcCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.Odbc.OdbcCommand"/> to use for executing the SQL statement.</param>
@@ -10517,7 +10517,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.SqlClient.SqlCommand,System.String)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
@@ -10526,7 +10526,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.SqlClient.SqlCommand,System.String,System.Int32,System.Int32,System.Int32)">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
@@ -10538,7 +10538,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.SqlClient.SqlCommand,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
@@ -10548,7 +10548,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.SqlClient.SqlCommand,System.String,System.Int32,System.Int32,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.SqlClient.SqlCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="sql">The SQL statement to be executed.</param>
             <param name="command">The <see cref="T:System.Data.SqlClient.SqlCommand"/> to use for executing the SQL statement.</param>
@@ -10561,7 +10561,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.IDbCommand,System.Type,System.String,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
             <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
@@ -10572,7 +10572,7 @@
         <member name="M:GSF.Data.DataExtensions.RetrieveData(System.Data.IDbCommand,System.Type,System.String,System.Int32,System.Object[])">
             <summary>
             Executes the SQL statement using <see cref="T:System.Data.IDbCommand"/>, and returns the first <see cref="T:System.Data.DataTable"/> 
-            of resultset, if the resultset contains multiple tables.
+            of result set, if the result set contains multiple tables.
             </summary>
             <param name="command">The <see cref="T:System.Data.IDbCommand"/> to use for executing the SQL statement.</param>
             <param name="dataAdapterType">The <see cref="T:System.Type"/> of data adapter to use to retreieve data.</param>
@@ -26252,7 +26252,7 @@
         </member>
         <member name="M:GSF.TypeExtensions.GetRootType(System.Type)">
             <summary>
-            Gets the root type in the inheritace hierarchy from which the specified <paramref name="type"/> inherits.
+            Gets the root type in the inheritance hierarchy from which the specified <paramref name="type"/> inherits.
             </summary>
             <param name="type">The <see cref="T:System.Type"/> whose root type is to be found.</param>
             <returns>The root type in the inheritance hierarchy from which the specified <paramref name="type"/> inherits.</returns>
