@@ -30,7 +30,6 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     public static class TreeNodeInitializer
     {
         private static readonly object SyncRoot;
-
         private static readonly Dictionary<Tuple<Guid, Type, Type>, CreateTreeNodeBase> TreeNodeKeyValue;
         private static readonly Dictionary<Tuple<Guid, Type>, CreateTreeNodeBase> TreeNodeKey;
         private static readonly Dictionary<Guid, CreateTreeNodeBase> TreeNode;
@@ -43,7 +42,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             TreeNode = new Dictionary<Guid, CreateTreeNodeBase>();
 
             Register(new CreateFixedSizeNode());
-           
+
         }
 
         public static void Register(CreateTreeNodeBase treeNode)
@@ -82,7 +81,15 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
                     if (!TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
                         if (!TreeNode.TryGetValue(compressionMethod, out treeNode))
-                            throw new Exception("Type is not registered");
+                        {
+                            new TKey().RegisterImplementations();
+                            new TValue().RegisterImplementations();
+
+                            if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
+                                if (!TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
+                                    if (!TreeNode.TryGetValue(compressionMethod, out treeNode))
+                                        throw new Exception("Type is not registered");
+                        }
             }
             return new TreeNodeInitializer<TKey, TValue>(treeNode);
         }
@@ -100,7 +107,15 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
                     if (!TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
                         if (!TreeNode.TryGetValue(compressionMethod, out treeNode))
-                            throw new Exception("Type is not registered");
+                        {
+                            new TKey().RegisterImplementations();
+                            new TValue().RegisterImplementations();
+
+                            if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
+                                if (!TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
+                                    if (!TreeNode.TryGetValue(compressionMethod, out treeNode))
+                                        throw new Exception("Type is not registered");
+                        }
             }
 
             return treeNode.Create<TKey, TValue>(level);

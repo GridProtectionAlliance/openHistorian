@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  QueryFilterPointId_UIntHashSet.cs - Gbtc
+//  PointIDFilter_UIntHashSet`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,39 +16,46 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/29/2012 - Steven E. Chisholm
+//  11/9/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using GSF.Collections;
 using GSF.IO;
+using GSF.SortedTreeStore.Engine;
+using openHistorian;
 
-namespace openHistorian
+namespace GSF.SortedTreeStore.Filters
 {
-    /// <summary>
-    /// A class that is used to filter point results based on the PointID number.
-    /// </summary>
-    public abstract partial class QueryFilterPointId
+    public partial class PointIDFilter
     {
         /// <summary>
-        /// A filter that can fit in a 32bit value that is in a HashSet.
+        /// A filter that uses a <see cref="BitArray"/> to set true and false values
         /// </summary>
-        private class UIntHashSet
-            : QueryFilterPointId
+        class UIntHashSet<TKey>
+            : KeyMatchFilterBase<TKey>
+            where TKey : EngineKeyBase<TKey>, new()
         {
-            private readonly HashSet<uint> m_points;
+            ulong m_maxValue;
+                        private readonly HashSet<uint> m_points;
+
 
             /// <summary>
-            /// Creates a filter from the stream.
+            /// Creates a new filter backed by a <see cref="BitArray"/>.
             /// </summary>
             /// <param name="stream">The the stream to load from.</param>
             /// <param name="pointCount">the number of points in the stream.</param>
-            public UIntHashSet(BinaryStreamBase stream, int pointCount)
+            /// <param name="maxValue">the maximum value stored in the bit array. Cannot be larger than int.MaxValue-1</param>
+            public UIntHashSet(BinaryStreamBase stream, int pointCount, ulong maxValue)
             {
-                m_points = new HashSet<uint>();
+                m_maxValue = maxValue;
+                 m_points = new HashSet<uint>();
                 while (pointCount > 0)
                 {
                     m_points.Add(stream.ReadUInt32());
@@ -57,49 +64,46 @@ namespace openHistorian
             }
 
             /// <summary>
-            /// Creates a filter from the stream.
+            /// Creates a bit array filter from <see cref="points"/>
             /// </summary>
             /// <param name="points">the points to use.</param>
-            public UIntHashSet(IEnumerable<ulong> points)
+            /// <param name="maxValue">the maximum value stored in the bit array. Cannot be larger than int.MaxValue-1</param>
+            public UIntHashSet(IEnumerable<ulong> points, ulong maxValue)
             {
+                m_maxValue = maxValue;
                 m_points = new HashSet<uint>();
                 m_points.UnionWith(points.Select(x => (uint)x));
             }
 
-
-            /// <summary>
-            /// Determines if a pointID is contained in the filter
-            /// </summary>
-            /// <param name="pointID">the point to check for.</param>
-            /// <returns></returns>
-            public override bool ContainsPointID(ulong pointID)
+            public override Guid FilterType
             {
-                return pointID <= uint.MaxValue && m_points.Contains((uint)pointID);
+                get
+                {
+                    throw new NotImplementedException();
+                }
             }
 
-            /// <summary>
-            /// Serializes the filter to a stream
-            /// </summary>
-            /// <param name="stream">the stream to write to</param>
-            protected override void WriteToStream(BinaryStreamBase stream)
+            public override void Load(BinaryStreamBase stream)
             {
+                throw new NotImplementedException();
+            }
+
+            public override void Save(BinaryStreamBase stream)
+            {
+                stream.Write((byte)1); //Stored as array of uint[]
+                stream.Write(m_maxValue);
+                stream.Write(m_points.Count);
                 foreach (uint x in m_points)
                 {
                     stream.Write(x);
                 }
             }
 
-            /// <summary>
-            /// The number of points in this filter. Used to serialize to the disk.
-            /// </summary>
-            protected override int Count
+            public override bool Contains(TKey key)
             {
-                get
-                {
-                    return m_points.Count;
-                }
+                return key.PointID <= uint.MaxValue && m_points.Contains((uint)key.PointID);
+
             }
         }
-
     }
 }

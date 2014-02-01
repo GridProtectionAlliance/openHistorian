@@ -88,7 +88,15 @@ namespace GSF.SortedTreeStore.Net.Initialization
                 if (!s_compressedStreamKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out createStreamCompression))
                     if (!s_compressedStreamKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out createStreamCompression))
                         if (!s_compressedStream.TryGetValue(compressionMethod, out createStreamCompression))
-                            throw new Exception("Type is not registered");
+                        {
+                            new TKey().RegisterImplementations();
+                            new TValue().RegisterImplementations();
+
+                            if (!s_compressedStreamKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out createStreamCompression))
+                                if (!s_compressedStreamKey.TryGetValue(Tuple.Create(compressionMethod, keyType),out createStreamCompression))
+                                    if (!s_compressedStream.TryGetValue(compressionMethod, out createStreamCompression))
+                                        throw new Exception("Type is not registered");
+                        }
             }
 
             return createStreamCompression.Create<TKey,TValue>();

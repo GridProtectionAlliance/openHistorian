@@ -26,7 +26,7 @@ using System;
 namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
     /// <summary>
-    /// A base class that allows for generically constructing any number of <see cref="T:GSF.SortedTreeStore.Tree.TreeNodeBase`2"/> implementations.
+    /// A base class that allows for generically constructing any number of <see cref="SortedTreeNodeBase{TKey,TValue}"/> implementations.
     /// </summary>
     public abstract class CreateTreeNodeBase
     {

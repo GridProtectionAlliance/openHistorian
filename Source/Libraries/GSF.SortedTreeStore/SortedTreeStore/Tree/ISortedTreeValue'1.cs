@@ -21,6 +21,9 @@
 //     
 //******************************************************************************************************
 
+using GSF.SortedTreeStore.Net.Initialization;
+using GSF.SortedTreeStore.Tree.TreeNodes;
+
 namespace GSF.SortedTreeStore.Tree
 {
 
@@ -37,5 +40,9 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         SortedTreeValueMethodsBase<TValue> CreateValueMethods();
 
+        /// <summary>
+        /// Requests that any custom compression type is registered with <see cref="TreeNodeInitializer"/> and <see cref="KeyValueStreamCompression"/>
+        /// </summary>
+        void RegisterImplementations();
     }
 }

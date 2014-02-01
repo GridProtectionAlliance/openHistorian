@@ -23,7 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 using openHistorian;
 
@@ -39,14 +39,27 @@ namespace GSF.SortedTreeStore.Engine.Reader
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, new()
     {
+        ///// <summary>
+        ///// Reads data from the historian with the provided filters.
+        ///// </summary>
+        ///// <param name="timestampFilter">filters for the timestamp</param>
+        ///// <param name="pointIdFilter">filters for the pointId</param>
+        ///// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
+        ///// <returns></returns>
+        //public abstract TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, SortedTreeEngineReaderOptions readerOptions);
+
         /// <summary>
-        /// Reads data from the historian with the provided filters.
+        /// Reads data from the SortedTreeEngine with the provided read options and server side filters.
         /// </summary>
-        /// <param name="timestampFilter">filters for the timestamp</param>
-        /// <param name="pointIdFilter">filters for the pointId</param>
-        /// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
+        /// <param name="readerOptions"></param>
+        /// <param name="keySeekFilter"></param>
+        /// <param name="keyMatchFilter"></param>
+        /// <param name="valueMatchFilter"></param>
         /// <returns></returns>
-        public abstract TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, SortedTreeEngineReaderOptions readerOptions);
+        public abstract TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions,
+                                                      KeySeekFilterBase<TKey> keySeekFilter,
+                                                      KeyMatchFilterBase<TKey> keyMatchFilter,
+                                                      ValueMatchFilterBase<TValue> valueMatchFilter); 
 
         /// <summary>
         /// Closes this reader

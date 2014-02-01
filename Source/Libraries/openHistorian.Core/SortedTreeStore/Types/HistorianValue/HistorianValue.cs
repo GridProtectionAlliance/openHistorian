@@ -25,6 +25,7 @@
 using System;
 using System.Text;
 using GSF;
+using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Collections
@@ -136,6 +137,11 @@ namespace openHistorian.Collections
         public SortedTreeValueMethodsBase<HistorianValue> CreateValueMethods()
         {
             return new ValueMethodsHistorianValue();
+        }
+
+        void ISortedTreeValue<HistorianValue>.RegisterImplementations()
+        {
+            RegisterTypes.Register();
         }
     }
 }

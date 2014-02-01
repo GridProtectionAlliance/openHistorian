@@ -12,9 +12,12 @@ namespace GSF.IO.Unmanaged.Test
         [Test]
         public void RunMemoryStreamTest()
         {
+            MemoryPoolTest.TestMemoryLeak();
             MemoryPoolStream ms = new MemoryPoolStream();
             BinaryStream bs = new BinaryStream(ms);
             Run(bs, false);
+            ms.Dispose();
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         public static void Run(BinaryStream bs, bool clipboard = true)

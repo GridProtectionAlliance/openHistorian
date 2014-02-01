@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  QueryFilterTimestamp_FixedRange.cs - Gbtc
+//  TimestampFilter_FixedRange.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,36 +16,56 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/29/2012 - Steven E. Chisholm
+//  11/9/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using GSF.IO;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Tree;
 
-namespace openHistorian
+namespace GSF.SortedTreeStore.Filters
 {
-    public abstract partial class QueryFilterTimestamp
+    public partial class TimestampFilter
     {
-        /// <summary>
-        /// Creates a <see cref="QueryFilterTimestamp"/> based on a single time range window.
-        /// </summary>
-        private class FixedRange 
-            : QueryFilterTimestamp
+        private class FixedRange<TKey>
+            : KeySeekFilterBase<TKey>
+            where TKey : EngineKeyBase<TKey>, new()
         {
             private bool m_isEndReached;
+            private SortedTreeKeyMethodsBase<TKey> m_keyMethods;
+
             private readonly ulong m_start;
             private readonly ulong m_stop;
+
+            private FixedRange()
+            {
+                StartOfFrame = new TKey();
+                EndOfFrame = new TKey();
+                StartOfRange = StartOfFrame;
+                EndOfRange = EndOfFrame;
+                m_keyMethods = StartOfFrame.CreateKeyMethods();
+            }
 
             /// <summary>
             /// Creates a filter by reading from the stream.
             /// </summary>
             /// <param name="stream">the stream to read from</param>
             public FixedRange(BinaryStreamBase stream)
+                : this()
             {
                 m_start = stream.ReadUInt64();
                 m_stop = stream.ReadUInt64();
+                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.Timestamp = m_start;
+                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.Timestamp = m_stop;
             }
 
             /// <summary>
@@ -54,27 +74,30 @@ namespace openHistorian
             /// <param name="firstTime">the start of the only window.</param>
             /// <param name="lastTime">the stop of the only window.</param>
             public FixedRange(ulong firstTime, ulong lastTime)
+                : this()
             {
                 m_start = firstTime;
                 m_stop = lastTime;
+                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.Timestamp = m_start;
+                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.Timestamp = m_stop;
             }
 
             /// <summary>
             /// Gets the next search window.
             /// </summary>
-            /// <param name="startOfWindow">the start of the window to search</param>
-            /// <param name="endOfWindow">the end of the window to search</param>
             /// <returns>true if window exists, false if finished.</returns>
-            public override bool GetNextWindow(out ulong startOfWindow, out ulong endOfWindow)
+            public override bool NextWindow()
             {
                 if (m_isEndReached)
                 {
-                    startOfWindow = 0;
-                    endOfWindow = 0;
                     return false;
                 }
-                startOfWindow = m_start;
-                endOfWindow = m_stop;
+                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.Timestamp = m_start;
+                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.Timestamp = m_stop;
                 m_isEndReached = true;
                 return true;
             }
@@ -84,44 +107,42 @@ namespace openHistorian
             /// </summary>
             /// <remarks>
             /// Since a time filter is a set of date ranges, this will reset the frame so a
-            /// call to <see cref="GetNextWindow"/> will return the first window of the sequence.
+            /// call to <see cref="NextWindow"/> will return the first window of the sequence.
             /// </remarks>
             public override void Reset()
             {
                 m_isEndReached = false;
+                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.Timestamp = m_start;
+                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.Timestamp = m_stop;
             }
 
             /// <summary>
             /// Serializes the filter to a stream
             /// </summary>
             /// <param name="stream">the stream to write to</param>
-            protected override void WriteToStream(BinaryStreamBase stream)
+            public override void Save(BinaryStreamBase stream)
             {
+                stream.Write((byte)1); //stored as start/stop
                 stream.Write(m_start);
                 stream.Write(m_stop);
             }
 
-            /// <summary>
-            /// Gets the first time that might be accessed by this filter.
-            /// </summary>
-            public override ulong FirstTime
+            public override Guid FilterType
             {
                 get
                 {
-                    return m_start;
+                    throw new NotImplementedException();
                 }
             }
 
-            /// <summary>
-            /// Gets the last time that might be accessed by this filter.
-            /// </summary>
-            public override ulong LastTime
+            public override void Load(BinaryStreamBase stream)
             {
-                get
-                {
-                    return m_stop;
-                }
+                throw new NotImplementedException();
             }
+
+
         }
 
     }

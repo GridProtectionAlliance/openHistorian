@@ -24,6 +24,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GSF.SortedTreeStore.Filters;
+using openHistorian.Collections;
 
 namespace openHistorian.Data
 {
@@ -63,12 +65,12 @@ namespace openHistorian.Data
             return sampleRate;
         }
 
-        public QueryFilterTimestamp GetParser(DateTime startTime, DateTime endTime, uint sampleCount)
+        public KeySeekFilterBase<HistorianKey> GetParser(DateTime startTime, DateTime endTime, uint sampleCount)
         {
             return GetParser(startTime, endTime, (ulong)SuggestSamplesPerDay(startTime, endTime, sampleCount));
         }
 
-        public QueryFilterTimestamp GetParser(DateTime startTime, DateTime endTime, ulong samplesPerDay)
+        public KeySeekFilterBase<HistorianKey> GetParser(DateTime startTime, DateTime endTime, ulong samplesPerDay)
         {
             long interval = (long)(TimeSpan.TicksPerDay / samplesPerDay);
 
@@ -90,7 +92,7 @@ namespace openHistorian.Data
                 }
                 count++;
             }
-            return QueryFilterTimestamp.CreateFromIntervalData((ulong)startTime2, (ulong)endTime2, bigInterval, (ulong)interval, (ulong)m_windowTolerance.Ticks);
+            return TimestampFilter.CreateFromIntervalData<HistorianKey>((ulong)startTime2, (ulong)endTime2, bigInterval, (ulong)interval, (ulong)m_windowTolerance.Ticks);
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  KeyParserPrimary.cs - Gbtc
+//  TimestampFilter_IntervalRanges.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,26 +16,30 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/29/2012 - Steven E. Chisholm
+//  11/9/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using GSF.IO;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Tree;
 
-namespace openHistorian
+namespace GSF.SortedTreeStore.Filters
 {
-    public abstract partial class QueryFilterTimestamp
+    public partial class TimestampFilter
     {
-
-        /// <summary>
-        /// Creates a filter over a set of date ranges (Similiar to downsampled queries)
-        /// </summary>
-        private class IntervalRanges 
-            : QueryFilterTimestamp
+        private class IntervalRanges<TKey>
+            : KeySeekFilterBase<TKey>
+            where TKey : EngineKeyBase<TKey>, new()
         {
+            private SortedTreeKeyMethodsBase<TKey> m_keyMethods;
+
             private ulong m_start;
             private ulong m_current;
             private ulong m_mainInterval;
@@ -45,11 +49,21 @@ namespace openHistorian
             private ulong m_tolerance;
             private ulong m_stop;
 
+            private IntervalRanges()
+            {
+                StartOfFrame = new TKey();
+                EndOfFrame = new TKey();
+                StartOfRange = new TKey();
+                EndOfRange = new TKey();
+                m_keyMethods = StartOfFrame.CreateKeyMethods();
+            }
+
             /// <summary>
             /// Creates a filter by reading from the stream.
             /// </summary>
             /// <param name="stream">the stream to read from</param>
             public IntervalRanges(BinaryStreamBase stream)
+                : this()
             {
                 ulong start = stream.ReadUInt64();
                 ulong stop = stream.ReadUInt64();
@@ -67,13 +81,14 @@ namespace openHistorian
             /// <param name="mainInterval">the smallest interval that is exact</param>
             /// <param name="subInterval">the interval that will be parsed. Possible to be rounded</param>
             /// <param name="tolerance">the width of every window</param>
-            /// <returns>A <see cref="QueryFilterTimestamp"/> that will be able to do this parsing</returns>
+            /// <returns>A <see cref="KeySeekFilterBase{TKey}"/> that will be able to do this parsing</returns>
             /// <remarks>
             /// Example uses. FirstTime = 1/1/2013. LastTime = 1/2/2013. 
             ///               MainInterval = 0.1 seconds. SubInterval = 0.0333333 seconds.
             ///               Tolerance = 0.001 seconds.
             /// </remarks>
             public IntervalRanges(ulong firstTime, ulong lastTime, ulong mainInterval, ulong subInterval, ulong tolerance)
+                : this()
             {
                 Initialize(firstTime, lastTime, mainInterval, subInterval, tolerance);
             }
@@ -81,14 +96,20 @@ namespace openHistorian
             private void Initialize(ulong start, ulong stop, ulong mainInterval, ulong subInterval, ulong tolerance)
             {
                 if (start > stop)
-                    throw new ArgumentOutOfRangeException("start","start must be before stop");
+                    throw new ArgumentOutOfRangeException("start", "start must be before stop");
                 if (mainInterval < subInterval)
-                    throw new ArgumentOutOfRangeException("mainInterval","must be larger than the subinterval");
+                    throw new ArgumentOutOfRangeException("mainInterval", "must be larger than the subinterval");
                 if (tolerance >= subInterval)
-                    throw new ArgumentOutOfRangeException("tolerance","must be smaller than the subinterval");
+                    throw new ArgumentOutOfRangeException("tolerance", "must be smaller than the subinterval");
 
                 m_start = start;
                 m_stop = stop;
+
+                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.Timestamp = m_start;
+                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.Timestamp = m_stop;
+
                 m_current = start;
                 m_mainInterval = mainInterval;
                 m_subInterval = subInterval;
@@ -100,10 +121,8 @@ namespace openHistorian
             /// <summary>
             /// Gets the next search window.
             /// </summary>
-            /// <param name="startOfWindow">the start of the window to search</param>
-            /// <param name="endOfWindow">the end of the window to search</param>
             /// <returns>true if window exists, false if finished.</returns>
-            public override bool GetNextWindow(out ulong startOfWindow, out ulong endOfWindow)
+            public override bool NextWindow()
             {
                 checked
                 {
@@ -131,12 +150,38 @@ namespace openHistorian
                 }
             }
 
+            private ulong startOfWindow 
+            {
+                get
+                {
+                    return StartOfFrame.Timestamp;
+                }
+                set
+                {
+                    m_keyMethods.SetMin(StartOfFrame);
+                    StartOfFrame.Timestamp = value;
+                }
+            }
+
+            private ulong endOfWindow
+            {
+                get
+                {
+                    return EndOfFrame.Timestamp;
+                }
+                set
+                {
+                    m_keyMethods.SetMax(EndOfFrame);
+                    EndOfFrame.Timestamp = value;
+                }
+            }
+
             /// <summary>
             /// Resets the iterative nature of the filter. 
             /// </summary>
             /// <remarks>
             /// Since a time filter is a set of date ranges, this will reset the frame so a
-            /// call to <see cref="GetNextWindow"/> will return the first window of the sequence.
+            /// call to <see cref="NextWindow"/> will return the first window of the sequence.
             /// </remarks>
             public override void Reset()
             {
@@ -148,8 +193,9 @@ namespace openHistorian
             /// Serializes the filter to a stream
             /// </summary>
             /// <param name="stream">the stream to write to</param>
-            protected override void WriteToStream(BinaryStreamBase stream)
+            public override void Save(BinaryStreamBase stream)
             {
+                stream.Write((byte)2); //Stored with interval data
                 stream.Write(m_start);
                 stream.Write(m_stop);
                 stream.Write(m_mainInterval);
@@ -157,29 +203,21 @@ namespace openHistorian
                 stream.Write(m_tolerance);
             }
 
-
-            /// <summary>
-            /// Gets the first time that might be accessed by this filter.
-            /// </summary>
-            public override ulong FirstTime
+            public override Guid FilterType
             {
                 get
                 {
-                    return m_start;
+                    throw new NotImplementedException();
                 }
             }
 
-            /// <summary>
-            /// Gets the last time that might be accessed by this filter.
-            /// </summary>
-            public override ulong LastTime
+            public override void Load(BinaryStreamBase stream)
             {
-                get
-                {
-                    return m_stop;
-                }
+                throw new NotImplementedException();
             }
+
 
         }
+
     }
 }

@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Tree;
 
@@ -72,7 +73,7 @@ namespace openHistorian.Collections
             PointID = ulong.MaxValue;
             EntryNumber = ulong.MaxValue;
         }
-        
+
         /// <summary>
         /// Sets the key to the default values.
         /// </summary>
@@ -136,6 +137,11 @@ namespace openHistorian.Collections
         public override SortedTreeKeyMethodsBase<HistorianKey> CreateKeyMethods()
         {
             return new KeyMethodsHistorianKey();
+        }
+
+        public override void RegisterImplementations()
+        {
+            RegisterTypes.Register();
         }
 
         public override string ToString()

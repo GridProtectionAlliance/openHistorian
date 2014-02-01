@@ -24,6 +24,7 @@
 
 using System;
 using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 using openHistorian;
 
@@ -50,14 +51,37 @@ namespace GSF.SortedTreeStore.Net
                 Close();
             }
 
-            public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, SortedTreeEngineReaderOptions readerOptions)
+            //public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, SortedTreeEngineReaderOptions readerOptions)
+            //{
+            //    if (m_reader != null)
+            //        throw new Exception("Sockets do not support concurrent readers.");
+
+            //    m_client.m_stream.Write((byte)ServerCommand.Read);
+            //    timestampFilter.Save(m_client.m_stream);
+            //    pointIdFilter.Save(m_client.m_stream);
+            //    readerOptions.Save(m_client.m_stream);
+            //    m_client.m_stream.Flush();
+            //    return new PointReader(m_client, () => m_reader = null);
+            //}
+
+            public override TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, KeySeekFilterBase<TKey> keySeekFilter,
+                                        KeyMatchFilterBase<TKey> keyMatchFilter, ValueMatchFilterBase<TValue> valueMatchFilterBase)
             {
                 if (m_reader != null)
                     throw new Exception("Sockets do not support concurrent readers.");
 
                 m_client.m_stream.Write((byte)ServerCommand.Read);
-                timestampFilter.Save(m_client.m_stream);
-                pointIdFilter.Save(m_client.m_stream);
+               
+                if (keySeekFilter == null)
+                    m_client.m_stream.Write((byte)0);
+                else
+                    keySeekFilter.Save(m_client.m_stream);
+               
+                if (keyMatchFilter == null)
+                    m_client.m_stream.Write((byte)0);
+                else
+                    keyMatchFilter.Save(m_client.m_stream);
+
                 readerOptions.Save(m_client.m_stream);
                 m_client.m_stream.Flush();
                 return new PointReader(m_client, () => m_reader = null);
@@ -92,7 +116,7 @@ namespace GSF.SortedTreeStore.Net
 
                 public override bool Read()
                 {
-                    
+
                     if (!m_completed && m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey, CurrentValue))
                     {
                         //CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);

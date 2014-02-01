@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  QueryFilterTimestamp.cs - Gbtc
+//  TimestampFilter.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,31 +16,32 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/29/2012 - Steven E. Chisholm
+//  11/9/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using GSF.IO;
+using GSF.SortedTreeStore.Engine;
 
-namespace openHistorian
+namespace GSF.SortedTreeStore.Filters
 {
-    /// <summary>
-    /// A class that is used to filter point results based on the Timestamp
-    /// </summary>
-    public abstract partial class QueryFilterTimestamp
+    public partial class TimestampFilter
     {
-
         /// <summary>
         /// Creates a filter that is a universe filter that will not filter any points.
         /// </summary>
         /// <returns></returns>
-        public static QueryFilterTimestamp CreateAllKeysValid()
+        public static KeySeekFilterBase<TKey> CreateAllKeysValid<TKey>()
+            where TKey : EngineKeyBase<TKey>, new()
         {
-            return new UniverseRange();
+            return null;
         }
 
         /// <summary>
@@ -49,9 +50,10 @@ namespace openHistorian
         /// <param name="firstTime">the first time if the query (inclusive)</param>
         /// <param name="lastTime">the last time of the query (inclusive)</param>
         /// <returns></returns>
-        public static QueryFilterTimestamp CreateFromRange(DateTime firstTime, DateTime lastTime)
+        public static KeySeekFilterBase<TKey> CreateFromRange<TKey>(DateTime firstTime, DateTime lastTime)
+            where TKey : EngineKeyBase<TKey>, new()
         {
-            return new FixedRange((ulong)firstTime.Ticks, (ulong)lastTime.Ticks);
+            return new FixedRange<TKey>((ulong)firstTime.Ticks, (ulong)lastTime.Ticks);
         }
 
         /// <summary>
@@ -60,9 +62,10 @@ namespace openHistorian
         /// <param name="firstTime">the first time if the query (inclusive)</param>
         /// <param name="lastTime">the last time of the query (inclusive)</param>
         /// <returns></returns>
-        public static QueryFilterTimestamp CreateFromRange(ulong firstTime, ulong lastTime)
+        public static KeySeekFilterBase<TKey> CreateFromRange<TKey>(ulong firstTime, ulong lastTime)
+            where TKey : EngineKeyBase<TKey>, new()
         {
-            return new FixedRange(firstTime, lastTime);
+            return new FixedRange<TKey>(firstTime, lastTime);
         }
 
         /// <summary>
@@ -73,15 +76,16 @@ namespace openHistorian
         /// <param name="mainInterval">the smallest interval that is exact</param>
         /// <param name="subInterval">the interval that will be parsed. Possible to be rounded</param>
         /// <param name="tolerance">the width of every window</param>
-        /// <returns>A <see cref="QueryFilterTimestamp"/> that will be able to do this parsing</returns>
+        /// <returns>A <see cref="KeySeekFilterBase{TKey}"/> that will be able to do this parsing</returns>
         /// <remarks>
         /// Example uses. FirstTime = 1/1/2013. LastTime = 1/2/2013. 
         ///               MainInterval = 0.1 seconds. SubInterval = 0.0333333 seconds.
         ///               Tolerance = 0.001 seconds.
         /// </remarks>
-        public static QueryFilterTimestamp CreateFromIntervalData(ulong firstTime, ulong lastTime, ulong mainInterval, ulong subInterval, ulong tolerance)
+        public static KeySeekFilterBase<TKey> CreateFromIntervalData<TKey>(ulong firstTime, ulong lastTime, ulong mainInterval, ulong subInterval, ulong tolerance)
+            where TKey : EngineKeyBase<TKey>, new()
         {
-            return new IntervalRanges(firstTime, lastTime, mainInterval, subInterval, tolerance);
+            return new IntervalRanges<TKey>(firstTime, lastTime, mainInterval, subInterval, tolerance);
         }
 
         /// <summary>
@@ -91,15 +95,16 @@ namespace openHistorian
         /// <param name="lastTime">the last time of the query (inclusive if contained in the intervals)</param>
         /// <param name="interval">the exact interval</param>
         /// <param name="tolerance">the width of every window</param>
-        /// <returns>A <see cref="QueryFilterTimestamp"/> that will be able to do this parsing</returns>
+        /// <returns>A <see cref="KeySeekFilterBase{TKey}"/> that will be able to do this parsing</returns>
         /// <remarks>
         /// Example uses. FirstTime = 1/1/2013. LastTime = 1/2/2013. 
         ///               MainInterval = 0.1 seconds. SubInterval = 0.0333333 seconds.
         ///               Tolerance = 0.001 seconds.
         /// </remarks>
-        public static QueryFilterTimestamp CreateFromIntervalData(ulong firstTime, ulong lastTime, ulong interval, ulong tolerance)
+        public static KeySeekFilterBase<TKey> CreateFromIntervalData<TKey>(ulong firstTime, ulong lastTime, ulong interval, ulong tolerance)
+            where TKey : EngineKeyBase<TKey>, new()
         {
-            return new IntervalRanges(firstTime, lastTime, interval, interval, tolerance);
+            return new IntervalRanges<TKey>(firstTime, lastTime, interval, interval, tolerance);
         }
 
         /// <summary>
@@ -110,15 +115,16 @@ namespace openHistorian
         /// <param name="mainInterval">the smallest interval that is exact</param>
         /// <param name="subInterval">the interval that will be parsed. Possible to be rounded</param>
         /// <param name="tolerance">the width of every window</param>
-        /// <returns>A <see cref="QueryFilterTimestamp"/> that will be able to do this parsing</returns>
+        /// <returns>A <see cref="KeySeekFilterBase{TKey}"/> that will be able to do this parsing</returns>
         /// <remarks>
         /// Example uses. FirstTime = 1/1/2013. LastTime = 1/2/2013. 
         ///               MainInterval = 0.1 seconds. SubInterval = 0.0333333 seconds.
         ///               Tolerance = 0.001 seconds.
         /// </remarks>
-        public static QueryFilterTimestamp CreateFromIntervalData(DateTime firstTime, DateTime lastTime, TimeSpan mainInterval, TimeSpan subInterval, TimeSpan tolerance)
+        public static KeySeekFilterBase<TKey> CreateFromIntervalData<TKey>(DateTime firstTime, DateTime lastTime, TimeSpan mainInterval, TimeSpan subInterval, TimeSpan tolerance)
+            where TKey : EngineKeyBase<TKey>, new()
         {
-            return new IntervalRanges((ulong)firstTime.Ticks, (ulong)lastTime.Ticks, (ulong)mainInterval.Ticks, (ulong)subInterval.Ticks, (ulong)tolerance.Ticks);
+            return new IntervalRanges<TKey>((ulong)firstTime.Ticks, (ulong)lastTime.Ticks, (ulong)mainInterval.Ticks, (ulong)subInterval.Ticks, (ulong)tolerance.Ticks);
         }
 
         /// <summary>
@@ -128,95 +134,38 @@ namespace openHistorian
         /// <param name="lastTime">the last time of the query (inclusive)</param>
         /// <param name="interval">the exact interval to do the scan</param>
         /// <param name="tolerance">the width of every window</param>
-        /// <returns>A <see cref="QueryFilterTimestamp"/> that will be able to do this parsing</returns>
+        /// <returns>A <see cref="KeySeekFilterBase{TKey}"/> that will be able to do this parsing</returns>
         /// <remarks>
         /// Example uses. FirstTime = 1/1/2013. LastTime = 1/2/2013. 
         ///               Interval = 0.1 seconds.
         ///               Tolerance = 0.001 seconds.
         /// </remarks>
-        public static QueryFilterTimestamp CreateFromIntervalData(DateTime firstTime, DateTime lastTime, TimeSpan interval, TimeSpan tolerance)
+        public static KeySeekFilterBase<TKey> CreateFromIntervalData<TKey>(DateTime firstTime, DateTime lastTime, TimeSpan interval, TimeSpan tolerance)
+            where TKey : EngineKeyBase<TKey>, new()
         {
-            return new IntervalRanges((ulong)firstTime.Ticks, (ulong)lastTime.Ticks, (ulong)interval.Ticks, (ulong)interval.Ticks, (ulong)tolerance.Ticks);
+            return new IntervalRanges<TKey>((ulong)firstTime.Ticks, (ulong)lastTime.Ticks, (ulong)interval.Ticks, (ulong)interval.Ticks, (ulong)tolerance.Ticks);
         }
 
         /// <summary>
-        /// Loads a <see cref="QueryFilterTimestamp"/> from the provided <see cref="stream"/>.
+        /// Loads a <see cref="KeySeekFilterBase{TKey}"/> from the provided <see cref="stream"/>.
         /// </summary>
         /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
-        public static QueryFilterTimestamp CreateFromStream(BinaryStreamBase stream)
+        public static KeySeekFilterBase<TKey> CreateFromStream<TKey>(BinaryStreamBase stream)
+            where TKey : EngineKeyBase<TKey>, new()
         {
             byte version = stream.ReadByte();
             switch (version)
             {
                 case 0:
-                    return new UniverseRange();
+                    return null;
                 case 1:
-                    return new FixedRange(stream);
+                    return new FixedRange<TKey>(stream);
                 case 2:
-                    return new IntervalRanges(stream);
+                    return new IntervalRanges<TKey>(stream);
                 default:
                     throw new VersionNotFoundException("Unknown Version");
             }
         }
-
-        /// <summary>
-        /// Resets the iterative nature of the filter. 
-        /// </summary>
-        /// <remarks>
-        /// Since a time filter is a set of date ranges, this will reset the frame so a
-        /// call to <see cref="GetNextWindow"/> will return the first window of the sequence.
-        /// </remarks>
-        public abstract void Reset();
-
-        /// <summary>
-        /// Gets the next search window.
-        /// </summary>
-        /// <param name="startOfWindow">the start of the window to search</param>
-        /// <param name="endOfWindow">the end of the window to search</param>
-        /// <returns>true if window exists, false if finished.</returns>
-        public abstract bool GetNextWindow(out ulong startOfWindow, out ulong endOfWindow);
-
-
-        /// <summary>
-        /// Serializes the filter to a stream
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        public void Save(BinaryStreamBase stream)
-        {
-            if (this is UniverseRange)
-            {
-                stream.Write((byte)0); //No data stored
-            }
-            else if (this is FixedRange)
-            {
-                stream.Write((byte)1); //stored as start/stop
-                WriteToStream(stream);
-            }
-            else if (this is IntervalRanges)
-            {
-                stream.Write((byte)2); //Stored with interval data
-                WriteToStream(stream);
-            }
-            else
-            {
-                throw new NotSupportedException("The provided inherited class cannot be serialized");
-            }
-        }
-
-        /// <summary>
-        /// Serializes the filter to a stream
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        protected abstract void WriteToStream(BinaryStreamBase stream);
-
-        /// <summary>
-        /// Gets the first time that might be accessed by this filter.
-        /// </summary>
-        public abstract ulong FirstTime { get; }
-        /// <summary>
-        /// Gets the last time that might be accessed by this filter.
-        /// </summary>
-        public abstract ulong LastTime { get; }
     }
 }

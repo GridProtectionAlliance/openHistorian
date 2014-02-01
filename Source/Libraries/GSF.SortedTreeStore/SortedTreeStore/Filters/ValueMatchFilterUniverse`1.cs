@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeUInt32.cs - Gbtc
+//  PointIDFilter.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,47 +16,45 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/12/2013 - Steven E. Chisholm
+//  11/9/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using GSF.IO;
-using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Types
+namespace GSF.SortedTreeStore.Filters
 {
-    public class SortedTreeUInt32
-        : ISortedTreeKey<SortedTreeUInt32>, ISortedTreeValue<SortedTreeUInt32>
+    /// <summary>
+    /// Represents no filter
+    /// </summary>
+    /// <typeparam name="TValue"></typeparam>
+    public class ValueMatchFilterUniverse<TValue> 
+        : ValueMatchFilterBase<TValue>
     {
-        public SortedTreeUInt32()
+        public override Guid FilterType
         {
-
+            get
+            {
+                return Guid.Empty;
+            }
         }
-        public SortedTreeUInt32(uint value)
+        public override void Load(BinaryStreamBase stream)
         {
-            Value = value;
+            
         }
-
-        public uint Value;
-
-        public SortedTreeKeyMethodsBase<SortedTreeUInt32> CreateKeyMethods()
+        public override void Save(BinaryStreamBase stream)
         {
-            return new SortedTreeKeyMethodsUInt32();
+            
         }
-
-        public SortedTreeValueMethodsBase<SortedTreeUInt32> CreateValueMethods()
+        public override bool Contains(TValue value)
         {
-            return new SortedTreeValueMethodsUInt32();
-        }
-
-        void ISortedTreeValue<SortedTreeUInt32>.RegisterImplementations()
-        {
-        }
-        void ISortedTreeKey<SortedTreeUInt32>.RegisterImplementations()
-        {
+            return true;
         }
     }
-  
 }

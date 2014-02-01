@@ -147,6 +147,7 @@
     <Compile Include="IO\Unmanaged\BufferedFileStreamTest.cs" />
     <Compile Include="IO\Unmanaged\BufferedFileStream_IoQueue.cs" />
     <Compile Include="IO\Unmanaged\LeastRecentlyUsedPageReplacementTest.cs" />
+    <Compile Include="IO\Unmanaged\MemoryPoolTest.cs" />
     <Compile Include="IO\Unmanaged\MemoryStreamCoreTest.cs" />
     <Compile Include="IO\Unmanaged\MemoryStreamTest.cs" />
     <Compile Include="IO\Unmanaged\MemoryStreamTestPerformance.cs" />

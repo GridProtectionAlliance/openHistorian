@@ -39,5 +39,6 @@ namespace GSF.SortedTreeStore
         /// </summary>
         /// <param name="key">the key to seek to.</param>
         public abstract void SeekToKey(TKey key);
+
     }
 }

@@ -13,7 +13,7 @@ namespace openHistorian.Data
             DateTime stop = start.AddDays(1);
 
             PeriodicScanner scanner = new PeriodicScanner(30);
-            QueryFilterTimestamp parser = scanner.GetParser(start, stop, 2592000);
+            var parser = scanner.GetParser(start, stop, 2592000);
             parser = scanner.GetParser(start, stop, 2592000 / 2);
             parser = scanner.GetParser(start, stop, 2592000 / 3);
             parser = scanner.GetParser(start, stop, 2592000 / 4);

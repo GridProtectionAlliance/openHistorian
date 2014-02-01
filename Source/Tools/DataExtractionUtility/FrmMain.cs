@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DataExtractionUtility.Properties;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Net;
 using GSF.TimeSeries;
 using openHistorian.Collections;
@@ -105,14 +106,14 @@ namespace DataExtractionUtility
             using (HistorianClient client = new HistorianClient(clientOptions))
             {
 
-                QueryFilterTimestamp timeFilter;
+                KeySeekFilterBase<HistorianKey> timeFilter;
                 if (interval.Ticks != 0)
-                    timeFilter = QueryFilterTimestamp.CreateFromIntervalData(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+                    timeFilter = TimestampFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
                 else
-                    timeFilter = QueryFilterTimestamp.CreateFromRange(startTime, stopTime);
+                    timeFilter = TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
 
                 var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
-                QueryFilterPointId pointFilter = QueryFilterPointId.CreateFromList(points);
+                var pointFilter = PointIDFilter.CreateFromList<HistorianKey>(points);
 
                 var database = client.GetDefaultDatabase();
                 var frames = database.GetFrames(timeFilter, pointFilter).RoundToTolerance(1);

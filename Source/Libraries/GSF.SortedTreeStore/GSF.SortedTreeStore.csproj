@@ -98,6 +98,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SortedTreeStore\Engine\KeyFilter`1.cs" />
+    <Compile Include="SortedTreeStore\Filters\KeySeekFilterUniverse`1.cs" />
+    <Compile Include="SortedTreeStore\Filters\KeyMatchFilterUniverse`1.cs" />
+    <Compile Include="SortedTreeStore\Filters\TimestampFilter_IntervalRanges.cs" />
+    <Compile Include="SortedTreeStore\Filters\PointIDFilter_UlongHashSet.cs" />
+    <Compile Include="SortedTreeStore\Filters\PointIDFilter_UIntHashSet.cs" />
+    <Compile Include="SortedTreeStore\Filters\KeySeekFilterBase`1.cs" />
+    <Compile Include="SortedTreeStore\Filters\KeyMatchFilterBase`1.cs" />
+    <Compile Include="SortedTreeStore\Filters\PointIDFilter.cs" />
+    <Compile Include="SortedTreeStore\Filters\PointIDFilter_BitArray.cs" />
+    <Compile Include="SortedTreeStore\Filters\TimestampFilter.cs" />
+    <Compile Include="SortedTreeStore\Filters\TimestampFilter_FixedRange.cs" />
+    <Compile Include="SortedTreeStore\Filters\ValueMatchFilterUniverse`1.cs" />
+    <Compile Include="SortedTreeStore\Filters\ValueMatchFilterBase`1.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableReadSnapshot`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableSnapshotInfo`2.cs" />
@@ -256,15 +270,6 @@
     <Compile Include="IO\Unmanaged\UnmanagedMemoryStreamCore.cs" />
     <Compile Include="IO\Unmanaged\UnmanagedMemoryStream_IoSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryFilterPointId.cs" />
-    <Compile Include="QueryFilterPointId_BitArray.cs" />
-    <Compile Include="QueryFilterPointId_UIntHashSet.cs" />
-    <Compile Include="QueryFilterPointId_ULongHashSet.cs" />
-    <Compile Include="QueryFilterPointId_Universe.cs" />
-    <Compile Include="QueryFilterTimestamp.cs" />
-    <Compile Include="QueryFilterTimestamp_FixedRange.cs" />
-    <Compile Include="QueryFilterTimestamp_IntervalRanges.cs" />
-    <Compile Include="QueryFilterTimestamp_UniverseRange.cs" />
     <Compile Include="Stats.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="Streaming\StreamMux.cs" />

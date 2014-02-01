@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GSF.SortedTreeStore.Filters;
 using GSF.Threading;
 using openHistorian;
 using GSF.SortedTreeStore.Storage;
@@ -51,17 +52,22 @@ namespace GSF.SortedTreeStore.Engine.Reader
             m_snapshot = m_list.CreateNewClientResources();
         }
 
-        /// <summary>
-        /// Reads data from the historian with the provided filters.
-        /// </summary>
-        /// <param name="timestampFilter">filters for the timestamp</param>
-        /// <param name="pointIdFilter">filters for the pointId</param>
-        /// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
-        /// <returns></returns>
-        public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, SortedTreeEngineReaderOptions readerOptions)
+        ///// <summary>
+        ///// Reads data from the historian with the provided filters.
+        ///// </summary>
+        ///// <param name="timestampFilter">filters for the timestamp</param>
+        ///// <param name="pointIdFilter">filters for the pointId</param>
+        ///// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
+        ///// <returns></returns>
+        //public override TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, SortedTreeEngineReaderOptions readerOptions)
+        //{
+
+        //}
+
+        public override TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, KeySeekFilterBase<TKey> keySeekFilter, KeyMatchFilterBase<TKey> keyMatchFilter, ValueMatchFilterBase<TValue> valueMatchFilter)
         {
             Stats.QueriesExecuted++;
-            return new ReadStream(timestampFilter, pointIdFilter, m_snapshot, readerOptions);
+            return new ReadStream(m_snapshot, readerOptions, keySeekFilter, keyMatchFilter, valueMatchFilter);
         }
 
         /// <summary>
@@ -84,14 +90,17 @@ namespace GSF.SortedTreeStore.Engine.Reader
         private class ReadStream
             : TreeStream<TKey, TValue>
         {
+            SortedTreeEngineReaderOptions m_readerOptions;
+            KeySeekFilterBase<TKey> m_keySeekFilter;
+            KeyMatchFilterBase<TKey> m_keyMatchFilter;
+            ValueMatchFilterBase<TValue> m_valueMatchFilter;
+            SortedTreeKeyMethodsBase<TKey> m_keyMethods;
+
             private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;
-            private ulong m_startKey;
-            private ulong m_stopKey;
-            private readonly QueryFilterTimestamp m_timestampFilter;
-            private readonly QueryFilterPointId m_poingIdFilter;
-            bool m_isKey2Universal;
+            //private readonly QueryFilterTimestamp m_timestampFilter;
+            //private readonly QueryFilterPointId m_poingIdFilter;
+            //bool m_isKey2Universal;
             private bool m_timedOut;
-            private long m_pointCount;
 
             private TimeoutOperation m_timeout;
             private readonly Queue<KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>> m_tables;
@@ -101,27 +110,69 @@ namespace GSF.SortedTreeStore.Engine.Reader
             private SortedTreeTableReadSnapshot<TKey, TValue> m_currentInstance;
             private SeekableTreeStream<TKey, TValue> m_currentScanner;
 
-            public ReadStream(QueryFilterTimestamp timestampFilter, QueryFilterPointId poingIdFilter, ArchiveListSnapshot<TKey, TValue> snapshot, SortedTreeEngineReaderOptions readerOptions)
+            //public ReadStream(QueryFilterTimestamp timestampFilter, QueryFilterPointId poingIdFilter, ArchiveListSnapshot<TKey, TValue> snapshot, SortedTreeEngineReaderOptions readerOptions)
+            //{
+            //    //if (readerOptions.Timeout.Ticks > 0)
+            //    //{
+            //    //    m_timeout = new TimeoutOperation();
+            //    //    m_timeout.RegisterTimeout(readerOptions.Timeout, () => m_timedOut = true);
+            //    //}
+
+            //    //m_timestampFilter = timestampFilter;
+            //    //m_poingIdFilter = poingIdFilter;
+            //    //m_isKey2Universal = poingIdFilter.IsUniverseFilter;
+            //    //m_startKey = timestampFilter.FirstTime;
+            //    //m_stopKey = timestampFilter.LastTime;
+            //    //m_snapshot = snapshot;
+            //    //m_snapshot.UpdateSnapshot();
+            //    //TKey startKey = new TKey();
+            //    //TKey stopKey = new TKey();
+
+            //    //var methods = startKey.CreateKeyMethods();
+            //    //methods.SetMin(startKey);
+            //    //methods.SetMax(stopKey);
+
+            //    //m_tables = new Queue<KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>>();
+
+            //    //for (int x = 0; x < m_snapshot.Tables.Count(); x++)
+            //    //{
+            //    //    ArchiveTableSummary<TKey, TValue> table = m_snapshot.Tables[x];
+            //    //    if (table != null)
+            //    //    {
+            //    //        startKey.Timestamp = timestampFilter.FirstTime;
+            //    //        stopKey.Timestamp = timestampFilter.LastTime;
+            //    //        if (table.Contains(startKey, stopKey))
+            //    //        {
+            //    //            m_tables.Enqueue(new KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>(x, table));
+            //    //        }
+            //    //        else
+            //    //        {
+            //    //            m_snapshot.Tables[x] = null;
+            //    //        }
+            //    //    }
+            //    //}
+            //    //prepareNextFile();
+            //}
+
+            public ReadStream(ArchiveListSnapshot<TKey, TValue> snapshot, SortedTreeEngineReaderOptions readerOptions, KeySeekFilterBase<TKey> keySeekFilter, KeyMatchFilterBase<TKey> keyMatchFilter, ValueMatchFilterBase<TValue> valueMatchFilter)
             {
                 if (readerOptions.Timeout.Ticks > 0)
                 {
                     m_timeout = new TimeoutOperation();
                     m_timeout.RegisterTimeout(readerOptions.Timeout, () => m_timedOut = true);
                 }
+                m_keyMethods = new TKey().CreateKeyMethods();
+                m_keySeekFilter = keySeekFilter;
+                m_keyMatchFilter = keyMatchFilter;
+                m_valueMatchFilter = valueMatchFilter;
 
-                m_timestampFilter = timestampFilter;
-                m_poingIdFilter = poingIdFilter;
-                m_isKey2Universal = poingIdFilter.IsUniverseFilter;
-                m_startKey = timestampFilter.FirstTime;
-                m_stopKey = timestampFilter.LastTime;
+                //m_timestampFilter = timestampFilter;
+                //m_poingIdFilter = poingIdFilter;
+                //m_isKey2Universal = poingIdFilter.IsUniverseFilter;
+                //m_startKey = timestampFilter.FirstTime;
+                //m_stopKey = timestampFilter.LastTime;
                 m_snapshot = snapshot;
                 m_snapshot.UpdateSnapshot();
-                TKey startKey = new TKey();
-                TKey stopKey = new TKey();
-
-                var methods = startKey.CreateKeyMethods();
-                methods.SetMin(startKey);
-                methods.SetMax(stopKey);
 
                 m_tables = new Queue<KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>>();
 
@@ -130,9 +181,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     ArchiveTableSummary<TKey, TValue> table = m_snapshot.Tables[x];
                     if (table != null)
                     {
-                        startKey.Timestamp = timestampFilter.FirstTime;
-                        stopKey.Timestamp = timestampFilter.LastTime;
-                        if (table.Contains(startKey, stopKey))
+                        if (keySeekFilter == null || table.Contains(keySeekFilter.StartOfRange, keySeekFilter.EndOfRange))
                         {
                             m_tables.Enqueue(new KeyValuePair<int, ArchiveTableSummary<TKey, TValue>>(x, table));
                         }
@@ -152,23 +201,20 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     Cancel();
                 if (m_currentScanner.Read())
                 {
-                    if (CurrentKey.Timestamp <= m_stopKey)
+                    if (m_keySeekFilter == null || m_keyMethods.IsLessThanOrEqualTo(CurrentKey, m_keySeekFilter.EndOfFrame))
                     {
                         Stats.PointsScanned++;
-                        if (m_isKey2Universal || m_poingIdFilter.ContainsPointID(CurrentKey.PointID))
+                        if (m_keyMatchFilter == null || m_keyMatchFilter.Contains(CurrentKey))
                         {
                             Stats.PointsReturned++;
                             return true;
                         }
                         goto TryAgain;
                     }
-
-                    if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
+                    if (m_keySeekFilter != null && m_keySeekFilter.NextWindow())
                     {
-                        TKey key = new TKey();
-                        key.Timestamp = m_startKey;
                         Stats.SeeksRequested++;
-                        m_currentScanner.SeekToKey(key);
+                        m_currentScanner.SeekToKey(m_keySeekFilter.StartOfFrame);
                         goto TryAgain;
                     }
                 }
@@ -194,20 +240,28 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 }
                 if (m_tables.Count > 0)
                 {
-                    m_timestampFilter.Reset();
-                    if (!m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
-                    {
-                        throw new Exception("No keys in the list");
-                    }
-
                     KeyValuePair<int, ArchiveTableSummary<TKey, TValue>> kvp = m_tables.Dequeue();
                     m_currentIndex = kvp.Key;
                     m_currentInstance = kvp.Value.ActiveSnapshotInfo.CreateReadSnapshot();
                     m_currentScanner = m_currentInstance.GetTreeScanner();
-                    TKey key = new TKey();
-                    key.Timestamp = m_startKey;
-                    m_currentScanner.SeekToKey(key);
                     SetKeyValueReferences(m_currentScanner.CurrentKey, m_currentScanner.CurrentValue);
+
+                    if (m_keySeekFilter != null)
+                    {
+                        m_keySeekFilter.Reset();
+                        if (!m_keySeekFilter.NextWindow())
+                        {
+                            throw new Exception("No keys in the list");
+                        }
+                        m_currentScanner.SeekToKey(m_keySeekFilter.StartOfFrame);
+                    }
+                    else
+                    {
+                        TKey key = new TKey();
+                        m_keyMethods.SetMin(key);
+                        m_currentScanner.SeekToKey(key);
+
+                    }
 
                     Stats.SeeksRequested++;
                 }

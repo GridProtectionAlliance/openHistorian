@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Filters;
 using NUnit.Framework;
 using openHistorian;
 using GSF.SortedTreeStore.Storage;
@@ -41,8 +42,10 @@ namespace GSF.SortedTreeStore.Engine
                 var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
                 var scanner = sequencer.Read().TestSequential();
 
+                int count = 0;
                 while (scanner.Read())
                 {
+                    count++;
                     if (!masterScanSequential.Read())
                         throw new Exception();
 
@@ -348,7 +351,7 @@ namespace GSF.SortedTreeStore.Engine
                 }
             }
 
-            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
+            var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
             var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
@@ -395,7 +398,7 @@ namespace GSF.SortedTreeStore.Engine
                 }
             }
 
-            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
+            var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
             var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);
@@ -417,7 +420,7 @@ namespace GSF.SortedTreeStore.Engine
                 }
             }
 
-            var filter = QueryFilterTimestamp.CreateFromIntervalData(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
+            var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
             var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);
@@ -448,7 +451,7 @@ namespace GSF.SortedTreeStore.Engine
                 }
             }
 
-            var filter = QueryFilterTimestamp.CreateFromIntervalData(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
+            var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
             var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);

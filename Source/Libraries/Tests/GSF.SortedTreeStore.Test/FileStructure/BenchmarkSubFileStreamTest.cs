@@ -13,7 +13,7 @@ namespace GSF.SortedTreeStore.Storage.Test.FileStructure
         public void TestSubFileStream()
         {
             const int BlockSize = 256;
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
+            MemoryPoolTest.TestMemoryLeak();
             //string file = Path.GetTempFileName();
             //System.IO.File.Delete(file);
             try
@@ -44,8 +44,7 @@ namespace GSF.SortedTreeStore.Storage.Test.FileStructure
                 //System.IO.File.Delete(file);
             }
 
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
-            Assert.IsTrue(true);
+            MemoryPoolTest.TestMemoryLeak();
         }
     }
 }

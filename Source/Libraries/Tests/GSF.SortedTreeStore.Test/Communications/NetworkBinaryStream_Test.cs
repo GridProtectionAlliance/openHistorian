@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.Net
@@ -15,6 +16,7 @@ namespace GSF.Net
         [Test]
         public void Test1()
         {
+            MemoryPoolTest.TestMemoryLeak();
             TcpListener listener = new TcpListener(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 42134));
             listener.Start();
             TcpClient client = new TcpClient();
@@ -51,6 +53,8 @@ namespace GSF.Net
             server.Close();
             client.Close();
             listener.Stop();
+            MemoryPoolTest.TestMemoryLeak();
+
         }
     }
 }

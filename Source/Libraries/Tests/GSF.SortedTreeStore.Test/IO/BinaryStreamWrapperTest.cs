@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.IO.Test
@@ -12,6 +13,7 @@ namespace GSF.IO.Test
         [Test()]
         public void Test()
         {
+            MemoryPoolTest.TestMemoryLeak();
             const int count = 1000;
             MemoryStream ms = new MemoryStream();
             ms.Write(new byte[100000], 0, 100000);
@@ -121,7 +123,7 @@ namespace GSF.IO.Test
             sw.Stop();
             Assert.IsTrue(true);
             ms.Dispose();
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
+            MemoryPoolTest.TestMemoryLeak();
 
             //MessageBox.Show((count * count * 10 / sw.Elapsed.TotalSeconds / 1000000).ToString());
         }

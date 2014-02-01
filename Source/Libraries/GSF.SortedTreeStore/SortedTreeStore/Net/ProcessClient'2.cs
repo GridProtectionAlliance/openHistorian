@@ -28,6 +28,7 @@ using System.Text;
 using GSF.Net;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Filters;
 using openHistorian;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Net.Initialization;
@@ -196,11 +197,13 @@ namespace GSF.SortedTreeStore.Net
 
         private void ProcessRead()
         {
-            QueryFilterTimestamp key1Parser = QueryFilterTimestamp.CreateFromStream(m_stream);
-            QueryFilterPointId key2Parser = QueryFilterPointId.CreateFromStream(m_stream);
+            var key1Parser = TimestampFilter.CreateFromStream<TKey>(m_stream);
+            //QueryFilterTimestamp key1Parser = QueryFilterTimestamp.CreateFromStream(m_stream);
+            var key2Parser = PointIDFilter.CreateFromStream<TKey>(m_stream);
+            //QueryFilterPointId key2Parser = QueryFilterPointId.CreateFromStream(m_stream);
             SortedTreeEngineReaderOptions readerOptions = new SortedTreeEngineReaderOptions(m_stream);
 
-            TreeStream<TKey, TValue> scanner = m_historianReaderBase.Read(key1Parser, key2Parser, readerOptions);
+            TreeStream<TKey, TValue> scanner = m_historianReaderBase.Read(readerOptions, key1Parser, key2Parser, null);
             m_compressionMode.ResetEncoder();
             int loop = 0;
             while (scanner.Read())

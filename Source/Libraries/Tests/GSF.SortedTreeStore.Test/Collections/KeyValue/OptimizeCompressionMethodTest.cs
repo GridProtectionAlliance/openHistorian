@@ -9,7 +9,6 @@ using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Collections
 {
-    [TestFixture]
     public class OptimizeCompressionMethodTest
     {
         public unsafe static void Run()

@@ -10,13 +10,13 @@ namespace GSF.IO.Unmanaged.Test
         [Test()]
         public void Test()
         {
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
+            MemoryPoolTest.TestMemoryLeak();
             SelfTest();
             UnmanagedMemoryStream ms = new UnmanagedMemoryStream();
             BinaryStreamTest.Test(ms);
             Assert.IsTrue(true);
             ms.Dispose();
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         private static void SelfTest()

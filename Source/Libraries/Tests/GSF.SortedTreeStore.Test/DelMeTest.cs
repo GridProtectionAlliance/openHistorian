@@ -35,7 +35,8 @@ namespace openHistorian
                 {
                     var stream = reader.Read();
                     while (stream.Read())
-                        System.Threading.Thread.Sleep(1);
+                        ;
+                    //System.Threading.Thread.Sleep(1);
                 }
 
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  EngineKeyBase'1.cs - Gbtc
+//  KeyMatchFilterBase`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,66 +16,48 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/12/2013 - Steven E. Chisholm
+//  11/9/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
+using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Engine
+namespace GSF.SortedTreeStore.Filters
 {
     /// <summary>
-    /// Base implementation of a historian key. 
-    /// These are the required functions that are 
-    /// necessary for the historian engine to operate
+    /// Represents some kind of filter that does a match based on the key.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public abstract class EngineKeyBase<TKey>
-        : IComparable<TKey>, IEquatable<TKey>, ISortedTreeKey<TKey>
-        where TKey : class,new()
+    public abstract class KeyMatchFilterBase<TKey>
     {
-        /// <summary>
-        /// The timestamp stored as native ticks. 
-        /// </summary>
-        public ulong Timestamp;
 
         /// <summary>
-        /// The id number of the point.
+        /// The filter guid 
         /// </summary>
-        public ulong PointID;
-       
+        public abstract Guid FilterType { get; }
+
         /// <summary>
-        /// Compares the current instance to <see cref="other"/>.
+        /// Loads a filter from the provided <see cref="stream"/>.
         /// </summary>
-        /// <param name="other">the key to compare to</param>
+        /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
-        public abstract int CompareTo(TKey other);
-    
+        public abstract void Load(BinaryStreamBase stream);
+
         /// <summary>
-        /// Is the current instance equal to <see cref="other"/>
+        /// Serializes the filter to a stream
         /// </summary>
-        /// <param name="other">the key to compare to</param>
+        /// <param name="stream">the stream to write to</param>
+        public abstract void Save(BinaryStreamBase stream);
+
+        /// <summary>
+        /// Determines if a key is contained in the filter
+        /// </summary>
+        /// <param name="key">the key to check</param>
         /// <returns></returns>
-        public bool IsEqualTo(TKey other)
-        {
-            return CompareTo(other) == 0;
-        }
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <returns>
-        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-        /// </returns>
-        /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(TKey other)
-        {
-            return IsEqualTo(other);
-        }
-
-        public abstract SortedTreeKeyMethodsBase<TKey> CreateKeyMethods();
-        public abstract void RegisterImplementations();
+        public abstract bool Contains(TKey key);
+      
     }
 }

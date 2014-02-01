@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeUInt32.cs - Gbtc
+//  ValueMatchFilterBase`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/12/2013 - Steven E. Chisholm
+//  11/9/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
@@ -25,38 +25,37 @@ using System;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Types
+namespace GSF.SortedTreeStore.Filters
 {
-    public class SortedTreeUInt32
-        : ISortedTreeKey<SortedTreeUInt32>, ISortedTreeValue<SortedTreeUInt32>
+    /// <summary>
+    /// Represents a match like finter based on the value
+    /// </summary>
+    /// <typeparam name="TValue"></typeparam>
+    public abstract class ValueMatchFilterBase<TValue>
     {
-        public SortedTreeUInt32()
-        {
+        /// <summary>
+        /// The filter guid 
+        /// </summary>
+        public abstract Guid FilterType { get; }
 
-        }
-        public SortedTreeUInt32(uint value)
-        {
-            Value = value;
-        }
+        /// <summary>
+        /// Loads a filter from the provided <see cref="stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream to load the filter from</param>
+        /// <returns></returns>
+        public abstract void Load(BinaryStreamBase stream);
 
-        public uint Value;
+        /// <summary>
+        /// Serializes the filter to a stream
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        public abstract void Save(BinaryStreamBase stream);
 
-        public SortedTreeKeyMethodsBase<SortedTreeUInt32> CreateKeyMethods()
-        {
-            return new SortedTreeKeyMethodsUInt32();
-        }
-
-        public SortedTreeValueMethodsBase<SortedTreeUInt32> CreateValueMethods()
-        {
-            return new SortedTreeValueMethodsUInt32();
-        }
-
-        void ISortedTreeValue<SortedTreeUInt32>.RegisterImplementations()
-        {
-        }
-        void ISortedTreeKey<SortedTreeUInt32>.RegisterImplementations()
-        {
-        }
+        /// <summary>
+        /// Determines if a value is contained in the filter
+        /// </summary>
+        /// <param name="value">the value to check</param>
+        /// <returns></returns>
+        public abstract bool Contains(TValue value);
     }
-  
 }

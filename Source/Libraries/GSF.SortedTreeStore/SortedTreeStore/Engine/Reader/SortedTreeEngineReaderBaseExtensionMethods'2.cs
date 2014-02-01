@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 using openHistorian;
 
@@ -34,54 +35,53 @@ namespace GSF.SortedTreeStore.Engine.Reader
 {
     public static class SortedTreeEngineReaderBaseExtensionMethods
     {
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey,TValue> reader, ulong timestamp)
+        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, ulong timestamp)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(QueryFilterTimestamp.CreateFromRange(timestamp, timestamp), QueryFilterPointId.CreateAllKeysValid(), SortedTreeEngineReaderOptions.Default);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(timestamp, timestamp), null, null);
         }
 
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, QueryFilterTimestamp timeFilter)
+        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, KeySeekFilterBase<TKey> timeFilter)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(timeFilter, QueryFilterPointId.CreateAllKeysValid(), SortedTreeEngineReaderOptions.Default);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, timeFilter, null, null);
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            QueryFilterTimestamp.CreateAllKeysValid();
-            return reader.Read(QueryFilterTimestamp.CreateAllKeysValid(), QueryFilterPointId.CreateAllKeysValid(), SortedTreeEngineReaderOptions.Default);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, null, null, null);
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, ulong firstTime, ulong lastTime)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateAllKeysValid(), SortedTreeEngineReaderOptions.Default);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(firstTime, lastTime), null, null);
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, ulong firstTime, ulong lastTime, IEnumerable<ulong> pointIds)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateFromList(pointIds.ToList()), SortedTreeEngineReaderOptions.Default);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(firstTime, lastTime), PointIDFilter.CreateFromList<TKey>(pointIds.ToList()),null);
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, DateTime firstTime, DateTime lastTime, IEnumerable<ulong> pointIds)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(QueryFilterTimestamp.CreateFromRange(firstTime, lastTime), QueryFilterPointId.CreateFromList(pointIds.ToList()), SortedTreeEngineReaderOptions.Default);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(firstTime, lastTime), PointIDFilter.CreateFromList<TKey>(pointIds.ToList()), null);
         }
 
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, QueryFilterTimestamp key1, IEnumerable<ulong> pointIds)
+        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, KeySeekFilterBase<TKey> key1, IEnumerable<ulong> pointIds)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(key1, QueryFilterPointId.CreateFromList(pointIds.ToList()), SortedTreeEngineReaderOptions.Default);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, key1, PointIDFilter.CreateFromList<TKey>(pointIds.ToList()), null);
         }
 
     }

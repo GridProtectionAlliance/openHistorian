@@ -5,16 +5,6 @@ using NUnit.Framework;
 namespace GSF.IO.Unmanaged.Test
 {
     [TestFixture()]
-    public class BufferPoolTest2
-    {
-        [Test()]
-        public void TestMemoryLeak()
-        {
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
-        }
-    }
-
-    [TestFixture()]
     public class BufferPoolTest
     {
         private static List<int> lst;
@@ -22,8 +12,7 @@ namespace GSF.IO.Unmanaged.Test
         [Test()]
         public void Test()
         {
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
-
+            MemoryPoolTest.TestMemoryLeak();
 
             EventHandler<CollectionEventArgs> del = new EventHandler<CollectionEventArgs>(BufferPool_RequestCollection);
             Globals.MemoryPool.RequestCollection += del;
@@ -33,10 +22,7 @@ namespace GSF.IO.Unmanaged.Test
 
             Globals.MemoryPool.RequestCollection -= del;
 
-            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
-
-
-            Assert.IsTrue(true);
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         //static void Test1()
