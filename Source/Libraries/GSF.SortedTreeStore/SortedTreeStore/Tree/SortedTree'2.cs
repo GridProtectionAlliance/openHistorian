@@ -61,7 +61,7 @@ namespace GSF.SortedTreeStore.Tree
 
         #region [ Constructors ]
 
-        internal SortedTree(BinaryStreamBase stream1, BinaryStreamBase stream2)
+        internal SortedTree(BinaryStreamBaseOld stream1, BinaryStreamBaseOld stream2)
         {
             KeyMethods = new TKey().CreateKeyMethods();
             ValueMethods = new TValue().CreateValueMethods();
@@ -172,13 +172,13 @@ namespace GSF.SortedTreeStore.Tree
         /// <summary>
         /// Contains the stream for reading and writing.
         /// </summary>
-        protected BinaryStreamBase Stream
+        protected BinaryStreamBaseOld Stream
         {
             get;
             private set;
         }
 
-        protected BinaryStreamBase StreamLeaf
+        protected BinaryStreamBaseOld StreamLeaf
         {
             get;
             private set;
@@ -316,11 +316,11 @@ namespace GSF.SortedTreeStore.Tree
 
         #region [ Protected Methods ]
 
-        protected virtual void OnLoadingHeader(BinaryStreamBase stream)
+        protected virtual void OnLoadingHeader(BinaryStreamBaseOld stream)
         {
         }
 
-        protected virtual void OnSavingHeader(BinaryStreamBase stream)
+        protected virtual void OnSavingHeader(BinaryStreamBaseOld stream)
         {
         }
 
@@ -399,7 +399,7 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="stream">the stream to use to open.</param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Open(BinaryStreamBase stream)
+        public static SortedTree<TKey, TValue> Open(BinaryStreamBaseOld stream)
         {
             return Open(stream, stream);
         }
@@ -409,7 +409,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream1">the first stream</param>
         /// <param name="stream2">the second stream</param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Open(BinaryStreamBase stream1, BinaryStreamBase stream2)
+        public static SortedTree<TKey, TValue> Open(BinaryStreamBaseOld stream1, BinaryStreamBaseOld stream2)
         {
             SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream1, stream2);
             tree.InitializeOpen();
@@ -422,7 +422,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize)
+        public static SortedTree<TKey, TValue> Create(BinaryStreamBaseOld stream, int blockSize)
         {
             return Create(stream, stream, blockSize);
         }
@@ -433,7 +433,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream2"></param>
         /// <param name="blockSize"></param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
+        public static SortedTree<TKey, TValue> Create(BinaryStreamBaseOld stream1, BinaryStreamBaseOld stream2, int blockSize)
         {
             return Create(stream1, stream2, blockSize, SortedTree.FixedSizeNode);
         }
@@ -444,7 +444,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="blockSize"></param>
         /// <param name="treeNodeType"></param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize, Guid treeNodeType)
+        public static SortedTree<TKey, TValue> Create(BinaryStreamBaseOld stream, int blockSize, Guid treeNodeType)
         {
             return Create(stream, stream, blockSize, treeNodeType);
         }
@@ -456,7 +456,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="blockSize"></param>
         /// <param name="treeNodeType"></param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize, Guid treeNodeType)
+        public static SortedTree<TKey, TValue> Create(BinaryStreamBaseOld stream1, BinaryStreamBaseOld stream2, int blockSize, Guid treeNodeType)
         {
             SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream1, stream2);
             tree.InitializeCreate(SortedTree.FixedSizeNode, treeNodeType, blockSize);

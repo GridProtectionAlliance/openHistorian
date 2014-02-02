@@ -118,7 +118,7 @@ namespace GSF.SortedTreeStore.Net
         {
             while (true)
             {
-                ServerCommand command = (ServerCommand)m_stream.ReadByte();
+                ServerCommand command = (ServerCommand)m_stream.ReadUInt8();
                 switch (command)
                 {
                     case ServerCommand.SetCompressionMode:
@@ -150,7 +150,7 @@ namespace GSF.SortedTreeStore.Net
         {
             while (true)
             {
-                switch ((ServerCommand)m_stream.ReadByte())
+                switch ((ServerCommand)m_stream.ReadUInt8())
                 {
                     case ServerCommand.OpenReader:
                         m_historianReaderBase = m_sortedTreeEngine.OpenDataReader();
@@ -174,7 +174,7 @@ namespace GSF.SortedTreeStore.Net
         {
             while (true)
             {
-                switch ((ServerCommand)m_stream.ReadByte())
+                switch ((ServerCommand)m_stream.ReadUInt8())
                 {
                     case ServerCommand.DisconnectReader:
                         m_historianReaderBase.Close();

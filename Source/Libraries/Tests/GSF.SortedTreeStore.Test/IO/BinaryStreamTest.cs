@@ -18,7 +18,7 @@ namespace GSF.IO.Test
             //ms.Write(new byte[100000], 0, 100000);
             //ms.Write(new byte[100000], 0, 100000);
             //ms.Position = 0;
-            BinaryStream bs = new BinaryStream(ms);
+            BinaryStreamOld bs = new BinaryStreamOld(ms);
             Stopwatch sw = new Stopwatch();
             //DateTime b = DateTime.UtcNow;
             long b = 10;
@@ -128,7 +128,7 @@ namespace GSF.IO.Test
 
         public static unsafe void Test(ISupportsBinaryStream stream)
         {
-            BinaryStream bs = new BinaryStream(stream);
+            BinaryStreamOld bs = new BinaryStreamOld(stream);
             Random rand = new Random();
             int seed = rand.Next();
             rand = new Random(seed);

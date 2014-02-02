@@ -116,6 +116,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         /// <param name="currentValue"></param>
         /// <param name="previousValue"></param>
+        public abstract void WriteCompressed(BinaryStreamBaseOld stream, TValue currentValue, TValue previousValue);
         public abstract void WriteCompressed(BinaryStreamBase stream, TValue currentValue, TValue previousValue);
         /// <summary>
         /// Reads the <see cref="currentValue"/> as a delta from the <see cref="previousValue"/> from the provided stream.
@@ -123,6 +124,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         /// <param name="currentValue"></param>
         /// <param name="previousValue"></param>
+        public abstract void ReadCompressed(BinaryStreamBaseOld stream, TValue currentValue, TValue previousValue);
         public abstract void ReadCompressed(BinaryStreamBase stream, TValue currentValue, TValue previousValue);
         /// <summary>
         /// Copies the source to the destination
@@ -164,6 +166,15 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="data"></param>
+        public virtual unsafe void Write(BinaryStreamBaseOld stream, TValue data)
+        {
+#if GetTreeValueMethodsCallCount
+            CallMethods[(int)Method.WriteBinaryStreamBase]++;
+#endif
+            byte* ptr = stackalloc byte[Size];
+            Write(ptr, data);
+            stream.Write(ptr, Size);
+        }
         public virtual unsafe void Write(BinaryStreamBase stream, TValue data)
         {
 #if GetTreeValueMethodsCallCount
@@ -178,13 +189,23 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="data"></param>
-        public virtual unsafe void Read(BinaryStreamBase stream, TValue data)
+        public virtual unsafe void Read(BinaryStreamBaseOld stream, TValue data)
         {
 #if GetTreeValueMethodsCallCount
             CallMethods[(int)Method.ReadBinaryStreamBase]++;
 #endif
             byte* ptr = stackalloc byte[Size];
             stream.Read(ptr, Size);
+            Read(ptr, data);
+        }
+
+        public virtual unsafe void Read(BinaryStreamBase stream, TValue data)
+        {
+#if GetTreeValueMethodsCallCount
+            CallMethods[(int)Method.ReadBinaryStreamBase]++;
+#endif
+            byte* ptr = stackalloc byte[Size];
+            stream.ReadAll(ptr, Size);
             Read(ptr, data);
         }
     }

@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using GSF.IO;
@@ -40,9 +41,13 @@ namespace GSF.Net
         byte[] m_sendBuffer;
 
         private Socket m_socket;
+        Stream m_stream;
 
         public NetworkBinaryStream(Socket socket, int timeout = -1)
         {
+            if (!BitConverter.IsLittleEndian)
+                throw new Exception("BigEndian processors are not supported");
+
             m_receiveBuffer = new byte[BufferSize];
             m_sendBuffer = new byte[BufferSize];
             m_sendLength = 0;
@@ -52,6 +57,7 @@ namespace GSF.Net
             m_socket = socket;
             Timeout = timeout;
             m_socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
+            m_stream = new NetworkStream(socket);
         }
 
         public Socket Socket
@@ -108,6 +114,22 @@ namespace GSF.Net
             }
         }
 
+        public override bool CanWrite
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public override long Length
+        {
+            get
+            {
+                throw new NotSupportedException();
+            }
+        }
+
         public override long Position
         {
             get
@@ -120,10 +142,20 @@ namespace GSF.Net
             }
         }
 
-        public void Flush()
+        public override void Flush()
         {
-            SendToSocket(m_sendBuffer, 0, m_sendLength);
+            m_stream.Write(m_sendBuffer, 0, m_sendLength);
             m_sendLength = 0;
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -159,7 +191,7 @@ namespace GSF.Net
                 //Loop since ReceiveFromSocket can return parial results.
                 while (count > 0)
                 {
-                    receiveBufferLength = ReceiveFromSocket(buffer, offset, count);
+                    receiveBufferLength = m_stream.Read(buffer, offset, count);
                     offset += receiveBufferLength;
                     count -= receiveBufferLength;
                 }
@@ -174,7 +206,7 @@ namespace GSF.Net
                 m_receiveLength = 0;
                 while (m_receiveLength < count)
                 {
-                    receiveBufferLength = ReceiveFromSocket(m_receiveBuffer, m_receiveLength, prebufferLength);
+                    receiveBufferLength = m_stream.Read(m_receiveBuffer, m_receiveLength, prebufferLength);
                     m_receiveLength += receiveBufferLength;
                     prebufferLength -= receiveBufferLength;
                 }
@@ -184,9 +216,12 @@ namespace GSF.Net
             }
         }
 
-        public override unsafe void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            Disconnect();
+            if (disposing)
+                Disconnect();
+
+            base.Dispose(disposing);
         }
 
         public override void Write(bool value)
@@ -312,7 +347,7 @@ namespace GSF.Net
             return base.ReadBoolean();
         }
 
-        public override byte ReadByte()
+        public override byte ReadUInt8()
         {
             if (m_receivePosition < m_receiveLength)
             {
@@ -320,7 +355,7 @@ namespace GSF.Net
                 m_receivePosition++;
                 return value;
             }
-            return base.ReadByte();
+            return base.ReadUInt8();
         }
 
         public unsafe override long ReadInt64()
@@ -408,12 +443,28 @@ namespace GSF.Net
 
             if (count > 100)
             {
-                SendToSocket(buffer, offset, count);
+                m_stream.Write(buffer, offset, count);
             }
             else
             {
                 Array.Copy(buffer, offset, m_sendBuffer, m_sendLength, count);
                 m_sendLength += count;
+            }
+        }
+
+        public override bool CanRead
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public override bool CanSeek
+        {
+            get
+            {
+                return false;
             }
         }
 
@@ -440,43 +491,6 @@ namespace GSF.Net
                 catch
                 {
                 }
-            }
-        }
-
-        private void SendToSocket(byte[] buffer, int offset, int count)
-        {
-            if (!Connected)
-                throw new Exception("Not Connected");
-            try
-            {
-                if (m_socket.Send(buffer, offset, count, SocketFlags.None) != count)
-                    throw new Exception("Something isn't right");
-            }
-            catch
-            {
-                Disconnect();
-                throw;
-            }
-        }
-
-        int ReceiveFromSocket(byte[] buffer, int offset, int count)
-        {
-            if (!Connected)
-                throw new Exception("Not Connected");
-            try
-            {
-                int rec = m_socket.Receive(buffer, offset, count, SocketFlags.None);
-                if (rec == 0)
-                {
-                    Disconnect();
-                    return 0;
-                }
-                return rec;
-            }
-            catch
-            {
-                Disconnect();
-                throw;
             }
         }
     }

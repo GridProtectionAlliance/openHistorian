@@ -38,6 +38,18 @@ namespace GSF.SortedTreeStore.Types
             return 16;
         }
 
+        public override void ReadCompressed(BinaryStreamBaseOld stream, SortedTreeUInt128 currentValue, SortedTreeUInt128 previousValue)
+        {
+            currentValue.Value1 = stream.Read7BitUInt64() ^ previousValue.Value1;
+            currentValue.Value2 = stream.Read7BitUInt64() ^ previousValue.Value2;
+        }
+
+        public override void WriteCompressed(BinaryStreamBaseOld stream, SortedTreeUInt128 currentValue, SortedTreeUInt128 previousValue)
+        {
+            stream.Write7Bit(previousValue.Value1 ^ currentValue.Value1);
+            stream.Write7Bit(previousValue.Value2 ^ currentValue.Value2);
+        }
+
         public override void ReadCompressed(BinaryStreamBase stream, SortedTreeUInt128 currentValue, SortedTreeUInt128 previousValue)
         {
             currentValue.Value1 = stream.Read7BitUInt64() ^ previousValue.Value1;

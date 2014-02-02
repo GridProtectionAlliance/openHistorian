@@ -42,7 +42,7 @@ namespace openHistorian.Utility
             if (File.Exists(newFileName))
                 throw new ArgumentException("New file already exists", "newFileName");
 
-            using (var bs0 = new BinaryStream())
+            using (var bs0 = new BinaryStreamOld())
             {
                 var key = new HistorianKey();
                 var value = new HistorianValue();

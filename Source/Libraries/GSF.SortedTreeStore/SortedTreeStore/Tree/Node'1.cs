@@ -56,7 +56,7 @@ namespace GSF.SortedTreeStore.Tree
         protected SortedTreeKeyMethodsBase<TKey> KeyMethods;
         protected byte Level;
         protected int BlockSize;
-        protected BinaryStreamBase Stream;
+        protected BinaryStreamBaseOld Stream;
         private uint m_nodeIndex;
         private ushort m_recordCount;
         private ushort m_validBytes;
@@ -87,7 +87,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="blockSize"></param>
         /// <param name="level"></param>
         /// <param name="version">The version code of the node.</param>
-        public Node(BinaryStreamBase stream, int blockSize, byte level, byte version)
+        public Node(BinaryStreamBaseOld stream, int blockSize, byte level, byte version)
             : this(level, version)
         {
             InitializeNode(stream, blockSize);
@@ -98,7 +98,7 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
-        protected void InitializeNode(BinaryStreamBase stream, int blockSize)
+        protected void InitializeNode(BinaryStreamBaseOld stream, int blockSize)
         {
             if (m_initialized)
                 throw new Exception("Duplicate calls to initialize");

@@ -23,14 +23,13 @@
 //******************************************************************************************************
 
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.Unmanaged
 {
-    public unsafe class BinaryStream
-        : BinaryStreamBase
+    public unsafe class BinaryStreamOld 
+        : BinaryStreamBaseOld
     {
         #region [ Members ]
 
@@ -85,34 +84,29 @@ namespace GSF.IO.Unmanaged
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a <see cref="BinaryStream"/> that is in memory only.
+        /// Creates a <see cref="BinaryStreamOld"/> that is in memory only.
         /// </summary>
-        public BinaryStream()
+        public BinaryStreamOld()
             : this(new MemoryPoolStream(), false)
         {
-            if (!BitConverter.IsLittleEndian)
-                throw new Exception("Only designed to run on a little endian processor.");
         }
 
         /// <summary>
-        /// Creates a <see cref="BinaryStream"/> that is in memory only.
+        /// Creates a <see cref="BinaryStreamOld"/> that is in memory only.
         /// </summary>
-        public BinaryStream(MemoryPool pool)
+        public BinaryStreamOld(MemoryPool pool)
             : this(new MemoryPoolStream(pool), false)
         {
-            if (!BitConverter.IsLittleEndian)
-                throw new Exception("Only designed to run on a little endian processor.");
         }
 
         /// <summary>
-        /// Creates a <see cref="BinaryStream"/> that is in memory only.
+        /// Creates a <see cref="BinaryStreamOld"/> that is in memory only.
         /// </summary>
         /// <param name="allocatesOwnMemory">true to allowcate its own memory rather than using the <see cref="MemoryPool"/>.</param>
-        public BinaryStream(bool allocatesOwnMemory)
+        public BinaryStreamOld(bool allocatesOwnMemory)
             : this(CreatePool(allocatesOwnMemory))
         {
-            if (!BitConverter.IsLittleEndian)
-                throw new Exception("Only designed to run on a little endian processor.");
+
         }
 
         static ISupportsBinaryStream CreatePool(bool allocatesOwnMemory)
@@ -124,12 +118,12 @@ namespace GSF.IO.Unmanaged
         }
 
         /// <summary>
-        /// Creates a <see cref="BinaryStream"/> that is at position 0 of the provided stream.
+        /// Creates a <see cref="BinaryStreamOld"/> that is at position 0 of the provided stream.
         /// </summary>
         /// <param name="stream">The base stream to use.</param>
         /// <param name="leaveOpen">Determines if the underlying stream will automatically be 
         /// disposed of when this class has it's dispose method called.</param>
-        public BinaryStream(ISupportsBinaryStream stream, bool leaveOpen = true)
+        public BinaryStreamOld(ISupportsBinaryStream stream, bool leaveOpen = true)
             : base()
         {
             m_args = new BlockArguments();
@@ -145,12 +139,6 @@ namespace GSF.IO.Unmanaged
             m_mainIoSession = stream.CreateIoSession();
             //if (stream.RemainingSupportedIoSessions >= 1)
             //    m_secondaryIoSession = stream.CreateIoSession();
-        }
-
-        ~BinaryStream()
-        {
-            Dispose(false);
-            GC.SuppressFinalize(this);
         }
 
         #endregion
@@ -176,38 +164,6 @@ namespace GSF.IO.Unmanaged
             get
             {
                 return m_stream.RemainingSupportedIoSessions > 0 || m_secondaryIoSession != null;
-            }
-        }
-
-        public override bool CanWrite
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        public override long Length
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
-
-        public override bool CanRead
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        public override bool CanSeek
-        {
-            get
-            {
-                return true;
             }
         }
 
@@ -311,12 +267,12 @@ namespace GSF.IO.Unmanaged
         /// Clones a binary stream if it is supported.  Check <see cref="SupportsAnotherClone"/> before calling this method.
         /// </summary>
         /// <returns></returns>
-        public override BinaryStreamBase CloneStream()
+        public override BinaryStreamBaseOld CloneStream()
         {
             if (!SupportsAnotherClone)
                 throw new Exception("Base stream does not support additional clones");
 
-            return new BinaryStream(m_stream, false);
+            return new BinaryStreamOld(m_stream, false);
         }
 
         public override byte* GetWritePointer(long position, int length)
@@ -438,7 +394,7 @@ namespace GSF.IO.Unmanaged
             //manually perform the copy
             byte[] data = new byte[length];
             Position = source;
-            ReadAll(data, 0, data.Length);
+            Read(data, 0, data.Length);
             Position = destination;
             Write(data, 0, data.Length);
         }
@@ -739,8 +695,6 @@ namespace GSF.IO.Unmanaged
             Write2(value, offset, count);
         }
 
-        
-
         private void Write2(byte[] value, int offset, int count)
         {
             while (count > 0)
@@ -775,7 +729,7 @@ namespace GSF.IO.Unmanaged
                 return value;
             }
             value = ReadUInt16();
-            return value | ((uint)ReadUInt8() << 16);
+            return value | ((uint)ReadByte() << 16);
         }
 
         public override ulong ReadUInt40()
@@ -788,7 +742,7 @@ namespace GSF.IO.Unmanaged
                 return value;
             }
             value = ReadUInt32();
-            return value | ((ulong)ReadUInt8() << 32);
+            return value | ((ulong)ReadByte() << 32);
         }
 
         public override ulong ReadUInt48()
@@ -821,7 +775,7 @@ namespace GSF.IO.Unmanaged
 
         #region Core Types
 
-        public override byte ReadUInt8()
+        public override byte ReadByte()
         {
             const int size = sizeof(byte);
             if (m_current < m_lastRead)
@@ -830,7 +784,7 @@ namespace GSF.IO.Unmanaged
                 m_current += size;
                 return value;
             }
-            return base.ReadUInt8();
+            return base.ReadByte();
         }
 
         public override short ReadInt16()
@@ -1017,8 +971,6 @@ namespace GSF.IO.Unmanaged
             return base.Read7BitUInt64();
         }
 
-       
-
         public override int Read(byte[] value, int offset, int count)
         {
             if (RemainingReadLength >= count)
@@ -1052,29 +1004,10 @@ namespace GSF.IO.Unmanaged
 
         #endregion
 
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            switch (origin)
-            {
-                case SeekOrigin.Begin:
-                    Position = offset;
-                    break;
-                case SeekOrigin.Current:
-                    Position += offset;
-                    break;
-                case SeekOrigin.End:
-                    Position = Length + offset;
-                    break;
-            }
-            return Position;
-        }
-
-        public override void SetLength(long value)
-        {
-            throw new NotSupportedException();
-        }
-
-        protected override void Dispose(bool disposing)
+        /// <summary>
+        /// Releases all the resources used by the <see cref="BinaryStreamOld"/> object.
+        /// </summary>
+        public override void Dispose()
         {
             if (!m_disposed)
             {
@@ -1102,12 +1035,6 @@ namespace GSF.IO.Unmanaged
                     m_disposed = true;
                 }
             }
-            base.Dispose(disposing);
-        }
-
-        public override void Flush()
-        {
-            //Do Nothing
         }
 
         #endregion

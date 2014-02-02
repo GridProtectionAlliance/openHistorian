@@ -48,7 +48,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <param name="blockSize"></param>
         /// <param name="stream"></param>
         /// <param name="lookupKey"></param>
-        public HistorianCompressionDeltaScanner(byte level, int blockSize, BinaryStreamBase stream, Func<HistorianKey, byte, uint> lookupKey)
+        public HistorianCompressionDeltaScanner(byte level, int blockSize, BinaryStreamBaseOld stream, Func<HistorianKey, byte, uint> lookupKey)
             : base(level, blockSize, stream, lookupKey, 2)
         {
         }

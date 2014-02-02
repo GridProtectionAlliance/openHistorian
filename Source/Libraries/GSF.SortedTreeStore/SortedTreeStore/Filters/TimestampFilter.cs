@@ -154,7 +154,7 @@ namespace GSF.SortedTreeStore.Filters
         public static KeySeekFilterBase<TKey> CreateFromStream<TKey>(BinaryStreamBase stream)
             where TKey : EngineKeyBase<TKey>, new()
         {
-            byte version = stream.ReadByte();
+            byte version = stream.ReadUInt8();
             switch (version)
             {
                 case 0:

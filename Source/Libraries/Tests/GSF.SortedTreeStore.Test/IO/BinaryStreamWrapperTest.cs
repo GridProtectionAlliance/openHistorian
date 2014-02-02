@@ -19,7 +19,7 @@ namespace GSF.IO.Test
             ms.Write(new byte[100000], 0, 100000);
             ms.Write(new byte[100000], 0, 100000);
             ms.Position = 0;
-            BinaryStreamWrapper bs = new BinaryStreamWrapper(ms);
+            BinaryStreamWrapperOld bs = new BinaryStreamWrapperOld(ms);
             Stopwatch sw = new Stopwatch();
             //DateTime b = DateTime.UtcNow;
             long b = 10;
@@ -132,7 +132,7 @@ namespace GSF.IO.Test
         public unsafe void TestMethod()
         {
             MemoryStream stream = new MemoryStream();
-            BinaryStreamWrapper bs = new BinaryStreamWrapper(stream);
+            BinaryStreamWrapperOld bs = new BinaryStreamWrapperOld(stream);
             Random rand = new Random();
             int seed = rand.Next();
             rand = new Random(seed);

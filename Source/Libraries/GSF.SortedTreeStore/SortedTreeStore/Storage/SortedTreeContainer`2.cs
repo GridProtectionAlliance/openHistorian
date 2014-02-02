@@ -39,7 +39,7 @@ namespace GSF.SortedTreeStore.Storage
         #region [ Members ]
 
         private SubFileStream m_subStream;
-        private BinaryStream m_binaryStream;
+        private BinaryStreamOld m_binaryStream;
         private SortedTree<TKey, TValue> m_tree;
         private bool m_disposed;
 
@@ -50,7 +50,7 @@ namespace GSF.SortedTreeStore.Storage
         public SortedTreeContainer(TransactionalRead currentTransaction, SubFileName fileName)
         {
             m_subStream = currentTransaction.OpenFile(fileName);
-            m_binaryStream = new BinaryStream(m_subStream);
+            m_binaryStream = new BinaryStreamOld(m_subStream);
             m_tree = SortedTree<TKey, TValue>.Open(m_binaryStream);
         }
 

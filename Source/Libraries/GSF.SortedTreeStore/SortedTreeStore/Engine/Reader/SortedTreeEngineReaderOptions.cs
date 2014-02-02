@@ -67,7 +67,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
         /// <param name="stream">the stream to read from</param>
         public SortedTreeEngineReaderOptions(BinaryStreamBase stream)
         {
-            byte version = stream.ReadByte();
+            byte version = stream.ReadUInt8();
             switch (version)
             {
                 case 0:

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.SortedTreeStore.Engine
@@ -10,21 +11,25 @@ namespace GSF.SortedTreeStore.Engine
         [Test]
         public void Test1()
         {
+            MemoryPoolTest.TestMemoryLeak();
             Test(0);
             Test(1);
             Test(2);
             Test(100);
             Test(1000);
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void Test2()
         {
+            MemoryPoolTest.TestMemoryLeak();
             TestWithRenumber(0);
             TestWithRenumber(1);
             TestWithRenumber(2);
             TestWithRenumber(100);
             TestWithRenumber(1000);
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         public void Test(int count)

@@ -24,7 +24,7 @@ namespace GSF.IO.Unmanaged.Test
         private static void SelfTest()
         {
             MemoryPoolStream ms1 = new MemoryPoolStream();
-            BinaryStreamBase ms = ms1.CreateBinaryStream();
+            BinaryStreamBaseOld ms = ms1.CreateBinaryStream();
             Random rand = new Random();
             int seed = rand.Next();
             rand = new Random(seed);

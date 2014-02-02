@@ -17,7 +17,7 @@ namespace GSF.IO.FileStructure
             using (TransactionalFileStructure file = TransactionalFileStructure.CreateInMemory(4096))
             using (TransactionalEdit edit = file.BeginEdit())
             using (SubFileStream stream = edit.CreateFile(SubFileName.CreateRandom()))
-            using (BinaryStream bs = new BinaryStream(stream))
+            using (BinaryStreamOld bs = new BinaryStreamOld(stream))
             {
                 Stats.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
@@ -52,7 +52,7 @@ namespace GSF.IO.FileStructure
             using (TransactionalFileStructure file = TransactionalFileStructure.CreateInMemory(4096))
             using (TransactionalEdit edit = file.BeginEdit())
             using (SubFileStream stream = edit.CreateFile(SubFileName.CreateRandom()))
-            using (BinaryStream bs = new BinaryStream(stream))
+            using (BinaryStreamOld bs = new BinaryStreamOld(stream))
             {
                 Stats.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
@@ -82,7 +82,7 @@ namespace GSF.IO.FileStructure
             using (TransactionalFileStructure file = TransactionalFileStructure.CreateInMemory(4096))
             using (TransactionalEdit edit = file.BeginEdit())
             using (SubFileStream stream = edit.CreateFile(SubFileName.CreateRandom()))
-            using (BinaryStream bs = new BinaryStream(stream))
+            using (BinaryStreamOld bs = new BinaryStreamOld(stream))
             {
                 Stats.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
@@ -122,7 +122,7 @@ namespace GSF.IO.FileStructure
             using (TransactionalFileStructure file = TransactionalFileStructure.CreateInMemory(4096))
             using (TransactionalEdit edit = file.BeginEdit())
             using (SubFileStream stream = edit.CreateFile(SubFileName.CreateRandom()))
-            using (BinaryStream bs = new BinaryStream(stream))
+            using (BinaryStreamOld bs = new BinaryStreamOld(stream))
             {
                 //Write 8 million
                 for (long s = 0; s < 1000000; s++)

@@ -98,6 +98,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\BinaryStreamBase.cs" />
+    <Compile Include="IO\BinaryStreamWrapper.cs" />
+    <Compile Include="IO\Unmanaged\BinaryStream.cs" />
+    <Compile Include="Net\NetworkBinaryStream.cs" />
     <Compile Include="SortedTreeStore\Engine\KeyFilter`1.cs" />
     <Compile Include="SortedTreeStore\Filters\KeySeekFilterUniverse`1.cs" />
     <Compile Include="SortedTreeStore\Filters\KeyMatchFilterUniverse`1.cs" />
@@ -182,7 +186,7 @@
     <Compile Include="SortedTreeStore\Net\Initialization\KeyValueStreamCompression.cs" />
     <Compile Include="SortedTreeStore\Net\Initialization\KeyValueStreamCompressionBase.cs" />
     <Compile Include="SortedTreeStore\Net\Initialization\RegisterKeyValueStreamCompressionTypes.cs" />
-    <Compile Include="Net\NetworkBinaryStream.cs" />
+    <Compile Include="Net\NetworkBinaryStreamOld.cs" />
     <Compile Include="SortedTreeStore\Net\ProcessClient%272.cs" />
     <Compile Include="SortedTreeStore\Net\SortedTreeServerSocket%272.cs" />
     <Compile Include="Compression.cs" />
@@ -249,9 +253,9 @@
     <Compile Include="SortedTreeStore\Net\ServerCommand.cs" />
     <Compile Include="HistorianCollection%272.cs" />
     <Compile Include="IO\AsyncWriter.cs" />
-    <Compile Include="IO\BinaryStreamBase.cs" />
-    <Compile Include="IO\BinaryStreamWrapper.cs" />
-    <Compile Include="IO\Unmanaged\BinaryStream.cs" />
+    <Compile Include="IO\BinaryStreamBaseOld.cs" />
+    <Compile Include="IO\BinaryStreamWrapperOld.cs" />
+    <Compile Include="IO\Unmanaged\BinaryStreamOld.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionBase.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionCache.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionExtensionMethods.cs" />

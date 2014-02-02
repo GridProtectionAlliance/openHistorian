@@ -41,7 +41,7 @@ namespace GSF.SortedTreeStore.Tree
         private int m_blockSize;
         private readonly TKey m_key;
         private readonly SortedTreeUInt32 m_value;
-        private BinaryStreamBase m_stream;
+        private BinaryStreamBaseOld m_stream;
         private Func<uint> m_getNextNewNodeIndex;
         private readonly SortedTreeKeyMethodsBase<TKey> m_keyMethods;
         private SortedTreeNodeBase<TKey, SortedTreeUInt32>[] m_nodes;
@@ -107,7 +107,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="getNextNewNodeIndex">A method to use when additional nodes must be allocated.</param>
         /// <param name="rootNodeLevel"></param>
         /// <param name="rootNodeIndexAddress"></param>
-        public void Initialize(BinaryStreamBase stream, int blockSize, Func<uint> getNextNewNodeIndex, byte rootNodeLevel, uint rootNodeIndexAddress)
+        public void Initialize(BinaryStreamBaseOld stream, int blockSize, Func<uint> getNextNewNodeIndex, byte rootNodeLevel, uint rootNodeIndexAddress)
         {
             if (m_isInitialized)
                 throw new Exception("Duplicate calls to Initialize");

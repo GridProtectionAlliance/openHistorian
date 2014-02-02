@@ -20,7 +20,7 @@ namespace GSF.SortedTreeStore.Tree.CustomCompression
         [Test]
         public void TestCompressCases()
         {
-            using (var bs = new BinaryStream())
+            using (var bs = new BinaryStreamOld())
             {
                 
                 var tree = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096, CreateHistorianCompressionTs.TypeGuid);

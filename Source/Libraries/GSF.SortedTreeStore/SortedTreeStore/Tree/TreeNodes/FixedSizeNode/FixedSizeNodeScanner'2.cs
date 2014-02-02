@@ -46,7 +46,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <param name="blockSize"></param>
         /// <param name="stream"></param>
         /// <param name="lookupKey"></param>
-        public FixedSizeNodeScanner(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey)
+        public FixedSizeNodeScanner(byte level, int blockSize, BinaryStreamBaseOld stream, Func<TKey, byte, uint> lookupKey)
             : base(level, blockSize, stream, lookupKey, version: 1)
         {
             m_keyValueSize = (KeyMethods.Size + ValueMethods.Size);

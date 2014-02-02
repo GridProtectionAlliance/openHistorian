@@ -122,7 +122,7 @@ namespace GSF.SortedTreeStore.Net.Compression
 
         public override unsafe bool TryDecode(BinaryStreamBase stream, HistorianKey key, HistorianValue value)
         {
-            byte code = stream.ReadByte();
+            byte code = stream.ReadUInt8();
             if (code == 255)
                 return false;
 

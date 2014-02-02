@@ -235,6 +235,15 @@ namespace GSF.SortedTreeStore.Tree
             CallMethods[(int)Method.ReadBinaryStreamBase]++;
 #endif
             byte* ptr = stackalloc byte[Size];
+            stream.ReadAll(ptr, Size);
+            Read(ptr, data);
+        }
+        public virtual unsafe void Read(BinaryStreamBaseOld stream, TKey data)
+        {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.ReadBinaryStreamBase]++;
+#endif
+            byte* ptr = stackalloc byte[Size];
             stream.Read(ptr, Size);
             Read(ptr, data);
         }
@@ -278,6 +287,16 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         /// <param name="data"></param>
         public virtual unsafe void Write(BinaryStreamBase stream, TKey data)
+        {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.WriteBinaryStreamBase]++;
+#endif
+            byte* ptr = stackalloc byte[Size];
+            Write(ptr, data);
+            stream.Write(ptr, Size);
+        }
+
+        public virtual unsafe void Write(BinaryStreamBaseOld stream, TKey data)
         {
 #if GetTreeKeyMethodsCallCount
             CallMethods[(int)Method.WriteBinaryStreamBase]++;

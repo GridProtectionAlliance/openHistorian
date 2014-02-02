@@ -83,7 +83,7 @@ namespace GSF.SortedTreeStore.Filters
             where TKey : EngineKeyBase<TKey>, new()
         {
             KeyMatchFilterBase<TKey> filter;
-            byte version = stream.ReadByte();
+            byte version = stream.ReadUInt8();
             ulong maxValue;
             int count;
             switch (version)

@@ -161,7 +161,7 @@ namespace GSF.IO.FileStructure.Test
 
         internal static void TestSingleByteWrite(SubFileStream ds)
         {
-            using (BinaryStream bs = new BinaryStream(ds))
+            using (BinaryStreamOld bs = new BinaryStreamOld(ds))
             {
                 bs.Position = 0;
                 for (int x = 0; x < 10000; x++)
@@ -173,7 +173,7 @@ namespace GSF.IO.FileStructure.Test
 
         internal static void TestSingleByteRead(SubFileStream ds)
         {
-            using (BinaryStream bs = new BinaryStream(ds))
+            using (BinaryStreamOld bs = new BinaryStreamOld(ds))
             {
                 bs.Position = 0;
                 for (int x = 0; x < 10000; x++)
@@ -186,7 +186,7 @@ namespace GSF.IO.FileStructure.Test
 
         internal static void TestCustomSizeWrite(SubFileStream ds, int length)
         {
-            using (BinaryStream bs = new BinaryStream(ds))
+            using (BinaryStreamOld bs = new BinaryStreamOld(ds))
             {
                 Random r = new Random(length);
 
@@ -206,7 +206,7 @@ namespace GSF.IO.FileStructure.Test
 
         internal static void TestCustomSizeRead(SubFileStream ds, int seed)
         {
-            using (BinaryStream bs = new BinaryStream(ds))
+            using (BinaryStreamOld bs = new BinaryStreamOld(ds))
             {
                 Random r = new Random(seed);
 

@@ -26,51 +26,22 @@ using System.IO;
 
 namespace GSF.IO
 {
-    /// <summary>
-    /// A simple wrapper of a <see cref="Stream"/>. Provides no caching functionality.
-    /// </summary>
-    public class BinaryStreamWrapper
-        : BinaryStreamBase
+    public class BinaryStreamWrapperOld 
+        : BinaryStreamBaseOld
     {
         private readonly Stream m_stream;
-        bool m_ownsStream;
 
-        public BinaryStreamWrapper(Stream stream, bool ownsStream)
+        public BinaryStreamWrapperOld(Stream stream)
         {
-            m_ownsStream = ownsStream;
             m_stream = stream;
         }
 
-        public override bool CanWrite
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public override void Dispose()
         {
-            get
-            {
-                return m_stream.CanWrite;
-            }
-        }
-
-        public override long Length
-        {
-            get
-            {
-                return m_stream.Length;
-            }
-        }
-
-        public override bool CanRead
-        {
-            get
-            {
-                return m_stream.CanRead;
-            }
-        }
-
-        public override bool CanSeek
-        {
-            get
-            {
-                return m_stream.CanSeek;
-            }
         }
 
         /// <summary>
@@ -101,13 +72,7 @@ namespace GSF.IO
             m_stream.Write(value, offset, count);
         }
 
-        
-        public override int ReadByte()
-        {
-            return m_stream.ReadByte();
-        }
-
-        public override byte ReadUInt8()
+        public override byte ReadByte()
         {
             int value = m_stream.ReadByte();
             if (value < 0)
@@ -115,31 +80,12 @@ namespace GSF.IO
             return (byte)value;
         }
 
-        public override void Flush()
-        {
-            m_stream.Flush();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && m_ownsStream)
-                m_stream.Dispose();
-            base.Dispose(disposing);
-        }
-
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            return m_stream.Seek(offset, origin);
-        }
-
-        public override void SetLength(long value)
-        {
-            m_stream.SetLength(value);
-        }
-
         public override int Read(byte[] value, int offset, int count)
         {
-            return m_stream.Read(value, offset, count);
+            int len = m_stream.Read(value, offset, count);
+            if (len != count)
+                throw new EndOfStreamException();
+            return len;
         }
     }
 }

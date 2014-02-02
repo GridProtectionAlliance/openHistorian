@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Filters;
 using NUnit.Framework;
@@ -22,6 +23,7 @@ namespace GSF.SortedTreeStore.Engine
         [Test]
         public void TestOneFile()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
 
             var master = CreateTable();
@@ -59,11 +61,13 @@ namespace GSF.SortedTreeStore.Engine
                     throw new Exception();
 
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void TestTwoFiles()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
 
             var master = CreateTable();
@@ -102,11 +106,13 @@ namespace GSF.SortedTreeStore.Engine
                 if (masterScan.Read())
                     throw new Exception();
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void TestTwoIdenticalFiles()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
 
             var master = CreateTable();
@@ -144,6 +150,7 @@ namespace GSF.SortedTreeStore.Engine
                 if (masterScan.Read())
                     throw new Exception();
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
 
 
@@ -220,6 +227,7 @@ namespace GSF.SortedTreeStore.Engine
         [Test]
         public void BenchmarkRawFile()
         {
+            MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
 
             var master = CreateTable();
@@ -240,11 +248,14 @@ namespace GSF.SortedTreeStore.Engine
                 Console.WriteLine(Max / sec / 1000000);
 
             }
+            master.Dispose();
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void BenchmarkOneFile()
         {
+            MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
 
@@ -267,11 +278,14 @@ namespace GSF.SortedTreeStore.Engine
                     }
                 });
             Console.WriteLine(Max / sec / 1000000);
+            table1.Dispose();
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void BenchmarkTwoFiles()
         {
+            MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
 
@@ -297,11 +311,14 @@ namespace GSF.SortedTreeStore.Engine
                 }
             });
             Console.WriteLine(Max / sec / 1000000);
+            list.Dispose();
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void BenchmarkThreeFiles()
         {
+            MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
 
@@ -330,12 +347,15 @@ namespace GSF.SortedTreeStore.Engine
                 }
             });
             Console.WriteLine(Max / sec / 1000000);
+            list.Dispose();
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void BenchmarkRealisticSamples()
         {
 
+            MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
             const int FileCount = 1000;
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
@@ -365,7 +385,7 @@ namespace GSF.SortedTreeStore.Engine
                 }
             });
             Console.WriteLine(Max / sec / 1000000);
-
+            list.Dispose();
             //TreeKeyMethodsBase<HistorianKey>.WriteToConsole();
             //TreeValueMethodsBase<HistorianValue>.WriteToConsole();
 
@@ -379,12 +399,15 @@ namespace GSF.SortedTreeStore.Engine
             //{
             //    Console.WriteLine(TreeValueMethodsBase<HistorianValue>.CallMethods[x] + "\t" + ((TreeValueMethodsBase<HistorianValue>.Method)(x)).ToString());
             //}
+            list.Dispose();
 
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void ConsoleTest1()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
             DateTime start = DateTime.Now.Date;
 
@@ -402,11 +425,14 @@ namespace GSF.SortedTreeStore.Engine
             var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);
+            list.Dispose();
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void ConsoleTest2()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
             DateTime start = DateTime.Now.Date;
 
@@ -424,11 +450,14 @@ namespace GSF.SortedTreeStore.Engine
             var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);
+            list.Dispose();
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void ConsoleTest3()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
             DateTime start = DateTime.Now.Date;
 
@@ -455,6 +484,8 @@ namespace GSF.SortedTreeStore.Engine
             var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
             var frames = sequencer.Read(filter).GetFrames();
             WriteToConsole(frames);
+            list.Dispose();
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         void WriteToConsole(SortedList<DateTime, FrameData> frames)

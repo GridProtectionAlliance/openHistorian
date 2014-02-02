@@ -46,7 +46,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         //it has been used, and not allowing it to grow beyond 2 times
         //the average size.
 
-        private readonly BinaryStream m_queue;
+        private readonly BinaryStreamOld m_queue;
         private int m_pointCount;
         private int m_remainingPoints;
         private bool m_isReading;
@@ -60,7 +60,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         {
             m_keyMethods = new TKey().CreateKeyMethods();
             m_valueMethods = new TValue().CreateValueMethods();
-            m_queue = new BinaryStream(allocatesOwnMemory: true);
+            m_queue = new BinaryStreamOld(allocatesOwnMemory: true);
             m_isReading = false;
             m_pointCount = 0;
         }

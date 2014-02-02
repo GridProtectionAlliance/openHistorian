@@ -27,16 +27,11 @@
 //#define GetBaseMethodCallCount
 
 using System;
-using System.IO;
 using System.Text;
 
 namespace GSF.IO
 {
-    /// <summary>
-    /// An abstract class for reading/writing to a little endian stream.
-    /// </summary>
-    public abstract unsafe class BinaryStreamBase
-        : Stream
+    public abstract unsafe class BinaryStreamBaseOld : IDisposable
     {
 
 #if GetBaseMethodCallCount
@@ -68,10 +63,26 @@ namespace GSF.IO
 
         private readonly byte[] m_buffer = new byte[16];
 
+        #region [ Abstract Code ]
+
         /// <summary>
-        /// Gets the pointer version number assuming that this binary stream has an unmanaged buffer backing this stream. 
-        /// If the pointer version is the same, than any pointer acquired is still valid.
+        /// Gets/Sets the current position for the stream.
+        /// <remarks>It is important to use this to Get/Set the position from the underlying stream since 
+        /// this class buffers the results of the query.  Setting this field does not gaurentee that
+        /// the underlying stream will get set. Call FlushToUnderlyingStream to acomplish this.</remarks>
         /// </summary>
+        public abstract long Position
+        {
+            get;
+            set;
+        }
+
+        public abstract void Write(byte[] value, int offset, int count);
+        public abstract int Read(byte[] value, int offset, int count);
+        public abstract void Dispose();
+
+        #endregion
+
         public long PointerVersion
         {
             get;
@@ -93,10 +104,10 @@ namespace GSF.IO
         }
 
         /// <summary>
-        /// Clones a binary stream if it is supported.  Check <see cref="BinaryStreamBase.SupportsAnotherClone"/> before calling this method.
+        /// Clones a binary stream if it is supported.  Check <see cref="BinaryStreamBaseOld.SupportsAnotherClone"/> before calling this method.
         /// </summary>
         /// <returns></returns>
-        public virtual BinaryStreamBase CloneStream()
+        public virtual BinaryStreamBaseOld CloneStream()
         {
             throw new NotImplementedException();
         }
@@ -156,7 +167,7 @@ namespace GSF.IO
             byte[] data = new byte[length];
             long oldPos = Position;
             Position = source;
-            ReadAll(data, 0, length);
+            Read(data, 0, length);
             Position = destination;
             Write(data, 0, length);
             Position = oldPos;
@@ -191,7 +202,7 @@ namespace GSF.IO
 #endif
             byte[] data = new byte[lengthOfValidDataToShift];
             long oldPos = Position;
-            ReadAll(data, 0, lengthOfValidDataToShift);
+            Read(data, 0, lengthOfValidDataToShift);
             Position = oldPos + numberOfBytes;
             Write(data, 0, lengthOfValidDataToShift);
             Position = oldPos;
@@ -217,17 +228,10 @@ namespace GSF.IO
             byte[] data = new byte[lengthOfValidDataToShift];
             long oldPos = Position;
             Position = oldPos + numberOfBytes;
-            ReadAll(data, 0, lengthOfValidDataToShift);
+            Read(data, 0, lengthOfValidDataToShift);
             Position = oldPos;
             Write(data, 0, lengthOfValidDataToShift);
             Position = oldPos;
-        }
-
-        #region [ Write ]
-
-        public override void WriteByte(byte value)
-        {
-            Write(value);
         }
 
         public virtual void Write(sbyte value)
@@ -256,6 +260,7 @@ namespace GSF.IO
 #endif
             Write((short)value);
         }
+
 
         public virtual void Write(uint value)
         {
@@ -287,8 +292,10 @@ namespace GSF.IO
 #if GetBaseMethodCallCount
             CallMethods[(int)Method.WriteInt16]++;
 #endif
-            m_buffer[0] = (byte)value;
-            m_buffer[1] = (byte)(value >> 8);
+            fixed (byte* lp = m_buffer)
+            {
+                *(short*)lp = value;
+            }
             Write(m_buffer, 0, 2);
         }
 
@@ -297,10 +304,10 @@ namespace GSF.IO
 #if GetBaseMethodCallCount
             CallMethods[(int)Method.WriteInt32]++;
 #endif
-            m_buffer[0] = (byte)value;
-            m_buffer[1] = (byte)(value >> 8);
-            m_buffer[2] = (byte)(value >> 16);
-            m_buffer[3] = (byte)(value >> 24);
+            fixed (byte* lp = m_buffer)
+            {
+                *(int*)lp = value;
+            }
             Write(m_buffer, 0, 4);
         }
 
@@ -309,7 +316,11 @@ namespace GSF.IO
 #if GetBaseMethodCallCount
             CallMethods[(int)Method.WriteSingle]++;
 #endif
-            Write(*(int*)(&value));
+            fixed (byte* lp = m_buffer)
+            {
+                *(float*)lp = value;
+            }
+            Write(m_buffer, 0, 4);
         }
 
         public virtual void Write(long value)
@@ -317,14 +328,10 @@ namespace GSF.IO
 #if GetBaseMethodCallCount
             CallMethods[(int)Method.WriteInt64]++;
 #endif
-            m_buffer[0] = (byte)value;
-            m_buffer[1] = (byte)(value >> 8);
-            m_buffer[2] = (byte)(value >> 16);
-            m_buffer[3] = (byte)(value >> 24);
-            m_buffer[4] = (byte)(value >> 32);
-            m_buffer[5] = (byte)(value >> 40);
-            m_buffer[6] = (byte)(value >> 48);
-            m_buffer[7] = (byte)(value >> 56);
+            fixed (byte* lp = m_buffer)
+            {
+                *(long*)lp = value;
+            }
             Write(m_buffer, 0, 8);
         }
 
@@ -333,7 +340,11 @@ namespace GSF.IO
 #if GetBaseMethodCallCount
             CallMethods[(int)Method.WriteDouble]++;
 #endif
-            Write(*(long*)&value);
+            fixed (byte* lp = m_buffer)
+            {
+                *(double*)lp = value;
+            }
+            Write(m_buffer, 0, 8);
         }
 
         public virtual void Write(DateTime value)
@@ -341,7 +352,11 @@ namespace GSF.IO
 #if GetBaseMethodCallCount
             CallMethods[(int)Method.WriteDateTime]++;
 #endif
-            Write(value.Ticks);
+            fixed (byte* lp = m_buffer)
+            {
+                *(long*)lp = value.Ticks;
+            }
+            Write(m_buffer, 0, 8);
         }
 
         public virtual void Write(decimal value)
@@ -349,11 +364,11 @@ namespace GSF.IO
 #if GetBaseMethodCallCount
             CallMethods[(int)Method.WriteDecimal]++;
 #endif
-            int* ptr = (int*)&value;
-            Write(ptr[0]); //flags
-            Write(ptr[1]); //high
-            Write(ptr[2]); //low
-            Write(ptr[3]); //mid
+            fixed (byte* lp = m_buffer)
+            {
+                *(decimal*)lp = value;
+            }
+            Write(m_buffer, 0, 16);
         }
 
         public virtual void Write(Guid value)
@@ -361,18 +376,11 @@ namespace GSF.IO
 #if GetBaseMethodCallCount
             CallMethods[(int)Method.WriteGuid]++;
 #endif
-            byte* ptr = (byte*)&value;
-            Write(*(int*)(ptr + 0));
-            Write(*(short*)(ptr + 4));
-            Write(*(short*)(ptr + 6));
-            Write(ptr[8]);
-            Write(ptr[9]);
-            Write(ptr[10]);
-            Write(ptr[11]);
-            Write(ptr[12]);
-            Write(ptr[13]);
-            Write(ptr[14]);
-            Write(ptr[15]);
+            fixed (byte* lp = m_buffer)
+            {
+                *(Guid*)lp = value;
+            }
+            Write(m_buffer, 0, 16);
         }
 
         public virtual void WriteUInt24(uint value)
@@ -396,8 +404,7 @@ namespace GSF.IO
         public virtual void WriteUInt56(ulong value)
         {
             Write((uint)value);
-            Write((ushort)(value >> 32));
-            Write((byte)(value >> 48));
+            WriteUInt24((uint)(value >> 32));
         }
 
         public virtual void WriteUInt(ulong value, int bytes)
@@ -455,11 +462,6 @@ namespace GSF.IO
             WriteWithLength(Encoding.ASCII.GetBytes(value));
         }
 
-        public virtual void Write(string value, Encoding encoding)
-        {
-            WriteWithLength(encoding.GetBytes(value));
-        }
-
         public virtual void Write(byte[] value)
         {
             Write(value, 0, value.Length);
@@ -468,34 +470,41 @@ namespace GSF.IO
         public virtual void WriteWithLength(byte[] value)
         {
             Write7Bit((uint)value.Length);
-            Write(value, 0, value.Length);
+            Write(value);
         }
 
         public virtual void Write(byte* buffer, int length)
         {
-            for (int x = 0; x < length; x++)
+            int pos = 0;
+            while (pos + 8 <= length)
             {
-                Write(buffer[x]);
+                Write(*(long*)(buffer + pos));
+                pos += 8;
+            }
+            if (pos + 4 <= length)
+            {
+                Write(*(int*)(buffer + pos));
+                pos += 4;
+            }
+            if (pos + 2 <= length)
+            {
+                Write(*(short*)(buffer + pos));
+                pos += 2;
+            }
+            if (pos + 1 <= length)
+            {
+                Write(*(buffer + pos));
             }
         }
 
-        #endregion
-
-        #region [ Read ]
-
-        //public override int ReadByte()
-        //{
-        //    throw new NotSupportedException();
-        //}
-
-        public virtual sbyte ReadInt8()
+        public virtual sbyte ReadSByte()
         {
-            return (sbyte)ReadUInt8();
+            return (sbyte)ReadByte();
         }
 
         public virtual bool ReadBoolean()
         {
-            return ReadUInt8() != 0;
+            return ReadByte() != 0;
         }
 
         public virtual ushort ReadUInt16()
@@ -506,7 +515,7 @@ namespace GSF.IO
         public virtual uint ReadUInt24()
         {
             uint value = ReadUInt16();
-            return value | ((uint)ReadUInt8() << 16);
+            return value | ((uint)ReadByte() << 16);
         }
 
         public virtual uint ReadUInt32()
@@ -517,7 +526,7 @@ namespace GSF.IO
         public virtual ulong ReadUInt40()
         {
             ulong value = ReadUInt32();
-            return value | ((ulong)ReadUInt8() << 32);
+            return value | ((ulong)ReadByte() << 32);
         }
 
         public virtual ulong ReadUInt48()
@@ -544,7 +553,7 @@ namespace GSF.IO
                 case 0:
                     return 0;
                 case 1:
-                    return ReadUInt8();
+                    return ReadByte();
                 case 2:
                     return ReadUInt16();
                 case 3:
@@ -563,51 +572,55 @@ namespace GSF.IO
             throw new ArgumentOutOfRangeException("bytes", "must be between 0 and 8 inclusive.");
         }
 
-        public virtual byte ReadUInt8()
+        public virtual byte ReadByte()
         {
-            ReadAll(m_buffer, 0, 1);
+            Read(m_buffer, 0, 1);
             return m_buffer[0];
         }
 
         public virtual short ReadInt16()
         {
-            ReadAll(m_buffer, 0, 2);
-            return (short)((int)m_buffer[0]
-                | (int)m_buffer[1] << 8);
+            Read(m_buffer, 0, 2);
+            fixed (byte* lp = m_buffer)
+            {
+                return *(short*)lp;
+            }
         }
 
         public virtual int ReadInt32()
         {
-            ReadAll(m_buffer, 0, 4);
-            return (int)m_buffer[0]
-                | (int)m_buffer[1] << 8
-                | (int)m_buffer[2] << 16
-                | (int)m_buffer[3] << 24;
+            Read(m_buffer, 0, 4);
+            fixed (byte* lp = m_buffer)
+            {
+                return *(int*)lp;
+            }
         }
 
         public virtual float ReadSingle()
         {
-            int value = ReadInt32();
-            return *(float*)&value;
+            Read(m_buffer, 0, 4);
+            fixed (byte* lp = m_buffer)
+            {
+                return *(float*)lp;
+            }
         }
 
         public virtual long ReadInt64()
         {
-            ReadAll(m_buffer, 0, 8);
-            return (long)m_buffer[0]
-                   | (long)m_buffer[1] << 8
-                   | (long)m_buffer[2] << 16
-                   | (long)m_buffer[3] << 24
-                   | (long)m_buffer[4] << 32
-                   | (long)m_buffer[5] << 40
-                   | (long)m_buffer[6] << 48
-                   | (long)m_buffer[7] << 56;
+            Read(m_buffer, 0, 8);
+            fixed (byte* lp = m_buffer)
+            {
+                return *(long*)lp;
+            }
         }
 
         public virtual double ReadDouble()
         {
-            long value = ReadInt64();
-            return *(double*)&value;
+            Read(m_buffer, 0, 8);
+            fixed (byte* lp = m_buffer)
+            {
+                return *(double*)lp;
+            }
         }
 
         public virtual DateTime ReadDateTime()
@@ -617,35 +630,33 @@ namespace GSF.IO
 
         public virtual decimal ReadDecimal()
         {
-            decimal rv;
-            int* ptr = (int*)&rv;
-            ptr[0] = ReadInt32();
-            ptr[1] = ReadInt32();
-            ptr[2] = ReadInt32();
-            ptr[3] = ReadInt32();
-            return rv;
+            Read(m_buffer, 0, 16);
+            fixed (byte* lp = m_buffer)
+            {
+                return *(decimal*)lp;
+            }
         }
 
         public virtual Guid ReadGuid()
         {
-            ReadAll(m_buffer, 0, 16);
+            Read(m_buffer, 0, 16);
             return new Guid(m_buffer);
         }
 
         public virtual uint Read7BitUInt32()
         {
-            return Compression.Read7BitUInt32(ReadUInt8);
+            return Compression.Read7BitUInt32(ReadByte);
         }
 
         public virtual ulong Read7BitUInt64()
         {
-            return Compression.Read7BitUInt64(ReadUInt8);
+            return Compression.Read7BitUInt64(ReadByte);
         }
 
         public virtual byte[] ReadBytes(int count)
         {
             byte[] value = new byte[count];
-            ReadAll(value, 0, count);
+            Read(value, 0, count);
             return value;
         }
 
@@ -659,42 +670,28 @@ namespace GSF.IO
             return Encoding.ASCII.GetString(ReadBytes());
         }
 
-        public virtual string ReadString(Encoding encoding)
+        public virtual void Read(byte* buffer, int length)
         {
-            return encoding.GetString(ReadBytes());
-        }
-
-        public virtual void ReadAll(byte* buffer, int length)
-        {
-            for (int x = 0; x < length; x++)
+            int pos = 0;
+            while (pos + 8 <= length)
             {
-                buffer[x] = ReadUInt8();
+                *(long*)(buffer + pos) = ReadInt64();
+                pos += 8;
+            }
+            if (pos + 4 <= length)
+            {
+                *(int*)(buffer + pos) = ReadInt32();
+                pos += 4;
+            }
+            if (pos + 2 <= length)
+            {
+                *(short*)(buffer + pos) = ReadInt16();
+                pos += 2;
+            }
+            if (pos + 1 <= length)
+            {
+                *(buffer + pos) = ReadByte();
             }
         }
-
-        /// <summary>
-        /// Reads all of the provided bytes. Will not return prematurely, 
-        /// but continue to execute a <see cref="Read"/> command until the entire
-        /// <see cref="length"/> has been read.
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="position"></param>
-        /// <param name="length"></param>
-        /// <exception cref="EndOfStreamException">occurs if the end of the stream has been reached.</exception>
-        public virtual void ReadAll(byte[] buffer, int position, int length)
-        {
-        ReadAgain:
-            int bytesRead = Read(buffer, position, length);
-            if (length == bytesRead)
-                return;
-            if (bytesRead == 0)
-                throw new EndOfStreamException();
-            length -= bytesRead;
-            position += bytesRead;
-            goto ReadAgain;
-        }
-
-        #endregion
-
     }
 }

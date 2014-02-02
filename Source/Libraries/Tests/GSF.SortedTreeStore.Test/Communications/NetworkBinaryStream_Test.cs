@@ -45,7 +45,7 @@ namespace GSF.Net
                     int val = cr.Next();
                     if (val != s.ReadInt32())
                         throw new Exception("Error");
-                    if ((byte)val != s.ReadByte())
+                    if ((byte)val != s.ReadUInt8())
                         throw new Exception("Error");
                 }
             }

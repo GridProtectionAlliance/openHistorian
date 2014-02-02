@@ -47,7 +47,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="sparseIndexType"></param>
         /// <param name="treeNodeType"></param>
         /// <param name="blockSize"></param>
-        internal static void ReadHeader(BinaryStreamBase stream, out Guid sparseIndexType, out Guid treeNodeType, out int blockSize)
+        internal static void ReadHeader(BinaryStreamBaseOld stream, out Guid sparseIndexType, out Guid treeNodeType, out int blockSize)
         {
             stream.Position = 0;
             sparseIndexType = stream.ReadGuid();

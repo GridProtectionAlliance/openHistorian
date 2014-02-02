@@ -48,7 +48,7 @@ namespace GSF.IO.FileStructure.Test
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {
                         SubFileStream fs = edit.CreateFile(SubFileName.CreateRandom());
-                        BinaryStream bs = new BinaryStream(fs);
+                        BinaryStreamOld bs = new BinaryStreamOld(fs);
                         bs.Write((byte)1);
                         bs.Dispose();
                         fs.Dispose();
@@ -57,14 +57,14 @@ namespace GSF.IO.FileStructure.Test
                     {
                         TransactionalRead read = service.GetCurrentSnapshot();
                         SubFileStream f1 = read.OpenFile(0);
-                        BinaryStream bs1 = new BinaryStream(f1);
+                        BinaryStreamOld bs1 = new BinaryStreamOld(f1);
                         if (bs1.ReadByte() != 1)
                             throw new Exception();
 
                         using (TransactionalEdit edit = service.BeginEditTransaction())
                         {
                             SubFileStream f2 = edit.OpenFile(0);
-                            BinaryStream bs2 = new BinaryStream(f2);
+                            BinaryStreamOld bs2 = new BinaryStreamOld(f2);
                             if (bs2.ReadByte() != 1)
                                 throw new Exception();
                             bs2.Write((byte)3);
@@ -77,7 +77,7 @@ namespace GSF.IO.FileStructure.Test
                         {
                             TransactionalRead read2 = service.GetCurrentSnapshot();
                             SubFileStream f2 = read2.OpenFile(0);
-                            BinaryStream bs2 = new BinaryStream(f2);
+                            BinaryStreamOld bs2 = new BinaryStreamOld(f2);
                             if (bs2.ReadByte() != 1)
                                 throw new Exception();
                             if (bs2.ReadByte() != 0)
@@ -88,7 +88,7 @@ namespace GSF.IO.FileStructure.Test
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {
                         SubFileStream f2 = edit.OpenFile(0);
-                        BinaryStream bs2 = new BinaryStream(f2);
+                        BinaryStreamOld bs2 = new BinaryStreamOld(f2);
                         bs2.Write((byte)13);
                         bs2.Write((byte)23);
                         bs2.Dispose();

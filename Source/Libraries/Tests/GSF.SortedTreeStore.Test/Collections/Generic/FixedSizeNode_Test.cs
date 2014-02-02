@@ -141,7 +141,7 @@ namespace GSF.SortedTreeStore.Tree
 
             Stopwatch swWrite = new Stopwatch();
             Stopwatch swRead = new Stopwatch();
-            using (BinaryStream bs = new BinaryStream())
+            using (BinaryStreamOld bs = new BinaryStreamOld())
             {
                 uint k, v;
                 FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32> node = new FixedSizeNode<SortedTreeUInt32, SortedTreeUInt32>(0);
