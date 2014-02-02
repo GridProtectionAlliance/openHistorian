@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using GSF.IO.Unmanaged;
+using NUnit.Framework;
 using openHistorian;
 
 namespace GSF.Collections.Test
@@ -9,7 +10,9 @@ namespace GSF.Collections.Test
         [Test]
         public void TestLargeArray()
         {
+            MemoryPoolTest.TestMemoryLeak();
             TestArray(new LargeArray<int>());
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         //[Test]

@@ -61,6 +61,8 @@ namespace GSF.SortedTreeStore.Engine
                     throw new Exception();
 
             }
+            list.Dispose();
+            master.Dispose();
             MemoryPoolTest.TestMemoryLeak();
         }
 
@@ -106,6 +108,8 @@ namespace GSF.SortedTreeStore.Engine
                 if (masterScan.Read())
                     throw new Exception();
             }
+            master.Dispose();
+            list.Dispose();
             MemoryPoolTest.TestMemoryLeak();
         }
 
@@ -150,6 +154,8 @@ namespace GSF.SortedTreeStore.Engine
                 if (masterScan.Read())
                     throw new Exception();
             }
+            list.Dispose();
+            master.Dispose();
             MemoryPoolTest.TestMemoryLeak();
         }
 
@@ -385,7 +391,6 @@ namespace GSF.SortedTreeStore.Engine
                 }
             });
             Console.WriteLine(Max / sec / 1000000);
-            list.Dispose();
             //TreeKeyMethodsBase<HistorianKey>.WriteToConsole();
             //TreeValueMethodsBase<HistorianValue>.WriteToConsole();
 

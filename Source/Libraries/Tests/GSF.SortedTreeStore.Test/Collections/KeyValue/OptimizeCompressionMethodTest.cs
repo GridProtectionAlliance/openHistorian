@@ -19,7 +19,7 @@ namespace openHistorian.Collections
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            var bs0 = new BinaryStreamOld();
+            var bs0 = new BinaryStream();
             var tree0 = SortedTree<HistorianKey, HistorianValue>.Create(bs0, 4096);
 
 
@@ -110,7 +110,7 @@ namespace openHistorian.Collections
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            var bs0 = new BinaryStreamOld();
+            var bs0 = new BinaryStream();
             var tree0 = SortedTree<HistorianKey, HistorianValue>.Create(bs0, 4096);
             int globalCount = 0;
             float count = 0;
@@ -211,7 +211,7 @@ namespace openHistorian.Collections
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            var bs0 = new BinaryStreamOld();
+            var bs0 = new BinaryStream();
             var tree0 = SortedTree<HistorianKey, HistorianValue>.Create(bs0, 4096);
             int globalCount = 0;
             float count = 0;

@@ -25,6 +25,7 @@
 using System;
 using System.Diagnostics;
 using GSF;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.IO.FileStructure.Test
@@ -59,11 +60,13 @@ namespace GSF.IO.FileStructure.Test
         [Test()]
         public void Benchmark()
         {
+            MemoryPoolTest.TestMemoryLeak();
             Benchmark(0, "Direct\t");
             Benchmark(AddressesPerBlock - 1, "Single\t");
             Benchmark(AddressesPerBlock * AddressesPerBlock - 1, "Double\t");
             Benchmark(AddressesPerBlock * AddressesPerBlock * AddressesPerBlock - 1, "Triple\t");
             Benchmark(AddressesPerBlock * AddressesPerBlock * AddressesPerBlock * AddressesPerBlock - 1, "Last\t");
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         public void Benchmark(uint page, string text)
@@ -91,6 +94,7 @@ namespace GSF.IO.FileStructure.Test
         [Test]
         public static void TestMethod1()
         {
+            MemoryPoolTest.TestMemoryLeak();
             int blockSize = 128;
             IndexMapper map = new IndexMapper(blockSize);
             CheckValues check = new CheckValues(blockSize);
@@ -103,6 +107,7 @@ namespace GSF.IO.FileStructure.Test
                 map.MapPosition(x);
                 check.Check(map, x);
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         private class CheckValues

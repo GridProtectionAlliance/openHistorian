@@ -1,4 +1,5 @@
 ﻿using System;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.Collections.Test
@@ -10,6 +11,7 @@ namespace GSF.Collections.Test
         [Test()]
         public void BitArray()
         {
+            MemoryPoolTest.TestMemoryLeak();
             Random rand = new Random();
             int seed = rand.Next();
 
@@ -19,6 +21,7 @@ namespace GSF.Collections.Test
             TestSequentialInv(rand.Next(100000) + 10);
             TestRandom(seed);
             Assert.IsTrue(true);
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         private static void TestSequential(int count)
@@ -104,6 +107,7 @@ namespace GSF.Collections.Test
         [Test()]
         public void TestCounts()
         {
+            MemoryPoolTest.TestMemoryLeak();
             BitArray bit = new BitArray(true, 1000);
 
             for (int x = 0; x < 1000; x++)
@@ -138,6 +142,7 @@ namespace GSF.Collections.Test
                 Assert.AreEqual(1000 - x, bit.ClearCount);
                 bit[x] = true;
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
     }
 }

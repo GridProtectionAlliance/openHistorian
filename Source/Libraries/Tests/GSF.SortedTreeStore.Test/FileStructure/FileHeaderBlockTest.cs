@@ -25,6 +25,7 @@ using System;
 using System.Linq;
 using GSF;
 using GSF.IO.FileStructure.Test;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.IO.FileStructure
@@ -35,6 +36,7 @@ namespace GSF.IO.FileStructure
         [Test()]
         public void Test()
         {
+            MemoryPoolTest.TestMemoryLeak();
             Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
             FileHeaderBlock header = FileHeaderBlock.CreateNew(4096);
             header = header.CloneEditable();
@@ -48,6 +50,7 @@ namespace GSF.IO.FileStructure
             CheckEqual(header2, header);
             Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
             //verify they are the same;
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         private static void CheckEqual(FileHeaderBlock RO, FileHeaderBlock RW)

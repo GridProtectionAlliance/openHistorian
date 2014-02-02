@@ -11,6 +11,7 @@ namespace GSF.IO.FileStructure.Media
         [Test]
         public void Test1()
         {
+            MemoryPoolTest.TestMemoryLeak();
             MemoryPoolFile file = new MemoryPoolFile(Globals.MemoryPool);
 
             BinaryStreamIoSessionBase session = file.CreateIoSession();
@@ -44,6 +45,8 @@ namespace GSF.IO.FileStructure.Media
                 blockArguments.Position = 1000000;
                 session.GetBlock(blockArguments);
             }));
+            file.Dispose();
+            MemoryPoolTest.TestMemoryLeak();
         }
     }
 }

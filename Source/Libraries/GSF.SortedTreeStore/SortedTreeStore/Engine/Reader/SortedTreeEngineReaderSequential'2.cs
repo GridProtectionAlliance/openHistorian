@@ -168,6 +168,8 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 m_keySeekFilter.Reset();
                 if (m_keySeekFilter.NextWindow())
                 {
+                    m_startKey = m_keySeekFilter.StartOfFrame.Timestamp;
+                    m_stopKey = m_keySeekFilter.EndOfFrame.Timestamp;
                     m_currentTables.SeekToKey(m_keySeekFilter.StartOfFrame);
                 }
                 else
@@ -245,6 +247,9 @@ namespace GSF.SortedTreeStore.Engine.Reader
             TryAgain:
                 if (m_keySeekFilter != null && m_keySeekFilter.NextWindow())
                 {
+                    m_startKey = m_keySeekFilter.StartOfFrame.Timestamp;
+                    m_stopKey = m_keySeekFilter.EndOfFrame.Timestamp;
+
                     //If the current point is a valid point.
                     if (m_currentTables.IsValid)
                     {

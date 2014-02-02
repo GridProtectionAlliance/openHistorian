@@ -2,6 +2,7 @@
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.Collections.Test
@@ -71,6 +72,7 @@ namespace GSF.Collections.Test
         [Test]
         public void Test()
         {
+            MemoryPoolTest.TestMemoryLeak();
             const string Path = @"C:\Temp\Buffer\";
             const string Prefix = @"Data";
             const int cnt = 1000000;
@@ -89,11 +91,13 @@ namespace GSF.Collections.Test
             }
             sw.Stop();
             Console.WriteLine(sw.Elapsed.TotalSeconds);
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void TestDequeue()
         {
+            MemoryPoolTest.TestMemoryLeak();
             const string Path = @"C:\Temp\Buffer\";
             const string Prefix = @"Data";
             int cnt = 0;
@@ -110,6 +114,7 @@ namespace GSF.Collections.Test
             collection.Dispose();
             Console.WriteLine(sw.Elapsed.TotalSeconds);
             Console.WriteLine(cnt);
+            MemoryPoolTest.TestMemoryLeak();
         }
     }
 }

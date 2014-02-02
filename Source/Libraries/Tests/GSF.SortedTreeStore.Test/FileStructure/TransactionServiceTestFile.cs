@@ -48,7 +48,7 @@ namespace GSF.IO.FileStructure.Test
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {
                         SubFileStream fs = edit.CreateFile(SubFileName.CreateRandom());
-                        BinaryStreamOld bs = new BinaryStreamOld(fs);
+                        BinaryStream bs = new BinaryStream(fs);
                         bs.Write((byte)1);
                         bs.Dispose();
                         fs.Dispose();
@@ -57,30 +57,30 @@ namespace GSF.IO.FileStructure.Test
                     {
                         TransactionalRead read = service.GetCurrentSnapshot();
                         SubFileStream f1 = read.OpenFile(0);
-                        BinaryStreamOld bs1 = new BinaryStreamOld(f1);
-                        if (bs1.ReadByte() != 1)
+                        BinaryStream bs1 = new BinaryStream(f1);
+                        if (bs1.ReadUInt8() != 1)
                             throw new Exception();
 
                         using (TransactionalEdit edit = service.BeginEditTransaction())
                         {
                             SubFileStream f2 = edit.OpenFile(0);
-                            BinaryStreamOld bs2 = new BinaryStreamOld(f2);
-                            if (bs2.ReadByte() != 1)
+                            BinaryStream bs2 = new BinaryStream(f2);
+                            if (bs2.ReadUInt8() != 1)
                                 throw new Exception();
                             bs2.Write((byte)3);
                             bs2.Dispose();
                         } //rollback should be issued;
-                        if (bs1.ReadByte() != 0)
+                        if (bs1.ReadUInt8() != 0)
                             throw new Exception();
                         bs1.Dispose();
 
                         {
                             TransactionalRead read2 = service.GetCurrentSnapshot();
                             SubFileStream f2 = read2.OpenFile(0);
-                            BinaryStreamOld bs2 = new BinaryStreamOld(f2);
-                            if (bs2.ReadByte() != 1)
+                            BinaryStream bs2 = new BinaryStream(f2);
+                            if (bs2.ReadUInt8() != 1)
                                 throw new Exception();
-                            if (bs2.ReadByte() != 0)
+                            if (bs2.ReadUInt8() != 0)
                                 throw new Exception();
                             bs2.Dispose();
                         }
@@ -88,7 +88,7 @@ namespace GSF.IO.FileStructure.Test
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {
                         SubFileStream f2 = edit.OpenFile(0);
-                        BinaryStreamOld bs2 = new BinaryStreamOld(f2);
+                        BinaryStream bs2 = new BinaryStream(f2);
                         bs2.Write((byte)13);
                         bs2.Write((byte)23);
                         bs2.Dispose();

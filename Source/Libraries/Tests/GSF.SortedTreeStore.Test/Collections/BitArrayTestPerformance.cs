@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.Collections.Test
@@ -10,6 +11,7 @@ namespace GSF.Collections.Test
         [Test]
         public void BitArray()
         {
+            MemoryPoolTest.TestMemoryLeak();
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
             Stopwatch sw3 = new Stopwatch();
@@ -75,6 +77,7 @@ namespace GSF.Collections.Test
             Console.WriteLine("Clear Bits Again: " + (count / sw4.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
             Console.WriteLine("Get Bits: " + (count / sw5.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
             Console.WriteLine("Find Cleared Bit (All bits cleared): " + (count / sw6.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
+            MemoryPoolTest.TestMemoryLeak();
         }
     }
 }

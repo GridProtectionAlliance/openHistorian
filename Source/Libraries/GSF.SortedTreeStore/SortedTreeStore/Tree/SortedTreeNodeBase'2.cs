@@ -69,7 +69,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="blockSize">the size of each block</param>
         /// <param name="getNextNewNodeIndex"></param>
         /// <param name="sparseIndex"></param>
-        public void Initialize(BinaryStreamBaseOld stream, int blockSize, Func<uint> getNextNewNodeIndex, SparseIndex<TKey> sparseIndex)
+        public void Initialize(BinaryStreamBase stream, int blockSize, Func<uint> getNextNewNodeIndex, SparseIndex<TKey> sparseIndex)
         {
             if (m_initialized)
                 throw new Exception("Duplicate calls to initialize");

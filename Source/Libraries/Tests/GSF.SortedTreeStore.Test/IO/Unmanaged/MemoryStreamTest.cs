@@ -24,7 +24,7 @@ namespace GSF.IO.Unmanaged.Test
         private static void SelfTest()
         {
             MemoryPoolStream ms1 = new MemoryPoolStream();
-            BinaryStreamBaseOld ms = ms1.CreateBinaryStream();
+            BinaryStreamBase ms = ms1.CreateBinaryStream();
             Random rand = new Random();
             int seed = rand.Next();
             rand = new Random(seed);
@@ -44,7 +44,7 @@ namespace GSF.IO.Unmanaged.Test
             while (ms.Position < 1000000)
             {
                 int length = rand.Next(256);
-                ms.Read(data2, 0, length);
+                ms.ReadAll(data2, 0, length);
                 Compare(data, data2, length);
             }
             ms.Dispose();

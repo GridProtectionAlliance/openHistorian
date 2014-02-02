@@ -24,7 +24,7 @@ namespace GSF.SortedTreeStore.Storage.Test.FileStructure
                     using (TransactionalEdit edit = service.BeginEditTransaction())
                     {
                         SubFileStream fs = edit.CreateFile(SubFileName.Empty);
-                        BinaryStreamOld bs = new BinaryStreamOld(fs);
+                        BinaryStream bs = new BinaryStream(fs);
 
                         for (int x = 0; x < 20000000; x++)
                             bs.Write(1L);

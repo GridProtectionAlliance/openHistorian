@@ -238,15 +238,7 @@ namespace GSF.SortedTreeStore.Tree
             stream.ReadAll(ptr, Size);
             Read(ptr, data);
         }
-        public virtual unsafe void Read(BinaryStreamBaseOld stream, TKey data)
-        {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.ReadBinaryStreamBase]++;
-#endif
-            byte* ptr = stackalloc byte[Size];
-            stream.Read(ptr, Size);
-            Read(ptr, data);
-        }
+       
         /// <summary>
         /// Reads the provided key from the BinaryReader.
         /// </summary>
@@ -296,15 +288,6 @@ namespace GSF.SortedTreeStore.Tree
             stream.Write(ptr, Size);
         }
 
-        public virtual unsafe void Write(BinaryStreamBaseOld stream, TKey data)
-        {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.WriteBinaryStreamBase]++;
-#endif
-            byte* ptr = stackalloc byte[Size];
-            Write(ptr, data);
-            stream.Write(ptr, Size);
-        }
         /// <summary>
         /// Does a binary search on the data to find the best location for the <see cref="key"/>
         /// </summary>

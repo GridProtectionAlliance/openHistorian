@@ -14,13 +14,13 @@ namespace GSF.IO.Unmanaged.Test
         {
             MemoryPoolTest.TestMemoryLeak();
             MemoryPoolStream ms = new MemoryPoolStream();
-            BinaryStreamOld bs = new BinaryStreamOld(ms);
+            BinaryStream bs = new BinaryStream(ms);
             Run(bs, false);
             ms.Dispose();
             MemoryPoolTest.TestMemoryLeak();
         }
 
-        public static void Run(BinaryStreamOld bs, bool clipboard = true)
+        public static void Run(BinaryStream bs, bool clipboard = true)
         {
             const int count = 1000;
             StringBuilder sb = new StringBuilder();
@@ -66,7 +66,7 @@ namespace GSF.IO.Unmanaged.Test
             }
         }
 
-        public static string RunInserts(int thousands, BinaryStreamOld bs)
+        public static string RunInserts(int thousands, BinaryStream bs)
         {
             const int insertBytes = 1;
             const int moveSize = 512;
@@ -118,7 +118,7 @@ namespace GSF.IO.Unmanaged.Test
             return "Inserts\t" + (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static unsafe string GetReadPointer(int thousands, BinaryStreamOld bs)
+        public static unsafe string GetReadPointer(int thousands, BinaryStream bs)
         {
             return "GetReadPointer\t" +
                    StepTimer.Time(10, () =>
@@ -136,7 +136,7 @@ namespace GSF.IO.Unmanaged.Test
                    });
         }
 
-        public static unsafe string GetWritePointer(BinaryStreamOld bs)
+        public static unsafe string GetWritePointer(BinaryStream bs)
         {
             return "GetWritePointer\t" +
                    StepTimer.Time(10, () =>
@@ -154,7 +154,7 @@ namespace GSF.IO.Unmanaged.Test
                    });
         }
 
-        public static string RunSeeks(int thousands, BinaryStreamOld bs)
+        public static string RunSeeks(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             byte b = 10;
@@ -204,7 +204,7 @@ namespace GSF.IO.Unmanaged.Test
             return "Seeks\t" + (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunULong(int thousands, BinaryStreamOld bs)
+        public static string RunULong(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -271,7 +271,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunLong(int thousands, BinaryStreamOld bs)
+        public static string RunLong(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -338,7 +338,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunDouble(int thousands, BinaryStreamOld bs)
+        public static string RunDouble(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -405,7 +405,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string Run7Bit64(int thousands, BinaryStreamOld bs, ulong b)
+        public static string Run7Bit64(int thousands, BinaryStream bs, ulong b)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -471,7 +471,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string Run7Bit32(int thousands, BinaryStreamOld bs, uint b)
+        public static string Run7Bit32(int thousands, BinaryStream bs, uint b)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -537,7 +537,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunUInt(int thousands, BinaryStreamOld bs)
+        public static string RunUInt(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -604,7 +604,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunInt(int thousands, BinaryStreamOld bs)
+        public static string RunInt(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -671,7 +671,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunSingle(int thousands, BinaryStreamOld bs)
+        public static string RunSingle(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -738,7 +738,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunUShort(int thousands, BinaryStreamOld bs)
+        public static string RunUShort(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -805,7 +805,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunShort(int thousands, BinaryStreamOld bs)
+        public static string RunShort(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -872,7 +872,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunSByte(int thousands, BinaryStreamOld bs)
+        public static string RunSByte(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -922,16 +922,16 @@ namespace GSF.IO.Unmanaged.Test
                 bs.Position = 0;
                 for (int x = 0; x < 100; x++)
                 {
-                    bs.ReadSByte();
-                    bs.ReadSByte();
-                    bs.ReadSByte();
-                    bs.ReadSByte();
-                    bs.ReadSByte();
-                    bs.ReadSByte();
-                    bs.ReadSByte();
-                    bs.ReadSByte();
-                    bs.ReadSByte();
-                    bs.ReadSByte();
+                    bs.ReadInt8();
+                    bs.ReadInt8();
+                    bs.ReadInt8();
+                    bs.ReadInt8();
+                    bs.ReadInt8();
+                    bs.ReadInt8();
+                    bs.ReadInt8();
+                    bs.ReadInt8();
+                    bs.ReadInt8();
+                    bs.ReadInt8();
                 }
             }
             sw2.Stop();
@@ -939,7 +939,7 @@ namespace GSF.IO.Unmanaged.Test
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
-        public static string RunByte(int thousands, BinaryStreamOld bs)
+        public static string RunByte(int thousands, BinaryStream bs)
         {
             Stopwatch sw1 = new Stopwatch();
             Stopwatch sw2 = new Stopwatch();
@@ -989,16 +989,16 @@ namespace GSF.IO.Unmanaged.Test
                 bs.Position = 0;
                 for (int x = 0; x < 100; x++)
                 {
-                    bs.ReadByte();
-                    bs.ReadByte();
-                    bs.ReadByte();
-                    bs.ReadByte();
-                    bs.ReadByte();
-                    bs.ReadByte();
-                    bs.ReadByte();
-                    bs.ReadByte();
-                    bs.ReadByte();
-                    bs.ReadByte();
+                    bs.ReadUInt8();
+                    bs.ReadUInt8();
+                    bs.ReadUInt8();
+                    bs.ReadUInt8();
+                    bs.ReadUInt8();
+                    bs.ReadUInt8();
+                    bs.ReadUInt8();
+                    bs.ReadUInt8();
+                    bs.ReadUInt8();
+                    bs.ReadUInt8();
                 }
             }
             sw2.Stop();

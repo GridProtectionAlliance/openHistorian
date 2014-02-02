@@ -231,7 +231,7 @@ namespace GSF.SortedTreeStore.Storage
             using (TransactionalEdit trans = m_fileStructure.BeginEdit())
             {
                 using (SubFileStream fs = trans.CreateFile(fileName))
-                using (BinaryStreamOld bs = new BinaryStreamOld(fs))
+                using (BinaryStream bs = new BinaryStream(fs))
                 {
                     int blockSize = m_fileStructure.DataBlockSize;
                     const int maxValue = 4096;

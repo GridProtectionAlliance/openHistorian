@@ -43,13 +43,13 @@ namespace GSF.SortedTreeStore.Filters
         /// </summary>
         /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
-        public abstract void Load(BinaryStreamBaseOld stream);
+        public abstract void Load(BinaryStreamBase stream);
 
         /// <summary>
         /// Serializes the filter to a stream
         /// </summary>
         /// <param name="stream">the stream to write to</param>
-        public abstract void Save(BinaryStreamBaseOld stream);
+        public abstract void Save(BinaryStreamBase stream);
 
         /// <summary>
         /// Determines if a value is contained in the filter

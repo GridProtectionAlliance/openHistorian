@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.Collections.Test
@@ -15,6 +16,7 @@ namespace GSF.Collections.Test
         [Test]
         public void Test()
         {
+            MemoryPoolTest.TestMemoryLeak();
             m_wait = new ManualResetEvent(false);
             m_collection = new IsolatedQueue<int>();
 
@@ -32,6 +34,7 @@ namespace GSF.Collections.Test
             sw.Stop();
             Console.WriteLine(sw.Elapsed.TotalSeconds);
             m_wait.WaitOne();
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         private void RunTwo(object state)

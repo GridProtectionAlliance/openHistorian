@@ -12,12 +12,13 @@ namespace GSF.IO.FileStructure
         [Test]
         public void TestRandomWriteAmplification()
         {
+            MemoryPoolTest.TestMemoryLeak();
             double size;
 
             using (TransactionalFileStructure file = TransactionalFileStructure.CreateInMemory(4096))
             using (TransactionalEdit edit = file.BeginEdit())
             using (SubFileStream stream = edit.CreateFile(SubFileName.CreateRandom()))
-            using (BinaryStreamOld bs = new BinaryStreamOld(stream))
+            using (BinaryStream bs = new BinaryStream(stream))
             {
                 Stats.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
@@ -38,12 +39,14 @@ namespace GSF.IO.FileStructure
             Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.000"));
             Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.000"));
             Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.000"));
+            MemoryPoolTest.TestMemoryLeak();
         }
 
 
         [Test]
         public void TestSequentialWriteAmplification()
         {
+            MemoryPoolTest.TestMemoryLeak();
             double size;
             Stats.ChecksumCount = 0;
             DiskIoSession.WriteCount = 0;
@@ -52,7 +55,7 @@ namespace GSF.IO.FileStructure
             using (TransactionalFileStructure file = TransactionalFileStructure.CreateInMemory(4096))
             using (TransactionalEdit edit = file.BeginEdit())
             using (SubFileStream stream = edit.CreateFile(SubFileName.CreateRandom()))
-            using (BinaryStreamOld bs = new BinaryStreamOld(stream))
+            using (BinaryStream bs = new BinaryStream(stream))
             {
                 Stats.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
@@ -69,11 +72,13 @@ namespace GSF.IO.FileStructure
             Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
             Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
             Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.0"));
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void TestSequentialReWriteAmplification()
         {
+            MemoryPoolTest.TestMemoryLeak();
             double size;
             Stats.ChecksumCount = 0;
             DiskIoSession.WriteCount = 0;
@@ -82,7 +87,7 @@ namespace GSF.IO.FileStructure
             using (TransactionalFileStructure file = TransactionalFileStructure.CreateInMemory(4096))
             using (TransactionalEdit edit = file.BeginEdit())
             using (SubFileStream stream = edit.CreateFile(SubFileName.CreateRandom()))
-            using (BinaryStreamOld bs = new BinaryStreamOld(stream))
+            using (BinaryStream bs = new BinaryStream(stream))
             {
                 Stats.ChecksumCount = 0;
                 DiskIoSession.WriteCount = 0;
@@ -109,11 +114,13 @@ namespace GSF.IO.FileStructure
             Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
             Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
             Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.0"));
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void TestSequentialReadAmplification()
         {
+            MemoryPoolTest.TestMemoryLeak();
             double size;
             Stats.ChecksumCount = 0;
             DiskIoSession.WriteCount = 0;
@@ -122,7 +129,7 @@ namespace GSF.IO.FileStructure
             using (TransactionalFileStructure file = TransactionalFileStructure.CreateInMemory(4096))
             using (TransactionalEdit edit = file.BeginEdit())
             using (SubFileStream stream = edit.CreateFile(SubFileName.CreateRandom()))
-            using (BinaryStreamOld bs = new BinaryStreamOld(stream))
+            using (BinaryStream bs = new BinaryStream(stream))
             {
                 //Write 8 million
                 for (long s = 0; s < 1000000; s++)
@@ -145,6 +152,7 @@ namespace GSF.IO.FileStructure
             Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
             Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
             Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.0"));
+            MemoryPoolTest.TestMemoryLeak();
         }
     }
 }

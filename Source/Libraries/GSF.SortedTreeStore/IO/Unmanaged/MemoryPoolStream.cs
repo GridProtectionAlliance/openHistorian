@@ -120,9 +120,9 @@ namespace GSF.IO.Unmanaged
         /// Creates a new binary from an IO session
         /// </summary>
         /// <returns></returns>
-        public BinaryStreamBaseOld CreateBinaryStream()
+        public BinaryStreamBase CreateBinaryStream()
         {
-            return new BinaryStreamOld(this);
+            return new BinaryStream(this);
         }
 
         #endregion

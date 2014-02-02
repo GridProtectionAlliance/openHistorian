@@ -106,7 +106,7 @@ namespace GSF.SortedTreeStore.Tree
         private readonly byte m_version;
         private readonly byte m_level;
         private readonly int m_blockSize;
-        protected readonly BinaryStreamBaseOld Stream;
+        protected readonly BinaryStreamBase Stream;
 
         /// <summary>
         /// The index number of the next key/value that needs to be read.
@@ -120,7 +120,7 @@ namespace GSF.SortedTreeStore.Tree
         protected int HeaderSize { get; private set; }
         //protected int OffsetOfUpperBounds;
 
-        protected SortedTreeScannerBase(byte level, int blockSize, BinaryStreamBaseOld stream, Func<TKey, byte, uint> lookupKey, byte version)
+        protected SortedTreeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, byte version)
         {
             m_tempKey = new TKey();
             //m_lowerKey = new TKey();

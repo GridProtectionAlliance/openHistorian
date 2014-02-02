@@ -19,7 +19,7 @@ namespace GSF.IO.Test
             ms.Write(new byte[100000], 0, 100000);
             ms.Write(new byte[100000], 0, 100000);
             ms.Position = 0;
-            BinaryStreamWrapperOld bs = new BinaryStreamWrapperOld(ms);
+            BinaryStreamWrapper bs = new BinaryStreamWrapper(ms, false);
             Stopwatch sw = new Stopwatch();
             //DateTime b = DateTime.UtcNow;
             long b = 10;
@@ -132,7 +132,7 @@ namespace GSF.IO.Test
         public unsafe void TestMethod()
         {
             MemoryStream stream = new MemoryStream();
-            BinaryStreamWrapperOld bs = new BinaryStreamWrapperOld(stream);
+            BinaryStreamWrapper bs = new BinaryStreamWrapper(stream, false);
             Random rand = new Random();
             int seed = rand.Next();
             rand = new Random(seed);
@@ -214,7 +214,7 @@ namespace GSF.IO.Test
                             bs.InsertBytes(insertCount, 100);
                             bs.Write(data, 0, insertCount);
                             bs.Position -= insertCount;
-                            bs.Read(data2, 0, insertCount);
+                            bs.ReadAll(data2, 0, insertCount);
                             bs.Position -= insertCount;
                             bs.RemoveBytes(insertCount, 100);
                             bs.Position += 100;
@@ -234,12 +234,12 @@ namespace GSF.IO.Test
                 for (int x = 0; x < 10000; x++)
                 {
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadByte() != (*(byte*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadUInt8() != (*(byte*)lp)) throw new Exception();
                     int skip = rand.Next(40) + 1;
                     bs.Position += skip;
                     bs.Position -= rand.Next(skip);
                     rand.NextBytes(data);
-                    while (rand.Next(4) < 2) if (bs.ReadSByte() != (*(sbyte*)lp)) throw new Exception();
+                    while (rand.Next(4) < 2) if (bs.ReadInt8() != (*(sbyte*)lp)) throw new Exception();
                     rand.NextBytes(data);
                     while (rand.Next(4) < 2) if (bs.ReadInt16() != (*(short*)lp)) throw new Exception();
                     rand.NextBytes(data);
@@ -293,7 +293,7 @@ namespace GSF.IO.Test
                     while (rand.Next(4) < 2) if (bs.Read7BitUInt64() != (*(ulong*)lp)) throw new Exception();
 
                     rand.NextBytes(data);
-                    bs.Read(data2, 0, 16);
+                    bs.ReadAll(data2, 0, 16);
                     if (!data2.SequenceEqual<byte>(data)) throw new Exception();
 
                     while (rand.Next(4) < 2)

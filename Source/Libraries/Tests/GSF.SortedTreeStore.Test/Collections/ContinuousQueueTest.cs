@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
 namespace GSF.Collections.Test
@@ -41,6 +42,7 @@ namespace GSF.Collections.Test
         [Test]
         public void Test2()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
             for (int x = 0; x < 1000; x++)
@@ -52,11 +54,13 @@ namespace GSF.Collections.Test
             {
                 Assert.AreEqual(x, queue[x]);
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void TestGet()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
             for (int x = 0; x < 1000; x++)
@@ -78,12 +82,14 @@ namespace GSF.Collections.Test
             {
                 Assert.AreEqual((int)x, queue[x]);
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
 
 
         [Test]
         public void TestSet()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
             for (int x = 0; x < 1000; x++)
@@ -106,11 +112,13 @@ namespace GSF.Collections.Test
                 queue[x] = (int)-x;
                 Assert.AreEqual((int)-x, queue[x]);
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void TestStack()
         {
+            MemoryPoolTest.TestMemoryLeak();
             Stack<int> baseLine = new Stack<int>();
             ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
@@ -137,11 +145,13 @@ namespace GSF.Collections.Test
                 Assert.AreEqual(baseLine.Pop(), queue.Pop());
                 Assert.IsTrue(baseLine.Reverse().SequenceEqual(queue));
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
 
         [Test]
         public void TestReverseStack()
         {
+            MemoryPoolTest.TestMemoryLeak();
             Stack<int> baseLine = new Stack<int>();
             ContinuousQueue<int> queue = new ContinuousQueue<int>();
 
@@ -168,6 +178,7 @@ namespace GSF.Collections.Test
                 Assert.AreEqual(baseLine.Pop(), queue.RemoveFromTail());
                 Assert.IsTrue(baseLine.SequenceEqual(queue));
             }
+            MemoryPoolTest.TestMemoryLeak();
         }
     }
 }

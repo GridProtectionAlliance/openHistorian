@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GSF.IO.Unmanaged;
 using NUnit.Framework;
 using openHistorian;
 
@@ -14,6 +15,7 @@ namespace GSF.Collections.Generic
         [Test]
         public void Test1()
         {
+            MemoryPoolTest.TestMemoryLeak();
             DebugStopwatch sw = new DebugStopwatch();
 
             for (int max = 10; max < 10000; max *= 2)
@@ -61,6 +63,7 @@ namespace GSF.Collections.Generic
                 Console.WriteLine("Old Method " + max + " " + sw.TimeEvent(add1) * 1000000);
                 Console.WriteLine("New Method " + max + " " + sw.TimeEvent(add2) * 1000000);
                 //Console.WriteLine("Unsafe Method " + max + " " + sw.TimeEvent(add3) * 1000000);
+                MemoryPoolTest.TestMemoryLeak();
             }
 
 

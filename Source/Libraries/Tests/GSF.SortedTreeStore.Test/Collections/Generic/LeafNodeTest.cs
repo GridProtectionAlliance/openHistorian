@@ -38,7 +38,7 @@ namespace GSF.SortedTreeStore.Tree
 
             StringBuilder sb = new StringBuilder();
 
-            using (BinaryStreamOld bs = new BinaryStreamOld())
+            using (BinaryStream bs = new BinaryStream())
             {
                 const int pageSize = 512;
                 SparseIndex<TKey> sparse = new SparseIndex<TKey>(SortedTree.FixedSizeNode);
@@ -117,7 +117,7 @@ namespace GSF.SortedTreeStore.Tree
             };
 
 
-            using (BinaryStreamOld bs = new BinaryStreamOld())
+            using (BinaryStream bs = new BinaryStream())
             {
                 randomizer.Reset(Max);
                 for (int x = 0; x < Max; x++)

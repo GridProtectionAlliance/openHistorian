@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using GSF.IO.Unmanaged;
+using NUnit.Framework;
 
 namespace GSF.Collections.Test
 {
@@ -8,6 +9,7 @@ namespace GSF.Collections.Test
         [Test()]
         public void Test()
         {
+            MemoryPoolTest.TestMemoryLeak();
             ResourceQueueCollection<int, string> queue = new ResourceQueueCollection<int, string>((x) => () => x.ToString(), 3, 3);
 
             Assert.AreEqual("1", queue[1].Dequeue());
@@ -20,6 +22,7 @@ namespace GSF.Collections.Test
             Assert.AreEqual("250", queue[250].Dequeue());
             Assert.AreEqual("0", queue[250].Dequeue());
             Assert.AreEqual("250", queue[250].Dequeue());
+            MemoryPoolTest.TestMemoryLeak();
         }
     }
 }
