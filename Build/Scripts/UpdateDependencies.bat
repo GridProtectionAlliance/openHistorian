@@ -70,6 +70,7 @@ MOVE /Y "%sourceschema%\Oracle\*.*" "%targetschema%\Oracle\"
 MOVE /Y "%sourceschema%\SQL Server\*.*" "%targetschema%\SQL Server\"
 MOVE /Y "%sourceschema%\SQLite\*.*" "%targetschema%\SQLite\"
 %replace% /r /v "%targetschema%\*.sql" GSFSchema openHistorian
+%replace% /r /v "%targetschema%\*.sql" "--*" "-- "
 %replace% /r /v "%targetschema%\*InitialDataSet.sql" HistorianAdapters openHistorian.Adapters
 %replace% /r /v "%targetschema%\*SampleDataSet.sql" TestingAdapters openHistorian.Adapters
 %replace% /r /v "%targetschema%\*SampleDataSet.sql" VirtualOutputAdapter LocalOutputAdapter
