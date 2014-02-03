@@ -14130,6 +14130,20 @@
             will be the return value.
             </remarks>
         </member>
+        <member name="M:GSF.Identity.UserInfo.IsUserSID(System.String)">
+            <summary>
+            Determines whether the given security identifier identifies a user account.
+            </summary>
+            <param name="sid">The security identifier.</param>
+            <returns>True if the security identifier identifies a user account; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Identity.UserInfo.IsGroupSID(System.String)">
+            <summary>
+            Determines whether the given security identifier identifies a group.
+            </summary>
+            <param name="sid">The security identifier.</param>
+            <returns>True if the security identifier identifies a group; false otherwise.</returns>
+        </member>
         <member name="E:GSF.Identity.UserInfo.Disposed">
             <summary>
             Occurs when the class has been disposed.
