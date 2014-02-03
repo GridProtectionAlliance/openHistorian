@@ -71,7 +71,7 @@
     <SubMenuItems>
       <MenuDataItem Icon="" MenuText="Manage _Nodes" Description="Manage Nodes" Roles="Administrator" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.NodeUserControl" />
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
-      <MenuDataItem Icon="" MenuText="Configure _Security" Description="Manager Security" Roles="Administrator" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.SecurityUserControl" />
+      <MenuDataItem Icon="" MenuText="Configure _Security" Description="Configure Security" Roles="Administrator" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.SecurityUserControl" />
       <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
       <MenuDataItem Icon="" MenuText="_View Iaon Tree" Description="View Iaon Tree" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.IaonTreeUserControl"/>
     </SubMenuItems>
