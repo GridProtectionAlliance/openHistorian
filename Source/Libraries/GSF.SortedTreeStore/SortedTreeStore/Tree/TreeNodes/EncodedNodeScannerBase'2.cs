@@ -66,7 +66,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
         /// </summary>
-        protected override void ReadNext()
+        unsafe protected override void ReadNext()
         {
             if (m_skipNextRead)
             {
@@ -76,7 +76,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             }
             else
             {
-                InternalRead();
+                m_nextOffset += DecodeRecord(Pointer + m_nextOffset, CurrentKey, CurrentValue);
             }
         }
 
@@ -84,7 +84,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to advance to</param>
-        protected override int FindKey(TKey key)
+        unsafe protected override int FindKey(TKey key)
         {
             OnNoadReload();
             int nextReadIndex = 0;
@@ -96,7 +96,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             while (!indexFound && nextReadIndex < RecordCount)
             {
                 nextReadIndex++;
-                InternalRead();
+                m_nextOffset += DecodeRecord(Pointer + m_nextOffset, CurrentKey, CurrentValue);
                 if (KeyMethods.IsGreaterThanOrEqualTo(CurrentKey, key))
                     indexFound = true;
             }
@@ -124,15 +124,6 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         {
             m_nextOffset = 0;
             ResetEncoder();
-        }
-
-        /// <summary>
-        /// Executes a read of the next set of data.
-        /// </summary>
-        /// <returns></returns>
-        private unsafe void InternalRead()
-        {
-            m_nextOffset += DecodeRecord(Pointer + m_nextOffset, CurrentKey, CurrentValue);
         }
     }
 }

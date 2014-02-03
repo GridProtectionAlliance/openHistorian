@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore
@@ -35,10 +36,10 @@ namespace GSF.SortedTreeStore
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class UnionSeekableTreeStream<T, TKey, TValue>
+    public class EngineUnionSeekableTreeStream<T, TKey, TValue>
         : SeekableTreeStream<TKey, TValue>
         where T : SeekableTreeStream<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         CustomSortHelper<T> m_tables;
@@ -46,14 +47,16 @@ namespace GSF.SortedTreeStore
         SortedTreeKeyMethodsBase<TKey> m_keyMethods;
         SortedTreeValueMethodsBase<TValue> m_valueMethods;
 
-        public UnionSeekableTreeStream(IEnumerable<T> list)
+        ulong m_nextTime;
+
+        public EngineUnionSeekableTreeStream(IEnumerable<T> list)
         {
             m_keyMethods = new TKey().CreateKeyMethods();
             m_valueMethods = new TValue().CreateValueMethods();
             m_tables = new CustomSortHelper<T>(list, CompareStreams);
         }
 
-        protected int CompareStreams(T item1, T item2)
+        int CompareStreams(T item1, T item2)
         {
             if (!item1.IsValid && !item2.IsValid)
                 return 0;
@@ -64,38 +67,62 @@ namespace GSF.SortedTreeStore
             return m_keyMethods.CompareTo(item1.CurrentKey, item2.CurrentKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
         }
 
+        void VerifyOrder()
+        {
+            //If list is no longer in order
+            int compare = CompareStreams(m_firstTable, m_tables[1]);
+            if (compare == 0 && m_firstTable.IsValid)
+            {
+                //If a duplicate entry is found, advance the position of the duplicate entry
+                RemoveDuplicatesFromList();
+                SetCacheValue();
+            }
+            if (compare > 0)
+            {
+                m_tables.SortAssumingIncreased(0);
+                m_firstTable = m_tables[0];
+                SetCacheValue();
+            }
+        }
+
+        void SetCacheValue()
+        {
+            if (m_tables.Items.Length > 1 && m_tables[1].IsValid)
+            {
+                m_nextTime = m_tables[1].CurrentKey.Timestamp;
+            }
+            else
+            {
+                m_nextTime = ulong.MaxValue;
+            }
+        }
+
         public override bool Read()
         {
-            if (m_firstTable == null || !m_firstTable.IsValid)
+            var firstTable = m_firstTable;
+            if (firstTable == null || !firstTable.IsValid)
             {
                 IsValid = false;
                 return false;
             }
             else
             {
-                m_keyMethods.Copy(m_firstTable.CurrentKey, CurrentKey);
-                m_valueMethods.Copy(m_firstTable.CurrentValue, CurrentValue);
-                m_firstTable.Read();
+                m_keyMethods.Copy(firstTable.CurrentKey, CurrentKey);
+                m_valueMethods.Copy(firstTable.CurrentValue, CurrentValue);
+                //m_firstTable.CurrentKey.CopyTo(CurrentKey);
+                //m_firstTable.CurrentValue.CopyTo(CurrentValue);
+                firstTable.Read();
 
-                if (m_tables.Items.Length >= 2)
+                if (m_tables.Items.Length > 1)
                 {
-                    //If list is no longer in order
-                    int compare = CompareStreams(m_firstTable, m_tables[1]);
-                    if (compare == 0 && m_firstTable.IsValid)
+                    if (!firstTable.IsValid || firstTable.CurrentKey.Timestamp >= m_nextTime) //A 99% check
                     {
-                        //If a duplicate entry is found, advance the position of the duplicate entry
-                        RemoveDuplicatesFromList();
-                    }
-                    if (compare > 0)
-                    {
-                        m_tables.SortAssumingIncreased(0);
-                        m_firstTable = m_tables[0];
+                        VerifyOrder();
                     }
                 }
                 IsValid = true;
                 return true;
             }
-
         }
 
         public override void SeekToKey(TKey key)
@@ -106,7 +133,6 @@ namespace GSF.SortedTreeStore
                 table.Read();
             }
             m_tables.Sort();
-
 
             //Remove any duplicates
             if (m_tables.Items.Length >= 2)
@@ -122,6 +148,9 @@ namespace GSF.SortedTreeStore
                 m_firstTable = m_tables[0];
 
             IsValid = false;
+
+            SetCacheValue();
+
         }
 
         /// <summary>
@@ -170,6 +199,9 @@ namespace GSF.SortedTreeStore
             {
                 IsValid = false;
             }
+
+            SetCacheValue();
+
         }
 
         void RemoveDuplicatesFromList()
@@ -187,6 +219,8 @@ namespace GSF.SortedTreeStore
                     break;
                 }
             }
+
+            SetCacheValue();
             //m_tables.Sort();
         }
 

@@ -115,7 +115,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
             private TimeoutOperation m_timeout;
             private List<ArchiveTablePointEnumerator<TKey, TValue>> m_tables;
-            private UnionSeekableTreeStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue> m_currentTables;
+            private EngineUnionSeekableTreeStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue> m_currentTables;
 
             public ReadStream(ArchiveListSnapshot<TKey, TValue> snapshot, SortedTreeEngineReaderOptions readerOptions, 
                                        KeySeekFilterBase<TKey> keySeekFilter, KeyMatchFilterBase<TKey> keyMatchFilter, 
@@ -162,7 +162,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     }
                 }
 
-                m_currentTables = new UnionSeekableTreeStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue>(m_tables);
+                m_currentTables = new EngineUnionSeekableTreeStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue>(m_tables);
                 SetKeyValueReferences(m_currentTables.CurrentKey, m_currentTables.CurrentValue);
 
                 m_keySeekFilter.Reset();
@@ -176,71 +176,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 {
                     Cancel();
                 }
-
             }
-
-            //public ReadStream(QueryFilterTimestamp timestampFilter, QueryFilterPointId poingIdFilter, ArchiveListSnapshot<TKey, TValue> snapshot, SortedTreeEngineReaderOptions readerOptions)
-            //{
-            //    m_keyMethods = new TKey().CreateKeyMethods();
-            //    m_valueMethods = new TValue().CreateValueMethods();
-            //    if (readerOptions.Timeout.Ticks > 0)
-            //    {
-            //        m_timeout = new TimeoutOperation();
-            //        m_timeout.RegisterTimeout(readerOptions.Timeout, () => m_timedOut = true);
-            //    }
-
-            //    m_timestampFilter = timestampFilter;
-            //    m_poingIdFilter = poingIdFilter;
-            //    m_isKey2Universal = poingIdFilter.IsUniverseFilter;
-            //    m_startKey = timestampFilter.FirstTime;
-            //    m_stopKey = timestampFilter.LastTime;
-            //    m_snapshot = snapshot;
-            //    m_snapshot.UpdateSnapshot();
-
-            //    TKey startKey = new TKey();
-            //    TKey stopKey = new TKey();
-
-            //    m_keyMethods.SetMin(startKey);
-            //    m_keyMethods.SetMax(stopKey);
-            //    //startKey.SetMin();
-            //    //stopKey.SetMax();
-
-            //    m_tables = new List<ArchiveTablePointEnumerator<TKey, TValue>>();
-
-            //    for (int x = 0; x < m_snapshot.Tables.Count(); x++)
-            //    {
-            //        ArchiveTableSummary<TKey, TValue> table = m_snapshot.Tables[x];
-            //        if (table != null)
-            //        {
-            //            startKey.Timestamp = timestampFilter.FirstTime;
-            //            stopKey.Timestamp = timestampFilter.LastTime;
-            //            if (table.Contains(startKey, stopKey))
-            //            {
-            //                m_tables.Add(new ArchiveTablePointEnumerator<TKey, TValue>(x, table));
-            //            }
-            //            else
-            //            {
-            //                m_snapshot.Tables[x] = null;
-            //            }
-            //        }
-            //    }
-
-            //    m_currentTables = new UnionSeekableTreeStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue>(m_tables);
-            //    SetKeyValueReferences(m_currentTables.CurrentKey, m_currentTables.CurrentValue);
-
-            //    m_timestampFilter.Reset();
-            //    if (m_timestampFilter.GetNextWindow(out m_startKey, out m_stopKey))
-            //    {
-            //        TKey key = new TKey();
-            //        m_keyMethods.SetMin(key); //key.SetMin();
-            //        key.Timestamp = m_startKey;
-            //        m_currentTables.SeekToKey(key);
-            //    }
-            //    else
-            //    {
-            //        Cancel();
-            //    }
-            //}
 
             bool AdvanceTimestampFilter()
             {

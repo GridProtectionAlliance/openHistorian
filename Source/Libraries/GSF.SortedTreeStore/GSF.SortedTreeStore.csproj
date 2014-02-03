@@ -102,6 +102,7 @@
     <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="IO\Unmanaged\BinaryStream.cs" />
     <Compile Include="Net\NetworkBinaryStream.cs" />
+    <Compile Include="SortedTreeStore\EngineUnionSeekableTreeStream%273.cs" />
     <Compile Include="SortedTreeStore\Engine\KeyFilter`1.cs" />
     <Compile Include="SortedTreeStore\Filters\KeySeekFilterUniverse`1.cs" />
     <Compile Include="SortedTreeStore\Filters\KeyMatchFilterUniverse`1.cs" />

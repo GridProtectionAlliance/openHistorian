@@ -163,6 +163,11 @@ namespace GSF.Collections
             return (m_array[index >> BitsPerElementShift] & (1L << (index & BitsPerElementMask))) != 0;
         }
 
+        internal bool InternalGetBit(int index)
+        {
+            return (m_array[index >> BitsPerElementShift] & (1L << (index & BitsPerElementMask))) != 0;
+        }
+
         /// <summary>
         /// Sets the corresponding bit to true
         /// </summary>
