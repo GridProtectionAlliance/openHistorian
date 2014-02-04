@@ -1180,10 +1180,22 @@
             </summary>
             <param name="username">User's logon name.</param>
         </member>
+        <member name="M:GSF.Security.UserData.#ctor(GSF.Security.UserData)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GSF.Security.UserData"/> class by copying an existing instance.
+            </summary>
+            <param name="userData">The existing instance of the <see cref="T:GSF.Security.UserData"/> class.</param>
+        </member>
         <member name="M:GSF.Security.UserData.Initialize">
             <summary>
             Initializes this <see cref="T:GSF.Security.UserData"/> object.
             </summary>
+        </member>
+        <member name="M:GSF.Security.UserData.Clone(GSF.Security.UserData)">
+            <summary>
+            Copies a new instance of the <see cref="T:GSF.Security.UserData"/> class by copying an existing instance.
+            </summary>
+            <param name="userData">The existing instance of the <see cref="T:GSF.Security.UserData"/> class.</param>
         </member>
         <member name="P:GSF.Security.UserData.LoginID">
             <summary>

@@ -450,6 +450,17 @@
             Connects to backend windows service.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.CommonFunctions.DisplayStatusMessage(System.String)">
+            <summary>
+            Displays a status message in the unobtrusive status message popup.
+            </summary>
+            <param name="message">The message to be displayed.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.CommonFunctions.HideStatusMessage">
+            <summary>
+            Hides the unobtrusive status message popup.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.CommonFunctions.ConnectAsync">
             <summary>
             Connects asynchronously to backend windows service.
