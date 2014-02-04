@@ -23,6 +23,7 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.ComponentModel;
 using System.Windows;
 using ConfigurationSetupUtility.Screens;
@@ -52,18 +53,23 @@ namespace ConfigurationSetupUtility
 
             // Setup screen manager
             m_screenManager = new ScreenManager(this, new WelcomeScreen());
-
-            Loaded += MainWindow_Loaded;
         }
 
         #endregion
 
         #region [ Methods ]
 
-        // Make sure window is focused
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        // Make sure the window is on top when initialized
+        private void Window_Initialized(object sender, EventArgs e)
         {
+            Topmost = true;
             Activate();
+        }
+
+        // Make sure the window doesn't stay on top if the user clicks away
+        private void Window_ContentRendered(object sender, EventArgs e)
+        {
+            Topmost = false;
         }
 
         // Occurs when the user clicks the "Next" button.

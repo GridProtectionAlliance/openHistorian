@@ -1,7 +1,9 @@
 ﻿<Window x:Class="ConfigurationSetupUtility.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Configuration Setup Utility" Height="390" Width="450" Closing="Window_Closing" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Background="WhiteSmoke" Icon="DatabaseSetupUtility.ico">
+        Title="Configuration Setup Utility" Height="390" Width="450"
+        Initialized="Window_Initialized" ContentRendered="Window_ContentRendered" Closing="Window_Closing"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Background="WhiteSmoke" Icon="DatabaseSetupUtility.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
