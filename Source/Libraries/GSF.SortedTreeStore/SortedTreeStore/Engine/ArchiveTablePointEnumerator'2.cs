@@ -24,6 +24,7 @@
 
 using System;
 using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
@@ -64,6 +65,13 @@ namespace GSF.SortedTreeStore.Engine
             IsValid = m_scanner.Read();
             return IsValid;
         }
+
+        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        {
+            IsValid = m_scanner.Read(filter);
+            return IsValid;
+        }
+
         public override void SeekToKey(TKey key)
         {
             m_scanner.SeekToKey(key);
@@ -78,6 +86,5 @@ namespace GSF.SortedTreeStore.Engine
                 m_snapshot = null;
             }
         }
-
     }
 }

@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore
@@ -58,9 +59,17 @@ namespace GSF.SortedTreeStore
             return false;
         }
 
+        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        {
+            IsValid = false;
+            return false;
+        }
+
         public override unsafe void SeekToKey(TKey key)
         {
             IsValid = false;
         }
+
+        
     }
 }

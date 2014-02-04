@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore
@@ -95,7 +96,11 @@ namespace GSF.SortedTreeStore
                 IsValid = true;
                 return true;
             }
+        }
 
+        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        {
+            return Read();
         }
 
         public override void SeekToKey(TKey key)

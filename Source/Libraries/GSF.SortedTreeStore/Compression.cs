@@ -342,6 +342,28 @@ namespace GSF
             return;
         }
 
+        public unsafe static int Measure7BitUInt64(byte* stream, int position)
+        {
+            stream += position;
+            if (stream[0] < 128)
+                return 1;
+            if (stream[1] < 128)
+                return 2;
+            if (stream[2] < 128)
+                return 3;
+            if (stream[3] < 128)
+                return 4;
+            if (stream[4] < 128)
+                return 5;
+            if (stream[5] < 128)
+                return 6;
+            if (stream[6] < 128)
+                return 7;
+            if (stream[7] < 128)
+                return 8;
+            return 9;
+        }
+
         public unsafe static ulong Read7BitUInt64(byte* stream, ref int position)
         {
             ulong value;
@@ -596,7 +618,7 @@ namespace GSF
             return;
         }
 
-        
+
         private static byte GetLength(uint value)
         {
             if (value <= 0xFF)

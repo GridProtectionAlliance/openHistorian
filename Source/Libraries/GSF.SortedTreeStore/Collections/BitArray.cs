@@ -35,11 +35,11 @@ namespace GSF.Collections
     {
         #region [ Members ]
 
-        private const int BitsPerElementShift = 6;
-        private const int BitsPerElementMask = BitsPerElement - 1;
+        internal const int BitsPerElementShift = 6;
+        internal const int BitsPerElementMask = BitsPerElement - 1;
         private const int BitsPerElement = sizeof(long) * 8;
 
-        private long[] m_array;
+        internal long[] m_array;
         private int m_count;
         private int m_setCount;
         private int m_lastFoundClearedIndex;

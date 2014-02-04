@@ -38,12 +38,13 @@ namespace GSF.SortedTreeStore.Filters
         /// <summary>
         /// A filter that uses a <see cref="BitArray"/> to set true and false values
         /// </summary>
-        class BitArrayFilter<TKey>
+        public class BitArrayFilter<TKey>
             : KeyMatchFilterBase<TKey>
             where TKey : EngineKeyBase<TKey>, new()
         {
-            readonly BitArray m_points;
-            ulong m_maxValue;
+            internal readonly BitArray m_points;
+            internal ulong m_maxValue;
+            long[] m_array;
 
             /// <summary>
             /// Creates a new filter backed by a <see cref="BitArray"/>.
@@ -64,6 +65,7 @@ namespace GSF.SortedTreeStore.Filters
                     m_points.SetBit((int)stream.ReadUInt32());
                     pointCount--;
                 }
+                m_array = m_points.m_array;
             }
 
             /// <summary>
@@ -79,6 +81,7 @@ namespace GSF.SortedTreeStore.Filters
                 {
                     m_points.SetBit((int)pt);
                 }
+                m_array = m_points.m_array;
             }
 
             public override Guid FilterType
@@ -107,7 +110,8 @@ namespace GSF.SortedTreeStore.Filters
 
             public override bool Contains(TKey key)
             {
-                return key.PointID <= m_maxValue && m_points.InternalGetBit((int)key.PointID);
+                int point = (int)key.PointID;
+                return (key.PointID <= m_maxValue && ((m_array[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
             }
         }
     }

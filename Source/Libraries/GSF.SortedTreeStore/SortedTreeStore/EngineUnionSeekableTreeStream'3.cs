@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore
@@ -42,6 +43,7 @@ namespace GSF.SortedTreeStore
         where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
+
         CustomSortHelper<T> m_tables;
         T m_firstTable;
         SortedTreeKeyMethodsBase<TKey> m_keyMethods;
@@ -109,9 +111,35 @@ namespace GSF.SortedTreeStore
             {
                 m_keyMethods.Copy(firstTable.CurrentKey, CurrentKey);
                 m_valueMethods.Copy(firstTable.CurrentValue, CurrentValue);
-                //m_firstTable.CurrentKey.CopyTo(CurrentKey);
-                //m_firstTable.CurrentValue.CopyTo(CurrentValue);
+
                 firstTable.Read();
+
+                if (m_tables.Items.Length > 1)
+                {
+                    if (!firstTable.IsValid || firstTable.CurrentKey.Timestamp >= m_nextTime) //A 99% check
+                    {
+                        VerifyOrder();
+                    }
+                }
+                IsValid = true;
+                return true;
+            }
+        }
+
+        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        {
+            var firstTable = m_firstTable;
+            if (firstTable == null || !firstTable.IsValid)
+            {
+                IsValid = false;
+                return false;
+            }
+            else
+            {
+                m_keyMethods.Copy(firstTable.CurrentKey, CurrentKey);
+                m_valueMethods.Copy(firstTable.CurrentValue, CurrentValue);
+
+                firstTable.Read(filter);
 
                 if (m_tables.Items.Length > 1)
                 {

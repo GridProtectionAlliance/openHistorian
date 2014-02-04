@@ -21,6 +21,8 @@
 //     
 //******************************************************************************************************
 
+using GSF.SortedTreeStore.Filters;
+
 namespace GSF.SortedTreeStore
 {
 
@@ -34,11 +36,30 @@ namespace GSF.SortedTreeStore
         where TKey : class, new()
         where TValue : class, new()
     {
+        //protected StreamFilterBase<TKey, TValue> Filter;
+
+        ///// <summary>
+        ///// Sets the filter that can be used to prefilter the results of the read operations.
+        ///// </summary>
+        ///// <param name="filter">the filter to use, can be null for no filter.</param>
+        ///// <remarks>
+        ///// It is best that only the lowest level applies the filter. 
+        ///// So if you are not the lowest level, pass this filter through to a lower level.
+        ///// </remarks>
+        //public abstract void SetFilter(StreamFilterBase<TKey, TValue> filter);
+
+        /// <summary>
+        /// Reads the stream, applying the provided filter to the read expression.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public abstract bool Read(StreamFilterBase<TKey, TValue> filter);
+
+
         /// <summary>
         /// Seeks the stream to the first value greater than or equal to <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to seek to.</param>
         public abstract void SeekToKey(TKey key);
-
     }
 }

@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using GSF.SortedTreeStore.Filters;
 
 namespace GSF.SortedTreeStore.Tree
 {
@@ -112,7 +113,7 @@ namespace GSF.SortedTreeStore.Tree
         /// The index number of the next key/value that needs to be read.
         /// The valid range of this field is [0, RecordCount - 1]
         /// </summary>
-        protected int IndexOfNextKeyValue { get; private set; }
+        protected int IndexOfNextKeyValue;
 
         /// <summary>
         /// The number of bytes in the header of any given node.
@@ -148,6 +149,15 @@ namespace GSF.SortedTreeStore.Tree
         protected abstract void ReadNext();
 
         /// <summary>
+        /// Using <see cref="Pointer"/> advance to the next KeyValue that is contained in the provided filter.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <remarks> Be sure to modify <see cref="IndexOfNextKeyValue"/> and compare that to <see cref="RecordCount"/> 
+        /// to determine if we are at the end of the stream.
+        /// </remarks>
+        protected abstract void ReadNext(StreamFilterBase<TKey, TValue> filter);
+
+        /// <summary>
         /// Using <see cref="Pointer"/> advance to the search location of the provided <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to advance to</param>
@@ -163,13 +173,16 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
         public override bool Read()
         {
-            //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
-            if (IndexOfNextKeyValue < RecordCount && Stream.PointerVersion == PointerVersion)
+            if (Stream.PointerVersion == PointerVersion)
             {
-                ReadNext();
-                IndexOfNextKeyValue++;
-                IsValid = true;
-                return true;
+                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
+                if (IndexOfNextKeyValue < RecordCount)
+                {
+                    ReadNext();
+                    IndexOfNextKeyValue++;
+                    IsValid = true;
+                    return true;
+                }
             }
             return Read2();
         }
@@ -205,6 +218,122 @@ namespace GSF.SortedTreeStore.Tree
             IsValid = true;
             return true;
         }
+
+        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        {
+            if (Stream.PointerVersion == PointerVersion)
+            {
+                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
+                if (IndexOfNextKeyValue < RecordCount)
+                {
+                    ReadNext(filter);
+                    if (IndexOfNextKeyValue <= RecordCount)
+                    {
+                        IsValid = true;
+                        return true;
+                    }
+                }
+            }
+            return Read2(filter);
+        }
+
+        /// <summary>
+        /// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
+        /// </summary>
+        /// <returns></returns>
+        protected bool Read2(StreamFilterBase<TKey, TValue> filter)
+        {
+        ReadAgain:
+
+            //return false;
+            //If there are no more records in the current node.
+            if (IndexOfNextKeyValue >= RecordCount)
+            {
+                //If the last leaf node, return false
+                if (RightSiblingNodeIndex == uint.MaxValue)
+                {
+                    KeyMethods.Clear(CurrentKey);
+                    ValueMethods.Clear(CurrentValue);
+                    IsValid = false;
+                    return false;
+                }
+                LoadNode(RightSiblingNodeIndex);
+            }
+            //if the pointer data is no longer valid, refresh the pointer
+            if (Stream.PointerVersion != PointerVersion)
+            {
+                RefreshPointer();
+            }
+            //Reads the next key in the sequence.
+            ReadNext(filter);
+            if (IndexOfNextKeyValue <= RecordCount)
+            {
+                IsValid = true;
+                return true;
+            }
+            goto ReadAgain;
+        }
+
+        //public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        //{
+
+        //    if (Stream.PointerVersion == PointerVersion)
+        //    {
+        //    ReadAgain:
+        //        //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
+        //        if (IndexOfNextKeyValue < RecordCount)
+        //        {
+        //            ReadNext();
+        //            IndexOfNextKeyValue++;
+        //            if (filter.ContinueReading(CurrentKey, CurrentValue))
+        //                goto ReadAgain;
+
+        //            IsValid = true;
+        //            return true;
+        //        }
+        //    }
+        //    return Read2(filter);
+        //}
+
+        ///// <summary>
+        ///// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
+        ///// </summary>
+        ///// <returns></returns>
+        //protected bool Read2(StreamFilterBase<TKey, TValue> filter)
+        //{
+        //ReadAgain:
+
+        //    //return false;
+        //    //If there are no more records in the current node.
+        //    if (IndexOfNextKeyValue >= RecordCount)
+        //    {
+        //        //If the last leaf node, return false
+        //        if (RightSiblingNodeIndex == uint.MaxValue)
+        //        {
+        //            KeyMethods.Clear(CurrentKey);
+        //            ValueMethods.Clear(CurrentValue);
+        //            IsValid = false;
+        //            return false;
+        //        }
+        //        LoadNode(RightSiblingNodeIndex);
+        //    }
+        //    //if the pointer data is no longer valid, refresh the pointer
+        //    if (Stream.PointerVersion != PointerVersion)
+        //    {
+        //        RefreshPointer();
+        //    }
+        //    //Reads the next key in the sequence.
+        //    ReadNext();
+        //    IndexOfNextKeyValue++;
+
+        //    if (filter.ContinueReading(CurrentKey, CurrentValue))
+        //        goto ReadAgain;
+
+        //    IsValid = true;
+        //    return true;
+        //}
+
+
 
         /// <summary>
         /// Seeks to the start of SortedTree.
@@ -280,5 +409,12 @@ namespace GSF.SortedTreeStore.Tree
         protected virtual void OnNoadReload()
         {
         }
+
+        //public override void SetFilter(Filters.StreamFilterBase<TKey, TValue> filter)
+        //{
+        //    Filter = filter;
+        //    //if (filter != null)
+        //    //    filter.SetKeyValueReferences(CurrentKey, CurrentValue);
+        //}
     }
 }

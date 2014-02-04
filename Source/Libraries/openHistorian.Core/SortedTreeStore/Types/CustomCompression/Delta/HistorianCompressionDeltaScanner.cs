@@ -24,6 +24,7 @@
 using System;
 using GSF;
 using GSF.IO;
+using GSF.SortedTreeStore.Filters;
 using openHistorian.Collections;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
@@ -77,6 +78,12 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             value.Value2 = m_prevValue2;
             value.Value3 = m_prevValue3;
             return position;
+        }
+
+        protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value, StreamFilterBase<HistorianKey, HistorianValue> filter)
+        {
+            IndexOfNextKeyValue++;
+            return DecodeRecord(stream, key, value);
         }
 
         /// <summary>

@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using GSF.SortedTreeStore.Filters;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
@@ -58,11 +59,13 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <returns></returns>
         protected abstract unsafe int DecodeRecord(byte* stream, TKey key, TValue value);
 
+        protected abstract unsafe int DecodeRecord(byte* stream, TKey key, TValue value, StreamFilterBase<TKey, TValue> filter);
+
         /// <summary>
         /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.
         /// </summary>
         protected abstract void ResetEncoder();
-        
+
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
         /// </summary>
@@ -79,6 +82,113 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 m_nextOffset += DecodeRecord(Pointer + m_nextOffset, CurrentKey, CurrentValue);
             }
         }
+
+        protected override unsafe void ReadNext(StreamFilterBase<TKey, TValue> filter)
+        {
+            TKey currentKey = CurrentKey;
+            TValue currentValue = CurrentValue;
+
+            if (m_skipNextRead)
+            {
+                m_skipNextRead = false;
+                KeyMethods.Copy(m_prevKey, currentKey);
+                ValueMethods.Copy(m_prevValue, currentValue);
+                if (filter.StopReading(currentKey, currentValue))
+                {
+                    IndexOfNextKeyValue++;
+                    return;
+                }
+            }
+
+            m_nextOffset += DecodeRecord(Pointer + m_nextOffset, currentKey, currentValue, filter);
+        }
+
+        //protected override unsafe void ReadNext(StreamFilterBase<TKey, TValue> filter)
+        //{
+        //    int scannedRecords = 0;
+        //    int remainingRecords = RecordCount - IndexOfNextKeyValue;
+        //    TKey currentKey = CurrentKey;
+        //    TValue currentValue = CurrentValue;
+
+        //    if (m_skipNextRead)
+        //    {
+        //        scannedRecords = 1;
+        //        m_skipNextRead = false;
+        //        KeyMethods.Copy(m_prevKey, currentKey);
+        //        ValueMethods.Copy(m_prevValue, currentValue);
+        //        if (filter.StopReading(currentKey, currentValue))
+        //        {
+        //            IndexOfNextKeyValue += scannedRecords;
+        //            return;
+        //        }
+        //    }
+
+        //    while (scannedRecords < remainingRecords)
+        //    {
+        //        m_nextOffset += DecodeRecord(Pointer + m_nextOffset, currentKey, currentValue);
+        //        scannedRecords += 1;
+        //        if (filter.StopReading(currentKey, currentValue))
+        //        {
+        //            IndexOfNextKeyValue += scannedRecords;
+        //            return;
+        //        }
+        //    }
+        //    IndexOfNextKeyValue += scannedRecords + 1;
+        //    return;
+        //}
+
+
+        //protected override unsafe int ReadNext(StreamFilterBase<TKey, TValue> filter, int remainingRecords)
+        //{
+        //    TKey currentKey = CurrentKey;
+        //    TValue currentValue = CurrentValue;
+
+        //    int scannedRecords = 0;
+        //    if (m_skipNextRead)
+        //    {
+        //        scannedRecords = 1;
+        //        m_skipNextRead = false;
+        //        KeyMethods.Copy(m_prevKey, currentKey);
+        //        ValueMethods.Copy(m_prevValue, currentValue);
+        //        if (filter.StopReading(currentKey, currentValue))
+        //            return scannedRecords;
+        //    }
+
+        //    while (scannedRecords < remainingRecords)
+        //    {
+        //        m_nextOffset += DecodeRecord(Pointer + m_nextOffset, currentKey, currentValue);
+        //        scannedRecords += 1;
+        //        if (filter.StopReading(currentKey, currentValue))
+        //        {
+        //            return scannedRecords;
+        //        }
+        //    }
+        //    return scannedRecords + 1;
+        //}
+
+        //protected override unsafe int ReadNext(StreamFilterBase<TKey, TValue> filter, int remainingRecords)
+        //{
+        //    int scannedRecords = 0;
+        //    while (scannedRecords < remainingRecords)
+        //    {
+        //        if (m_skipNextRead)
+        //        {
+        //            m_skipNextRead = false;
+        //            KeyMethods.Copy(m_prevKey, CurrentKey);
+        //            ValueMethods.Copy(m_prevValue, CurrentValue);
+        //        }
+        //        else
+        //        {
+        //            m_nextOffset += DecodeRecord(Pointer + m_nextOffset, CurrentKey, CurrentValue);
+        //        }
+        //        scannedRecords += 1;
+        //        if (filter.StopReading(CurrentKey, CurrentValue))
+        //        {
+        //            return scannedRecords;
+        //        }
+        //    }
+        //    return scannedRecords + 1;
+        //}
 
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>

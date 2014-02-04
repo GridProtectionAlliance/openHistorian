@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO;
+using GSF.SortedTreeStore.Filters;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
@@ -62,6 +63,27 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             KeyMethods.Read(ptr, CurrentKey);
             ValueMethods.Read(ptr + m_keySize, CurrentValue);
         }
+
+        protected override unsafe void ReadNext(StreamFilterBase<TKey, TValue> filter)
+        {
+            int remainingRecords = RecordCount - IndexOfNextKeyValue;
+            int scannedRecords = 0;
+            while (scannedRecords < remainingRecords)
+            {
+                byte* ptr = Pointer + (IndexOfNextKeyValue + scannedRecords) * m_keyValueSize;
+                KeyMethods.Read(ptr, CurrentKey);
+                ValueMethods.Read(ptr + m_keySize, CurrentValue);
+                scannedRecords += 1;
+                if (filter.StopReading(CurrentKey, CurrentValue))
+                {
+                    IndexOfNextKeyValue += scannedRecords;
+                    return;
+                }
+            }
+            IndexOfNextKeyValue += scannedRecords + 1;
+            return;
+        }
+
 
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
