@@ -718,6 +718,11 @@
             Represents a non-topmost <see cref="T:System.Windows.Controls.Primitives.Popup"/> window.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.UI.TsfPopup.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.TsfPopup"/> class.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.UI.TsfPopup.TopmostProperty">
             <summary>
             Dependency property to define zorder of the <see cref="T:GSF.TimeSeries.UI.TsfPopup"/>.
