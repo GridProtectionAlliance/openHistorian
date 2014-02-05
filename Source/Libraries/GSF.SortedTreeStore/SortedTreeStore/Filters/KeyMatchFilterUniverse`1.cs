@@ -44,17 +44,21 @@ namespace GSF.SortedTreeStore.Filters
                 return Guid.Empty;
             }
         }
+
         public override void Load(BinaryStreamBase stream)
         {
             
         }
+
         public override void Save(BinaryStreamBase stream)
         {
             
         }
+
         public override bool Contains(TKey value)
         {
             return true;
         }
+        
     }
 }

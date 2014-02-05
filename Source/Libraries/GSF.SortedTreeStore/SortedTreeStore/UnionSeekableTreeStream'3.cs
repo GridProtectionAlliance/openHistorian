@@ -98,7 +98,7 @@ namespace GSF.SortedTreeStore
             }
         }
 
-        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        public override bool Read(KeyMatchFilterBase<TKey> filter)
         {
             return Read();
         }

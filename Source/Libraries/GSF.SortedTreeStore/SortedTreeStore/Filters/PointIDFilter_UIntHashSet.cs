@@ -24,12 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.Collections;
 using GSF.IO;
 using GSF.SortedTreeStore.Engine;
-using openHistorian;
 
 namespace GSF.SortedTreeStore.Filters
 {
@@ -43,7 +40,7 @@ namespace GSF.SortedTreeStore.Filters
             where TKey : EngineKeyBase<TKey>, new()
         {
             ulong m_maxValue;
-                        private readonly HashSet<uint> m_points;
+            private readonly HashSet<uint> m_points;
 
 
             /// <summary>
@@ -55,7 +52,7 @@ namespace GSF.SortedTreeStore.Filters
             public UIntHashSet(BinaryStreamBase stream, int pointCount, ulong maxValue)
             {
                 m_maxValue = maxValue;
-                 m_points = new HashSet<uint>();
+                m_points = new HashSet<uint>();
                 while (pointCount > 0)
                 {
                     m_points.Add(stream.ReadUInt32());
@@ -103,6 +100,14 @@ namespace GSF.SortedTreeStore.Filters
             {
                 return key.PointID <= uint.MaxValue && m_points.Contains((uint)key.PointID);
 
+            }
+
+            public override bool FilterContains(TKey key)
+            {
+                PointCount++;
+                if ((PointCount & 1023) == 0)
+                    return true;
+                return key.PointID <= uint.MaxValue && m_points.Contains((uint)key.PointID);
             }
         }
     }

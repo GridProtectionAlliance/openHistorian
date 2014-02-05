@@ -113,6 +113,27 @@ namespace GSF.SortedTreeStore.Filters
                 int point = (int)key.PointID;
                 return (key.PointID <= m_maxValue && ((m_array[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
             }
+
+            public override bool FilterContains(TKey key)
+            {
+                PointCount++;
+                if ((PointCount & 1023) != 0)
+                {
+                    if (key.PointID <= m_maxValue)
+                    {
+                        return (m_array[(int)key.PointID >> BitArray.BitsPerElementShift] & 1L << ((int)key.PointID & BitArray.BitsPerElementMask)) != 0;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+          
         }
     }
 }

@@ -53,7 +53,7 @@ namespace GSF.SortedTreeStore
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public abstract bool Read(StreamFilterBase<TKey, TValue> filter);
+        public abstract bool Read(KeyMatchFilterBase<TKey> filter);
 
 
         /// <summary>

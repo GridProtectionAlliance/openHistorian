@@ -56,22 +56,26 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         {
         }
 
-        protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value, StreamFilterBase<HistorianKey, HistorianValue> filter)
+        protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value, KeyMatchFilterBase<HistorianKey> filter)
         {
-            int totalSize = 0;
-            int size;
             ulong tmp = 0;
+            int totalSize = 0;
+            int size = 0;
 
-            key.PointID = m_prevPointId;
             key.Timestamp = m_prevTimestamp;
-
+            key.PointID = m_prevPointId;
+            key.EntryNumber = 0;
 
             //ulong prevTimestamp = m_prevTimestamp;
             //ulong prevPointId = m_prevPointId;
 
-   TryAgain:
+        FilterFailed:
             IndexOfNextKeyValue++;
-
+            if (IndexOfNextKeyValue > RecordCount)
+            {
+                goto FilterSuccess;
+            }
+            
             uint code = stream[0];
             //Compression Stages:
             //  Stage 1: Big Positive Float. 
@@ -83,66 +87,69 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             {
                 //If stage 1 (50% success)
                 //key.Timestamp = prevTimestamp;
-                size = 4;
                 key.PointID += 1 + ((code >> 4) & 0x7);
-                key.EntryNumber = 0;
-                if (!filter.StopReading(key, value))
+                //key.EntryNumber = 0;
+                if (!filter.FilterContains(key))
                 {
+                    totalSize += 4;
+                    stream += 4;
                     goto FilterFailed;
                 }
                 value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
                 value.Value2 = 0;
                 value.Value3 = 0;
-                goto FilterSuccess;
-
+                totalSize += 4;
             }
             else if (code < 0xC0)
             {
                 //If stage 2 (16% success)
                 //key.Timestamp = prevTimestamp;
-                size = 4;
                 key.PointID += 1 + ((code >> 4) & 0x3);
-                key.EntryNumber = 0;
-                if (!filter.StopReading(key, value))
+                //key.EntryNumber = 0;
+                if (!filter.FilterContains(key))
                 {
+                    totalSize += 4;
+                    stream += 4;
                     goto FilterFailed;
                 }
                 value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
                 value.Value2 = 0;
                 value.Value3 = 0;
-                goto FilterSuccess;
+                totalSize += 4;
             }
             else if (code < 0xD0)
             {
                 //If stage 3 (28% success)
                 //prevTimestamp = prevTimestamp;
-                size = 1;
                 key.PointID += 1 + (code & 0xF);
-                key.EntryNumber = 0;
-                if (!filter.StopReading(key, value))
+                //key.EntryNumber = 0;
+                if (!filter.FilterContains(key))
                 {
+                    totalSize += 1;
+                    stream += 1;
                     goto FilterFailed;
                 }
                 value.Value1 = 0;
                 value.Value2 = 0;
                 value.Value3 = 0;
-                goto FilterSuccess;
+                totalSize += 1;
             }
             else if (code < 0xE0)
             {
                 //If stage 4 (3% success)
                 //prevTimestamp = prevTimestamp;
-                size = 5;
                 key.PointID += 1 + (code & 0xF);
-                key.EntryNumber = 0;
-                if (!filter.StopReading(key, value))
+                //key.EntryNumber = 0;
+                if (!filter.FilterContains(key))
                 {
+                    totalSize += 5;
+                    stream += 5;
                     goto FilterFailed;
                 }
                 value.Value1 = *(uint*)(stream + 1);
                 value.Value2 = 0;
                 value.Value3 = 0;
-                goto FilterSuccess;
+                totalSize += 5;
                 //key.Timestamp = prevTimestamp;
             }
             else
@@ -178,8 +185,9 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                     key.EntryNumber = 0;
                 }
 
-                if (!filter.StopReading(key, value))
+                if (!filter.FilterContains(key))
                 {
+                    key.EntryNumber = 0;
                     size += 4 + ((byte)code & 4);
                     //if ((code & 4) != 0) //V1 is set)
                     //{
@@ -199,6 +207,9 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                     {
                         size += Compression.Measure7BitUInt64(stream, size);
                     }
+
+                    totalSize += size;
+                    stream += size;
                     goto FilterFailed;
                 }
 
@@ -235,23 +246,10 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 {
                     value.Value3 = 0;
                 }
-               
-                goto FilterSuccess;
-            }
-
-        FilterFailed:
-            if (IndexOfNextKeyValue < RecordCount)
-            {
-                //If we can try again, then do it.
                 totalSize += size;
-                stream += size;
-                goto TryAgain;
             }
-
-            IndexOfNextKeyValue++;
 
         FilterSuccess:
-            totalSize += size;
             m_prevPointId = key.PointID;
             m_prevTimestamp = key.Timestamp;
             return totalSize;

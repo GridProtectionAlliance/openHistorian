@@ -80,7 +80,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return position;
         }
 
-        protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value, StreamFilterBase<HistorianKey, HistorianValue> filter)
+        protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value, KeyMatchFilterBase<HistorianKey> filter)
         {
             IndexOfNextKeyValue++;
             return DecodeRecord(stream, key, value);

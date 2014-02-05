@@ -126,7 +126,7 @@ namespace GSF.SortedTreeStore
             }
         }
 
-        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        public override bool Read(KeyMatchFilterBase<TKey> filter)
         {
             var firstTable = m_firstTable;
             if (firstTable == null || !firstTable.IsValid)

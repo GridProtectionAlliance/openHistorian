@@ -59,7 +59,7 @@ namespace GSF.SortedTreeStore
             return false;
         }
 
-        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        public override bool Read(KeyMatchFilterBase<TKey> filter)
         {
             IsValid = false;
             return false;

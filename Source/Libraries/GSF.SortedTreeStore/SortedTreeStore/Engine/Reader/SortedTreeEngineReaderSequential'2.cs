@@ -106,7 +106,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
             private bool m_timedOut;
             private long m_pointCount;
 
-            StreamFilterBase<TKey, TValue> m_streamFilter;
             SortedTreeKeyMethodsBase<TKey> m_keyMethods;
             SortedTreeValueMethodsBase<TValue> m_valueMethods;
 
@@ -164,15 +163,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 }
 
                 m_currentTables = new EngineUnionSeekableTreeStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue>(m_tables);
-                var filter = m_keyMatchFilter as PointIDFilter.BitArrayFilter<TKey>;
-                if (filter == null)
-                {
-                    m_streamFilter = new EngineStreamFilter<TKey, TValue>(m_keyMatchFilter);
-                }
-                else
-                {
-                    m_streamFilter = new EngineStreamFilterBitArray<TKey, TValue>(filter);
-                }
 
                 SetKeyValueReferences(m_currentTables.CurrentKey, m_currentTables.CurrentValue);
 
@@ -256,7 +246,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     Cancel();
                 else
                 {
-                    if (m_currentTables.Read(m_streamFilter) && m_currentTables.CurrentKey.Timestamp <= m_stopKey)
+                    if (m_currentTables.Read(m_keyMatchFilter) && m_currentTables.CurrentKey.Timestamp <= m_stopKey)
                     {
                         Stats.PointsScanned++;
                         if (m_keyMatchFilter == null || m_keyMatchFilter.Contains(CurrentKey))

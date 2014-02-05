@@ -59,7 +59,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <returns></returns>
         protected abstract unsafe int DecodeRecord(byte* stream, TKey key, TValue value);
 
-        protected abstract unsafe int DecodeRecord(byte* stream, TKey key, TValue value, StreamFilterBase<TKey, TValue> filter);
+        protected abstract unsafe int DecodeRecord(byte* stream, TKey key, TValue value, KeyMatchFilterBase<TKey> filter);
 
         /// <summary>
         /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.
@@ -83,7 +83,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             }
         }
 
-        protected override unsafe void ReadNext(StreamFilterBase<TKey, TValue> filter)
+        protected override unsafe void ReadNext(KeyMatchFilterBase<TKey> filter)
         {
             TKey currentKey = CurrentKey;
             TValue currentValue = CurrentValue;
@@ -93,7 +93,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 m_skipNextRead = false;
                 KeyMethods.Copy(m_prevKey, currentKey);
                 ValueMethods.Copy(m_prevValue, currentValue);
-                if (filter.StopReading(currentKey, currentValue))
+                if (filter.FilterContains(currentKey))
                 {
                     IndexOfNextKeyValue++;
                     return;

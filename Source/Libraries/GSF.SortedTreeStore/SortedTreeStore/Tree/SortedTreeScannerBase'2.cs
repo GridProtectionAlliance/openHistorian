@@ -155,7 +155,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <remarks> Be sure to modify <see cref="IndexOfNextKeyValue"/> and compare that to <see cref="RecordCount"/> 
         /// to determine if we are at the end of the stream.
         /// </remarks>
-        protected abstract void ReadNext(StreamFilterBase<TKey, TValue> filter);
+        protected abstract void ReadNext(KeyMatchFilterBase<TKey> filter);
 
         /// <summary>
         /// Using <see cref="Pointer"/> advance to the search location of the provided <see cref="key"/>
@@ -219,7 +219,7 @@ namespace GSF.SortedTreeStore.Tree
             return true;
         }
 
-        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        public override bool Read(KeyMatchFilterBase<TKey> filter)
         {
             if (Stream.PointerVersion == PointerVersion)
             {
@@ -241,7 +241,7 @@ namespace GSF.SortedTreeStore.Tree
         /// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
         /// </summary>
         /// <returns></returns>
-        protected bool Read2(StreamFilterBase<TKey, TValue> filter)
+        protected bool Read2(KeyMatchFilterBase<TKey> filter)
         {
         ReadAgain:
 

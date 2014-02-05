@@ -66,7 +66,7 @@ namespace GSF.SortedTreeStore.Engine
             return IsValid;
         }
 
-        public override bool Read(StreamFilterBase<TKey, TValue> filter)
+        public override bool Read(KeyMatchFilterBase<TKey> filter)
         {
             IsValid = m_scanner.Read(filter);
             return IsValid;

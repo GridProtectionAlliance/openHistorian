@@ -23,13 +23,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.Collections;
 using GSF.IO;
 using GSF.SortedTreeStore.Engine;
-using openHistorian;
 
 namespace GSF.SortedTreeStore.Filters
 {
@@ -101,8 +97,16 @@ namespace GSF.SortedTreeStore.Filters
             public override bool Contains(TKey key)
             {
                 return m_points.Contains(key.PointID);
-
             }
+
+            public override bool FilterContains(TKey key)
+            {
+                PointCount++;
+                if ((PointCount & 1023) == 0)
+                    return true;
+                return m_points.Contains(key.PointID);
+            }
+            
         }
     }
 }

@@ -39,7 +39,6 @@ namespace openHistorian.PerformanceTests
                         var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
                         while (stream.Read())
                             ;
-
                     }
 
                     sw.Start();
