@@ -708,6 +708,11 @@
             Gets or sets the path on the server to the local certificate used to identify the subscriber.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.ImportCertificatePath">
+            <summary>
+            Gets or sets the path to the certificate to be imported to the service.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Transport.UI.ViewModels.SubscriberRequestViewModel.RemoteCertificateFile">
             <summary>
             Gets or sets the path to the remote certificate used to identify the publisher.
