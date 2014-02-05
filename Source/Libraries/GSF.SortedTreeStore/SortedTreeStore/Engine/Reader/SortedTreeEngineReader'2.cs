@@ -204,7 +204,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     if (m_keySeekFilter == null || m_keyMethods.IsLessThanOrEqualTo(CurrentKey, m_keySeekFilter.EndOfFrame))
                     {
                         Stats.PointsScanned++;
-                        if (m_keyMatchFilter == null || m_keyMatchFilter.Contains(CurrentKey))
+                        if (m_keyMatchFilter.Contains(CurrentKey))
                         {
                             Stats.PointsReturned++;
                             return true;

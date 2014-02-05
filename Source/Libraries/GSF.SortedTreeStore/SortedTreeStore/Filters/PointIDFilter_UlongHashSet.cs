@@ -99,14 +99,6 @@ namespace GSF.SortedTreeStore.Filters
                 return m_points.Contains(key.PointID);
             }
 
-            public override bool FilterContains(TKey key)
-            {
-                PointCount++;
-                if ((PointCount & 1023) == 0)
-                    return true;
-                return m_points.Contains(key.PointID);
-            }
-            
         }
     }
 }

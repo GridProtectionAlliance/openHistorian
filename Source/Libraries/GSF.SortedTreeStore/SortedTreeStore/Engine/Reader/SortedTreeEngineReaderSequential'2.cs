@@ -249,7 +249,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     if (m_currentTables.Read(m_keyMatchFilter) && m_currentTables.CurrentKey.Timestamp <= m_stopKey)
                     {
                         Stats.PointsScanned++;
-                        if (m_keyMatchFilter == null || m_keyMatchFilter.Contains(CurrentKey))
+                        if (m_keyMatchFilter.Contains(CurrentKey))
                         {
                             Stats.PointsReturned++;
                             IsValid = true;

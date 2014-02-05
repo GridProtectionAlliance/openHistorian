@@ -101,14 +101,7 @@ namespace GSF.SortedTreeStore.Filters
                 return key.PointID <= uint.MaxValue && m_points.Contains((uint)key.PointID);
 
             }
-
-            public override bool FilterContains(TKey key)
-            {
-                PointCount++;
-                if ((PointCount & 1023) == 0)
-                    return true;
-                return key.PointID <= uint.MaxValue && m_points.Contains((uint)key.PointID);
-            }
+       
         }
     }
 }

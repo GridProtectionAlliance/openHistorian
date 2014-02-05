@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Net;
 using openHistorian.Data;
@@ -71,7 +72,8 @@ namespace openHistorian.PerformanceTests
                 HistorianClientOptions clientOptions = new HistorianClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
-
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
                 using (var client = new HistorianClient(clientOptions))
                 {
                     var database = client.GetDefaultDatabase();
@@ -85,6 +87,8 @@ namespace openHistorian.PerformanceTests
                     }
                     database.Disconnect();
                 }
+                sw.Stop();
+                //MessageBox.Show(sw.Elapsed.TotalSeconds.ToString());
             }
         }
     }

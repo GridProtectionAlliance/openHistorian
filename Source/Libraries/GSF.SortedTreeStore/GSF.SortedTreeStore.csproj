@@ -187,7 +187,6 @@
     <Compile Include="SortedTreeStore\Net\Initialization\KeyValueStreamCompression.cs" />
     <Compile Include="SortedTreeStore\Net\Initialization\KeyValueStreamCompressionBase.cs" />
     <Compile Include="SortedTreeStore\Net\Initialization\RegisterKeyValueStreamCompressionTypes.cs" />
-    <Compile Include="Net\NetworkBinaryStreamOld.cs" />
     <Compile Include="SortedTreeStore\Net\ProcessClient%272.cs" />
     <Compile Include="SortedTreeStore\Net\SortedTreeServerSocket%272.cs" />
     <Compile Include="Compression.cs" />
@@ -254,8 +253,6 @@
     <Compile Include="SortedTreeStore\Net\ServerCommand.cs" />
     <Compile Include="HistorianCollection%272.cs" />
     <Compile Include="IO\AsyncWriter.cs" />
-    <Compile Include="IO\BinaryStreamBaseOld.cs" />
-    <Compile Include="IO\BinaryStreamWrapperOld.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamOld.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionBase.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionCache.cs" />

@@ -64,24 +64,25 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             ValueMethods.Read(ptr + m_keySize, CurrentValue);
         }
 
-        protected override unsafe void ReadNext(KeyMatchFilterBase<TKey> filter)
+        protected override unsafe int ReadNext(KeyMatchFilterBase<TKey> filter)
         {
+            int before = IndexOfNextKeyValue;
             int remainingRecords = RecordCount - IndexOfNextKeyValue;
             int scannedRecords = 0;
             while (scannedRecords < remainingRecords)
             {
                 byte* ptr = Pointer + (IndexOfNextKeyValue + scannedRecords) * m_keyValueSize;
                 KeyMethods.Read(ptr, CurrentKey);
-                ValueMethods.Read(ptr + m_keySize, CurrentValue);
                 scannedRecords += 1;
-                if (filter.FilterContains(CurrentKey))
+                if (filter.Contains(CurrentKey))
                 {
+                    ValueMethods.Read(ptr + m_keySize, CurrentValue);
                     IndexOfNextKeyValue += scannedRecords;
-                    return;
+                    return IndexOfNextKeyValue - before;
                 }
             }
             IndexOfNextKeyValue += scannedRecords + 1;
-            return;
+            return IndexOfNextKeyValue - before;
         }
 
 

@@ -42,9 +42,9 @@ namespace GSF.SortedTreeStore.Filters
             : KeyMatchFilterBase<TKey>
             where TKey : EngineKeyBase<TKey>, new()
         {
-            internal readonly BitArray m_points;
-            internal ulong m_maxValue;
-            long[] m_array;
+            readonly BitArray m_points;
+            public ulong MaxValue;
+            public long[] ArrayBits;
 
             /// <summary>
             /// Creates a new filter backed by a <see cref="BitArray"/>.
@@ -57,7 +57,7 @@ namespace GSF.SortedTreeStore.Filters
                 if (maxValue >= int.MaxValue)
                     throw new ArgumentOutOfRangeException("maxValue", "Cannot be larger than int.MaxValue-1");
 
-                m_maxValue = maxValue;
+                MaxValue = maxValue;
                 m_points = new BitArray(false, (int)maxValue + 1);
                 while (pointCount > 0)
                 {
@@ -65,7 +65,7 @@ namespace GSF.SortedTreeStore.Filters
                     m_points.SetBit((int)stream.ReadUInt32());
                     pointCount--;
                 }
-                m_array = m_points.m_array;
+                ArrayBits = m_points.GetInternalData();
             }
 
             /// <summary>
@@ -75,13 +75,13 @@ namespace GSF.SortedTreeStore.Filters
             /// <param name="maxValue">the maximum value stored in the bit array. Cannot be larger than int.MaxValue-1</param>
             public BitArrayFilter(IEnumerable<ulong> points, ulong maxValue)
             {
-                m_maxValue = maxValue;
+                MaxValue = maxValue;
                 m_points = new BitArray(false, (int)maxValue + 1);
                 foreach (ulong pt in points)
                 {
                     m_points.SetBit((int)pt);
                 }
-                m_array = m_points.m_array;
+                ArrayBits = m_points.GetInternalData();
             }
 
             public override Guid FilterType
@@ -100,7 +100,7 @@ namespace GSF.SortedTreeStore.Filters
             public override void Save(BinaryStreamBase stream)
             {
                 stream.Write((byte)1); //Stored as array of uint[]
-                stream.Write(m_maxValue);
+                stream.Write(MaxValue);
                 stream.Write(m_points.SetCount);
                 foreach (int x in m_points.GetAllSetBits())
                 {
@@ -111,29 +111,17 @@ namespace GSF.SortedTreeStore.Filters
             public override bool Contains(TKey key)
             {
                 int point = (int)key.PointID;
-                return (key.PointID <= m_maxValue && ((m_array[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
+                return (key.PointID <= MaxValue &&
+                    ((ArrayBits[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
             }
 
-            public override bool FilterContains(TKey key)
+            public bool Contains(ulong pointId)
             {
-                PointCount++;
-                if ((PointCount & 1023) != 0)
-                {
-                    if (key.PointID <= m_maxValue)
-                    {
-                        return (m_array[(int)key.PointID >> BitArray.BitsPerElementShift] & 1L << ((int)key.PointID & BitArray.BitsPerElementMask)) != 0;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return true;
-                }
+                int point = (int)pointId;
+                return (pointId <= MaxValue &&
+                    ((ArrayBits[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
             }
-          
+
         }
     }
 }

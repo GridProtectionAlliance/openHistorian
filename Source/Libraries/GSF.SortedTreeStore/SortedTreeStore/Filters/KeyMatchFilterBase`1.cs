@@ -60,21 +60,5 @@ namespace GSF.SortedTreeStore.Filters
         /// <returns></returns>
         public abstract bool Contains(TKey key);
 
-
-        /// <summary>
-        /// Use this to appy the logic for a filter expression. This filter expression 
-        /// intentionally creates false positives in order for higher layers to cancel 
-        /// the search functionality.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public virtual bool FilterContains(TKey key)
-        {
-            PointCount++;
-            if ((PointCount & 1023) == 0) 
-                return true;
-            return Contains(key);
-        }
-
     }
 }

@@ -155,7 +155,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <remarks> Be sure to modify <see cref="IndexOfNextKeyValue"/> and compare that to <see cref="RecordCount"/> 
         /// to determine if we are at the end of the stream.
         /// </remarks>
-        protected abstract void ReadNext(KeyMatchFilterBase<TKey> filter);
+        protected abstract int ReadNext(KeyMatchFilterBase<TKey> filter);
 
         /// <summary>
         /// Using <see cref="Pointer"/> advance to the search location of the provided <see cref="key"/>
@@ -226,7 +226,7 @@ namespace GSF.SortedTreeStore.Tree
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
-                    ReadNext(filter);
+                    filter.PointCount += ReadNext(filter);
                     if (IndexOfNextKeyValue <= RecordCount)
                     {
                         IsValid = true;
@@ -265,7 +265,7 @@ namespace GSF.SortedTreeStore.Tree
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            ReadNext(filter);
+            filter.PointCount += ReadNext(filter);
             if (IndexOfNextKeyValue <= RecordCount)
             {
                 IsValid = true;

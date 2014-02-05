@@ -83,24 +83,26 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             }
         }
 
-        protected override unsafe void ReadNext(KeyMatchFilterBase<TKey> filter)
+        protected override unsafe int ReadNext(KeyMatchFilterBase<TKey> filter)
         {
             TKey currentKey = CurrentKey;
             TValue currentValue = CurrentValue;
+            int beforeScan = IndexOfNextKeyValue;
 
             if (m_skipNextRead)
             {
                 m_skipNextRead = false;
                 KeyMethods.Copy(m_prevKey, currentKey);
                 ValueMethods.Copy(m_prevValue, currentValue);
-                if (filter.FilterContains(currentKey))
+                if (filter.Contains(currentKey))
                 {
                     IndexOfNextKeyValue++;
-                    return;
+                    return 0;
                 }
             }
 
             m_nextOffset += DecodeRecord(Pointer + m_nextOffset, currentKey, currentValue, filter);
+            return IndexOfNextKeyValue - beforeScan;
         }
 
         //protected override unsafe void ReadNext(StreamFilterBase<TKey, TValue> filter)

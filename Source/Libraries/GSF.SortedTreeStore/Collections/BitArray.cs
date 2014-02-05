@@ -35,11 +35,11 @@ namespace GSF.Collections
     {
         #region [ Members ]
 
-        internal const int BitsPerElementShift = 6;
-        internal const int BitsPerElementMask = BitsPerElement - 1;
-        private const int BitsPerElement = sizeof(long) * 8;
+        public const int BitsPerElementShift = 6;
+        public const int BitsPerElementMask = BitsPerElement - 1;
+        public const int BitsPerElement = sizeof(long) * 8;
 
-        internal long[] m_array;
+        long[] m_array;
         private int m_count;
         private int m_setCount;
         private int m_lastFoundClearedIndex;
@@ -392,6 +392,11 @@ namespace GSF.Collections
                 }
             }
             return -1;
+        }
+
+        public long[] GetInternalData()
+        {
+            return (long[])m_array.Clone();
         }
 
         /// <summary>
