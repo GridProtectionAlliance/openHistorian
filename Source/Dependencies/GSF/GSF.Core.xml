@@ -9499,11 +9499,12 @@
             The default timeout duration used for executing SQL statements when timeout duration is not specified.
             </summary>
         </member>
-        <member name="M:GSF.Data.DataExtensions.SqlEncode(System.String)">
+        <member name="M:GSF.Data.DataExtensions.SQLEncode(System.String,GSF.Data.DatabaseType)">
             <summary>
-            Performs SQL encoding on given T-SQL string.
+            Performs SQL encoding on given SQL string.
             </summary>
             <param name="sql">The string on which SQL encoding is to be performed.</param>
+            <param name="databaseType">Database type for the SQL encoding.</param>
             <returns>The SQL encoded string.</returns>
         </member>
         <member name="M:GSF.Data.DataExtensions.ExecuteNonQuery``1(``0,System.String,System.Object[])">
