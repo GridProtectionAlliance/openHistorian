@@ -106,6 +106,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             private bool m_timedOut;
             private long m_pointCount;
 
+            bool m_keyMatchIsUniverse;
             SortedTreeKeyMethodsBase<TKey> m_keyMethods;
             SortedTreeValueMethodsBase<TValue> m_valueMethods;
 
@@ -126,6 +127,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 m_keySeekFilter = keySeekFilter;
                 m_keyMatchFilter = keyMatchFilter;
                 m_valueMatchFilter = valueMatchFilter;
+                m_keyMatchIsUniverse = (m_keyMatchFilter as KeyMatchFilterUniverse<TKey>) != null;
 
                 if (readerOptions.Timeout.Ticks > 0)
                 {
@@ -246,7 +248,14 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     Cancel();
                 else
                 {
-                    if (m_currentTables.Read(m_keyMatchFilter) && m_currentTables.CurrentKey.Timestamp <= m_stopKey)
+                    if (m_keyMatchIsUniverse && m_currentTables.Read() && m_currentTables.CurrentKey.Timestamp <= m_stopKey)
+                    {
+                        Stats.PointsScanned++;
+                        Stats.PointsReturned++;
+                        IsValid = true;
+                        return true;
+                    }
+                    if (!m_keyMatchIsUniverse && m_currentTables.Read(m_keyMatchFilter) && m_currentTables.CurrentKey.Timestamp <= m_stopKey)
                     {
                         Stats.PointsScanned++;
                         if (m_keyMatchFilter.Contains(CurrentKey))

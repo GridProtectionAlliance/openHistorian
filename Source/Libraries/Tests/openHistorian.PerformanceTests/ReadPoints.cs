@@ -10,12 +10,97 @@ using GSF.SortedTreeStore.Net;
 using openHistorian.Data;
 
 using NUnit.Framework;
+using openHistorian.Data.Query;
 
 namespace openHistorian.PerformanceTests
 {
     [TestFixture]
     public class ReadPoints
     {
+        [Test]
+        public void ReadFrames()
+        {
+            Stopwatch sw = new Stopwatch();
+            int pointCount = 0;
+            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
+            db.InMemoryArchive = true;
+            db.ConnectionString = "port=12345";
+            db.Paths = new[] { @"C:\Program Files\openHistorian\Archive\" };
+
+            using (HistorianServer server = new HistorianServer(db))
+            {
+                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                clientOptions.NetworkPort = 12345;
+                clientOptions.ServerNameOrIp = "127.0.0.1";
+
+                using (var client = new HistorianClient(clientOptions))
+                {
+                    var database = server.GetDefaultDatabase();
+
+                    using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue).GetFrameReader())
+                    {
+                        while (frameReader.Read())
+                            ;
+                    }
+
+
+                    sw.Start();
+                    using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue).GetFrameReader())
+                    {
+                        while (frameReader.Read())
+                            ;
+                    }
+                    sw.Stop();
+                    database.Disconnect();
+                }
+            }
+            Console.WriteLine(pointCount);
+            Console.WriteLine(sw.Elapsed.TotalSeconds.ToString());
+
+        }
+
+        [Test]
+        public void ReadAllPoints()
+        {
+            Stopwatch sw = new Stopwatch();
+            int pointCount = 0;
+            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
+            db.InMemoryArchive = true;
+            db.ConnectionString = "port=12345";
+            db.Paths = new[] { @"C:\Program Files\openHistorian\Archive\" };
+
+            using (HistorianServer server = new HistorianServer(db))
+            {
+                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                clientOptions.NetworkPort = 12345;
+                clientOptions.ServerNameOrIp = "127.0.0.1";
+
+                using (var client = new HistorianClient(clientOptions))
+                {
+                    var database = server.GetDefaultDatabase();
+
+                    using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue))
+                    {
+                        while (frameReader.Read())
+                            ;
+                    }
+
+
+                    //sw.Start();
+                    //using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue))
+                    //{
+                    //    while (frameReader.Read())
+                    //        ;
+                    //}
+                    //sw.Stop();
+                    database.Disconnect();
+                }
+            }
+            Console.WriteLine(pointCount);
+            Console.WriteLine(sw.Elapsed.TotalSeconds.ToString());
+
+        }
+
         [Test]
         public void TestReadPoints()
         {

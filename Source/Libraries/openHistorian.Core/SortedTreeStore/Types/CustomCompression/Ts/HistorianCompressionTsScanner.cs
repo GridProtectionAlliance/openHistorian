@@ -158,7 +158,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 size = 1;
                 if ((code & 16) != 0) //T is set
                 {
-                    key.Timestamp = Compression.Read7BitUInt64(stream, ref size);
+                    key.Timestamp += Compression.Read7BitUInt64(stream, ref size);
                     key.PointID = Compression.Read7BitUInt64(stream, ref size);
                 }
                 else

@@ -144,8 +144,16 @@ namespace GSF.SortedTreeStore.Net
             if (m_sortedTreeEngine != null)
                 m_sortedTreeEngine.Dispose();
 
-            m_stream.Write((byte)ServerCommand.Disconnect);
-            m_stream.Flush();
+            try
+            {
+                m_stream.Write((byte)ServerCommand.Disconnect);
+                m_stream.Flush();
+            }
+            catch (Exception)
+            {
+
+            }
+
 
             if (m_client != null)
                 m_client.Close();
