@@ -53,20 +53,23 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static Dictionary<ulong, RawSignalTimeValue> GetRawSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime endTime, IEnumerable<ulong> signals)
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
             Dictionary<ulong, RawSignalTimeValue> results = signals.ToDictionary((x) => x, (x) => new RawSignalTimeValue());
 
             using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read((ulong)startTime.Ticks, (ulong)endTime.Ticks, signals);
-               
-                while (stream.Read())
+
+                while (stream.Read(key, value))
                 {
-                    results[stream.CurrentKey.PointID].Signals.Add(stream.CurrentKey.TimestampAsDate,stream.CurrentValue.ToStruct());
+                    results[key.PointID].Signals.Add(key.TimestampAsDate, value.ToStruct());
                 }
             }
             return results;
         }
 
-       
+
     }
 }

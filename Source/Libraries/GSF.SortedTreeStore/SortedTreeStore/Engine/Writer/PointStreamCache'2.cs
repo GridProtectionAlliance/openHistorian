@@ -97,14 +97,17 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <param name="stream">the stream to write</param>
         public void Write(TreeStream<TKey, TValue> stream)
         {
+            TKey key = new TKey();
+            TValue value = new TValue();
+
             if (m_isReading)
                 throw new Exception("Cannot write to a stream while it is being read.");
 
-            while (stream.Read())
+            while (stream.Read(key, value))
             {
                 m_pointCount++;
-                m_keyMethods.Write(m_queue, stream.CurrentKey);
-                m_valueMethods.Write(m_queue, stream.CurrentValue);
+                m_keyMethods.Write(m_queue, key);
+                m_valueMethods.Write(m_queue, value);
             }
         }
 
@@ -114,15 +117,15 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <returns>
         /// Returns true if the next value is valid. Returns false if the end of the stream has been encountered.
         /// </returns>
-        public override bool Read()
+        public override bool Read(TKey key, TValue value)
         {
             if (!m_isReading)
                 throw new Exception("Cannot read from a stream while it is being written to.");
 
             if (m_remainingPoints > 0)
             {
-                m_keyMethods.Read(m_queue, CurrentKey);
-                m_valueMethods.Read(m_queue, CurrentValue);
+                m_keyMethods.Read(m_queue, key);
+                m_valueMethods.Read(m_queue, value);
                 m_remainingPoints--;
                 return true;
             }

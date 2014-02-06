@@ -239,9 +239,11 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream">stream to add</param>
         public void AddRange(TreeStream<TKey, TValue> stream)
         {
-            while (stream.Read())
+            TKey key = new TKey();
+            TValue value = new TValue();
+            while (stream.Read(key, value))
             {
-                Add(stream.CurrentKey, stream.CurrentValue);
+                Add(key, value);
             }
         }
         /// <summary>
@@ -250,9 +252,11 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream">the stream to add.</param>
         public void TryAddRange(TreeStream<TKey, TValue> stream)
         {
-            while (stream.Read())
+            TKey key = new TKey();
+            TValue value = new TValue();
+            while (stream.Read(key, value))
             {
-                TryAdd(stream.CurrentKey, stream.CurrentValue);
+                TryAdd(key, value);
             }
         }
         /// <summary>

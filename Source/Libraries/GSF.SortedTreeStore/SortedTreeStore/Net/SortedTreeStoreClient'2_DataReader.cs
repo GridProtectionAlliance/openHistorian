@@ -71,12 +71,12 @@ namespace GSF.SortedTreeStore.Net
                     throw new Exception("Sockets do not support concurrent readers.");
 
                 m_client.m_stream.Write((byte)ServerCommand.Read);
-               
+
                 if (keySeekFilter == null)
                     m_client.m_stream.Write((byte)0);
                 else
                     keySeekFilter.Save(m_client.m_stream);
-               
+
                 if (keyMatchFilter == null)
                     m_client.m_stream.Write((byte)0);
                 else
@@ -114,10 +114,10 @@ namespace GSF.SortedTreeStore.Net
                     m_client.m_compressionMode.ResetEncoder();
                 }
 
-                public override bool Read()
+                public override bool Read(TKey key, TValue value)
                 {
 
-                    if (!m_completed && m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey, CurrentValue))
+                    if (!m_completed && m_client.m_compressionMode.TryDecode(m_client.m_stream, key, value))
                     {
                         //CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);
                         //CurrentValue.ReadCompressed(m_client.m_stream, CurrentValue);
@@ -132,12 +132,14 @@ namespace GSF.SortedTreeStore.Net
 
                 public override void Cancel()
                 {
+                    TKey key = new TKey();
+                    TValue value = new TValue();
                     if (m_completed)
                         return;
                     m_client.m_stream.Write((byte)ServerCommand.CancelRead);
                     m_client.m_stream.Flush();
                     //flush the rest of the data off of the receive queue.
-                    while (m_client.m_compressionMode.TryDecode(m_client.m_stream, CurrentKey, CurrentValue))
+                    while (m_client.m_compressionMode.TryDecode(m_client.m_stream, key, value))
                     {
                         //CurrentKey.ReadCompressed(m_client.m_stream, CurrentKey);
                         //CurrentValue.ReadCompressed(m_client.m_stream, CurrentValue);

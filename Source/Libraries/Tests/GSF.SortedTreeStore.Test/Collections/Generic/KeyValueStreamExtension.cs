@@ -45,11 +45,11 @@ namespace GSF.SortedTreeStore.Tree
         /// If before the beginning of the stream, advances to the first value
         /// </summary>
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
-        public override bool Read()
+        public override bool Read(TKey key, TValue value)
         {
             if (m_isEndOfStream)
             {
-                if (m_baseStream.Read())
+                if (m_baseStream.Read(key, value))
                     throw new Exception("Data exists past the end of the stream");
                 if (m_baseStream.IsValid)
                     throw new Exception("Should not be valid");
@@ -61,7 +61,7 @@ namespace GSF.SortedTreeStore.Tree
                 if (!m_baseStream.IsValid)
                     throw new Exception("Should be valid");
                 if (IsValid)
-                    if (m_keyMethods.IsGreaterThanOrEqualTo(CurrentKey,m_baseStream.CurrentKey))// CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))
+                    if (m_keyMethods.IsGreaterThanOrEqualTo(CurrentKey, m_baseStream.CurrentKey))// CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))
                         throw new Exception("Stream is not sequential");
 
                 IsValid = true;

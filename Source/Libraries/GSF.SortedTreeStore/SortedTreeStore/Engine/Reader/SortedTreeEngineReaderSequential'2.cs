@@ -115,8 +115,8 @@ namespace GSF.SortedTreeStore.Engine.Reader
             ValueMatchFilterBase<TValue> m_valueMatchFilter;
 
             private TimeoutOperation m_timeout;
-            private List<ArchiveTablePointEnumerator<TKey, TValue>> m_tables;
-            private EngineUnionSeekableTreeStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue> m_currentTables;
+            private List<BufferedArchiveStream<TKey, TValue>> m_tables;
+            private UnionArchive<TKey, TValue> m_currentTables;
 
             public ReadStream(ArchiveListSnapshot<TKey, TValue> snapshot, SortedTreeEngineReaderOptions readerOptions,
                                        KeySeekFilterBase<TKey> keySeekFilter, KeyMatchFilterBase<TKey> keyMatchFilter,
@@ -146,7 +146,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 //startKey.SetMin();
                 //stopKey.SetMax();
 
-                m_tables = new List<ArchiveTablePointEnumerator<TKey, TValue>>();
+                m_tables = new List<BufferedArchiveStream<TKey, TValue>>();
 
                 for (int x = 0; x < m_snapshot.Tables.Count(); x++)
                 {
@@ -155,7 +155,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     {
                         if (keySeekFilter == null || table.Contains(keySeekFilter.StartOfRange, keySeekFilter.EndOfRange))
                         {
-                            m_tables.Add(new ArchiveTablePointEnumerator<TKey, TValue>(x, table));
+                            m_tables.Add(new BufferedArchiveStream<TKey, TValue>(x, table));
                         }
                         else
                         {
@@ -164,9 +164,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     }
                 }
 
-                m_currentTables = new EngineUnionSeekableTreeStream<ArchiveTablePointEnumerator<TKey, TValue>, TKey, TValue>(m_tables);
-
-                SetKeyValueReferences(m_currentTables.CurrentKey, m_currentTables.CurrentValue);
+                m_currentTables = new UnionArchive<TKey, TValue>(m_tables);
 
                 m_keySeekFilter.Reset();
                 if (m_keySeekFilter.NextWindow())
@@ -181,7 +179,58 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 }
             }
 
-            bool AdvanceTimestampFilter()
+            public override bool Read(TKey key, TValue value)
+            {
+                bool isValid;
+            TryAgain:
+                if (m_timedOut)
+                {
+                    Cancel();
+                }
+                else
+                {
+                    if (m_keyMatchIsUniverse)
+                    {
+                        isValid = m_currentTables.Read(key, value);
+                        if (isValid && key.Timestamp <= m_stopKey)
+                        {
+                            Stats.PointsScanned++;
+                            Stats.PointsReturned++;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        isValid = m_currentTables.Read(key, value, m_keyMatchFilter);
+                        if (isValid && key.Timestamp <= m_stopKey)
+                        {
+                            Stats.PointsScanned++;
+                            if (m_keyMatchFilter.Contains(key))
+                            {
+                                Stats.PointsReturned++;
+                                return true;
+                            }
+                            goto TryAgain;
+                        }
+                    }
+                    if (isValid)
+                    {
+                        if (AdvanceTimestampFilter(isValid, key, value))
+                        {
+                            return true;
+                        }
+                        goto TryAgain;
+                    }
+                }
+                Cancel();
+                return false;
+            }
+
+            /// <summary>
+            /// Does a seek operation on the current stream when there is a seek filter on the reader.
+            /// </summary>
+            /// <returns></returns>
+            bool AdvanceTimestampFilter(bool isValid, TKey key, TValue value)
             {
             TryAgain:
                 if (m_keySeekFilter != null && m_keySeekFilter.NextWindow())
@@ -190,91 +239,31 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     m_stopKey = m_keySeekFilter.EndOfFrame.Timestamp;
 
                     //If the current point is a valid point.
-                    if (m_currentTables.IsValid)
+                    if (isValid)
                     {
                         //If the current point is within this window
-                        if (m_keyMethods.IsGreaterThanOrEqualTo(m_currentTables.CurrentKey, m_keySeekFilter.StartOfFrame) &&
-                            m_keyMethods.IsLessThanOrEqualTo(m_currentTables.CurrentKey, m_keySeekFilter.EndOfFrame))
+                        if (m_keyMethods.IsGreaterThanOrEqualTo(key, m_keySeekFilter.StartOfFrame) &&
+                            m_keyMethods.IsLessThanOrEqualTo(key, m_keySeekFilter.EndOfFrame))
                         {
-                            IsValid = true;
                             return true;
                         }
 
                         //If the current point is after this window, see to the next window.
-                        if (m_keyMethods.IsGreaterThan(m_currentTables.CurrentKey, m_keySeekFilter.EndOfFrame))
+                        if (m_keyMethods.IsGreaterThan(key, m_keySeekFilter.EndOfFrame))
                             goto TryAgain;
                     }
 
                     //If the current point is not valid, or is before m_startKey
                     //Advance the scanner to the next window.
-                    TKey key = new TKey();
-                    m_keyMethods.SetMin(key); //key.SetMin();
-                    key.Timestamp = m_startKey;
-                    m_currentTables.SeekForward(key);
-
-                    //If the current point is not valid, then make it valid.
-                    if (!m_currentTables.IsValid)
-                    {
-                        if (!m_currentTables.Read())
-                        {
-                            //The read was unsuccessful, end of the stream encountered.
-                            Cancel();
-                            return false;
-                        }
-                    }
-
-                    //If the current point is within this window
-                    if (m_currentTables.CurrentKey.Timestamp >= m_startKey &&
-                        m_currentTables.CurrentKey.Timestamp <= m_stopKey)
-                    {
-                        IsValid = true;
-                        return true;
-                    }
-
-                    //If the current point is after this window, see to the next window.
-                    if (m_currentTables.CurrentKey.Timestamp > m_stopKey)
-                        goto TryAgain;
-
-                    throw new Exception("The seek behavior of the stream did not function properly");
+                    TKey tmpKey = new TKey();
+                    m_keyMethods.SetMin(tmpKey); //key.SetMin();
+                    tmpKey.Timestamp = m_startKey;
+                    m_currentTables.SeekForward(tmpKey);
                 }
-                Cancel();
                 return false;
+
             }
 
-            public override bool Read()
-            {
-            TryAgain:
-                if (m_timedOut)
-                    Cancel();
-                else
-                {
-                    if (m_keyMatchIsUniverse && m_currentTables.Read() && m_currentTables.CurrentKey.Timestamp <= m_stopKey)
-                    {
-                        Stats.PointsScanned++;
-                        Stats.PointsReturned++;
-                        IsValid = true;
-                        return true;
-                    }
-                    if (!m_keyMatchIsUniverse && m_currentTables.Read(m_keyMatchFilter) && m_currentTables.CurrentKey.Timestamp <= m_stopKey)
-                    {
-                        Stats.PointsScanned++;
-                        if (m_keyMatchFilter.Contains(CurrentKey))
-                        {
-                            Stats.PointsReturned++;
-                            IsValid = true;
-                            return true;
-                        }
-                        goto TryAgain;
-                    }
-                    if (AdvanceTimestampFilter())
-                    {
-                        IsValid = true;
-                        return true;
-                    }
-                }
-                IsValid = false;
-                return false;
-            }
 
             public override void Cancel()
             {
@@ -290,7 +279,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     m_tables = null;
                     Array.Clear(m_snapshot.Tables, 0, m_snapshot.Tables.Length);
                 }
-                IsValid = false;
                 m_timedOut = true;
             }
         }

@@ -47,7 +47,7 @@ namespace openHistorian
     /// <remarks>
     /// This class implements the 1.0 historian <see cref="IArchive"/> to automatically bring in historian providers (e.g., web services).
     /// </remarks>
-    public class HistorianDatabaseEngine 
+    public class HistorianDatabaseEngine
         : SortedTreeEngine<HistorianKey, HistorianValue>, IArchive
     {
         #region [ Constructors ]
@@ -108,17 +108,20 @@ namespace openHistorian
 
         private IEnumerable<IDataPoint> ReadDataStream(TreeStream<HistorianKey, HistorianValue> stream)
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
             List<ArchiveDataPoint> queriedData = new List<ArchiveDataPoint>();
             ArchiveDataPoint point;
             MeasurementStateFlags stateFlags;
 
-            while (stream.Read())
+            while (stream.Read(key, value))
             {
-                point = new ArchiveDataPoint((int)stream.CurrentKey.PointID);
-                point.Time = new TimeTag(new DateTime((long)stream.CurrentKey.Timestamp));
-                point.Value = BitMath.ConvertToSingle(stream.CurrentValue.Value1);
+                point = new ArchiveDataPoint((int)key.PointID);
+                point.Time = new TimeTag(new DateTime((long)key.Timestamp));
+                point.Value = BitMath.ConvertToSingle(value.Value1);
 
-                stateFlags = (MeasurementStateFlags)stream.CurrentValue.Value3;
+                stateFlags = (MeasurementStateFlags)value.Value3;
 
                 if ((stateFlags & MeasurementStateFlags.BadData) == 0)
                 {

@@ -69,14 +69,14 @@ namespace GSF.SortedTreeStore.Net
                 if (m_historianReader != null)
                     throw new Exception("Cannot write to the database when a reader is open when using sockets.");
 
-                TKey oldKey = new TKey();
-                TValue oldValue = new TValue();
+                TKey key = new TKey();
+                TValue value = new TValue();
                 m_client.m_stream.Write((byte)ServerCommand.Write);
-                
+
                 m_client.m_compressionMode.ResetEncoder();
-                while (points.Read())
+                while (points.Read(key, value))
                 {
-                    m_client.m_compressionMode.Encode(m_client.m_stream, points.CurrentKey, points.CurrentValue);
+                    m_client.m_compressionMode.Encode(m_client.m_stream, key, value);
                 }
                 m_client.m_compressionMode.WriteEndOfStream(m_client.m_stream);
                 m_client.m_stream.Flush();

@@ -146,7 +146,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <summary>
         /// Using <see cref="Pointer"/> advance to the next KeyValue
         /// </summary>
-        protected abstract void ReadNext();
+        protected abstract void ReadNext(TKey key, TValue value);
 
         /// <summary>
         /// Using <see cref="Pointer"/> advance to the next KeyValue that is contained in the provided filter.
@@ -155,7 +155,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <remarks> Be sure to modify <see cref="IndexOfNextKeyValue"/> and compare that to <see cref="RecordCount"/> 
         /// to determine if we are at the end of the stream.
         /// </remarks>
-        protected abstract int ReadNext(KeyMatchFilterBase<TKey> filter);
+        protected abstract int ReadNext(TKey key, TValue value, KeyMatchFilterBase<TKey> filter);
 
         /// <summary>
         /// Using <see cref="Pointer"/> advance to the search location of the provided <see cref="key"/>
@@ -171,27 +171,26 @@ namespace GSF.SortedTreeStore.Tree
         /// If before the beginning of the stream, advances to the first value
         /// </summary>
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
-        public override bool Read()
+        public override bool Read(TKey key, TValue value)
         {
             if (Stream.PointerVersion == PointerVersion)
             {
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
-                    ReadNext();
+                    ReadNext(key, value);
                     IndexOfNextKeyValue++;
-                    IsValid = true;
                     return true;
                 }
             }
-            return Read2();
+            return Read2(key, value);
         }
 
         /// <summary>
         /// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
         /// </summary>
         /// <returns></returns>
-        protected bool Read2()
+        protected bool Read2(TKey key, TValue value)
         {
             //return false;
             //If there are no more records in the current node.
@@ -200,9 +199,8 @@ namespace GSF.SortedTreeStore.Tree
                 //If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
-                    KeyMethods.Clear(CurrentKey);
-                    ValueMethods.Clear(CurrentValue);
-                    IsValid = false;
+                    KeyMethods.Clear(key);
+                    ValueMethods.Clear(value);
                     return false;
                 }
                 LoadNode(RightSiblingNodeIndex);
@@ -213,35 +211,33 @@ namespace GSF.SortedTreeStore.Tree
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            ReadNext();
+            ReadNext(key, value);
             IndexOfNextKeyValue++;
-            IsValid = true;
             return true;
         }
 
-        public override bool Read(KeyMatchFilterBase<TKey> filter)
+        public override bool Read(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
         {
             if (Stream.PointerVersion == PointerVersion)
             {
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
-                    filter.PointCount += ReadNext(filter);
+                    filter.PointCount += ReadNext(key, value, filter);
                     if (IndexOfNextKeyValue <= RecordCount)
                     {
-                        IsValid = true;
                         return true;
                     }
                 }
             }
-            return Read2(filter);
+            return Read2(key, value, filter);
         }
 
         /// <summary>
         /// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
         /// </summary>
         /// <returns></returns>
-        protected bool Read2(KeyMatchFilterBase<TKey> filter)
+        protected bool Read2(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
         {
         ReadAgain:
 
@@ -252,9 +248,8 @@ namespace GSF.SortedTreeStore.Tree
                 //If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
-                    KeyMethods.Clear(CurrentKey);
-                    ValueMethods.Clear(CurrentValue);
-                    IsValid = false;
+                    KeyMethods.Clear(key);
+                    ValueMethods.Clear(value);
                     return false;
                 }
                 LoadNode(RightSiblingNodeIndex);
@@ -265,10 +260,9 @@ namespace GSF.SortedTreeStore.Tree
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            filter.PointCount += ReadNext(filter);
+            filter.PointCount += ReadNext(key, value, filter);
             if (IndexOfNextKeyValue <= RecordCount)
             {
-                IsValid = true;
                 return true;
             }
             goto ReadAgain;

@@ -57,14 +57,14 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
         /// </summary>
-        protected override unsafe void ReadNext()
+        protected override unsafe void ReadNext(TKey key, TValue value)
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
-            KeyMethods.Read(ptr, CurrentKey);
-            ValueMethods.Read(ptr + m_keySize, CurrentValue);
+            KeyMethods.Read(ptr, key);
+            ValueMethods.Read(ptr + m_keySize, value);
         }
 
-        protected override unsafe int ReadNext(KeyMatchFilterBase<TKey> filter)
+        protected override unsafe int ReadNext(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
         {
             int before = IndexOfNextKeyValue;
             int remainingRecords = RecordCount - IndexOfNextKeyValue;
@@ -72,11 +72,11 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             while (scannedRecords < remainingRecords)
             {
                 byte* ptr = Pointer + (IndexOfNextKeyValue + scannedRecords) * m_keyValueSize;
-                KeyMethods.Read(ptr, CurrentKey);
+                KeyMethods.Read(ptr, key);
                 scannedRecords += 1;
-                if (filter.Contains(CurrentKey))
+                if (filter.Contains(key))
                 {
-                    ValueMethods.Read(ptr + m_keySize, CurrentValue);
+                    ValueMethods.Read(ptr + m_keySize, value);
                     IndexOfNextKeyValue += scannedRecords;
                     return IndexOfNextKeyValue - before;
                 }

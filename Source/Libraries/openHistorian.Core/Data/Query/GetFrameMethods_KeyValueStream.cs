@@ -70,11 +70,13 @@ namespace openHistorian.Data.Query
             SortedList<DateTime, FrameDataConstructor> results = new SortedList<DateTime, FrameDataConstructor>();
             ulong lastTime = ulong.MinValue;
             FrameDataConstructor lastFrame = null;
-            while (stream.Read())
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            while (stream.Read(key, value))
             {
-                if (lastFrame == null || stream.CurrentKey.Timestamp != lastTime)
+                if (lastFrame == null || key.Timestamp != lastTime)
                 {
-                    lastTime = stream.CurrentKey.Timestamp;
+                    lastTime = key.Timestamp;
                     DateTime timestamp = new DateTime((long)lastTime);
 
                     if (!results.TryGetValue(timestamp, out lastFrame))
@@ -83,8 +85,8 @@ namespace openHistorian.Data.Query
                         results.Add(timestamp, lastFrame);
                     }
                 }
-                lastFrame.PointId.Add(stream.CurrentKey.PointID);
-                lastFrame.Values.Add(stream.CurrentValue.ToStruct());
+                lastFrame.PointId.Add(key.PointID);
+                lastFrame.Values.Add(value.ToStruct());
             }
             List<FrameData> data = new List<FrameData>(results.Count);
             data.AddRange(results.Values.Select(x => x.ToFrameData()));

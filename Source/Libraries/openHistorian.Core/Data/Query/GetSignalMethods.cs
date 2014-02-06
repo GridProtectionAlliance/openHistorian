@@ -58,18 +58,20 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime)
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue hvalue = new HistorianValue();
             Dictionary<ulong, SignalDataBase> results = new Dictionary<ulong, SignalDataBase>();
 
             using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime);
                 ulong time, point, quality, value;
-                while (stream.Read())
+                while (stream.Read(key, hvalue))
                 {
-                    time = stream.CurrentKey.Timestamp;
-                    point = stream.CurrentKey.PointID;
-                    quality = stream.CurrentValue.Value3;
-                    value = stream.CurrentValue.Value1;
+                    time = key.Timestamp;
+                    point = key.PointID;
+                    quality = hvalue.Value3;
+                    value = hvalue.Value1;
                     results.AddSignal(time, point, value);
                 }
             }
@@ -88,18 +90,20 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ulong> signals)
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue hvalue = new HistorianValue();
             Dictionary<ulong, SignalDataBase> results = signals.ToDictionary((x) => x, (x) => (SignalDataBase)new SignalDataUnknown());
 
             using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime, signals);
                 ulong time, point, quality, value;
-                while (stream.Read())
+                while (stream.Read(key, hvalue))
                 {
-                    time = stream.CurrentKey.Timestamp;
-                    point = stream.CurrentKey.PointID;
-                    quality = stream.CurrentValue.Value3;
-                    value = stream.CurrentValue.Value1;
+                    time = key.Timestamp;
+                    point = key.PointID;
+                    quality = hvalue.Value3;
+                    value = hvalue.Value1;
                     results.AddSignalIfExists(time, point, value);
                 }
             }
@@ -120,18 +124,20 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong startTime, ulong endTime, IEnumerable<ulong> signals, TypeBase conversion)
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue hvalue = new HistorianValue();
             Dictionary<ulong, SignalDataBase> results = signals.ToDictionary((x) => x, (x) => (SignalDataBase)new SignalData(conversion));
 
             using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read(startTime, endTime, signals);
                 ulong time, point, quality, value;
-                while (stream.Read())
+                while (stream.Read(key, hvalue))
                 {
-                    time = stream.CurrentKey.Timestamp;
-                    point = stream.CurrentKey.PointID;
-                    quality = stream.CurrentValue.Value3;
-                    value = stream.CurrentValue.Value1;
+                    time = key.Timestamp;
+                    point = key.PointID;
+                    quality = hvalue.Value3;
+                    value = hvalue.Value1;
                     results.AddSignalIfExists(time, point, value);
                 }
             }
@@ -180,15 +186,17 @@ namespace openHistorian.Data.Query
 
             using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
+                HistorianKey key = new HistorianKey();
+                HistorianValue hvalue = new HistorianValue();
                 var keyParser = PointIDFilter.CreateFromList<HistorianKey>(signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
                 TreeStream<HistorianKey, HistorianValue> stream = reader.Read(readerOptions, timestamps, keyParser, null);
                 ulong time, point, quality, value;
-                while (stream.Read())
+                while (stream.Read(key, hvalue))
                 {
-                    time = stream.CurrentKey.Timestamp;
-                    point = stream.CurrentKey.PointID;
-                    quality = stream.CurrentValue.Value3;
-                    value = stream.CurrentValue.Value1;
+                    time = key.Timestamp;
+                    point = key.PointID;
+                    quality = hvalue.Value3;
+                    value = hvalue.Value1;
                     results.AddSignalIfExists(time, point, value);
                 }
             }

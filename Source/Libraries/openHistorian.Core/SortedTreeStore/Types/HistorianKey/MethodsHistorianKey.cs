@@ -29,7 +29,6 @@ namespace openHistorian.Collections
 {
     public class KeyMethodsHistorianKey
         : SortedTreeKeyMethodsBase<HistorianKey>
-
     {
         // {6527D41B-9D04-4BFA-8133-05273D521D46}
         public static Guid TypeGuid = new Guid(0x6527d41b, 0x9d04, 0x4bfa, 0x81, 0x33, 0x05, 0x27, 0x3d, 0x52, 0x1d, 0x46);
@@ -217,7 +216,7 @@ namespace openHistorian.Collections
 
         //public override unsafe void Read(GSF.IO.BinaryStreamBase stream, HistorianKey data)
         //{
-            
+
         //}
 
         public override Guid GenericTypeGuid
@@ -227,7 +226,7 @@ namespace openHistorian.Collections
                 return TypeGuid;
             }
         }
-        
+
         //public override bool IsLessThan(HistorianKey left, HistorianKey right)
         //{
         //    return left.Value1 < right.Value1 || (left.Value1 == right.Value1 && left.Value2 < right.Value2);

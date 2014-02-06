@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore.Filters;
 
 namespace GSF.SortedTreeStore
 {
@@ -35,63 +36,50 @@ namespace GSF.SortedTreeStore
         where TKey : class, new()
         where TValue : class, new()
     {
-        /// <summary>
-        /// Constructs the TreeStream using new instances of CurrentKey and CurrentValue
-        /// </summary>
         protected TreeStream()
-            : this(new TKey(), new TValue())
         {
-        }
-
-        /// <summary>
-        /// Constructs the TreeStream using the provided instances of <see cref="key"/> and <see cref="value"/> 
-        /// for <see cref="CurrentKey"/> and <see cref="CurrentValue"/>.
-        /// </summary>
-        /// <param name="key">the instance to use for <see cref="CurrentKey"/></param>
-        /// <param name="value">the instance to use for <see cref="CurrentValue"/></param>
-        protected TreeStream(TKey key, TValue value)
-        {
-            if (key == null)
-                throw new ArgumentNullException("key");
-            if (value == null)
-                throw new ArgumentNullException("value");
-            CurrentKey = key;
-            CurrentValue = value;
+            CurrentKey = new TKey();
+            CurrentValue = new TValue();
         }
 
         /// <summary>
         /// Gets if the <see cref="CurrentKey"/> and <see cref="CurrentValue"/> fields are valid.
-        /// </summary>
+        /// </summary>]
+        [Obsolete("Not used anymore")]
         public bool IsValid
         {
             get;
             protected set;
         }
 
-        /// <summary>
-        /// The instance that will contain the current key if <see cref="IsValid"/> is true.
-        /// </summary>
-        /// <remarks>
-        /// This instance will continue to be reused. Therefore if maintaining the value is important, be sure
-        /// to clone this class before calling <see cref="Read"/>.
-        /// </remarks>
+        [Obsolete("Not used anymore")]
         public TKey CurrentKey
         {
             get;
             private set;
         }
 
-        /// <summary>
-        /// The instance that will contain the current value if <see cref="IsValid"/> is true.
-        /// </summary>
-        /// <remarks>
-        /// This instance will continue to be reused. Therefore if maintaining the value is important, be sure
-        /// to clone this class before calling <see cref="Read"/>.
-        /// </remarks>
+        [Obsolete("Not used anymore")]
         public TValue CurrentValue
         {
             get;
             private set;
+        }
+
+        public bool Read()
+        {
+            IsValid = Read(CurrentKey, CurrentValue);
+            return IsValid;
+        }
+
+        /// <summary>
+        /// Reads the stream, applying the provided filter to the read expression.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public virtual bool Read(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
+        {
+            return Read(key, value);
         }
 
         /// <summary>
@@ -99,7 +87,30 @@ namespace GSF.SortedTreeStore
         /// If before the beginning of the stream, advances to the first value
         /// </summary>
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
-        public abstract bool Read();
+        public abstract bool Read(TKey key, TValue value);
+
+
+        public virtual void Fill(PointCollectionBase<TKey, TValue> collection)
+        {
+            TKey key = new TKey();
+            TValue value = new TValue();
+            while (!collection.IsFull)
+            {
+                if (Read(key, value))
+                    collection.Enqueue(key, value);
+            }
+        }
+
+        public virtual void Fill(PointCollectionBase<TKey, TValue> collection, KeyMatchFilterBase<TKey> filter)
+        {
+            TKey key = new TKey();
+            TValue value = new TValue();
+            while (!collection.IsFull)
+            {
+                if (Read(key, value, filter))
+                    collection.Enqueue(key, value);
+            }
+        }
 
         /// <summary>
         /// Cancels the reading of the stream. This does not need to be called if <see cref="Read"/> returns
@@ -109,19 +120,21 @@ namespace GSF.SortedTreeStore
         {
         }
 
-        /// <summary>
-        /// Used to maintain the relationship that a stream's <see cref="CurrentKey"/> and <see cref="CurrentValue"/>
-        /// are always the same instance. Can also help having to copy the Key and Value parameters if in a nested stream reading case.
-        /// </summary>
-        /// <param name="key">the instance to use for <see cref="CurrentKey"/></param>
-        /// <param name="value">the instance to use for <see cref="CurrentValue"/></param>
-        /// <remarks>
-        /// Be weary of calling this function too often as assignment of classes in .NET requires a function call.
-        /// </remarks>
-        protected void SetKeyValueReferences(TKey key, TValue value)
-        {
-            CurrentKey = key;
-            CurrentValue = value;
-        }
+
+
+        ///// <summary>
+        ///// Used to maintain the relationship that a stream's <see cref="CurrentKey"/> and <see cref="CurrentValue"/>
+        ///// are always the same instance. Can also help having to copy the Key and Value parameters if in a nested stream reading case.
+        ///// </summary>
+        ///// <param name="key">the instance to use for <see cref="CurrentKey"/></param>
+        ///// <param name="value">the instance to use for <see cref="CurrentValue"/></param>
+        ///// <remarks>
+        ///// Be weary of calling this function too often as assignment of classes in .NET requires a function call.
+        ///// </remarks>
+        //protected void SetKeyValueReferences(TKey key, TValue value)
+        //{
+        //    CurrentKey = key;
+        //    CurrentValue = value;
+        //}
     }
 }

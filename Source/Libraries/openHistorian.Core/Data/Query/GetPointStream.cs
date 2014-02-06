@@ -45,7 +45,6 @@ namespace openHistorian.Data.Query
         {
             m_stream = stream;
             m_reader = reader;
-            SetKeyValueReferences(m_stream.CurrentKey, m_stream.CurrentValue);
         }
 
         public void Dispose()
@@ -54,9 +53,18 @@ namespace openHistorian.Data.Query
             m_reader.Dispose();
         }
 
-        public override bool Read()
+        public HistorianKey CurrentKey = new HistorianKey();
+        public HistorianValue CurrentValue = new HistorianValue();
+        public bool IsValid;
+
+        public bool Read()
         {
-            if (m_stream.Read())
+            return Read(CurrentKey, CurrentValue);
+        }
+
+        public override bool Read(HistorianKey key, HistorianValue value)
+        {
+            if (m_stream.Read(CurrentKey, CurrentValue))
             {
                 IsValid = true;
                 return true;
@@ -184,14 +192,17 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static SortedList<DateTime, FrameData> GetPointStream(this TreeStream<HistorianKey, HistorianValue> stream)
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
             SortedList<DateTime, FrameDataConstructor> results = new SortedList<DateTime, FrameDataConstructor>();
             ulong lastTime = ulong.MinValue;
             FrameDataConstructor lastFrame = null;
-            while (stream.Read())
+            while (stream.Read(key,value))
             {
-                if (lastFrame == null || stream.CurrentKey.Timestamp != lastTime)
+                if (lastFrame == null || key.Timestamp != lastTime)
                 {
-                    lastTime = stream.CurrentKey.Timestamp;
+                    lastTime = key.Timestamp;
                     DateTime timestamp = new DateTime((long)lastTime);
 
                     if (!results.TryGetValue(timestamp, out lastFrame))
@@ -200,8 +211,8 @@ namespace openHistorian.Data.Query
                         results.Add(timestamp, lastFrame);
                     }
                 }
-                lastFrame.PointId.Add(stream.CurrentKey.PointID);
-                lastFrame.Values.Add(stream.CurrentValue.ToStruct());
+                lastFrame.PointId.Add(key.PointID);
+                lastFrame.Values.Add(value.ToStruct());
             }
             List<FrameData> data = new List<FrameData>(results.Count);
             data.AddRange(results.Values.Select(x => x.ToFrameData()));

@@ -69,39 +69,37 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
         /// </summary>
-        unsafe protected override void ReadNext()
+        unsafe protected override void ReadNext(TKey key, TValue value)
         {
             if (m_skipNextRead)
             {
                 m_skipNextRead = false;
-                KeyMethods.Copy(m_prevKey, CurrentKey);
-                ValueMethods.Copy(m_prevValue, CurrentValue);
+                KeyMethods.Copy(m_prevKey, key);
+                ValueMethods.Copy(m_prevValue, value);
             }
             else
             {
-                m_nextOffset += DecodeRecord(Pointer + m_nextOffset, CurrentKey, CurrentValue);
+                m_nextOffset += DecodeRecord(Pointer + m_nextOffset, key, value);
             }
         }
 
-        protected override unsafe int ReadNext(KeyMatchFilterBase<TKey> filter)
+        protected override unsafe int ReadNext(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
         {
-            TKey currentKey = CurrentKey;
-            TValue currentValue = CurrentValue;
             int beforeScan = IndexOfNextKeyValue;
 
             if (m_skipNextRead)
             {
                 m_skipNextRead = false;
-                KeyMethods.Copy(m_prevKey, currentKey);
-                ValueMethods.Copy(m_prevValue, currentValue);
-                if (filter.Contains(currentKey))
+                KeyMethods.Copy(m_prevKey, key);
+                ValueMethods.Copy(m_prevValue, value);
+                if (filter.Contains(key))
                 {
                     IndexOfNextKeyValue++;
                     return 0;
                 }
             }
 
-            m_nextOffset += DecodeRecord(Pointer + m_nextOffset, currentKey, currentValue, filter);
+            m_nextOffset += DecodeRecord(Pointer + m_nextOffset, key, value, filter);
             return IndexOfNextKeyValue - beforeScan;
         }
 
@@ -198,6 +196,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <param name="key">the key to advance to</param>
         unsafe protected override int FindKey(TKey key)
         {
+            TKey tmpKey = new TKey();
+            TValue tmpValue = new TValue();
             OnNoadReload();
             int nextReadIndex = 0;
             bool indexFound = false;
@@ -208,16 +208,16 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             while (!indexFound && nextReadIndex < RecordCount)
             {
                 nextReadIndex++;
-                m_nextOffset += DecodeRecord(Pointer + m_nextOffset, CurrentKey, CurrentValue);
-                if (KeyMethods.IsGreaterThanOrEqualTo(CurrentKey, key))
+                m_nextOffset += DecodeRecord(Pointer + m_nextOffset, tmpKey, tmpValue);
+                if (KeyMethods.IsGreaterThanOrEqualTo(tmpKey, key))
                     indexFound = true;
             }
 
             if (indexFound)
             {
                 m_skipNextRead = true;
-                KeyMethods.Copy(CurrentKey, m_prevKey);
-                ValueMethods.Copy(CurrentValue, m_prevValue);
+                KeyMethods.Copy(tmpKey, m_prevKey);
+                ValueMethods.Copy(tmpValue, m_prevValue);
                 return nextReadIndex - 1;
             }
             else

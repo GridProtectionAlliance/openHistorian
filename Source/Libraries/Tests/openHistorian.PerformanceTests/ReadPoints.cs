@@ -79,12 +79,13 @@ namespace openHistorian.PerformanceTests
                 {
                     var database = server.GetDefaultDatabase();
 
+                    sw.Start();
                     using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue))
                     {
                         while (frameReader.Read())
-                            ;
+                            pointCount++;
                     }
-
+                    sw.Stop();
 
                     //sw.Start();
                     //using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue))

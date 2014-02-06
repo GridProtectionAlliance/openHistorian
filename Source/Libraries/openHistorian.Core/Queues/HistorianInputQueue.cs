@@ -48,12 +48,14 @@ namespace openHistorian.Queues
 
             public bool Load(TreeStream<HistorianKey, HistorianValue> stream)
             {
-                if (stream.Read())
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
+                if (stream.Read(key, value))
                 {
-                    Key1 = stream.CurrentKey.Timestamp;
-                    Key2 = stream.CurrentKey.PointID;
-                    Value1 = stream.CurrentValue.Value3;
-                    Value2 = stream.CurrentValue.Value1;
+                    Key1 = key.Timestamp;
+                    Key2 = key.PointID;
+                    Value1 = value.Value3;
+                    Value2 = value.Value1;
                     return true;
                 }
                 return false;
@@ -176,23 +178,23 @@ namespace openHistorian.Queues
                 }
             }
 
-            public override bool Read()
+            public override bool Read(HistorianKey key, HistorianValue value)
             {
                 PointData data;
                 if (!m_canceled && m_count < m_maxPoints && m_measurements.TryDequeue(out data))
                 {
-                    CurrentKey.Timestamp = data.Key1;
-                    CurrentKey.PointID = data.Key2;
-                    CurrentValue.Value3 = data.Value1;
-                    CurrentValue.Value1 = data.Value2;
+                    key.Timestamp = data.Key1;
+                    key.PointID = data.Key2;
+                    value.Value3 = data.Value1;
+                    value.Value1 = data.Value2;
                     m_count++;
                     return true;
                 }
                 m_canceled = true;
-                CurrentKey.Timestamp = 0;
-                CurrentKey.PointID = 0;
-                CurrentValue.Value3 = 0;
-                CurrentValue.Value1 = 0;
+                key.Timestamp = 0;
+                key.PointID = 0;
+                value.Value3 = 0;
+                value.Value1 = 0;
                 return false;
             }
 

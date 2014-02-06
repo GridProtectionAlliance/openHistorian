@@ -308,23 +308,24 @@ namespace openHistorian.Adapters
                 return false;
             }
 
-            public override bool Read()
+            public override bool Read(HistorianKey key, HistorianValue value)
             {
                 if (m_index < m_measurements.Length)
                 {
                     IMeasurement measurement = m_measurements[m_index];
-                    CurrentKey.Timestamp = (ulong)(long)measurement.Timestamp;
-                    CurrentKey.PointID = measurement.Key.ID;
-
-                    CurrentValue.Value1 = BitMath.ConvertToUInt64((float)measurement.AdjustedValue);
-
-                    CurrentValue.Value3 = (ulong)measurement.StateFlags;
+                    key.Timestamp = (ulong)(long)measurement.Timestamp;
+                    key.PointID = measurement.Key.ID;
+                    key.EntryNumber = 0;
+                    
+                    value.Value1 = BitMath.ConvertToUInt64((float)measurement.AdjustedValue);
+                    value.Value2 = 0;
+                    value.Value3 = (ulong)measurement.StateFlags;
 
                     m_index++;
                     return true;
                 }
-                CurrentKey.Clear();
-                CurrentValue.Clear();
+                key.Clear();
+                value.Clear();
                 return false;
             }
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  NullTreeScanner.cs - Gbtc
+//  PointCollectionBase`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,52 +16,30 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/1/2012 - Steven E. Chisholm
+//  2/5/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-using GSF.SortedTreeStore.Filters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore
 {
-    /// <summary>
-    /// Represents an empty tree scanner. 
-    /// </summary>
-    /// <remarks>
-    /// This can be useful to return instead of null at times. Seeks will not throw exceptions and 
-    /// scans will yield no results.
-    /// To use this class. Call the static property <see cref="Instance"/>.
-    /// </remarks>
-    public class NullTreeScanner<TKey, TValue>
-        : SeekableTreeStream<TKey, TValue>
+    public abstract class PointCollectionBase<TKey, TValue>
         where TKey : class, new()
         where TValue : class, new()
     {
-        /// <summary>
-        /// Returns a static instance of this class
-        /// </summary>
-        public static SeekableTreeStream<TKey, TValue> Instance
-        {
-            get;
-            private set;
-        }
+        public bool IsFull { get; protected set; }
 
-        static NullTreeScanner()
-        {
-            Instance = new NullTreeScanner<TKey, TValue>();
-        }
+        public abstract void Clear();
 
-        public override bool Read(TKey key, TValue value)
-        {
-            return false;
-        }
+        public abstract void Enqueue(TKey key, TValue value);
 
-        public override unsafe void SeekToKey(TKey key)
-        {
-        }
-
-
+        public abstract void Dequeue(TKey key, TValue value);
     }
 }

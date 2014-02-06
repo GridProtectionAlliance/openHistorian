@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ArchiveTablePointEnumerator'2.cs - Gbtc
+//  BufferedArchiveStream'2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,14 +28,13 @@ using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Engine
+namespace GSF.SortedTreeStore.Engine.Reader
 {
-    public class ArchiveTablePointEnumerator<TKey, TValue>
-        : SeekableTreeStream<TKey, TValue>, IDisposable
+    public class BufferedArchiveStream<TKey, TValue>
+        : IDisposable
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
-
         ArchiveTableSummary<TKey, TValue> m_table;
         SortedTreeTableReadSnapshot<TKey, TValue> m_snapshot;
         SeekableTreeStream<TKey, TValue> m_scanner;
@@ -50,29 +49,31 @@ namespace GSF.SortedTreeStore.Engine
         /// </summary>
         /// <param name="index"></param>
         /// <param name="table"></param>
-        public ArchiveTablePointEnumerator(int index, ArchiveTableSummary<TKey, TValue> table)
+        public BufferedArchiveStream(int index, ArchiveTableSummary<TKey, TValue> table)
         {
             Index = index;
             m_table = table;
             m_snapshot = m_table.ActiveSnapshotInfo.CreateReadSnapshot();
             m_scanner = m_snapshot.GetTreeScanner();
-            SetKeyValueReferences(m_scanner.CurrentKey, m_scanner.CurrentValue);
-            IsValid = false;
         }
 
-        public override bool Read()
+
+        public bool IsValid = false;
+        public TKey CurrentKey = new TKey();
+        public TValue CurrentValue = new TValue();
+
+
+        public void Read()
         {
-            IsValid = m_scanner.Read();
-            return IsValid;
+            IsValid = m_scanner.Read(CurrentKey, CurrentValue);
         }
 
-        public override bool Read(KeyMatchFilterBase<TKey> filter)
+        public void Read(KeyMatchFilterBase<TKey> filter)
         {
-            IsValid = m_scanner.Read(filter);
-            return IsValid;
+            IsValid = m_scanner.Read(CurrentKey, CurrentValue, filter);
         }
 
-        public override void SeekToKey(TKey key)
+        public void SeekToKey(TKey key)
         {
             m_scanner.SeekToKey(key);
             IsValid = false;

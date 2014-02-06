@@ -197,6 +197,8 @@ namespace GSF.SortedTreeStore.Net
 
         private void ProcessRead()
         {
+            TKey key = new TKey();
+            TValue value = new TValue();
             var key1Parser = TimestampFilter.CreateFromStream<TKey>(m_stream);
             //QueryFilterTimestamp key1Parser = QueryFilterTimestamp.CreateFromStream(m_stream);
             var key2Parser = PointIDFilter.CreateFromStream<TKey>(m_stream);
@@ -206,9 +208,9 @@ namespace GSF.SortedTreeStore.Net
             TreeStream<TKey, TValue> scanner = m_historianReaderBase.Read(readerOptions, key1Parser, key2Parser, null);
             m_compressionMode.ResetEncoder();
             int loop = 0;
-            while (scanner.Read())
+            while (scanner.Read(key, value))
             {
-                m_compressionMode.Encode(m_stream, scanner.CurrentKey, scanner.CurrentValue);
+                m_compressionMode.Encode(m_stream, key, value);
                 loop++;
                 if (loop > 1000)
                 {

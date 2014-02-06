@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  UnionSeekableTreeStream'3.cs - Gbtc
+//  UnionArchive'2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,37 +28,33 @@ using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore
+namespace GSF.SortedTreeStore.Engine.Reader
 {
     /// <summary>
     /// Creates a <see cref="SeekableTreeStream{TKey,TValue}"/> that is the union of a collection of 
     /// other SeekableKeyValueStream.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class EngineUnionSeekableTreeStream<T, TKey, TValue>
-        : SeekableTreeStream<TKey, TValue>
-        where T : SeekableTreeStream<TKey, TValue>
+    public class UnionArchive<TKey, TValue>
         where TKey : EngineKeyBase<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
-
-        CustomSortHelper<T> m_tables;
-        T m_firstTable;
+        CustomSortHelper<BufferedArchiveStream<TKey,TValue>> m_tables;
+        BufferedArchiveStream<TKey, TValue> m_firstTable;
         SortedTreeKeyMethodsBase<TKey> m_keyMethods;
         SortedTreeValueMethodsBase<TValue> m_valueMethods;
 
         ulong m_nextTime;
 
-        public EngineUnionSeekableTreeStream(IEnumerable<T> list)
+        public UnionArchive(IEnumerable<BufferedArchiveStream<TKey, TValue>> list)
         {
             m_keyMethods = new TKey().CreateKeyMethods();
             m_valueMethods = new TValue().CreateValueMethods();
-            m_tables = new CustomSortHelper<T>(list, CompareStreams);
+            m_tables = new CustomSortHelper<BufferedArchiveStream<TKey, TValue>>(list, CompareStreams);
         }
 
-        int CompareStreams(T item1, T item2)
+        int CompareStreams(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
         {
             if (!item1.IsValid && !item2.IsValid)
                 return 0;
@@ -99,18 +95,17 @@ namespace GSF.SortedTreeStore
             }
         }
 
-        public override bool Read()
+        public bool Read(TKey key, TValue value)
         {
             var firstTable = m_firstTable;
             if (firstTable == null || !firstTable.IsValid)
             {
-                IsValid = false;
                 return false;
             }
             else
             {
-                m_keyMethods.Copy(firstTable.CurrentKey, CurrentKey);
-                m_valueMethods.Copy(firstTable.CurrentValue, CurrentValue);
+                m_keyMethods.Copy(firstTable.CurrentKey, key);
+                m_valueMethods.Copy(firstTable.CurrentValue, value);
 
                 firstTable.Read();
 
@@ -121,23 +116,21 @@ namespace GSF.SortedTreeStore
                         VerifyOrder();
                     }
                 }
-                IsValid = true;
                 return true;
             }
         }
 
-        public override bool Read(KeyMatchFilterBase<TKey> filter)
+        public bool Read(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
         {
             var firstTable = m_firstTable;
             if (firstTable == null || !firstTable.IsValid)
             {
-                IsValid = false;
                 return false;
             }
             else
             {
-                m_keyMethods.Copy(firstTable.CurrentKey, CurrentKey);
-                m_valueMethods.Copy(firstTable.CurrentValue, CurrentValue);
+                m_keyMethods.Copy(firstTable.CurrentKey, key);
+                m_valueMethods.Copy(firstTable.CurrentValue, value);
 
                 firstTable.Read(filter);
 
@@ -148,12 +141,11 @@ namespace GSF.SortedTreeStore
                         VerifyOrder();
                     }
                 }
-                IsValid = true;
                 return true;
             }
         }
 
-        public override void SeekToKey(TKey key)
+        public void SeekToKey(TKey key)
         {
             foreach (var table in m_tables.Items)
             {
@@ -175,10 +167,7 @@ namespace GSF.SortedTreeStore
             if (m_tables.Items.Length > 0)
                 m_firstTable = m_tables[0];
 
-            IsValid = false;
-
             SetCacheValue();
-
         }
 
         /// <summary>
@@ -201,6 +190,7 @@ namespace GSF.SortedTreeStore
                     table.SeekToKey(key);
                     table.Read();
                 }
+                //ToDo: Consider commenting out this debug code.
                 if (table.IsValid && m_keyMethods.IsLessThan(table.CurrentKey, key)) // table.CurrentKey.IsLessThan(key))
                 {
                     table.SeekToKey(key);
@@ -223,13 +213,7 @@ namespace GSF.SortedTreeStore
             if (m_tables.Items.Length > 0)
                 m_firstTable = m_tables[0];
 
-            if (m_keyMethods.IsLessThan(CurrentKey, key))//CurrentKey.IsLessThan(key))
-            {
-                IsValid = false;
-            }
-
             SetCacheValue();
-
         }
 
         void RemoveDuplicatesFromList()

@@ -32,21 +32,21 @@ namespace openHistorian
             m_value2 = value2;
         }
 
-        public override bool Read()
+        public override bool Read(HistorianKey key, HistorianValue value)
         {
             if (m_count <= 0)
             {
-                CurrentKey.Timestamp = 0;
-                CurrentKey.PointID = 0;
-                CurrentValue.Value3 = 0;
-                CurrentValue.Value1 = 0;
+                key.Timestamp = 0;
+                key.PointID = 0;
+                value.Value3 = 0;
+                value.Value1 = 0;
                 return false;
             }
             m_count--;
-            CurrentKey.Timestamp = m_key1(m_start);
-            CurrentKey.PointID = m_key2(m_start);
-            CurrentValue.Value3 = m_value1(m_start);
-            CurrentValue.Value1 = m_value2(m_start);
+            key.Timestamp = m_key1(m_start);
+            key.PointID = m_key2(m_start);
+            value.Value3 = m_value1(m_start);
+            value.Value1 = m_value2(m_start);
             m_start++;
             return true;
         }

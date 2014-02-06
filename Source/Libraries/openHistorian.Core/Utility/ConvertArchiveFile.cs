@@ -71,23 +71,23 @@ namespace openHistorian.Utility
                 hist.Read(del);
 
                 using (var file1 = SortedTreeFile.CreateFile(newFileName))
-                using (var table = file1.OpenOrCreateTable<HistorianKey,HistorianValue>(compressionMethod))
+                using (var table = file1.OpenOrCreateTable<HistorianKey, HistorianValue>(compressionMethod))
                 using (var edit1 = table.BeginEdit())
                 {
                     var scan0 = tree0.CreateTreeScanner();
                     scan0.SeekToStart();
-                    while (scan0.Read())
+                    while (scan0.Read(key, value))
                     {
-                        edit1.AddPoint(scan0.CurrentKey, scan0.CurrentValue);
+                        edit1.AddPoint(key, value);
                     }
 
                     var range = edit1.GetRange();
                     range.SeekToStart();
-                    while (range.Read())
+                    while (range.Read(key, value))
                         ;
 
                     edit1.Commit();
-                    
+
                 }
             }
         }

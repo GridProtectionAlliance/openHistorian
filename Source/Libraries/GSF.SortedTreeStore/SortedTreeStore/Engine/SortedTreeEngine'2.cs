@@ -96,9 +96,11 @@ namespace GSF.SortedTreeStore.Engine
 
         public override void Write(TreeStream<TKey, TValue> points)
         {
+            TKey key = new TKey();
+            TValue value = new TValue();
             //ToDo: Prebuffer the points in the stream. It is possible that this call may be behind a slow socket interface, therefore it will lockup the writing speed.
-            while (points.Read())
-                Write(points.CurrentKey, points.CurrentValue);
+            while (points.Read(key, value))
+                Write(key, value);
         }
 
         public override void SoftCommit()
