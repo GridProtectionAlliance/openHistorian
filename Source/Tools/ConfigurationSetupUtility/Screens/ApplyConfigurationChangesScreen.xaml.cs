@@ -67,15 +67,17 @@ namespace ConfigurationSetupUtility.Screens
             get
             {
                 bool applyChangesToService = Convert.ToBoolean(m_state["applyChangesToService"]);
+                bool applyChangesToLocalManager = Convert.ToBoolean(m_state["applyChangesToLocalManager"]);
                 bool existing = Convert.ToBoolean(m_state["existing"]);
                 bool setupHistorian = Convert.ToBoolean(m_state["setupHistorian"]);
 
                 if (setupHistorian)
                     return m_historianSetupScreen;
-                else if (existing && applyChangesToService)
+                
+                if (existing && (applyChangesToService || applyChangesToLocalManager))
                     return m_nodeSelectionScreen;
-                else
-                    return m_setupReadyScreen;
+                
+                return m_setupReadyScreen;
             }
         }
 
