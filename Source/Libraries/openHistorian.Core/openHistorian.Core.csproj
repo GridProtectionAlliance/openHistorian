@@ -84,6 +84,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queues\FileBackedHistorianInputQueue.cs" />
     <Compile Include="Queues\HistorianInputQueue.cs" />
+    <Compile Include="SortedTreeStore\Collection\Custom\CreateHistorianPointCollection.cs" />
+    <Compile Include="SortedTreeStore\Collection\Custom\HistorianPointCollection.cs" />
     <Compile Include="SortedTreeStore\RegisterTypes.cs" />
     <Compile Include="SortedTreeStore\Net\Compression\CreateHistorianCompressedStream.cs" />
     <Compile Include="SortedTreeStore\Net\Compression\HistorianCompressedStream.cs" />

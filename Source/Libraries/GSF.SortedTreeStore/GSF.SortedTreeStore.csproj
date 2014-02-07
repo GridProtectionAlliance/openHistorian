@@ -102,7 +102,9 @@
     <Compile Include="IO\BinaryStreamWrapper.cs" />
     <Compile Include="IO\Unmanaged\BinaryStream.cs" />
     <Compile Include="Net\NetworkBinaryStream.cs" />
-    <Compile Include="SortedTreeStore\PointCollectionBase%272.cs" />
+    <Compile Include="SortedTreeStore\Collection\CreatePointCollectionBase.cs" />
+    <Compile Include="SortedTreeStore\Collection\PointCollectionBase%272.cs" />
+    <Compile Include="SortedTreeStore\Engine\Reader\NewBufferedArchiveStream%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\UnionArchive`2.cs" />
     <Compile Include="SortedTreeStore\Engine\KeyFilter`1.cs" />
     <Compile Include="SortedTreeStore\Filters\KeySeekFilterUniverse`1.cs" />
@@ -118,7 +120,7 @@
     <Compile Include="SortedTreeStore\Filters\TimestampFilter_FixedRange.cs" />
     <Compile Include="SortedTreeStore\Filters\ValueMatchFilterUniverse`1.cs" />
     <Compile Include="SortedTreeStore\Filters\ValueMatchFilterBase`1.cs" />
-    <Compile Include="SortedTreeStore\PointCollection.cs" />
+    <Compile Include="SortedTreeStore\Collection\PointCollection.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableReadSnapshot`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableSnapshotInfo`2.cs" />
@@ -129,6 +131,8 @@
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\ContinuousQueue`1.cs" />
+    <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer%272.cs" />
+    <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer.cs" />
     <Compile Include="SortedTreeStore\Tree\ISortedTreeKey`1.cs" />
     <Compile Include="SortedTreeStore\Tree\ISortedTreeValue%271.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTree.cs" />

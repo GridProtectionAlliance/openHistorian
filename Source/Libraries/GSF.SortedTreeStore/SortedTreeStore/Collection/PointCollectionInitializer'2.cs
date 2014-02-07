@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RegisterTypes.cs - Gbtc
+//  PointCollectionInitializer`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,33 +16,27 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/9/2013 - Steven E. Chisholm
+//  4/26/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//
+//     
 //******************************************************************************************************
 
-using GSF.SortedTreeStore.Net.Compression;
-using GSF.SortedTreeStore.Net.Initialization;
-using GSF.SortedTreeStore.Tree.TreeNodes;
-
-namespace GSF.SortedTreeStore
+namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
-    public static class RegisterTypes
+    internal class PointCollectionInitializer<TKey, TValue>
+        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
     {
-        static RegisterTypes()
+        private readonly CreatePointCollectionBase m_base;
+
+        public PointCollectionInitializer(CreatePointCollectionBase treeNode)
         {
-            TreeNodeInitializer.Register(new CreateHistorianCompressionDelta());
-            TreeNodeInitializer.Register(new CreateHistorianCompressionTs());
-            KeyValueStreamCompression.Register(new CreateHistorianCompressedStream());
-            PointCollectionInitializer.Register(new CreateHistorianPointCollection());
+            m_base = treeNode;
         }
 
-        /// <summary>
-        /// Registers custom types with the SortedTreeStore
-        /// </summary>
-        public static void Register()
+        public PointCollectionBase<TKey, TValue> Create(int capacity)
         {
-            //Do Nothing. Code is called in the static constructor.
+            return m_base.Create<TKey, TValue>(capacity);
         }
     }
 }

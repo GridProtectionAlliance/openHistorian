@@ -60,7 +60,7 @@ namespace openHistorian.PerformanceTests
         }
 
         [Test]
-        public void ReadAllPoints()
+        public static void ReadAllPoints()
         {
             Stopwatch sw = new Stopwatch();
             int pointCount = 0;
@@ -77,12 +77,12 @@ namespace openHistorian.PerformanceTests
 
                 using (var client = new HistorianClient(clientOptions))
                 {
-                    var database = server.GetDefaultDatabase();
+                    var database = client.GetDefaultDatabase();
 
                     sw.Start();
                     using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue))
                     {
-                        while (frameReader.Read())
+                        while (frameReader.Read() && pointCount < 1000000)
                             pointCount++;
                     }
                     sw.Stop();

@@ -34,6 +34,22 @@ namespace GSF.SortedTreeStore.Net.Compression
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
+        public override bool SupportsPointerSerialization
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public override int MaxCompressedSize
+        {
+            get
+            {
+                return -1;
+            }
+        }
+
         public override Guid CompressionType
         {
             get
@@ -52,6 +68,11 @@ namespace GSF.SortedTreeStore.Net.Compression
             stream.Write(true);
             KeyMethods.Write(stream, currentKey);
             ValueMethods.Write(stream, currentValue);
+        }
+
+        public override unsafe int Encode(byte* stream, TKey currentKey, TValue currentValue)
+        {
+            throw new NotImplementedException();
         }
 
         public override unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value)

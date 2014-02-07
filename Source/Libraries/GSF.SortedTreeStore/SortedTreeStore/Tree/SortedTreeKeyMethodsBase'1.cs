@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using GSF.IO;
+using GSF.IO.Unmanaged;
 
 namespace GSF.SortedTreeStore.Tree
 {
@@ -40,7 +41,7 @@ namespace GSF.SortedTreeStore.Tree
     /// </remarks>
     /// <typeparam name="TKey"></typeparam>
     public abstract class SortedTreeKeyMethodsBase<TKey>
-        : IComparer<TKey> 
+        : IComparer<TKey>
         where TKey : class, new()
     {
 
@@ -87,9 +88,10 @@ namespace GSF.SortedTreeStore.Tree
             }
         }
 #endif
-        
+
         protected TKey TempKey = new TKey();
-       
+        protected TKey TempKey2 = new TKey();
+
         protected int LastFoundIndex;
 
         /// <summary>
@@ -210,6 +212,12 @@ namespace GSF.SortedTreeStore.Tree
             Clear(TempKey);
             Write(stream, TempKey);
         }
+
+        public virtual unsafe void Copy(byte* source, byte* destination)
+        {
+            Memory.Copy(source, destination, Size);
+        }
+
         /// <summary>
         /// Copies the source to the destination
         /// </summary>
@@ -238,7 +246,7 @@ namespace GSF.SortedTreeStore.Tree
             stream.ReadAll(ptr, Size);
             Read(ptr, data);
         }
-       
+
         /// <summary>
         /// Reads the provided key from the BinaryReader.
         /// </summary>
@@ -569,6 +577,22 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
+        public virtual unsafe int CompareTo(byte* left, byte* right)
+        {
+#if GetTreeKeyMethodsCallCount
+            CallMethods[(int)Method.CompareToPointer]++;
+#endif
+            Read(left, TempKey);
+            Read(right, TempKey2);
+            return CompareTo(left, right);
+        }
+
+        /// <summary>
+        /// Compares Left to Right
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public virtual unsafe int CompareTo(byte* left, TKey right)
         {
 #if GetTreeKeyMethodsCallCount
@@ -589,6 +613,6 @@ namespace GSF.SortedTreeStore.Tree
         {
             return CompareTo(x, y);
         }
-        
+
     }
 }

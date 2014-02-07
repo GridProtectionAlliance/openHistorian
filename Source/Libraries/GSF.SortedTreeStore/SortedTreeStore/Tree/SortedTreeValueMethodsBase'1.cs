@@ -25,6 +25,7 @@
 
 using System;
 using GSF.IO;
+using GSF.IO.Unmanaged;
 
 namespace GSF.SortedTreeStore.Tree
 {
@@ -72,7 +73,7 @@ namespace GSF.SortedTreeStore.Tree
             Size = GetSize();
         }
         /// <summary>
-        /// The fixed size of this key
+        /// The fixed size of this value
         /// </summary>
         public int Size
         {
@@ -138,7 +139,13 @@ namespace GSF.SortedTreeStore.Tree
             Write(ptr, source);
             Read(ptr, destination);
         }
-     
+
+        public virtual unsafe void Copy(byte* source, byte* destination)
+        {
+            Memory.Copy(source, destination, Size);
+        }
+
+
         /// <summary>
         /// Gets if value == value2
         /// </summary>

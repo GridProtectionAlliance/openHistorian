@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GSF.SortedTreeStore.Filters;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.Threading;
 using openHistorian;
 using GSF.SortedTreeStore.Tree;
@@ -103,7 +104,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;
             private ulong m_startKey;
             private ulong m_stopKey;
-            private bool m_timedOut;
+            private volatile bool m_timedOut;
             private long m_pointCount;
 
             bool m_keyMatchIsUniverse;
@@ -264,9 +265,9 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
             }
 
-
             public override void Cancel()
             {
+                EOS = true;
                 if (m_timeout != null)
                 {
                     m_timeout.Cancel();

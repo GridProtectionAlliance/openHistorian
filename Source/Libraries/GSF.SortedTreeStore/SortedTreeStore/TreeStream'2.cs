@@ -45,27 +45,28 @@ namespace GSF.SortedTreeStore
         /// <summary>
         /// Gets if the <see cref="CurrentKey"/> and <see cref="CurrentValue"/> fields are valid.
         /// </summary>]
-        [Obsolete("Not used anymore")]
+        //[Obsolete("Not used anymore")]
         public bool IsValid
         {
             get;
             protected set;
         }
 
-        [Obsolete("Not used anymore")]
+        //[Obsolete("Not used anymore")]
         public TKey CurrentKey
         {
             get;
             private set;
         }
 
-        [Obsolete("Not used anymore")]
+        //[Obsolete("Not used anymore")]
         public TValue CurrentValue
         {
             get;
             private set;
         }
 
+        //[Obsolete("Not used anymore")]
         public bool Read()
         {
             IsValid = Read(CurrentKey, CurrentValue);
@@ -73,14 +74,9 @@ namespace GSF.SortedTreeStore
         }
 
         /// <summary>
-        /// Reads the stream, applying the provided filter to the read expression.
+        /// Boolean indicating that the end of the stream has been reached.
         /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        public virtual bool Read(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
-        {
-            return Read(key, value);
-        }
+        public bool EOS { get; protected set; }
 
         /// <summary>
         /// Advances the stream to the next value. 
@@ -89,28 +85,59 @@ namespace GSF.SortedTreeStore
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
         public abstract bool Read(TKey key, TValue value);
 
-
-        public virtual void Fill(PointCollectionBase<TKey, TValue> collection)
+        /// <summary>
+        /// Reads the stream, applying the provided filter to the read expression.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public virtual bool Read(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
         {
-            TKey key = new TKey();
-            TValue value = new TValue();
-            while (!collection.IsFull)
+            if (EOS)
+                return false;
+            if (!Read(key, value))
             {
-                if (Read(key, value))
-                    collection.Enqueue(key, value);
+                EOS = true;
+                return false;
             }
+            return true;
         }
 
-        public virtual void Fill(PointCollectionBase<TKey, TValue> collection, KeyMatchFilterBase<TKey> filter)
-        {
-            TKey key = new TKey();
-            TValue value = new TValue();
-            while (!collection.IsFull)
-            {
-                if (Read(key, value, filter))
-                    collection.Enqueue(key, value);
-            }
-        }
+        //public virtual void Read(PointCollectionBase<TKey, TValue> collection)
+        //{
+        //    if (EOS)
+        //        return;
+
+        //    TKey key = new TKey();
+        //    TValue value = new TValue();
+        //    while (!collection.IsFull)
+        //    {
+        //        if (Read(key, value))
+        //            collection.Enqueue(key, value);
+        //        else
+        //        {
+        //            EOS = true;
+        //            return;
+        //        }
+        //    }
+        //}
+
+        //public virtual void Read(PointCollectionBase<TKey, TValue> collection, KeyMatchFilterBase<TKey> filter)
+        //{
+        //    if (EOS)
+        //        return;
+        //    TKey key = new TKey();
+        //    TValue value = new TValue();
+        //    while (!collection.IsFull)
+        //    {
+        //        if (Read(key, value, filter))
+        //            collection.Enqueue(key, value);
+        //        else
+        //        {
+        //            EOS = true;
+        //            return;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Cancels the reading of the stream. This does not need to be called if <see cref="Read"/> returns
@@ -118,6 +145,7 @@ namespace GSF.SortedTreeStore
         /// </summary>
         public virtual void Cancel()
         {
+            EOS = true;
         }
 
 

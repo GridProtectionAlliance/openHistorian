@@ -29,6 +29,7 @@ using GSF.Net;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Filters;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Net.Initialization;
@@ -197,8 +198,6 @@ namespace GSF.SortedTreeStore.Net
 
         private void ProcessRead()
         {
-            TKey key = new TKey();
-            TValue value = new TValue();
             var key1Parser = TimestampFilter.CreateFromStream<TKey>(m_stream);
             //QueryFilterTimestamp key1Parser = QueryFilterTimestamp.CreateFromStream(m_stream);
             var key2Parser = PointIDFilter.CreateFromStream<TKey>(m_stream);
@@ -206,7 +205,23 @@ namespace GSF.SortedTreeStore.Net
             SortedTreeEngineReaderOptions readerOptions = new SortedTreeEngineReaderOptions(m_stream);
 
             TreeStream<TKey, TValue> scanner = m_historianReaderBase.Read(readerOptions, key1Parser, key2Parser, null);
+
+
             m_compressionMode.ResetEncoder();
+
+            if (m_compressionMode.SupportsPointerSerialization)
+                ProcessReadWithPointers(scanner);
+            else
+                ProcessRead(scanner);
+
+            m_compressionMode.WriteEndOfStream(m_stream);
+            m_stream.Flush();
+        }
+
+        void ProcessRead(TreeStream<TKey, TValue> scanner)
+        {
+            TKey key = new TKey();
+            TValue value = new TValue();
             int loop = 0;
             while (scanner.Read(key, value))
             {
@@ -217,15 +232,53 @@ namespace GSF.SortedTreeStore.Net
                     loop = 0;
                     if (m_stream.AvailableReadBytes > 0)
                     {
-                        m_compressionMode.WriteEndOfStream(m_stream);
-                        m_stream.Flush();
                         return;
                     }
                 }
             }
+        }
 
-            m_compressionMode.WriteEndOfStream(m_stream);
-            m_stream.Flush();
+        unsafe private void ProcessReadWithPointers(TreeStream<TKey, TValue> scanner)
+        {
+
+            int bytesForSerialization = m_compressionMode.MaxCompressedSize;
+            byte[] buffer;
+            int position;
+            int bufferSize;
+            int origPosition;
+            m_stream.UnsafeGetInternalSendBuffer(out buffer, out position, out bufferSize);
+            origPosition = position;
+            fixed (byte* lp = buffer)
+            {
+                TKey key = new TKey();
+                TValue value = new TValue();
+                int loop = 0;
+                while (scanner.Read(key, value))
+                {
+                    if (bufferSize - position < bytesForSerialization)
+                    {
+                        m_stream.UnsafeAdvanceSendPosition(position - origPosition);
+                        m_stream.Flush();
+                        position = 0;
+                        origPosition = 0;
+                    }
+
+                    position += m_compressionMode.Encode(lp + position, key, value);
+
+                    loop++;
+                    if (loop > 1000)
+                    {
+                        loop = 0;
+                        if (m_stream.AvailableReadBytes > 0)
+                        {
+                            m_stream.UnsafeAdvanceSendPosition(position - origPosition);
+                            return;
+                        }
+                    }
+                }
+            }
+            m_stream.UnsafeAdvanceSendPosition(position - origPosition);
+
         }
 
         private void ProcessWrite()

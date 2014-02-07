@@ -33,8 +33,24 @@ namespace GSF.SortedTreeStore.Net.Compression
         : KeyValueStreamCompressionBase<HistorianKey, HistorianValue>
     {
 
-        ulong prevTimestamp;
-        ulong prevPointID;
+        ulong m_prevTimestamp;
+        ulong m_prevPointID;
+
+        public override bool SupportsPointerSerialization
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public override int MaxCompressedSize
+        {
+            get
+            {
+                return 55; //3 extra bytes just to be safe.
+            }
+        }
 
         public override Guid CompressionType
         {
@@ -51,8 +67,8 @@ namespace GSF.SortedTreeStore.Net.Compression
 
         public override void Encode(BinaryStreamBase stream, HistorianKey currentKey, HistorianValue currentValue)
         {
-            if (currentKey.Timestamp == prevTimestamp
-                && ((currentKey.PointID ^ prevPointID) < 64)
+            if (currentKey.Timestamp == m_prevTimestamp
+                && ((currentKey.PointID ^ m_prevPointID) < 64)
                 && currentKey.EntryNumber == 0
                 && currentValue.Value1 <= uint.MaxValue //must be a 32-bit value
                 && currentValue.Value2 == 0
@@ -60,21 +76,21 @@ namespace GSF.SortedTreeStore.Net.Compression
             {
                 if (currentValue.Value1 == 0)
                 {
-                    stream.Write((byte)((currentKey.PointID ^ prevPointID)));
+                    stream.Write((byte)((currentKey.PointID ^ m_prevPointID)));
                 }
                 else
                 {
-                    stream.Write((byte)((currentKey.PointID ^ prevPointID) | 64));
+                    stream.Write((byte)((currentKey.PointID ^ m_prevPointID) | 64));
                     stream.Write((uint)currentValue.Value1);
                 }
-                prevTimestamp = currentKey.Timestamp;
-                prevPointID = currentKey.PointID;
+                m_prevTimestamp = currentKey.Timestamp;
+                m_prevPointID = currentKey.PointID;
                 return;
             }
 
             byte code = 128;
 
-            if (currentKey.Timestamp != prevTimestamp)
+            if (currentKey.Timestamp != m_prevTimestamp)
                 code |= 64;
 
             if (currentKey.EntryNumber != 0)
@@ -95,10 +111,10 @@ namespace GSF.SortedTreeStore.Net.Compression
 
             stream.Write(code);
 
-            if (currentKey.Timestamp != prevTimestamp)
-                stream.Write7Bit(currentKey.Timestamp ^ prevTimestamp);
+            if (currentKey.Timestamp != m_prevTimestamp)
+                stream.Write7Bit(currentKey.Timestamp ^ m_prevTimestamp);
 
-            stream.Write7Bit(currentKey.PointID ^ prevPointID);
+            stream.Write7Bit(currentKey.PointID ^ m_prevPointID);
 
             if (currentKey.EntryNumber != 0)
                 stream.Write7Bit(currentKey.EntryNumber);
@@ -116,8 +132,99 @@ namespace GSF.SortedTreeStore.Net.Compression
             else if (currentValue.Value3 > 0)
                 stream.Write((uint)currentValue.Value3);
 
-            prevTimestamp = currentKey.Timestamp;
-            prevPointID = currentKey.PointID;
+            m_prevTimestamp = currentKey.Timestamp;
+            m_prevPointID = currentKey.PointID;
+        }
+
+        public override unsafe int Encode(byte* stream, HistorianKey currentKey, HistorianValue currentValue)
+        {
+            int size = 0;
+            if (currentKey.Timestamp == m_prevTimestamp
+             && ((currentKey.PointID ^ m_prevPointID) < 64)
+             && currentKey.EntryNumber == 0
+             && currentValue.Value1 <= uint.MaxValue //must be a 32-bit value
+             && currentValue.Value2 == 0
+             && currentValue.Value3 == 0)
+            {
+                if (currentValue.Value1 == 0)
+                {
+                    stream[0] = (byte)(currentKey.PointID ^ m_prevPointID);
+                    size = 1;
+                }
+                else
+                {
+                    stream[0] = ((byte)((currentKey.PointID ^ m_prevPointID) | 64));
+                    *(uint*)(stream + 1) = (uint)currentValue.Value1;
+                    size = 5;
+                }
+                m_prevTimestamp = currentKey.Timestamp;
+                m_prevPointID = currentKey.PointID;
+                return size;
+            }
+
+            byte code = 128;
+
+            if (currentKey.Timestamp != m_prevTimestamp)
+                code |= 64;
+
+            if (currentKey.EntryNumber != 0)
+                code |= 32;
+
+            if (currentValue.Value1 > uint.MaxValue)
+                code |= 16;
+            else if (currentValue.Value1 > 0)
+                code |= 8;
+
+            if (currentValue.Value2 != 0)
+                code |= 4;
+
+            if (currentValue.Value3 > uint.MaxValue)
+                code |= 2;
+            else if (currentValue.Value3 > 0)
+                code |= 1;
+
+            stream[0] = code;
+            size = 1;
+
+            if (currentKey.Timestamp != m_prevTimestamp)
+                GSF.Compression.Write7Bit(stream, ref size, currentKey.Timestamp ^ m_prevTimestamp);
+
+            GSF.Compression.Write7Bit(stream, ref size, currentKey.PointID ^ m_prevPointID);
+
+            if (currentKey.EntryNumber != 0)
+                GSF.Compression.Write7Bit(stream, ref size, currentKey.EntryNumber);
+
+            if (currentValue.Value1 > uint.MaxValue)
+            {
+                *(ulong*)(stream + size) = currentValue.Value1;
+                size += 8;
+            }
+            else if (currentValue.Value1 > 0)
+            {
+                *(uint*)(stream + size) = (uint)currentValue.Value1;
+                size += 4;
+            }
+
+            if (currentValue.Value2 != 0)
+            {
+                *(ulong*)(stream + size) = currentValue.Value2;
+                size += 8;
+            }
+
+            if (currentValue.Value3 > uint.MaxValue)
+            {
+                *(ulong*)(stream + size) = currentValue.Value3;
+                size += 8;
+            }
+            else if (currentValue.Value3 > 0)
+            {
+                *(uint*)(stream + size) = (uint)currentValue.Value3;
+                size += 4;
+            }
+
+            m_prevTimestamp = currentKey.Timestamp;
+            m_prevPointID = currentKey.PointID;
+            return size;
         }
 
         public override unsafe bool TryDecode(BinaryStreamBase stream, HistorianKey key, HistorianValue value)
@@ -130,8 +237,8 @@ namespace GSF.SortedTreeStore.Net.Compression
             {
                 if (code < 64)
                 {
-                    key.Timestamp = prevTimestamp;
-                    key.PointID = prevPointID ^ code;
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointID ^ code;
                     key.EntryNumber = 0;
                     value.Value1 = 0;
                     value.Value2 = 0;
@@ -139,24 +246,24 @@ namespace GSF.SortedTreeStore.Net.Compression
                 }
                 else
                 {
-                    key.Timestamp = prevTimestamp;
-                    key.PointID = prevPointID ^ code ^ 64;
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointID ^ code ^ 64;
                     key.EntryNumber = 0;
                     value.Value1 = stream.ReadUInt32();
                     value.Value2 = 0;
                     value.Value3 = 0;
                 }
-                prevTimestamp = key.Timestamp;
-                prevPointID = key.PointID;
+                m_prevTimestamp = key.Timestamp;
+                m_prevPointID = key.PointID;
                 return true;
             }
 
             if ((code & 64) != 0) //T is set
-                key.Timestamp = prevTimestamp ^ stream.Read7BitUInt64();
+                key.Timestamp = m_prevTimestamp ^ stream.Read7BitUInt64();
             else
-                key.Timestamp = prevTimestamp;
+                key.Timestamp = m_prevTimestamp;
 
-            key.PointID = prevPointID ^ stream.Read7BitUInt64();
+            key.PointID = m_prevPointID ^ stream.Read7BitUInt64();
 
             if ((code & 32) != 0) //E is set)
                 key.EntryNumber = stream.Read7BitUInt64();
@@ -181,16 +288,16 @@ namespace GSF.SortedTreeStore.Net.Compression
                 value.Value3 = stream.ReadUInt32();
             else
                 value.Value3 = 0;
-            prevTimestamp = key.Timestamp;
-            prevPointID = key.PointID;
+            m_prevTimestamp = key.Timestamp;
+            m_prevPointID = key.PointID;
 
             return true;
         }
 
         public override void ResetEncoder()
         {
-            prevTimestamp = 0;
-            prevPointID = 0;
+            m_prevTimestamp = 0;
+            m_prevPointID = 0;
         }
     }
 }

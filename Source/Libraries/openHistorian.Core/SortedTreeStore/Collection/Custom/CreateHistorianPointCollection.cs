@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PointCollectionBase`2.cs - Gbtc
+//  CreateHistorianCompressedStream.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,30 +16,35 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/5/2014 - Steven E. Chisholm
+//  8/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//       
+//
 //******************************************************************************************************
 
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
+using openHistorian.Collections;
+using GSF.SortedTreeStore.Net.Initialization;
 
-namespace GSF.SortedTreeStore
+namespace GSF.SortedTreeStore.Net.Compression
 {
-    public abstract class PointCollectionBase<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+    class CreateHistorianPointCollection
+        : CreatePointCollectionBase
     {
-        public bool IsFull { get; protected set; }
+     
+        /// <summary>
+        /// Creates a class
+        /// </summary>
+        public CreateHistorianPointCollection()
+            : base(typeof(HistorianKey), typeof(HistorianValue))
+        {
+        }
 
-        public abstract void Clear();
-
-        public abstract void Enqueue(TKey key, TValue value);
-
-        public abstract void Dequeue(TKey key, TValue value);
+        public override PointCollectionBase<TKey, TValue> Create<TKey, TValue>(int capacity)
+        {
+            return (PointCollectionBase<TKey, TValue>)((object)new HistorianPointCollection(capacity));
+        }
     }
 }

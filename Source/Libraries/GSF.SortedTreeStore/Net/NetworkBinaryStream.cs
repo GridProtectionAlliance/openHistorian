@@ -60,6 +60,20 @@ namespace GSF.Net
             m_stream = new NetworkStream(socket);
         }
 
+
+        public void UnsafeGetInternalSendBuffer(out byte[] sendBuffer, out int position, out int bufferSize )
+        {
+            sendBuffer = m_sendBuffer;
+            position = m_sendLength;
+            bufferSize = BufferSize;
+        }
+
+        public void UnsafeAdvanceSendPosition(int length)
+        {
+            m_sendLength += length;
+        }
+            
+
         public Socket Socket
         {
             get
@@ -263,6 +277,34 @@ namespace GSF.Net
             base.Write(value);
         }
 
+        public unsafe override void Write(int value)
+        {
+            if (m_sendLength <= BufferSize - 4)
+            {
+                fixed (byte* lp = m_sendBuffer)
+                {
+                    *(int*)(lp + m_sendLength) = value;
+                    m_sendLength += 4;
+                    return;
+                }
+            }
+            base.Write(value);
+        }
+
+        public unsafe override void Write(uint value)
+        {
+            if (m_sendLength <= BufferSize - 4)
+            {
+                fixed (byte* lp = m_sendBuffer)
+                {
+                    *(uint*)(lp + m_sendLength) = value;
+                    m_sendLength += 4;
+                    return;
+                }
+            }
+            base.Write(value);
+        }
+
         public unsafe override void Write7Bit(ulong value)
         {
             const int size = 9;
@@ -356,6 +398,35 @@ namespace GSF.Net
                 return value;
             }
             return base.ReadUInt8();
+        }
+
+
+        public unsafe override uint ReadUInt32()
+        {
+            if (m_receivePosition <= m_receiveLength - 4)
+            {
+                fixed (byte* lp = m_receiveBuffer)
+                {
+                    uint value = *(uint*)(lp + m_receivePosition);
+                    m_receivePosition += 4;
+                    return value;
+                }
+            }
+            return base.ReadUInt32();
+        }
+
+        public unsafe override int ReadInt32()
+        {
+            if (m_receivePosition <= m_receiveLength - 4)
+            {
+                fixed (byte* lp = m_receiveBuffer)
+                {
+                    int value = *(int*)(lp + m_receivePosition);
+                    m_receivePosition += 4;
+                    return value;
+                }
+            }
+            return base.ReadInt32();
         }
 
         public unsafe override long ReadInt64()

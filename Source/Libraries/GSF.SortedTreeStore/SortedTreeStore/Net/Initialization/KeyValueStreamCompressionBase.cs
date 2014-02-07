@@ -40,11 +40,17 @@ namespace GSF.SortedTreeStore.Net.Initialization
             ValueMethods = new TValue().CreateValueMethods();
         }
 
+        public abstract bool SupportsPointerSerialization { get; }
+
+        public abstract int MaxCompressedSize { get; }
+
         public abstract Guid CompressionType { get; }
 
         public abstract void WriteEndOfStream(BinaryStreamBase stream);
 
         public abstract void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue);
+
+        public unsafe abstract int Encode(byte* stream, TKey currentKey, TValue currentValue);
 
         public abstract unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value);
 
