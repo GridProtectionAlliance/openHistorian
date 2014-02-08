@@ -243,6 +243,8 @@ namespace openHistorian.PerformanceTests
         [Test]
         public void TestReadFilteredPointsAll()
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
             Stopwatch sw = new Stopwatch();
             int pointCount = 0;
             HistorianDatabaseInstance db = new HistorianDatabaseInstance();
@@ -270,7 +272,7 @@ namespace openHistorian.PerformanceTests
                 using (var reader = database.OpenDataReader())
                 {
                     var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
-                    while (stream.Read())
+                    while (stream.Read(key,value))
                         ;
                 }
 
@@ -278,7 +280,7 @@ namespace openHistorian.PerformanceTests
                 using (var reader = database.OpenDataReader())
                 {
                     var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, lst);
-                    while (stream.Read())
+                    while (stream.Read(key, value))
                         pointCount++;
 
                 }

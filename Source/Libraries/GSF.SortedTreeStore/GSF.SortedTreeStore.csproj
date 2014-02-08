@@ -105,6 +105,7 @@
     <Compile Include="SortedTreeStore\Collection\CreatePointCollectionBase.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionBase%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\BufferedArchiveStream%272.cs" />
+    <Compile Include="SortedTreeStore\Engine\Reader\SequentialReaderStream%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\SortedTreeEngineReaderSequential%272.cs" />
     <Compile Include="SortedTreeStore\Engine\KeyFilter`1.cs" />
     <Compile Include="SortedTreeStore\Filters\KeySeekFilterUniverse`1.cs" />
@@ -205,7 +206,6 @@
     <Compile Include="SortedTreeStore\Engine\ArchiveList%272_Editor.cs" />
     <Compile Include="SortedTreeStore\Engine\ArchiveListRemovalStatus%272.cs" />
     <Compile Include="SortedTreeStore\Engine\ArchiveListSnapshot%272.cs" />
-    <Compile Include="SortedTreeStore\Engine\Reader\SortedTreeEngineReader%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\PointStreamCache%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\PrestageWriter%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\RolloverArgs%272.cs" />
