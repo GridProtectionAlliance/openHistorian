@@ -55,9 +55,27 @@ namespace GSF.SortedTreeStore.Engine.Reader
             Scanner = m_snapshot.GetTreeScanner();
         }
 
-        public bool SortByIsValid = false;
-        public TKey SortByKey = new TKey();
-        public TValue SortByValue = new TValue();
+        public bool CacheIsValid = false;
+        public TKey CacheKey = new TKey();
+        public TValue CacheValue = new TValue();
+
+        public void UpdateCachedValue()
+        {
+            CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
+        }
+
+        public void SkipToNextKeyAndUpdateCachedValue()
+        {
+            CacheIsValid = Scanner.Read(CacheKey, CacheValue);
+            CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
+        }
+
+        public void SeekToKeyAndUpdateCacheValue(TKey key)
+        {
+            Scanner.SeekToKey(key);
+            CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
+        }
+
 
         public void Dispose()
         {

@@ -65,7 +65,7 @@ namespace GSF.SortedTreeStore
         }
 
         /// <summary>
-        /// Resorts the entire list
+        /// Resorts the entire list. Uses an insertion sort routine
         /// </summary>
         public void Sort()
         {

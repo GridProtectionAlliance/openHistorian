@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeEngineReaderSequential'2.cs - Gbtc
+//  SequentialReaderStream'2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -39,7 +39,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;
-        private ulong m_startKey;
         private ulong m_stopKey;
         private volatile bool m_timedOut;
         private long m_pointCount;
@@ -53,9 +52,16 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
         private TimeoutOperation m_timeout;
         private List<BufferedArchiveStream<TKey, TValue>> m_tablesOrigList;
+        CustomSortHelper<BufferedArchiveStream<TKey, TValue>> m_sortedArchiveStreams;
+        BufferedArchiveStream<TKey, TValue> m_firstTable;
+        SortedTreeScannerBase<TKey, TValue> m_firstTableScanner;
+        TKey m_readWhileUpperBounds = new TKey();
 
-        public SequentialReaderStream(ArchiveListSnapshot<TKey, TValue> snapshot, SortedTreeEngineReaderOptions readerOptions,
-                                   KeySeekFilterBase<TKey> keySeekFilter, KeyMatchFilterBase<TKey> keyMatchFilter,
+
+        public SequentialReaderStream(ArchiveListSnapshot<TKey, TValue> snapshot,
+                                   SortedTreeEngineReaderOptions readerOptions,
+                                   KeySeekFilterBase<TKey> keySeekFilter,
+                                   KeyMatchFilterBase<TKey> keyMatchFilter,
                                    ValueMatchFilterBase<TValue> valueMatchFilter)
         {
             m_keyMethods = new TKey().CreateKeyMethods();
@@ -72,7 +78,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
             m_snapshot = snapshot;
             m_snapshot.UpdateSnapshot();
-
             m_tablesOrigList = new List<BufferedArchiveStream<TKey, TValue>>();
 
             for (int x = 0; x < m_snapshot.Tables.Count(); x++)
@@ -91,12 +96,11 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 }
             }
 
-            UnionArchive2(m_tablesOrigList);
+            m_sortedArchiveStreams = new CustomSortHelper<BufferedArchiveStream<TKey, TValue>>(m_tablesOrigList, CompareStreams);
 
             m_keySeekFilter.Reset();
             if (m_keySeekFilter.NextWindow())
             {
-                m_startKey = m_keySeekFilter.StartOfFrame.Timestamp;
                 m_stopKey = m_keySeekFilter.EndOfFrame.Timestamp;
                 SeekToKey(m_keySeekFilter.StartOfFrame);
             }
@@ -104,122 +108,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
             {
                 Cancel();
             }
-        }
-
-        public override bool Read(TKey key, TValue value)
-        {
-            if (!m_timedOut &&
-                m_keyMatchIsUniverse &&
-                m_firstTable != null &&
-                m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey))
-            {
-                if (key.Timestamp <= m_stopKey || AdvanceTimestampFilter(true, key, value))
-                {
-                    Stats.PointsScanned++;
-                    Stats.PointsReturned++;
-                    return true;
-                }
-            }
-            return Read2(key, value);
-        }
-
-        bool Read2(TKey key, TValue value)
-        {
-            bool isValid;
-        TryAgain:
-            if (!m_timedOut)
-            {
-                if (m_keyMatchIsUniverse)
-                {
-                    if (m_firstTable != null)
-                    {
-                        if (m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey))
-                        {
-                            isValid = true;
-                        }
-                        else
-                        {
-                            isValid = ReadUnion2(key, value);
-                        }
-                    }
-                    else
-                    {
-                        isValid = false;
-                    }
-
-                    //isValid = ReadUnion(key, value);
-                    if (isValid && key.Timestamp <= m_stopKey)
-                    {
-                        Stats.PointsScanned++;
-                        Stats.PointsReturned++;
-                        return true;
-                    }
-                }
-                else
-                {
-                    isValid = ReadUnionFilter(key, value, m_keyMatchFilter);
-                    if (isValid && key.Timestamp <= m_stopKey)
-                    {
-                        Stats.PointsScanned++;
-                        if (m_keyMatchFilter.Contains(key))
-                        {
-                            Stats.PointsReturned++;
-                            return true;
-                        }
-                        goto TryAgain;
-                    }
-                }
-                if (isValid)
-                {
-                    if (AdvanceTimestampFilter(isValid, key, value))
-                    {
-                        return true;
-                    }
-                    goto TryAgain;
-                }
-            }
-            Cancel();
-            return false;
-        }
-
-
-
-        /// <summary>
-        /// Does a seek operation on the current stream when there is a seek filter on the reader.
-        /// </summary>
-        /// <returns></returns>
-        bool AdvanceTimestampFilter(bool isValid, TKey key, TValue value)
-        {
-        TryAgain:
-            if (m_keySeekFilter != null && m_keySeekFilter.NextWindow())
-            {
-                m_startKey = m_keySeekFilter.StartOfFrame.Timestamp;
-                m_stopKey = m_keySeekFilter.EndOfFrame.Timestamp;
-
-                //If the current point is a valid point.
-                if (isValid)
-                {
-                    //If the current point is within this window
-                    if (m_keyMethods.IsGreaterThanOrEqualTo(key, m_keySeekFilter.StartOfFrame) &&
-                        m_keyMethods.IsLessThanOrEqualTo(key, m_keySeekFilter.EndOfFrame))
-                    {
-                        return true;
-                    }
-
-                    //If the current point is after this window, see to the next window.
-                    if (m_keyMethods.IsGreaterThan(key, m_keySeekFilter.EndOfFrame))
-                        goto TryAgain;
-                }
-
-                //If the current point is not valid, or is before m_startKey
-                //Advance the scanner to the next window.
-                TKey tmpKey = new TKey();
-                m_keyMethods.SetMin(tmpKey); //key.SetMin();
-                tmpKey.Timestamp = m_startKey;
-                SeekForward(tmpKey);
-            }
-            return false;
-
         }
 
         public override void Cancel()
@@ -240,230 +128,340 @@ namespace GSF.SortedTreeStore.Engine.Reader
             m_timedOut = true;
         }
 
-
-        //------------------------------------------------------------------
-        //------------------------------------------------------------------
-        //------------------------------------------------------------------
-        //------------------------------------------------------------------
-        //------------------------------------------------------------------
-
-
-        CustomSortHelper<BufferedArchiveStream<TKey, TValue>> m_tables;
-        BufferedArchiveStream<TKey, TValue> m_firstTable;
-        TKey m_nextTableKey = new TKey();
-
-        void UnionArchive2(IEnumerable<BufferedArchiveStream<TKey, TValue>> list)
-        {
-            m_tables = new CustomSortHelper<BufferedArchiveStream<TKey, TValue>>(list, CompareStreams);
-        }
-
-        int CompareStreams(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
-        {
-            if (!item1.SortByIsValid && !item2.SortByIsValid)
-                return 0;
-            if (!item1.SortByIsValid)
-                return 1;
-            if (!item2.SortByIsValid)
-                return -1;
-            return m_keyMethods.CompareTo(item1.SortByKey, item2.SortByKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
-        }
-
-        bool ReadUnion(TKey key, TValue value)
-        {
-            if (m_firstTable != null)
-            {
-                if (!m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey))
-                {
-                    return ReadUnion2(key, value);
-                }
-                return true;
-            }
-            return false;
-        }
-
-        bool ReadUnion2(TKey key, TValue value)
-        {
-            //Set the first table's cache to the correct value
-            m_firstTable.SortByIsValid = m_firstTable.Scanner.Peek(m_firstTable.SortByKey, m_firstTable.SortByValue);
-
-            if (m_tables.Items.Length > 1)
-            {
-                //If list is no longer in order
-                int compare = CompareStreams(m_firstTable, m_tables[1]);
-                if (compare == 0 && m_firstTable.SortByIsValid)
-                {
-                    //If a duplicate entry is found, advance the position of the duplicate entry
-                    RemoveDuplicatesFromList();
-                    SetCacheValue();
-                }
-                if (compare > 0)
-                {
-                    m_tables.SortAssumingIncreased(0);
-                    m_firstTable = m_tables[0];
-                    SetCacheValue();
-                }
-            }
-            return m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey);
-        }
-
-        bool ReadUnionFilter(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
-        {
-            if (m_firstTable != null)
-            {
-                if (!m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey, filter))
-                {
-                    return ReadUnionFilter2(key, value, filter);
-                }
-                return true;
-            }
-            return false;
-        }
-
-        bool ReadUnionFilter2(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
+        public override bool Read(TKey key, TValue value)
         {
         TryAgain:
-
-            //Set the first table's cache to the correct value
-            m_firstTable.SortByIsValid = m_firstTable.Scanner.Peek(m_firstTable.SortByKey, m_firstTable.SortByValue);
-
-            if (m_tables.Items.Length > 1)
+            if (!m_timedOut)
             {
-                //If list is no longer in order
-                int compare = CompareStreams(m_firstTable, m_tables[1]);
-                if (compare == 0 && m_firstTable.SortByIsValid)
+                bool isValid;
+                if (m_keyMatchIsUniverse)
                 {
-                    //If a duplicate entry is found, advance the position of the duplicate entry
-                    RemoveDuplicatesFromList();
-                    SetCacheValue();
+                    isValid = ReadUnfiltered(key, value);
+                    if (isValid && key.Timestamp <= m_stopKey)
+                    {
+                        Stats.PointsScanned++;
+                        Stats.PointsReturned++;
+                        return true;
+                    }
                 }
-                if (compare > 0)
+                else
                 {
-                    m_tables.SortAssumingIncreased(0);
-                    m_firstTable = m_tables[0];
-                    SetCacheValue();
+                    isValid = ReadFiltered(key, value, m_keyMatchFilter);
+                    if (isValid && key.Timestamp <= m_stopKey)
+                    {
+                        Stats.PointsScanned++;
+                        if (m_keyMatchFilter.Contains(key))
+                        {
+                            Stats.PointsReturned++;
+                            return true;
+                        }
+                        goto TryAgain;
+                    }
                 }
-                if (compare == 0 && !m_firstTable.SortByIsValid)
+                if (isValid)
                 {
-                    EOS = true;
-                    return false;
+                    if (AdvanceSeekableFilter(isValid, key))
+                    {
+                        return true;
+                    }
+                    goto TryAgain;
                 }
             }
-            else
-            {
-                if (!m_firstTable.SortByIsValid)
-                {
-                    EOS = true;
-                    return false;
-                }
-            }
+            Cancel();
+            return false;
+        }
 
-            if (m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey, filter))
+        bool ReadUnfiltered(TKey key, TValue value)
+        {
+            if (m_firstTableScanner != null && m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds))
+            {
+                return true;
+            }
+            return ReadUnfilteredCatchAll(key, value);
+        }
+
+        bool ReadUnfilteredCatchAll(TKey key, TValue value)
+        {
+            //Function is called when a ReadWhile attempt of the FirstTableScanner failed.
+
+            if (EOS)
+                return false;
+
+            m_firstTable.UpdateCachedValue();
+
+            VerifyArchiveStreamSortingOrder();
+
+            if (EOS)
+                return false;
+
+            return m_firstTable.Scanner.ReadWhile(key, value, m_readWhileUpperBounds);
+        }
+
+        bool ReadFiltered(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
+        {
+            if (m_firstTableScanner != null)
+            {
+                if (!m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds, filter))
+                {
+                    return ReadFilteredCatchAll(key, value, filter);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        bool ReadFilteredCatchAll(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
+        {
+            //Function is called when a ReadWhile attempt of the FirstTableScanner failed.
+
+            if (EOS)
+                return false;
+        
+            TryAgain:
+
+            VerifyArchiveStreamSortingOrder();
+            if (EOS)
+                return false;
+
+            if (m_firstTable.Scanner.ReadWhile(key, value, m_readWhileUpperBounds, filter))
             {
                 return true;
             }
             goto TryAgain;
         }
 
-        void SeekToKey(TKey key)
-        {
-            foreach (var table in m_tables.Items)
-            {
-                table.Scanner.SeekToKey(key);
-                table.SortByIsValid = table.Scanner.Peek(table.SortByKey, table.SortByValue);
-            }
-            m_tables.Sort();
 
-            //Remove any duplicates
-            if (m_tables.Items.Length >= 2)
+        //-------------------------------------------------------------
+        
+        /// <summary>
+        /// Will verify that the stream is in the proper order and remove any duplicates that were found. 
+        /// May be called after every single read, but better to be called
+        /// when a ReadWhile function returns false.
+        /// </summary>
+        void VerifyArchiveStreamSortingOrder()
+        {
+            if (EOS)
+                return;
+
+            m_sortedArchiveStreams[0].UpdateCachedValue();
+
+            if (m_sortedArchiveStreams.Items.Length > 1)
             {
-                if (CompareStreams(m_tables[0], m_tables[1]) == 0 && m_tables[0].SortByIsValid)
+                //If list is no longer in order
+                int compare = CompareStreams(m_sortedArchiveStreams[0], m_sortedArchiveStreams[1]);
+                if (compare == 0 && m_sortedArchiveStreams[0].CacheIsValid)
                 {
                     //If a duplicate entry is found, advance the position of the duplicate entry
                     RemoveDuplicatesFromList();
+                    SetReadWhileUpperBoundsValue();
+                }
+                if (compare > 0)
+                {
+                    m_sortedArchiveStreams.SortAssumingIncreased(0);
+                    m_firstTable = m_sortedArchiveStreams[0];
+                    m_firstTableScanner = m_firstTable.Scanner;
+                    SetReadWhileUpperBoundsValue();
+                }
+                if (compare == 0 && !m_sortedArchiveStreams[0].CacheIsValid)
+                {
+                    EOS = true;
+                    m_firstTable = null;
+                    m_firstTableScanner = null;
                 }
             }
+            else
+            {
+                if (!m_sortedArchiveStreams[0].CacheIsValid)
+                {
+                    EOS = true;
+                    m_firstTable = null;
+                    m_firstTableScanner = null;
+                }
+            }
+        }
 
-            if (m_tables.Items.Length > 0)
-                m_firstTable = m_tables[0];
 
-            SetCacheValue();
+        /// <summary>
+        /// Does a seek operation on the current stream when there is a seek filter on the reader.
+        /// </summary>
+        /// <returns>
+        /// True if the provided key is still valid within the next best fitting frame. 
+        /// </returns>
+        bool AdvanceSeekableFilter(bool isValid, TKey key)
+        {
+
+        TryAgain:
+            if (m_keySeekFilter != null && m_keySeekFilter.NextWindow())
+            {
+                m_stopKey = m_keySeekFilter.EndOfFrame.Timestamp;
+
+                //If the current point is a valid point. 
+                //Check to see if the seek operation can be avoided.
+                //or if the next available point does not exist in this window.
+                if (isValid)
+                {
+                    //If the current point is within this window
+                    if (m_keyMethods.IsGreaterThanOrEqualTo(key, m_keySeekFilter.StartOfFrame) &&
+                        m_keyMethods.IsLessThanOrEqualTo(key, m_keySeekFilter.EndOfFrame))
+                    {
+                        return true;
+                    }
+
+                    //If the current point is after this window, seek to the next window.
+                    if (m_keyMethods.IsGreaterThan(key, m_keySeekFilter.EndOfFrame))
+                        goto TryAgain;
+                }
+
+                //If the current point is not valid, or is before m_startKey
+                //Advance the scanner to the next window.
+                SeekAllArchiveStreamsForward(m_keySeekFilter.StartOfFrame);
+                return false;
+            }
+            m_stopKey = 0;
+            return false;
+
+        }
+
+        /// <summary>
+        /// Compares two Archive Streams together for proper sorting.
+        /// </summary>
+        /// <param name="item1"></param>
+        /// <param name="item2"></param>
+        /// <returns></returns>
+        int CompareStreams(BufferedArchiveStream<TKey, TValue> item1, BufferedArchiveStream<TKey, TValue> item2)
+        {
+            if (!item1.CacheIsValid && !item2.CacheIsValid)
+                return 0;
+            if (!item1.CacheIsValid)
+                return 1;
+            if (!item2.CacheIsValid)
+                return -1;
+            return m_keyMethods.CompareTo(item1.CacheKey, item2.CacheKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
+        }
+
+        /// <summary>
+        /// Does an unconditional seek operation to the provided key.
+        /// </summary>
+        /// <param name="key"></param>
+        void SeekToKey(TKey key)
+        {
+            foreach (var table in m_sortedArchiveStreams.Items)
+            {
+                table.SeekToKeyAndUpdateCacheValue(key);
+            }
+            m_sortedArchiveStreams.Sort();
+
+            //Remove any duplicates
+            RemoveDuplicatesIfExists();
+
+            if (m_sortedArchiveStreams.Items.Length > 0)
+            {
+                m_firstTable = m_sortedArchiveStreams[0];
+                m_firstTableScanner = m_firstTable.Scanner;
+            }
+            else
+            {
+                m_firstTable = null;
+                m_firstTableScanner = null;
+            }
+
+            SetReadWhileUpperBoundsValue();
         }
 
         /// <summary>
         /// Seeks the streams only in the forward direction.
         /// This means that if the current position in any stream is invalid or past this point,
         /// the stream will not seek backwards.
-        /// After returning, the <see cref="TreeStream{TKey,TValue}.CurrentKey"/> 
-        /// and <see cref="TreeStream{TKey,TValue}.CurrentValue"/> will only be valid
-        /// if it's position is greater then or equal to <see cref="key"/>.
-        /// Bug Consideration: When seeking forward, Don't forget to check <see cref="TreeStream{TKey,TValue}.IsValid"/> to see if the first
-        /// sample point in this list is still valid. If not, you will accidentially skip the first sample point.
         /// </summary>
-        /// <param name="key"></param>
-        void SeekForward(TKey key)
+        /// <param name="key">the key to seek to</param>
+        void SeekAllArchiveStreamsForward(TKey key)
         {
-            foreach (var table in m_tables.Items)
+            foreach (var table in m_sortedArchiveStreams.Items)
             {
-                if (table.SortByIsValid && m_keyMethods.IsLessThan(table.SortByKey, key)) // table.CurrentKey.IsLessThan(key))
+                if (table.CacheIsValid && m_keyMethods.IsLessThan(table.CacheKey, key))
                 {
-                    table.Scanner.SeekToKey(key);
-                    table.SortByIsValid = table.Scanner.Peek(table.SortByKey, table.SortByValue);
-                }
-                //ToDo: Consider commenting out this debug code.
-                if (table.SortByIsValid && m_keyMethods.IsLessThan(table.SortByKey, key)) // table.CurrentKey.IsLessThan(key))
-                {
-                    throw new Exception("should never occur");
+                    table.SeekToKeyAndUpdateCacheValue(key);
                 }
             }
-            m_tables.Sort();
+            //Resorts the entire list.
+            m_sortedArchiveStreams.Sort();
 
             //Remove any duplicates
-            if (m_tables.Items.Length >= 2)
+            RemoveDuplicatesIfExists();
+
+            if (m_sortedArchiveStreams.Items.Length > 0)
             {
-                if (CompareStreams(m_tables[0], m_tables[1]) == 0 && m_tables[0].SortByIsValid)
+                m_firstTable = m_sortedArchiveStreams[0];
+                m_firstTableScanner = m_firstTable.Scanner;
+            }
+            else
+            {
+                m_firstTable = null;
+                m_firstTableScanner = null;
+            }
+
+            SetReadWhileUpperBoundsValue();
+        }
+
+
+
+        /// <summary>
+        /// Checks the first 2 Archive Streams for a duplicate entry. If one exists, then removes the duplicate and resorts the list.
+        /// </summary>
+        void RemoveDuplicatesIfExists()
+        {
+            if (m_sortedArchiveStreams.Items.Length > 1)
+            {
+                if (CompareStreams(m_sortedArchiveStreams[0], m_sortedArchiveStreams[1]) == 0 && m_sortedArchiveStreams[0].CacheIsValid)
                 {
                     //If a duplicate entry is found, advance the position of the duplicate entry
                     RemoveDuplicatesFromList();
                 }
             }
-
-            if (m_tables.Items.Length > 0)
-                m_firstTable = m_tables[0];
-
-            SetCacheValue();
         }
 
-
+        /// <summary>
+        /// Call this function when the same point exists in multiple archive files. It will
+        /// read past the duplicate point in all other archive files and then resort the tables.
+        /// 
+        /// Assums that the archiveStream's cached value is current.
+        /// </summary>
         void RemoveDuplicatesFromList()
         {
-            for (int index = 1; index < m_tables.Items.Length; index++)
+            int lastDuplicateIndex = -1;
+            for (int index = 1; index < m_sortedArchiveStreams.Items.Length; index++)
             {
-                if (CompareStreams(m_tables[0], m_tables[index]) == 0)
+                if (CompareStreams(m_sortedArchiveStreams[0], m_sortedArchiveStreams[index]) == 0)
                 {
-                    m_tables[index].SortByIsValid = m_tables[index].Scanner.Read(m_tables[index].SortByKey, m_tables[index].SortByValue);
-                    m_tables[index].SortByIsValid = m_tables[index].Scanner.Peek(m_tables[index].SortByKey, m_tables[index].SortByValue);
+                    m_sortedArchiveStreams[index].SkipToNextKeyAndUpdateCachedValue();
+                    lastDuplicateIndex = index;
                 }
                 else
                 {
-                    for (int j = index; j > 0; j--)
-                        m_tables.SortAssumingIncreased(j);
                     break;
                 }
             }
 
-            SetCacheValue();
-            //m_tables.Sort();
+            //Resorts the list in reverse order.
+            for (int j = lastDuplicateIndex; j > 0; j--)
+                m_sortedArchiveStreams.SortAssumingIncreased(j);
+
+            SetReadWhileUpperBoundsValue();
         }
 
-        void SetCacheValue()
+        /// <summary>
+        /// Sets the read while upper bounds value. 
+        /// Which is the first point in the adjacent table
+        /// </summary>
+        void SetReadWhileUpperBoundsValue()
         {
-            if (m_tables.Items.Length > 1 && m_tables[1].SortByIsValid)
+            if (m_sortedArchiveStreams.Items.Length > 1 && m_sortedArchiveStreams[1].CacheIsValid)
             {
-                m_keyMethods.Copy(m_tables[1].SortByKey, m_nextTableKey);
+                m_keyMethods.Copy(m_sortedArchiveStreams[1].CacheKey, m_readWhileUpperBounds);
             }
             else
             {
-                m_keyMethods.SetMax(m_nextTableKey);
+                m_keyMethods.SetMax(m_readWhileUpperBounds);
             }
         }
 
