@@ -54,27 +54,45 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             m_keySize = KeyMethods.Size;
         }
 
-        /// <summary>
-        /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
-        /// </summary>
-        protected override unsafe void ReadNext(TKey key, TValue value, bool advanceIndex)
+
+        protected override unsafe void InternalRead(TKey key, TValue value)
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             KeyMethods.Read(ptr, key);
             ValueMethods.Read(ptr + m_keySize, value);
-            if (advanceIndex)
-                IndexOfNextKeyValue++;
+            IndexOfNextKeyValue++;
+        }
+
+        protected override unsafe bool InternalRead(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
+        {
+        TryAgain:
+            byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
+            KeyMethods.Read(ptr, key);
+            ValueMethods.Read(ptr + m_keySize, value);
+            IndexOfNextKeyValue++;
+            if (filter.Contains(key))
+                return true;
+            if (IndexOfNextKeyValue >= RecordCount)
+                return false;
+            goto TryAgain;
+        }
+
+        protected override unsafe void InternalPeek(TKey key, TValue value)
+        {
+            byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
+            KeyMethods.Read(ptr, key);
+            ValueMethods.Read(ptr + m_keySize, value);
         }
 
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
         /// </summary>
-        protected override unsafe bool ReadUnless(TKey key, TValue value, TKey stopBeforeKey)
+        protected override unsafe bool InternalReadWhile(TKey key, TValue value, TKey upperBounds)
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             KeyMethods.Read(ptr, key);
             ValueMethods.Read(ptr + m_keySize, value);
-            if (KeyMethods.IsLessThan(key, stopBeforeKey))
+            if (KeyMethods.IsLessThan(key, upperBounds))
             {
                 IndexOfNextKeyValue++;
                 return true;
@@ -85,45 +103,22 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
         /// </summary>
-        protected override unsafe bool ReadUnless(TKey key, TValue value, TKey stopBeforeKey, KeyMatchFilterBase<TKey> filter)
+        protected override unsafe bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, KeyMatchFilterBase<TKey> filter)
         {
         TryAgain:
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             KeyMethods.Read(ptr, key);
             ValueMethods.Read(ptr + m_keySize, value);
-            if (KeyMethods.IsLessThan(key, stopBeforeKey))
+            if (KeyMethods.IsLessThan(key, upperBounds))
             {
                 IndexOfNextKeyValue++;
                 if (filter.Contains(key))
-                {
                     return true;
-                }
                 if (IndexOfNextKeyValue >= RecordCount)
                     return false;
                 goto TryAgain;
             }
             return false;
-        }
-
-        protected override unsafe int ReadNext(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
-        {
-            int before = IndexOfNextKeyValue;
-            int remainingRecords = RecordCount - IndexOfNextKeyValue;
-            int scannedRecords = 0;
-            while (scannedRecords < remainingRecords)
-            {
-                byte* ptr = Pointer + (IndexOfNextKeyValue + scannedRecords) * m_keyValueSize;
-                KeyMethods.Read(ptr, key);
-                scannedRecords += 1;
-                if (filter.Contains(key))
-                {
-                    ValueMethods.Read(ptr + m_keySize, value);
-                    IndexOfNextKeyValue += scannedRecords;
-                    return IndexOfNextKeyValue - before;
-                }
-            }
-            IndexOfNextKeyValue += scannedRecords + 1;
-            return IndexOfNextKeyValue - before;
         }
 
         /// <summary>

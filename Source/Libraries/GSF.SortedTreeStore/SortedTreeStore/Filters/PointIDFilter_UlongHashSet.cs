@@ -99,10 +99,6 @@ namespace GSF.SortedTreeStore.Filters
                 return m_points.Contains(key.PointID);
             }
 
-            public override unsafe bool Contains(byte* ptr)
-            {
-                return m_points.Contains(*(ulong*)(ptr + 8));
-            }
         }
     }
 }

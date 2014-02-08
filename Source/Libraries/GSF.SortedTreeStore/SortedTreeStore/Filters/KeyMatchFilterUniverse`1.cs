@@ -59,10 +59,6 @@ namespace GSF.SortedTreeStore.Filters
         {
             return true;
         }
-
-        public override unsafe bool Contains(byte* ptr)
-        {
-            return true;
-        }
+     
     }
 }

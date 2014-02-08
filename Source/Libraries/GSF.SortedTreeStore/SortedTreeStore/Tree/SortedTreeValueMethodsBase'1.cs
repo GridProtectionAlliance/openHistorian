@@ -21,7 +21,7 @@
 //     
 //******************************************************************************************************
 
-//#define GetTreeValueMethodsCallCount
+#define GetTreeValueMethodsCallCount
 
 using System;
 using GSF.IO;
@@ -41,32 +41,6 @@ namespace GSF.SortedTreeStore.Tree
     public abstract class SortedTreeValueMethodsBase<TValue>
         where TValue : class, new()
     {
-
-#if GetTreeValueMethodsCallCount
-        public static void ClearStats()
-        {
-            CallMethods = new long[100];
-        }
-        static public long[] CallMethods = new long[100];
-        public enum Method
-            : int
-        {
-            Copy,
-            ReadBinaryStreamBase,
-            WriteBinaryStreamBase,
-            IsEqual,
-            Create
-
-        }
-        public static void WriteToConsole()
-        {
-            Console.WriteLine("ValueMethodsBase calls");
-            for (int x = 0; x < 5; x++)
-            {
-                Console.WriteLine(CallMethods[x] + "\t" + ((Method)(x)).ToString());
-            }
-        }
-#endif
 
         protected SortedTreeValueMethodsBase()
         {
@@ -132,14 +106,16 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="destination"></param>
         public virtual unsafe void Copy(TValue source, TValue destination)
         {
-#if GetTreeValueMethodsCallCount
-            CallMethods[(int)Method.Copy]++;
-#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, source);
             Read(ptr, destination);
         }
 
+        /// <summary>
+        /// Copies the source to the destination.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
         public virtual unsafe void Copy(byte* source, byte* destination)
         {
             Memory.Copy(source, destination, Size);
@@ -154,9 +130,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe bool IsEqual(TValue value, TValue value2)
         {
-#if GetTreeValueMethodsCallCount
-            CallMethods[(int)Method.IsEqual]++;
-#endif
             byte* buffer1 = stackalloc byte[Size];
             byte* buffer2 = stackalloc byte[Size];
             Write(buffer1, value);
@@ -167,21 +140,25 @@ namespace GSF.SortedTreeStore.Tree
             return true;
         }
         
+        /// <summary>
+        /// Writes the value to the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public virtual unsafe void Write(BinaryStreamBase stream, TValue data)
         {
-#if GetTreeValueMethodsCallCount
-            CallMethods[(int)Method.WriteBinaryStreamBase]++;
-#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, data);
             stream.Write(ptr, Size);
         }
 
+        /// <summary>
+        /// reads the value from the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
         public virtual unsafe void Read(BinaryStreamBase stream, TValue data)
         {
-#if GetTreeValueMethodsCallCount
-            CallMethods[(int)Method.ReadBinaryStreamBase]++;
-#endif
             byte* ptr = stackalloc byte[Size];
             stream.ReadAll(ptr, Size);
             Read(ptr, data);

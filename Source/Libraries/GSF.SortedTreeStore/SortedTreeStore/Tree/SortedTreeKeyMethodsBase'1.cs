@@ -21,8 +21,6 @@
 //     
 //******************************************************************************************************
 
-//#define GetTreeKeyMethodsCallCount
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,50 +42,6 @@ namespace GSF.SortedTreeStore.Tree
         : IComparer<TKey>
         where TKey : class, new()
     {
-
-#if GetTreeKeyMethodsCallCount
-        public static void ClearStats()
-        {
-            CallMethods = new long[100];
-        }
-
-        static public long[] CallMethods = new long[100];
-        public enum Method
-            : int
-        {
-            WriteMax,
-            WriteMin,
-            WriteNull,
-            Copy,
-            ReadBinaryStreamBase,
-            ReadBinaryReader,
-            WriteBinaryWriter,
-            WriteBinaryStreamBase,
-            BinarySearch,
-            BinarySearch2,
-            IsBetween,
-            IsLessThanOrEqualTo,
-            IsLessThan,
-            IsNotEqual,
-            IsGreaterThan,
-            IsGreaterThanPointer,
-            IsGreaterThanPointer2,
-            IsGreaterThanOrEqualTo,
-            IsEqual,
-            IsEqualPointer,
-            CompareToPointer,
-            CompareToPointer2,
-            Create
-        }
-        public static void WriteToConsole()
-        {
-            Console.WriteLine("KeyMethodsBase calls");
-            for (int x = 0; x < 23; x++)
-            {
-                Console.WriteLine(CallMethods[x] + "\t" + ((Method)(x)).ToString());
-            }
-        }
-#endif
 
         protected TKey TempKey = new TKey();
         protected TKey TempKey2 = new TKey();
@@ -182,9 +136,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         public virtual unsafe void WriteMax(byte* stream)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.WriteMax]++;
-#endif
             SetMax(TempKey);
             Write(stream, TempKey);
         }
@@ -194,9 +145,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         public virtual unsafe void WriteMin(byte* stream)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.WriteMin]++;
-#endif
             SetMin(TempKey);
             Write(stream, TempKey);
         }
@@ -206,13 +154,15 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         public virtual unsafe void WriteNull(byte* stream)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.WriteNull]++;
-#endif
             Clear(TempKey);
             Write(stream, TempKey);
         }
 
+        /// <summary>
+        /// Copies the source to the destination.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
         public virtual unsafe void Copy(byte* source, byte* destination)
         {
             Memory.Copy(source, destination, Size);
@@ -225,9 +175,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="destination"></param>
         public virtual unsafe void Copy(TKey source, TKey destination)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.Copy]++;
-#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, source);
             Read(ptr, destination);
@@ -239,9 +186,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="data"></param>
         public virtual unsafe void Read(BinaryStreamBase stream, TKey data)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.ReadBinaryStreamBase]++;
-#endif
             byte* ptr = stackalloc byte[Size];
             stream.ReadAll(ptr, Size);
             Read(ptr, data);
@@ -254,9 +198,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="data"></param>
         public virtual unsafe void Read(BinaryReader reader, TKey data)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.ReadBinaryReader]++;
-#endif
             byte* ptr = stackalloc byte[Size];
             for (int x = 0; x < Size; x++)
             {
@@ -271,9 +212,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="data"></param>
         public virtual unsafe void Write(BinaryWriter writer, TKey data)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.WriteBinaryWriter]++;
-#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, data);
             for (int x = 0; x < Size; x++)
@@ -288,9 +226,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="data"></param>
         public virtual unsafe void Write(BinaryStreamBase stream, TKey data)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.WriteBinaryStreamBase]++;
-#endif
             byte* ptr = stackalloc byte[Size];
             Write(ptr, data);
             stream.Write(ptr, Size);
@@ -306,9 +241,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe int BinarySearch(byte* pointer, TKey key, int recordCount, int keyValueSize)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.BinarySearch]++;
-#endif
             TKey compareKey = TempKey;
             if (LastFoundIndex == recordCount - 1)
             {
@@ -341,9 +273,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         protected virtual unsafe int BinarySearch2(byte* pointer, TKey key, int recordCount, int keyPointerSize)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.BinarySearch2]++;
-#endif
             if (recordCount == 0)
                 return ~0;
             TKey compareKey = TempKey;
@@ -428,9 +357,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual bool IsBetween(TKey lowerBounds, TKey key, TKey upperBounds)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsBetween]++;
-#endif
             return IsLessThanOrEqualTo(lowerBounds, key) && IsLessThan(key, upperBounds);
         }
 
@@ -442,9 +368,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual bool IsLessThanOrEqualTo(TKey left, TKey right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsLessThanOrEqualTo]++;
-#endif
             return CompareTo(left, right) <= 0;
         }
 
@@ -456,9 +379,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual bool IsLessThan(TKey left, TKey right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsLessThan]++;
-#endif
             return CompareTo(left, right) < 0;
         }
 
@@ -470,9 +390,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual bool IsNotEqual(TKey left, TKey right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsNotEqual]++;
-#endif
             return CompareTo(left, right) != 0;
         }
 
@@ -484,9 +401,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual bool IsGreaterThan(TKey left, TKey right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsGreaterThan]++;
-#endif
             return CompareTo(left, right) > 0;
         }
 
@@ -498,9 +412,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe bool IsGreaterThan(TKey left, byte* right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsGreaterThanPointer]++;
-#endif
             return CompareTo(left, right) > 0;
         }
 
@@ -512,9 +423,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe bool IsGreaterThan(byte* left, TKey right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsGreaterThanPointer2]++;
-#endif
             return CompareTo(left, right) > 0;
         }
         /// <summary>
@@ -525,9 +433,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual bool IsGreaterThanOrEqualTo(TKey left, TKey right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsGreaterThanOrEqualTo]++;
-#endif
             return CompareTo(left, right) >= 0;
         }
         /// <summary>
@@ -538,9 +443,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual bool IsEqual(TKey left, TKey right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsEqual]++;
-#endif
             return CompareTo(left, right) == 0;
         }
         /// <summary>
@@ -551,9 +453,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe bool IsEqual(TKey left, byte* right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.IsEqualPointer]++;
-#endif
             return CompareTo(left, right) == 0;
         }
         /// <summary>
@@ -564,9 +463,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe int CompareTo(TKey left, byte* right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.CompareToPointer]++;
-#endif
             Read(right, TempKey);
             return CompareTo(left, TempKey);
         }
@@ -579,12 +475,9 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe int CompareTo(byte* left, byte* right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.CompareToPointer]++;
-#endif
             Read(left, TempKey);
             Read(right, TempKey2);
-            return CompareTo(left, right);
+            return CompareTo(TempKey, TempKey2);
         }
 
         /// <summary>
@@ -595,9 +488,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe int CompareTo(byte* left, TKey right)
         {
-#if GetTreeKeyMethodsCallCount
-            CallMethods[(int)Method.CompareToPointer2]++;
-#endif
             Read(left, TempKey);
             return CompareTo(TempKey, right);
         }

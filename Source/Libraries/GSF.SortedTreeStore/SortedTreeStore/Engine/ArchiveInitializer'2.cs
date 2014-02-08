@@ -26,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GSF;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 

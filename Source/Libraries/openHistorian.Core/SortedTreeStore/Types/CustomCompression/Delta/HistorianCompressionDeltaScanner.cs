@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF;
 using GSF.IO;
 using GSF.SortedTreeStore.Filters;
 using openHistorian.Collections;
@@ -55,13 +54,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         {
         }
 
-        /// <summary>
-        /// Decodes the next record from the byte array into the provided key and value.
-        /// </summary>
-        /// <param name="key">the key to write to.</param>
-        /// <param name="value">the value to write to.</param>
-        /// <returns></returns>
-        protected override void ReadNext(HistorianKey key, HistorianValue value, bool advanceIndex)
+        protected override void InternalRead(HistorianKey key, HistorianValue value)
         {
             byte* stream = Pointer + m_nextOffset;
             int position = 0;
@@ -72,23 +65,46 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             value.Value2 = m_prevValue2 ^ Compression.Read7BitUInt64(stream, ref position);
             value.Value3 = m_prevValue3 ^ Compression.Read7BitUInt64(stream, ref position);
 
-            if (advanceIndex)
-            {
-                m_prevTimestamp = key.Timestamp;
-                m_prevPointId = key.PointID;
-                m_prevEntryNumber = key.EntryNumber;
-                m_prevValue1 = value.Value1;
-                m_prevValue2 = value.Value2;
-                m_prevValue3 = value.Value3;
-                m_nextOffset += position;
-                IndexOfNextKeyValue++;
-            }
+            m_prevTimestamp = key.Timestamp;
+            m_prevPointId = key.PointID;
+            m_prevEntryNumber = key.EntryNumber;
+            m_prevValue1 = value.Value1;
+            m_prevValue2 = value.Value2;
+            m_prevValue3 = value.Value3;
+            m_nextOffset += position;
+            IndexOfNextKeyValue++;
         }
 
-        /// <summary>
-        /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
-        /// </summary>
-        protected override unsafe bool ReadUnless(HistorianKey key, HistorianValue value, HistorianKey stopBeforeKey)
+        protected override unsafe bool InternalRead(HistorianKey key, HistorianValue value, KeyMatchFilterBase<HistorianKey> filter)
+        {
+        TryAgain:
+
+            byte* stream = Pointer + m_nextOffset;
+            int position = 0;
+            key.Timestamp = m_prevTimestamp ^ Compression.Read7BitUInt64(stream, ref position);
+            key.PointID = m_prevPointId ^ Compression.Read7BitUInt64(stream, ref position);
+            key.EntryNumber = m_prevEntryNumber ^ Compression.Read7BitUInt64(stream, ref position);
+            value.Value1 = m_prevValue1 ^ Compression.Read7BitUInt64(stream, ref position);
+            value.Value2 = m_prevValue2 ^ Compression.Read7BitUInt64(stream, ref position);
+            value.Value3 = m_prevValue3 ^ Compression.Read7BitUInt64(stream, ref position);
+
+            m_prevTimestamp = key.Timestamp;
+            m_prevPointId = key.PointID;
+            m_prevEntryNumber = key.EntryNumber;
+            m_prevValue1 = value.Value1;
+            m_prevValue2 = value.Value2;
+            m_prevValue3 = value.Value3;
+            m_nextOffset += position;
+            IndexOfNextKeyValue++;
+
+            if (filter.Contains(key))
+                return true;
+            if (IndexOfNextKeyValue >= RecordCount)
+                return false;
+            goto TryAgain;
+        }
+
+        protected override void InternalPeek(HistorianKey key, HistorianValue value)
         {
             byte* stream = Pointer + m_nextOffset;
             int position = 0;
@@ -98,8 +114,20 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             value.Value1 = m_prevValue1 ^ Compression.Read7BitUInt64(stream, ref position);
             value.Value2 = m_prevValue2 ^ Compression.Read7BitUInt64(stream, ref position);
             value.Value3 = m_prevValue3 ^ Compression.Read7BitUInt64(stream, ref position);
-            
-            if (KeyMethods.IsLessThan(key, stopBeforeKey))
+        }
+
+        protected override unsafe bool InternalReadWhile(HistorianKey key, HistorianValue value, HistorianKey upperBounds)
+        {
+            byte* stream = Pointer + m_nextOffset;
+            int position = 0;
+            key.Timestamp = m_prevTimestamp ^ Compression.Read7BitUInt64(stream, ref position);
+            key.PointID = m_prevPointId ^ Compression.Read7BitUInt64(stream, ref position);
+            key.EntryNumber = m_prevEntryNumber ^ Compression.Read7BitUInt64(stream, ref position);
+            value.Value1 = m_prevValue1 ^ Compression.Read7BitUInt64(stream, ref position);
+            value.Value2 = m_prevValue2 ^ Compression.Read7BitUInt64(stream, ref position);
+            value.Value3 = m_prevValue3 ^ Compression.Read7BitUInt64(stream, ref position);
+
+            if (KeyMethods.IsLessThan(key, upperBounds))
             {
                 m_prevTimestamp = key.Timestamp;
                 m_prevPointId = key.PointID;
@@ -114,9 +142,9 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return false;
         }
 
-        protected override unsafe bool ReadUnless(HistorianKey key, HistorianValue value, HistorianKey stopBeforeKey, KeyMatchFilterBase<HistorianKey> filter)
+        protected override unsafe bool InternalReadWhile(HistorianKey key, HistorianValue value, HistorianKey upperBounds, KeyMatchFilterBase<HistorianKey> filter)
         {
-            TryAgain:
+        TryAgain:
 
             byte* stream = Pointer + m_nextOffset;
             int position = 0;
@@ -127,7 +155,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             value.Value2 = m_prevValue2 ^ Compression.Read7BitUInt64(stream, ref position);
             value.Value3 = m_prevValue3 ^ Compression.Read7BitUInt64(stream, ref position);
 
-            if (KeyMethods.IsLessThan(key, stopBeforeKey))
+            if (KeyMethods.IsLessThan(key, upperBounds))
             {
                 m_prevTimestamp = key.Timestamp;
                 m_prevPointId = key.PointID;
@@ -139,9 +167,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 IndexOfNextKeyValue++;
 
                 if (filter.Contains(key))
-                {
                     return true;
-                }
                 if (IndexOfNextKeyValue >= RecordCount)
                     return false;
                 goto TryAgain;
@@ -149,10 +175,10 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return false;
         }
 
-        protected override unsafe void DecodeRecord(HistorianKey key, HistorianValue value, KeyMatchFilterBase<HistorianKey> filter)
-        {
-            ReadNext(key, value, true);
-        }
+        //protected override unsafe void DecodeRecord(HistorianKey key, HistorianValue value, KeyMatchFilterBase<HistorianKey> filter)
+        //{
+        //    ReadNext(key, value, true);
+        //}
 
         /// <summary>
         /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.

@@ -23,8 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Engine.Reader;
-using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
@@ -60,12 +58,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
         public bool SortByIsValid = false;
         public TKey SortByKey = new TKey();
         public TValue SortByValue = new TValue();
-
-        public void Read(KeyMatchFilterBase<TKey> filter)
-        {
-            throw new NotImplementedException();
-            //IsValid = Scanner.Read(CurrentKey, CurrentValue, filter);
-        }
 
         public void Dispose()
         {

@@ -240,6 +240,57 @@ namespace openHistorian.PerformanceTests
             Console.WriteLine((140107816 / sw.Elapsed.TotalSeconds / 1000000).ToString());
         }
 
+        [Test]
+        public void TestReadFilteredPointsAll()
+        {
+            Stopwatch sw = new Stopwatch();
+            int pointCount = 0;
+            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
+            db.InMemoryArchive = true;
+            db.ConnectionString = "port=12345";
+            db.Paths = new[] { @"C:\Program Files\openHistorian\Archive\" };
+
+            var lst = new List<ulong>();
+            for (uint x = 0; x < 6000; x++)
+            {
+                lst.Add(x);
+            }
+
+
+
+            using (HistorianServer server = new HistorianServer(db))
+            {
+                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                clientOptions.NetworkPort = 12345;
+                clientOptions.ServerNameOrIp = "127.0.0.1";
+
+                //using (var client = new HistorianClient(clientOptions))
+                //{
+                var database = server.GetDefaultDatabase();
+                using (var reader = database.OpenDataReader())
+                {
+                    var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
+                    while (stream.Read())
+                        ;
+                }
+
+                sw.Start();
+                using (var reader = database.OpenDataReader())
+                {
+                    var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, lst);
+                    while (stream.Read())
+                        pointCount++;
+
+                }
+                sw.Stop();
+                database.Disconnect();
+                //}
+            }
+            Console.WriteLine(pointCount);
+            Console.WriteLine(sw.Elapsed.TotalSeconds.ToString());
+            Console.WriteLine((140107816 / sw.Elapsed.TotalSeconds / 1000000).ToString());
+        }
+
 
         public static void TestReadPoints2()
         {

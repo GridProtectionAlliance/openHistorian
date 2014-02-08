@@ -23,7 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.SortedTreeStore.Filters;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
@@ -47,54 +46,20 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             m_tmpValue = new TValue();
         }
 
-        protected abstract unsafe void DecodeRecord(TKey key, TValue value, KeyMatchFilterBase<TKey> filter);
-
         /// <summary>
         /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.
         /// </summary>
         protected abstract void ResetEncoder();
 
-        protected override unsafe int ReadNext(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
-        {
-            throw new NotImplementedException();
-            //int beforeScan = IndexOfNextKeyValue;
-
-            //if (m_skipNextRead)
-            //{
-            //    m_skipNextRead = false;
-            //    KeyMethods.Copy(m_prevKey, key);
-            //    ValueMethods.Copy(m_prevValue, value);
-            //    if (filter.Contains(key))
-            //    {
-            //        IndexOfNextKeyValue++;
-            //        return 0;
-            //    }
-            //}
-
-            //m_nextOffset += DecodeRecord(Pointer + m_nextOffset, key, value, filter);
-            //return IndexOfNextKeyValue - beforeScan;
-        }
-
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to advance to</param>
-        unsafe protected override void FindKey(TKey key)
+        protected override void FindKey(TKey key)
         {
             OnNoadReload();
-
-            //Find the first occurance where the key that 
-            //is read is greater than or equal to the search key.
-            //or the end of the stream is encountered.
-            while (IndexOfNextKeyValue < RecordCount)
-            {
-                ReadNext(m_tmpKey, m_tmpValue, advanceIndex: false);
-                if (KeyMethods.IsGreaterThanOrEqualTo(m_tmpKey, key))
-                {
-                    return;
-                }
-                ReadNext(m_tmpKey, m_tmpValue, advanceIndex: true);
-            }
+            while (InternalReadWhile(m_tmpKey, m_tmpValue, key))
+                ;
         }
 
         /// <summary>

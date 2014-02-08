@@ -104,8 +104,8 @@
     <Compile Include="Net\NetworkBinaryStream.cs" />
     <Compile Include="SortedTreeStore\Collection\CreatePointCollectionBase.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionBase%272.cs" />
-    <Compile Include="SortedTreeStore\Engine\Reader\BufferedArchiveStream2%272.cs" />
-    <Compile Include="SortedTreeStore\Engine\Reader\SortedTreeEngineReaderSequential2%272.cs" />
+    <Compile Include="SortedTreeStore\Engine\Reader\BufferedArchiveStream%272.cs" />
+    <Compile Include="SortedTreeStore\Engine\Reader\SortedTreeEngineReaderSequential%272.cs" />
     <Compile Include="SortedTreeStore\Engine\KeyFilter`1.cs" />
     <Compile Include="SortedTreeStore\Filters\KeySeekFilterUniverse`1.cs" />
     <Compile Include="SortedTreeStore\Filters\KeyMatchFilterUniverse`1.cs" />
@@ -133,7 +133,6 @@
     <Compile Include="Collections\ContinuousQueue`1.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer%272.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer.cs" />
-    <Compile Include="SortedTreeStore\Tree\AdvancedReader.cs" />
     <Compile Include="SortedTreeStore\Tree\ISortedTreeKey`1.cs" />
     <Compile Include="SortedTreeStore\Tree\ISortedTreeValue%271.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTree.cs" />
@@ -215,7 +214,6 @@
     <Compile Include="SortedTreeStore\Engine\Writer\Old\TransactionalBlocking%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\WriteProcessor%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\WriteProcessorSettings%272.cs" />
-    <Compile Include="SortedTreeStore\Engine\Old\ArchiveTableSummaryExtensions%272.cs" />
     <Compile Include="SortedTreeStore\Engine\DatabaseConfig.cs" />
     <Compile Include="SortedTreeStore\CustomSortHelper%271.cs" />
     <Compile Include="SortedTreeStore\UnionSeekableTreeStream%273.cs" />

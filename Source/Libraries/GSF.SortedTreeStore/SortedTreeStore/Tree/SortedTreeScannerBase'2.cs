@@ -46,7 +46,9 @@ namespace GSF.SortedTreeStore.Tree
         private const int OffsetOfRightSibling = OffsetOfLeftSibling + IndexSize;
         private const int OffsetOfLowerBounds = OffsetOfRightSibling + IndexSize;
         private const int IndexSize = sizeof(uint);
+        protected int KeySize;
 
+        protected TKey UpperKey = new TKey();
         private readonly Func<TKey, byte, uint> m_lookupKey;
         private readonly TKey m_tempKey;
         //private TKey m_lowerKey;
@@ -93,6 +95,17 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
+        /// Gets the byte offset of the upper bouds key
+        /// </summary>
+        private int OffsetOfUpperBounds
+        {
+            get
+            {
+                return OffsetOfLowerBounds + KeySize;
+            }
+        }
+
+        /// <summary>
         /// The pointer that is right after the header of the node.
         /// </summary>
         protected byte* Pointer { get; private set; }
@@ -134,6 +147,7 @@ namespace GSF.SortedTreeStore.Tree
             //m_currentNode = new Node(stream, blockSize);
             KeyMethods = m_tempKey.CreateKeyMethods();
             ValueMethods = new TValue().CreateValueMethods();
+            KeySize = KeyMethods.Size;
 
             //OffsetOfUpperBounds = OffsetOfLowerBounds + KeySize;
             HeaderSize = OffsetOfLowerBounds + 2 * KeyMethods.Size;
@@ -145,40 +159,33 @@ namespace GSF.SortedTreeStore.Tree
             RecordCount = 0;
         }
 
-        /// <summary>
-        /// Using <see cref="Pointer"/> advance to the next KeyValue
-        /// </summary>
-        protected abstract void ReadNext(TKey key, TValue value, bool advanceIndex);
+        protected abstract void InternalPeek(TKey key, TValue value);
 
-        protected abstract bool ReadUnless(TKey key, TValue value, TKey stopBeforeKey);
+        protected abstract void InternalRead(TKey key, TValue value);
 
-        protected abstract bool ReadUnless(TKey key, TValue value, TKey stopBeforeKey, KeyMatchFilterBase<TKey> filter);
+        protected abstract bool InternalRead(TKey key, TValue value, KeyMatchFilterBase<TKey> filter);
 
-        /// <summary>
-        /// Using <see cref="Pointer"/> advance to the next KeyValue that is contained in the provided filter.
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <remarks> Be sure to modify <see cref="IndexOfNextKeyValue"/> and compare that to <see cref="RecordCount"/> 
-        /// to determine if we are at the end of the stream.
-        /// </remarks>
-        protected abstract int ReadNext(TKey key, TValue value, KeyMatchFilterBase<TKey> filter);
+        protected abstract bool InternalReadWhile(TKey key, TValue value, TKey upperBounds);
+
+        protected abstract bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, KeyMatchFilterBase<TKey> filter);
 
         /// <summary>
         /// Using <see cref="Pointer"/> advance to the search location of the provided <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to advance to</param>
-        /// <returns>
-        /// The index position of the key that was found that is greater than or equal to <see cref="key"/>
-        /// </returns>
         protected abstract void FindKey(TKey key);
+
+        #region [ Peek ]
 
         /// <summary>
         /// Reads the next point, but doees not advance the position of the stream.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns>True if a point is found. 
-        /// False if the end of the stream has been encountered.</returns>
+        /// <param name="key">the key to write the results to</param>
+        /// <param name="value">the value to write the results to</param>
+        /// <returns>
+        /// True if a point is found. 
+        /// False if the end of the stream has been encountered.
+        /// </returns>
         public bool Peek(TKey key, TValue value)
         {
             if (StreamPointer.Version == PointerVersion)
@@ -186,14 +193,14 @@ namespace GSF.SortedTreeStore.Tree
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
-                    ReadNext(key, value, false);
+                    InternalPeek(key, value);
                     return true;
                 }
             }
-            return Peek2(key, value);
+            return PeekCatchAll(key, value);
         }
 
-        protected bool Peek2(TKey key, TValue value)
+        protected bool PeekCatchAll(TKey key, TValue value)
         {
             //If there are no more records in the current node.
             if (IndexOfNextKeyValue >= RecordCount)
@@ -214,24 +221,49 @@ namespace GSF.SortedTreeStore.Tree
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            ReadNext(key, value, false);
+            InternalPeek(key, value);
             return true;
         }
 
-        public virtual bool ReadUntil(TKey key, TValue value, TKey stopBeforeKey)
+        #endregion
+
+        #region [ ReadWhile ]
+
+        /// <summary>
+        /// Continues to advance the stream 
+        /// but stops short of returning the point that is equal to
+        /// the provided key.
+        /// </summary>
+        /// <param name="key">Where to store the key</param>
+        /// <param name="value">Where to store the value</param>
+        /// <param name="upperBounds">the test condition. Will return false if the returned point would have 
+        /// exceeded this value</param>
+        /// <returns>
+        /// Returns true if the point returned is valid. 
+        /// Returns false if:
+        ///     The point read is greater than or equal to <see cref="upperBounds"/>.
+        ///     The end of the stream is reached.
+        ///     The end of the current node has been reached.
+        /// </returns>
+        public virtual bool ReadWhile(TKey key, TValue value, TKey upperBounds)
         {
             if (StreamPointer.Version == PointerVersion)
             {
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
-                    return ReadUnless(key, value, stopBeforeKey);
+                    if (KeyMethods.IsLessThan(UpperKey, upperBounds))
+                    {
+                        InternalRead(key, value);
+                        return true;
+                    }
+                    return InternalReadWhile(key, value, upperBounds);
                 }
             }
-            return ReadUntil2(key, value, stopBeforeKey);
+            return ReadWhileCatchAll(key, value, upperBounds);
         }
 
-        protected bool ReadUntil2(TKey key, TValue value, TKey stopBeforeKey)
+        protected bool ReadWhileCatchAll(TKey key, TValue value, TKey upperBounds)
         {
             //If there are no more records in the current node.
             if (IndexOfNextKeyValue >= RecordCount)
@@ -252,23 +284,46 @@ namespace GSF.SortedTreeStore.Tree
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            return ReadUnless(key, value, stopBeforeKey);
-        }
-
-        public virtual bool ReadUntil(TKey key, TValue value, TKey stopBeforeKey, KeyMatchFilterBase<TKey> filter)
-        {
-            if (StreamPointer.Version == PointerVersion)
+            if (KeyMethods.IsLessThan(UpperKey, upperBounds))
             {
-                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
-                if (IndexOfNextKeyValue < RecordCount)
-                {
-                    return ReadUnless(key, value, stopBeforeKey, filter);
-                }
+                InternalRead(key, value);
+                return true;
             }
-            return ReadUntil2(key, value, stopBeforeKey, filter);
+            return InternalReadWhile(key, value, upperBounds);
         }
 
-        protected bool ReadUntil2(TKey key, TValue value, TKey stopBeforeKey, KeyMatchFilterBase<TKey> filter)
+
+        /// <summary>
+        /// Using the provided filter, continues to advance the stream 
+        /// but stops short of returning the point that is equal to
+        /// the provided key.
+        /// </summary>
+        /// <param name="key">Where to store the key</param>
+        /// <param name="value">Where to store the value</param>
+        /// <param name="upperBounds">the test condition. Will return false if the returned point would have 
+        /// exceeded this value</param>
+        /// <param name="filter">the filter to apply to the reading.</param>
+        /// <returns>
+        /// Returns true if the point returned is valid. 
+        /// Returns false if:
+        ///     The point read is greater than or equal to <see cref="upperBounds"/>.
+        ///     The end of the stream is reached.
+        ///     The end of the current node has been reached.
+        /// </returns>
+        public virtual bool ReadWhile(TKey key, TValue value, TKey upperBounds, KeyMatchFilterBase<TKey> filter)
+        {
+            if (StreamPointer.Version == PointerVersion && IndexOfNextKeyValue < RecordCount)
+            {
+                if (KeyMethods.IsLessThan(UpperKey, upperBounds))
+                {
+                    return InternalRead(key, value, filter);
+                }
+                return InternalReadWhile(key, value, upperBounds, filter);
+            }
+            return ReadWhileCatchAll(key, value, upperBounds, filter);
+        }
+
+        protected bool ReadWhileCatchAll(TKey key, TValue value, TKey upperBounds, KeyMatchFilterBase<TKey> filter)
         {
             //If there are no more records in the current node.
             if (IndexOfNextKeyValue >= RecordCount)
@@ -289,8 +344,16 @@ namespace GSF.SortedTreeStore.Tree
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            return ReadUnless(key, value, stopBeforeKey, filter);
+            if (KeyMethods.IsLessThan(UpperKey, upperBounds))
+            {
+                return InternalRead(key, value, filter);
+            }
+            return InternalReadWhile(key, value, upperBounds, filter);
         }
+
+        #endregion
+
+        #region [ Read ]
 
         /// <summary>
         /// Advances the stream to the next value. 
@@ -304,20 +367,19 @@ namespace GSF.SortedTreeStore.Tree
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
-                    ReadNext(key, value, true);
+                    InternalRead(key, value);
                     return true;
                 }
             }
-            return Read2(key, value);
+            return ReadCatchAll(key, value);
         }
 
         /// <summary>
         /// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
         /// </summary>
         /// <returns></returns>
-        protected bool Read2(TKey key, TValue value)
+        protected bool ReadCatchAll(TKey key, TValue value)
         {
-            //return false;
             //If there are no more records in the current node.
             if (IndexOfNextKeyValue >= RecordCount)
             {
@@ -337,9 +399,11 @@ namespace GSF.SortedTreeStore.Tree
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            ReadNext(key, value, true);
+            InternalRead(key, value);
             return true;
         }
+
+        #endregion
 
         /// <summary>
         /// Seeks to the start of SortedTree.
@@ -383,7 +447,7 @@ namespace GSF.SortedTreeStore.Tree
             LeftSiblingNodeIndex = *(uint*)(ptr + OffsetOfLeftSibling);
             RightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
             //KeyMethods.Read(ptr + OffsetOfLowerBounds, m_lowerKey);
-            //KeyMethods.Read(ptr + OffsetOfUpperBounds, m_upperKey);
+            KeyMethods.Read(ptr + OffsetOfUpperBounds, UpperKey);
             IndexOfNextKeyValue = 0;
             OnNoadReload();
         }
@@ -416,11 +480,5 @@ namespace GSF.SortedTreeStore.Tree
         {
         }
 
-        //public override void SetFilter(Filters.StreamFilterBase<TKey, TValue> filter)
-        //{
-        //    Filter = filter;
-        //    //if (filter != null)
-        //    //    filter.SetKeyValueReferences(CurrentKey, CurrentValue);
-        //}
     }
 }

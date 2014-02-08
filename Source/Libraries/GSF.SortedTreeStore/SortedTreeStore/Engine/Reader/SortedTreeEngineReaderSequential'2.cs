@@ -173,7 +173,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 if (!m_timedOut &&
                     m_keyMatchIsUniverse &&
                     m_firstTable != null &&
-                    m_firstTable.Scanner.ReadUntil(key, value, m_nextTableKey))
+                    m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey))
                 {
                     if (key.Timestamp <= m_stopKey || AdvanceTimestampFilter(true, key, value))
                     {
@@ -195,7 +195,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     {
                         if (m_firstTable != null)
                         {
-                            if (m_firstTable.Scanner.ReadUntil(key, value, m_nextTableKey))
+                            if (m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey))
                             {
                                 isValid = true;
                             }
@@ -334,7 +334,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             {
                 if (m_firstTable != null)
                 {
-                    if (!m_firstTable.Scanner.ReadUntil(key, value, m_nextTableKey))
+                    if (!m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey))
                     {
                         return ReadUnion2(key, value);
                     }
@@ -365,14 +365,14 @@ namespace GSF.SortedTreeStore.Engine.Reader
                         SetCacheValue();
                     }
                 }
-                return m_firstTable.Scanner.ReadUntil(key, value, m_nextTableKey);
+                return m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey);
             }
 
             bool ReadUnionFilter(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
             {
                 if (m_firstTable != null)
                 {
-                    if (!m_firstTable.Scanner.ReadUntil(key, value, m_nextTableKey, filter))
+                    if (!m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey, filter))
                     {
                         return ReadUnionFilter2(key, value, filter);
                     }
@@ -419,7 +419,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     }
                 }
 
-                if (m_firstTable.Scanner.ReadUntil(key, value, m_nextTableKey, filter))
+                if (m_firstTable.Scanner.ReadWhile(key, value, m_nextTableKey, filter))
                 {
                     return true;
                 }

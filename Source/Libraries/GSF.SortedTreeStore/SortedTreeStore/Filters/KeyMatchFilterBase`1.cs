@@ -60,7 +60,5 @@ namespace GSF.SortedTreeStore.Filters
         /// <returns></returns>
         public abstract bool Contains(TKey key);
 
-        public unsafe abstract bool Contains(byte* ptr);
-
     }
 }
