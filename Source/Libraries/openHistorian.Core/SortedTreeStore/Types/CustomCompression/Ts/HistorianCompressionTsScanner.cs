@@ -41,6 +41,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         //public static int Stage4 = 0;
         //public static int Stage5 = 0;
 
+        int m_nextOffset;
         ulong m_prevTimestamp;
         ulong m_prevPointId;
 
@@ -241,14 +242,14 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return totalSize;
         }
 
-        protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value, KeyMatchFilterBase<HistorianKey> filter)
+        protected override unsafe void DecodeRecord(HistorianKey key, HistorianValue value, KeyMatchFilterBase<HistorianKey> filter)
         {
             var bitArray = filter as PointIDFilter.BitArrayFilter<HistorianKey>;
             if (bitArray != null)
-                return DecodeBitArray(stream, key, value, bitArray);
-            return InternalDecode(stream, key, value, filter);
+                DecodeBitArray(Pointer + m_nextOffset, key, value, bitArray);
+            InternalDecode(Pointer + m_nextOffset, key, value, filter);
         }
-        
+
         //0.614
         unsafe int DecodeBitArray(byte* stream, HistorianKey key, HistorianValue value, PointIDFilter.BitArrayFilter<HistorianKey> filter)
         {
@@ -438,314 +439,287 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             }
         }
 
-        //protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value, StreamFilterBase<HistorianKey, HistorianValue> filter)
-        //{
-        //    int totalSize = 0;
-        //    int size;
-        //    key.PointID = m_prevPointId;
-        //    key.Timestamp = m_prevTimestamp;
 
-        //    //ulong prevTimestamp = m_prevTimestamp;
-        ////ulong prevPointId = m_prevPointId;
+        public override bool ReadUntil(HistorianKey key, HistorianValue value, HistorianKey stopBeforeKey, KeyMatchFilterBase<HistorianKey> filter)
+        {
+            if (StreamPointer.Version == PointerVersion && IndexOfNextKeyValue < RecordCount)
+            {
+            TryAgain:
+                
+                byte* stream = Pointer + m_nextOffset;
+                int size;
+                uint code = stream[0];
+                //Compression Stages:
+                //  Stage 1: Big Positive Float. 
+                //  Stage 2: Big Negative Float.
+                //  Stage 3: Zero
+                //  Stage 4: 32 bit
+                //  Stage 5: Catch all
 
+                if (code < 0x80)
+                {
+                    //If stage 1 (50% success)
+                    //prevTimestamp = prevTimestamp;
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x7);
+                    key.EntryNumber = 0;
+                    value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                    value.Value2 = 0;
+                    value.Value3 = 0;
+                    size = 4;
+                }
+                else if (code < 0xC0)
+                {
+                    //If stage 2 (16% success)
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x3);
+                    key.EntryNumber = 0;
+                    value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                    value.Value2 = 0;
+                    value.Value3 = 0;
+                    size = 4;
+                }
+                else if (code < 0xD0)
+                {
+                    //If stage 3 (28% success)
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + 1 + (code & 0xF);
+                    key.EntryNumber = 0;
+                    value.Value1 = 0;
+                    value.Value2 = 0;
+                    value.Value3 = 0;
+                    size = 1;
+                }
+                else if (code < 0xE0)
+                {
+                    //If stage 4 (3% success)
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + 1 + (code & 0xF);
+                    key.EntryNumber = 0;
+                    value.Value1 = *(uint*)(stream + 1);
+                    value.Value2 = 0;
+                    value.Value3 = 0;
+                    size = 5;
+                }
+                else
+                {
+                    //Stage 5: 2%
+                    //Stage 5: Catch All
+                    size = 1;
+                    if ((code & 16) != 0) //T is set
+                    {
+                        key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
+                        key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                    }
+                    else
+                    {
+                        key.Timestamp = m_prevTimestamp;
+                        key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                    }
 
-        //TryAgain:
-        //    IndexOfNextKeyValue++;
+                    if ((code & 8) != 0) //E is set)
+                    {
+                        key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                    }
+                    else
+                    {
+                        key.EntryNumber = 0;
+                    }
 
-        //    uint code = stream[0];
-        //    //Compression Stages:
-        //    //  Stage 1: Big Positive Float. 
-        //    //  Stage 2: Big Negative Float.
-        //    //  Stage 3: Zero
-        //    //  Stage 4: 32 bit
-        //    //  Stage 5: Catch all
+                    if ((code & 4) != 0) //V1 is set)
+                    {
+                        value.Value1 = *(ulong*)(stream + size);
+                        size += 8;
+                    }
+                    else
+                    {
+                        value.Value1 = *(uint*)(stream + size);
+                        size += 4;
+                    }
 
-        //    if (code < 0x80)
-        //    {
-        //        //If stage 1 (50% success)
-        //        //key.Timestamp = prevTimestamp;
-        //        key.PointID += 1 + ((code >> 4) & 0x7);
-        //        key.EntryNumber = 0;
-        //        value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
-        //        value.Value2 = 0;
-        //        value.Value3 = 0;
-        //        size = 4;
-        //    }
-        //    else if (code < 0xC0)
-        //    {
-        //        //If stage 2 (16% success)
-        //        //key.Timestamp = prevTimestamp;
-        //        key.PointID += 1 + ((code >> 4) & 0x3);
-        //        key.EntryNumber = 0;
-        //        value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
-        //        value.Value2 = 0;
-        //        value.Value3 = 0;
+                    if ((code & 2) != 0) //V2 is set)
+                    {
+                        value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                    }
+                    else
+                    {
+                        value.Value2 = 0;
+                    }
 
-        //        size = 4;
-        //    }
-        //    else if (code < 0xD0)
-        //    {
-        //        //If stage 3 (28% success)
-        //        //prevTimestamp = prevTimestamp;
-        //        key.PointID += 1 + (code & 0xF);
-        //        key.EntryNumber = 0;
-        //        value.Value1 = 0;
-        //        value.Value2 = 0;
-        //        value.Value3 = 0;
-        //        size = 1;
-        //    }
-        //    else if (code < 0xE0)
-        //    {
-        //        //If stage 4 (3% success)
-        //        //prevTimestamp = prevTimestamp;
-        //        key.PointID += 1 + (code & 0xF);
-        //        key.EntryNumber = 0;
-        //        value.Value1 = *(uint*)(stream + 1);
-        //        value.Value2 = 0;
-        //        value.Value3 = 0;
-        //        //key.Timestamp = prevTimestamp;
-        //        size = 5;
-        //    }
-        //    else
-        //    {
-        //        //Stage 5: 2%
-        //        //Stage 5: Catch All
-        //        size = 1;
-        //        if ((code & 16) != 0) //T is set
-        //        {
-        //            key.Timestamp += Compression.Read7BitUInt64(stream, ref size);
-        //            key.PointID = Compression.Read7BitUInt64(stream, ref size);
-        //        }
-        //        else
-        //        {
-        //            key.PointID += Compression.Read7BitUInt64(stream, ref size);
-        //        }
+                    if ((code & 1) != 0) //V3 is set)
+                    {
+                        value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                    }
+                    else
+                    {
+                        value.Value3 = 0;
+                    }
+                }
 
-        //        if ((code & 8) != 0) //E is set)
-        //        {
-        //            key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
-        //        }
-        //        else
-        //        {
-        //            key.EntryNumber = 0;
-        //        }
+                if (key.Timestamp < stopBeforeKey.Timestamp ||
+                    key.Timestamp == stopBeforeKey.Timestamp && key.PointID < stopBeforeKey.PointID ||
+                    key.Timestamp == stopBeforeKey.Timestamp && key.PointID == stopBeforeKey.PointID &&
+                    key.EntryNumber < stopBeforeKey.EntryNumber)
+                {
+                    m_prevTimestamp = key.Timestamp;
+                    m_prevPointId = key.PointID;
+                    m_nextOffset += size;
+                    IndexOfNextKeyValue++;
 
-        //        if ((code & 4) != 0) //V1 is set)
-        //        {
-        //            value.Value1 = *(ulong*)(stream + size);
-        //            size += 8;
-        //        }
-        //        else
-        //        {
-        //            value.Value1 = *(uint*)(stream + size);
-        //            size += 4;
-        //        }
-
-        //        if ((code & 2) != 0) //V2 is set)
-        //        {
-        //            value.Value2 = Compression.Read7BitUInt64(stream, ref size);
-        //        }
-        //        else
-        //        {
-        //            value.Value2 = 0;
-        //        }
-
-        //        if ((code & 1) != 0) //V3 is set)
-        //        {
-        //            value.Value3 = Compression.Read7BitUInt64(stream, ref size);
-        //        }
-        //        else
-        //        {
-        //            value.Value3 = 0;
-        //        }
-        //    }
-
-
-        //    if (filter.StopReading(key, value))
-        //    {
-        //        goto FilterSuccess;
-        //    }
-
-        //FilterFailed:
-        //    if (IndexOfNextKeyValue < RecordCount)
-        //    {
-        //        //If we can try again, then do it.
-        //        totalSize += size;
-        //        stream += size;
-        //        goto TryAgain;
-        //    }
-
-        //    IndexOfNextKeyValue++;
-
-        //FilterSuccess:
-        //    totalSize += size;
-        //    m_prevPointId = key.PointID;
-        //    m_prevTimestamp = key.Timestamp;
-        //    return totalSize;
-        //}
+                    if (filter.Contains(key))
+                    {
+                        return true;
+                    }
+                    if (IndexOfNextKeyValue >= RecordCount)
+                        return false;
+                    goto TryAgain;
+                }
+                return false;
+            }
+            return ReadUntil2(key, value, stopBeforeKey);
+        }
 
 
+        public override bool ReadUntil(HistorianKey key, HistorianValue value, HistorianKey stopBeforeKey)
+        {
+            if (StreamPointer.Version == PointerVersion && IndexOfNextKeyValue < RecordCount)
+            {
+                byte* stream = Pointer + m_nextOffset;
+                int size;
+                uint code = stream[0];
+                //Compression Stages:
+                //  Stage 1: Big Positive Float. 
+                //  Stage 2: Big Negative Float.
+                //  Stage 3: Zero
+                //  Stage 4: 32 bit
+                //  Stage 5: Catch all
 
-        //protected override unsafe int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value, StreamFilterBase<HistorianKey, HistorianValue> filter)
-        //{
-        //    int totalSize = 0;
-        //    int size;
-        //    ulong prevTimestamp = m_prevTimestamp;
-        //    ulong prevPointId = m_prevPointId;
+                if (code < 0x80)
+                {
+                    //If stage 1 (50% success)
+                    //prevTimestamp = prevTimestamp;
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x7);
+                    key.EntryNumber = 0;
+                    value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                    value.Value2 = 0;
+                    value.Value3 = 0;
+                    size = 4;
+                }
+                else if (code < 0xC0)
+                {
+                    //If stage 2 (16% success)
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x3);
+                    key.EntryNumber = 0;
+                    value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                    value.Value2 = 0;
+                    value.Value3 = 0;
+                    size = 4;
+                }
+                else if (code < 0xD0)
+                {
+                    //If stage 3 (28% success)
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + 1 + (code & 0xF);
+                    key.EntryNumber = 0;
+                    value.Value1 = 0;
+                    value.Value2 = 0;
+                    value.Value3 = 0;
+                    size = 1;
+                }
+                else if (code < 0xE0)
+                {
+                    //If stage 4 (3% success)
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + 1 + (code & 0xF);
+                    key.EntryNumber = 0;
+                    value.Value1 = *(uint*)(stream + 1);
+                    value.Value2 = 0;
+                    value.Value3 = 0;
+                    size = 5;
+                }
+                else
+                {
+                    //Stage 5: 2%
+                    //Stage 5: Catch All
+                    size = 1;
+                    if ((code & 16) != 0) //T is set
+                    {
+                        key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
+                        key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                    }
+                    else
+                    {
+                        key.Timestamp = m_prevTimestamp;
+                        key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                    }
 
+                    if ((code & 8) != 0) //E is set)
+                    {
+                        key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                    }
+                    else
+                    {
+                        key.EntryNumber = 0;
+                    }
 
-        //TryAgain:
-        //    IndexOfNextKeyValue++;
+                    if ((code & 4) != 0) //V1 is set)
+                    {
+                        value.Value1 = *(ulong*)(stream + size);
+                        size += 8;
+                    }
+                    else
+                    {
+                        value.Value1 = *(uint*)(stream + size);
+                        size += 4;
+                    }
 
-        //    uint code = stream[0];
-        //    //Compression Stages:
-        //    //  Stage 1: Big Positive Float. 
-        //    //  Stage 2: Big Negative Float.
-        //    //  Stage 3: Zero
-        //    //  Stage 4: 32 bit
-        //    //  Stage 5: Catch all
+                    if ((code & 2) != 0) //V2 is set)
+                    {
+                        value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                    }
+                    else
+                    {
+                        value.Value2 = 0;
+                    }
 
-        //    if (code < 0x80)
-        //    {
-        //        //If stage 1 (50% success)
-        //        //prevTimestamp = prevTimestamp;
-        //        prevPointId += 1 + ((code >> 4) & 0x7);
-        //        key.EntryNumber = 0;
-        //        value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
-        //        value.Value2 = 0;
-        //        value.Value3 = 0;
-        //        key.Timestamp = prevTimestamp;
-        //        key.PointID = prevPointId;
-        //        size = 4;
-        //    }
-        //    else if (code < 0xC0)
-        //    {
-        //        //If stage 2 (16% success)
-        //        //prevTimestamp = prevTimestamp;
-        //        prevPointId += 1 + ((code >> 4) & 0x3);
-        //        key.EntryNumber = 0;
-        //        value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
-        //        value.Value2 = 0;
-        //        value.Value3 = 0;
-        //        key.Timestamp = prevTimestamp;
-        //        key.PointID = prevPointId;
-        //        size = 4;
-        //    }
-        //    else if (code < 0xD0)
-        //    {
-        //        //If stage 3 (28% success)
-        //        //prevTimestamp = prevTimestamp;
-        //        prevPointId += 1 + (code & 0xF);
-        //        key.EntryNumber = 0;
-        //        value.Value1 = 0;
-        //        value.Value2 = 0;
-        //        value.Value3 = 0;
-        //        key.Timestamp = prevTimestamp;
-        //        key.PointID = prevPointId;
-        //        size = 1;
-        //    }
-        //    else if (code < 0xE0)
-        //    {
-        //        //If stage 4 (3% success)
-        //        //prevTimestamp = prevTimestamp;
-        //        prevPointId += 1 + (code & 0xF);
-        //        key.EntryNumber = 0;
-        //        value.Value1 = *(uint*)(stream + 1);
-        //        value.Value2 = 0;
-        //        value.Value3 = 0;
-        //        key.Timestamp = prevTimestamp;
-        //        key.PointID = prevPointId;
-        //        size = 5;
-        //    }
-        //    else
-        //    {
-        //        //Stage 5: 2%
-        //        //Stage 5: Catch All
-        //        size = 1;
-        //        if ((code & 16) != 0) //T is set
-        //        {
-        //            prevTimestamp += Compression.Read7BitUInt64(stream, ref size);
-        //            prevPointId = Compression.Read7BitUInt64(stream, ref size);
-        //        }
-        //        else
-        //        {
-        //            //prevTimestamp = prevTimestamp;
-        //            prevPointId += Compression.Read7BitUInt64(stream, ref size);
-        //        }
+                    if ((code & 1) != 0) //V3 is set)
+                    {
+                        value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                    }
+                    else
+                    {
+                        value.Value3 = 0;
+                    }
+                }
 
+                if (key.Timestamp < stopBeforeKey.Timestamp ||
+                    key.Timestamp == stopBeforeKey.Timestamp && key.PointID < stopBeforeKey.PointID ||
+                    key.Timestamp == stopBeforeKey.Timestamp && key.PointID == stopBeforeKey.PointID &&
+                    key.EntryNumber < stopBeforeKey.EntryNumber)
+                {
+                    m_prevTimestamp = key.Timestamp;
+                    m_prevPointId = key.PointID;
+                    m_nextOffset += size;
+                    IndexOfNextKeyValue++;
+                    return true;
+                }
+                return false;
+            }
+            return ReadUntil2(key, value, stopBeforeKey);
+        }
 
-        //        if ((code & 8) != 0) //E is set)
-        //        {
-        //            key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
-        //        }
-        //        else
-        //        {
-        //            key.EntryNumber = 0;
-        //        }
-
-        //        if ((code & 4) != 0) //V1 is set)
-        //        {
-        //            value.Value1 = *(ulong*)(stream + size);
-        //            size += 8;
-        //        }
-        //        else
-        //        {
-        //            value.Value1 = *(uint*)(stream + size);
-        //            size += 4;
-        //        }
-
-        //        if ((code & 2) != 0) //V2 is set)
-        //        {
-        //            value.Value2 = Compression.Read7BitUInt64(stream, ref size);
-        //        }
-        //        else
-        //        {
-        //            value.Value2 = 0;
-        //        }
-
-        //        if ((code & 1) != 0) //V3 is set)
-        //        {
-        //            value.Value3 = Compression.Read7BitUInt64(stream, ref size);
-        //        }
-        //        else
-        //        {
-        //            value.Value3 = 0;
-        //        }
-
-        //        key.Timestamp = prevTimestamp;
-        //        key.PointID = prevPointId;
-        //    }
-
-        //    totalSize += size;
-
-        //    if (filter.StopReading(key, value))
-        //    {
-        //        m_prevPointId = prevPointId;
-        //        m_prevTimestamp = prevTimestamp;
-        //        return totalSize;
-        //    }
-        //    if (IndexOfNextKeyValue < RecordCount)
-        //    {
-        //        //If we can try again, then do it.
-        //        stream += size;
-        //        goto TryAgain;
-        //    }
-
-        //    m_prevPointId = prevPointId;
-        //    m_prevTimestamp = prevTimestamp;
-        //    IndexOfNextKeyValue++;
-        //    return totalSize;
-        //}
 
         /// <summary>
         /// Decodes the next record from the byte array into the provided key and value.
         /// </summary>
-        /// <param name="stream">the start of the next record.</param>
         /// <param name="key">the key to write to.</param>
         /// <param name="value">the value to write to.</param>
         /// <returns></returns>
-        protected override int DecodeRecord(byte* stream, HistorianKey key, HistorianValue value)
+        protected override void ReadNext(HistorianKey key, HistorianValue value, bool advanceIndex)
         {
+            byte* stream = Pointer + m_nextOffset;
             int size;
             uint code = stream[0];
             //Compression Stages:
@@ -759,111 +733,428 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             {
                 //If stage 1 (50% success)
                 //prevTimestamp = prevTimestamp;
-                m_prevPointId += 1 + ((code >> 4) & 0x7);
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x7);
                 key.EntryNumber = 0;
                 value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
                 value.Value2 = 0;
                 value.Value3 = 0;
-                key.Timestamp = m_prevTimestamp;
-                key.PointID = m_prevPointId;
-                return 4;
+                size = 4;
             }
-            if (code < 0xC0)
+            else if (code < 0xC0)
             {
                 //If stage 2 (16% success)
-                //prevTimestamp = prevTimestamp;
-                m_prevPointId += 1 + ((code >> 4) & 0x3);
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x3);
                 key.EntryNumber = 0;
                 value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
                 value.Value2 = 0;
                 value.Value3 = 0;
-                key.Timestamp = m_prevTimestamp;
-                key.PointID = m_prevPointId;
-                return 4;
+                size = 4;
             }
-            if (code < 0xD0)
+            else if (code < 0xD0)
             {
                 //If stage 3 (28% success)
-                //prevTimestamp = prevTimestamp;
-                m_prevPointId += 1 + (code & 0xF);
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + (code & 0xF);
                 key.EntryNumber = 0;
                 value.Value1 = 0;
                 value.Value2 = 0;
                 value.Value3 = 0;
-                key.Timestamp = m_prevTimestamp;
-                key.PointID = m_prevPointId;
-                return 1;
+                size = 1;
             }
-            if (code < 0xE0)
+            else if (code < 0xE0)
             {
                 //If stage 4 (3% success)
-                //prevTimestamp = prevTimestamp;
-                m_prevPointId += 1 + (code & 0xF);
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + (code & 0xF);
                 key.EntryNumber = 0;
                 value.Value1 = *(uint*)(stream + 1);
                 value.Value2 = 0;
                 value.Value3 = 0;
-                key.Timestamp = m_prevTimestamp;
-                key.PointID = m_prevPointId;
-                return 5;
-            }
-
-            //Stage 5: 2%
-            //Stage 5: Catch All
-            size = 1;
-            if ((code & 16) != 0) //T is set
-            {
-                m_prevTimestamp += Compression.Read7BitUInt64(stream, ref size);
-                m_prevPointId = Compression.Read7BitUInt64(stream, ref size);
+                size = 5;
             }
             else
             {
+                //Stage 5: 2%
+                //Stage 5: Catch All
+                size = 1;
+                if ((code & 16) != 0) //T is set
+                {
+                    key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
+                    key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                }
+
+                if ((code & 8) != 0) //E is set)
+                {
+                    key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    key.EntryNumber = 0;
+                }
+
+                if ((code & 4) != 0) //V1 is set)
+                {
+                    value.Value1 = *(ulong*)(stream + size);
+                    size += 8;
+                }
+                else
+                {
+                    value.Value1 = *(uint*)(stream + size);
+                    size += 4;
+                }
+
+                if ((code & 2) != 0) //V2 is set)
+                {
+                    value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    value.Value2 = 0;
+                }
+
+                if ((code & 1) != 0) //V3 is set)
+                {
+                    value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    value.Value3 = 0;
+                }
+            }
+
+            if (advanceIndex)
+            {
+                m_prevTimestamp = key.Timestamp;
+                m_prevPointId = key.PointID;
+                m_nextOffset += size;
+                IndexOfNextKeyValue++;
+            }
+            return;
+        }
+
+
+        protected override unsafe bool ReadUnless(HistorianKey key, HistorianValue value, HistorianKey stopBeforeKey, KeyMatchFilterBase<HistorianKey> filter)
+        {
+        TryAgain:
+            byte* stream = Pointer + m_nextOffset;
+            int size;
+            uint code = stream[0];
+            //Compression Stages:
+            //  Stage 1: Big Positive Float. 
+            //  Stage 2: Big Negative Float.
+            //  Stage 3: Zero
+            //  Stage 4: 32 bit
+            //  Stage 5: Catch all
+
+            if (code < 0x80)
+            {
+                //If stage 1 (50% success)
                 //prevTimestamp = prevTimestamp;
-                m_prevPointId += Compression.Read7BitUInt64(stream, ref size);
-            }
-
-
-            if ((code & 8) != 0) //E is set)
-            {
-                key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
-            }
-            else
-            {
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x7);
                 key.EntryNumber = 0;
-            }
-
-            if ((code & 4) != 0) //V1 is set)
-            {
-                value.Value1 = *(ulong*)(stream + size);
-                size += 8;
-            }
-            else
-            {
-                value.Value1 = *(uint*)(stream + size);
-                size += 4;
-            }
-
-            if ((code & 2) != 0) //V2 is set)
-            {
-                value.Value2 = Compression.Read7BitUInt64(stream, ref size);
-            }
-            else
-            {
+                value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
                 value.Value2 = 0;
+                value.Value3 = 0;
+                size = 4;
             }
-
-            if ((code & 1) != 0) //V3 is set)
+            else if (code < 0xC0)
             {
-                value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                //If stage 2 (16% success)
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x3);
+                key.EntryNumber = 0;
+                value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                value.Value2 = 0;
+                value.Value3 = 0;
+                size = 4;
+            }
+            else if (code < 0xD0)
+            {
+                //If stage 3 (28% success)
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + (code & 0xF);
+                key.EntryNumber = 0;
+                value.Value1 = 0;
+                value.Value2 = 0;
+                value.Value3 = 0;
+                size = 1;
+            }
+            else if (code < 0xE0)
+            {
+                //If stage 4 (3% success)
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + (code & 0xF);
+                key.EntryNumber = 0;
+                value.Value1 = *(uint*)(stream + 1);
+                value.Value2 = 0;
+                value.Value3 = 0;
+                size = 5;
             }
             else
             {
-                value.Value3 = 0;
+                //Stage 5: 2%
+                //Stage 5: Catch All
+                size = 1;
+                if ((code & 16) != 0) //T is set
+                {
+                    key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
+                    key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                }
+
+                if ((code & 8) != 0) //E is set)
+                {
+                    key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    key.EntryNumber = 0;
+                }
+
+                if ((code & 4) != 0) //V1 is set)
+                {
+                    value.Value1 = *(ulong*)(stream + size);
+                    size += 8;
+                }
+                else
+                {
+                    value.Value1 = *(uint*)(stream + size);
+                    size += 4;
+                }
+
+                if ((code & 2) != 0) //V2 is set)
+                {
+                    value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    value.Value2 = 0;
+                }
+
+                if ((code & 1) != 0) //V3 is set)
+                {
+                    value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    value.Value3 = 0;
+                }
             }
 
-            key.Timestamp = m_prevTimestamp;
-            key.PointID = m_prevPointId;
-            return size;
+            if (key.Timestamp < stopBeforeKey.Timestamp ||
+                key.Timestamp == stopBeforeKey.Timestamp && key.PointID < stopBeforeKey.PointID ||
+                key.Timestamp == stopBeforeKey.Timestamp && key.PointID == stopBeforeKey.PointID &&
+                key.EntryNumber < stopBeforeKey.EntryNumber)
+            {
+                m_prevTimestamp = key.Timestamp;
+                m_prevPointId = key.PointID;
+                m_nextOffset += size;
+                IndexOfNextKeyValue++;
+                if (filter.Contains(key))
+                {
+                    return true;
+                }
+                if (IndexOfNextKeyValue >= RecordCount)
+                    return false;
+                goto TryAgain;
+            }
+            return false;
+
+            //if (key.Timestamp > stopBeforeKey.Timestamp)
+            //    return false;
+            //if (key.Timestamp == stopBeforeKey.Timestamp)
+            //{
+            //    if (key.PointID > stopBeforeKey.PointID)
+            //        return false;
+            //    if (key.PointID == stopBeforeKey.PointID)
+            //    {
+            //        if (key.EntryNumber >= stopBeforeKey.EntryNumber)
+            //            return false;
+            //    }
+            //}
+
+            //m_prevTimestamp = key.Timestamp;
+            //m_prevPointId = key.PointID;
+            //m_nextOffset += size;
+            //IndexOfNextKeyValue++;
+            //return true;
+
+            //if (KeyMethods.IsLessThan(key, stopBeforeKey))
+            //{
+            //    m_prevTimestamp = key.Timestamp;
+            //    m_prevPointId = key.PointID;
+            //    m_nextOffset += size;
+            //    IndexOfNextKeyValue++;
+            //    return true;
+            //}
+            //return false;
+        }
+
+        protected override unsafe bool ReadUnless(HistorianKey key, HistorianValue value, HistorianKey stopBeforeKey)
+        {
+            byte* stream = Pointer + m_nextOffset;
+            int size;
+            uint code = stream[0];
+            //Compression Stages:
+            //  Stage 1: Big Positive Float. 
+            //  Stage 2: Big Negative Float.
+            //  Stage 3: Zero
+            //  Stage 4: 32 bit
+            //  Stage 5: Catch all
+
+            if (code < 0x80)
+            {
+                //If stage 1 (50% success)
+                //prevTimestamp = prevTimestamp;
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x7);
+                key.EntryNumber = 0;
+                value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                value.Value2 = 0;
+                value.Value3 = 0;
+                size = 4;
+            }
+            else if (code < 0xC0)
+            {
+                //If stage 2 (16% success)
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + ((code >> 4) & 0x3);
+                key.EntryNumber = 0;
+                value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                value.Value2 = 0;
+                value.Value3 = 0;
+                size = 4;
+            }
+            else if (code < 0xD0)
+            {
+                //If stage 3 (28% success)
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + (code & 0xF);
+                key.EntryNumber = 0;
+                value.Value1 = 0;
+                value.Value2 = 0;
+                value.Value3 = 0;
+                size = 1;
+            }
+            else if (code < 0xE0)
+            {
+                //If stage 4 (3% success)
+                key.Timestamp = m_prevTimestamp;
+                key.PointID = m_prevPointId + 1 + (code & 0xF);
+                key.EntryNumber = 0;
+                value.Value1 = *(uint*)(stream + 1);
+                value.Value2 = 0;
+                value.Value3 = 0;
+                size = 5;
+            }
+            else
+            {
+                //Stage 5: 2%
+                //Stage 5: Catch All
+                size = 1;
+                if ((code & 16) != 0) //T is set
+                {
+                    key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
+                    key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    key.Timestamp = m_prevTimestamp;
+                    key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                }
+
+                if ((code & 8) != 0) //E is set)
+                {
+                    key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    key.EntryNumber = 0;
+                }
+
+                if ((code & 4) != 0) //V1 is set)
+                {
+                    value.Value1 = *(ulong*)(stream + size);
+                    size += 8;
+                }
+                else
+                {
+                    value.Value1 = *(uint*)(stream + size);
+                    size += 4;
+                }
+
+                if ((code & 2) != 0) //V2 is set)
+                {
+                    value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    value.Value2 = 0;
+                }
+
+                if ((code & 1) != 0) //V3 is set)
+                {
+                    value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                }
+                else
+                {
+                    value.Value3 = 0;
+                }
+            }
+
+            if (key.Timestamp < stopBeforeKey.Timestamp ||
+                key.Timestamp == stopBeforeKey.Timestamp && key.PointID < stopBeforeKey.PointID ||
+                key.Timestamp == stopBeforeKey.Timestamp && key.PointID == stopBeforeKey.PointID &&
+                key.EntryNumber < stopBeforeKey.EntryNumber)
+            {
+                m_prevTimestamp = key.Timestamp;
+                m_prevPointId = key.PointID;
+                m_nextOffset += size;
+                IndexOfNextKeyValue++;
+                return true;
+            }
+            return false;
+
+            //if (key.Timestamp > stopBeforeKey.Timestamp)
+            //    return false;
+            //if (key.Timestamp == stopBeforeKey.Timestamp)
+            //{
+            //    if (key.PointID > stopBeforeKey.PointID)
+            //        return false;
+            //    if (key.PointID == stopBeforeKey.PointID)
+            //    {
+            //        if (key.EntryNumber >= stopBeforeKey.EntryNumber)
+            //            return false;
+            //    }
+            //}
+
+            //m_prevTimestamp = key.Timestamp;
+            //m_prevPointId = key.PointID;
+            //m_nextOffset += size;
+            //IndexOfNextKeyValue++;
+            //return true;
+
+            //if (KeyMethods.IsLessThan(key, stopBeforeKey))
+            //{
+            //    m_prevTimestamp = key.Timestamp;
+            //    m_prevPointId = key.PointID;
+            //    m_nextOffset += size;
+            //    IndexOfNextKeyValue++;
+            //    return true;
+            //}
+            //return false;
         }
 
         /// <summary>
@@ -871,6 +1162,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// </summary>
         protected override void ResetEncoder()
         {
+            m_nextOffset = 0;
             m_prevTimestamp = 0;
             m_prevPointId = 0;
         }

@@ -128,6 +128,7 @@ namespace GSF.SortedTreeStore.Engine
                 throw new ObjectDisposedException(GetType().FullName);
 
             return new SortedTreeEngineReaderSequential<TKey, TValue>(m_archiveList);
+            //return new SortedTreeEngineReaderSequential<TKey, TValue>(m_archiveList);
             //return new ArchiveReader<TKey, TValue>(m_archiveList);
         }
 

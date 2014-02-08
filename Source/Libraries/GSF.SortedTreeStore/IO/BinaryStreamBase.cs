@@ -33,6 +33,25 @@ using System.Text;
 namespace GSF.IO
 {
     /// <summary>
+    /// Since object that inherit from MarshalByRefObject cannot be inlined, I decided to make
+    /// a wrapper class for the pointer information so that it can be inlined.
+    /// </summary>
+    public class PointerVersionBox
+    {
+        public long Version { get; private set; }
+
+        public PointerVersionBox(out Action increment)
+        {
+            Version = 0;
+            increment = Increment;
+        }
+        void Increment()
+        {
+            Version++;
+        }
+    }
+
+    /// <summary>
     /// An abstract class for reading/writing to a little endian stream.
     /// </summary>
     public abstract unsafe class BinaryStreamBase
@@ -66,7 +85,15 @@ namespace GSF.IO
         }
 #endif
 
+        protected BinaryStreamBase()
+        {
+            PointerVersionBox = new PointerVersionBox(out IncrementPointer);
+        }
+
         private readonly byte[] m_buffer = new byte[16];
+        protected Action IncrementPointer;
+
+        public PointerVersionBox PointerVersionBox { get; private set; }
 
         /// <summary>
         /// Gets the pointer version number assuming that this binary stream has an unmanaged buffer backing this stream. 
@@ -74,8 +101,10 @@ namespace GSF.IO
         /// </summary>
         public long PointerVersion
         {
-            get;
-            protected set;
+            get
+            {
+                return PointerVersionBox.Version;
+            }
         }
 
         /// <summary>

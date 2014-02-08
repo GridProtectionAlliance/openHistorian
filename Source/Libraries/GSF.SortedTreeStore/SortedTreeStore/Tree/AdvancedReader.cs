@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  KeyMatchFilterUniverse.cs - Gbtc
+//  AdvancedReader.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,9 +16,10 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/9/2013 - Steven E. Chisholm
+//  8/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//       
+//
 //******************************************************************************************************
 
 using System;
@@ -26,43 +27,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GSF.IO;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Filters;
 
-namespace GSF.SortedTreeStore.Filters
+namespace GSF.SortedTreeStore.Tree
 {
-    /// <summary>
-    /// Represents no filter
-    /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    public class KeyMatchFilterUniverse<TKey>
-        : KeyMatchFilterBase<TKey>
+    unsafe public class AdvanceReaderBase<TKey, TValue>
     {
-        public override Guid FilterType
+        public byte* WritePointer;
+        public byte* ReadPointer;
+
+        public const int Quit = 1;
+        public const int ContinueReading = 2;
+        public const int RollbackPoint = 3;
+    }
+
+    unsafe public class AdvancedReader<TKey, TValue>
+        : AdvanceReaderBase<TKey, TValue>
+        where TKey : EngineKeyBase<TKey>, new()
+        where TValue : class, ISortedTreeValue<TValue>, new()
+    {
+      
+        public int PointSize;
+        public bool IsFull;
+
+        /// <summary>
+        /// Set this value to decide when to stop.
+        /// </summary>
+        public ulong StopOnTimestamp;
+
+        public KeyMatchFilterBase<TKey> KeyFilter;
+
+        public bool ReadTooFar;
+
+        public int NextAction()
         {
-            get
+            if (*(ulong*)WritePointer >= StopOnTimestamp)
+                return RollbackPoint;
+
+            if (!KeyFilter.Contains(WritePointer)) //If I should filter the point
             {
-                return Guid.Empty;
+                WritePointer += PointSize;
             }
+
+            if (IsFull)
+                return Quit;
+
+            return ContinueReading;
         }
 
-        public override void Load(BinaryStreamBase stream)
+        public bool FilterPoint()
         {
-            
+            return false;
         }
 
-        public override void Save(BinaryStreamBase stream)
-        {
-            
-        }
 
-        public override bool Contains(TKey value)
-        {
-            return true;
-        }
-
-        public override unsafe bool Contains(byte* ptr)
-        {
-            return true;
-        }
     }
 }

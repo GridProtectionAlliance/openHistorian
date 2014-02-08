@@ -101,7 +101,12 @@ namespace GSF.SortedTreeStore.Filters
                 return key.PointID <= uint.MaxValue && m_points.Contains((uint)key.PointID);
 
             }
-       
+
+            public override unsafe bool Contains(byte* ptr)
+            {
+                ulong pt = *(ulong*)(ptr + 8);
+                return pt <= uint.MaxValue && m_points.Contains((uint)pt);
+            }
         }
     }
 }

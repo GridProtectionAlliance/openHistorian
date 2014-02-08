@@ -57,11 +57,52 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
         /// </summary>
-        protected override unsafe void ReadNext(TKey key, TValue value)
+        protected override unsafe void ReadNext(TKey key, TValue value, bool advanceIndex)
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             KeyMethods.Read(ptr, key);
             ValueMethods.Read(ptr + m_keySize, value);
+            if (advanceIndex)
+                IndexOfNextKeyValue++;
+        }
+
+        /// <summary>
+        /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
+        /// </summary>
+        protected override unsafe bool ReadUnless(TKey key, TValue value, TKey stopBeforeKey)
+        {
+            byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
+            KeyMethods.Read(ptr, key);
+            ValueMethods.Read(ptr + m_keySize, value);
+            if (KeyMethods.IsLessThan(key, stopBeforeKey))
+            {
+                IndexOfNextKeyValue++;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
+        /// </summary>
+        protected override unsafe bool ReadUnless(TKey key, TValue value, TKey stopBeforeKey, KeyMatchFilterBase<TKey> filter)
+        {
+        TryAgain:
+            byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
+            KeyMethods.Read(ptr, key);
+            ValueMethods.Read(ptr + m_keySize, value);
+            if (KeyMethods.IsLessThan(key, stopBeforeKey))
+            {
+                IndexOfNextKeyValue++;
+                if (filter.Contains(key))
+                {
+                    return true;
+                }
+                if (IndexOfNextKeyValue >= RecordCount)
+                    return false;
+                goto TryAgain;
+            }
+            return false;
         }
 
         protected override unsafe int ReadNext(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
@@ -85,17 +126,16 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return IndexOfNextKeyValue - before;
         }
 
-
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to advance to</param>
-        protected override unsafe int FindKey(TKey key)
+        protected override unsafe void FindKey(TKey key)
         {
             int offset = KeyMethods.BinarySearch(Pointer, key, RecordCount, m_keyValueSize);
             if (offset < 0)
                 offset = ~offset;
-            return offset;
+            IndexOfNextKeyValue = offset;
         }
     }
 }

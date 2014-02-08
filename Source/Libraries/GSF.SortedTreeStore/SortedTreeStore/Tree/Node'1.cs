@@ -57,6 +57,7 @@ namespace GSF.SortedTreeStore.Tree
         protected byte Level;
         protected int BlockSize;
         protected BinaryStreamBase Stream;
+        protected PointerVersionBox StreamPointer;
         private uint m_nodeIndex;
         private ushort m_recordCount;
         private ushort m_validBytes;
@@ -105,6 +106,7 @@ namespace GSF.SortedTreeStore.Tree
             m_initialized = true;
 
             Stream = stream;
+            StreamPointer = stream.PointerVersionBox;
             BlockSize = blockSize;
             m_lowerKey = new TKey();
             m_upperKey = new TKey();
@@ -473,7 +475,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         protected byte* GetReadPointer()
         {
-            if (Stream.PointerVersion != m_pointerReadVersion)
+            if (StreamPointer.Version != m_pointerReadVersion)
                 UpdateReadPointer();
             return m_pointer;
         }
@@ -484,7 +486,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public byte* GetReadPointerAfterHeader()
         {
-            if (Stream.PointerVersion != m_pointerReadVersion)
+            if (StreamPointer.Version != m_pointerReadVersion)
                 UpdateReadPointer();
             return m_pointerAfterHeader;
         }
@@ -495,7 +497,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         protected byte* GetWritePointer()
         {
-            if (Stream.PointerVersion != m_pointerWriteVersion)
+            if (StreamPointer.Version != m_pointerWriteVersion)
                 UpdateWritePointer();
             return m_pointer;
         }
@@ -506,7 +508,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         protected byte* GetWritePointerAfterHeader()
         {
-            if (Stream.PointerVersion != m_pointerWriteVersion)
+            if (StreamPointer.Version != m_pointerWriteVersion)
                 UpdateWritePointer();
             return m_pointerAfterHeader;
         }
@@ -516,9 +518,9 @@ namespace GSF.SortedTreeStore.Tree
             bool ptrSupportsWrite;
             m_pointer = Stream.GetReadPointer(BlockSize * NodeIndex, BlockSize, out ptrSupportsWrite);
             m_pointerAfterHeader = m_pointer + HeaderSize;
-            m_pointerReadVersion = Stream.PointerVersion;
+            m_pointerReadVersion = StreamPointer.Version;
             if (ptrSupportsWrite)
-                m_pointerWriteVersion = Stream.PointerVersion;
+                m_pointerWriteVersion = StreamPointer.Version;
             else
                 m_pointerWriteVersion = -1;
         }
@@ -527,8 +529,8 @@ namespace GSF.SortedTreeStore.Tree
         {
             m_pointer = Stream.GetWritePointer(BlockSize * NodeIndex, BlockSize);
             m_pointerAfterHeader = m_pointer + HeaderSize;
-            m_pointerReadVersion = Stream.PointerVersion;
-            m_pointerWriteVersion = Stream.PointerVersion;
+            m_pointerReadVersion = StreamPointer.Version;
+            m_pointerWriteVersion = StreamPointer.Version;
         }
     }
 }

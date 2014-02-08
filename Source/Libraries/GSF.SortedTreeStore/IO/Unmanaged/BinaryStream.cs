@@ -363,7 +363,7 @@ namespace GSF.IO.Unmanaged
             long position = GetPosition();
             m_args.Position = position;
             m_args.IsWriting = isWriting;
-            PointerVersion++;
+            IncrementPointer();
             m_mainIoSession.GetBlock(m_args);
             m_firstPosition = m_args.FirstPosition;
             m_first = (byte*)m_args.FirstPointer;

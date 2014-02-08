@@ -108,6 +108,7 @@ namespace GSF.SortedTreeStore.Tree
         private readonly byte m_level;
         private readonly int m_blockSize;
         protected readonly BinaryStreamBase Stream;
+        protected readonly PointerVersionBox StreamPointer;
 
         /// <summary>
         /// The index number of the next key/value that needs to be read.
@@ -138,6 +139,7 @@ namespace GSF.SortedTreeStore.Tree
             HeaderSize = OffsetOfLowerBounds + 2 * KeyMethods.Size;
             m_blockSize = blockSize;
             Stream = stream;
+            StreamPointer = stream.PointerVersionBox;
             PointerVersion = -1;
             IndexOfNextKeyValue = 0;
             RecordCount = 0;
@@ -146,7 +148,11 @@ namespace GSF.SortedTreeStore.Tree
         /// <summary>
         /// Using <see cref="Pointer"/> advance to the next KeyValue
         /// </summary>
-        protected abstract void ReadNext(TKey key, TValue value);
+        protected abstract void ReadNext(TKey key, TValue value, bool advanceIndex);
+
+        protected abstract bool ReadUnless(TKey key, TValue value, TKey stopBeforeKey);
+
+        protected abstract bool ReadUnless(TKey key, TValue value, TKey stopBeforeKey, KeyMatchFilterBase<TKey> filter);
 
         /// <summary>
         /// Using <see cref="Pointer"/> advance to the next KeyValue that is contained in the provided filter.
@@ -164,7 +170,127 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns>
         /// The index position of the key that was found that is greater than or equal to <see cref="key"/>
         /// </returns>
-        protected abstract int FindKey(TKey key);
+        protected abstract void FindKey(TKey key);
+
+        /// <summary>
+        /// Reads the next point, but doees not advance the position of the stream.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns>True if a point is found. 
+        /// False if the end of the stream has been encountered.</returns>
+        public bool Peek(TKey key, TValue value)
+        {
+            if (StreamPointer.Version == PointerVersion)
+            {
+                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
+                if (IndexOfNextKeyValue < RecordCount)
+                {
+                    ReadNext(key, value, false);
+                    return true;
+                }
+            }
+            return Peek2(key, value);
+        }
+
+        protected bool Peek2(TKey key, TValue value)
+        {
+            //If there are no more records in the current node.
+            if (IndexOfNextKeyValue >= RecordCount)
+            {
+                //If the last leaf node, return false
+                if (RightSiblingNodeIndex == uint.MaxValue)
+                {
+                    KeyMethods.Clear(key);
+                    ValueMethods.Clear(value);
+                    EOS = true;
+                    return false;
+                }
+                LoadNode(RightSiblingNodeIndex);
+            }
+            //if the pointer data is no longer valid, refresh the pointer
+            if (StreamPointer.Version != PointerVersion)
+            {
+                RefreshPointer();
+            }
+            //Reads the next key in the sequence.
+            ReadNext(key, value, false);
+            return true;
+        }
+
+        public virtual bool ReadUntil(TKey key, TValue value, TKey stopBeforeKey)
+        {
+            if (StreamPointer.Version == PointerVersion)
+            {
+                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
+                if (IndexOfNextKeyValue < RecordCount)
+                {
+                    return ReadUnless(key, value, stopBeforeKey);
+                }
+            }
+            return ReadUntil2(key, value, stopBeforeKey);
+        }
+
+        protected bool ReadUntil2(TKey key, TValue value, TKey stopBeforeKey)
+        {
+            //If there are no more records in the current node.
+            if (IndexOfNextKeyValue >= RecordCount)
+            {
+                //If the last leaf node, return false
+                if (RightSiblingNodeIndex == uint.MaxValue)
+                {
+                    KeyMethods.Clear(key);
+                    ValueMethods.Clear(value);
+                    EOS = true;
+                    return false;
+                }
+                LoadNode(RightSiblingNodeIndex);
+            }
+            //if the pointer data is no longer valid, refresh the pointer
+            if (StreamPointer.Version != PointerVersion)
+            {
+                RefreshPointer();
+            }
+            //Reads the next key in the sequence.
+            return ReadUnless(key, value, stopBeforeKey);
+        }
+
+        public virtual bool ReadUntil(TKey key, TValue value, TKey stopBeforeKey, KeyMatchFilterBase<TKey> filter)
+        {
+            if (StreamPointer.Version == PointerVersion)
+            {
+                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
+                if (IndexOfNextKeyValue < RecordCount)
+                {
+                    return ReadUnless(key, value, stopBeforeKey, filter);
+                }
+            }
+            return ReadUntil2(key, value, stopBeforeKey, filter);
+        }
+
+        protected bool ReadUntil2(TKey key, TValue value, TKey stopBeforeKey, KeyMatchFilterBase<TKey> filter)
+        {
+            //If there are no more records in the current node.
+            if (IndexOfNextKeyValue >= RecordCount)
+            {
+                //If the last leaf node, return false
+                if (RightSiblingNodeIndex == uint.MaxValue)
+                {
+                    KeyMethods.Clear(key);
+                    ValueMethods.Clear(value);
+                    EOS = true;
+                    return false;
+                }
+                LoadNode(RightSiblingNodeIndex);
+            }
+            //if the pointer data is no longer valid, refresh the pointer
+            if (StreamPointer.Version != PointerVersion)
+            {
+                RefreshPointer();
+            }
+            //Reads the next key in the sequence.
+            return ReadUnless(key, value, stopBeforeKey, filter);
+        }
 
         /// <summary>
         /// Advances the stream to the next value. 
@@ -173,13 +299,12 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
         public override bool Read(TKey key, TValue value)
         {
-            if (Stream.PointerVersion == PointerVersion)
+            if (StreamPointer.Version == PointerVersion)
             {
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
-                    ReadNext(key, value);
-                    IndexOfNextKeyValue++;
+                    ReadNext(key, value, true);
                     return true;
                 }
             }
@@ -201,133 +326,20 @@ namespace GSF.SortedTreeStore.Tree
                 {
                     KeyMethods.Clear(key);
                     ValueMethods.Clear(value);
+                    EOS = true;
                     return false;
                 }
                 LoadNode(RightSiblingNodeIndex);
             }
             //if the pointer data is no longer valid, refresh the pointer
-            if (Stream.PointerVersion != PointerVersion)
+            if (StreamPointer.Version != PointerVersion)
             {
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            ReadNext(key, value);
-            IndexOfNextKeyValue++;
+            ReadNext(key, value, true);
             return true;
         }
-
-        public override bool Read(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
-        {
-            if (Stream.PointerVersion == PointerVersion)
-            {
-                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
-                if (IndexOfNextKeyValue < RecordCount)
-                {
-                    filter.PointCount += ReadNext(key, value, filter);
-                    if (IndexOfNextKeyValue <= RecordCount)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return Read2(key, value, filter);
-        }
-
-        /// <summary>
-        /// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
-        /// </summary>
-        /// <returns></returns>
-        protected bool Read2(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
-        {
-        ReadAgain:
-
-            //return false;
-            //If there are no more records in the current node.
-            if (IndexOfNextKeyValue >= RecordCount)
-            {
-                //If the last leaf node, return false
-                if (RightSiblingNodeIndex == uint.MaxValue)
-                {
-                    KeyMethods.Clear(key);
-                    ValueMethods.Clear(value);
-                    return false;
-                }
-                LoadNode(RightSiblingNodeIndex);
-            }
-            //if the pointer data is no longer valid, refresh the pointer
-            if (Stream.PointerVersion != PointerVersion)
-            {
-                RefreshPointer();
-            }
-            //Reads the next key in the sequence.
-            filter.PointCount += ReadNext(key, value, filter);
-            if (IndexOfNextKeyValue <= RecordCount)
-            {
-                return true;
-            }
-            goto ReadAgain;
-        }
-
-        //public override bool Read(StreamFilterBase<TKey, TValue> filter)
-        //{
-
-        //    if (Stream.PointerVersion == PointerVersion)
-        //    {
-        //    ReadAgain:
-        //        //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
-        //        if (IndexOfNextKeyValue < RecordCount)
-        //        {
-        //            ReadNext();
-        //            IndexOfNextKeyValue++;
-        //            if (filter.ContinueReading(CurrentKey, CurrentValue))
-        //                goto ReadAgain;
-
-        //            IsValid = true;
-        //            return true;
-        //        }
-        //    }
-        //    return Read2(filter);
-        //}
-
-        ///// <summary>
-        ///// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
-        ///// </summary>
-        ///// <returns></returns>
-        //protected bool Read2(StreamFilterBase<TKey, TValue> filter)
-        //{
-        //ReadAgain:
-
-        //    //return false;
-        //    //If there are no more records in the current node.
-        //    if (IndexOfNextKeyValue >= RecordCount)
-        //    {
-        //        //If the last leaf node, return false
-        //        if (RightSiblingNodeIndex == uint.MaxValue)
-        //        {
-        //            KeyMethods.Clear(CurrentKey);
-        //            ValueMethods.Clear(CurrentValue);
-        //            IsValid = false;
-        //            return false;
-        //        }
-        //        LoadNode(RightSiblingNodeIndex);
-        //    }
-        //    //if the pointer data is no longer valid, refresh the pointer
-        //    if (Stream.PointerVersion != PointerVersion)
-        //    {
-        //        RefreshPointer();
-        //    }
-        //    //Reads the next key in the sequence.
-        //    ReadNext();
-        //    IndexOfNextKeyValue++;
-
-        //    if (filter.ContinueReading(CurrentKey, CurrentValue))
-        //        goto ReadAgain;
-
-        //    IsValid = true;
-        //    return true;
-        //}
-
-
 
         /// <summary>
         /// Seeks to the start of SortedTree.
@@ -345,7 +357,7 @@ namespace GSF.SortedTreeStore.Tree
         public override void SeekToKey(TKey key)
         {
             LoadNode(FindLeafNodeAddress(key));
-            IndexOfNextKeyValue = FindKey(key);
+            FindKey(key);
         }
 
         /// <summary>
@@ -382,7 +394,7 @@ namespace GSF.SortedTreeStore.Tree
         private void RefreshPointer()
         {
             Pointer = Stream.GetReadPointer(NodeIndex * m_blockSize, m_blockSize) + HeaderSize;
-            PointerVersion = Stream.PointerVersion;
+            PointerVersion = StreamPointer.Version;
         }
 
         /// <summary>

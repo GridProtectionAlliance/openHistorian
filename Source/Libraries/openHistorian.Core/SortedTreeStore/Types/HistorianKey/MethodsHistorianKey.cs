@@ -77,18 +77,28 @@ namespace openHistorian.Collections
             return 0;
         }
 
-        //public override bool IsLessThan(HistorianKey left, HistorianKey right)
-        //{
-        //    if (left.Timestamp == right.Timestamp)
-        //    {
-        //        if (left.PointID == right.PointID)
-        //        {
-        //            return left.EntryNumber < right.EntryNumber;
-        //        }
-        //        return left.PointID < right.PointID;
-        //    }
-        //    return left.Timestamp < right.Timestamp;
-        //}
+        public override bool IsLessThan(HistorianKey left, HistorianKey right)
+        {
+            if (left.Timestamp != right.Timestamp)
+                return left.Timestamp < right.Timestamp;
+
+            //Implide left.Timestamp == right.Timestamp
+            if (left.PointID != right.PointID)
+                return left.PointID < right.PointID;
+
+            //Implide left.EntryNumber == right.EntryNumber
+            return left.EntryNumber < right.EntryNumber;
+
+            //if (left.Timestamp == right.Timestamp)
+            //{
+            //    if (left.PointID == right.PointID)
+            //    {
+            //        return left.EntryNumber < right.EntryNumber;
+            //    }
+            //    return left.PointID < right.PointID;
+            //}
+            //return left.Timestamp < right.Timestamp;
+        }
 
         //public override bool IsGreaterThan(HistorianKey left, HistorianKey right)
         //{

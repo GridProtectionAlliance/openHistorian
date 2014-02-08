@@ -115,10 +115,11 @@ namespace GSF.SortedTreeStore.Filters
                     ((ArrayBits[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
             }
 
-            public bool Contains(ulong pointId)
+            public override unsafe bool Contains(byte* ptr)
             {
-                int point = (int)pointId;
-                return (pointId <= MaxValue &&
+                ulong pt = *(ulong*)(ptr + 8);
+                int point = (int)pt;
+                return (pt <= MaxValue &&
                     ((ArrayBits[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
             }
 

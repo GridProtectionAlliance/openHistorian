@@ -35,9 +35,9 @@ namespace GSF.SortedTreeStore.Engine.Reader
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
+        public SortedTreeScannerBase<TKey, TValue> Scanner;
         ArchiveTableSummary<TKey, TValue> m_table;
         SortedTreeTableReadSnapshot<TKey, TValue> m_snapshot;
-        SeekableTreeStream<TKey, TValue> m_scanner;
 
         /// <summary>
         /// An index value that is used to disassociate the archive file. Passed to this class from the <see cref="SortedTreeEngineReaderSequential{TKey,TValue}"/>
@@ -54,29 +54,17 @@ namespace GSF.SortedTreeStore.Engine.Reader
             Index = index;
             m_table = table;
             m_snapshot = m_table.ActiveSnapshotInfo.CreateReadSnapshot();
-            m_scanner = m_snapshot.GetTreeScanner();
+            Scanner = m_snapshot.GetTreeScanner();
         }
 
-
-        public bool IsValid = false;
-        public TKey CurrentKey = new TKey();
-        public TValue CurrentValue = new TValue();
-
-
-        public void Read()
-        {
-            IsValid = m_scanner.Read(CurrentKey, CurrentValue);
-        }
+        public bool SortByIsValid = false;
+        public TKey SortByKey = new TKey();
+        public TValue SortByValue = new TValue();
 
         public void Read(KeyMatchFilterBase<TKey> filter)
         {
-            IsValid = m_scanner.Read(CurrentKey, CurrentValue, filter);
-        }
-
-        public void SeekToKey(TKey key)
-        {
-            m_scanner.SeekToKey(key);
-            IsValid = false;
+            throw new NotImplementedException();
+            //IsValid = Scanner.Read(CurrentKey, CurrentValue, filter);
         }
 
         public void Dispose()

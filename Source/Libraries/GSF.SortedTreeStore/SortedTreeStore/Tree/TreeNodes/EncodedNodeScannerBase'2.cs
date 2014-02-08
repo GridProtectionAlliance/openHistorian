@@ -37,193 +37,63 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
-        private int m_nextOffset;
-        private bool m_skipNextRead;
-        TKey m_prevKey;
-        TValue m_prevValue;
+        TKey m_tmpKey;
+        TValue m_tmpValue;
 
         protected EncodedNodeScannerBase(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey, byte version)
             : base(level, blockSize, stream, lookupKey, version)
         {
-            m_prevKey = new TKey();
-            m_prevValue = new TValue();
-            m_skipNextRead = false;
+            m_tmpKey = new TKey();
+            m_tmpValue = new TValue();
         }
 
-        /// <summary>
-        /// Decodes the next record from the byte array into the provided key and value.
-        /// </summary>
-        /// <param name="stream">the start of the next record.</param>
-        /// <param name="key">the key to write to.</param>
-        /// <param name="value">the value to write to.</param>
-        /// <returns></returns>
-        protected abstract unsafe int DecodeRecord(byte* stream, TKey key, TValue value);
-
-        protected abstract unsafe int DecodeRecord(byte* stream, TKey key, TValue value, KeyMatchFilterBase<TKey> filter);
+        protected abstract unsafe void DecodeRecord(TKey key, TValue value, KeyMatchFilterBase<TKey> filter);
 
         /// <summary>
         /// Occurs when a new node has been reached and any encoded data that has been generated needs to be cleared.
         /// </summary>
         protected abstract void ResetEncoder();
 
-        /// <summary>
-        /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
-        /// </summary>
-        unsafe protected override void ReadNext(TKey key, TValue value)
-        {
-            if (m_skipNextRead)
-            {
-                m_skipNextRead = false;
-                KeyMethods.Copy(m_prevKey, key);
-                ValueMethods.Copy(m_prevValue, value);
-            }
-            else
-            {
-                m_nextOffset += DecodeRecord(Pointer + m_nextOffset, key, value);
-            }
-        }
-
         protected override unsafe int ReadNext(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
         {
-            int beforeScan = IndexOfNextKeyValue;
+            throw new NotImplementedException();
+            //int beforeScan = IndexOfNextKeyValue;
 
-            if (m_skipNextRead)
-            {
-                m_skipNextRead = false;
-                KeyMethods.Copy(m_prevKey, key);
-                ValueMethods.Copy(m_prevValue, value);
-                if (filter.Contains(key))
-                {
-                    IndexOfNextKeyValue++;
-                    return 0;
-                }
-            }
+            //if (m_skipNextRead)
+            //{
+            //    m_skipNextRead = false;
+            //    KeyMethods.Copy(m_prevKey, key);
+            //    ValueMethods.Copy(m_prevValue, value);
+            //    if (filter.Contains(key))
+            //    {
+            //        IndexOfNextKeyValue++;
+            //        return 0;
+            //    }
+            //}
 
-            m_nextOffset += DecodeRecord(Pointer + m_nextOffset, key, value, filter);
-            return IndexOfNextKeyValue - beforeScan;
+            //m_nextOffset += DecodeRecord(Pointer + m_nextOffset, key, value, filter);
+            //return IndexOfNextKeyValue - beforeScan;
         }
-
-        //protected override unsafe void ReadNext(StreamFilterBase<TKey, TValue> filter)
-        //{
-        //    int scannedRecords = 0;
-        //    int remainingRecords = RecordCount - IndexOfNextKeyValue;
-        //    TKey currentKey = CurrentKey;
-        //    TValue currentValue = CurrentValue;
-
-        //    if (m_skipNextRead)
-        //    {
-        //        scannedRecords = 1;
-        //        m_skipNextRead = false;
-        //        KeyMethods.Copy(m_prevKey, currentKey);
-        //        ValueMethods.Copy(m_prevValue, currentValue);
-        //        if (filter.StopReading(currentKey, currentValue))
-        //        {
-        //            IndexOfNextKeyValue += scannedRecords;
-        //            return;
-        //        }
-        //    }
-
-        //    while (scannedRecords < remainingRecords)
-        //    {
-        //        m_nextOffset += DecodeRecord(Pointer + m_nextOffset, currentKey, currentValue);
-        //        scannedRecords += 1;
-        //        if (filter.StopReading(currentKey, currentValue))
-        //        {
-        //            IndexOfNextKeyValue += scannedRecords;
-        //            return;
-        //        }
-        //    }
-        //    IndexOfNextKeyValue += scannedRecords + 1;
-        //    return;
-        //}
-
-
-        //protected override unsafe int ReadNext(StreamFilterBase<TKey, TValue> filter, int remainingRecords)
-        //{
-        //    TKey currentKey = CurrentKey;
-        //    TValue currentValue = CurrentValue;
-
-        //    int scannedRecords = 0;
-        //    if (m_skipNextRead)
-        //    {
-        //        scannedRecords = 1;
-        //        m_skipNextRead = false;
-        //        KeyMethods.Copy(m_prevKey, currentKey);
-        //        ValueMethods.Copy(m_prevValue, currentValue);
-        //        if (filter.StopReading(currentKey, currentValue))
-        //            return scannedRecords;
-        //    }
-
-        //    while (scannedRecords < remainingRecords)
-        //    {
-        //        m_nextOffset += DecodeRecord(Pointer + m_nextOffset, currentKey, currentValue);
-        //        scannedRecords += 1;
-        //        if (filter.StopReading(currentKey, currentValue))
-        //        {
-        //            return scannedRecords;
-        //        }
-        //    }
-        //    return scannedRecords + 1;
-        //}
-
-        //protected override unsafe int ReadNext(StreamFilterBase<TKey, TValue> filter, int remainingRecords)
-        //{
-        //    int scannedRecords = 0;
-        //    while (scannedRecords < remainingRecords)
-        //    {
-        //        if (m_skipNextRead)
-        //        {
-        //            m_skipNextRead = false;
-        //            KeyMethods.Copy(m_prevKey, CurrentKey);
-        //            ValueMethods.Copy(m_prevValue, CurrentValue);
-        //        }
-        //        else
-        //        {
-        //            m_nextOffset += DecodeRecord(Pointer + m_nextOffset, CurrentKey, CurrentValue);
-        //        }
-        //        scannedRecords += 1;
-        //        if (filter.StopReading(CurrentKey, CurrentValue))
-        //        {
-        //            return scannedRecords;
-        //        }
-        //    }
-        //    return scannedRecords + 1;
-        //}
 
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
         /// </summary>
         /// <param name="key">the key to advance to</param>
-        unsafe protected override int FindKey(TKey key)
+        unsafe protected override void FindKey(TKey key)
         {
-            TKey tmpKey = new TKey();
-            TValue tmpValue = new TValue();
             OnNoadReload();
-            int nextReadIndex = 0;
-            bool indexFound = false;
 
             //Find the first occurance where the key that 
             //is read is greater than or equal to the search key.
             //or the end of the stream is encountered.
-            while (!indexFound && nextReadIndex < RecordCount)
+            while (IndexOfNextKeyValue < RecordCount)
             {
-                nextReadIndex++;
-                m_nextOffset += DecodeRecord(Pointer + m_nextOffset, tmpKey, tmpValue);
-                if (KeyMethods.IsGreaterThanOrEqualTo(tmpKey, key))
-                    indexFound = true;
-            }
-
-            if (indexFound)
-            {
-                m_skipNextRead = true;
-                KeyMethods.Copy(tmpKey, m_prevKey);
-                ValueMethods.Copy(tmpValue, m_prevValue);
-                return nextReadIndex - 1;
-            }
-            else
-            {
-                m_skipNextRead = false;
-                return nextReadIndex;
+                ReadNext(m_tmpKey, m_tmpValue, advanceIndex: false);
+                if (KeyMethods.IsGreaterThanOrEqualTo(m_tmpKey, key))
+                {
+                    return;
+                }
+                ReadNext(m_tmpKey, m_tmpValue, advanceIndex: true);
             }
         }
 
@@ -234,7 +104,6 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// </summary>
         protected override void OnNoadReload()
         {
-            m_nextOffset = 0;
             ResetEncoder();
         }
     }

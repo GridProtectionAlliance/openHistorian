@@ -45,28 +45,28 @@ namespace GSF.SortedTreeStore
         /// <summary>
         /// Gets if the <see cref="CurrentKey"/> and <see cref="CurrentValue"/> fields are valid.
         /// </summary>]
-        //[Obsolete("Not used anymore")]
+        [Obsolete("Not used anymore")]
         public bool IsValid
         {
             get;
             protected set;
         }
 
-        //[Obsolete("Not used anymore")]
+        [Obsolete("Not used anymore")]
         public TKey CurrentKey
         {
             get;
             private set;
         }
 
-        //[Obsolete("Not used anymore")]
+        [Obsolete("Not used anymore")]
         public TValue CurrentValue
         {
             get;
             private set;
         }
 
-        //[Obsolete("Not used anymore")]
+        [Obsolete("Not used anymore")]
         public bool Read()
         {
             IsValid = Read(CurrentKey, CurrentValue);
@@ -86,60 +86,6 @@ namespace GSF.SortedTreeStore
         public abstract bool Read(TKey key, TValue value);
 
         /// <summary>
-        /// Reads the stream, applying the provided filter to the read expression.
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        public virtual bool Read(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
-        {
-            if (EOS)
-                return false;
-            if (!Read(key, value))
-            {
-                EOS = true;
-                return false;
-            }
-            return true;
-        }
-
-        //public virtual void Read(PointCollectionBase<TKey, TValue> collection)
-        //{
-        //    if (EOS)
-        //        return;
-
-        //    TKey key = new TKey();
-        //    TValue value = new TValue();
-        //    while (!collection.IsFull)
-        //    {
-        //        if (Read(key, value))
-        //            collection.Enqueue(key, value);
-        //        else
-        //        {
-        //            EOS = true;
-        //            return;
-        //        }
-        //    }
-        //}
-
-        //public virtual void Read(PointCollectionBase<TKey, TValue> collection, KeyMatchFilterBase<TKey> filter)
-        //{
-        //    if (EOS)
-        //        return;
-        //    TKey key = new TKey();
-        //    TValue value = new TValue();
-        //    while (!collection.IsFull)
-        //    {
-        //        if (Read(key, value, filter))
-        //            collection.Enqueue(key, value);
-        //        else
-        //        {
-        //            EOS = true;
-        //            return;
-        //        }
-        //    }
-        //}
-
-        /// <summary>
         /// Cancels the reading of the stream. This does not need to be called if <see cref="Read"/> returns
         /// the end of the stream.
         /// </summary>
@@ -148,21 +94,5 @@ namespace GSF.SortedTreeStore
             EOS = true;
         }
 
-
-
-        ///// <summary>
-        ///// Used to maintain the relationship that a stream's <see cref="CurrentKey"/> and <see cref="CurrentValue"/>
-        ///// are always the same instance. Can also help having to copy the Key and Value parameters if in a nested stream reading case.
-        ///// </summary>
-        ///// <param name="key">the instance to use for <see cref="CurrentKey"/></param>
-        ///// <param name="value">the instance to use for <see cref="CurrentValue"/></param>
-        ///// <remarks>
-        ///// Be weary of calling this function too often as assignment of classes in .NET requires a function call.
-        ///// </remarks>
-        //protected void SetKeyValueReferences(TKey key, TValue value)
-        //{
-        //    CurrentKey = key;
-        //    CurrentValue = value;
-        //}
     }
 }
