@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using GSF.SortedTreeStore.Filters;
 using GSF.Threading;
 using openHistorian;
@@ -64,6 +65,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                                    KeyMatchFilterBase<TKey> keyMatchFilter,
                                    ValueMatchFilterBase<TValue> valueMatchFilter)
         {
+            m_pointCount = 0;
             m_keyMethods = new TKey().CreateKeyMethods();
             m_keySeekFilter = keySeekFilter;
             m_keyMatchFilter = keyMatchFilter;
@@ -112,6 +114,9 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
         public override void Cancel()
         {
+            Interlocked.Add(ref Stats.PointsReturned, m_pointCount);
+            m_pointCount = 0;
+
             EOS = true;
             if (m_timeout != null)
             {
@@ -136,8 +141,12 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 {
                     if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds))
                     {
-                        Stats.PointsScanned++;
-                        Stats.PointsReturned++;
+                        m_pointCount++;
+                        if (m_pointCount > 10000)
+                        {
+                            Interlocked.Add(ref Stats.PointsReturned, m_pointCount);
+                            m_pointCount = 0;
+                        }
                         return true;
                     }
                 }
@@ -145,8 +154,12 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 {
                     if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds, m_keyMatchFilter))
                     {
-                        Stats.PointsScanned++;
-                        Stats.PointsReturned++;
+                        m_pointCount++;
+                        if (m_pointCount > 10000)
+                        {
+                            Interlocked.Add(ref Stats.PointsReturned, m_pointCount);
+                            m_pointCount = 0;
+                        }
                         return true;
                     }
                 }
@@ -156,6 +169,12 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
         bool ReadCatchAll(TKey key, TValue value)
         {
+            if (m_pointCount > 10000)
+            {
+                Interlocked.Add(ref Stats.PointsReturned, m_pointCount);
+                m_pointCount = 0;
+            }
+
         TryAgain:
             if (!m_timedOut)
             {
@@ -166,8 +185,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
                     if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds) || ReadWhileFollowupActions(key, value, null))
                     {
-                        Stats.PointsScanned++;
-                        Stats.PointsReturned++;
+                        m_pointCount++;
                         return true;
                     }
                     goto TryAgain;
@@ -179,8 +197,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
                     if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds, m_keyMatchFilter) || ReadWhileFollowupActions(key, value, m_keyMatchFilter))
                     {
-                        Stats.PointsScanned++;
-                        Stats.PointsReturned++;
+                        m_pointCount++;
                         return true;
                     }
                     goto TryAgain;

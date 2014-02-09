@@ -76,14 +76,19 @@ namespace openHistorian.PerformanceTests
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
+                DateTime start =  DateTime.FromBinary(Convert.ToDateTime("2/1/2014").Date.Ticks + Convert.ToDateTime("6:00:00PM").TimeOfDay.Ticks).ToUniversalTime();
+
                 using (var client = new HistorianClient(clientOptions))
                 {
                     var database = client.GetDefaultDatabase();
+                    HistorianKey key = new HistorianKey();
+                    HistorianValue value = new HistorianValue();
 
                     sw.Start();
-                    using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue))
+                    using (var frameReader = database.OpenDataReader())
                     {
-                        while (frameReader.Read() && pointCount < 10000000)
+                        var scan = frameReader.Read((ulong)start.Ticks, ulong.MaxValue);
+                        while (scan.Read(key, value) && pointCount < 10000000)
                             pointCount++;
                     }
                     sw.Stop();

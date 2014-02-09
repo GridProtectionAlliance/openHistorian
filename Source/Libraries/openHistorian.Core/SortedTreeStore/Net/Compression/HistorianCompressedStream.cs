@@ -40,7 +40,7 @@ namespace GSF.SortedTreeStore.Net.Compression
         {
             get
             {
-                return false;
+                return true;
             }
         }
 

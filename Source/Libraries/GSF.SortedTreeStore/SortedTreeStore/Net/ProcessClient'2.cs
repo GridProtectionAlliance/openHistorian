@@ -240,7 +240,6 @@ namespace GSF.SortedTreeStore.Net
 
         unsafe private void ProcessReadWithPointers(TreeStream<TKey, TValue> scanner)
         {
-
             int bytesForSerialization = m_compressionMode.MaxCompressedSize;
             byte[] buffer;
             int position;

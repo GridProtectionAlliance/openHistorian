@@ -78,6 +78,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BenchmarkSockets.cs" />
+    <Compile Include="ConcurrentReading.cs" />
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="NPlot\PlotSpeed.cs" />
     <Compile Include="Program.cs" />
