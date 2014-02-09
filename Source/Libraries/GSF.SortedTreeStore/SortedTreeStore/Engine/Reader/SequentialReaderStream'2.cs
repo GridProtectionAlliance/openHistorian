@@ -56,7 +56,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
         BufferedArchiveStream<TKey, TValue> m_firstTable;
         SortedTreeScannerBase<TKey, TValue> m_firstTableScanner;
         TKey m_readWhileUpperBounds = new TKey();
-
+        TKey m_nextArchiveStreamLowerBounds = new TKey();
 
         public SequentialReaderStream(ArchiveListSnapshot<TKey, TValue> snapshot,
                                    SortedTreeEngineReaderOptions readerOptions,
@@ -130,14 +130,11 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
         public override bool Read(TKey key, TValue value)
         {
-        TryAgain:
-            if (!m_timedOut)
+            if (!m_timedOut && m_firstTableScanner != null)
             {
-                bool isValid;
                 if (m_keyMatchIsUniverse)
                 {
-                    isValid = ReadUnfiltered(key, value);
-                    if (isValid && key.Timestamp <= m_stopKey)
+                    if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds))
                     {
                         Stats.PointsScanned++;
                         Stats.PointsReturned++;
@@ -146,22 +143,44 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 }
                 else
                 {
-                    isValid = ReadFiltered(key, value, m_keyMatchFilter);
-                    if (isValid && key.Timestamp <= m_stopKey)
+                    if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds, m_keyMatchFilter))
                     {
                         Stats.PointsScanned++;
-                        if (m_keyMatchFilter.Contains(key))
-                        {
-                            Stats.PointsReturned++;
-                            return true;
-                        }
-                        goto TryAgain;
+                        Stats.PointsReturned++;
+                        return true;
                     }
                 }
-                if (isValid)
+            }
+            return ReadCatchAll(key, value);
+        }
+
+        bool ReadCatchAll(TKey key, TValue value)
+        {
+        TryAgain:
+            if (!m_timedOut)
+            {
+                if (m_keyMatchIsUniverse)
                 {
-                    if (AdvanceSeekableFilter(isValid, key))
+                    if (m_firstTableScanner == null)
+                        return false;
+
+                    if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds) || ReadWhileFollowupActions(key, value, null))
                     {
+                        Stats.PointsScanned++;
+                        Stats.PointsReturned++;
+                        return true;
+                    }
+                    goto TryAgain;
+                }
+                else
+                {
+                    if (m_firstTableScanner == null)
+                        return false;
+
+                    if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds, m_keyMatchFilter) || ReadWhileFollowupActions(key, value, m_keyMatchFilter))
+                    {
+                        Stats.PointsScanned++;
+                        Stats.PointsReturned++;
                         return true;
                     }
                     goto TryAgain;
@@ -171,68 +190,66 @@ namespace GSF.SortedTreeStore.Engine.Reader
             return false;
         }
 
-        bool ReadUnfiltered(TKey key, TValue value)
+        bool ReadWhileFollowupActions(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
         {
-            if (m_firstTableScanner != null && m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds))
-            {
-                return true;
-            }
-            return ReadUnfilteredCatchAll(key, value);
-        }
+            //There are certain followup requirements when a ReadWhile method returns false.
+            //Condition 1:
+            //  The end of the node has been reached. 
+            //Response: 
+            //  It returned false to allow for additional checks such as timeouts to occur.
+            //  Do Nothing.
+            //
+            //Condition 2:
+            //  The archive stream may no longer be in order and needs to be checked
+            //Response:
+            //  Resort the archive stream
+            //
+            //Condition 3:
+            //  The end of the frame has been reached
+            //Response:
+            //  Advance to the next frame
+            //  Also test the edge case where the current point might be equal to the end of the frame
+            //      since this is an inclusive filter and ReadWhile is exclusive.
+            //      If it's part of the frame, return true after Advancing the frame and the point.
+            //
 
-        bool ReadUnfilteredCatchAll(TKey key, TValue value)
-        {
-            //Function is called when a ReadWhile attempt of the FirstTableScanner failed.
-
-            if (EOS)
-                return false;
-
+            //Update the cached values for the table so proper analysis can be done.
             m_firstTable.UpdateCachedValue();
 
+            //Check Condition 1
+            if (m_firstTable.CacheIsValid && m_keyMethods.IsLessThan(m_firstTable.CacheKey, m_readWhileUpperBounds))
+                return false;
+
+            //Since condition 2 and 3 can occur at the same time, verifying the sort of the Archive Stream is a good thing to do.
             VerifyArchiveStreamSortingOrder();
 
             if (EOS)
                 return false;
 
-            return m_firstTable.Scanner.ReadWhile(key, value, m_readWhileUpperBounds);
-        }
 
-        bool ReadFiltered(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
-        {
-            if (m_firstTableScanner != null)
+            //Check if Condition 3's exception occured.
+            if (m_keyMethods.IsEqual(m_firstTable.CacheKey, m_keySeekFilter.EndOfFrame))
             {
-                if (!m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds, filter))
-                {
-                    return ReadFilteredCatchAll(key, value, filter);
-                }
-                return true;
+                //This is the exception clause. I will advance the frame, but will still need to return the current point.
+                m_firstTable.Scanner.Read(key, value);
+                AdvanceSeekableFilter(true, key);
+                SetReadWhileUpperBoundsValue();
+
+                return filter == null || filter.Contains(key);
+            }
+
+            //Check if condition 3 occured
+            if (m_keyMethods.IsGreaterThan(m_firstTable.CacheKey, m_keySeekFilter.EndOfFrame))
+            {
+                AdvanceSeekableFilter(true, m_firstTable.CacheKey);
+                SetReadWhileUpperBoundsValue();
             }
             return false;
         }
 
-        bool ReadFilteredCatchAll(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
-        {
-            //Function is called when a ReadWhile attempt of the FirstTableScanner failed.
-
-            if (EOS)
-                return false;
-        
-            TryAgain:
-
-            VerifyArchiveStreamSortingOrder();
-            if (EOS)
-                return false;
-
-            if (m_firstTable.Scanner.ReadWhile(key, value, m_readWhileUpperBounds, filter))
-            {
-                return true;
-            }
-            goto TryAgain;
-        }
-
 
         //-------------------------------------------------------------
-        
+
         /// <summary>
         /// Will verify that the stream is in the proper order and remove any duplicates that were found. 
         /// May be called after every single read, but better to be called
@@ -403,8 +420,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
             SetReadWhileUpperBoundsValue();
         }
 
-
-
         /// <summary>
         /// Checks the first 2 Archive Streams for a duplicate entry. If one exists, then removes the duplicate and resorts the list.
         /// </summary>
@@ -451,17 +466,29 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
         /// <summary>
         /// Sets the read while upper bounds value. 
-        /// Which is the first point in the adjacent table
-        /// </summary>
+        /// Which is the lesser of 
+        /// The first point in the adjacent table or
+        /// The end of the current seek window.
+        ///  </summary>
         void SetReadWhileUpperBoundsValue()
         {
             if (m_sortedArchiveStreams.Items.Length > 1 && m_sortedArchiveStreams[1].CacheIsValid)
             {
-                m_keyMethods.Copy(m_sortedArchiveStreams[1].CacheKey, m_readWhileUpperBounds);
+                m_keyMethods.Copy(m_sortedArchiveStreams[1].CacheKey, m_nextArchiveStreamLowerBounds);
             }
             else
             {
-                m_keyMethods.SetMax(m_readWhileUpperBounds);
+                m_keyMethods.SetMax(m_nextArchiveStreamLowerBounds);
+            }
+            m_keyMethods.Copy(m_nextArchiveStreamLowerBounds, m_readWhileUpperBounds);
+
+            //If there is a key seek filter. adjust this bounds if necessary
+            if (m_keySeekFilter != null)
+            {
+                if (m_keyMethods.IsLessThan(m_keySeekFilter.EndOfFrame, m_readWhileUpperBounds))
+                {
+                    m_keyMethods.Copy(m_keySeekFilter.EndOfFrame, m_readWhileUpperBounds);
+                }
             }
         }
 

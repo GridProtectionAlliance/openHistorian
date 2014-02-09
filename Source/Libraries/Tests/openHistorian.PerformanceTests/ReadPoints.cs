@@ -83,7 +83,7 @@ namespace openHistorian.PerformanceTests
                     sw.Start();
                     using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue))
                     {
-                        while (frameReader.Read() && pointCount < 1000000)
+                        while (frameReader.Read() && pointCount < 10000000)
                             pointCount++;
                     }
                     sw.Stop();
@@ -100,6 +100,7 @@ namespace openHistorian.PerformanceTests
             }
             Console.WriteLine(pointCount);
             Console.WriteLine(sw.Elapsed.TotalSeconds.ToString());
+            Console.WriteLine((pointCount / sw.Elapsed.TotalSeconds / 1000000).ToString());
 
         }
 
@@ -125,6 +126,14 @@ namespace openHistorian.PerformanceTests
 
                 HistorianKey key = new HistorianKey();
                 HistorianValue value = new HistorianValue();
+
+                using (var frameReader = database.OpenDataReader())
+                {
+                    var scan = frameReader.Read(0, ulong.MaxValue);
+                    while (scan.Read(key, value))// && pointCount < 1000000)
+                        ;
+                }
+
                 sw.Start();
                 using (var frameReader = database.OpenDataReader())
                 {
