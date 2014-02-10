@@ -146,7 +146,7 @@ namespace openHistorian.Collections
 
         public override string ToString()
         {
-            return TimestampAsDate.ToString();
+            return TimestampAsDate.ToString("MM/dd/yyyy HH:mm:ss.fffffff") + " " + PointID.ToString();
         }
     }
 }

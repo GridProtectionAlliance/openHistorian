@@ -60,5 +60,16 @@ namespace GSF.SortedTreeStore.Filters
         /// <returns></returns>
         public abstract bool Contains(TKey key);
 
+
+         /// <summary>
+         /// The boundaries of the page.
+         /// </summary>
+         /// <param name="lowerBounds">the lower inclusive bounds of the page</param>
+         /// <param name="upperBounds">the upper exclusive bounds of the page</param>
+         /// <returns></returns>
+         public virtual bool PageCannotContainPoints(TKey lowerBounds, TKey upperBounds)
+         {
+             return true;
+         }
     }
 }

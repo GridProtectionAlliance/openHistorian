@@ -363,6 +363,19 @@ namespace GSF
                 return 8;
             return 9;
         }
+        public unsafe static int Measure7BitUInt64_2(byte* stream, int position)
+        {
+            if (stream[position] < 128) position += 1;
+            else if (stream[position + 1] < 128) position += 2;
+            else if (stream[position + 2] < 128) position += 3;
+            else if (stream[position + 3] < 128) position += 4;
+            else if (stream[position + 4] < 128) position += 5;
+            else if (stream[position + 5] < 128) position += 6;
+            else if (stream[position + 6] < 128) position += 7;
+            else if (stream[position + 7] < 128) position += 8;
+            else position += 9;
+            return position;
+        }
 
         public unsafe static ulong Read7BitUInt64(byte* stream, ref int position)
         {

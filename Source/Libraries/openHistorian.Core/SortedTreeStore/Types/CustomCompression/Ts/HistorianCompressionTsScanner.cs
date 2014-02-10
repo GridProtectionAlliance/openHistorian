@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Collections;
 using GSF.IO;
 using GSF.SortedTreeStore.Filters;
 using openHistorian.Collections;
@@ -192,6 +193,27 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             }
             return ReadWhileCatchAll(key, value, upperBounds);
         }
+
+        //public override bool ReadWhile(HistorianKey key, HistorianValue value, HistorianKey upperBounds, KeyMatchFilterBase<HistorianKey> filter)
+        //{
+        //    if (StreamPointer.Version == PointerVersion && IndexOfNextKeyValue < RecordCount)
+        //    {
+        //        if (KeyMethods.IsLessThan(UpperKey, upperBounds))
+        //        {
+        //            var bitFilter = filter as PointIDFilter.BitArrayFilter<HistorianKey>;
+        //            if (bitFilter != null)
+        //            {
+        //                return InternalReadBitArray(key, value, bitFilter);
+        //            }
+        //            else
+        //            {
+        //                return InternalRead(key, value, filter);
+        //            }
+        //        }
+        //        return InternalReadWhile(key, value, upperBounds, filter);
+        //    }
+        //    return ReadWhileCatchAll(key, value, upperBounds, filter);
+        //}
 
         #endregion
 
@@ -867,5 +889,217 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             }
             return false;
         }
+
+
+        //bool InternalReadBitArray(HistorianKey key, HistorianValue value, PointIDFilter.BitArrayFilter<HistorianKey> filter)
+        //{
+        //    //ToDo: Fix the bug in this code. The correct number of points are not returned.
+
+        //    fixed (long* array = filter.ArrayBits)
+        //    {
+        //        byte* stream = Pointer + m_nextOffset;
+        //        ulong prevPointID = m_prevPointId;
+        //        int totalSize = 0;
+        //        int size = 0;
+        //        uint maxValue = (uint)filter.MaxValue;
+        //        int IndexOfNextKeyValue = this.IndexOfNextKeyValue;
+
+        //        key.EntryNumber = 0;
+
+        //    FilterFailed:
+        //        IndexOfNextKeyValue++;
+        //        if (IndexOfNextKeyValue > RecordCount)
+        //        {
+        //            this.IndexOfNextKeyValue = IndexOfNextKeyValue;
+        //            m_prevPointId = key.PointID;
+        //            m_prevTimestamp = key.Timestamp;
+        //            m_nextOffset += totalSize;
+        //            return false;
+        //        }
+
+        //        uint code = stream[0];
+        //        //Compression Stages:
+        //        //  Stage 1: Big Positive Float. 
+        //        //  Stage 2: Big Negative Float.
+        //        //  Stage 3: Zero
+        //        //  Stage 4: 32 bit
+        //        //  Stage 5: Catch all
+        //        if (code < 0x80)
+        //        {
+        //            //If stage 1 (50% success)
+        //            //key.Timestamp = prevTimestamp;
+        //            prevPointID += 1 + ((code >> 4) & 0x7);
+        //            //key.EntryNumber = 0;
+        //            if (!(prevPointID <= maxValue && ((array[(int)prevPointID >> BitArray.BitsPerElementShift] & (1L << ((int)prevPointID & BitArray.BitsPerElementMask))) != 0)))
+        //            {
+        //                totalSize += 4;
+        //                stream += 4;
+        //                goto FilterFailed;
+        //            }
+        //            value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+        //            value.Value2 = 0;
+        //            value.Value3 = 0;
+        //            totalSize += 4;
+        //        }
+        //        else if (code < 0xC0)
+        //        {
+        //            //If stage 2 (16% success)
+        //            //key.Timestamp = prevTimestamp;
+        //            prevPointID += 1 + ((code >> 4) & 0x3);
+        //            //key.EntryNumber = 0;
+        //            if (!(prevPointID <= maxValue && ((array[(int)prevPointID >> BitArray.BitsPerElementShift] & (1L << ((int)prevPointID & BitArray.BitsPerElementMask))) != 0)))
+        //            {
+        //                totalSize += 4;
+        //                stream += 4;
+        //                goto FilterFailed;
+        //            }
+        //            value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+        //            value.Value2 = 0;
+        //            value.Value3 = 0;
+        //            totalSize += 4;
+        //        }
+        //        else if (code < 0xD0)
+        //        {
+        //            //If stage 3 (28% success)
+        //            //prevTimestamp = prevTimestamp;
+        //            prevPointID += 1 + (code & 0xF);
+        //            //key.EntryNumber = 0;
+        //            if (!(prevPointID <= maxValue && ((array[(int)prevPointID >> BitArray.BitsPerElementShift] & (1L << ((int)prevPointID & BitArray.BitsPerElementMask))) != 0)))
+        //            {
+        //                totalSize += 1;
+        //                stream += 1;
+        //                goto FilterFailed;
+        //            }
+        //            value.Value1 = 0;
+        //            value.Value2 = 0;
+        //            value.Value3 = 0;
+        //            totalSize += 1;
+        //        }
+        //        else if (code < 0xE0)
+        //        {
+        //            //If stage 4 (3% success)
+        //            //prevTimestamp = prevTimestamp;
+        //            prevPointID += 1 + (code & 0xF);
+        //            //key.EntryNumber = 0;
+        //            if (!(prevPointID <= maxValue && ((array[(int)prevPointID >> BitArray.BitsPerElementShift] & (1L << ((int)prevPointID & BitArray.BitsPerElementMask))) != 0)))
+        //            {
+        //                totalSize += 5;
+        //                stream += 5;
+        //                goto FilterFailed;
+        //            }
+        //            value.Value1 = *(uint*)(stream + 1);
+        //            value.Value2 = 0;
+        //            value.Value3 = 0;
+        //            totalSize += 5;
+        //            //key.Timestamp = prevTimestamp;
+        //        }
+        //        else
+        //        {
+        //            //Stage 5: 2%
+        //            //Stage 5: Catch All
+        //            size = 1;
+        //            if ((code & 16) != 0) //T is set
+        //            {
+        //                m_prevTimestamp += Compression.Read7BitUInt64(stream, ref size);
+        //                prevPointID = Compression.Read7BitUInt64(stream, ref size);
+        //            }
+        //            else
+        //            {
+        //                prevPointID += Compression.Read7BitUInt64(stream, ref size);
+        //            }
+
+        //            if ((code & 8) != 0) //E is set)
+        //            {
+        //                key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+        //            }
+        //            else
+        //            {
+        //                key.EntryNumber = 0;
+        //            }
+
+        //            if (!(prevPointID <= maxValue && ((array[(int)prevPointID >> BitArray.BitsPerElementShift] & (1L << ((int)prevPointID & BitArray.BitsPerElementMask))) != 0)))
+        //            {
+        //                key.EntryNumber = 0;
+        //                size += 4 + ((byte)code & 4);
+        //                //if ((code & 4) != 0) //V1 is set)
+        //                //{
+        //                //    size += 8;
+        //                //}
+        //                //else
+        //                //{
+        //                //    size += 4;
+        //                //}
+
+        //                if ((code & 2) != 0) //V2 is set)
+        //                {
+        //                    if (stream[size] < 128) size += 1;
+        //                    else if (stream[size + 1] < 128) size += 2;
+        //                    else if (stream[size + 2] < 128) size += 3;
+        //                    else if (stream[size + 3] < 128) size += 4;
+        //                    else if (stream[size + 4] < 128) size += 5;
+        //                    else if (stream[size + 5] < 128) size += 6;
+        //                    else if (stream[size + 6] < 128) size += 7;
+        //                    else if (stream[size + 7] < 128) size += 8;
+        //                    else size += 9;
+        //                }
+
+        //                if ((code & 1) != 0) //V3 is set)
+        //                {
+        //                    if (stream[size] < 128) size += 1;
+        //                    else if (stream[size + 1] < 128) size += 2;
+        //                    else if (stream[size + 2] < 128) size += 3;
+        //                    else if (stream[size + 3] < 128) size += 4;
+        //                    else if (stream[size + 4] < 128) size += 5;
+        //                    else if (stream[size + 5] < 128) size += 6;
+        //                    else if (stream[size + 6] < 128) size += 7;
+        //                    else if (stream[size + 7] < 128) size += 8;
+        //                    else size += 9;
+        //                }
+
+        //                totalSize += size;
+        //                stream += size;
+        //                goto FilterFailed;
+        //            }
+
+
+        //            if ((code & 4) != 0) //V1 is set)
+        //            {
+        //                value.Value1 = *(ulong*)(stream + size);
+        //                size += 8;
+        //            }
+        //            else
+        //            {
+        //                value.Value1 = *(uint*)(stream + size);
+        //                size += 4;
+        //            }
+
+        //            if ((code & 2) != 0) //V2 is set)
+        //            {
+        //                value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+        //            }
+        //            else
+        //            {
+        //                value.Value2 = 0;
+        //            }
+
+        //            if ((code & 1) != 0) //V3 is set)
+        //            {
+        //                value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+        //            }
+        //            else
+        //            {
+        //                value.Value3 = 0;
+        //            }
+        //            totalSize += size;
+        //        }
+
+        //        this.IndexOfNextKeyValue = IndexOfNextKeyValue;
+        //        m_prevPointId = key.PointID;
+        //        m_prevTimestamp = key.Timestamp;
+        //        m_nextOffset += totalSize;
+        //        return true;
+        //    }
+        //}
+
     }
 }

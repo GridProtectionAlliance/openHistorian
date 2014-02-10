@@ -43,7 +43,10 @@ namespace GSF.SortedTreeStore.Filters
             where TKey : EngineKeyBase<TKey>, new()
         {
             readonly BitArray m_points;
-            public ulong MaxValue;
+
+            public ulong MaxValue = ulong.MaxValue;
+            public ulong MinValue = ulong.MinValue;
+
             public long[] ArrayBits;
 
             /// <summary>
@@ -66,6 +69,12 @@ namespace GSF.SortedTreeStore.Filters
                     pointCount--;
                 }
                 ArrayBits = m_points.GetInternalData();
+
+                foreach (int point in m_points.GetAllSetBits())
+                {
+                    MinValue = (ulong)point;
+                    break;
+                }
             }
 
             /// <summary>
@@ -82,6 +91,13 @@ namespace GSF.SortedTreeStore.Filters
                     m_points.SetBit((int)pt);
                 }
                 ArrayBits = m_points.GetInternalData();
+
+                foreach (int point in m_points.GetAllSetBits())
+                {
+                    MinValue = (ulong)point;
+                    break;
+                }
+
             }
 
             public override Guid FilterType
@@ -115,6 +131,35 @@ namespace GSF.SortedTreeStore.Filters
                     ((ArrayBits[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
             }
 
+            /// <summary>
+            /// The boundaries of the page.
+            /// </summary>
+            /// <param name="lowerBounds">the lower inclusive bounds of the page</param>
+            /// <param name="upperBounds">the upper exclusive bounds of the page</param>
+            /// <returns></returns>
+            public override bool PageCannotContainPoints(TKey lowerBounds, TKey upperBounds)
+            {
+                //ToDo: Consider this implementation.  Could work very well with SCADA systems or a system with tens of thousands of points.
+                // lp = lower point;  up = upper point
+                // if either condition is true, the page cannot 
+                // contain the filter.
+                // Otherwise, it can.
+                //
+                // lp  up  [ filter ]
+                //
+                // or 
+                //
+                // [ filter ] lp   up
+                // 
+                if (m_points.SetCount == 0)
+                    return true;
+                if (lowerBounds.Timestamp != upperBounds.Timestamp)
+                    return false;
+                if (lowerBounds.PointID > MaxValue || upperBounds.PointID < MinValue)
+                    return true;
+
+                return false;
+            }
 
         }
     }

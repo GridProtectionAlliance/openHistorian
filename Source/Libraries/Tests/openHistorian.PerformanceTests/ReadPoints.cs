@@ -212,7 +212,7 @@ namespace openHistorian.PerformanceTests
         }
 
         [Test]
-        public void TestReadFilteredPoints()
+        public static void TestReadFilteredPoints()
         {
             Stopwatch sw = new Stopwatch();
             int pointCount = 0;

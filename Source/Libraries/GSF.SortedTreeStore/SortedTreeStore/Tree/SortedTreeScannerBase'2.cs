@@ -49,6 +49,7 @@ namespace GSF.SortedTreeStore.Tree
         protected int KeySize;
 
         protected TKey UpperKey = new TKey();
+        protected TKey LowerKey = new TKey();
         private readonly Func<TKey, byte, uint> m_lookupKey;
         private readonly TKey m_tempKey;
         //private TKey m_lowerKey;
@@ -446,7 +447,7 @@ namespace GSF.SortedTreeStore.Tree
             RecordCount = *(ushort*)(ptr + OffsetOfRecordCount);
             LeftSiblingNodeIndex = *(uint*)(ptr + OffsetOfLeftSibling);
             RightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
-            //KeyMethods.Read(ptr + OffsetOfLowerBounds, m_lowerKey);
+            KeyMethods.Read(ptr + OffsetOfLowerBounds, LowerKey);
             KeyMethods.Read(ptr + OffsetOfUpperBounds, UpperKey);
             IndexOfNextKeyValue = 0;
             OnNoadReload();

@@ -13,7 +13,8 @@ namespace openHistorian.PerformanceTests
             //var tree = new SortedTree256Test();
             //tree.SortedTree256Archive();
             //ReadPoints.TestReadPoints2();
-            ReadPoints.ReadAllPoints();
+            //ReadPoints.ReadAllPoints();
+            ReadPoints.TestReadFilteredPoints();
             
             //Console.ReadLine();
         }

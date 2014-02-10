@@ -213,9 +213,9 @@ namespace DataExtractionUtility
                             HistorianValueStruct value;
                             if (frameReader.Frame.TryGetValue((ulong)signal.PointID, out value))
                             {
-                                //csvStream.Write(value.AsSingle);
+                                csvStream.Write(value.AsSingle);
                             }
-                            //csvStream.Write(',');
+                            csvStream.Write(',');
                         }
                         csvStream.WriteLine();
                     }
