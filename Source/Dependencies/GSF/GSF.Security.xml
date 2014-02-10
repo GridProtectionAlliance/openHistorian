@@ -1211,6 +1211,10 @@
             <summary>
             Gets the user's password.
             </summary>
+            <remarks>
+            This field is only used to store hashed user
+            passwords which are stored in the database.
+            </remarks>
         </member>
         <member name="P:GSF.Security.UserData.FirstName">
             <summary>
