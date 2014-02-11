@@ -32,7 +32,14 @@ namespace openHistorianShell
 
         private void FrmMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            m_server.Dispose();
+            try
+            {
+                m_server.Dispose();
+            }
+            catch (Exception)
+            {
+                
+            }
         }
     }
 }

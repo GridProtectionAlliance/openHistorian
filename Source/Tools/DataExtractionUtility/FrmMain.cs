@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DataExtractionUtility.Properties;
+using GSF.IO;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Net;
 using GSF.TimeSeries;
@@ -151,6 +152,85 @@ namespace DataExtractionUtility
 
         //}
 
+        //private void BtnExport_Click(object sender, EventArgs e)
+        //{
+        //    Settings.Default.Save();
+        //    if (m_meta == null)
+        //    {
+        //        MessageBox.Show("Please download the metadata first.");
+        //        return;
+        //    }
+        //    if (m_selectedMeasurements == null || m_selectedMeasurements.Count == 0)
+        //    {
+        //        MessageBox.Show("There are no measurements to extract");
+        //        return;
+        //    }
+        //    DateTime startTime = dateStartTime.Value;
+        //    DateTime stopTime = dateStopTime.Value;
+        //    if (startTime > stopTime)
+        //    {
+        //        MessageBox.Show("Start and Stop times are invalid");
+        //        return;
+        //    }
+        //    TimeSpan interval = Resolutions.GetInterval((string)cmbResolution.SelectedItem);
+
+
+        //    HistorianClientOptions clientOptions = new HistorianClientOptions();
+        //    clientOptions.DefaultDatabase = Settings.Default.HistorianInstanceName;
+        //    clientOptions.NetworkPort = Settings.Default.HistorianStreamingPort;
+        //    clientOptions.ServerNameOrIp = Settings.Default.ServerIP;
+        //    using (HistorianClient client = new HistorianClient(clientOptions))
+        //    {
+        //        KeySeekFilterBase<HistorianKey> timeFilter;
+        //        if (interval.Ticks != 0)
+        //            timeFilter = TimestampFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+        //        else
+        //            timeFilter = TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+
+        //        var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
+        //        var pointFilter = PointIDFilter.CreateFromList<HistorianKey>(points);
+
+        //        var database = client.GetDefaultDatabase();
+
+        //        using (var frameReader = database.GetPointStream(timeFilter, pointFilter).GetFrameReader())
+        //        using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
+        //        {
+        //            var ultraStream = new UltraStreamWriter(csvStream);
+        //            //csvStream.AutoFlush = false;
+        //            csvStream.Write("Timestamp,");
+        //            foreach (var signal in m_selectedMeasurements)
+        //            {
+        //                csvStream.Write(signal.Description);
+        //                csvStream.Write(',');
+        //            }
+        //            csvStream.WriteLine();
+
+        //            while (frameReader.Read())
+        //            {
+        //                csvStream.Write(frameReader.FrameTime.ToString("MM/dd/yyyy hh:mm:ss.fffffff"));
+        //                csvStream.Write(',');
+
+        //                foreach (var signal in m_selectedMeasurements)
+        //                {
+        //                    HistorianValueStruct value;
+        //                    if (frameReader.Frame.TryGetValue((ulong)signal.PointID, out value))
+        //                    {
+        //                        ultraStream.Write(value.AsSingle);
+        //                        //csvStream.Write(value.AsSingle);
+        //                    }
+        //                    //csvStream.Write(',');
+        //                    ultraStream.Write(',');
+        //                }
+        //                ultraStream.Flush();
+        //                csvStream.WriteLine();
+        //            }
+
+        //            csvStream.Flush();
+        //        }
+        //        database.Disconnect();
+        //    }
+        //}
+
         private void BtnExport_Click(object sender, EventArgs e)
         {
             Settings.Default.Save();
@@ -180,6 +260,16 @@ namespace DataExtractionUtility
             clientOptions.ServerNameOrIp = Settings.Default.ServerIP;
             using (HistorianClient client = new HistorianClient(clientOptions))
             {
+                m_readIndex = 0;
+                m_fillMeasurements.Clear();
+                m_measurementsInOrder.Clear();
+                foreach (var signal in m_selectedMeasurements)
+                {
+                    var m = new Measurements();
+                    m_fillMeasurements.Add((ulong)signal.PointID, m);
+                    m_measurementsInOrder.Add(m);
+                }
+
                 KeySeekFilterBase<HistorianKey> timeFilter;
                 if (interval.Ticks != 0)
                     timeFilter = TimestampFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
@@ -190,10 +280,11 @@ namespace DataExtractionUtility
                 var pointFilter = PointIDFilter.CreateFromList<HistorianKey>(points);
 
                 var database = client.GetDefaultDatabase();
-                
-                using (var frameReader = database.GetPointStream(timeFilter, pointFilter).GetFrameReader())
+
+                using (var fillAdapter = database.GetPointStream(timeFilter, pointFilter).GetFillAdapter())
                 using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
                 {
+                    var ultraStream = new UltraStreamWriter(csvStream);
                     //csvStream.AutoFlush = false;
                     csvStream.Write("Timestamp,");
                     foreach (var signal in m_selectedMeasurements)
@@ -203,26 +294,48 @@ namespace DataExtractionUtility
                     }
                     csvStream.WriteLine();
 
-                    while (frameReader.Read())
+                    m_readIndex++;
+                    while (fillAdapter.Fill(FillData))
                     {
-                        csvStream.Write(frameReader.FrameTime.ToString("MM/dd/yyyy hh:mm:ss.fffffff"));
+                        csvStream.Write(fillAdapter.FrameTime.ToString("MM/dd/yyyy hh:mm:ss.fffffff"));
                         csvStream.Write(',');
 
-                        foreach (var signal in m_selectedMeasurements)
+                        foreach (var signal in m_measurementsInOrder)
                         {
-                            HistorianValueStruct value;
-                            if (frameReader.Frame.TryGetValue((ulong)signal.PointID, out value))
+                            if (signal.ReadNumber == m_readIndex)
                             {
-                                csvStream.Write(value.AsSingle);
+                                ultraStream.Write(signal.Value);
                             }
-                            csvStream.Write(',');
+                            ultraStream.Write(',');
                         }
+                        ultraStream.Flush();
                         csvStream.WriteLine();
+                        m_readIndex++;
+
                     }
 
                     csvStream.Flush();
                 }
                 database.Disconnect();
+            }
+        }
+
+        int m_readIndex;
+        public Dictionary<ulong, Measurements> m_fillMeasurements = new Dictionary<ulong, Measurements>();
+        public List<Measurements> m_measurementsInOrder = new List<Measurements>();
+        public class Measurements
+        {
+            public int ReadNumber;
+            public float Value;
+        }
+
+        void FillData(ulong pointId, HistorianValue key)
+        {
+            Measurements m;
+            if (m_fillMeasurements.TryGetValue(pointId, out m))
+            {
+                m.ReadNumber = m_readIndex;
+                m.Value = key.AsSingle;
             }
         }
 

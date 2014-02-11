@@ -100,8 +100,10 @@
   <ItemGroup>
     <Compile Include="IO\BinaryStreamBase.cs" />
     <Compile Include="IO\BinaryStreamWrapper.cs" />
+    <Compile Include="IO\UltraStreamWriter.cs" />
     <Compile Include="IO\Unmanaged\BinaryStream.cs" />
     <Compile Include="Net\NetworkBinaryStream.cs" />
+    <Compile Include="Number.cs" />
     <Compile Include="SortedTreeStore\Collection\CreatePointCollectionBase.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionBase%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\BufferedArchiveStream%272.cs" />

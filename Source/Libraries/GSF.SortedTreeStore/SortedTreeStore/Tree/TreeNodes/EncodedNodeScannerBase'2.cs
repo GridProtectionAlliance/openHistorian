@@ -58,7 +58,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         protected override void FindKey(TKey key)
         {
             OnNoadReload();
-            while (InternalReadWhile(m_tmpKey, m_tmpValue, key))
+            while ((IndexOfNextKeyValue < RecordCount) && InternalReadWhile(m_tmpKey, m_tmpValue, key))
                 ;
         }
 

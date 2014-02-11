@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\PeriodicScanner.cs" />
+    <Compile Include="Data\Query\GetDataFillAdapter.cs" />
     <Compile Include="Data\Query\GetPointStream.cs" />
     <Compile Include="Data\Query\GetFrameReader.cs" />
     <Compile Include="Data\Query\GetFrameMethods_KeyValueStream.cs" />
