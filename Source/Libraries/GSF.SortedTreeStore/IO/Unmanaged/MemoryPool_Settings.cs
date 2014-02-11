@@ -182,10 +182,10 @@ namespace GSF.IO.Unmanaged
 
             //Physical upper limit is
             //the greater of 
-            //  75% of memory
+            //  50% of memory
             //or
-            //  all but 4GB of RAM
-            long physicalUpperLimit = Math.Max(systemTotalPhysicalMemory / 4 * 3, systemTotalPhysicalMemory - 4 * 1024 * 1024 * 1024L);
+            //  all but 8GB of RAM
+            long physicalUpperLimit = Math.Max(systemTotalPhysicalMemory / 2, systemTotalPhysicalMemory - 8 * 1024 * 1024 * 1024L);
 
             size = Math.Min(size, physicalUpperLimit);
 
