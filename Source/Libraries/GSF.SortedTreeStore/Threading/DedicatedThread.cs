@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ForegroundThread.cs - Gbtc
+//  DedicatedThread.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,43 +27,59 @@ using System.Threading;
 
 namespace GSF.Threading
 {
-    internal class ForegroundThread 
+    /// <summary>
+    /// Implements a dedicated thread that is either a foreground or a background thread. 
+    /// If foreground, this means that it will
+    /// prevent an application from exiting if it's still doing work. Therefore be sure to 
+    /// dispose of the thread before exiting the application. (Which will be done from ScheduledTask via
+    /// weak references if an object becomes orphaned)
+    /// </summary>
+    internal class DedicatedThread
         : CustomThreadBase
     {
         private readonly Thread m_thread;
-        private readonly Action m_callback;
+        private readonly WeakAction m_callback;
         private readonly ManualResetEvent m_go;
         private readonly ManualResetEvent m_sleep;
         private volatile int m_sleepTime;
         private volatile bool m_disposed;
 
-        public ForegroundThread(Action callback)
+        /// <summary>
+        /// Initializes a <see cref="DedicatedThread"/> that will execute the provided callback.
+        /// </summary>
+        /// <param name="callback">the callback method to execute when running</param>
+        /// <param name="isBackground">determines if the thread is supposed to be a background thread</param>
+        public DedicatedThread(Action callback, bool isBackground)
         {
             m_sleepTime = 0;
-            m_callback = callback;
+            m_callback = new WeakAction(callback);
             m_go = new ManualResetEvent(false);
             m_sleep = new ManualResetEvent(false);
             m_thread = new Thread(RunWorkerThread);
+            m_thread.IsBackground = isBackground;
             m_thread.Start();
         }
 
+        /// <summary>
+        /// The internal loop that holds the thread.
+        /// </summary>
         private void RunWorkerThread()
         {
-            //Initially m_state == State.IsRunning;
             while (true)
             {
                 if (m_disposed)
                     return;
-                //Thread.CurrentThread.IsBackground = true;
                 m_go.WaitOne(-1);
                 m_sleep.WaitOne(m_sleepTime);
-                //Thread.CurrentThread.IsBackground = false;
                 if (m_disposed)
                     return;
-                m_callback();
+                m_callback.TryInvoke();
             }
         }
 
+        /// <summary>
+        /// Requests that the callback executes immediately.
+        /// </summary>
         public override void StartNow()
         {
             m_sleepTime = 0;
@@ -71,17 +87,27 @@ namespace GSF.Threading
             m_go.Set();
         }
 
+        /// <summary>
+        /// Requests that the callback executes after the specified interval in milliseconds.
+        /// </summary>
+        /// <param name="delay">the delay in milliseconds</param>
         public override void StartLater(int delay)
         {
             m_sleepTime = delay;
             m_go.Set();
         }
 
+        /// <summary>
+        /// Requests that a previous delay be canceled and the callback be executed immediately
+        /// </summary>
         public override void ShortCircuitDelayRequest()
         {
             m_sleep.Set();
         }
 
+        /// <summary>
+        /// A reset will return the thread to a non-executing/ready state.
+        /// </summary>
         public override void ResetTimer()
         {
             m_go.Reset();
@@ -89,6 +115,10 @@ namespace GSF.Threading
             m_sleepTime = 0;
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public override void Dispose()
         {
             m_disposed = true;

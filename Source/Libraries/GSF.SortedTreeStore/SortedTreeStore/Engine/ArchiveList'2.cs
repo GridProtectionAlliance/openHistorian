@@ -70,7 +70,7 @@ namespace GSF.SortedTreeStore.Engine
         {
             m_filesToDelete = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_filesToDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
-            m_processRemovals = new ScheduledTask(ThreadingMode.Background);
+            m_processRemovals = new ScheduledTask(ThreadingMode.DedicatedBackground);
             m_processRemovals.OnRunWorker += m_processRemovals_OnRunWorker;
             m_processRemovals.OnDispose += m_processRemovals_OnDispose;
             m_processRemovals.OnException += m_processRemovals_OnException;

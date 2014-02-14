@@ -80,7 +80,7 @@ namespace openHistorian.Queues
             m_blocks = new IsolatedQueue<PointData>();
             m_pointStream = new StreamPoints(m_blocks, 1000);
             m_getDatabase = getDatabase;
-            m_worker = new ScheduledTask(ThreadingMode.Foreground);
+            m_worker = new ScheduledTask(ThreadingMode.DedicatedForeground);
             m_worker.OnRunWorker += WorkerDoWork;
             m_worker.OnDispose += WorkerCleanUp;
         }

@@ -281,12 +281,10 @@
     <Compile Include="StepTimer.cs" />
     <Compile Include="Streaming\StreamMux.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
-    <Compile Include="Threading\BackgroundThread.cs" />
+    <Compile Include="Threading\ThreadpoolThread.cs" />
     <Compile Include="Threading\CustomThreadBase.cs" />
-    <Compile Include="Threading\ForegroundThread.cs" />
-    <Compile Include="Threading\Old\ReaderWriterSpinLockSlim.cs" />
+    <Compile Include="Threading\DedicatedThread.cs" />
     <Compile Include="Threading\ScheduledTask.cs" />
-    <Compile Include="Threading\ScheduledTask_Internal.cs" />
     <Compile Include="Threading\StateMachine.cs" />
     <Compile Include="Threading\SynchronousEvent.cs" />
     <Compile Include="Threading\ThreadSafeList.cs" />
@@ -295,7 +293,6 @@
     <Compile Include="Threading\TimeoutOperation.cs" />
     <Compile Include="Threading\WeakAction.cs" />
     <Compile Include="Threading\WeakDelegateBase.cs" />
-    <Compile Include="Threading\Old\Worker.cs" />
     <Compile Include="IO\Unmanaged\CollectionEventArgs.cs" />
     <Compile Include="IO\Unmanaged\Memory.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool.cs" />

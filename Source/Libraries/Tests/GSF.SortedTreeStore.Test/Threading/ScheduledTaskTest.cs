@@ -12,7 +12,7 @@ namespace GSF.Threading.Test
         public void TestDisposed()
         {
             int count = 0;
-            ScheduledTask worker = new ScheduledTask(ThreadingMode.Foreground);
+            ScheduledTask worker = new ScheduledTask(ThreadingMode.DedicatedForeground);
             WeakReference workerWeak = new WeakReference(worker);
             worker = null;
             GC.Collect();
@@ -41,7 +41,7 @@ namespace GSF.Threading.Test
 
             public NestedDispose()
             {
-                worker = new ScheduledTask(ThreadingMode.Foreground);
+                worker = new ScheduledTask(ThreadingMode.DedicatedForeground);
                 worker.OnEvent += Method;
             }
 
@@ -54,7 +54,7 @@ namespace GSF.Threading.Test
         [Test]
         public void Test()
         {
-            using (ScheduledTask work = new ScheduledTask(ThreadingMode.Foreground))
+            using (ScheduledTask work = new ScheduledTask(ThreadingMode.DedicatedForeground))
             {
                 work.OnRunWorker += work_DoWork;
                 work.OnDispose += work_CleanupWork;

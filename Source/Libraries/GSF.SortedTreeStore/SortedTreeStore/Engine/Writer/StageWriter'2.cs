@@ -101,7 +101,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_maximumAllowedSize = settings.MaximumAllowedSize;
             m_syncRoot = new object();
             m_onRollover = onRollover;
-            m_rolloverTask = new ScheduledTask(ThreadingMode.Foreground);
+            m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground);
             m_rolloverTask.OnEvent += ProcessRollover;
             m_rolloverTask.Start(m_rolloverInterval);
         }

@@ -26,13 +26,41 @@ using System;
 
 namespace GSF.Threading
 {
+    /// <summary>
+    /// Functions that might be executed by <see cref="ScheduledTask"/>. 
+    /// This allows for multiple types of threads to be created, such as one that uses
+    /// the threadpool, or one that uses a dedicated thread that is a foreground thread.
+    /// 
+    /// All calls to this class need to be properly coordinated.
+    /// </summary>
     internal abstract class CustomThreadBase 
         : IDisposable
     {
+        /// <summary>
+        /// Requests that the callback executes immediately.
+        /// </summary>
         public abstract void StartNow();
+       
+        /// <summary>
+        /// Requests that the callback executes after the specified interval in milliseconds.
+        /// </summary>
+        /// <param name="delay">the delay in milliseconds</param>
         public abstract void StartLater(int delay);
+
+        /// <summary>
+        /// Requests that a previous delay be canceled and the callback be executed immediately
+        /// </summary>
         public abstract void ShortCircuitDelayRequest();
+
+        /// <summary>
+        /// A reset will return the thread to a non-executing/ready state.
+        /// </summary>
         public abstract void ResetTimer();
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public abstract void Dispose();
     }
 }

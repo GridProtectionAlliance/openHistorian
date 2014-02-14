@@ -29,10 +29,17 @@ namespace GSF.Threading
     /// <summary>
     /// Helps facilitate a multithreaded state machine.
     /// </summary>
+    /// <remarks>
+    /// State machine variables must be integers since <see cref="Interlocked"/> methods require premitive types.
+    /// </remarks>
     public class StateMachine
     {
         private int m_state;
 
+        /// <summary>
+        /// Creates a new <see cref="StateMachine"/>
+        /// </summary>
+        /// <param name="initialState">the state to initially set to</param>
         public StateMachine(int initialState)
         {
             m_state = initialState;
@@ -45,6 +52,9 @@ namespace GSF.Threading
         /// <param name="nextState">The state to change to</param>
         /// <returns>True if the state changed from the previous state to the next state. 
         /// False if unsuccessful.</returns>
+        /// <remarks>
+        /// A full memory fence is implied in this command.
+        /// </remarks>
         public bool TryChangeState(int prevState, int nextState)
         {
             bool success;
@@ -52,22 +62,6 @@ namespace GSF.Threading
             success = (m_state == prevState && Interlocked.CompareExchange(ref m_state, nextState, prevState) == prevState);
             Thread.MemoryBarrier();
             return success;
-        }
-
-        /// <summary>
-        /// Attempts to change the state of this machine from any one of the previous states to <see cref="nextState"/>.
-        /// </summary>
-        /// <param name="prevState1">The state to check first</param>
-        /// <param name="prevState2">The state to check Second</param>
-        /// <param name="nextState">The state to change to</param>
-        /// <returns>True if the state changed from the previous state to the next state. 
-        /// False if unsuccessful.</returns>
-        /// <remarks>The order here matters. Make sure to list the previous states in order so if the state happens to progress 
-        /// in the middle of this operation, it can be caught by the later operation.</remarks>
-        public bool TryChangeStates(int prevState1, int prevState2, int nextState)
-        {
-            return TryChangeState(prevState1, nextState)
-                   || TryChangeState(prevState2, nextState);
         }
 
         /// <summary>
@@ -95,6 +89,11 @@ namespace GSF.Threading
             Thread.MemoryBarrier();
         }
 
+        /// <summary>
+        /// Implicity conversion of the state to the integer value of the state.
+        /// </summary>
+        /// <param name="machine"></param>
+        /// <returns></returns>
         public static implicit operator int(StateMachine machine)
         {
             return machine.State;

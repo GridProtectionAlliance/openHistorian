@@ -120,7 +120,7 @@ namespace openVisN.Framework
             m_enabled = true;
             m_syncEvent = new SynchronousEvent<QueryResultsEventArgs>();
             m_syncEvent.CustomEvent += m_syncEvent_CustomEvent;
-            m_async = new ScheduledTask(ThreadingMode.Foreground);
+            m_async = new ScheduledTask(ThreadingMode.DedicatedForeground);
             m_async.OnRunWorker += AsyncDoWork;
             m_async.OnException += OnError;
             m_activeSignals = new List<MetadataBase>();

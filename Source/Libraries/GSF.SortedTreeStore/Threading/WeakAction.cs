@@ -36,6 +36,10 @@ namespace GSF.Threading
         {
         }
 
+        /// <summary>
+        /// Attempts to invoke the delegate to a weak reference object.
+        /// </summary>
+        /// <returns>True if successful, false if not</returns>
         public bool TryInvoke()
         {
             return TryInvokeInternal(null);

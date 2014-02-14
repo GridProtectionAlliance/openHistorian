@@ -143,7 +143,7 @@ namespace GSF.Collections
             m_pooledNodes = new ResourceQueue<IsolatedNode<T>>(() => new IsolatedNode<T>(m_elementsPerNode), 2, 10);
             m_inboundQueue = new ContinuousQueue<IsolatedNode<T>>();
             m_outboundQueue = new ContinuousQueue<IsolatedNode<T>>();
-            m_workerFlushToFile = new ScheduledTask(ThreadingMode.Foreground);
+            m_workerFlushToFile = new ScheduledTask(ThreadingMode.DedicatedForeground);
             m_workerFlushToFile.OnRunWorker += OnWorkerFlushToFileDoWork;
             m_workerFlushToFile.OnDispose += OnWorkerFlushToFileCleanupWork;
             m_syncRoot = new object();
