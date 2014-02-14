@@ -36,7 +36,7 @@ namespace GSF.Threading
         /// <summary>
         /// Handle that is created when telling the threadpool to do a delayed start.
         /// </summary>
-        private RegisteredWaitHandle m_registeredHandle;
+        private volatile RegisteredWaitHandle m_registeredHandle;
 
         /// <summary>
         /// The callback to execute
@@ -72,12 +72,7 @@ namespace GSF.Threading
         /// <param name="delay">the delay in milliseconds</param>
         public override void StartLater(int delay)
         {
-            if (m_registeredHandle != null)
-            {
-                m_registeredHandle.Unregister(null);
-                m_registeredHandle = null;
-            }
-            m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_waitObject, BeginRunOnTimer, null, delay, true);
+            m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_waitObject, BeginRunOnTimer, null, delay, executeOnlyOnce: true);
         }
 
         /// <summary>
@@ -93,13 +88,7 @@ namespace GSF.Threading
         /// </summary>
         public override void ResetTimer()
         {
-            m_waitObject.Reset();
-
-            if (m_registeredHandle != null)
-            {
-                m_registeredHandle.Unregister(null);
-                m_registeredHandle = null;
-            }
+           m_waitObject.Reset();
         }
 
         /// <summary>
@@ -118,20 +107,13 @@ namespace GSF.Threading
         /// <param name="isTimeout"></param>
         private void BeginRunOnTimer(object state, bool isTimeout)
         {
-            //There is the potential for a race condition, so, I have multiple calls to this
-            if (m_registeredHandle != null)
-            {
-                m_registeredHandle.Unregister(null);
-                m_registeredHandle = null;
-            }
+            //Wait for this race condition to satisfy
+            while (m_registeredHandle == null)
+                ;
+            m_registeredHandle.Unregister(null);
+            m_registeredHandle = null;
 
             m_callback.TryInvoke();
-            
-            if (m_registeredHandle != null)
-            {
-                m_registeredHandle.Unregister(null);
-                m_registeredHandle = null;
-            }
         }
 
         /// <summary>
@@ -140,11 +122,6 @@ namespace GSF.Threading
         /// <filterpriority>2</filterpriority>
         public override void Dispose()
         {
-            if (m_registeredHandle != null)
-            {
-                m_registeredHandle.Unregister(null);
-                m_registeredHandle = null;
-            }
             //Nothing required for background threads.
         }
     }

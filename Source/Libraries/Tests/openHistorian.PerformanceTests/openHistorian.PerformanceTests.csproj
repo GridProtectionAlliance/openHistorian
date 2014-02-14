@@ -88,6 +88,7 @@
     <Compile Include="SocketBenchmark.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="StreamWriterTest.cs" />
+    <Compile Include="Threading\ScheduledTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

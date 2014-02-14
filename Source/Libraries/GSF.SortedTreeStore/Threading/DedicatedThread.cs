@@ -70,7 +70,10 @@ namespace GSF.Threading
                 if (m_disposed)
                     return;
                 m_go.WaitOne(-1);
-                m_sleep.WaitOne(m_sleepTime);
+
+                if (m_sleepTime != 0)
+                    m_sleep.WaitOne(m_sleepTime);
+
                 if (m_disposed)
                     return;
                 m_callback.TryInvoke();
@@ -83,7 +86,6 @@ namespace GSF.Threading
         public override void StartNow()
         {
             m_sleepTime = 0;
-            m_sleep.Set();
             m_go.Set();
         }
 

@@ -197,6 +197,11 @@ namespace GSF.Threading
         private volatile bool m_completelyDisposed;
 
         /// <summary>
+        /// Used as a lightweight spinlock.
+        /// </summary>
+        private int m_spinLock;
+
+        /// <summary>
         /// Only occurs at most once when the <see cref="ScheduledTask"/> has been disposed.
         /// This will only occur if <see cref="Dispose"/> method is called. It will not be raised
         /// if either the finalizer disposes of the class, or if <see cref="DisposeWithoutWait"/> is called.
@@ -321,9 +326,7 @@ namespace GSF.Threading
             {
                 if (m_disposeCalled != 0)
                     return;
-
-                int state = m_stateMachine;
-                switch (state)
+                switch (m_stateMachine)
                 {
                     case State.NotRunning:
                         if (m_stateMachine.TryChangeState(State.NotRunning, State.ScheduledToRunPending))
@@ -366,6 +369,7 @@ namespace GSF.Threading
                         throw new Exception("Unknown State");
                 }
 
+                //Interlocked.Increment(ref m_spinLock);
                 wait.SpinOnce();
             }
         }
@@ -402,8 +406,7 @@ namespace GSF.Threading
                 if (m_disposeCalled != 0)
                     return;
 
-                int state = m_stateMachine;
-                switch (state)
+                switch (m_stateMachine)
                 {
                     case State.NotRunning:
                         if (m_stateMachine.TryChangeState(State.NotRunning, State.ScheduledToRunAfterDelayPending))
@@ -501,8 +504,7 @@ namespace GSF.Threading
                     return NextAction.Quit;
                 }
 
-                int state = m_stateMachine;
-                switch (state)
+                switch (m_stateMachine)
                 {
                     case State.Running:
                         if (m_stateMachine.TryChangeState(State.Running, State.NotRunningPending))
@@ -560,8 +562,7 @@ namespace GSF.Threading
                     Thread.MemoryBarrier();
                     while (true)
                     {
-                        int state = m_stateMachine;
-                        switch (state)
+                        switch (m_stateMachine)
                         {
                             case State.NotRunning:
                                 if (m_stateMachine.TryChangeState(State.NotRunning, State.Disposed))
@@ -620,11 +621,7 @@ namespace GSF.Threading
 
             while (true)
             {
-                if (m_disposeCalled != 0)
-                    return;
-
-                int state = m_stateMachine;
-                switch (state)
+                switch (m_stateMachine)
                 {
                     case State.NotRunning:
                         if (m_stateMachine.TryChangeState(State.NotRunning, State.Disposed))

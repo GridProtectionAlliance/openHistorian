@@ -34,7 +34,7 @@ namespace GSF.Threading
     /// </remarks>
     public class StateMachine
     {
-        private int m_state;
+        private volatile int m_state;
 
         /// <summary>
         /// Creates a new <see cref="StateMachine"/>
@@ -52,41 +52,29 @@ namespace GSF.Threading
         /// <param name="nextState">The state to change to</param>
         /// <returns>True if the state changed from the previous state to the next state. 
         /// False if unsuccessful.</returns>
-        /// <remarks>
-        /// A full memory fence is implied in this command.
-        /// </remarks>
         public bool TryChangeState(int prevState, int nextState)
         {
-            bool success;
-            Thread.MemoryBarrier();
-            success = (m_state == prevState && Interlocked.CompareExchange(ref m_state, nextState, prevState) == prevState);
-            Thread.MemoryBarrier();
-            return success;
+            return (m_state == prevState && Interlocked.CompareExchange(ref m_state, nextState, prevState) == prevState);
         }
 
         /// <summary>
-        /// Gets the current state of the State Machine. Provides a full memory fence.
+        /// Gets the current state of the State Machine. 
         /// </summary>
         public int State
         {
             get
             {
-                Thread.MemoryBarrier();
-                int value = m_state;
-                Thread.MemoryBarrier();
-                return value;
+                return m_state;
             }
         }
 
         /// <summary>
-        /// Sets the value of the state. Also comes with a full memory fence.
+        /// Sets the value of the state.
         /// </summary>
         /// <param name="state"></param>
         public void SetState(int state)
         {
-            Thread.MemoryBarrier();
             m_state = state;
-            Thread.MemoryBarrier();
         }
 
         /// <summary>
