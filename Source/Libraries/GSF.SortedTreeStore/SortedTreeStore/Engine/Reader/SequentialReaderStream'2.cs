@@ -40,7 +40,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;
-        private ulong m_stopKey;
         private volatile bool m_timedOut;
         private long m_pointCount;
 
@@ -103,7 +102,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
             m_keySeekFilter.Reset();
             if (m_keySeekFilter.NextWindow())
             {
-                m_stopKey = m_keySeekFilter.EndOfFrame.Timestamp;
                 SeekToKey(m_keySeekFilter.StartOfFrame);
             }
             else
@@ -327,8 +325,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
         TryAgain:
             if (m_keySeekFilter != null && m_keySeekFilter.NextWindow())
             {
-                m_stopKey = m_keySeekFilter.EndOfFrame.Timestamp;
-
                 //If the current point is a valid point. 
                 //Check to see if the seek operation can be avoided.
                 //or if the next available point does not exist in this window.
@@ -351,7 +347,9 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 SeekAllArchiveStreamsForward(m_keySeekFilter.StartOfFrame);
                 return false;
             }
-            m_stopKey = 0;
+            EOS = true;
+            m_firstTableScanner = null;
+            m_firstTable = null;
             return false;
 
         }
