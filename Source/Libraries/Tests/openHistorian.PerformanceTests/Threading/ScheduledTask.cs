@@ -25,8 +25,7 @@ namespace openHistorian.PerformanceTests.Threading
 
         void Test(ThreadingMode mode)
         {
-
-            const int Count = 10000000;
+            const int Count = 100000000;
             Stopwatch sw = new Stopwatch();
             m_doWorkCount = 0;
             using (ScheduledTask work = new ScheduledTask(mode))
@@ -75,7 +74,7 @@ namespace openHistorian.PerformanceTests.Threading
         void TestTimed(ThreadingMode mode)
         {
 
-            const int Count = 10000000;
+            const int Count = 100000000;
             Stopwatch sw = new Stopwatch();
             m_doWorkCount = 0;
             using (ScheduledTask work = new ScheduledTask(mode))
@@ -87,7 +86,7 @@ namespace openHistorian.PerformanceTests.Threading
                 for (int x = 0; x < 1000; x++)
                 {
                     work.Start(1);
-                    //work.Start();
+                    work.Start();
                 }
 
                 sw.Stop();
@@ -104,7 +103,7 @@ namespace openHistorian.PerformanceTests.Threading
                 for (int x = 0; x < Count; x++)
                 {
                     work.Start(1);
-                    //work.Start();
+                    work.Start();
                 }
 
                 sw.Stop();
@@ -131,7 +130,7 @@ namespace openHistorian.PerformanceTests.Threading
         {
             int workCount;
 
-            const int Count = 10000000;
+            const int Count = 100000000;
             Stopwatch sw = new Stopwatch();
             m_doWorkCount = 0;
             using (ScheduledTask work = new ScheduledTask(mode))
@@ -179,7 +178,7 @@ namespace openHistorian.PerformanceTests.Threading
             try
             {
                 ScheduledTask task = (ScheduledTask)obj;
-                const int Count = 10000000;
+                const int Count = 100000000;
                 for (int x = 0; x < Count; x++)
                     task.Start();
             }

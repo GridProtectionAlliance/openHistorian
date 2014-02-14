@@ -109,64 +109,61 @@ namespace GSF.Threading
         : IDisposable
     {
 
-        private enum NextAction
-        {
-            RunAgain,
-            Quit
-        }
-
         /// <summary>
         /// State variables for the internal state machine.
         /// </summary>
         private static class State
         {
             /// <summary>
-            /// A prestage event that is set right before NotRunning is set.
+            /// A state to set the machine to when addional work needs to be done before finalizing the next state.
+            /// Never leave in this state, never change from this state unless you are the one who set this state.
             /// </summary>
-            public const int NotRunningPending = 0;
+            public const int PendingAction = 0;
+
             /// <summary>
             /// Indicates that the task is not running.
             /// </summary>
             public const int NotRunning = 1;
 
             /// <summary>
-            /// A prestage event that is set right before ScheduledToRunAfterDelay is set.
-            /// </summary>
-            public const int ScheduledToRunAfterDelayPending = 2;
-            /// <summary>
             /// Indicates that the task is scheduled to execute after a user specified delay
             /// </summary>
-            public const int ScheduledToRunAfterDelay = 3;
+            public const int ScheduledToRunAfterDelay = 2;
 
-            /// <summary>
-            /// A prestage event that is set right before ScheduledToRun is set.
-            /// </summary>
-            public const int ScheduledToRunPending = 4;
             /// <summary>
             /// Indicates the task has been queue for immediate execution, but has not started running yet.
             /// </summary>
-            public const int ScheduledToRun = 5;
+            public const int ScheduledToRun = 3;
+
             /// <summary>
             /// Indicates the task is currently running.
             /// </summary>
-            public const int Running = 6;
+            public const int Running = 4;
+
             /// <summary>
             /// Indicates that the task is running, but has been requested to run again immediately after finishing.
             /// </summary>
-            public const int RunAgain = 7;
+            public const int RunAgain = 5;
 
-            /// <summary>
-            /// A prestage event that is set right before RunAgainAfterDelay is set.
-            /// </summary>
-            public const int RunAgainAfterDelayPending = 8;
             /// <summary>
             /// Indicates that the task is running, but has been requested to run again after a user specified interval.
             /// </summary>
-            public const int RunAgainAfterDelay = 9;
+            public const int RunAgainAfterDelay = 6;
+
             /// <summary>
-            /// Indicates that the class has been disposed and no more execution is possible.
+            /// Indicates that the worker thread should run one more time before terminating.
             /// </summary>
-            public const int Disposed = 10;
+            public const int TerminateQueuedRunAgain = 7;
+
+            /// <summary>
+            /// Indicates that the worker thread should terminate before running the task.
+            /// </summary>
+            public const int TerminateQueued = 8;
+
+            /// <summary>
+            /// Indicates that the class has been Terminated and no more execution is possible.
+            /// </summary>
+            public const int Terminated = 9;
         }
 
         /// <summary>
@@ -176,7 +173,7 @@ namespace GSF.Threading
         /// <summary>
         /// The wait handle that signals after the worker thread has been completed and is now disposed.
         /// </summary>
-        private readonly ManualResetEvent m_hasQuitWaitHandle;
+        private ManualResetEvent m_hasQuitWaitHandle;
         /// <summary>
         /// The current state of the state machine.
         /// </summary>
@@ -186,29 +183,10 @@ namespace GSF.Threading
         /// The delay time in milliseconds that has been requested when a RunAgainAfterDelay has been queued
         /// </summary>
         private volatile int m_delayRequested;
-        /// <summary>
-        /// A non-zero value means true.  Occurs when Disposing has been initiated for the task.
-        /// </summary>
-        private volatile int m_disposeCalled = 0;
-
-        /// <summary>
-        /// Occurs when the class has been completely disposed.
-        /// </summary>
-        private volatile bool m_completelyDisposed;
-
-        /// <summary>
-        /// Used as a lightweight spinlock.
-        /// </summary>
-        private int m_spinLock;
 
         /// <summary>
         /// Only occurs at most once when the <see cref="ScheduledTask"/> has been disposed.
-        /// This will only occur if <see cref="Dispose"/> method is called. It will not be raised
-        /// if either the finalizer disposes of the class, or if <see cref="DisposeWithoutWait"/> is called.
         /// </summary>
-        /// <remarks>
-        /// The thread that executes this OnDispose event is the same thread that called <see cref="Dispose"/> method.
-        /// </remarks>
         public event EventHandler<ScheduledTaskEventArgs> OnDispose;
 
         /// <summary>
@@ -232,6 +210,7 @@ namespace GSF.Threading
         /// </summary>
         public event UnhandledExceptionEventHandler OnException;
 
+
         /// <summary>
         /// Creates a task that can be manually scheduled to run.
         /// </summary>
@@ -242,15 +221,15 @@ namespace GSF.Threading
         {
             if (threadMode == ThreadingMode.DedicatedForeground)
             {
-                m_workerThread = new DedicatedThread(ProcessStateRunning, false);
+                m_workerThread = new DedicatedThread(ProcessRunningState, false);
             }
             else if (threadMode == ThreadingMode.DedicatedBackground)
             {
-                m_workerThread = new DedicatedThread(ProcessStateRunning, true);
+                m_workerThread = new DedicatedThread(ProcessRunningState, true);
             }
             else if (threadMode == ThreadingMode.ThreadPool)
             {
-                m_workerThread = new ThreadpoolThread(ProcessStateRunning);
+                m_workerThread = new ThreadpoolThread(ProcessRunningState);
             }
             else
             {
@@ -265,31 +244,7 @@ namespace GSF.Threading
         /// </summary>
         ~ScheduledTask()
         {
-            DisposeMethod(waitForExit: false);
-        }
-
-        /// <summary>
-        /// Gets if this class is trying to dispose. This is useful for the worker thread to know.
-        /// So it can try to quit early if need be since the disposing thread will be blocked 
-        /// until the worker has complete. 
-        /// </summary>
-        public bool DisposedCalled
-        {
-            get
-            {
-                return m_disposeCalled != 0;
-            }
-        }
-
-        /// <summary>
-        /// Determines when everything has been disposed. 
-        /// </summary>
-        public bool CompletelyDisposed
-        {
-            get
-            {
-                return m_completelyDisposed;
-            }
+            Terminate();
         }
 
         /// <summary>
@@ -298,7 +253,18 @@ namespace GSF.Threading
         /// </summary>
         public void Dispose()
         {
-            DisposeMethod(waitForExit: true);
+            Terminate();
+
+            //Potential for extended contention on this lock, but that's ok because it would have to wait for
+            //m_hasQuitWaitHandle anyway.
+            lock (m_workerThread)
+            {
+                if (m_hasQuitWaitHandle != null)
+                {
+                    m_hasQuitWaitHandle.WaitOne();
+                    m_hasQuitWaitHandle = null;
+                }
+            }
         }
 
         /// <summary>
@@ -306,7 +272,7 @@ namespace GSF.Threading
         /// </summary>
         public void DisposeWithoutWait()
         {
-            DisposeMethod(waitForExit: false);
+            Terminate();
         }
 
         /// <summary>
@@ -318,18 +284,14 @@ namespace GSF.Threading
         /// </remarks>
         public void Start()
         {
-            if (m_completelyDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
             SpinWait wait = default(SpinWait);
 
             while (true)
             {
-                if (m_disposeCalled != 0)
-                    return;
                 switch (m_stateMachine)
                 {
                     case State.NotRunning:
-                        if (m_stateMachine.TryChangeState(State.NotRunning, State.ScheduledToRunPending))
+                        if (m_stateMachine.TryChangeState(State.NotRunning, State.PendingAction))
                         {
                             m_workerThread.StartNow();
                             m_stateMachine.SetState(State.ScheduledToRun);
@@ -337,7 +299,7 @@ namespace GSF.Threading
                         }
                         break;
                     case State.ScheduledToRunAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.ScheduledToRunPending))
+                        if (m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.PendingAction))
                         {
                             m_workerThread.ShortCircuitDelayRequest();
                             m_stateMachine.SetState(State.ScheduledToRun);
@@ -357,20 +319,17 @@ namespace GSF.Threading
                         }
                         break;
                     case State.RunAgain:
-                    case State.ScheduledToRunPending:
                     case State.ScheduledToRun:
-                    case State.Disposed:
+                    case State.Terminated:
+                    case State.TerminateQueued:
+                    case State.TerminateQueuedRunAgain:
                         return;
-                    case State.RunAgainAfterDelayPending:
-                    case State.NotRunningPending:
-                    case State.ScheduledToRunAfterDelayPending:
+                    case State.PendingAction:
                         break;
-                    default:
-                        throw new Exception("Unknown State");
                 }
 
                 //Interlocked.Increment(ref m_spinLock);
-                wait.SpinOnce();
+                //wait.SpinOnce();
             }
         }
 
@@ -397,19 +356,14 @@ namespace GSF.Threading
         /// </remarks>
         public void Start(int delay)
         {
-            if (m_completelyDisposed)
-                throw new ObjectDisposedException(GetType().FullName);
             SpinWait wait = new SpinWait();
 
             while (true)
             {
-                if (m_disposeCalled != 0)
-                    return;
-
                 switch (m_stateMachine)
                 {
                     case State.NotRunning:
-                        if (m_stateMachine.TryChangeState(State.NotRunning, State.ScheduledToRunAfterDelayPending))
+                        if (m_stateMachine.TryChangeState(State.NotRunning, State.PendingAction))
                         {
                             m_workerThread.StartLater(delay);
                             m_stateMachine.SetState(State.ScheduledToRunAfterDelay);
@@ -417,7 +371,7 @@ namespace GSF.Threading
                         }
                         break;
                     case State.Running:
-                        if (m_stateMachine.TryChangeState(State.Running, State.RunAgainAfterDelayPending))
+                        if (m_stateMachine.TryChangeState(State.Running, State.PendingAction))
                         {
                             m_workerThread.ResetTimer();
                             m_delayRequested = delay;
@@ -425,21 +379,18 @@ namespace GSF.Threading
                             return;
                         }
                         break;
-                    case State.ScheduledToRunAfterDelayPending:
                     case State.ScheduledToRunAfterDelay:
-                    case State.ScheduledToRunPending:
                     case State.ScheduledToRun:
                     case State.RunAgain:
-                    case State.RunAgainAfterDelayPending:
                     case State.RunAgainAfterDelay:
-                    case State.Disposed:
+                    case State.Terminated:
+                    case State.TerminateQueued:
+                    case State.TerminateQueuedRunAgain:
                         return;
-                    case State.NotRunningPending:
+                    case State.PendingAction:
                         break;
-                    default:
-                        throw new Exception("Unknown State");
                 }
-                wait.SpinOnce();
+                //wait.SpinOnce();
             }
         }
 
@@ -448,221 +399,151 @@ namespace GSF.Threading
         /// The method executed in the state: Running. This is invoked by the 
         /// thread when it is time to run this state.
         /// </summary>
-        private void ProcessStateRunning()
-        {
-            SpinWait wait = new SpinWait();
-            while (true)
-            {
-                bool wasScheduled = m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.Running);
-                bool wasRunNow = m_stateMachine.TryChangeState(State.ScheduledToRun, State.Running);
-                bool isRerun = false;
-                if (wasScheduled || wasRunNow)
-                {
-                    while (true)
-                    {
-                        if (m_disposeCalled != 0)
-                        {
-                            SetStateToDisposeWorkerThread();
-                            m_workerThread.Dispose();
-                            m_hasQuitWaitHandle.Set();
-                            m_completelyDisposed = true;
-                            return;
-                        }
-
-                        ProcessClientCallback(new ScheduledTaskEventArgs(isOnInterval: wasScheduled, isDisposing: false, isRerun: isRerun));
-
-                        if (CheckAfterRunAction() == NextAction.Quit)
-                        {
-                            return;
-                        }
-                        isRerun = true;
-                        wasScheduled = false;
-                        wasRunNow = false;
-                    }
-                }
-                wait.SpinOnce();
-            }
-        }
-
-        /// <summary>
-        /// Occurs after the <see cref="ProcessStateRunning"/>
-        /// to set the machine in its next state.
-        /// </summary>
-        /// <returns></returns>
-        private NextAction CheckAfterRunAction()
+        private void ProcessRunningState()
         {
             SpinWait wait = new SpinWait();
 
             while (true)
             {
-                if (m_disposeCalled != 0)
-                {
-                    SetStateToDisposeWorkerThread();
-                    m_workerThread.Dispose();
-                    m_hasQuitWaitHandle.Set();
-                    m_completelyDisposed = true;
-                    return NextAction.Quit;
-                }
-
                 switch (m_stateMachine)
                 {
+                    case State.ScheduledToRun:
+                        if (m_stateMachine.TryChangeState(State.ScheduledToRun, State.Running))
+                        {
+                            ProcessClientCallback(isOnInterval: false, isRerun: false);
+                        }
+                        break;
+                    case State.ScheduledToRunAfterDelay:
+                        if (m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.Running))
+                        {
+                            ProcessClientCallback(isOnInterval: true, isRerun: false);
+                        }
+                        break;
                     case State.Running:
-                        if (m_stateMachine.TryChangeState(State.Running, State.NotRunningPending))
+                        if (m_stateMachine.TryChangeState(State.Running, State.PendingAction))
                         {
                             m_workerThread.ResetTimer();
                             m_stateMachine.SetState(State.NotRunning);
-                            return NextAction.Quit;
+                            return;
                         }
                         break;
                     case State.RunAgain:
                         if (m_stateMachine.TryChangeState(State.RunAgain, State.Running))
                         {
-                            return NextAction.RunAgain;
+                            ProcessClientCallback(isOnInterval: false, isRerun: true);
                         }
                         break;
                     case State.RunAgainAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.RunAgainAfterDelay, State.ScheduledToRunAfterDelayPending))
+                        if (m_stateMachine.TryChangeState(State.RunAgainAfterDelay, State.PendingAction))
                         {
                             m_workerThread.StartLater(m_delayRequested);
                             m_stateMachine.SetState(State.ScheduledToRunAfterDelay);
-                            return NextAction.Quit;
+                            return;
                         }
                         break;
-                    case State.Disposed:
-                    case State.RunAgainAfterDelayPending:
-                        break;
-                    default:
-                        throw new Exception("Should never be in this state.");
-                }
-                if (m_disposeCalled != 0)
-                {
-                    SetStateToDisposeWorkerThread();
-                    m_workerThread.Dispose();
-                    m_hasQuitWaitHandle.Set();
-                    m_completelyDisposed = true;
-                    return NextAction.Quit;
-                }
-                wait.SpinOnce();
-            }
-        }
-
-        /// <summary>
-        /// Attempts to clean up all resources used by this class. This method is similiar to <see cref="Dispose"/>
-        /// except it does not wait for the worker thread to actually quit, and the disposing callback is not executed.
-        /// </summary>
-        void DisposeMethod(bool waitForExit)
-        {
-            SpinWait wait = new SpinWait();
-
-            if (m_disposeCalled == 0)
-            {
-                //Prevents duplicate calls in an async condition.
-                if (Interlocked.Increment(ref m_disposeCalled) == 1)
-                {
-                    Thread.MemoryBarrier();
-                    while (true)
-                    {
-                        switch (m_stateMachine)
+                    case State.TerminateQueued:
+                        if (m_stateMachine.TryChangeState(State.TerminateQueued, State.PendingAction))
                         {
-                            case State.NotRunning:
-                                if (m_stateMachine.TryChangeState(State.NotRunning, State.Disposed))
-                                {
-                                    m_workerThread.Dispose();
-                                    m_completelyDisposed = true;
-                                    m_hasQuitWaitHandle.Set();
-                                    if (waitForExit)
-                                    {
-                                        ProcessClientCallbackDisposing(new ScheduledTaskEventArgs(false, true, false));
-                                    }
-                                    return;
-                                }
-                                break;
-                            case State.ScheduledToRunAfterDelay:
-                                if (m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.ScheduledToRunPending))
-                                {
-                                    m_workerThread.ShortCircuitDelayRequest();
-                                    m_stateMachine.SetState(State.ScheduledToRun);
-                                    if (waitForExit)
-                                    {
-                                        m_hasQuitWaitHandle.WaitOne();
-                                        ProcessClientCallbackDisposing(new ScheduledTaskEventArgs(false, true, false));
-                                    }
-                                    return;
-                                }
-                                break;
-                            case State.ScheduledToRun:
-                            case State.Running:
-                            case State.RunAgain:
-                                if (waitForExit)
-                                {
-                                    m_hasQuitWaitHandle.WaitOne();
-                                    ProcessClientCallbackDisposing(new ScheduledTaskEventArgs(false, true, false));
-                                }
-                                return;
-                            case State.RunAgainAfterDelay:
-                                m_stateMachine.TryChangeState(State.RunAgainAfterDelay, State.RunAgain);
-                                break;
+                            m_workerThread.StopExecution();
+                            m_hasQuitWaitHandle.Set();
+                            m_stateMachine.SetState(State.Terminated);
+                            ProcessClientCallbackDisposing(false, false);
+                            return;
                         }
-                        wait.SpinOnce();
-                    }
+                        break;
+                    case State.TerminateQueuedRunAgain:
+                        if (m_stateMachine.TryChangeState(State.TerminateQueuedRunAgain, State.TerminateQueued))
+                        {
+                            ProcessClientCallback(isOnInterval: false, isRerun: false);
+                        }
+                        break;
+                    case State.Terminated:
+                        if (m_stateMachine.TryChangeState(State.Terminated, State.PendingAction))
+                        {
+                            throw new Exception("InvalidState");
+                        }
+                        break;
+                    case State.NotRunning:
+                        if (m_stateMachine.TryChangeState(State.NotRunning, State.PendingAction))
+                        {
+                            throw new Exception("InvalidState");
+                        }
+                        break;
+                    case State.PendingAction:
+                        break;
                 }
-
+                //wait.SpinOnce();
             }
         }
 
-
         /// <summary>
-        /// Safely changes the state of the worker to Dispose. 
-        /// This should only be called by the working thread.
+        /// Terminates the execution of the worker gracefully.
         /// </summary>
-        private void SetStateToDisposeWorkerThread()
+        void Terminate()
         {
             SpinWait wait = new SpinWait();
-
             while (true)
             {
                 switch (m_stateMachine)
                 {
                     case State.NotRunning:
-                        if (m_stateMachine.TryChangeState(State.NotRunning, State.Disposed))
+                        if (m_stateMachine.TryChangeState(State.NotRunning, State.PendingAction))
+                        {
+                            m_workerThread.StopExecution();
+                            m_hasQuitWaitHandle.Set();
+                            m_stateMachine.SetState(State.Terminated);
+                            ProcessClientCallbackDisposing(false, false);
                             return;
-                        break;
-                    case State.Running:
-                        if (m_stateMachine.TryChangeState(State.Running, State.Disposed))
-                            return;
+                        }
                         break;
                     case State.ScheduledToRunAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.Disposed))
+                        if (m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.PendingAction))
+                        {
+                            m_workerThread.ShortCircuitDelayRequest();
+                            m_stateMachine.SetState(State.TerminateQueuedRunAgain);
                             return;
+                        }
                         break;
                     case State.ScheduledToRun:
-                        if (m_stateMachine.TryChangeState(State.ScheduledToRun, State.Disposed))
+                        if (m_stateMachine.TryChangeState(State.ScheduledToRun, State.TerminateQueuedRunAgain))
+                        {
                             return;
+                        }
+                        break;
+                    case State.Running:
+                        if (m_stateMachine.TryChangeState(State.Running, State.TerminateQueued))
+                        {
+                            return;
+                        }
                         break;
                     case State.RunAgain:
-                        if (m_stateMachine.TryChangeState(State.RunAgain, State.Disposed))
+                        if (m_stateMachine.TryChangeState(State.RunAgain, State.TerminateQueuedRunAgain))
+                        {
                             return;
+                        }
                         break;
                     case State.RunAgainAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.RunAgainAfterDelay, State.Disposed))
+                        if (m_stateMachine.TryChangeState(State.RunAgainAfterDelay, State.TerminateQueuedRunAgain))
+                        {
                             return;
+                        }
                         break;
-                    case State.Disposed:
+                    case State.Terminated:
+                    case State.TerminateQueued:
+                    case State.TerminateQueuedRunAgain:
                         return;
-                    case State.ScheduledToRunPending:
-                    case State.RunAgainAfterDelayPending:
-                    case State.ScheduledToRunAfterDelayPending:
-                    case State.NotRunningPending:
+                    case State.PendingAction:
                         break;
-                    default:
-                        throw new Exception("Unknown State");
+
                 }
-                wait.SpinOnce();
+                //wait.SpinOnce();
             }
         }
 
-        private void ProcessClientCallbackDisposing(ScheduledTaskEventArgs eventArgs)
+        private void ProcessClientCallbackDisposing(bool isOnInterval, bool isRerun)
         {
+            var eventArgs = new ScheduledTaskEventArgs(isOnInterval, true, isRerun);
+
             if (!eventArgs.IsDisposing)
                 throw new Exception("Internal state error");
 
@@ -703,9 +584,10 @@ namespace GSF.Threading
 
         }
 
-
-        private void ProcessClientCallback(ScheduledTaskEventArgs eventArgs)
+        private void ProcessClientCallback(bool isOnInterval, bool isRerun)
         {
+            var eventArgs = new ScheduledTaskEventArgs(isOnInterval, false, isRerun);
+
             if (eventArgs.IsDisposing)
                 throw new Exception();
 

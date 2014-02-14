@@ -22,8 +22,6 @@
 //
 //******************************************************************************************************
 
-using System;
-
 namespace GSF.Threading
 {
     /// <summary>
@@ -34,7 +32,6 @@ namespace GSF.Threading
     /// All calls to this class need to be properly coordinated.
     /// </summary>
     internal abstract class CustomThreadBase 
-        : IDisposable
     {
         /// <summary>
         /// Requests that the callback executes immediately.
@@ -56,11 +53,11 @@ namespace GSF.Threading
         /// A reset will return the thread to a non-executing/ready state.
         /// </summary>
         public abstract void ResetTimer();
-
+        
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Gracefully stops the execution of the custom thread. 
+        /// Similiar to Dispose, except, this action must also be properly coordinated.
         /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public abstract void Dispose();
+        public abstract void StopExecution();
     }
 }

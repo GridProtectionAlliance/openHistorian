@@ -46,7 +46,7 @@ namespace GSF.Threading
         /// <summary>
         /// The reset event that allows the timer to be short circuited.
         /// </summary>
-        private readonly ManualResetEvent m_waitObject;
+        private ManualResetEvent m_waitObject;
 
         /// <summary>
         /// Initializes a <see cref="ThreadpoolThread"/> that will execute the provided callback.
@@ -116,13 +116,15 @@ namespace GSF.Threading
             m_callback.TryInvoke();
         }
 
+
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Gracefully stops the execution of the custom thread. 
+        /// Similiar to Dispose, except, this action must also be properly coordinated.
         /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public override void Dispose()
+        public override void StopExecution()
         {
-            //Nothing required for background threads.
+            m_waitObject.Dispose();
+            m_waitObject = null;
         }
     }
 }

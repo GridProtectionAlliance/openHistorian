@@ -37,12 +37,12 @@ namespace GSF.Threading
     internal class DedicatedThread
         : CustomThreadBase
     {
-        private readonly Thread m_thread;
-        private readonly WeakAction m_callback;
-        private readonly ManualResetEvent m_go;
-        private readonly ManualResetEvent m_sleep;
+        private Thread m_thread;
+        private WeakAction m_callback;
+        private ManualResetEvent m_go;
+        private ManualResetEvent m_sleep;
         private volatile int m_sleepTime;
-        private volatile bool m_disposed;
+        private volatile bool m_stopExecuting;
 
         /// <summary>
         /// Initializes a <see cref="DedicatedThread"/> that will execute the provided callback.
@@ -67,15 +67,22 @@ namespace GSF.Threading
         {
             while (true)
             {
-                if (m_disposed)
-                    return;
                 m_go.WaitOne(-1);
+
+                if (m_stopExecuting)
+                {
+                    m_go.Dispose();
+                    m_go = null;
+                    m_sleep.Dispose();
+                    m_sleep = null;
+                    m_callback = null;
+                    m_thread = null;
+                    return;
+                }
 
                 if (m_sleepTime != 0)
                     m_sleep.WaitOne(m_sleepTime);
 
-                if (m_disposed)
-                    return;
                 m_callback.TryInvoke();
             }
         }
@@ -118,14 +125,12 @@ namespace GSF.Threading
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Gracefully stops the execution of the custom thread. 
+        /// Similiar to Dispose, except, this action must also be properly coordinated.
         /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public override void Dispose()
+        public override void StopExecution()
         {
-            m_disposed = true;
-            m_sleepTime = 0;
-            m_sleep.Set();
+            m_stopExecuting = true;
             m_go.Set();
         }
     }

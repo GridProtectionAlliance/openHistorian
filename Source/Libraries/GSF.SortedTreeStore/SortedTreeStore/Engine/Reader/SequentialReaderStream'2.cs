@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SequentialReaderStream'2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -18,7 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  10/25/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//  2/14/2014 - Steven E. Chisholm
+//       Generated original version of source code. 
 //
 //******************************************************************************************************
 
