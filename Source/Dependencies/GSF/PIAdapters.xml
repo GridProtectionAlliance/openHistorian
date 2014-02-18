@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PIAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:PIAdapters.PIOutputAdapter">
+            <summary>
+            Exports measurements to PI if the point tag or alternate tag corresponds to a PI point's tag name.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.#ctor">
+            <summary>
+            Creates a new <see cref="T:PIAdapters.PIOutputAdapter"/>
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIOutputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.Initialize">
+            <summary>
+            Initializes this <see cref="T:PIAdapters.PIOutputAdapter"/>.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.AttemptConnection">
+            <summary>
+            Connects to the configured PI server.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.AttemptDisconnection">
+            <summary>
+            Closes this <see cref="T:PIAdapters.PIOutputAdapter"/> connections to the PI server.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.ProcessMeasurements(GSF.TimeSeries.IMeasurement[])">
+            <summary>
+            Sorts measurements and sends them to the configured PI server in batches
+            </summary>
+            <param name="measurements">Measurements to queue</param>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.MapKeysToPoints">
+            <summary>
+            Resets the PI tag to MeasurementKey mapping for loading data into PI by finding PI points that match either the GSFSchema pointtag or alternatetag
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.RefreshMetadata">
+            <summary>
+            Refreshes metadata using all available and enabled providers.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIOutputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns a brief status of this <see cref="T:PIAdapters.PIOutputAdapter"/>
+            </summary>
+            <param name="maxLength">Maximum number of characters in the status string</param>
+            <returns>Status</returns>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.BulkUpdate">
+            <summary>
+            Set this property true to force the adapter to send bulk updates to PI with the UpdateValues method. Set this property to false to update points one value at a time using UpdateValue method.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.OutputIsForArchive">
+            <summary>
+            Returns true to indicate that this <see cref="T:PIAdapters.PIOutputAdapter"/> is sending measurements to a historian, OSISoft PI.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.UseAsyncConnect">
+            <summary>
+            Returns false to indicate that this <see cref="T:PIAdapters.PIOutputAdapter"/> will connect synchronously
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.ServerName">
+            <summary>
+            Gets or sets the name of the PI server for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.UserName">
+            <summary>
+            Gets or sets the name of the PI user ID for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.Password">
+            <summary>
+            Gets or sets the password used for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.ConnectTimeout">
+            <summary>
+            Gets or sets the timeout interval (in milliseconds) for the adapter's connection
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.RunMetadataSync">
+            <summary>
+            Gets or sets whether or not this adapter should automatically manage metadata for PI points.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.PIPointSource">
+            <summary>
+            Gets or sets the point source string used when automatically creating new PI points during the metadata update
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.PIPointClass">
+            <summary>
+            Gets or sets the point class string used when automatically creating new PI points during the metadata update. On the PI server, this class should inherit from classic.
+            </summary>
+        </member>
+        <member name="T:PIAdapters.PIPBInputAdapter">
+            <summary>
+            Retrieves PI data for non-real time temporal sessions. The real-time PI input adapter is preferred for real-time data due to use of event pipes.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.#ctor">
+            <summary>
+            Creates a new <see cref="T:PIAdapters.PIPBInputAdapter"/> with default values for members
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIPBInputAdapter"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.Initialize">
+            <summary>
+            Reads parameters from the connection string
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns a 1-line status for time-series host console
+            </summary>
+            <param name="maxLength">Maximum number of characters in the status</param>
+            <returns>status message</returns>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.AttemptConnection">
+            <summary>
+            Connects to the configured PI server.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.AttemptDisconnection">
+            <summary>
+            Disconnects from the configured PI server, if the server is currently connected
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIPBInputAdapter.HandleNewMeasurementsRequest(GSF.TimeSeries.MeasurementKey[])">
+            <summary>
+            Prepares the adapter to query data for the points that have been requested for connect on demand. The adapter will
+            look up PI tag names and start up the thread to start the timers and threads necessary to run.
+            </summary>
+            <param name="keys"></param>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.UseAsyncConnect">
+            <summary>
+            Returns false to indicate that this adapter connects synchronously when AttemptConnection is called
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Returns true to indicate that this adapter can process temporal data
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.RequestedOutputMeasurementKeys">
+            <summary>
+            Represents the measurements that this adapter is currently providing because they are being used in the framework
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.ServerName">
+            <summary>
+            Gets or sets the name of the PI server for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.UserName">
+            <summary>
+            Gets or sets the name of the PI user ID for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.Password">
+            <summary>
+            Gets or sets the password used for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="T:PIAdapters.PIRTInputAdapter">
+            <summary>
+            Uses PI event pipes to deliver real-time PI data to GSF host
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.#ctor">
+            <summary>
+            Receives real-time updates from PI
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.Initialize">
+            <summary>
+            Reads values from the connection string and prepares this <see cref="T:PIAdapters.PIRTInputAdapter"/> for connecting to PI
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.AttemptConnection">
+            <summary>
+            Connects to the configured PI server.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.AttemptDisconnection">
+            <summary>
+            Disconnects from the configured PI server if a connection is open
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.GetShortStatus(System.Int32)">
+            <summary>
+            Returns brief status with measurements processed
+            </summary>
+            <param name="maxLength"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.StartGettingData(System.Object)">
+            <summary>
+            Starts threads and timers to poll the PI server for data
+            </summary>
+            <param name="state">Filter string which will get the desired points from PI</param>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.QueryData">
+            <summary>
+            Runs a constant loop to pull data from PI
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.m_publishTimer_Tick(System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            Publishes data that was queried from PI using polling
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIRTInputAdapter.Dispose(System.Boolean)">
+            <summary>
+            Disposes members for garbage collection
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.UseEventPipes">
+            <summary>
+            Gets or sets a value for whether the adapter will use event pipes. If event pipes are disabled, the adapter will use polling.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.QueryTimeSpan">
+            <summary>
+            Gets or sets the number of seconds to query when the adapter is polling instead of using event pipes.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.UseAsyncConnect">
+            <summary>
+            Returns false to indicate that this <see cref="T:PIAdapters.PIRTInputAdapter"/> does NOT connect asynchronously
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.SupportsTemporalProcessing">
+            <summary>
+            Returns false to indicate that this <see cref="T:PIAdapters.PIRTInputAdapter"/> does NOT support temporal processing. 
+            Temporal processing is supported in a separate adapter that is not driven by event pipes.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.RequestedOutputMeasurementKeys">
+            <summary>
+            Gets or sets the measurements that this <see cref="T:PIAdapters.PIRTInputAdapter"/> has been requested to provide
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.ServerName">
+            <summary>
+            Gets or sets the name of the PI server for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.UserName">
+            <summary>
+            Gets or sets the name of the PI user ID for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.Password">
+            <summary>
+            Gets or sets the password used for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.AutoAddOutput">
+            <summary>
+            Enables or disables adapter's ability to automatically set output measurements.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.LastReceivedTimestamp">
+            <summary>
+            Last timestamp received from PI
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.Status">
+            <summary>
+            Returns the status of the adapter
+            </summary>
+        </member>
+    </members>
+</doc>

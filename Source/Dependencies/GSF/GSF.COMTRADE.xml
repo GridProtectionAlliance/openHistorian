@@ -1,0 +1,528 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GSF.COMTRADE</name>
+    </assembly>
+    <members>
+        <member name="T:GSF.COMTRADE.AnalogChannel">
+            <summary>
+            Represents an analog channel definition of the <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.AnalogChannel.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.AnalogChannel"/> from an existing line image.
+            </summary>
+            <param name="lineImage">Line image to parse.</param>
+        </member>
+        <member name="M:GSF.COMTRADE.AnalogChannel.ToString">
+            <summary>
+            Converts <see cref="T:GSF.COMTRADE.AnalogChannel"/> to its string format.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.Index">
+            <summary>
+            Gets or sets index of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.Name">
+            <summary>
+            Gets or sets name of this <see cref="T:GSF.COMTRADE.AnalogChannel"/> formatted as station_name:channel_name.
+            </summary>
+            <exception cref="T:System.FormatException">Name must be formatted as station_name:channel_name.</exception>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.StationName">
+            <summary>
+            Gets or sets station name component of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.ChannelName">
+            <summary>
+            Gets or sets channel name component of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.PhaseID">
+            <summary>
+            Gets or sets the 2-character phase identifier for this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.PhaseDesignation">
+            <summary>
+            Gets or sets phase designation of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+            <exception cref="T:System.ArgumentException">Value is not a valid phase designation.</exception>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.PhasorType">
+            <summary>
+            Gets or sets phasor type of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>, if applicable.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.NominalFrequency">
+            <summary>
+            Gets or sets nominal frequency of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.SignalKind">
+            <summary>
+            Gets or sets signal kind of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+            <exception cref="T:System.ArgumentException">Value is not a valid analog signal kind.</exception>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.CoordinateFormat">
+            <summary>
+            Gets or sets coordinate format of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.CircuitComponent">
+            <summary>
+            Gets or sets circuit component of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.Units">
+            <summary>
+            Gets or sets units of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.Multiplier">
+            <summary>
+            Gets or sets value multipler of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.Adder">
+            <summary>
+            Gets or sets adder of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.Skew">
+            <summary>
+            Gets or sets time skew between channels of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.MinValue">
+            <summary>
+            Gets or sets minimum unscaled value of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.MaxValue">
+            <summary>
+            Gets or sets maximum unscaled value of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.PrimaryRatio">
+            <summary>
+            Gets or sets the channel voltage or current transformer ratio primary factor of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.SecondaryRatio">
+            <summary>
+            Gets or sets the channel voltage or current transformer ratio secondary factor of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.AnalogChannel.ScalingIdentifier">
+            <summary>
+            Gets or sets the the primary or secondary data scaling identifer of this <see cref="T:GSF.COMTRADE.AnalogChannel"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.ChannelMetadata">
+            <summary>
+            Defines a minimal set of channel metadata for a COMTRADE config file.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.ChannelMetadata.Name">
+            <summary>
+            Channel name.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.ChannelMetadata.SignalType">
+            <summary>
+            Channel signal type.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.ChannelMetadata.IsDigital">
+            <summary>
+            Determines if channel is a digital.
+            </summary>
+            <remarks>
+            Channel is assumed to be an analog if field is <c>false</c>.
+            </remarks>
+        </member>
+        <member name="T:GSF.COMTRADE.ChannelMetadataSorter">
+            <summary>
+            Defines a comparison class to property sort metadata.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.ChannelMetadataSorter.Compare(GSF.COMTRADE.ChannelMetadata,GSF.COMTRADE.ChannelMetadata)">
+            <summary>
+            Compares one metadata record to another.
+            </summary>
+            <param name="left">Left metadata record to compare.</param>
+            <param name="right">Right metadata record to compare.</param>
+            <returns>Comparison sort order of metadata record.</returns>
+        </member>
+        <member name="F:GSF.COMTRADE.ChannelMetadataSorter.Default">
+            <summary>
+            Default instance of the metadata record sorter.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.DigitalChannel">
+            <summary>
+            Represents a digital channel definition of the <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.DigitalChannel.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.DigitalChannel.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.DigitalChannel"/> from an existing line image.
+            </summary>
+            <param name="lineImage">Line image to parse.</param>
+        </member>
+        <member name="M:GSF.COMTRADE.DigitalChannel.ToString">
+            <summary>
+            Converts <see cref="T:GSF.COMTRADE.DigitalChannel"/> to its string format.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.DigitalChannel.Index">
+            <summary>
+            Gets or sets index of this <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.DigitalChannel.Name">
+            <summary>
+            Gets or sets name of this <see cref="T:GSF.COMTRADE.DigitalChannel"/> formatted as station_name:channel_name.
+            </summary>
+            <exception cref="T:System.FormatException">Name must be formatted as station_name:channel_name.</exception>
+        </member>
+        <member name="P:GSF.COMTRADE.DigitalChannel.StationName">
+            <summary>
+            Gets or sets station name component of this <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.DigitalChannel.ChannelName">
+            <summary>
+            Gets or sets channel name component of this <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.DigitalChannel.PhaseID">
+            <summary>
+            Gets or sets the 2-character phase identifier for this <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.DigitalChannel.CircuitComponent">
+            <summary>
+            Gets or sets circuit component of this <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.DigitalChannel.NormalState">
+            <summary>
+            Gets or sets normal state of this <see cref="T:GSF.COMTRADE.DigitalChannel"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.Parser">
+            <summary>
+            COMTRADE data file(s) parser.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.#ctor">
+            <summary>
+            Creates a new instance of the COMTRADE <see cref="T:GSF.COMTRADE.Parser"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.COMTRADE.Parser"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.COMTRADE.Parser"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:GSF.COMTRADE.Parser"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.OpenFiles">
+            <summary>
+            Opens all COMTRADE data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.CloseFiles">
+            <summary>
+            Closes all COMTRADE data file streams.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Parser.ReadNext">
+            <summary>
+            Reads next COMTRADE record.
+            </summary>
+            <returns><c>true</c> if read succeeded; otherwise <c>false</c> if end of data set was reached.</returns>
+        </member>
+        <member name="P:GSF.COMTRADE.Parser.Schema">
+            <summary>
+            Gets or sets associated COMTRADE schema for this <see cref="T:GSF.COMTRADE.Parser"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Parser.FileName">
+            <summary>
+            Gets or sets COMTRADE data filename. If there are more than one data files in a set, this should be set to first file name in the set, e.g., DATA123.D00.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Parser.InferTimeFromSampleRates">
+            <summary>
+            Gets or sets flag that determines if time should be inferred from sample rates.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Parser.Timestamp">
+            <summary>
+            Gets timestamp of current record.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Parser.Values">
+            <summary>
+            Gets values of current record.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.SampleRate">
+            <summary>
+            Represents a sample rate with associated ending sample using the COMTRADE file standard, IEEE Std C37.111-1999.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.SampleRate.Rate">
+            <summary>
+            Sample rate in Hertz (Hz).
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.SampleRate.EndSample">
+            <summary>
+            Last sample number at sample rate.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.SampleRate.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.SampleRate"/> from an existing line image.
+            </summary>
+            <param name="lineImage">Line image to parse.</param>
+        </member>
+        <member name="M:GSF.COMTRADE.SampleRate.ToString">
+            <summary>
+            Converts <see cref="T:GSF.COMTRADE.SampleRate"/> to its string format.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.FileType">
+            <summary>
+            <see cref="T:GSF.COMTRADE.Schema"/> file type enumeration.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.FileType.Ascii">
+            <summary>
+            ASCII file type.
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.FileType.Binary">
+            <summary>
+            Binary file type.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.Schema">
+            <summary>
+            Represents the schema for a configuration file in the COMTRADE file standard, IEEE Std C37.111-1999.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Schema.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Schema.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.Schema"/> from an existing configuration file name.
+            </summary>
+            <param name="fileName">File name of configuration file to parse.</param>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.StationName">
+            <summary>
+            Gets or sets free-form station name for this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.DeviceID">
+            <summary>
+            Gets or sets free-form device ID for this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.Version">
+            <summary>
+            Gets or sets version number of the IEEE Std C37.111 used by this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">Only IEEE Std C37.111 version 1999 is supported by this implementation of the phasor data schema.</exception>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.TotalChannels">
+            <summary>
+            Gets total number of analog and digital channels of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.TotalAnalogChannels">
+            <summary>
+            Gets total number of analog channels of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.TotalDigitalChannels">
+            <summary>
+            Gets total number of digital channels of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.AnalogChannels">
+            <summary>
+            Gets or sets analog channels of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.DigitalChannels">
+            <summary>
+            Gets or sets digital channels of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.NominalFrequency">
+            <summary>
+            Gets or sets nominal frequency of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.TotalSampleRates">
+            <summary>
+            Gets total number of sample rates of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.SampleRates">
+            <summary>
+            Gets or sets sampling rates of this <see cref="T:GSF.COMTRADE.Schema"/>. A file of phasor data will normally be made using a single sampling rate, so this will usually be 1.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.StartTime">
+            <summary>
+            Gets or sets start timestamp of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.TriggerTime">
+            <summary>
+            Gets or sets trigger timestamp of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.FileType">
+            <summary>
+            Gets or sets file type of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.TimeFactor">
+            <summary>
+            Gets or sets the multiplication factor for the time differential (timestamp) field in this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.DigitalWords">
+            <summary>
+            Gets the total digital words for given number of digital values when the file type is binary.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.BinaryRecordLength">
+            <summary>
+            Calculates the size of a record, in bytes, when the file type is binary.
+            </summary>
+        </member>
+        <member name="P:GSF.COMTRADE.Schema.FileImage">
+            <summary>
+            Gets the file image of this <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.Timestamp">
+            <summary>
+            Represents a timestamp in the COMTRADE file standard format, IEEE Std C37.111-1999..
+            </summary>
+        </member>
+        <member name="F:GSF.COMTRADE.Timestamp.Value">
+            <summary>
+            Timestamp in ticks.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Timestamp.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.COMTRADE.Timestamp"/> from an existing line image.
+            </summary>
+            <param name="lineImage">Line image to parse.</param>
+        </member>
+        <member name="M:GSF.COMTRADE.Timestamp.ToString">
+            <summary>
+            Converts <see cref="T:GSF.COMTRADE.Timestamp"/> to its string format.
+            </summary>
+        </member>
+        <member name="T:GSF.COMTRADE.Writer">
+            <summary>
+            COMTRADE data and config file writer.
+            </summary>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.CreateSchema(System.Collections.Generic.IEnumerable{GSF.COMTRADE.ChannelMetadata},System.String,System.String,GSF.Ticks,System.Int32,System.Boolean,System.Double,System.Double,System.Double,System.Boolean)">
+            <summary>
+            Creates a new COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.
+            </summary>
+            <param name="metadata">Schema <see cref="T:GSF.COMTRADE.ChannelMetadata"/> records.</param>
+            <param name="stationName">Station name for the schema.</param>
+            <param name="deviceID">Device ID for the schema.</param>
+            <param name="dataStartTime">Data start time.</param>
+            <param name="sampleCount">Total data samples (i.e., total number of rows).</param>
+            <param name="isBinary">Determines if data file should be binary or ASCII - defaults to <c>true</c> for binary.</param>
+            <param name="timeFactor">Time factor to use in schema - defaults to 1000.</param>
+            <param name="samplingRate">Desired sampling rate - defaults to 33.3333Hz.</param>
+            <param name="nominalFrequency">Nominal frequency - defaults to 60Hz.</param>
+            <param name="includeFracSecDefinition">Determines if the FRACSEC word digital definitions should be included - defaults to <c>true</c>.</param>
+            <returns>New COMTRADE configuration <see cref="T:GSF.COMTRADE.Schema"/>.</returns>
+            <remarks>
+            This function is primarily intended to create a configuration based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually create a schema object for other COMTRADE needs. You can call
+            the <see cref="P:GSF.COMTRADE.Schema.FileImage"/> property to return a string that that can be written to a file
+            that will be the contents of the configuration file.
+            </remarks>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.WriteNextRecordAscii(System.IO.StreamWriter,GSF.COMTRADE.Schema,GSF.Ticks,System.Double[],System.UInt32,System.Boolean,System.UInt16)">
+            <summary>
+            Writes next COMTRADE record in ASCII format.
+            </summary>
+            <param name="output">Destination stream.</param>
+            <param name="schema">Source schema.</param>
+            <param name="timestamp">Record timestamp (implicitly castable as <see cref="T:System.DateTime"/>).</param>
+            <param name="values">Values to write - 16-bit digitals should exist as a word in an individual double value, method will write out bits.</param>
+            <param name="sample">User incremented sample index.</param>
+            <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>true</c>.</param>
+            <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
+            <remarks>
+            This function is primarily intended to write COMTRADE ASCII data records based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
+            </remarks>
+        </member>
+        <member name="M:GSF.COMTRADE.Writer.WriteNextRecordBinary(System.IO.Stream,GSF.COMTRADE.Schema,GSF.Ticks,System.Double[],System.UInt32,System.Boolean,System.UInt16)">
+            <summary>
+            Writes next COMTRADE record in binary format.
+            </summary>
+            <param name="output">Destination stream.</param>
+            <param name="schema">Source schema.</param>
+            <param name="timestamp">Record timestamp (implicitly castable as <see cref="T:System.DateTime"/>).</param>
+            <param name="values">Values to write - 16-bit digitals should exist as a word in an individual double value.</param>
+            <param name="sample">User incremented sample index.</param>
+            <param name="injectFracSecValue">Determines if FRACSEC value should be automatically injected into stream as first digital - defaults to <c>true</c>.</param>
+            <param name="fracSecValue">FRACSEC value to inject into output stream - defaults to 0x0000.</param>
+            <remarks>
+            This function is primarily intended to write COMTRADE binary data records based on synchrophasor data
+            (see Annex H: Schema for Phasor Data 2150 Using the COMTRADE File Standard in IEEE C37.111-2010),
+            it may be necessary to manually write records for other COMTRADE needs (e.g., non 16-bit digitals).
+            </remarks>
+        </member>
+    </members>
+</doc>

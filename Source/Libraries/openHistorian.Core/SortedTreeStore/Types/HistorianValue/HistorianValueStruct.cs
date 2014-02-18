@@ -37,11 +37,11 @@ namespace openHistorian.Collections
         /// </summary>
         public ulong Value1;
         /// <summary>
-        /// Should only be used if value cannot be entirely stored in Value1. Compression penality occurs when using this field.
+        /// Should only be used if value cannot be entirely stored in Value1. Compression penalty occurs when using this field.
         /// </summary>
         public ulong Value2;
         /// <summary>
-        /// Should contain any kind of digital data such as Quality. Compression penality occurs when used for any other type of field.
+        /// Should contain any kind of digital data such as Quality. Compression penalty occurs when used for any other type of field.
         /// </summary>
         public ulong Value3;
 

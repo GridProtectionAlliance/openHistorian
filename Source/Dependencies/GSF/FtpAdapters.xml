@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FtpAdapters</name>
+    </assembly>
+    <members>
+        <member name="T:FtpAdapters.FtpReader">
+            <summary>
+            Defines an adapter that downloads FTP files.
+            </summary>
+        </member>
+        <member name="M:FtpAdapters.FtpReader.#ctor">
+            <summary>
+            Creates a new <see cref="T:FtpAdapters.FtpReader"/>.
+            </summary>
+        </member>
+        <member name="M:FtpAdapters.FtpReader.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:FtpAdapters.FtpReader"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:FtpAdapters.FtpReader.GetShortStatus(System.Int32)">
+            <summary>
+            Gets a short one-line status of this <see cref="T:FtpAdapters.FtpReader"/>.
+            </summary>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:FtpAdapters.FtpReader"/>.</returns>
+        </member>
+        <member name="M:FtpAdapters.FtpReader.Initialize">
+            <summary>
+            Initializes <see cref="T:FtpAdapters.FtpReader"/>.
+            </summary>
+        </member>
+        <member name="M:FtpAdapters.FtpReader.DownloadFile">
+            <summary>
+            Connects to FTP host and downloads file.
+            </summary>
+        </member>
+        <member name="P:FtpAdapters.FtpReader.Host">
+            <summary>
+            Gets or sets FTP host name.
+            </summary>
+        </member>
+        <member name="P:FtpAdapters.FtpReader.UserName">
+            <summary>
+            Gets or sets FTP user name.
+            </summary>
+        </member>
+        <member name="P:FtpAdapters.FtpReader.Password">
+            <summary>
+            Gets or sets FTP password.
+            </summary>
+        </member>
+        <member name="P:FtpAdapters.FtpReader.RemotePath">
+            <summary>
+            Gets or sets remote FTP path.
+            </summary>
+        </member>
+        <member name="P:FtpAdapters.FtpReader.RemoteFileName">
+            <summary>
+            Gets or sets remote FTP file name.
+            </summary>
+        </member>
+        <member name="P:FtpAdapters.FtpReader.LocalPath">
+            <summary>
+            Gets or sets local path.
+            </summary>
+        </member>
+        <member name="P:FtpAdapters.FtpReader.LocalFileName">
+            <summary>
+            Gets or sets local file name.
+            </summary>
+        </member>
+        <member name="P:FtpAdapters.FtpReader.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+    </members>
+</doc>
