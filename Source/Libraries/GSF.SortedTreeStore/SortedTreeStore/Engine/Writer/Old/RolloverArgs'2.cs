@@ -25,7 +25,7 @@
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Engine.Writer
+namespace GSF.SortedTreeStore.Engine.Writer.Old
 {
     /// <summary>
     /// Contains the set of arguments that are passed between stages

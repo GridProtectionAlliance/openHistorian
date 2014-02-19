@@ -27,7 +27,7 @@ using System.Threading;
 using GSF.Threading;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Engine.Writer
+namespace GSF.SortedTreeStore.Engine.Writer.Old
 {
     /// <summary>
     /// A collection of settings for <see cref="PrestageWriter{TKey,TValue}"/>.
@@ -49,14 +49,6 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// in an attempt to slow down the input.
         /// </summary>
         public int DelayOnPointCount;
-    }
-
-    public class PrestageArgs<TKey, TValue>
-          where TKey : class, ISortedTreeKey<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
-    {
-        public PointStreamCache<TKey, TValue> Stream;
-        public long SequenceNumber;
     }
 
     /// <summary>
@@ -82,14 +74,14 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private PointStreamCache<TKey, TValue> m_processingQueue;
         private PointStreamCache<TKey, TValue> m_activeQueue;
         private ScheduledTask m_rolloverTask;
-        private readonly Action<PrestageArgs<TKey, TValue>> m_onRollover;
+        private readonly Action<RolloverArgs<TKey, TValue>> m_onRollover;
 
         /// <summary>
         /// Creates a prestage writer.
         /// </summary>
         /// <param name="settings">the settings for this stage</param>
         /// <param name="onRollover">delegate to call when a file is done with this stage.</param>
-        public PrestageWriter(PrestageSettings settings, Action<PrestageArgs<TKey, TValue>> onRollover)
+        public PrestageWriter(PrestageSettings settings, Action<RolloverArgs<TKey, TValue>> onRollover)
         {
             if (settings.RolloverInterval < 10 || settings.RolloverInterval > 1000)
                 throw new ArgumentOutOfRangeException("settings.RolloverInterval", "Must be between 10ms and 1000ms");
@@ -215,7 +207,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             //if the task is disposing, the following line does nothing.
             m_rolloverTask.Start(m_rolloverInterval);
 
-            PrestageArgs<TKey, TValue> args;
+            RolloverArgs<TKey, TValue> args;
             lock (m_syncRoot)
             {
                 int count = m_activeQueue.Count;
@@ -230,11 +222,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 m_activeQueue.ClearAndSetWriting();
                 stream.SetReadingFromBeginning();
 
-                args = new PrestageArgs<TKey, TValue>()
-                    {
-                        Stream = stream,
-                        SequenceNumber = m_sequenceId
-                    };
+                args = new RolloverArgs<TKey, TValue>(stream, m_sequenceId);
             }
 
             m_onRollover(args);

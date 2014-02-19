@@ -176,7 +176,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 if (RemainingBytes < length)
                     return false;
 
-                WinApi.MoveMemory(GetWritePointer() + m_nextOffset, buffer, length);
+                EncodeRecord(GetWritePointer() + m_nextOffset, m_prevKey, m_prevValue, key, value);
+                //WinApi.MoveMemory(GetWritePointer() + m_nextOffset, buffer, length);
                 IncrementOneRecord(length);
 
                 KeyMethods.Copy(key, m_currentKey);

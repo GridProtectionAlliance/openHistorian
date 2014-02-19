@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using NUnit.Framework;
 using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
@@ -50,14 +51,13 @@ namespace openHistorian.UnitTests.Archive
             Console.WriteLine();
 
 
-            //string fileName = @"c:\temp\testFile.d2";
-            //TestFile(1024, fileName);
-            //TestFile(2048, fileName);
-            //TestFile(4096, fileName);
-            //TestFile(4096 << 1, fileName);
-            //TestFile(4096 << 2, fileName);
-            //TestFile(4096 << 3, fileName);
-            //TestFile(4096 << 4, fileName);
+        }
+
+        [Test]
+        public void TestWriteFile()
+        {
+            string fileName = @"c:\temp\testFile.d2";
+            TestFile(4096, fileName);
         }
 
         [Test]
@@ -231,19 +231,18 @@ namespace openHistorian.UnitTests.Archive
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-
             value.Value3 = 0;
-            value.Value1 = 0;
+            value.AsSingle = 65.20f;
 
             if (File.Exists(fileName))
                 File.Delete(fileName);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (SortedTreeFile af = SortedTreeFile.CreateInMemory(pageSize))
-            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeFile af = SortedTreeFile.CreateFile(fileName,pageSize))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid))
             using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
             {
-                for (uint x = 0; x < 1000000; x++)
+                for (uint x = 0; x < 10000000; x++)
                 {
                     key.Timestamp = 1;
                     key.PointID = x;
@@ -252,7 +251,7 @@ namespace openHistorian.UnitTests.Archive
                 edit.Commit();
             }
             sw.Stop();
-            Console.WriteLine("Size: " + pageSize + " Rate: " + (1 / sw.Elapsed.TotalSeconds).ToString());
+            Console.WriteLine("Size: " + pageSize + " Rate: " + (10 / sw.Elapsed.TotalSeconds).ToString());
         }
     }
 }

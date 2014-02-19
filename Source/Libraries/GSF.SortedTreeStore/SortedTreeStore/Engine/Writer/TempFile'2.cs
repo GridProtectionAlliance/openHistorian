@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  StagingFile`2.cs - Gbtc
+//  TempFile`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  1/19/2013 - Steven E. Chisholm
+//  2/16/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -27,27 +27,27 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Writer
 {
-    /// <summary>
-    /// A file contained within each stage writer that handles combining files and creating new ones.
-    /// This class is not thread safe. All calls must be coordinated.
-    /// </summary>
-    public class StagingFile<TKey, TValue>
+
+    public class TempFile<TKey, TValue>
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private SortedTreeTable<TKey, TValue> m_sortedTreeFile;
         private readonly ArchiveList<TKey, TValue> m_archiveList;
-        private readonly ArchiveInitializer<TKey, TValue> m_initializer;
+        private readonly ArchiveInitializer<TKey, TValue> m_initialFile;
+        private readonly ArchiveInitializer<TKey, TValue> m_finalFile;
 
         /// <summary>
         /// Constructs a staging file
         /// </summary>
         /// <param name="archiveList">the place to store the archive files when converted</param>
-        /// <param name="initializer">the initializer that will create the archive files</param>
-        public StagingFile(ArchiveList<TKey, TValue> archiveList, ArchiveInitializer<TKey, TValue> initializer)
+        /// <param name="initialFile">the initializer that will create the archive files</param>
+        /// <param name="finalFile">the file that will be used to dump all of this data</param>
+        public TempFile(ArchiveList<TKey, TValue> archiveList, ArchiveInitializer<TKey, TValue> initialFile, ArchiveInitializer<TKey, TValue> finalFile)
         {
-            m_initializer = initializer;
+            m_initialFile = initialFile;
             m_archiveList = archiveList;
+            m_finalFile = finalFile;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         {
             if (m_sortedTreeFile == null)
             {
-                m_sortedTreeFile = m_initializer.CreateArchiveFile();
+                m_sortedTreeFile = m_initialFile.CreateArchiveFile();
                 using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
                 {
                     //Add the newly created file.
@@ -89,51 +89,28 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
 
-        /// <summary>
-        /// Adds all of the data in <see cref="file"/> to this archive stage queues up 
-        /// this existing file for deletion.
-        /// </summary>
-        /// <param name="file">the file to read from and then delete</param>
-        public void CombineAndDelete(SortedTreeTable<TKey, TValue> file)
+        public void DumpToDisk()
         {
             if (m_sortedTreeFile == null)
+                return;
+
+            var newFile = m_finalFile.CreateArchiveFile();
+            using (var editor = newFile.BeginEdit())
+            using (var reader = m_sortedTreeFile.BeginRead())
             {
-                m_sortedTreeFile = m_initializer.CreateArchiveFile();
-                using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
-                {
-                    //Add the newly created file.
-                    edit.Add(m_sortedTreeFile, isLocked: true);
-                }
+                var scan = reader.GetTreeScanner();
+                scan.SeekToStart();
+                editor.AddPoints(scan);
+                editor.Commit();
             }
-            using (SortedTreeTable<TKey, TValue>.Editor editor = m_sortedTreeFile.BeginEdit())
-            {
-                using (SortedTreeTableReadSnapshot<TKey, TValue> reader = file.BeginRead())
-                {
-                    SortedTreeScannerBase<TKey, TValue> scan = reader.GetTreeScanner();
-                    scan.SeekToStart();
-                    editor.AddPoints(scan);
-                    editor.Commit();
-                }
-            }
+
             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
             {
-                edit.RenewSnapshot(m_sortedTreeFile);
-                edit.RemoveAndDelete(file);
+                edit.Add(newFile, false);
+                edit.RemoveAndDelete(m_sortedTreeFile);
             }
-        }
 
-        /// <summary>
-        /// Extracts the internal <see cref="SortedTreeTable{TKey,TValue}"/> that was created and makes it
-        /// where if more data is added to this class, a new archivefile will be created.
-        /// </summary>
-        /// <returns>the internal archive file. null</returns>
-        public SortedTreeTable<TKey, TValue> GetFileAndSetNull()
-        {
-            if (m_sortedTreeFile == null)
-                return null;
-            SortedTreeTable<TKey, TValue> file = m_sortedTreeFile;
             m_sortedTreeFile = null;
-            return file;
         }
     }
 }

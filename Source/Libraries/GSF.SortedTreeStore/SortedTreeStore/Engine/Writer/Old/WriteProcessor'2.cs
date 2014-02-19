@@ -25,7 +25,7 @@
 using System;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Engine.Writer
+namespace GSF.SortedTreeStore.Engine.Writer.Old
 {
     /// <summary>
     /// Houses all of the write operations for the historian
@@ -34,14 +34,16 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// <typeparam name="TValue"></typeparam>
     public class WriteProcessor<TKey, TValue>
         : IDisposable
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private readonly ArchiveList<TKey, TValue> m_archiveList;
 
         private readonly PrestageWriter<TKey, TValue> m_prestage;
-        private readonly FirstStageWriter<TKey, TValue> m_stage0;
-        readonly CombineFiles<TKey, TValue> m_stage1;
+        private readonly StageWriter<TKey, TValue> m_stage0;
+        private readonly StageWriter<TKey, TValue> m_stage1;
+        private readonly StageWriter<TKey, TValue> m_stage2;
+
         /// <summary>
         /// Creates a new class
         /// </summary>
@@ -50,8 +52,11 @@ namespace GSF.SortedTreeStore.Engine.Writer
         public WriteProcessor(WriteProcessorSettings<TKey, TValue> settings, ArchiveList<TKey, TValue> list)
         {
             m_archiveList = list;
-            m_stage1 = new CombineFiles<TKey, TValue>(settings.Stage1);
-            m_stage0 = new FirstStageWriter<TKey, TValue>(settings.Stage0);
+            m_prestage = new PrestageWriter<TKey, TValue>(settings.Prestage, m_stage0.AppendData);
+
+            //m_stage2 = new StageWriter<TKey, TValue>(settings.Stage2, FinalizeArchiveFile);
+            //m_stage1 = new StageWriter<TKey, TValue>(settings.Stage1, m_stage2.AppendData);
+            m_stage0 = new StageWriter<TKey, TValue>(settings.Stage0, m_stage1.AppendData);
             m_prestage = new PrestageWriter<TKey, TValue>(settings.Prestage, m_stage0.AppendData);
         }
 
@@ -77,6 +82,18 @@ namespace GSF.SortedTreeStore.Engine.Writer
         }
 
         /// <summary>
+        /// The location where the historian files arrive once completed all the staging
+        /// </summary>
+        /// <param name="args"></param>
+        private void FinalizeArchiveFile(RolloverArgs<TKey, TValue> args)
+        {
+            using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
+            {
+                edit.ReleaseEditLock(args.File);
+            }
+        }
+        
+        /// <summary>
         /// Stops the execution of the historian in a orderly mannor.
         /// </summary>
         public void Dispose()
@@ -84,6 +101,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_prestage.Stop();
             m_stage0.Stop();
             m_stage1.Stop();
+            m_stage2.Stop();
         }
 
         public void SoftCommit()

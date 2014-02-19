@@ -177,7 +177,11 @@ namespace GSF.SortedTreeStore.Engine
                 status.AppendFormat("Files In Archive: {0} \r\n", m_fileSummaries.Count);
                 foreach (var file in m_fileSummaries)
                 {
-                    status.AppendFormat("{0} - {1} Name:{2}\r\n", file.FirstKey.ToString(), file.LastKey.ToString(), file.SortedTreeTable.BaseFile.FileName);
+                    if (file.IsEmpty)
+                        status.AppendFormat("Empty File - Name:{0}\r\n", file.SortedTreeTable.BaseFile.FileName);
+                    else
+                        status.AppendFormat("{0} - {1} Name:{2}\r\n", file.FirstKey.ToString(), file.LastKey.ToString(), file.SortedTreeTable.BaseFile.FileName);
+
                 }
             }
         }

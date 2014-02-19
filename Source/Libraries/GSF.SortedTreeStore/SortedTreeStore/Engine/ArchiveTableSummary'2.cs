@@ -93,6 +93,14 @@ namespace GSF.SortedTreeStore.Engine
             }
         }
 
+        public bool IsEmpty
+        {
+            get
+            {
+                return m_keyMethods.IsGreaterThan(FirstKey, LastKey);
+            }
+        }
+
         /// <summary>
         /// Gets the most recent <see cref="ArchiveSnapshotInfo"/> of this class when it was instanced.
         /// </summary>

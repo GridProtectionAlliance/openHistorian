@@ -24,7 +24,7 @@
 using System.Linq;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Engine.Writer
+namespace GSF.SortedTreeStore.Engine.Writer.Old
 {
     /// <summary>
     /// Responsible for the settings that are used for writing
@@ -42,11 +42,15 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <summary>
         /// The initial committed stage (usually in memory)
         /// </summary>
-        public FirstStageWriterSettings<TKey, TValue> Stage0;
+        public StageWriterSettings<TKey, TValue> Stage0;
         /// <summary>
         /// The first stange of data writen to the disk. Usually uncompressed since random inserts are still fast.
         /// </summary>
-        public CombineFilesSettings<TKey, TValue> Stage1;
+        public StageWriterSettings<TKey, TValue> Stage1;
+        /// <summary>
+        /// The first compressed stage on the disk. 
+        /// </summary>
+        public StageWriterSettings<TKey, TValue> Stage2;
 
         /// <summary>
         /// Forces the class to only be constructed via static methods.
@@ -80,23 +84,29 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 RolloverInterval = 100
             };
 
-
-            settings.Stage0 = new FirstStageWriterSettings<TKey, TValue>
+            settings.Stage0 = new StageWriterSettings<TKey, TValue>
             {
                 RolloverInterval = 1000,
                 RolloverSize = 1 * 1000 * 1000,
                 MaximumAllowedSize = 10 * 1000 * 1000,
-                TempFile = new TempFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode), ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
             };
 
-            settings.Stage1 = new CombineFilesSettings<TKey, TValue>
-                {
-                    ArchiveList = list,
-                    ExecuteInterval = 10000,
-                    Initializer = ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod),
-                    NameMatch = "-Stage1-"
-                };
+            settings.Stage1 = new StageWriterSettings<TKey, TValue>
+            {
+                RolloverInterval = 10 * 1000,
+                RolloverSize = 10 * 1000 * 1000,
+                MaximumAllowedSize = 100 * 1000 * 1000,
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
+            };
 
+            settings.Stage2 = new StageWriterSettings<TKey, TValue>
+            {
+                RolloverInterval = 100 * 1000,
+                RolloverSize = 100 * 1000 * 1000,
+                MaximumAllowedSize = 100 * 1000 * 1000,
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod))
+            };
             return settings;
         }
 
@@ -112,22 +122,30 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 RolloverInterval = 100
             };
 
-            settings.Stage0 = new FirstStageWriterSettings<TKey, TValue>
+            settings.Stage0 = new StageWriterSettings<TKey, TValue>
             {
-                RolloverInterval = 10000,
-                RolloverSize = 100 * 1000 * 1000,
+                RolloverInterval = 1000,
+                RolloverSize = 1 * 1000 * 1000,
+                MaximumAllowedSize = 10 * 1000 * 1000,
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
+            };
+
+            settings.Stage1 = new StageWriterSettings<TKey, TValue>
+            {
+                RolloverInterval = 60 * 1000,
+                RolloverSize = 50 * 1000 * 1000,
                 MaximumAllowedSize = 200 * 1000 * 1000,
-                TempFile = new TempFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode), ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage1"))
+                //StagingFile = new StagingFile(list, ArchiveInitializer.CreateInMemory(CompressionMethod.None))
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, SortedTree.FixedSizeNode, "Stage1"))
             };
 
-            settings.Stage1 = new CombineFilesSettings<TKey, TValue>
+            settings.Stage2 = new StageWriterSettings<TKey, TValue>
             {
-                ArchiveList = list,
-                ExecuteInterval = 60000,
-                Initializer = ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage2"),
-                NameMatch = "-Stage1-"
+                RolloverInterval = 15 * 60 * 1000,
+                RolloverSize = 1000 * 1000 * 1000,
+                MaximumAllowedSize = 2000 * 1000 * 1000,
+                StagingFile = new StagingFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage2"))
             };
-
             return settings;
         }
     }

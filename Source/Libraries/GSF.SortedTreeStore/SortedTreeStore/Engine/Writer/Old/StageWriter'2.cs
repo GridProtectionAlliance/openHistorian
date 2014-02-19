@@ -28,7 +28,7 @@ using GSF.Threading;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Engine.Writer
+namespace GSF.SortedTreeStore.Engine.Writer.Old
 {
     /// <summary>
     /// A collection of settings for <see cref="StageWriter{TKey,TValue}"/>.
