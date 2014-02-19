@@ -136,10 +136,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
                         size += list[x].SortedTreeTable.BaseFile.FileSize;
                         if (size > m_targetSize)
                         {
-                            if (x == list.Count - 1)//If not the last entry
+                            if (x != list.Count - 1)//If not the last entry
                                 list.RemoveRange(x + 1, list.Count - x - 1);
+                            break;
                         }
-                        break;
                     }
                     if (size > m_targetSize)
                         shouldRollover = true;
