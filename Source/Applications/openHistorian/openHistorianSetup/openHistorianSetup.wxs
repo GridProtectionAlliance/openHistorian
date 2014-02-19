@@ -302,8 +302,8 @@
       <Component Id="Ciloci.Flee">
         <File Id="Ciloci.Flee.dll" Name="Ciloci.Flee.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Ciloci.Flee.dll" />
       </Component>
-      <Component Id="Comtrade">
-        <File Id="Comtrade.dll" Name="Comtrade.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Comtrade.dll" />
+      <Component Id="COMTRADEAdapters">
+        <File Id="COMTRADEAdapters.dll" Name="COMTRADEAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\COMTRADEAdapters.dll" />
       </Component>
       <Component Id="CsvAdapters">
         <File Id="CsvAdapters.dll" Name="CsvAdapters.dll" Source="$(var.SolutionDir)\Dependencies\GSF\CsvAdapters.dll" />
