@@ -43,10 +43,16 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// The initial committed stage (usually in memory)
         /// </summary>
         public FirstStageWriterSettings<TKey, TValue> Stage0;
+        
         /// <summary>
         /// The first stange of data writen to the disk. Usually uncompressed since random inserts are still fast.
         /// </summary>
         public CombineFilesSettings<TKey, TValue> Stage1;
+
+        /// <summary>
+        /// The first stange of data writen to the disk. Usually uncompressed since random inserts are still fast.
+        /// </summary>
+        public CombineFilesSettings<TKey, TValue> Stage2;
 
         /// <summary>
         /// Forces the class to only be constructed via static methods.
@@ -86,16 +92,24 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 RolloverInterval = 1000,
                 RolloverSize = 1 * 1000 * 1000,
                 MaximumAllowedSize = 10 * 1000 * 1000,
-                TempFile = new TempFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode), ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode))
+                TempFile = new TempFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode), ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod))
             };
 
             settings.Stage1 = new CombineFilesSettings<TKey, TValue>
                 {
                     ArchiveList = list,
-                    ExecuteInterval = 10000,
-                    Initializer = ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod),
+                    TargetSize = 100 * 1014 * 1024,
+                    CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod),
                     NameMatch = "-Stage1-"
                 };
+
+            settings.Stage2 = new CombineFilesSettings<TKey, TValue>
+            {
+                ArchiveList = list,
+                TargetSize = 100 * 1014 * 1024,
+                CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod),
+                NameMatch = "-Stage2-"
+            };
 
             return settings;
         }
@@ -123,9 +137,17 @@ namespace GSF.SortedTreeStore.Engine.Writer
             settings.Stage1 = new CombineFilesSettings<TKey, TValue>
             {
                 ArchiveList = list,
-                ExecuteInterval = 60000,
-                Initializer = ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage2"),
+                TargetSize = 50 * 1014 * 1024,
+                CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage2"),
                 NameMatch = "-Stage1-"
+            };
+
+            settings.Stage2 = new CombineFilesSettings<TKey, TValue>
+            {
+                ArchiveList = list,
+                TargetSize = 1000 * 1014 * 1024,
+                CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage3"),
+                NameMatch = "-Stage2-"
             };
 
             return settings;

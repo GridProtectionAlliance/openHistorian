@@ -164,7 +164,7 @@ namespace GSF.SortedTreeStore.Engine
                 status.AppendFormat("Files Pending Deletion: {0} Disposal: {1}\r\n", m_filesToDelete.Count, m_filesToDispose.Count);
                 foreach (var file in m_filesToDelete)
                 {
-                    status.AppendFormat("Delete - {0}\r\n", file.SortedTree.BaseFile.FileName);
+                    status.AppendFormat("Delete - {0}\r\n", file.SortedTree.BaseFile.FilePath);
                     status.AppendFormat("Is Being Used {0}\r\n", file.IsBeingUsed);
                 }
 
@@ -178,9 +178,9 @@ namespace GSF.SortedTreeStore.Engine
                 foreach (var file in m_fileSummaries)
                 {
                     if (file.IsEmpty)
-                        status.AppendFormat("Empty File - Name:{0}\r\n", file.SortedTreeTable.BaseFile.FileName);
+                        status.AppendFormat("Empty File - Name:{0}\r\n", file.SortedTreeTable.BaseFile.FilePath);
                     else
-                        status.AppendFormat("{0} - {1} Name:{2}\r\n", file.FirstKey.ToString(), file.LastKey.ToString(), file.SortedTreeTable.BaseFile.FileName);
+                        status.AppendFormat("{0} - {1} Name:{2}\r\n", file.FirstKey.ToString(), file.LastKey.ToString(), file.SortedTreeTable.BaseFile.FilePath);
 
                 }
             }

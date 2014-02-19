@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.Threading;
@@ -34,14 +35,14 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// <summary>
     /// A collection of settings for <see cref="CombineFiles{TKey,TValue}"/>.
     /// </summary>
-    public struct CombineFilesSettings<TKey, TValue>
+    public class CombineFilesSettings<TKey, TValue>
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
-        public int ExecuteInterval;
+        public long TargetSize;
         public string NameMatch;
         public ArchiveList<TKey, TValue> ArchiveList;
-        public ArchiveInitializer<TKey, TValue> Initializer;
+        public ArchiveInitializer<TKey, TValue> CreateNextStageFile;
     }
 
     /// <summary>
@@ -53,19 +54,23 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         /// <summary>
+        /// Execute every 10 seconds
+        /// </summary>
+        public const int ExecuteInterval = 10000;
+        /// <summary>
         /// Event that notifies that a certain sequence number has been committed.
         /// </summary>
         public event Action<long> SequenceNumberCommitted;
         private object m_syncRoot;
-        private int m_executeInterval;
+        private long m_targetSize;
         private bool m_stopped;
         private bool m_disposed;
         private ScheduledTask m_rolloverTask;
         private readonly ManualResetEvent m_rolloverComplete;
 
         string m_nameMatch;
+        ArchiveInitializer<TKey, TValue> m_createNextStageFile;
         ArchiveList<TKey, TValue> m_archiveList;
-        ArchiveInitializer<TKey, TValue> m_initializer;
 
         /// <summary>
         /// Creates a stage writer.
@@ -73,15 +78,16 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <param name="settings">the settings for this stage</param>
         public CombineFiles(CombineFilesSettings<TKey, TValue> settings)
         {
-            m_rolloverComplete = new ManualResetEvent(false);
-            m_executeInterval = settings.ExecuteInterval;
-            m_nameMatch = settings.NameMatch;
+            m_targetSize = settings.TargetSize;
             m_archiveList = settings.ArchiveList;
-            m_initializer = settings.Initializer;
+            m_nameMatch = settings.NameMatch;
+            m_createNextStageFile = settings.CreateNextStageFile;
+
+            m_rolloverComplete = new ManualResetEvent(false);
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground);
             m_rolloverTask.OnEvent += OnExecute;
-            m_rolloverTask.Start(m_executeInterval);
+            m_rolloverTask.Start(ExecuteInterval);
         }
 
         private void OnExecute(object sender, ScheduledTaskEventArgs e)
@@ -95,7 +101,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             //go ahead and schedule the next rollover since nothing
             //will happen until this function exits anyway.
             //if the task is disposing, the following line does nothing.
-            m_rolloverTask.Start(m_executeInterval);
+            m_rolloverTask.Start(ExecuteInterval);
 
             lock (m_syncRoot)
             {
@@ -121,40 +127,66 @@ namespace GSF.SortedTreeStore.Engine.Writer
                         }
                     }
 
-                    var reader = new UnionReader<TKey, TValue>(list);
-                    var dest = m_initializer.CreateArchiveFile();
+                    bool shouldRollover = list.Count >= 30;
+
+                    long size = 0;
+
+                    for (int x = 0; x < list.Count; x++)
+                    {
+                        size += list[x].SortedTreeTable.BaseFile.FileSize;
+                        if (size > m_targetSize)
+                        {
+                            if (x == list.Count - 1)//If not the last entry
+                                list.RemoveRange(x + 1, list.Count - x - 1);
+                        }
+                        break;
+                    }
+                    if (size > m_targetSize)
+                        shouldRollover = true;
+
+                    if (shouldRollover)
+                    {
+                        var reader = new UnionReader<TKey, TValue>(list);
+                        var dest = m_createNextStageFile.CreateArchiveFile();
+
+                        try
+                        {
+                            using (var edit = dest.BeginEdit())
+                            {
+                                edit.AddPoints(reader);
+                                edit.Commit();
+                            }
+
+                            resource.Dispose();
+
+
+                            using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
+                            {
+                                //Add the newly created file.
+                                edit.Add(dest, isLocked: true);
+
+                                foreach (var table in list)
+                                {
+                                    edit.RemoveAndDelete(table.SortedTreeTable);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            reader.Cancel();
+                        }
+
+                    }
 
                     resource.Dispose();
 
-                    try
-                    {
-                        using (var edit = dest.BeginEdit())
-                        {
-                            edit.AddPoints(reader);
-                            edit.Commit();
-                        }
-
-                        using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
-                        {
-                            //Add the newly created file.
-                            edit.Add(dest, isLocked: true);
-
-                            foreach (var table in list)
-                            {
-                                edit.RemoveAndDelete(table.SortedTreeTable);
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        reader.Cancel();
-                    }
                 }
 
                 m_rolloverComplete.Set();
             }
 
         }
+
 
         /// <summary>
         /// Stop all writing to this class.

@@ -52,7 +52,7 @@ namespace GSF.SortedTreeStore.Storage
 
         #region [ Members ]
 
-        private string m_fileName;
+        private string m_filePath;
         private bool m_disposed;
 
         private TransactionalFileStructure m_fileStructure;
@@ -74,7 +74,7 @@ namespace GSF.SortedTreeStore.Storage
         public static SortedTreeFile CreateInMemory(int blockSize = 4096)
         {
             SortedTreeFile af = new SortedTreeFile();
-            af.m_fileName = string.Empty;
+            af.m_filePath = string.Empty;
             af.m_fileStructure = TransactionalFileStructure.CreateInMemory(blockSize);
             return af;
         }
@@ -87,7 +87,8 @@ namespace GSF.SortedTreeStore.Storage
         public static SortedTreeFile CreateFile(string file, int blockSize = 4096)
         {
             SortedTreeFile af = new SortedTreeFile();
-            af.m_fileName = file;
+            file = Path.GetFullPath(file);
+            af.m_filePath = file;
             af.m_fileStructure = TransactionalFileStructure.CreateFile(file, blockSize);
             return af;
         }
@@ -101,7 +102,8 @@ namespace GSF.SortedTreeStore.Storage
         public static SortedTreeFile OpenFile(string file, bool isReadOnly)
         {
             SortedTreeFile af = new SortedTreeFile();
-            af.m_fileName = file;
+            file = Path.GetFullPath(file);
+            af.m_filePath = file;
             af.m_fileStructure = TransactionalFileStructure.OpenFile(file, isReadOnly);
             if (af.m_fileStructure.ArchiveType != FileType)
                 throw new Exception("Archive type is unknown");
@@ -125,12 +127,26 @@ namespace GSF.SortedTreeStore.Storage
 
         /// <summary>
         /// Returns the name of the file.  Returns <see cref="String.Empty"/> if this is a memory archive.
+        /// This is the name of the entire path.
+        /// </summary>
+        public string FilePath
+        {
+            get
+            {
+                return m_filePath;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the file, but only the file, not the entire path.
         /// </summary>
         public string FileName
         {
             get
             {
-                return m_fileName;
+                if (m_filePath == string.Empty)
+                    return string.Empty;
+                return Path.GetFileName(m_filePath);
             }
         }
 
@@ -281,9 +297,9 @@ namespace GSF.SortedTreeStore.Storage
         public void Delete()
         {
             Dispose();
-            if (m_fileName != string.Empty)
+            if (m_filePath != string.Empty)
             {
-                System.IO.File.Delete(m_fileName);
+                System.IO.File.Delete(m_filePath);
             }
         }
 
@@ -301,6 +317,6 @@ namespace GSF.SortedTreeStore.Storage
 
         #endregion
 
-       
+
     }
 }

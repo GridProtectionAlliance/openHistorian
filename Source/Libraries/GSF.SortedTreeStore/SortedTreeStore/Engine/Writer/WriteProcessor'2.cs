@@ -42,6 +42,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private readonly PrestageWriter<TKey, TValue> m_prestage;
         private readonly FirstStageWriter<TKey, TValue> m_stage0;
         readonly CombineFiles<TKey, TValue> m_stage1;
+        readonly CombineFiles<TKey, TValue> m_stage2;
         /// <summary>
         /// Creates a new class
         /// </summary>
@@ -50,6 +51,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         public WriteProcessor(WriteProcessorSettings<TKey, TValue> settings, ArchiveList<TKey, TValue> list)
         {
             m_archiveList = list;
+            m_stage2 = new CombineFiles<TKey, TValue>(settings.Stage2);
             m_stage1 = new CombineFiles<TKey, TValue>(settings.Stage1);
             m_stage0 = new FirstStageWriter<TKey, TValue>(settings.Stage0);
             m_prestage = new PrestageWriter<TKey, TValue>(settings.Prestage, m_stage0.AppendData);
