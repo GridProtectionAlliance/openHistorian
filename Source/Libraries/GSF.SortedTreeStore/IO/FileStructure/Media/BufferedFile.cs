@@ -41,7 +41,7 @@ namespace GSF.IO.FileStructure.Media
     /// </remarks>
     //ToDo: Consider allowing this class to scale horizontally like how the concurrent dictionary scales.
     //ToDo: this will reduce the concurrent contention on the class at the cost of more memory required.
-    internal partial class BufferedFile 
+    internal partial class BufferedFile
         : IDiskMediumCoreFunctions
     {
         #region [ Members ]
@@ -161,7 +161,7 @@ namespace GSF.IO.FileStructure.Media
 
         #endregion
 
-        #region [ Public Methdos ] 
+        #region [ Public Methdos ]
 
         /// <summary>
         /// Executes a commit of data. This will flush the data to the disk use the provided header data to properly
@@ -233,7 +233,7 @@ namespace GSF.IO.FileStructure.Media
             }
 
             m_lengthOfCommittedData = lengthOfAllData;
-            m_writeBuffer.ConfigureAlignment(m_lengthOfCommittedData, m_pool.PageSize);
+            ReleaseWriteBufferSpace();
         }
 
         /// <summary>
@@ -255,6 +255,7 @@ namespace GSF.IO.FileStructure.Media
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().ToString());
+            ReleaseWriteBufferSpace();
         }
 
         /// <summary>
@@ -399,6 +400,18 @@ namespace GSF.IO.FileStructure.Media
                     m_pageReplacementAlgorithm.DoCollection(e);
                 }
             }
+        }
+
+        /// <summary>
+        /// Releases the buffered data contained in the buffer pool.
+        /// This is acomplished by disposing of the writer and recreating it.
+        /// </summary>
+        private void ReleaseWriteBufferSpace()
+        {
+            m_writeBuffer.Dispose();
+            m_writeBuffer = new MemoryPoolStreamCore(m_pool);
+            m_writeBuffer.ConfigureAlignment(m_lengthOfCommittedData, m_pool.PageSize);
+
         }
 
         #endregion
