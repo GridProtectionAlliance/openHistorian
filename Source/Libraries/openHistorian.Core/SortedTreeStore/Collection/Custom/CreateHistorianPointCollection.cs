@@ -24,6 +24,7 @@
 
 
 using System;
+using GSF.SortedTreeStore.Collection;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Net.Initialization;

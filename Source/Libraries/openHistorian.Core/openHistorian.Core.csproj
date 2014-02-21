@@ -75,7 +75,6 @@
     <Compile Include="Data\SignalDataBase.cs" />
     <Compile Include="Data\SignalDataSingle.cs" />
     <Compile Include="Data\SignalDataUnknown.cs" />
-    <Compile Include="Data\TimestampFilter.cs" />
     <Compile Include="Data\Types\TypeBase.cs" />
     <Compile Include="Data\Types\TypeDouble.cs" />
     <Compile Include="Data\Types\TypeSingle.cs" />

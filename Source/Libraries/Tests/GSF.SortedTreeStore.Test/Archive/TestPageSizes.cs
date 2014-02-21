@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using NUnit.Framework;
 using GSF.SortedTreeStore.Storage;

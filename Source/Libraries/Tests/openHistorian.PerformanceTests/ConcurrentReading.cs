@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;

@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GSF.SortedTreeStore.Filters;
 using GSF.Threading;
-using openHistorian;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Reader

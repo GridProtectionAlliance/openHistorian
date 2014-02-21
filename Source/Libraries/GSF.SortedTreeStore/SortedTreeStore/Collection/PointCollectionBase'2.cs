@@ -28,7 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore
+namespace GSF.SortedTreeStore.Collection
 {
     public abstract class PointCollectionBase<TKey, TValue>
         where TKey : class, new()

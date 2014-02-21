@@ -29,7 +29,6 @@ using System.Text;
 using System.Threading.Tasks;
 using GSF.IO;
 using GSF.SortedTreeStore.Engine;
-using openHistorian;
 
 namespace GSF.SortedTreeStore.Filters
 {

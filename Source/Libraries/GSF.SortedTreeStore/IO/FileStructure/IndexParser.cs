@@ -42,8 +42,6 @@ namespace GSF.IO.FileStructure
 
         private readonly SubFileDiskIoSessionPool m_ioSessions;
 
-        private int m_blockSize;
-
         #endregion
 
         #region [ Constructors ]
@@ -55,7 +53,6 @@ namespace GSF.IO.FileStructure
         public IndexParser(SubFileDiskIoSessionPool ioSessions)
             : base(ioSessions.Header.BlockSize)
         {
-            m_blockSize = ioSessions.Header.BlockSize;
             m_subFile = ioSessions.File;
             m_ioSessions = ioSessions;
             m_oldFirstOffset = -1;
@@ -115,7 +112,7 @@ namespace GSF.IO.FileStructure
         #region [ Methods ]
 
         /// <summary>
-        /// This function will also call <see cref="SetPosition"/> so after it returns, the current block data will be updated.
+        /// This function will also call <see cref="IndexMapper.MapPosition"/> so after it returns, the current block data will be updated.
         /// </summary>
         /// <param name="positionIndex">The virtual index address.</param>
         /// <returns>the physical position index for the provided virtual position</returns>

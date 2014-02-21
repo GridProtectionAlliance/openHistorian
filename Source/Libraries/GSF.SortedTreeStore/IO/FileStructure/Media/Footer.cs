@@ -23,7 +23,7 @@
 
 using System;
 using GSF;
-using openHistorian;
+using GSF.SortedTreeStore;
 
 namespace GSF.IO.FileStructure.Media
 {

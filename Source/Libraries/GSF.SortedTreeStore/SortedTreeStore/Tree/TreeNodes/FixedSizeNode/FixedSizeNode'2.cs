@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF;
 using GSF.IO.Unmanaged;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
@@ -50,7 +49,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         }
 
         /// <summary>
-        /// Returns a tree scanner class.
+        /// Returns a <see cref="SortedTreeScannerBase{TKey,TValue}"/>
         /// </summary>
         /// <returns></returns>
         public override SortedTreeScannerBase<TKey, TValue> CreateTreeScanner()

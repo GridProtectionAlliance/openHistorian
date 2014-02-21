@@ -28,7 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore
+namespace GSF.SortedTreeStore.Collection
 {
     unsafe public class PointCollection<TKey, TValue>
         : PointCollectionBase<TKey, TValue>

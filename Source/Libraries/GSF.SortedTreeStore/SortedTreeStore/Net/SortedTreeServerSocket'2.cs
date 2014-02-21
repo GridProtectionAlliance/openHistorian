@@ -27,7 +27,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using GSF.Net;
-using openHistorian;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Engine;
 

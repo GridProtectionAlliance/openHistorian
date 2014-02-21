@@ -35,8 +35,17 @@ namespace GSF.Collections
     {
         #region [ Members ]
 
+        /// <summary>
+        /// The number of bits to shift to get the index of the array
+        /// </summary>
         public const int BitsPerElementShift = 6;
+        /// <summary>
+        /// The mask to apply to get the bit position of the value
+        /// </summary>
         public const int BitsPerElementMask = BitsPerElement - 1;
+        /// <summary>
+        /// The number of bits per array element.
+        /// </summary>
         public const int BitsPerElement = sizeof(long) * 8;
 
         long[] m_array;
@@ -54,17 +63,8 @@ namespace GSF.Collections
         /// Initializes <see cref="BitArray"/>.
         /// </summary>
         /// <param name="initialState">Set to true to initial will all elements set.  False to have all elements cleared.</param>
-        public BitArray(bool initialState) :
-            this(initialState, BitsPerElement)
-        {
-        }
-
-        /// <summary>
-        /// Initializes <see cref="BitArray"/>.
-        /// </summary>
-        /// <param name="initialState">Set to true to initial will all elements set.  False to have all elements cleared.</param>
         /// <param name="count">The number of bit positions to support</param>
-        public BitArray(bool initialState, int count)
+        public BitArray(bool initialState, int count = BitsPerElement)
         {
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count");
@@ -160,11 +160,6 @@ namespace GSF.Collections
         {
             if (index < 0 || index >= m_count)
                 throw new ArgumentOutOfRangeException("index");
-            return (m_array[index >> BitsPerElementShift] & (1L << (index & BitsPerElementMask))) != 0;
-        }
-
-        internal bool InternalGetBit(int index)
-        {
             return (m_array[index >> BitsPerElementShift] & (1L << (index & BitsPerElementMask))) != 0;
         }
 
@@ -394,6 +389,10 @@ namespace GSF.Collections
             return -1;
         }
 
+        /// <summary>
+        /// Clones the internal array data
+        /// </summary>
+        /// <returns></returns>
         public long[] GetInternalData()
         {
             return (long[])m_array.Clone();

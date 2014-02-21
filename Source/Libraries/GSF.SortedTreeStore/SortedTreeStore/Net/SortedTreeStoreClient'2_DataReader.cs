@@ -26,7 +26,6 @@ using System;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
-using openHistorian;
 
 namespace GSF.SortedTreeStore.Net
 {

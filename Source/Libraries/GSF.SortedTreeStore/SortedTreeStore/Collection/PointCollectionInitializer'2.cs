@@ -16,12 +16,14 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/26/2013 - Steven E. Chisholm
+//  2/5/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+using GSF.SortedTreeStore.Tree;
+
+namespace GSF.SortedTreeStore.Collection
 {
     internal class PointCollectionInitializer<TKey, TValue>
         where TKey : class, ISortedTreeKey<TKey>, new()

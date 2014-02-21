@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateTreeNodeBase.cs - Gbtc
+//  CreatePointCollectionBase.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,17 +16,18 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/26/2013 - Steven E. Chisholm
+//  2/7/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.SortedTreeStore.Collection
 {
     /// <summary>
-    /// A base class that allows for generically constructing any number of <see cref="SortedTreeNodeBase{TKey,TValue}"/> implementations.
+    /// A base class that allows for generically constructing any number of <see cref="PointCollectionBase{TKey,TValue}"/> implementations.
     /// </summary>
     public abstract class CreatePointCollectionBase
     {

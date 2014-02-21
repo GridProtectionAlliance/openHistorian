@@ -26,7 +26,7 @@ namespace GSF.IO.FileStructure
     /// <summary>
     /// Maintains some global constants for the archive file.
     /// </summary>
-    internal class FileStructureConstants
+    internal static class FileStructureConstants
     {
         /// <summary>
         /// The number of bytes in the footer of a block

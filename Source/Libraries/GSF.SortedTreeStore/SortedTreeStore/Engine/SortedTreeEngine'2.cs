@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Text;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Engine.Writer;
-using openHistorian;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine

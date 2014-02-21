@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E461E61E-EB10-40CF-9DD7-B22A80F6A6B0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>openHistorian.Scada</RootNamespace>
+    <AssemblyName>openHistorian.Scada</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SortedTreeStore\Collection\Custom\CreateHistorianPointCollection.cs" />
+    <Compile Include="SortedTreeStore\Collection\Custom\HistorianPointCollection.cs" />
+    <Compile Include="SortedTreeStore\Net\Compression\CreateHistorianCompressedStream.cs" />
+    <Compile Include="SortedTreeStore\Net\Compression\HistorianCompressedStream.cs" />
+    <Compile Include="SortedTreeStore\Net\HistorianClient.cs" />
+    <Compile Include="SortedTreeStore\RegisterTypes.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\CreateHistorianCompressionTs.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTs.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTsScanner.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianKey\ScadaKey.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianKey\KeyMethodsScadaKey.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianValue\HistorianValue.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianValue\HistorianValueStruct.cs" />
+    <Compile Include="SortedTreeStore\Types\HistorianValue\MethodsHistorianValue.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\GSF.SortedTreeStore\GSF.SortedTreeStore.csproj">
+      <Project>{040e2ae7-021b-435a-adbf-06d07ee0a67d}</Project>
+      <Name>GSF.SortedTreeStore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

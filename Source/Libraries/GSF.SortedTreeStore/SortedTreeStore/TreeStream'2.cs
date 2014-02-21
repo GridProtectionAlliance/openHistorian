@@ -23,7 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Filters;
 
 namespace GSF.SortedTreeStore
 {
@@ -69,8 +68,13 @@ namespace GSF.SortedTreeStore
         [Obsolete("Not used anymore")]
         public bool Read()
         {
-            IsValid = Read(CurrentKey, CurrentValue);
-            return IsValid;
+            if (Read(CurrentKey, CurrentValue))
+            {
+                IsValid = true;
+            }
+            IsValid = false;
+            EOS = true;
+            return false;
         }
 
         /// <summary>

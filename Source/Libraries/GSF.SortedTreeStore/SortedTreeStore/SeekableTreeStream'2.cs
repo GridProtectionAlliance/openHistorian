@@ -21,8 +21,6 @@
 //     
 //******************************************************************************************************
 
-using GSF.SortedTreeStore.Filters;
-
 namespace GSF.SortedTreeStore
 {
 

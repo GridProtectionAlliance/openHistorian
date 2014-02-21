@@ -46,11 +46,11 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         public static readonly Guid TypeGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55);
         
         /// <summary>
-        /// Creates a TreeNodeBase
+        /// Creates a <see cref="SortedTreeNodeBase{TKey,TValue}"/>.
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        /// <param name="level"></param>
+        /// <param name="level">the node level of the tree</param>
         /// <returns></returns>
         public override SortedTreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
         {

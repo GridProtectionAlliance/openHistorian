@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TreeNodeInitializer.cs - Gbtc
+//  PointCollectionInitializer.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/12/2013 - Steven E. Chisholm
+//  2/5/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
@@ -24,8 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.SortedTreeStore.Collection
 {
     public static class PointCollectionInitializer
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using GSF.IO.FileStructure.Media;
 using GSF.IO.Unmanaged;
+using GSF.SortedTreeStore;
 using NUnit.Framework;
 using openHistorian;
 

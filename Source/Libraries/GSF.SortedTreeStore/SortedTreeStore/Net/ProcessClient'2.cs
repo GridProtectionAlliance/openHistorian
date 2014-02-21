@@ -30,7 +30,6 @@ using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree.TreeNodes;
-using openHistorian;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Net.Initialization;
 
