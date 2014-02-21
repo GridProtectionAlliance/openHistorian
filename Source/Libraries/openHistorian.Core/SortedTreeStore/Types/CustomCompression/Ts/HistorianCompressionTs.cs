@@ -39,6 +39,112 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         {
         }
 
+        //protected override void AppendSequentailStream(InsertStreamHelper<HistorianKey, HistorianValue> stream, out bool isFull)
+        //{
+        //    HistorianKey Key1 = stream.Key1;
+        //    HistorianKey Key2 = stream.Key2;
+        //    HistorianValue Value1 = stream.Value1;
+        //    HistorianValue Value2 = stream.Value2;
+        //    bool isValid = stream.IsValid;
+        //    bool isStillSequential = stream.IsStillSequential;
+        //    bool isKVP1 = stream.IsKVP1;
+        //    int remainingBytes = RemainingBytes;
+
+        //    int recordsAdded = 0;
+        //    byte* writePointer = GetWritePointer();
+        //    fixed (byte* buffer = m_buffer1)
+        //    {
+        //        SeekTo(RecordCount);
+
+        //        if (RecordCount > 0)
+        //        {
+        //            KeyMethods.Copy(m_currentKey, stream.PrevKey);
+        //        }
+        //        else
+        //        {
+        //            KeyMethods.Clear(stream.PrevKey);
+        //        }
+
+        //    TryAgain:
+        //        if (!isValid || !isStillSequential)
+        //        {
+        //            isFull = false;
+        //            IncrementRecordCounts(recordsAdded, RemainingBytes - remainingBytes);
+        //            ClearNodeCache();
+        //            stream.IsValid = isValid;
+        //            stream.IsKVP1 = isKVP1;
+        //            stream.IsStillSequential = isStillSequential;
+        //            return;
+        //        }
+
+        //        int length;
+        //        if (isKVP1)
+        //        {
+        //            //Key1,Value1 are the current record
+        //            if (remainingBytes < m_maximumStorageSize)
+        //            {
+        //                length = EncodeRecord(buffer, Key2, Value2, Key1, Value1);
+        //                if (remainingBytes < length)
+        //                {
+        //                    isFull = true;
+        //                    IncrementRecordCounts(recordsAdded, RemainingBytes - remainingBytes);
+        //                    ClearNodeCache();
+        //                    stream.IsValid = isValid;
+        //                    stream.IsKVP1 = isKVP1;
+        //                    stream.IsStillSequential = isStillSequential;
+        //                    return;
+        //                }
+        //            }
+
+        //            length = EncodeRecord(writePointer + m_nextOffset, Key2, Value2, Key1, Value1);
+        //            remainingBytes -= length;
+        //            recordsAdded++;
+        //            m_nextOffset = m_currentOffset + length;
+        //            //Inlined stream.Next()
+        //            isValid = stream.Stream.Read(Key2, Value2);
+        //            isKVP1 = false;
+        //            isStillSequential = Key1.Timestamp < Key2.Timestamp
+        //                 || (Key1.Timestamp == Key2.Timestamp && Key1.PointID < Key2.PointID)
+        //                 || (Key1.Timestamp == Key2.Timestamp && Key1.PointID == Key2.PointID && Key1.EntryNumber < Key2.EntryNumber);
+        //            //End Inlined
+        //            goto TryAgain;
+        //        }
+        //        else
+        //        {
+        //            //Key2,Value2 are the current record
+        //            if (remainingBytes < m_maximumStorageSize)
+        //            {
+        //                length = EncodeRecord(buffer, Key1, Value1, Key2, Value2);
+        //                if (remainingBytes < length)
+        //                {
+        //                    isFull = true;
+        //                    IncrementRecordCounts(recordsAdded, RemainingBytes - remainingBytes);
+        //                    ClearNodeCache();
+        //                    stream.IsValid = isValid;
+        //                    stream.IsKVP1 = isKVP1;
+        //                    stream.IsStillSequential = isStillSequential;
+        //                    return;
+        //                }
+        //            }
+
+        //            length = EncodeRecord(writePointer + m_nextOffset, Key1, Value1, Key2, Value2);
+        //            remainingBytes -= length;
+        //            recordsAdded++;
+        //            m_nextOffset = m_currentOffset + length;
+
+        //            //Inlined stream.Next()
+        //            isValid = stream.Stream.Read(Key1, Value1);
+        //            isKVP1 = true;
+        //            isStillSequential = Key2.Timestamp < Key1.Timestamp
+        //             || (Key2.Timestamp == Key1.Timestamp && Key2.PointID < Key1.PointID)
+        //             || (Key2.Timestamp == Key1.Timestamp && Key2.PointID == Key1.PointID && Key2.EntryNumber < Key1.EntryNumber);
+        //            //End Inlined
+
+        //            goto TryAgain;
+        //        }
+        //    }
+        //}
+
         //public unsafe int EncodeRecord(byte* buffer, KeyValue256 currentKey, KeyValue256 previousKey)
         //{
         //    int size = 0;
@@ -59,7 +165,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
         protected override unsafe int EncodeRecord(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey currentKey, HistorianValue currentValue)
         {
-            //ToDo: Make stage 1 still work on little endian processors.
+            //ToDo: Make stage 1 still work on big endian processors.
             int size = 0;
 
             //Compression Stages:
@@ -170,7 +276,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return size;
         }
 
-        protected override unsafe int DecodeRecord(byte* stream, byte* buffer, HistorianKey prevKey, HistorianValue prevValue, HistorianKey currentKey, HistorianValue currentValue)
+        protected override unsafe int DecodeRecord(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey currentKey, HistorianValue currentValue)
         {
             int size = 0;
             uint code = stream[0];
@@ -187,7 +293,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 currentKey.Timestamp = prevKey.Timestamp;
                 currentKey.PointID = prevKey.PointID + 1 + ((code >> 4) & 0x7);
                 currentKey.EntryNumber = 0;
-                currentValue.Value1 = (4u<<28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                currentValue.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
                 currentValue.Value2 = 0;
                 currentValue.Value3 = 0;
                 return 4;

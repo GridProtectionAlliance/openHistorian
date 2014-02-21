@@ -23,7 +23,6 @@
 
 namespace GSF.SortedTreeStore.Tree
 {
-
     public partial class SortedTreeNodeBase<TKey, TValue>
     {
         protected abstract void InitializeType();
@@ -48,6 +47,8 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="value"></param>
         /// <returns></returns>
         protected abstract bool InsertUnlessFull(int index, TKey key, TValue value);
+
+        protected abstract void AppendSequentailStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull);
 
         protected abstract int GetIndexOf(TKey key);
 

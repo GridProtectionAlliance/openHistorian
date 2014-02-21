@@ -108,6 +108,35 @@ namespace openHistorian.UnitTests.Archive
             };
         }
 
+        [Test]
+        public void TestBulkRolloverFile()
+        {
+            Stats.LookupKeys = 0;
+            DiskIoSession.ReadCount = 0;
+            DiskIoSession.WriteCount = 0;
+            Stats.ChecksumCount = 0;
+            DiskIoSession.Lookups = 0;
+            DiskIoSession.CachedLookups = 0;
+            long cnt;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            //using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(4096).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
+            using (SortedTreeTable<HistorianKey, HistorianValue> af = SortedTreeFile.CreateInMemory(4096).OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid))
+            {
+                using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af.BeginEdit())
+                {
+                    edit.AddPoints(new PointStreamSequentialPoints(1, 20000000));
+                    edit.Commit();
+                }
+                sw.Stop();
+
+                cnt = af.Count();
+                Console.WriteLine(cnt);
+            }
+
+            Console.WriteLine((float)(20 / sw.Elapsed.TotalSeconds));
+        }
+
         //TestResults Test(int pageSize)
         //{
         //    GSF.Stats.LookupKeys = 0;
@@ -178,7 +207,7 @@ namespace openHistorian.UnitTests.Archive
                 for (uint x = 0; x < 1000000; x++)
                 {
                     key.PointID = x;
-                    edit.AddPoint(key,value);
+                    edit.AddPoint(key, value);
                 }
                 edit.Commit();
             }

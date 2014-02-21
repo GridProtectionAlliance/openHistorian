@@ -47,6 +47,46 @@ namespace GSF.SortedTreeStore.Tree
             return TryInsert2(key, value);
         }
 
+        public virtual void TryInsertSequentailStream(InsertStreamHelper<TKey, TValue> stream)
+        {
+            //First check to see if the sequentail insertion is valid.
+            bool isFull;
+            TKey key = new TKey();
+            TValue value = new TValue();
+
+            //Exit if stream is not valid or not sequentail.
+            if (!stream.IsValid || !stream.IsStillSequential)
+                return;
+
+            NavigateToNode(stream.Key);
+
+            //Exit if the node holding this key is not the far right node.
+            if (!IsRightSiblingIndexNull)
+                return;
+
+            //Verify that this next key to be inserted is greater than the last record in this node
+            if (RecordCount > 0)
+            {
+                Read(RecordCount - 1, key, value);
+                if (KeyMethods.IsGreaterThanOrEqualTo(key, stream.Key))
+                    return;
+            }
+
+        TryAgain:
+
+            AppendSequentailStream(stream, out isFull);
+
+            if (!stream.IsValid || !stream.IsStillSequential || !IsRightSiblingIndexNull)
+                return;
+
+            if (isFull)
+            {
+                NewNodeThenInsert(stream.Key, stream.Value);
+                stream.Next();
+                goto TryAgain;
+            }
+        }
+
         /// <summary>
         /// Inserts the following value to the tree if it does not exist.
         /// </summary>

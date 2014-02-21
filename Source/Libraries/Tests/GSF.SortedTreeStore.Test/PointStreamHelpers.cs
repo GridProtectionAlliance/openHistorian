@@ -6,6 +6,37 @@ using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian
 {
+    public class PointStreamSequentialPoints
+       : TreeStream<HistorianKey, HistorianValue>
+    {
+        private ulong m_start;
+        private int m_count;
+
+        public PointStreamSequentialPoints(int start, int count)
+        {
+            m_start = (ulong)start;
+            m_count = count;
+        }
+
+        public override bool Read(HistorianKey key, HistorianValue value)
+        {
+            if (m_count <= 0)
+            {
+                key.Timestamp = 0;
+                key.PointID = 0;
+                value.Value3 = 0;
+                value.Value1 = 0;
+                return false;
+            }
+            m_count--;
+            key.Timestamp = 0;
+            key.PointID = m_start;
+            value.AsSingle = 60.251f;
+            m_start++;
+            return true;
+        }
+    }
+
     public class PointStreamSequential
         : TreeStream<HistorianKey, HistorianValue>
     {

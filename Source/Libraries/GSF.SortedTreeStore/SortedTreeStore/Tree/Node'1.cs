@@ -202,6 +202,15 @@ namespace GSF.SortedTreeStore.Tree
             ptr[1] += (ushort)additionalValidBytes;
         }
 
+        protected void IncrementRecordCounts(int recordCount, int additionalValidBytes)
+        {
+            ushort* ptr = (ushort*)(GetWritePointer() + OffsetOfRecordCount);
+            m_recordCount += (ushort)recordCount;
+            m_validBytes += (ushort)additionalValidBytes;
+            ptr[0] += (ushort)recordCount;
+            ptr[1] += (ushort)additionalValidBytes;
+        }
+
         /// <summary>
         /// The index of the left sibling. <see cref="uint.MaxValue"/> is the null case.
         /// </summary>

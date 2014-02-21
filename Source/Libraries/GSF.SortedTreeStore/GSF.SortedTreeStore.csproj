@@ -147,6 +147,7 @@
     <Compile Include="Collections\ContinuousQueue`1.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer%272.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer.cs" />
+    <Compile Include="SortedTreeStore\Tree\InsertStreamHelper`2.cs" />
     <Compile Include="SortedTreeStore\Tree\ISortedTreeKey`1.cs" />
     <Compile Include="SortedTreeStore\Tree\ISortedTreeValue%271.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTree.cs" />

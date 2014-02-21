@@ -121,6 +121,12 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return true;
         }
 
+        protected override void AppendSequentailStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull)
+        {
+            isFull = false;
+            //ToDo: Actually implement this method.
+        }
+
         protected override int GetIndexOf(TKey key)
         {
             return KeyMethods.BinarySearch(GetReadPointerAfterHeader(), key, RecordCount, KeyValueSize);

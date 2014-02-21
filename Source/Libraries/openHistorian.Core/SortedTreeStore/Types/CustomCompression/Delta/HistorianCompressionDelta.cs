@@ -73,7 +73,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return size;
         }
 
-        protected override unsafe int DecodeRecord(byte* stream, byte* buffer, HistorianKey prevKey, HistorianValue prevValue, HistorianKey currentKey, HistorianValue currentValue)
+        protected override unsafe int DecodeRecord(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey currentKey, HistorianValue currentValue)
         {
             int position = 0;
             currentKey.Timestamp = prevKey.Timestamp ^ Compression.Read7BitUInt64(stream, ref position);

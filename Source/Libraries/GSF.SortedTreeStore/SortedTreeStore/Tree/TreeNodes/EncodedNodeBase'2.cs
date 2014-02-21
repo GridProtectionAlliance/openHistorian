@@ -36,16 +36,17 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
-        private int m_nextOffset;
-        private int m_currentOffset;
+        int m_maximumStorageSize;
+        int m_nextOffset;
+        int m_currentOffset;
         private int m_currentIndex;
         private readonly TKey m_nullKey;
         private readonly TValue m_nullValue;
-        private readonly TKey m_currentKey;
-        private readonly TValue m_currentValue;
+        readonly TKey m_currentKey;
+        readonly TValue m_currentValue;
         private readonly TKey m_prevKey;
         private readonly TValue m_prevValue;
-        private byte[] m_buffer1;
+        byte[] m_buffer1;
         private byte[] m_buffer2;
 
         protected EncodedNodeBase(byte level, byte version)
@@ -69,6 +70,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
         protected override void InitializeType()
         {
+            m_maximumStorageSize = MaximumStorageSize;
             m_buffer1 = new byte[MaximumStorageSize];
             m_buffer2 = new byte[MaximumStorageSize];
             if ((BlockSize - HeaderSize) / MaximumStorageSize < 4)
@@ -90,13 +92,12 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// Decodes the record from the stream.
         /// </summary>
         /// <param name="stream">the stream where the record is stored</param>
-        /// <param name="buffer">a temporary buffer than can be used to decode the stream if needed</param>
         /// <param name="prevKey">the key value that was read</param>
         /// <param name="prevValue">the previous value that was read</param>
         /// <param name="currentKey">where to store the decoded key</param>
         /// <param name="currentValue">where to store the decoded value</param>
         /// <returns></returns>
-        protected abstract int DecodeRecord(byte* stream, byte* buffer, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
+        protected abstract int DecodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue);
 
         /// <summary>
         /// The maximum size that will ever be needed to encode or decode this data.
@@ -106,13 +107,12 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             get;
         }
 
-        
+
         protected override void Read(int index, TValue value)
         {
             if (index == RecordCount)
                 throw new Exception();
-            fixed (byte* buffer = m_buffer1)
-                SeekTo(index, buffer);
+            SeekTo(index);
             ValueMethods.Copy(m_currentValue, value);
         }
 
@@ -120,8 +120,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         {
             if (index == RecordCount)
                 throw new Exception();
-            fixed (byte* buffer = m_buffer1)
-                SeekTo(index, buffer);
+            SeekTo(index);
             KeyMethods.Copy(m_currentKey, key);
             ValueMethods.Copy(m_currentValue, value);
         }
@@ -141,6 +140,93 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             //return true;
         }
 
+        protected override void AppendSequentailStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull)
+        {
+            int recordsAdded = 0;
+            int additionalValidBytes = 0;
+            byte* writePointer = GetWritePointer();
+            fixed (byte* buffer = m_buffer1)
+            {
+                SeekTo(RecordCount);
+
+                if (RecordCount > 0)
+                {
+                    KeyMethods.Copy(m_currentKey, stream.PrevKey);
+                    ValueMethods.Copy(m_currentValue, stream.PrevValue);
+                }
+                else
+                {
+                    KeyMethods.Clear(stream.PrevKey);
+                    ValueMethods.Clear(stream.PrevValue);
+                }
+
+            TryAgain:
+                if (!stream.IsValid || !stream.IsStillSequential)
+                {
+                    isFull = false;
+                    IncrementRecordCounts(recordsAdded, additionalValidBytes);
+                    ClearNodeCache();
+                    return;
+                }
+
+                int length;
+                if (stream.IsKVP1)
+                {
+                    //Key1,Value1 are the current record
+                    if (RemainingBytes - additionalValidBytes < m_maximumStorageSize)
+                    {
+                        length = EncodeRecord(buffer, stream.Key2, stream.Value2, stream.Key1, stream.Value1);
+                        if (RemainingBytes - additionalValidBytes < length)
+                        {
+                            isFull = true;
+                            IncrementRecordCounts(recordsAdded, additionalValidBytes);
+                            ClearNodeCache();
+                            return;
+                        }
+                    }
+
+                    length = EncodeRecord(writePointer + m_nextOffset, stream.Key2, stream.Value2, stream.Key1, stream.Value1);
+                    additionalValidBytes += length;
+                    recordsAdded++;
+                    m_nextOffset = m_currentOffset + length;
+                    //Inlined stream.Next()
+                    stream.IsValid = stream.Stream.Read(stream.Key2, stream.Value2);
+                    stream.IsStillSequential = KeyMethods.IsLessThan(stream.Key1, stream.Key2);
+                    stream.IsKVP1 = false;
+                    //End Inlined
+                    goto TryAgain;
+                }
+                else
+                {
+                    //Key2,Value2 are the current record
+                    if (RemainingBytes - additionalValidBytes < m_maximumStorageSize)
+                    {
+                        length = EncodeRecord(buffer, stream.Key1, stream.Value1, stream.Key2, stream.Value2);
+                        if (RemainingBytes - additionalValidBytes < length)
+                        {
+                            isFull = true;
+                            IncrementRecordCounts(recordsAdded, additionalValidBytes);
+                            ClearNodeCache();
+                            return;
+                        }
+                    }
+
+                    length = EncodeRecord(writePointer + m_nextOffset, stream.Key1, stream.Value1, stream.Key2, stream.Value2);
+                    additionalValidBytes += length;
+                    recordsAdded++;
+                    m_nextOffset = m_currentOffset + length;
+                   
+                    //Inlined stream.Next()
+                    stream.IsValid = stream.Stream.Read(stream.Key1, stream.Value1);
+                    stream.IsStillSequential = KeyMethods.IsLessThan(stream.Key2, stream.Key1);
+                    stream.IsKVP1 = true;
+                    //End Inlined
+
+                    goto TryAgain;
+                }
+            }
+        }
+
         /// <summary>
         /// Inserts a point before the current position.
         /// </summary>
@@ -150,20 +236,17 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// <returns></returns>
         protected override bool InsertUnlessFull(int index, TKey key, TValue value)
         {
-            fixed (byte* buffer = m_buffer1)
+            if (index == RecordCount)
             {
-                if (index == RecordCount)
-                {
-                    //Insert After
-                    SeekTo(index, buffer);
-                    return InsertAfter(key, value);
-                }
-                else
-                {
-                    //Insert Between
-                    SeekTo(index, buffer);
-                    return InsertBetween(key, value);
-                }
+                //Insert After
+                SeekTo(index);
+                return InsertAfter(key, value);
+            }
+            else
+            {
+                //Insert Between
+                SeekTo(index);
+                return InsertBetween(key, value);
             }
         }
 
@@ -263,7 +346,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 ClearNodeCache();
                 while (m_currentOffset < (BlockSize >> 1))
                 {
-                    Read(buffer);
+                    Read();
                 }
 
                 int storageSize = EncodeRecord(buffer, m_nullKey, m_nullValue, m_currentKey, m_currentValue);
@@ -402,13 +485,13 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 {
                     return;
                 }
-                while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
+                while (Read() && KeyMethods.IsLessThan(m_currentKey, key))
                     ;
             }
             else
             {
                 ClearNodeCache();
-                while (Read(buffer) && KeyMethods.IsLessThan(m_currentKey, key))
+                while (Read() && KeyMethods.IsLessThan(m_currentKey, key))
                     ;
             }
         }
@@ -418,8 +501,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         /// until the <see cref="m_currentKey"/> >= <see cref="key"/>
         /// </summary>
         /// <param name="index"></param>
-        /// <param name="buffer"></param>
-        private void SeekTo(int index, byte* buffer)
+        private void SeekTo(int index)
         {
             //Reset();
             //for (int x = 0; x <= index; x++)
@@ -428,21 +510,21 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             {
                 ClearNodeCache();
                 for (int x = 0; x <= index; x++)
-                    Read(buffer);
+                    Read();
             }
             else
             {
                 for (int x = m_currentIndex; x < index; x++)
-                    Read(buffer);
+                    Read();
             }
         }
 
-        protected void OnNodeIndexChanged(object sender, EventArgs e)
+        void OnNodeIndexChanged(object sender, EventArgs e)
         {
             ClearNodeCache();
         }
 
-        protected void ClearNodeCache()
+        void ClearNodeCache()
         {
             m_nextOffset = HeaderSize;
             m_currentOffset = HeaderSize;
@@ -453,7 +535,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             ValueMethods.Clear(m_currentValue);
         }
 
-        private bool Read(byte* buffer)
+        private bool Read()
         {
             if (m_currentIndex == RecordCount)
             {
@@ -468,7 +550,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             if (m_currentIndex == RecordCount)
                 return false;
 
-            m_nextOffset += DecodeRecord(GetReadPointer() + m_nextOffset, buffer, m_prevKey, m_prevValue, m_currentKey, m_currentValue);
+            m_nextOffset += DecodeRecord(GetReadPointer() + m_nextOffset, m_prevKey, m_prevValue, m_currentKey, m_currentValue);
             return true;
         }
 

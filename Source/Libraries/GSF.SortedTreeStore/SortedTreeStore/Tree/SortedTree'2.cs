@@ -252,13 +252,19 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream">the stream to add.</param>
         public void TryAddRange(TreeStream<TKey, TValue> stream)
         {
-            TKey key = new TKey();
-            TValue value = new TValue();
-            while (stream.Read(key, value))
+            InsertStreamHelper<TKey, TValue> helper = new InsertStreamHelper<TKey, TValue>(stream);
+            LeafStorage.TryInsertSequentailStream(helper);
+            while (helper.IsValid)
             {
-                TryAdd(key, value);
+                LeafStorage.TryInsert(helper.Key, helper.Value);
+                helper.Next();
             }
+            if (IsDirty && AutoFlush)
+                SaveHeader();
         }
+
+
+
         /// <summary>
         /// Tries to remove the following key from the tree.
         /// </summary>
