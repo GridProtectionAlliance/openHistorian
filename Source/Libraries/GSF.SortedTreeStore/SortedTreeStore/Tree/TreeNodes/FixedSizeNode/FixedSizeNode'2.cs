@@ -24,7 +24,7 @@
 using System;
 using GSF.IO.Unmanaged;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
 {
     /// <summary>
     /// A node for a <see cref="SortedTree"/> that is encoded in a fixed width. 

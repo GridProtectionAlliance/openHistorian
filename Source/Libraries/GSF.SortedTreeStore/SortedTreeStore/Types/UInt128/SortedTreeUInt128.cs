@@ -42,11 +42,11 @@ namespace GSF.SortedTreeStore.Types
             return new SortedTreeValueMethodsUInt128();
         }
 
-        void ISortedTreeValue<SortedTreeUInt128>.RegisterImplementations()
+        void ISortedTreeValue<SortedTreeUInt128>.RegisterCustomValueImplementations()
         {
         }
 
-        void ISortedTreeKey<SortedTreeUInt128>.RegisterImplementations()
+        void ISortedTreeKey<SortedTreeUInt128>.RegisterCustomKeyImplementations()
         {
         }
     }

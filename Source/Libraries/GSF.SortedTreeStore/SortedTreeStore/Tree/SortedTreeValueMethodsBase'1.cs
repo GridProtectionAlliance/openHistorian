@@ -46,6 +46,7 @@ namespace GSF.SortedTreeStore.Tree
         {
             Size = GetSize();
         }
+
         /// <summary>
         /// The fixed size of this value
         /// </summary>
@@ -85,20 +86,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         /// <param name="data"></param>
         public abstract unsafe void Write(byte* stream, TValue data);
-        /// <summary>
-        /// Writes the <see cref="currentValue"/> as a delta from the <see cref="previousValue"/> to the provided stream.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="currentValue"></param>
-        /// <param name="previousValue"></param>
-        public abstract void WriteCompressed(BinaryStreamBase stream, TValue currentValue, TValue previousValue);
-        /// <summary>
-        /// Reads the <see cref="currentValue"/> as a delta from the <see cref="previousValue"/> from the provided stream.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="currentValue"></param>
-        /// <param name="previousValue"></param>
-        public abstract void ReadCompressed(BinaryStreamBase stream, TValue currentValue, TValue previousValue);
+
         /// <summary>
         /// Copies the source to the destination
         /// </summary>

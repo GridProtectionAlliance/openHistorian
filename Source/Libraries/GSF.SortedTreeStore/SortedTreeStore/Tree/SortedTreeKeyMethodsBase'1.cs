@@ -45,7 +45,6 @@ namespace GSF.SortedTreeStore.Tree
 
         protected TKey TempKey = new TKey();
         protected TKey TempKey2 = new TKey();
-
         protected int LastFoundIndex;
 
         /// <summary>
@@ -56,6 +55,12 @@ namespace GSF.SortedTreeStore.Tree
             get;
             private set;
         }
+
+        protected SortedTreeKeyMethodsBase()
+        {
+            Size = GetSize();
+        }
+
         /// <summary>
         /// Clears the key
         /// </summary>
@@ -93,33 +98,12 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         /// <param name="data"></param>
         public abstract unsafe void Read(byte* stream, TKey data);
-
-        /// <summary>
-        /// Writes the <see cref="currentKey"/> as a delta from the <see cref="previousKey"/> to the provided stream.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="currentKey"></param>
-        /// <param name="previousKey"></param>
-        public abstract void WriteCompressed(BinaryStreamBase stream, TKey currentKey, TKey previousKey);
-
-        /// <summary>
-        /// Reads the <see cref="currentKey"/> as a delta from the <see cref="previousKey"/> from the provided stream.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="currentKey"></param>
-        /// <param name="previousKey"></param>
-        public abstract void ReadCompressed(BinaryStreamBase stream, TKey currentKey, TKey previousKey);
-
+        
         /// <summary>
         /// Gets the size of this class when serialized
         /// </summary>
         /// <returns></returns>
         protected abstract int GetSize();
-
-        protected SortedTreeKeyMethodsBase()
-        {
-            Size = GetSize();
-        }
 
         /// <summary>
         /// The Guid uniquely defining this type. 

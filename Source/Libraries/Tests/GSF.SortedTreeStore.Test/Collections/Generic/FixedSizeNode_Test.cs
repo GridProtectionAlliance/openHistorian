@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode;
 using GSF.SortedTreeStore.Types;
 using NUnit.Framework;
 using openHistorian.Collections;

@@ -71,6 +71,7 @@ namespace GSF.SortedTreeStore
             if (Read(CurrentKey, CurrentValue))
             {
                 IsValid = true;
+                return true;
             }
             IsValid = false;
             EOS = true;

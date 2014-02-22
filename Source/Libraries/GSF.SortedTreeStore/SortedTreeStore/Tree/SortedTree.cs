@@ -24,6 +24,7 @@
 using System;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode;
 
 namespace GSF.SortedTreeStore.Tree
 {
@@ -32,14 +33,6 @@ namespace GSF.SortedTreeStore.Tree
     /// </summary>
     public static class SortedTree
     {
-        /// <summary>
-        /// Registers a user defined TreeNode type
-        /// </summary>
-        /// <param name="treeNode"></param>
-        public static void RegisterTreeNode(CreateTreeNodeBase treeNode)
-        {
-            TreeNodeInitializer.Register(treeNode);
-        }
         /// <summary>
         /// Reads the header data.
         /// </summary>

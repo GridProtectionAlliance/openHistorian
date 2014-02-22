@@ -80,18 +80,6 @@ namespace GSF.SortedTreeStore.Types
             data.Value1 = *(ulong*)stream;
             data.Value2 = *(ulong*)(stream + 8);
         }
-        
-        public override void ReadCompressed(BinaryStreamBase stream, SortedTreeUInt128 currentKey, SortedTreeUInt128 previousKey)
-        {
-            currentKey.Value1 = stream.Read7BitUInt64() ^ previousKey.Value1;
-            currentKey.Value2 = stream.Read7BitUInt64() ^ previousKey.Value2;
-        }
-
-        public override void WriteCompressed(BinaryStreamBase stream, SortedTreeUInt128 currentKey, SortedTreeUInt128 previousKey)
-        {
-            stream.Write7Bit(previousKey.Value1 ^ currentKey.Value1);
-            stream.Write7Bit(previousKey.Value2 ^ currentKey.Value2);
-        }
 
         public override Guid GenericTypeGuid
         {

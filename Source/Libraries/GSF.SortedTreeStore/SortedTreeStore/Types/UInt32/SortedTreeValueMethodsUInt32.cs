@@ -36,15 +36,6 @@ namespace GSF.SortedTreeStore.Types
         // {03F4BD3A-D9CF-4358-B175-A9D38BE6715A}
         public static Guid TypeGuid = new Guid(0x03f4bd3a, 0xd9cf, 0x4358, 0xb1, 0x75, 0xa9, 0xd3, 0x8b, 0xe6, 0x71, 0x5a);
 
-        public override void ReadCompressed(BinaryStreamBase stream, SortedTreeUInt32 currentKey, SortedTreeUInt32 previousKey)
-        {
-            currentKey.Value = stream.Read7BitUInt32() ^ previousKey.Value;
-        }
-        public override void WriteCompressed(BinaryStreamBase stream, SortedTreeUInt32 currentKey, SortedTreeUInt32 previousKey)
-        {
-            stream.Write7Bit(previousKey.Value ^ currentKey.Value);
-        }
-
         protected override int GetSize()
         {
             return 4;

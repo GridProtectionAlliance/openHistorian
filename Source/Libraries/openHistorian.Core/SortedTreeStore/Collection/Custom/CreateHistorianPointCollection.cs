@@ -24,16 +24,36 @@
 
 
 using System;
+using System.Runtime.CompilerServices;
 using GSF.SortedTreeStore.Collection;
-using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Net.Initialization;
 
 namespace GSF.SortedTreeStore.Net.Compression
 {
     class CreateHistorianPointCollection
         : CreatePointCollectionBase
     {
+
+        static CreateHistorianPointCollection()
+        {
+            //Gaurenteed to execute only once.
+            try
+            {
+                PointCollectionInitializer.Register(new CreateHistorianPointCollection());
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Registers this implementation with the appropriate class.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        public static void Register()
+        {
+            //Do Nothing. The static constructor will be called.
+        }
      
         /// <summary>
         /// Creates a class

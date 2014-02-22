@@ -26,7 +26,6 @@ using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace GSF.SortedTreeStore.Tree
 {
-
     /// <summary>
     /// The interface that is required to use as a value in <see cref="SortedTree"/> 
     /// </summary>
@@ -43,6 +42,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <summary>
         /// Requests that any custom compression type is registered with <see cref="TreeNodeInitializer"/> and <see cref="KeyValueStreamCompression"/>
         /// </summary>
-        void RegisterImplementations();
+        void RegisterCustomValueImplementations();
     }
 }

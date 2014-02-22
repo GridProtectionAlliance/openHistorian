@@ -51,10 +51,10 @@ namespace GSF.SortedTreeStore.Types
             return new SortedTreeValueMethodsUInt32();
         }
 
-        void ISortedTreeValue<SortedTreeUInt32>.RegisterImplementations()
+        void ISortedTreeValue<SortedTreeUInt32>.RegisterCustomValueImplementations()
         {
         }
-        void ISortedTreeKey<SortedTreeUInt32>.RegisterImplementations()
+        void ISortedTreeKey<SortedTreeUInt32>.RegisterCustomKeyImplementations()
         {
         }
     }

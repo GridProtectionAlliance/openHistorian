@@ -296,11 +296,7 @@ namespace openHistorian
         }
 
         #endregion
-
-        static HistorianServer()
-        {
-            RegisterTypes.Register();
-        }
+        
     }
 
     #region [ Old Code ]

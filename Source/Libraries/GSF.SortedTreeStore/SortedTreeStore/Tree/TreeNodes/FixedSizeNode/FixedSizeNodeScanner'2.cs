@@ -25,7 +25,7 @@ using System;
 using GSF.IO;
 using GSF.SortedTreeStore.Filters;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
 {
     /// <summary>
     /// The treescanner for a fixed size node.

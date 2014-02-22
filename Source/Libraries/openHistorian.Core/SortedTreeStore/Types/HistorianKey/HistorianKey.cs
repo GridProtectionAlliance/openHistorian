@@ -24,7 +24,9 @@
 using System;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace openHistorian.Collections
 {
@@ -139,9 +141,12 @@ namespace openHistorian.Collections
             return new KeyMethodsHistorianKey();
         }
 
-        public override void RegisterImplementations()
+        public override void RegisterCustomKeyImplementations()
         {
-            RegisterTypes.Register();
+            CreateHistorianCompressionDelta.Register();
+            CreateHistorianCompressionTs.Register();
+            CreateHistorianCompressedStream.Register();
+            CreateHistorianPointCollection.Register();
         }
 
         public override string ToString()

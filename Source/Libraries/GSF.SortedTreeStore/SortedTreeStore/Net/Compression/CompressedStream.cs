@@ -74,9 +74,10 @@ namespace GSF.SortedTreeStore.Net.Compression
 
         public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
+            throw new NotImplementedException();
             stream.Write(true);
-            KeyMethods.WriteCompressed(stream, currentKey, prevKey);
-            ValueMethods.WriteCompressed(stream, currentValue, prevValue);
+            //KeyMethods.WriteCompressed(stream, currentKey, prevKey);
+            //ValueMethods.WriteCompressed(stream, currentValue, prevValue);
 
             KeyMethods.Copy(currentKey, prevKey);
             ValueMethods.Copy(currentValue, prevValue);
@@ -91,9 +92,10 @@ namespace GSF.SortedTreeStore.Net.Compression
         {
             if (!stream.ReadBoolean())
                 return false;
+            throw new NotImplementedException();
 
-            KeyMethods.ReadCompressed(stream, key, prevKey);
-            ValueMethods.ReadCompressed(stream, value, prevValue);
+            //KeyMethods.ReadCompressed(stream, key, prevKey);
+            //ValueMethods.ReadCompressed(stream, value, prevValue);
 
             KeyMethods.Copy(key, prevKey);
             ValueMethods.Copy(value, prevValue);

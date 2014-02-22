@@ -45,20 +45,6 @@ namespace openHistorian.Collections
             *(ulong*)(stream + 16) = data.Value3;
         }
 
-        public override void WriteCompressed(BinaryStreamBase stream, HistorianValue currentValue, HistorianValue previousValue)
-        {
-            stream.Write7Bit(previousValue.Value1 ^ currentValue.Value1);
-            stream.Write7Bit(previousValue.Value2 ^ currentValue.Value2);
-            stream.Write7Bit(previousValue.Value3 ^ currentValue.Value3);
-        }
-
-        public override void ReadCompressed(BinaryStreamBase stream, HistorianValue currentValue, HistorianValue previousValue)
-        {
-            currentValue.Value1 = stream.Read7BitUInt64() ^ previousValue.Value1;
-            currentValue.Value2 = stream.Read7BitUInt64() ^ previousValue.Value2;
-            currentValue.Value3 = stream.Read7BitUInt64() ^ previousValue.Value3;
-        }
-
         public override void Clear(HistorianValue data)
         {
             data.Value1 = 0;

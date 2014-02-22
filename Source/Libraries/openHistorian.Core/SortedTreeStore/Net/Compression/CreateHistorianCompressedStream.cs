@@ -24,6 +24,9 @@
 
 
 using System;
+using System.Runtime.CompilerServices;
+using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Net.Initialization;
 
@@ -32,6 +35,26 @@ namespace GSF.SortedTreeStore.Net.Compression
     class CreateHistorianCompressedStream
         : CreateKeyValueStreamCompressionBase
     {
+        static CreateHistorianCompressedStream()
+        {
+            //Gaurenteed to execute only once.
+            try
+            {
+                KeyValueStreamCompression.Register(new CreateHistorianCompressedStream());
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Registers this implementation with the appropriate class.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        public static void Register()
+        {
+            //Do Nothing. The static constructor will be called.
+        }
      
         // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
         public readonly static Guid TypeGuid = new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28);

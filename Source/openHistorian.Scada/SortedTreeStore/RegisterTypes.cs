@@ -24,6 +24,7 @@
 using GSF.SortedTreeStore.Collection;
 using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Net.Initialization;
+using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace GSF.SortedTreeStore

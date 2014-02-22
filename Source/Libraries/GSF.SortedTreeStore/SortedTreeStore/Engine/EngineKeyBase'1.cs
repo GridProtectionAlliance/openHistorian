@@ -76,6 +76,6 @@ namespace GSF.SortedTreeStore.Engine
         }
 
         public abstract SortedTreeKeyMethodsBase<TKey> CreateKeyMethods();
-        public abstract void RegisterImplementations();
+        public abstract void RegisterCustomKeyImplementations();
     }
 }

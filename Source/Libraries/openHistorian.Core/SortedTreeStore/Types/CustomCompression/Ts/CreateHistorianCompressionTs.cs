@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Runtime.CompilerServices;
 using openHistorian.Collections;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
@@ -32,6 +33,26 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     public class CreateHistorianCompressionTs
         : CreateTreeNodeBase
     {
+        static CreateHistorianCompressionTs()
+        {
+            //Gaurenteed to execute only once.
+            try
+            {
+                TreeNodeInitializer.Register(new CreateHistorianCompressionTs());
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Registers this implementation with the appropriate class.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        public static void Register()
+        {
+            //Do Nothing. The static constructor will be called.
+        }
 
         /// <summary>
         /// Creates a class

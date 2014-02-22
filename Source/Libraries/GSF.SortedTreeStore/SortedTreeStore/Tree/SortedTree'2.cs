@@ -326,14 +326,6 @@ namespace GSF.SortedTreeStore.Tree
 
         #region [ Protected Methods ]
 
-        protected virtual void OnLoadingHeader(BinaryStreamBase stream)
-        {
-        }
-
-        protected virtual void OnSavingHeader(BinaryStreamBase stream)
-        {
-        }
-
         /// <summary>
         /// Creates a tree scanner that can be used to seek this tree.
         /// </summary>
@@ -377,7 +369,6 @@ namespace GSF.SortedTreeStore.Tree
             m_rootNodeIndexAddress = Stream.ReadUInt32();
             m_rootNodeLevel = Stream.ReadUInt8();
             IsEmpty = Stream.ReadBoolean();
-            OnLoadingHeader(Stream);
         }
 
         /// <summary>
@@ -398,7 +389,6 @@ namespace GSF.SortedTreeStore.Tree
             Stream.Write(m_rootNodeIndexAddress); //Root Index
             Stream.Write(m_rootNodeLevel); //Root Index
             Stream.Write(IsEmpty);
-            OnSavingHeader(Stream);
 
             Stream.Position = oldPosotion;
             IsDirty = false;

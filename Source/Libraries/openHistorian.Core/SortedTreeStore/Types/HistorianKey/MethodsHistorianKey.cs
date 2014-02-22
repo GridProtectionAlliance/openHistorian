@@ -203,20 +203,6 @@ namespace openHistorian.Collections
             data.EntryNumber = *(ulong*)(stream + 16);
         }
 
-        public override void ReadCompressed(BinaryStreamBase stream, HistorianKey currentKey, HistorianKey previousKey)
-        {
-            currentKey.Timestamp = stream.Read7BitUInt64() ^ previousKey.Timestamp;
-            currentKey.PointID = stream.Read7BitUInt64() ^ previousKey.PointID;
-            currentKey.EntryNumber = stream.Read7BitUInt64() ^ previousKey.EntryNumber;
-        }
-
-        public override void WriteCompressed(BinaryStreamBase stream, HistorianKey currentKey, HistorianKey previousKey)
-        {
-            stream.Write7Bit(previousKey.Timestamp ^ currentKey.Timestamp);
-            stream.Write7Bit(previousKey.PointID ^ currentKey.PointID);
-            stream.Write7Bit(previousKey.EntryNumber ^ currentKey.EntryNumber);
-        }
-
         public override unsafe void Copy(HistorianKey source, HistorianKey destination)
         {
             destination.Timestamp = source.Timestamp;

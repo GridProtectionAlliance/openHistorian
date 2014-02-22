@@ -45,11 +45,5 @@ namespace GSF.SortedTreeStore.Net
         {
           
         }
-
-        static HistorianClient()
-        {
-            RegisterTypes.Register();
-        }
-
     }
 }

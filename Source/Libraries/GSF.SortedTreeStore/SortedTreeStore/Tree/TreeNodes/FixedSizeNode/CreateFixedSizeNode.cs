@@ -23,7 +23,7 @@
 
 using System;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
 {
     /// <summary>
     /// Used to generically create a fixed size node.

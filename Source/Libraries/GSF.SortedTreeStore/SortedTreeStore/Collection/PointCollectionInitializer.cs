@@ -30,6 +30,8 @@ namespace GSF.SortedTreeStore.Collection
 {
     public static class PointCollectionInitializer
     {
+
+
         private static readonly object SyncRoot;
         private static readonly Dictionary<Tuple<Type, Type>, CreatePointCollectionBase> TreeNodeKeyValue;
         private static readonly Dictionary<Type, CreatePointCollectionBase> TreeNodeKey;
@@ -73,8 +75,8 @@ namespace GSF.SortedTreeStore.Collection
                 if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(keyType, valueType), out treeNode))
                     if (!TreeNodeKey.TryGetValue(keyType, out treeNode))
                     {
-                        new TKey().RegisterImplementations();
-                        new TValue().RegisterImplementations();
+                        new TKey().RegisterCustomKeyImplementations();
+                        new TValue().RegisterCustomValueImplementations();
 
                         if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(keyType, valueType), out treeNode))
                             if (!TreeNodeKey.TryGetValue(keyType, out treeNode))

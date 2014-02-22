@@ -42,6 +42,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <summary>
         /// Requests that any custom compression type is registered with <see cref="TreeNodeInitializer"/> and <see cref="KeyValueStreamCompression"/>
         /// </summary>
-        void RegisterImplementations();
+        void RegisterCustomKeyImplementations();
     }
 }

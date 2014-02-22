@@ -139,7 +139,7 @@ namespace openHistorian.Collections
             return new ValueMethodsHistorianValue();
         }
 
-        void ISortedTreeValue<ScadaValue>.RegisterImplementations()
+        void ISortedTreeValue<ScadaValue>.RegisterCustomValueImplementations()
         {
             RegisterTypes.Register();
         }

@@ -24,9 +24,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.SortedTreeStore.Tree
 {
+    /// <summary>
+    /// Allows for customized implementations of <see cref="SortedTreeNodeBase{TKey,TValue}"/> 
+    /// to be registered so a <see cref="SortedTree{TKey,TValue}"/> will automatically use
+    /// this node.
+    /// </summary>
     public static class TreeNodeInitializer
     {
         private static readonly object SyncRoot;
@@ -42,9 +49,12 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             TreeNode = new Dictionary<Guid, CreateTreeNodeBase>();
 
             Register(new CreateFixedSizeNode());
-
         }
 
+        /// <summary>
+        /// Registers the provided <see cref="treeNode"/>
+        /// </summary>
+        /// <param name="treeNode">The specific implementation of a <see cref="SortedTreeNodeBase{TKey,TValue}"/></param>
         public static void Register(CreateTreeNodeBase treeNode)
         {
             lock (SyncRoot)
@@ -78,23 +88,31 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             CreateTreeNodeBase treeNode;
             lock (SyncRoot)
             {
-                if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
-                    if (!TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
-                        if (!TreeNode.TryGetValue(compressionMethod, out treeNode))
-                        {
-                            new TKey().RegisterImplementations();
-                            new TValue().RegisterImplementations();
-
-                            if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
-                                if (!TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
-                                    if (!TreeNode.TryGetValue(compressionMethod, out treeNode))
-                                        throw new Exception("Type is not registered");
-                        }
+                if (TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode)
+                    || TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode)
+                    || TreeNode.TryGetValue(compressionMethod, out treeNode))
+                {
+                    return new TreeNodeInitializer<TKey, TValue>(treeNode);
+                }
             }
-            return new TreeNodeInitializer<TKey, TValue>(treeNode);
+
+            new TKey().RegisterCustomKeyImplementations();
+            new TValue().RegisterCustomValueImplementations();
+
+            lock (SyncRoot)
+            {
+                if (TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode)
+                    || TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode)
+                    || TreeNode.TryGetValue(compressionMethod, out treeNode))
+                {
+                    return new TreeNodeInitializer<TKey, TValue>(treeNode);
+                }
+            }
+            throw new Exception("Type is not registered");
         }
 
-        public static SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(Guid compressionMethod, byte level)
+
+        internal static SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(Guid compressionMethod, byte level)
             where TKey : class, ISortedTreeKey<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
         {
@@ -104,21 +122,27 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             CreateTreeNodeBase treeNode;
             lock (SyncRoot)
             {
-                if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
-                    if (!TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
-                        if (!TreeNode.TryGetValue(compressionMethod, out treeNode))
-                        {
-                            new TKey().RegisterImplementations();
-                            new TValue().RegisterImplementations();
-
-                            if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode))
-                                if (!TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode))
-                                    if (!TreeNode.TryGetValue(compressionMethod, out treeNode))
-                                        throw new Exception("Type is not registered");
-                        }
+                if (TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode)
+                    || TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode)
+                    || TreeNode.TryGetValue(compressionMethod, out treeNode))
+                {
+                    return treeNode.Create<TKey, TValue>(level);
+                }
             }
 
-            return treeNode.Create<TKey, TValue>(level);
+            new TKey().RegisterCustomKeyImplementations();
+            new TValue().RegisterCustomValueImplementations();
+
+            lock (SyncRoot)
+            {
+                if (TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode)
+                    || TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode)
+                    || TreeNode.TryGetValue(compressionMethod, out treeNode))
+                {
+                    return treeNode.Create<TKey, TValue>(level);
+                }
+            }
+            throw new Exception("Type is not registered");
         }
     }
 }

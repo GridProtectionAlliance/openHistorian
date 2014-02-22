@@ -139,7 +139,7 @@ namespace openHistorian.Collections
             return new KeyMethodsScadaKey();
         }
 
-        public override void RegisterImplementations()
+        public override void RegisterCustomKeyImplementations()
         {
             RegisterTypes.Register();
         }
