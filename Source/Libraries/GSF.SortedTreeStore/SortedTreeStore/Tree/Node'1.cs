@@ -77,7 +77,7 @@ namespace GSF.SortedTreeStore.Tree
             Level = level;
             KeyMethods = new TKey().CreateValueMethods();
             Version = version;
-            KeySize = KeyMethods.Size;
+            KeySize = new TKey().Size;
         }
 
         /// <summary>
@@ -377,6 +377,8 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="newNodeIndex"></param>
         public void CreateEmptyNode(uint newNodeIndex)
         {
+            var key = new TKey();
+
             byte* ptr = Stream.GetWritePointer(newNodeIndex * BlockSize, BlockSize);
             ptr[OffsetOfVersion] = Version;
             ptr[OffsetOfNodeLevel] = Level;

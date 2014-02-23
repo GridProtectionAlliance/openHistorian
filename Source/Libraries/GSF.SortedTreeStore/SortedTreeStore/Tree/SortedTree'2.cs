@@ -53,8 +53,6 @@ namespace GSF.SortedTreeStore.Tree
         private Guid m_treeNodeType;
         private int m_blockSize;
         private bool m_isInitialized;
-        protected SortedTreeTypeMethods<TKey> KeyMethods;
-        protected SortedTreeTypeMethods<TValue> ValueMethods;
 
 
         #endregion
@@ -63,8 +61,6 @@ namespace GSF.SortedTreeStore.Tree
 
         internal SortedTree(BinaryStreamBase stream1, BinaryStreamBase stream2)
         {
-            KeyMethods = new TKey().CreateValueMethods();
-            ValueMethods = new TValue().CreateValueMethods();
             Stream = stream1;
             StreamLeaf = stream2;
             m_isInitialized = false;

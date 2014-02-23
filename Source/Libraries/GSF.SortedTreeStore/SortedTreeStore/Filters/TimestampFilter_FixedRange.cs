@@ -35,7 +35,6 @@ namespace GSF.SortedTreeStore.Filters
             where TKey : EngineKeyBase<TKey>, new()
         {
             private bool m_isEndReached;
-            private SortedTreeTypeMethods<TKey> m_keyMethods;
 
             private readonly ulong m_start;
             private readonly ulong m_stop;
@@ -46,7 +45,6 @@ namespace GSF.SortedTreeStore.Filters
                 EndOfFrame = new TKey();
                 StartOfRange = StartOfFrame;
                 EndOfRange = EndOfFrame;
-                m_keyMethods = StartOfFrame.CreateValueMethods();
             }
 
             /// <summary>

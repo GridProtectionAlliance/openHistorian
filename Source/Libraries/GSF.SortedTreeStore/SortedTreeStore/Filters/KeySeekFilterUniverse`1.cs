@@ -37,7 +37,6 @@ namespace GSF.SortedTreeStore.Filters
         where TKey : EngineKeyBase<TKey>, new()
     {
         private bool m_isEndReached;
-        private SortedTreeTypeMethods<TKey> m_keyMethods;
 
         public KeySeekFilterUniverse()
         {
@@ -45,7 +44,6 @@ namespace GSF.SortedTreeStore.Filters
             EndOfFrame = new TKey();
             StartOfRange = StartOfFrame;
             EndOfRange = EndOfFrame;
-            m_keyMethods = StartOfFrame.CreateValueMethods();
             Reset();
         }
 

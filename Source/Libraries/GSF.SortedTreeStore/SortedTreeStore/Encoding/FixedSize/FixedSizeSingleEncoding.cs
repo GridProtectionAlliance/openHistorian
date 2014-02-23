@@ -62,11 +62,11 @@ namespace GSF.SortedTreeStore.Encoding
         : SingleValueEncodingBase<T>
         where T : SortedTreeTypeBase<T>, new()
     {
-        SortedTreeTypeMethods<T> m_methods;
+        int m_size;
 
         public FixedSizeSingleEncoding()
         {
-            m_methods = new T().CreateValueMethods();
+            m_size = new T().Size;
         }
 
         public override bool UsesPreviousValue
@@ -81,7 +81,7 @@ namespace GSF.SortedTreeStore.Encoding
         {
             get
             {
-                return m_methods.Size;
+                return m_size;
             }
         }
 

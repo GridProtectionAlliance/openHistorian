@@ -32,10 +32,10 @@ namespace GSF.SortedTreeStore.Types
         // {655BB169-45E6-4370-9E9B-417ACF445ECB}
         public static Guid TypeGuid = new Guid(0x655bb169, 0x45e6, 0x4370, 0x9e, 0x9b, 0x41, 0x7a, 0xcf, 0x44, 0x5e, 0xcb);
 
-        protected override int GetSize()
-        {
-            return 16;
-        }
+        //protected override int GetSize()
+        //{
+        //    return 16;
+        //}
 
         //public override void Clear(SortedTreeUInt128 key)
         //{

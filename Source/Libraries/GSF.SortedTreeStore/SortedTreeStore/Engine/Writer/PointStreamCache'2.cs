@@ -50,16 +50,12 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private int m_pointCount;
         private int m_remainingPoints;
         private bool m_isReading;
-        private readonly SortedTreeTypeMethods<TKey> m_keyMethods;
-        private readonly SortedTreeTypeMethods<TValue> m_valueMethods;
 
         /// <summary>
         /// Creates a point stream cache
         /// </summary>
         public PointStreamCache()
         {
-            m_keyMethods = new TKey().CreateValueMethods();
-            m_valueMethods = new TValue().CreateValueMethods();
             m_queue = new BinaryStream(allocatesOwnMemory: true);
             m_isReading = false;
             m_pointCount = 0;

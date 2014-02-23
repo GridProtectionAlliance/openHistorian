@@ -71,14 +71,13 @@ namespace GSF.SortedTreeStore.Encoding
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-
-        SortedTreeTypeMethods<TKey> m_keyMethods;
-        SortedTreeTypeMethods<TValue> m_valueMethods;
+        int m_keySize;
+        int m_valueSize;
 
         public FixedSizeCombinedEncoding()
         {
-            m_keyMethods = new TKey().CreateValueMethods();
-            m_valueMethods = new TValue().CreateValueMethods();
+            m_keySize = new TKey().Size;
+            m_valueSize = new TValue().Size;
         }
 
         public override bool UsesPreviousKey
@@ -101,7 +100,7 @@ namespace GSF.SortedTreeStore.Encoding
         {
             get
             {
-                return m_keyMethods.Size + m_valueMethods.Size;
+                return m_keySize + m_valueSize;
             }
         }
 

@@ -30,53 +30,6 @@ namespace openHistorian.Collections
     public class KeyMethodsHistorianKey
         : SortedTreeTypeMethods<HistorianKey>
     {
-        // {6527D41B-9D04-4BFA-8133-05273D521D46}
-        public static Guid TypeGuid = new Guid(0x6527d41b, 0x9d04, 0x4bfa, 0x81, 0x33, 0x05, 0x27, 0x3d, 0x52, 0x1d, 0x46);
-
-        protected override int GetSize()
-        {
-            return 24;
-        }
-
-        //public override void Clear(HistorianKey key)
-        //{
-        //    key.Timestamp = 0;
-        //    key.PointID = 0;
-        //    key.EntryNumber = 0;
-        //}
-
-        //public override void SetMin(HistorianKey key)
-        //{
-        //    key.Timestamp = ulong.MinValue;
-        //    key.PointID = ulong.MinValue;
-        //    key.EntryNumber = ulong.MinValue;
-        //}
-
-        //public override void SetMax(HistorianKey key)
-        //{
-        //    key.Timestamp = ulong.MaxValue;
-        //    key.PointID = ulong.MaxValue;
-        //    key.EntryNumber = ulong.MaxValue;
-        //}
-
-        //public override int CompareTo(HistorianKey left, HistorianKey right)
-        //{
-        //    if (left.Timestamp < right.Timestamp)
-        //        return -1;
-        //    if (left.Timestamp > right.Timestamp)
-        //        return 1;
-        //    if (left.PointID < right.PointID)
-        //        return -1;
-        //    if (left.PointID > right.PointID)
-        //        return 1;
-        //    if (left.EntryNumber < right.EntryNumber)
-        //        return -1;
-        //    if (left.EntryNumber > right.EntryNumber)
-        //        return 1;
-
-        //    return 0;
-        //}
-
         //public override bool IsLessThan(HistorianKey left, HistorianKey right)
         //{
         //    if (left.Timestamp != right.Timestamp)

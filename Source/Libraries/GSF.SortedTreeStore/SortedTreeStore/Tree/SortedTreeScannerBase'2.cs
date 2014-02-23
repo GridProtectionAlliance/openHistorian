@@ -47,7 +47,7 @@ namespace GSF.SortedTreeStore.Tree
         private const int OffsetOfLowerBounds = OffsetOfRightSibling + IndexSize;
         private const int IndexSize = sizeof(uint);
         protected int KeySize;
-
+        protected int ValueSize;
         protected TKey UpperKey = new TKey();
         protected TKey LowerKey = new TKey();
         private readonly Func<TKey, byte, uint> m_lookupKey;
@@ -55,7 +55,6 @@ namespace GSF.SortedTreeStore.Tree
         //private TKey m_lowerKey;
         //private TKey m_upperKey;
         protected SortedTreeTypeMethods<TKey> KeyMethods;
-        protected SortedTreeTypeMethods<TValue> ValueMethods;
 
         /// <summary>
         /// The index of the current node.
@@ -147,11 +146,11 @@ namespace GSF.SortedTreeStore.Tree
 
             //m_currentNode = new Node(stream, blockSize);
             KeyMethods = m_tempKey.CreateValueMethods();
-            ValueMethods = new TValue().CreateValueMethods();
-            KeySize = KeyMethods.Size;
+            KeySize = new TKey().Size;
+            ValueSize = new TValue().Size;
 
             //OffsetOfUpperBounds = OffsetOfLowerBounds + KeySize;
-            HeaderSize = OffsetOfLowerBounds + 2 * KeyMethods.Size;
+            HeaderSize = OffsetOfLowerBounds + 2 * KeySize;
             m_blockSize = blockSize;
             Stream = stream;
             StreamPointer = stream.PointerVersionBox;

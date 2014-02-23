@@ -46,10 +46,6 @@ namespace GSF.SortedTreeStore.Tree
                 node.Initialize(bs, pageSize, getNextKey, sparse);
                 node.CreateEmptyNode(1);
 
-
-                SortedTreeTypeMethods<TKey> keyMethods = new TKey().CreateValueMethods();
-                SortedTreeTypeMethods<TValue> valueMethods = new TValue().CreateValueMethods();
-
                 TKey key = new TKey();
                 TKey key2 = new TKey();
                 TValue value = new TValue();

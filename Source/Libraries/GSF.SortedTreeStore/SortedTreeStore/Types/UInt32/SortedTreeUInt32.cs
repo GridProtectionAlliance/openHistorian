@@ -78,7 +78,7 @@ namespace GSF.SortedTreeStore.Types
             }
         }
 
-        public override int GetSize
+        public override int Size
         {
             get
             {

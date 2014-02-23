@@ -39,11 +39,11 @@ namespace GSF.SortedTreeStore.Tree
 
         private bool m_isInitialized;
         private int m_blockSize;
+        private int m_keySize;
         private readonly TKey m_key;
         private readonly SortedTreeUInt32 m_value;
         private BinaryStreamBase m_stream;
         private Func<uint> m_getNextNewNodeIndex;
-        private readonly SortedTreeTypeMethods<TKey> m_keyMethods;
         private SortedTreeNodeBase<TKey, SortedTreeUInt32>[] m_nodes;
         private readonly TreeNodeInitializer<TKey, SortedTreeUInt32> m_initializer;
 
@@ -94,8 +94,8 @@ namespace GSF.SortedTreeStore.Tree
         {
             m_initializer = TreeNodeInitializer.GetTreeNodeInitializer<TKey, SortedTreeUInt32>(encodingMethod);
             m_key = new TKey();
+            m_keySize = m_key.Size;
             m_value = new SortedTreeUInt32();
-            m_keyMethods = m_key.CreateValueMethods();
 
         }
 
@@ -118,7 +118,7 @@ namespace GSF.SortedTreeStore.Tree
             m_getNextNewNodeIndex = getNextNewNodeIndex;
             m_blockSize = blockSize;
 
-            int minSize = (m_keyMethods.Size + sizeof(uint)) * 4 + (12 + 2 * m_keyMethods.Size); // (4 key pointers) + (Header Size))
+            int minSize = (m_keySize + sizeof(uint)) * 4 + (12 + 2 * m_keySize); // (4 key pointers) + (Header Size))
             if (blockSize < minSize)
                 throw new ArgumentOutOfRangeException("blockSize", string.Format("Must hold at least 4 elements which is {0}", minSize));
 

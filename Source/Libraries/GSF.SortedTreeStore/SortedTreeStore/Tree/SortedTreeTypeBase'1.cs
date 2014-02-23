@@ -49,7 +49,7 @@ namespace GSF.SortedTreeStore.Tree
         /// Gets the size of this class when serialized
         /// </summary>
         /// <returns></returns>
-        public abstract int GetSize { get; }
+        public abstract int Size { get; }
 
         /// <summary>
         /// Compares the current instance to <see cref="other"/>.
@@ -91,7 +91,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         public virtual unsafe void Read(byte* stream)
         {
-            var reader = new BinaryStreamPointerWrapper(stream, GetSize);
+            var reader = new BinaryStreamPointerWrapper(stream, Size);
             Read(reader);
         }
 
@@ -101,7 +101,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         public virtual unsafe void Write(byte* stream)
         {
-            var writer = new BinaryStreamPointerWrapper(stream, GetSize);
+            var writer = new BinaryStreamPointerWrapper(stream, Size);
             Write(writer);
         }
 
@@ -111,8 +111,8 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="reader"></param>
         public virtual unsafe void Read(BinaryReader reader)
         {
-            byte* ptr = stackalloc byte[GetSize];
-            for (int x = 0; x < GetSize; x++)
+            byte* ptr = stackalloc byte[Size];
+            for (int x = 0; x < Size; x++)
             {
                 ptr[x] = reader.ReadByte();
             }
@@ -125,9 +125,9 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="writer"></param>
         public virtual unsafe void Write(BinaryWriter writer)
         {
-            byte* ptr = stackalloc byte[GetSize];
+            byte* ptr = stackalloc byte[Size];
             Write(ptr);
-            for (int x = 0; x < GetSize; x++)
+            for (int x = 0; x < Size; x++)
             {
                 writer.Write(ptr[x]);
             }
@@ -139,7 +139,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="destination"></param>
         public virtual unsafe void CopyTo(T destination)
         {
-            byte* ptr = stackalloc byte[GetSize];
+            byte* ptr = stackalloc byte[Size];
             Write(ptr);
             destination.Read(ptr);
         }
@@ -184,6 +184,13 @@ namespace GSF.SortedTreeStore.Tree
             return IsEqualTo(other);
         }
 
+        /// <summary>
+        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <returns>
+        /// A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>, as shown in the following table.Value Meaning Less than zero<paramref name="x"/> is less than <paramref name="y"/>.Zero<paramref name="x"/> equals <paramref name="y"/>.Greater than zero<paramref name="x"/> is greater than <paramref name="y"/>.
+        /// </returns>
+        /// <param name="x">The first object to compare.</param><param name="y">The second object to compare.</param>
         public virtual int Compare(T x, T y)
         {
             return x.CompareTo(y);

@@ -28,8 +28,6 @@ namespace GSF.SortedTreeStore.Tree
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        public SortedTreeTypeMethods<TKey> KeyMethods;
-
         public bool IsStillSequential;
         public bool IsValid;
         /// <summary>
@@ -84,7 +82,6 @@ namespace GSF.SortedTreeStore.Tree
             Value1 = new TValue();
             Value2 = new TValue();
             IsKVP1 = false;
-            KeyMethods = Key1.CreateValueMethods();
             IsStillSequential = true;
 
             if (IsKVP1)

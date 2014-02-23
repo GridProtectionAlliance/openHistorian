@@ -41,7 +41,6 @@ namespace GSF.SortedTreeStore.Engine
         private readonly TKey m_lastKey;
         private readonly SortedTreeTable<TKey, TValue> m_sortedTreeTable;
         private readonly SortedTreeTableSnapshotInfo<TKey, TValue> m_activeSnapshotInfo;
-        private readonly SortedTreeTypeMethods<TKey> m_keyMethods;
 
         #endregion
 
@@ -49,7 +48,6 @@ namespace GSF.SortedTreeStore.Engine
 
         public ArchiveTableSummary(SortedTreeTable<TKey, TValue> file)
         {
-            m_keyMethods = new TKey().CreateValueMethods();
             m_sortedTreeTable = file;
             m_activeSnapshotInfo = file.AcquireReadSnapshot();
             m_firstKey = file.FirstKey;

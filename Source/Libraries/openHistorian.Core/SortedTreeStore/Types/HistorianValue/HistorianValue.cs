@@ -102,7 +102,7 @@ namespace openHistorian.Collections
             }
         }
 
-        public override int GetSize
+        public override int Size
         {
             get
             {

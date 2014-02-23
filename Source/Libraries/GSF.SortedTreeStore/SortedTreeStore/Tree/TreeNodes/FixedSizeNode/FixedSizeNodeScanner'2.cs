@@ -38,7 +38,6 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         readonly int m_keyValueSize;
-        readonly int m_keySize;
 
         /// <summary>
         /// creates a new class
@@ -50,8 +49,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         public FixedSizeNodeScanner(byte level, int blockSize, BinaryStreamBase stream, Func<TKey, byte, uint> lookupKey)
             : base(level, blockSize, stream, lookupKey, version: 1)
         {
-            m_keyValueSize = (KeyMethods.Size + ValueMethods.Size);
-            m_keySize = KeyMethods.Size;
+            m_keyValueSize = (KeySize + ValueSize);
         }
 
 
@@ -59,7 +57,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             key.Read(ptr);
-            value.Read(ptr + m_keySize);
+            value.Read(ptr + KeySize);
             IndexOfNextKeyValue++;
         }
 
@@ -68,7 +66,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         TryAgain:
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             key.Read(ptr);
-            value.Read(ptr + m_keySize);
+            value.Read(ptr + KeySize);
             IndexOfNextKeyValue++;
             if (filter.Contains(key))
                 return true;
@@ -81,7 +79,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             key.Read(ptr);
-            value.Read(ptr + m_keySize);
+            value.Read(ptr + KeySize);
         }
 
         /// <summary>
@@ -91,7 +89,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             key.Read(ptr);
-            value.Read(ptr + m_keySize);
+            value.Read(ptr + KeySize);
             if (key.IsLessThan( upperBounds))
             {
                 IndexOfNextKeyValue++;
@@ -108,7 +106,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         TryAgain:
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             key.Read(ptr);
-            value.Read(ptr + m_keySize);
+            value.Read(ptr + KeySize);
             if (key.IsLessThan( upperBounds))
             {
                 IndexOfNextKeyValue++;

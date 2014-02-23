@@ -46,7 +46,6 @@ namespace GSF.SortedTreeStore.Tree
         private Node<TKey> m_tempNode2;
         private int m_minRecordNodeBytes;
         private Func<uint> m_getNextNewNodeIndex;
-        protected SortedTreeTypeMethods<TValue> ValueMethods;
         protected SparseIndex<TKey> SparseIndex;
         private bool m_initialized;
 
@@ -58,8 +57,7 @@ namespace GSF.SortedTreeStore.Tree
             : base(level, version)
         {
             m_initialized = false;
-            ValueMethods = new TValue().CreateValueMethods();
-            KeyValueSize = KeySize + ValueMethods.Size;
+            KeyValueSize = KeySize + new TValue().Size;
         }
 
         /// <summary>

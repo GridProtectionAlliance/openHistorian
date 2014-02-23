@@ -24,7 +24,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.IO;
 using GSF.IO.Unmanaged;
 
 namespace GSF.SortedTreeStore.Tree
@@ -44,29 +43,6 @@ namespace GSF.SortedTreeStore.Tree
         protected T TempKey = new T();
         protected T TempKey2 = new T();
         protected int LastFoundIndex;
-
-        public SortedTreeTypeMethods()
-        {
-            Size = GetSize();
-        }
-
-        /// <summary>
-        /// The fixed size of this value
-        /// </summary>
-        public int Size
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the size of this class when serialized
-        /// </summary>
-        /// <returns></returns>
-        protected virtual int GetSize()
-        {
-            return TempKey.GetSize;
-        }
         
         /// <summary>
         /// Writes the maximum value to the provided stream
@@ -89,23 +65,13 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Writes null to the provided stream (hint: Clear state)
-        /// </summary>
-        /// <param name="stream"></param>
-        public virtual unsafe void WriteNull(byte* stream)
-        {
-            TempKey.Clear();
-            TempKey.Write(stream);
-        }
-
-        /// <summary>
         /// Copies the source to the destination.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="destination"></param>
         public virtual unsafe void Copy(byte* source, byte* destination)
         {
-            Memory.Copy(source, destination, Size);
+            Memory.Copy(source, destination, TempKey.Size);
         }
 
         /// <summary>

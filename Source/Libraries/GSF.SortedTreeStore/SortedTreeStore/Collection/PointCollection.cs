@@ -31,6 +31,7 @@ namespace GSF.SortedTreeStore.Collection
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+
         SortedTreeTypeMethods<TKey> m_keyMethods;
         SortedTreeTypeMethods<TValue> m_valueMethods;
 
@@ -38,7 +39,7 @@ namespace GSF.SortedTreeStore.Collection
         {
             m_keyMethods = new TKey().CreateValueMethods();
             m_valueMethods = new TValue().CreateValueMethods();
-            Initialize(capacity, m_keyMethods.Size, m_valueMethods.Size);
+            Initialize(capacity, new TKey().Size, new TValue().Size);
         }
 
         public override void UnDequeue(TKey key, TValue value)
