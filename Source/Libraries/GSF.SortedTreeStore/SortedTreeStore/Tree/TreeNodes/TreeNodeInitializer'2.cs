@@ -24,7 +24,7 @@
 namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
     /// <summary>
-    /// Allows a tree node to be created from a <see cref="CreateTreeNodeBase"/>. This is desired
+    /// Allows a tree node to be created from a <see cref="CreateSingleTreeNodeBase"/>. This is desired
     /// to minimize the number of calls to <see cref="TreeNodeInitializer"/>.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>

@@ -49,11 +49,11 @@ namespace GSF.Test
                     data[3] = 0;
                     value = *(uint*)lp;
 
-                    Compression.Write7Bit(buffer, ref position, value);
-                    if (position != 1 + Compression.Get7BitSize(value)) throw new Exception();
+                    Encoding7Bit.Write(buffer, ref position, value);
+                    if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     position = 1;
-                    Compression.Read7BitUInt32(buffer, ref position, out result);
-                    if (position != 1 + Compression.Get7BitSize(value)) throw new Exception();
+                    Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+                    if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     if (result != value) throw new Exception();
                     position = 1;
                 }
@@ -68,11 +68,11 @@ namespace GSF.Test
                     data[3] = 0;
                     value = *(uint*)lp;
 
-                    Compression.Write7Bit(buffer, ref position, value);
-                    if (position != 1 + Compression.Get7BitSize(value)) throw new Exception();
+                    Encoding7Bit.Write(buffer, ref position, value);
+                    if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     position = 1;
-                    Compression.Read7BitUInt32(buffer, ref position, out result);
-                    if (position != 1 + Compression.Get7BitSize(value)) throw new Exception();
+                    Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+                    if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     if (result != value) throw new Exception();
                     position = 1;
                 }
@@ -86,11 +86,11 @@ namespace GSF.Test
                     data[3] = 0;
                     value = *(uint*)lp;
 
-                    Compression.Write7Bit(buffer, ref position, value);
-                    if (position != 1 + Compression.Get7BitSize(value)) throw new Exception();
+                    Encoding7Bit.Write(buffer, ref position, value);
+                    if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     position = 1;
-                    Compression.Read7BitUInt32(buffer, ref position, out result);
-                    if (position != 1 + Compression.Get7BitSize(value)) throw new Exception();
+                    Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+                    if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     if (result != value) throw new Exception();
                     position = 1;
                 }
@@ -103,11 +103,11 @@ namespace GSF.Test
                     rand.NextBytes(data);
                     value = *(uint*)lp;
 
-                    Compression.Write7Bit(buffer, ref position, value);
-                    if (position != 1 + Compression.Get7BitSize(value)) throw new Exception();
+                    Encoding7Bit.Write(buffer, ref position, value);
+                    if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     position = 1;
-                    Compression.Read7BitUInt32(buffer, ref position, out result);
-                    if (position != 1 + Compression.Get7BitSize(value)) throw new Exception();
+                    Encoding7Bit.ReadUInt32(buffer, ref position, out result);
+                    if (position != 1 + Encoding7Bit.GetSize(value)) throw new Exception();
                     if (result != value) throw new Exception();
                     position = 1;
                 }
@@ -122,46 +122,46 @@ namespace GSF.Test
             int position = 1;
 
             value = 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 2) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt32(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
             if (position != 2) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 3) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt32(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
             if (position != 3) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127 * 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 4) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt32(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
             if (position != 4) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127 * 127 * 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 5) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt32(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
             if (position != 5) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = uint.MaxValue;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 6) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt32(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt32(buffer, ref position, out result);
             if (position != 6) throw new Exception();
             if (result != value) throw new Exception();
         }
@@ -174,91 +174,91 @@ namespace GSF.Test
             int position = 1;
 
             value = 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 2) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 2) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 3) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 3) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127 * 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 4) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 4) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127 * 127 * 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 5) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 5) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127L * 127 * 127 * 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 6) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 6) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127L * 127 * 127 * 127 * 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 7) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 7) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127L * 127 * 127 * 127 * 127 * 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 8) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 8) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127L * 127 * 127 * 127 * 127 * 127 * 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 9) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 9) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = 127L * 127 * 127 * 127 * 127 * 127 * 127 * 127 * 127;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 10) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 10) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
 
             value = ulong.MaxValue;
-            Compression.Write7Bit(buffer, ref position, value);
+            Encoding7Bit.Write(buffer, ref position, value);
             if (position != 10) throw new Exception();
             position = 1;
-            Compression.Read7BitUInt64(buffer, ref position, out result);
+            Encoding7Bit.ReadUInt64(buffer, ref position, out result);
             if (position != 10) throw new Exception();
             if (result != value) throw new Exception();
             position = 1;
@@ -307,11 +307,11 @@ namespace GSF.Test
                 position = 0;
                 for (int x = 0; x < 200; x++)
                 {
-                    Compression.Write7Bit(buffer, ref position, delta);
-                    Compression.Write7Bit(buffer, ref position, delta);
-                    Compression.Write7Bit(buffer, ref position, delta);
-                    Compression.Write7Bit(buffer, ref position, delta);
-                    Compression.Write7Bit(buffer, ref position, delta);
+                    Encoding7Bit.Write(buffer, ref position, delta);
+                    Encoding7Bit.Write(buffer, ref position, delta);
+                    Encoding7Bit.Write(buffer, ref position, delta);
+                    Encoding7Bit.Write(buffer, ref position, delta);
+                    Encoding7Bit.Write(buffer, ref position, delta);
 
                     //Compression.Write(buffer, ref position, delta, delta, delta, delta);
                     //Compression.Write(buffer, ref position, delta, delta, delta, delta);
@@ -332,11 +332,11 @@ namespace GSF.Test
 
             for (int x = 0; x < 200; x++)
             {
-                Compression.Write7Bit(buffer, ref position, delta);
-                Compression.Write7Bit(buffer, ref position, delta);
-                Compression.Write7Bit(buffer, ref position, delta);
-                Compression.Write7Bit(buffer, ref position, delta);
-                Compression.Write7Bit(buffer, ref position, delta);
+                Encoding7Bit.Write(buffer, ref position, delta);
+                Encoding7Bit.Write(buffer, ref position, delta);
+                Encoding7Bit.Write(buffer, ref position, delta);
+                Encoding7Bit.Write(buffer, ref position, delta);
+                Encoding7Bit.Write(buffer, ref position, delta);
             }
 
             Stopwatch sw = new Stopwatch();
@@ -346,11 +346,11 @@ namespace GSF.Test
                 position = 0;
                 for (int x = 0; x < 200; x++)
                 {
-                    Compression.Read7BitUInt32(buffer, ref position, out delta);
-                    Compression.Read7BitUInt32(buffer, ref position, out delta);
-                    Compression.Read7BitUInt32(buffer, ref position, out delta);
-                    Compression.Read7BitUInt32(buffer, ref position, out delta);
-                    Compression.Read7BitUInt32(buffer, ref position, out delta);
+                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
+                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
+                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
+                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
+                    Encoding7Bit.ReadUInt32(buffer, ref position, out delta);
                 }
             }
             sw.Stop();

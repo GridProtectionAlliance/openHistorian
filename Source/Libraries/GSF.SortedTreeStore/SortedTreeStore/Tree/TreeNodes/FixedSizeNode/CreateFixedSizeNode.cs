@@ -29,16 +29,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
     /// Used to generically create a fixed size node.
     /// </summary>
     public class CreateFixedSizeNode
-        : CreateTreeNodeBase
+        : CreateSingleTreeNodeBase
     {
-        /// <summary>
-        /// Creates a class
-        /// </summary>
-        public CreateFixedSizeNode()
-            : base(null, null, TypeGuid)
-        {
-
-        }
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
         /// The guid that represents the encoding method of this class
@@ -55,6 +47,30 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         public override SortedTreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
         {
             return new FixedSizeNode<TKey, TValue>(level);
+        }
+
+        public override Type KeyTypeIfNotGeneric
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public override Type ValueTypeIfNotGeneric
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public override Guid Method
+        {
+            get
+            {
+                return TypeGuid;
+            }
         }
     }
 }

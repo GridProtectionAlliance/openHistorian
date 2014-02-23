@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using GSF.IO.Unmanaged;
 using GSF.Threading;
 using NUnit.Framework;
 
@@ -14,7 +15,7 @@ namespace openHistorian.PerformanceTests.Threading
     class ScheduledTaskTest
     {
         int m_doWorkCount;
-
+        
         [Test]
         public void Test()
         {

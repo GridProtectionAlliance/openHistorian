@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
@@ -45,14 +46,14 @@ namespace GSF.SortedTreeStore.Engine
         /// The id number of the point.
         /// </summary>
         public ulong PointID;
-       
+
         /// <summary>
         /// Compares the current instance to <see cref="other"/>.
         /// </summary>
         /// <param name="other">the key to compare to</param>
         /// <returns></returns>
         public abstract int CompareTo(TKey other);
-    
+
         /// <summary>
         /// Is the current instance equal to <see cref="other"/>
         /// </summary>
@@ -76,6 +77,12 @@ namespace GSF.SortedTreeStore.Engine
         }
 
         public abstract SortedTreeKeyMethodsBase<TKey> CreateKeyMethods();
-        public abstract void RegisterCustomKeyImplementations();
+
+        public abstract IEnumerable GetEncodingMethods();
+
+        public SortedTreeMethodsBase<TKey> CreateBasicMethods()
+        {
+            return CreateKeyMethods();
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeValueMethodsBase`1.cs - Gbtc
+//  SortedTreeMethodsBase`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,8 +21,6 @@
 //     
 //******************************************************************************************************
 
-#define GetTreeValueMethodsCallCount
-
 using System;
 using GSF.IO;
 using GSF.IO.Unmanaged;
@@ -38,11 +36,11 @@ namespace GSF.SortedTreeStore.Tree
     /// for vastly superiour performance.
     /// </remarks>
     /// <typeparam name="TValue"></typeparam>
-    public abstract class SortedTreeValueMethodsBase<TValue>
+    public abstract class SortedTreeMethodsBase<TValue>
         where TValue : class, new()
     {
 
-        protected SortedTreeValueMethodsBase()
+        protected SortedTreeMethodsBase()
         {
             Size = GetSize();
         }

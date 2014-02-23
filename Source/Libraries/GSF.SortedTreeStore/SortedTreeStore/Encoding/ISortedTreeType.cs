@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianClient.cs - Gbtc
+//  ISortedTreeType`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,32 +16,25 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/8/2013 - Steven E. Chisholm
+//  11/1/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
-using openHistorian.Collections;
-using GSF.SortedTreeStore.Net.Compression;
 
-namespace GSF.SortedTreeStore.Net
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using GSF.SortedTreeStore.Tree;
+
+namespace GSF.SortedTreeStore.Encoding
 {
-    /// <summary>
-    /// Connects to a socket based remoted historian database collection.
-    /// </summary>
-    public class ScadaClient :
-        SortedTreeStoreClient<ScadaKey, ScadaValue>
+    public interface ISortedTreeType<T>
+        where T : class, new()
     {
-        static ScadaClient()
-        {
-            RegisterTypes.Register();
-        }
+        SortedTreeMethodsBase<T> CreateBasicMethods();
 
-        public ScadaClient(HistorianClientOptions options)
-            : base(options,CreateScadaCompressedStream.TypeGuid)
-        {
-          
-        }
     }
 }

@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  CreateHistorianCompressionTs.cs - Gbtc
+//  CreateDualFixedSizeNode.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,47 +16,71 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  7/26/2013 - Steven E. Chisholm
+//  4/16/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
-using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
 {
     /// <summary>
     /// Used to generically create a fixed size node.
     /// </summary>
-    public class CreateHistorianCompressionTs
-        : CreateTreeNodeBase
+    public class CreateDualFixedSizeNode
+        : CreateDualTreeNodeBase
     {
-
+        // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
-        /// Creates a class
+        /// The guid that represents the encoding method of this class
         /// </summary>
-        public CreateHistorianCompressionTs()
-            : base(typeof(ScadaKey), typeof(ScadaValue), TypeGuid)
-        {
-        }
-
-        // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}
-        /// <summary>
-        /// A unique identifier for this compression method.
-        /// </summary>
-        public readonly static Guid TypeGuid = new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7);
+        public static readonly Guid TypeGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55);
 
         /// <summary>
-        /// Creates a TreeNodeBase
+        /// Creates a <see cref="SortedTreeNodeBase{TKey,TValue}"/>.
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        /// <param name="level"></param>
+        /// <param name="level">the node level of the tree</param>
         /// <returns></returns>
         public override SortedTreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
         {
-            return (SortedTreeNodeBase<TKey, TValue>)(object)new ScadaCompressionTs(level);
+            return new FixedSizeNode<TKey, TValue>(level);
+        }
+
+        public override Type KeyTypeIfNotGeneric
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public override Type ValueTypeIfNotGeneric
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public override Guid KeyMethod
+        {
+            get
+            {
+                return TypeGuid;
+
+            }
+        }
+
+        public override Guid ValueMethod
+        {
+            get
+            {
+                return TypeGuid;
+
+            }
         }
     }
 }

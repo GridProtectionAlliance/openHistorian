@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  CreateHistorianCompressedStream.cs - Gbtc
+//  FixedSizeDualSingleEncoding`1.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,43 +16,41 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/10/2013 - Steven E. Chisholm
+//  2/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
-
 using System;
-using openHistorian.Collections;
-using GSF.SortedTreeStore.Net.Initialization;
 
-namespace GSF.SortedTreeStore.Net.Compression
+namespace GSF.SortedTreeStore.Encoding
 {
-    class CreateScadaCompressedStream
-        : CreateKeyValueStreamCompressionBase
+    public class CreateFixedSizeDualSingleEncoding
+        : CreateDualSingleValueBase
     {
-     
-        // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
-        public readonly static Guid TypeGuid = new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28);
+        // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
+        /// <summary>
+        /// The guid that represents the encoding method of this class
+        /// </summary>
+        public static readonly Guid TypeGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55);
 
-        public override Type KeyTypeIfFixed
+        public override Type KeyTypeIfNotGeneric
         {
             get
             {
-                return typeof(ScadaKey);
+                return null;
             }
         }
 
-        public override Type ValueTypeIfFixed
+        public override Type ValueTypeIfNotGeneric
         {
             get
             {
-                return typeof(ScadaValue);
+                return null;
             }
         }
 
-        public override Guid GetTypeGuid
+        public override Guid KeyMethod
         {
             get
             {
@@ -60,9 +58,17 @@ namespace GSF.SortedTreeStore.Net.Compression
             }
         }
 
-        public override KeyValueStreamCompressionBase<TKey, TValue> Create<TKey, TValue>()
+        public override Guid ValueMethod
         {
-            return (KeyValueStreamCompressionBase<TKey, TValue>)(object)new ScadaCompressedStream();
+            get
+            {
+                return TypeGuid;
+            }
+        }
+
+        public override DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
+        {
+            return new FixedSizeCombinedEncoding<TKey, TValue>();
         }
     }
 }

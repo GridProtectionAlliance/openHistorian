@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeUInt32.cs - Gbtc
+//  CreateTreeNodeBase.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,51 +16,25 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/12/2013 - Steven E. Chisholm
+//  4/26/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
-using System.Collections;
-using GSF.IO;
-using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Types
+namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
-    public class SortedTreeUInt32
-        : ISortedTreeKey<SortedTreeUInt32>, ISortedTreeValue<SortedTreeUInt32>
+    /// <summary>
+    /// A base class that allows for generically constructing any number of <see cref="SortedTreeNodeBase{TKey,TValue}"/> implementations.
+    /// </summary>
+    public abstract class CreateSingleTreeNodeBase : CreateTreeNodeBase
     {
-        public SortedTreeUInt32()
-        {
+        public abstract Type KeyTypeIfNotGeneric { get; }
 
-        }
-        public SortedTreeUInt32(uint value)
-        {
-            Value = value;
-        }
+        public abstract Type ValueTypeIfNotGeneric { get; }
 
-        public uint Value;
-
-        public SortedTreeKeyMethodsBase<SortedTreeUInt32> CreateKeyMethods()
-        {
-            return new SortedTreeKeyMethodsUInt32();
-        }
-
-        public SortedTreeMethodsBase<SortedTreeUInt32> CreateValueMethods()
-        {
-            return new SortedTreeValueMethodsUInt32();
-        }
-
-        public IEnumerable GetEncodingMethods()
-        {
-            return null;
-        }
-
-        public SortedTreeMethodsBase<SortedTreeUInt32> CreateBasicMethods()
-        {
-            return CreateValueMethods();
-        }
+        public abstract Guid Method { get; }
+        
     }
-  
 }

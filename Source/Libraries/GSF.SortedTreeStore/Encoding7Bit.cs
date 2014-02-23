@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  Compression.cs - Gbtc
+//  Encoding7Bit.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,9 +29,9 @@ namespace GSF
     /// <summary>
     /// Contains 7 bit encoding functions
     /// </summary>
-    public static class Compression
+    public static class Encoding7Bit
     {
-        public static int Get7BitSize(uint value1)
+        public static int GetSize(uint value1)
         {
             if (value1 < 128)
                 return 1;
@@ -44,7 +44,7 @@ namespace GSF
             return 5;
         }
 
-        public static int Get7BitSize(ulong value1)
+        public static int GetSize(ulong value1)
         {
             if (value1 < 128)
                 return 1;
@@ -65,7 +65,7 @@ namespace GSF
             return 9;
         }
 
-        public static unsafe void Write7Bit(byte* stream, ref int position, uint value1)
+        public static unsafe void Write(byte* stream, ref int position, uint value1)
         {
             if (value1 < 128)
             {
@@ -100,7 +100,7 @@ namespace GSF
             return;
         }
 
-        public static void Write7Bit(byte[] stream, ref int position, uint value1)
+        public static void Write(byte[] stream, ref int position, uint value1)
         {
             if (value1 < 128)
             {
@@ -135,7 +135,7 @@ namespace GSF
             return;
         }
 
-        public static void Write7Bit(Action<byte> stream, uint value1)
+        public static void Write(Action<byte> stream, uint value1)
         {
             if (value1 < 128)
             {
@@ -164,7 +164,7 @@ namespace GSF
             stream((byte)(value1 >> 28));
         }
 
-        public static void Read7BitUInt32(byte[] stream, ref int position, out uint value1)
+        public static void ReadUInt32(byte[] stream, ref int position, out uint value1)
         {
             int pos = position;
             uint value11;
@@ -202,7 +202,7 @@ namespace GSF
             return;
         }
 
-        public static uint Read7BitUInt32(Func<byte> stream)
+        public static uint ReadUInt32(Func<byte> stream)
         {
             uint value11;
             value11 = stream();
@@ -229,7 +229,7 @@ namespace GSF
             return value11;
         }
 
-        public static ulong Read7BitUInt64(Func<byte> stream)
+        public static ulong ReadUInt64(Func<byte> stream)
         {
             ulong value11;
             value11 = stream();
@@ -276,7 +276,7 @@ namespace GSF
             return value11 ^ 0x102040810204080L;
         }
 
-        public static void Read7BitUInt64(byte[] stream, ref int position, out ulong value1)
+        public static void ReadUInt64(byte[] stream, ref int position, out ulong value1)
         {
             int pos = position;
             ulong value11;
@@ -342,7 +342,7 @@ namespace GSF
             return;
         }
 
-        public unsafe static int Measure7BitUInt64(byte* stream, int position)
+        public unsafe static int MeasureUInt64(byte* stream, int position)
         {
             stream += position;
             if (stream[0] < 128)
@@ -363,28 +363,15 @@ namespace GSF
                 return 8;
             return 9;
         }
-        public unsafe static int Measure7BitUInt64_2(byte* stream, int position)
-        {
-            if (stream[position] < 128) position += 1;
-            else if (stream[position + 1] < 128) position += 2;
-            else if (stream[position + 2] < 128) position += 3;
-            else if (stream[position + 3] < 128) position += 4;
-            else if (stream[position + 4] < 128) position += 5;
-            else if (stream[position + 5] < 128) position += 6;
-            else if (stream[position + 6] < 128) position += 7;
-            else if (stream[position + 7] < 128) position += 8;
-            else position += 9;
-            return position;
-        }
 
-        public unsafe static ulong Read7BitUInt64(byte* stream, ref int position)
+        public unsafe static ulong ReadUInt64(byte* stream, ref int position)
         {
             ulong value;
-            Read7BitUInt64(stream, ref position, out value);
+            ReadUInt64(stream, ref position, out value);
             return value;
         }
 
-        public unsafe static void Read7BitUInt64(byte* stream, ref int position, out ulong value1)
+        public unsafe static void ReadUInt64(byte* stream, ref int position, out ulong value1)
         {
             int pos = position;
             ulong value11;
@@ -451,7 +438,7 @@ namespace GSF
         }
 
 
-        unsafe public static void Write7Bit(byte* stream, ref int position, ulong value1)
+        unsafe public static void Write(byte* stream, ref int position, ulong value1)
         {
             if (value1 < 128)
             {
@@ -514,7 +501,7 @@ namespace GSF
             return;
         }
 
-        public static void Write7Bit(byte[] stream, ref int position, ulong value1)
+        public static void Write(byte[] stream, ref int position, ulong value1)
         {
             if (value1 < 128)
             {
@@ -577,7 +564,7 @@ namespace GSF
             return;
         }
 
-        public static void Write7Bit(Action<byte> stream, ulong value1)
+        public static void Write(Action<byte> stream, ulong value1)
         {
             if (value1 < 128)
             {
@@ -630,17 +617,6 @@ namespace GSF
             stream((byte)(value1 >> (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7)));
             return;
         }
-
-
-        private static byte GetLength(uint value)
-        {
-            if (value <= 0xFF)
-                return 0;
-            if (value <= 0xFFFF)
-                return 1;
-            if (value <= 0xFFFFFF)
-                return 2;
-            return 3;
-        }
+        
     }
 }

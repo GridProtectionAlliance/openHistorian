@@ -22,11 +22,12 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore;
+using System.Collections;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Tree.TreeNodes;
+using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
 namespace openHistorian.Collections
 {
@@ -141,10 +142,15 @@ namespace openHistorian.Collections
             return new KeyMethodsHistorianKey();
         }
 
-        public override void RegisterCustomKeyImplementations()
+        public override IEnumerable GetEncodingMethods()
         {
-            CreateHistorianCompressionDelta.Register();
-            CreateHistorianCompressionTs.Register();
+            var list = new ArrayList();
+            list.Add(new CreateTsCombinedEncoding());
+            list.Add(new CreateHistorianCompressionTs());
+            return list;
+
+            //CreateHistorianCompressionDelta.Register();
+            //CreateHistorianCompressionTs.Register();
             CreateHistorianCompressedStream.Register();
             CreateHistorianPointCollection.Register();
         }

@@ -21,8 +21,7 @@
 //     
 //******************************************************************************************************
 
-using GSF.SortedTreeStore.Net.Initialization;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.SortedTreeStore.Encoding;
 
 namespace GSF.SortedTreeStore.Tree
 {
@@ -30,7 +29,7 @@ namespace GSF.SortedTreeStore.Tree
     /// The interface that is required to use as a key in <see cref="SortedTree"/> 
     /// </summary>
     /// <typeparam name="TKey">A class that has a default constructor</typeparam>
-    public interface ISortedTreeKey<TKey>
+    public interface ISortedTreeKey<TKey> : ISupportsCustomEncoding, ISortedTreeType<TKey>
         where TKey : class, new()
     {
         /// <summary>
@@ -39,9 +38,5 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         SortedTreeKeyMethodsBase<TKey> CreateKeyMethods();
 
-        /// <summary>
-        /// Requests that any custom compression type is registered with <see cref="TreeNodeInitializer"/> and <see cref="KeyValueStreamCompression"/>
-        /// </summary>
-        void RegisterCustomKeyImplementations();
     }
 }

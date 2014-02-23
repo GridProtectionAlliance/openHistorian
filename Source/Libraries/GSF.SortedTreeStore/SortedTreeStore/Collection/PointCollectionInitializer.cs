@@ -75,8 +75,8 @@ namespace GSF.SortedTreeStore.Collection
                 if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(keyType, valueType), out treeNode))
                     if (!TreeNodeKey.TryGetValue(keyType, out treeNode))
                     {
-                        new TKey().RegisterCustomKeyImplementations();
-                        new TValue().RegisterCustomValueImplementations();
+                        //new TKey().RegisterCustomKeyImplementations();
+                        //new TValue().RegisterCustomValueImplementations();
 
                         if (!TreeNodeKeyValue.TryGetValue(Tuple.Create(keyType, valueType), out treeNode))
                             if (!TreeNodeKey.TryGetValue(keyType, out treeNode))

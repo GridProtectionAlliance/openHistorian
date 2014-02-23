@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
@@ -37,18 +38,20 @@ namespace GSF.SortedTreeStore.Types
             return new SortedTreeKeyMethodsUInt128();
         }
 
-        public SortedTreeValueMethodsBase<SortedTreeUInt128> CreateValueMethods()
+        public SortedTreeMethodsBase<SortedTreeUInt128> CreateValueMethods()
         {
             return new SortedTreeValueMethodsUInt128();
         }
 
-        void ISortedTreeValue<SortedTreeUInt128>.RegisterCustomValueImplementations()
+        public IEnumerable GetEncodingMethods()
         {
+            return null;
         }
 
-        void ISortedTreeKey<SortedTreeUInt128>.RegisterCustomKeyImplementations()
+        public SortedTreeMethodsBase<SortedTreeUInt128> CreateBasicMethods()
         {
+            return CreateValueMethods();
         }
     }
-    
+
 }

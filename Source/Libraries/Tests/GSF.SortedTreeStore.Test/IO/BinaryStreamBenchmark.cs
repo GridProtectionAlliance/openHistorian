@@ -467,7 +467,7 @@ namespace GSF.IO.Unmanaged.Test
                 }
             }
             sw2.Stop();
-            return "7Bit64 " + Compression.Get7BitSize(b) + "\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
+            return "7Bit64 " + Encoding7Bit.GetSize(b) + "\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 
@@ -533,7 +533,7 @@ namespace GSF.IO.Unmanaged.Test
                 }
             }
             sw2.Stop();
-            return "7Bit32 " + Compression.Get7BitSize(b) + "\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
+            return "7Bit32 " + Encoding7Bit.GetSize(b) + "\t" + (thousands * 1000 / sw2.Elapsed.TotalSeconds / 1000000) + "\t" +
                    (thousands * 1000 / sw1.Elapsed.TotalSeconds / 1000000);
         }
 

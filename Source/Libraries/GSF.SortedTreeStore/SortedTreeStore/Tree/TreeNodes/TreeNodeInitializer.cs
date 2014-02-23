@@ -22,8 +22,9 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode;
 
@@ -37,112 +38,197 @@ namespace GSF.SortedTreeStore.Tree
     public static class TreeNodeInitializer
     {
         private static readonly object SyncRoot;
-        private static readonly Dictionary<Tuple<Guid, Type, Type>, CreateTreeNodeBase> TreeNodeKeyValue;
-        private static readonly Dictionary<Tuple<Guid, Type>, CreateTreeNodeBase> TreeNodeKey;
-        private static readonly Dictionary<Guid, CreateTreeNodeBase> TreeNode;
+        private static readonly HashSet<Type> RegisteredTypes;
+        private static readonly Dictionary<Guid, CreateTreeNodeBase> SingleTreeNode;
+        private static readonly Dictionary<Tuple<Guid, Type>, CreateTreeNodeBase> SingleTreeNodeKey;
+        private static readonly Dictionary<Tuple<Guid, Type>, CreateTreeNodeBase> SingleTreeNodeValue;
+        private static readonly Dictionary<Tuple<Guid, Type, Type>, CreateTreeNodeBase> SingleTreeNodeKeyValue;
+
+        private static readonly Dictionary<Tuple<Guid, Guid>, CreateTreeNodeBase> DualTreeNode;
+        private static readonly Dictionary<Tuple<Guid, Guid, Type>, CreateTreeNodeBase> DualTreeNodeKey;
+        private static readonly Dictionary<Tuple<Guid, Guid, Type>, CreateTreeNodeBase> DualTreeNodeValue;
+        private static readonly Dictionary<Tuple<Guid, Guid, Type, Type>, CreateTreeNodeBase> DualTreeNodeKeyValue;
 
         static TreeNodeInitializer()
         {
             SyncRoot = new object();
-            TreeNodeKeyValue = new Dictionary<Tuple<Guid, Type, Type>, CreateTreeNodeBase>();
-            TreeNodeKey = new Dictionary<Tuple<Guid, Type>, CreateTreeNodeBase>();
-            TreeNode = new Dictionary<Guid, CreateTreeNodeBase>();
+            RegisteredTypes = new HashSet<Type>();
+            SingleTreeNode = new Dictionary<Guid, CreateTreeNodeBase>();
+            SingleTreeNodeKey = new Dictionary<Tuple<Guid, Type>, CreateTreeNodeBase>();
+            SingleTreeNodeValue = new Dictionary<Tuple<Guid, Type>, CreateTreeNodeBase>();
+            SingleTreeNodeKeyValue = new Dictionary<Tuple<Guid, Type, Type>, CreateTreeNodeBase>();
+
+            DualTreeNode = new Dictionary<Tuple<Guid, Guid>, CreateTreeNodeBase>();
+            DualTreeNodeKey = new Dictionary<Tuple<Guid, Guid, Type>, CreateTreeNodeBase>();
+            DualTreeNodeValue = new Dictionary<Tuple<Guid, Guid, Type>, CreateTreeNodeBase>();
+            DualTreeNodeKeyValue = new Dictionary<Tuple<Guid, Guid, Type, Type>, CreateTreeNodeBase>();
 
             Register(new CreateFixedSizeNode());
+            Register(new CreateDualFixedSizeNode());
         }
 
-        /// <summary>
-        /// Registers the provided <see cref="treeNode"/>
-        /// </summary>
-        /// <param name="treeNode">The specific implementation of a <see cref="SortedTreeNodeBase{TKey,TValue}"/></param>
-        public static void Register(CreateTreeNodeBase treeNode)
+        public static void Register(ISupportsCustomEncoding type)
         {
             lock (SyncRoot)
             {
-                if (treeNode.KeyTypeIfFixed == null && treeNode.ValueTypeIfFixed == null)
+                if (RegisteredTypes.Add(type.GetType()))
                 {
-                    TreeNode.Add(treeNode.GetTypeGuid, treeNode);
+                    IEnumerable encodingMethods = type.GetEncodingMethods();
+                    if (encodingMethods == null)
+                        return;
+
+                    foreach (var method in encodingMethods)
+                    {
+                        var single = method as CreateSingleTreeNodeBase;
+                        var dual = method as CreateDualTreeNodeBase;
+
+                        if (single != null)
+                            Register(single);
+                        else if (dual != null)
+                            Register(dual);
+                    }
                 }
-                else if (treeNode.KeyTypeIfFixed != null && treeNode.ValueTypeIfFixed == null)
+            }
+        }
+
+        public static void Register(CreateSingleTreeNodeBase encoding)
+        {
+            lock (SyncRoot)
+            {
+                if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric == null)
                 {
-                    TreeNodeKey.Add(Tuple.Create(treeNode.GetTypeGuid, treeNode.KeyTypeIfFixed), treeNode);
+                    SingleTreeNode.Add(encoding.Method, encoding);
                 }
-                else if (treeNode.KeyTypeIfFixed != null && treeNode.ValueTypeIfFixed != null)
+                else if (encoding.KeyTypeIfNotGeneric != null && encoding.ValueTypeIfNotGeneric == null)
                 {
-                    TreeNodeKeyValue.Add(Tuple.Create(treeNode.GetTypeGuid, treeNode.KeyTypeIfFixed, treeNode.ValueTypeIfFixed), treeNode);
+                    SingleTreeNodeKey.Add(Tuple.Create(encoding.Method, encoding.KeyTypeIfNotGeneric), encoding);
+                }
+                else if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric != null)
+                {
+                    SingleTreeNodeValue.Add(Tuple.Create(encoding.Method, encoding.ValueTypeIfNotGeneric), encoding);
                 }
                 else
                 {
-                    throw new InvalidDataException("Type is not supported");
+                    SingleTreeNodeKeyValue.Add(Tuple.Create(encoding.Method, encoding.KeyTypeIfNotGeneric, encoding.ValueTypeIfNotGeneric), encoding);
                 }
             }
+        }
+
+        public static void Register(CreateDualTreeNodeBase encoding)
+        {
+            lock (SyncRoot)
+            {
+                if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric == null)
+                {
+                    DualTreeNode.Add(Tuple.Create(encoding.KeyMethod, encoding.ValueMethod), encoding);
+                }
+                else if (encoding.KeyTypeIfNotGeneric != null && encoding.ValueTypeIfNotGeneric == null)
+                {
+                    DualTreeNodeKey.Add(Tuple.Create(encoding.KeyMethod, encoding.ValueMethod, encoding.KeyTypeIfNotGeneric), encoding);
+                }
+                else if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric != null)
+                {
+                    DualTreeNodeValue.Add(Tuple.Create(encoding.KeyMethod, encoding.ValueMethod, encoding.ValueTypeIfNotGeneric), encoding);
+                }
+                else
+                {
+                    DualTreeNodeKeyValue.Add(Tuple.Create(encoding.KeyMethod, encoding.ValueMethod, encoding.KeyTypeIfNotGeneric, encoding.ValueTypeIfNotGeneric), encoding);
+                }
+            }
+        }
+
+
+        static CreateTreeNodeBase GetTreeNode<TKey, TValue>(Guid compressionMethod)
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
+        {
+            Type keyType = typeof(TKey);
+            Type valueType = typeof(TValue);
+
+            CreateTreeNodeBase customEncoding;
+
+            lock (SyncRoot)
+            {
+                if (!RegisteredTypes.Contains(keyType))
+                {
+                    Register(new TKey());
+                }
+                if (!RegisteredTypes.Contains(valueType))
+                {
+                    Register(new TValue());
+                }
+
+                if (SingleTreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out customEncoding)
+                    || SingleTreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out customEncoding)
+                    || SingleTreeNodeValue.TryGetValue(Tuple.Create(compressionMethod, valueType), out customEncoding)
+                    || SingleTreeNode.TryGetValue(compressionMethod, out customEncoding))
+                {
+                    return customEncoding;
+                }
+            }
+
+            return new CreateGenericEncodedNode<TKey, TValue>(EncodingMethodsLibrary.GetEncodingMethod<TKey, TValue>(compressionMethod));
+        }
+
+        static CreateTreeNodeBase GetTreeNode<TKey, TValue>(Guid keyEncodingMethod, Guid valueEncodingMethod)
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
+        {
+            Type keyType = typeof(TKey);
+            Type valueType = typeof(TValue);
+
+            CreateTreeNodeBase customEncoding;
+
+            lock (SyncRoot)
+            {
+                if (!RegisteredTypes.Contains(keyType))
+                {
+                    Register(new TKey());
+                }
+                if (!RegisteredTypes.Contains(valueType))
+                {
+                    Register(new TValue());
+                }
+
+                if (DualTreeNodeKeyValue.TryGetValue(Tuple.Create(keyEncodingMethod, valueEncodingMethod, keyType, valueType), out customEncoding)
+                    || DualTreeNodeKey.TryGetValue(Tuple.Create(keyEncodingMethod, valueEncodingMethod, keyType), out customEncoding)
+                    || DualTreeNodeValue.TryGetValue(Tuple.Create(keyEncodingMethod, valueEncodingMethod, valueType), out customEncoding)
+                    || DualTreeNode.TryGetValue(Tuple.Create(keyEncodingMethod, valueEncodingMethod), out customEncoding))
+                {
+                    return customEncoding;
+                }
+            }
+            return new CreateGenericEncodedNode<TKey, TValue>(EncodingMethodsLibrary.GetEncodingMethod<TKey, TValue>(keyEncodingMethod, valueEncodingMethod));
         }
 
         internal static TreeNodeInitializer<TKey, TValue> GetTreeNodeInitializer<TKey, TValue>(Guid compressionMethod)
             where TKey : class, ISortedTreeKey<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
         {
-            Type keyType = typeof(TKey);
-            Type valueType = typeof(TValue);
 
-            CreateTreeNodeBase treeNode;
-            lock (SyncRoot)
-            {
-                if (TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode)
-                    || TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode)
-                    || TreeNode.TryGetValue(compressionMethod, out treeNode))
-                {
-                    return new TreeNodeInitializer<TKey, TValue>(treeNode);
-                }
-            }
-
-            new TKey().RegisterCustomKeyImplementations();
-            new TValue().RegisterCustomValueImplementations();
-
-            lock (SyncRoot)
-            {
-                if (TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode)
-                    || TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode)
-                    || TreeNode.TryGetValue(compressionMethod, out treeNode))
-                {
-                    return new TreeNodeInitializer<TKey, TValue>(treeNode);
-                }
-            }
-            throw new Exception("Type is not registered");
+            return new TreeNodeInitializer<TKey, TValue>(GetTreeNode<TKey, TValue>(compressionMethod));
         }
 
+        internal static TreeNodeInitializer<TKey, TValue> GetTreeNodeInitializer<TKey, TValue>(Guid keyEncodingMethod, Guid valueEncodingMethod)
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
+        {
+
+            return new TreeNodeInitializer<TKey, TValue>(GetTreeNode<TKey, TValue>(keyEncodingMethod, valueEncodingMethod));
+        }
 
         internal static SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(Guid compressionMethod, byte level)
             where TKey : class, ISortedTreeKey<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
         {
-            Type keyType = typeof(TKey);
-            Type valueType = typeof(TValue);
+            return GetTreeNode<TKey, TValue>(compressionMethod).Create<TKey, TValue>(level);
+        }
 
-            CreateTreeNodeBase treeNode;
-            lock (SyncRoot)
-            {
-                if (TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode)
-                    || TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode)
-                    || TreeNode.TryGetValue(compressionMethod, out treeNode))
-                {
-                    return treeNode.Create<TKey, TValue>(level);
-                }
-            }
-
-            new TKey().RegisterCustomKeyImplementations();
-            new TValue().RegisterCustomValueImplementations();
-
-            lock (SyncRoot)
-            {
-                if (TreeNodeKeyValue.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out treeNode)
-                    || TreeNodeKey.TryGetValue(Tuple.Create(compressionMethod, keyType), out treeNode)
-                    || TreeNode.TryGetValue(compressionMethod, out treeNode))
-                {
-                    return treeNode.Create<TKey, TValue>(level);
-                }
-            }
-            throw new Exception("Type is not registered");
+        internal static SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(Guid keyEncodingMethod, Guid valueEncodingMethod, byte level)
+            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
+        {
+            return GetTreeNode<TKey, TValue>(keyEncodingMethod, valueEncodingMethod).Create<TKey, TValue>(level);
         }
     }
 }

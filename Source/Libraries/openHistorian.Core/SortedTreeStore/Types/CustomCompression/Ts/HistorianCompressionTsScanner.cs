@@ -137,18 +137,18 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                     int size = 1;
                     if ((code & 16) != 0) //T is set
                     {
-                        key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
-                        key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                        key.Timestamp = m_prevTimestamp + Encoding7Bit.ReadUInt64(stream, ref size);
+                        key.PointID = Encoding7Bit.ReadUInt64(stream, ref size);
                     }
                     else
                     {
                         key.Timestamp = m_prevTimestamp;
-                        key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                        key.PointID = m_prevPointId + Encoding7Bit.ReadUInt64(stream, ref size);
                     }
 
                     if ((code & 8) != 0) //E is set)
                     {
-                        key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                        key.EntryNumber = Encoding7Bit.ReadUInt64(stream, ref size);
                     }
                     else
                     {
@@ -168,7 +168,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                     if ((code & 2) != 0) //V2 is set)
                     {
-                        value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                        value.Value2 = Encoding7Bit.ReadUInt64(stream, ref size);
                     }
                     else
                     {
@@ -177,7 +177,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                     if ((code & 1) != 0) //V3 is set)
                     {
-                        value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                        value.Value3 = Encoding7Bit.ReadUInt64(stream, ref size);
                     }
                     else
                     {
@@ -193,27 +193,6 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             }
             return ReadWhileCatchAll(key, value, upperBounds);
         }
-
-        //public override bool ReadWhile(HistorianKey key, HistorianValue value, HistorianKey upperBounds, KeyMatchFilterBase<HistorianKey> filter)
-        //{
-        //    if (StreamPointer.Version == PointerVersion && IndexOfNextKeyValue < RecordCount)
-        //    {
-        //        if (KeyMethods.IsLessThan(UpperKey, upperBounds))
-        //        {
-        //            var bitFilter = filter as PointIDFilter.BitArrayFilter<HistorianKey>;
-        //            if (bitFilter != null)
-        //            {
-        //                return InternalReadBitArray(key, value, bitFilter);
-        //            }
-        //            else
-        //            {
-        //                return InternalRead(key, value, filter);
-        //            }
-        //        }
-        //        return InternalReadWhile(key, value, upperBounds, filter);
-        //    }
-        //    return ReadWhileCatchAll(key, value, upperBounds, filter);
-        //}
 
         #endregion
 
@@ -276,18 +255,18 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 int size = 1;
                 if ((code & 16) != 0) //T is set
                 {
-                    key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
-                    key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                    key.Timestamp = m_prevTimestamp + Encoding7Bit.ReadUInt64(stream, ref size);
+                    key.PointID = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
                     key.Timestamp = m_prevTimestamp;
-                    key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                    key.PointID = m_prevPointId + Encoding7Bit.ReadUInt64(stream, ref size);
                 }
 
                 if ((code & 8) != 0) //E is set)
                 {
-                    key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                    key.EntryNumber = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -307,7 +286,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 2) != 0) //V2 is set)
                 {
-                    value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value2 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -316,7 +295,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 1) != 0) //V3 is set)
                 {
-                    value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value3 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -389,18 +368,18 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 size = 1;
                 if ((code & 16) != 0) //T is set
                 {
-                    key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
-                    key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                    key.Timestamp = m_prevTimestamp + Encoding7Bit.ReadUInt64(stream, ref size);
+                    key.PointID = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
                     key.Timestamp = m_prevTimestamp;
-                    key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                    key.PointID = m_prevPointId + Encoding7Bit.ReadUInt64(stream, ref size);
                 }
 
                 if ((code & 8) != 0) //E is set)
                 {
-                    key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                    key.EntryNumber = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -420,7 +399,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 2) != 0) //V2 is set)
                 {
-                    value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value2 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -429,7 +408,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 1) != 0) //V3 is set)
                 {
-                    value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value3 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -548,17 +527,17 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 int size = 1;
                 if ((code & 16) != 0) //T is set
                 {
-                    key.Timestamp += Compression.Read7BitUInt64(stream, ref size);
-                    key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                    key.Timestamp += Encoding7Bit.ReadUInt64(stream, ref size);
+                    key.PointID = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
-                    key.PointID += Compression.Read7BitUInt64(stream, ref size);
+                    key.PointID += Encoding7Bit.ReadUInt64(stream, ref size);
                 }
 
                 if ((code & 8) != 0) //E is set)
                 {
-                    key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                    key.EntryNumber = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -580,12 +559,12 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                     if ((code & 2) != 0) //V2 is set)
                     {
-                        size += Compression.Measure7BitUInt64(stream, size);
+                        size += Encoding7Bit.MeasureUInt64(stream, size);
                     }
 
                     if ((code & 1) != 0) //V3 is set)
                     {
-                        size += Compression.Measure7BitUInt64(stream, size);
+                        size += Encoding7Bit.MeasureUInt64(stream, size);
                     }
 
                     totalSize += size;
@@ -607,7 +586,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 2) != 0) //V2 is set)
                 {
-                    value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value2 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -616,7 +595,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 1) != 0) //V3 is set)
                 {
-                    value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value3 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -695,18 +674,18 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 size = 1;
                 if ((code & 16) != 0) //T is set
                 {
-                    key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
-                    key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                    key.Timestamp = m_prevTimestamp + Encoding7Bit.ReadUInt64(stream, ref size);
+                    key.PointID = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
                     key.Timestamp = m_prevTimestamp;
-                    key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                    key.PointID = m_prevPointId + Encoding7Bit.ReadUInt64(stream, ref size);
                 }
 
                 if ((code & 8) != 0) //E is set)
                 {
-                    key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                    key.EntryNumber = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -726,7 +705,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 2) != 0) //V2 is set)
                 {
-                    value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value2 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -735,7 +714,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 1) != 0) //V3 is set)
                 {
-                    value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value3 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -822,18 +801,18 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 size = 1;
                 if ((code & 16) != 0) //T is set
                 {
-                    key.Timestamp = m_prevTimestamp + Compression.Read7BitUInt64(stream, ref size);
-                    key.PointID = Compression.Read7BitUInt64(stream, ref size);
+                    key.Timestamp = m_prevTimestamp + Encoding7Bit.ReadUInt64(stream, ref size);
+                    key.PointID = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
                     key.Timestamp = m_prevTimestamp;
-                    key.PointID = m_prevPointId + Compression.Read7BitUInt64(stream, ref size);
+                    key.PointID = m_prevPointId + Encoding7Bit.ReadUInt64(stream, ref size);
                 }
 
                 if ((code & 8) != 0) //E is set)
                 {
-                    key.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                    key.EntryNumber = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -853,7 +832,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 2) != 0) //V2 is set)
                 {
-                    value.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value2 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -862,7 +841,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if ((code & 1) != 0) //V3 is set)
                 {
-                    value.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                    value.Value3 = Encoding7Bit.ReadUInt64(stream, ref size);
                 }
                 else
                 {
@@ -889,7 +868,6 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             }
             return false;
         }
-
 
         //bool InternalReadBitArray(HistorianKey key, HistorianValue value, PointIDFilter.BitArrayFilter<HistorianKey> filter)
         //{

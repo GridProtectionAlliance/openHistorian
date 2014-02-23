@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Runtime.CompilerServices;
 using openHistorian.Collections;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
@@ -31,36 +30,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     /// Used to generically create a fixed size node.
     /// </summary>
     public class CreateHistorianCompressionTs
-        : CreateTreeNodeBase
+        : CreateSingleTreeNodeBase
     {
-        static CreateHistorianCompressionTs()
-        {
-            //Gaurenteed to execute only once.
-            try
-            {
-                TreeNodeInitializer.Register(new CreateHistorianCompressionTs());
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        /// <summary>
-        /// Registers this implementation with the appropriate class.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.NoOptimization)]
-        public static void Register()
-        {
-            //Do Nothing. The static constructor will be called.
-        }
-
-        /// <summary>
-        /// Creates a class
-        /// </summary>
-        public CreateHistorianCompressionTs()
-            : base(typeof(HistorianKey), typeof(HistorianValue), TypeGuid)
-        {
-        }
 
         // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}
         /// <summary>
@@ -78,6 +49,30 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         public override SortedTreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
         {
             return (SortedTreeNodeBase<TKey, TValue>)(object)new HistorianCompressionTs(level);
+        }
+
+        public override Type KeyTypeIfNotGeneric
+        {
+            get
+            {
+                return typeof(HistorianKey);
+            }
+        }
+
+        public override Type ValueTypeIfNotGeneric
+        {
+            get
+            {
+                return typeof(HistorianValue);
+            }
+        }
+
+        public override Guid Method
+        {
+            get
+            {
+                return TypeGuid;
+            }
         }
     }
 }

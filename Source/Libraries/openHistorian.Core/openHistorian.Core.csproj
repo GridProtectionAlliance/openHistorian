@@ -97,6 +97,7 @@
     <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\CreateHistorianCompressionTs.cs" />
     <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTs.cs" />
     <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTsScanner.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\TsCombinedEncoding.cs" />
     <Compile Include="SortedTreeStore\Types\HistorianKey\HistorianKey.cs" />
     <Compile Include="SortedTreeStore\Types\HistorianKey\MethodsHistorianKey.cs" />
     <Compile Include="SortedTreeStore\Types\HistorianValue\HistorianValue.cs" />

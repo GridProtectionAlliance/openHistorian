@@ -121,57 +121,57 @@ namespace GSF.SortedTreeStore.Tree.CustomCompression
         }
     }
 
-    [TestFixture]
-    class HistorianCompressionDelta
-    {
-        private const int Max = 1000000;
+    //[TestFixture]
+    //class HistorianCompressionDelta
+    //{
+    //    private const int Max = 1000000;
 
-        [Test]
-        public void TestSequently()
-        {
-            var tree = TreeNodeInitializer.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid, 0);
+    //    [Test]
+    //    public void TestSequently()
+    //    {
+    //        var tree = TreeNodeInitializer.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid, 0);
 
-            LeafNodeTest.TestNode(tree, new SequentialTest(), 5000);
-        }
+    //        LeafNodeTest.TestNode(tree, new SequentialTest(), 5000);
+    //    }
 
-        [Test]
-        public void TestReverseSequently()
-        {
-            var tree = TreeNodeInitializer.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid, 0);
+    //    [Test]
+    //    public void TestReverseSequently()
+    //    {
+    //        var tree = TreeNodeInitializer.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid, 0);
 
-            LeafNodeTest.TestNode(tree, new ReverseSequentialTest(), 5000);
-        }
+    //        LeafNodeTest.TestNode(tree, new ReverseSequentialTest(), 5000);
+    //    }
 
-        [Test]
-        public void TestRandom()
-        {
-            var tree = TreeNodeInitializer.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid, 0);
+    //    [Test]
+    //    public void TestRandom()
+    //    {
+    //        var tree = TreeNodeInitializer.CreateTreeNode<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid, 0);
 
-            LeafNodeTest.TestNode(tree, new RandomTest(), 2000);
-        }
+    //        LeafNodeTest.TestNode(tree, new RandomTest(), 2000);
+    //    }
 
-        [Test]
-        public void BenchmarkSequently()
-        {
-            var tree = TreeNodeInitializer.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid);
+    //    [Test]
+    //    public void BenchmarkSequently()
+    //    {
+    //        var tree = TreeNodeInitializer.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid);
 
-            LeafNodeTest.TestSpeed(tree, new SequentialTest(), 500, 512);
-        }
+    //        LeafNodeTest.TestSpeed(tree, new SequentialTest(), 500, 512);
+    //    }
 
-        [Test]
-        public void BenchmarkReverseSequently()
-        {
-            var tree = TreeNodeInitializer.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid);
+    //    [Test]
+    //    public void BenchmarkReverseSequently()
+    //    {
+    //        var tree = TreeNodeInitializer.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid);
 
-            LeafNodeTest.TestSpeed(tree, new ReverseSequentialTest(), 500, 512);
-        }
+    //        LeafNodeTest.TestSpeed(tree, new ReverseSequentialTest(), 500, 512);
+    //    }
 
-        [Test]
-        public void BenchmarkRandom()
-        {
-            var tree = TreeNodeInitializer.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid);
+    //    [Test]
+    //    public void BenchmarkRandom()
+    //    {
+    //        var tree = TreeNodeInitializer.GetTreeNodeInitializer<HistorianKey, HistorianValue>(CreateHistorianCompressionDelta.TypeGuid);
 
-            LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
-        }
-    }
+    //        LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
+    //    }
+    //}
 }

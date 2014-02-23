@@ -39,7 +39,7 @@ namespace GSF.SortedTreeStore.Tree
     /// </remarks>
     /// <typeparam name="TKey"></typeparam>
     public abstract class SortedTreeKeyMethodsBase<TKey>
-        : IComparer<TKey>
+        : SortedTreeMethodsBase<TKey>, IComparer<TKey>
         where TKey : class, new()
     {
 
@@ -47,25 +47,6 @@ namespace GSF.SortedTreeStore.Tree
         protected TKey TempKey2 = new TKey();
         protected int LastFoundIndex;
 
-        /// <summary>
-        /// The fixed size of this key
-        /// </summary>
-        public int Size
-        {
-            get;
-            private set;
-        }
-
-        protected SortedTreeKeyMethodsBase()
-        {
-            Size = GetSize();
-        }
-
-        /// <summary>
-        /// Clears the key
-        /// </summary>
-        /// <param name="key"></param>
-        public abstract void Clear(TKey key);
         /// <summary>
         /// Sets the provided key to it's minimum value
         /// </summary>
@@ -84,35 +65,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="right"></param>
         /// <returns></returns>
         public abstract int CompareTo(TKey left, TKey right);
-
-        /// <summary>
-        /// Writes the key to the stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="data"></param>
-        public abstract unsafe void Write(byte* stream, TKey data);
-
-        /// <summary>
-        /// Reads the key from the stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="data"></param>
-        public abstract unsafe void Read(byte* stream, TKey data);
-        
-        /// <summary>
-        /// Gets the size of this class when serialized
-        /// </summary>
-        /// <returns></returns>
-        protected abstract int GetSize();
-
-        /// <summary>
-        /// The Guid uniquely defining this type. 
-        /// It is important to uniquely tie 1 type to 1 guid.
-        /// </summary>
-        public abstract Guid GenericTypeGuid
-        {
-            get;
-        }
 
         /// <summary>
         /// Writes the maximum value to the provided stream
@@ -425,7 +377,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual bool IsEqual(TKey left, TKey right)
+        public override bool IsEqual(TKey left, TKey right)
         {
             return CompareTo(left, right) == 0;
         }

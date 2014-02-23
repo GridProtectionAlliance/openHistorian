@@ -23,7 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace GSF.SortedTreeStore.Tree
 {
@@ -55,7 +54,8 @@ namespace GSF.SortedTreeStore.Tree
         private int m_blockSize;
         private bool m_isInitialized;
         protected SortedTreeKeyMethodsBase<TKey> KeyMethods;
-        protected SortedTreeValueMethodsBase<TValue> ValueMethods;
+        protected SortedTreeMethodsBase<TValue> ValueMethods;
+
 
         #endregion
 
@@ -96,8 +96,7 @@ namespace GSF.SortedTreeStore.Tree
             m_sparseIndexType = sparseIndexType;
             m_treeNodeType = treeNodeType;
             m_blockSize = blockSize;
-
-            IsEmpty = true;
+            
             m_rootNodeLevel = 0;
             m_rootNodeIndexAddress = 1;
             m_lastAllocatedBlock = 1;
@@ -147,15 +146,6 @@ namespace GSF.SortedTreeStore.Tree
         {
             get;
             set;
-        }
-
-        /// <summary>
-        /// Determines if the tree has any data in it.
-        /// </summary>
-        public bool IsEmpty
-        {
-            get;
-            private set;
         }
 
         /// <summary>
@@ -368,7 +358,6 @@ namespace GSF.SortedTreeStore.Tree
             m_lastAllocatedBlock = Stream.ReadUInt32();
             m_rootNodeIndexAddress = Stream.ReadUInt32();
             m_rootNodeLevel = Stream.ReadUInt8();
-            IsEmpty = Stream.ReadBoolean();
         }
 
         /// <summary>
@@ -388,7 +377,6 @@ namespace GSF.SortedTreeStore.Tree
             Stream.Write(m_lastAllocatedBlock);
             Stream.Write(m_rootNodeIndexAddress); //Root Index
             Stream.Write(m_rootNodeLevel); //Root Index
-            Stream.Write(IsEmpty);
 
             Stream.Position = oldPosotion;
             IsDirty = false;

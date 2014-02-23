@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  RegisterTypes.cs - Gbtc
+//  CreateSingleValueBase.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,34 +16,22 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/9/2013 - Steven E. Chisholm
+//  2/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//
+//     
 //******************************************************************************************************
 
-using GSF.SortedTreeStore.Collection;
-using GSF.SortedTreeStore.Net.Compression;
-using GSF.SortedTreeStore.Net.Initialization;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Tree.TreeNodes;
+using System;
 
-namespace GSF.SortedTreeStore
+namespace GSF.SortedTreeStore.Encoding
 {
-    public static class RegisterTypes
+    public abstract class CreateSingleValueBase
     {
-        static RegisterTypes()
-        {
-            TreeNodeInitializer.Register(new CreateHistorianCompressionTs());
-            KeyValueStreamCompression.Register(new CreateScadaCompressedStream());
-            PointCollectionInitializer.Register(new CreateScadaPointCollection());
-        }
+        public abstract Type TypeIfNotGeneric { get; }
 
-        /// <summary>
-        /// Registers custom types with the SortedTreeStore
-        /// </summary>
-        public static void Register()
-        {
-            //Do Nothing. Code is called in the static constructor.
-        }
+        public abstract Guid Method { get; }
+
+        public abstract SingleValueEncodingBase<T> Create<T>()
+            where T : class,ISortedTreeType<T>, new();
     }
 }

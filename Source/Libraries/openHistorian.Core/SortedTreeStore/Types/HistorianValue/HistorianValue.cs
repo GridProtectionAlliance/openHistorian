@@ -23,6 +23,7 @@
 
 
 using System;
+using System.Collections;
 using System.Text;
 using GSF;
 using GSF.SortedTreeStore;
@@ -136,15 +137,30 @@ namespace openHistorian.Collections
             }
         }
 
-        public SortedTreeValueMethodsBase<HistorianValue> CreateValueMethods()
+        public SortedTreeMethodsBase<HistorianValue> CreateValueMethods()
         {
             return new ValueMethodsHistorianValue();
         }
 
-        void ISortedTreeValue<HistorianValue>.RegisterCustomValueImplementations()
+        public SortedTreeMethodsBase<HistorianValue> CreateBasicMethods()
         {
-            CreateHistorianCompressionDelta.Register();
-            CreateHistorianCompressionTs.Register();
+            return CreateValueMethods();
+        }
+
+        //void ISortedTreeValue<HistorianValue>.RegisterCustomValueImplementations()
+        //{
+        //    CreateHistorianCompressionDelta.Register();
+        //    CreateHistorianCompressionTs.Register();
+        //    CreateHistorianCompressedStream.Register();
+        //    CreateHistorianPointCollection.Register();
+        //}
+
+        public IEnumerable GetEncodingMethods()
+        {
+            return null;
+
+            //CreateHistorianCompressionDelta.Register();
+            //CreateHistorianCompressionTs.Register();
             CreateHistorianCompressedStream.Register();
             CreateHistorianPointCollection.Register();
         }

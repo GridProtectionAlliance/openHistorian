@@ -383,12 +383,12 @@ namespace GSF.IO
 
         public virtual void Write7Bit(uint value)
         {
-            Compression.Write7Bit(Write, value);
+            Encoding7Bit.Write(Write, value);
         }
 
         public virtual void Write7Bit(ulong value)
         {
-            Compression.Write7Bit(Write, value);
+            Encoding7Bit.Write(Write, value);
         }
 
         public virtual void Write(string value)
@@ -575,12 +575,12 @@ namespace GSF.IO
 
         public virtual uint Read7BitUInt32()
         {
-            return Compression.Read7BitUInt32(ReadUInt8);
+            return Encoding7Bit.ReadUInt32(ReadUInt8);
         }
 
         public virtual ulong Read7BitUInt64()
         {
-            return Compression.Read7BitUInt64(ReadUInt8);
+            return Encoding7Bit.ReadUInt64(ReadUInt8);
         }
 
         public virtual byte[] ReadBytes(int count)

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  SortedTreeUInt32.cs - Gbtc
+//  CreateDualSingleValueBase.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,51 +16,27 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/12/2013 - Steven E. Chisholm
+//  2/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
-using System.Collections;
-using GSF.IO;
-using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Types
+namespace GSF.SortedTreeStore.Encoding
 {
-    public class SortedTreeUInt32
-        : ISortedTreeKey<SortedTreeUInt32>, ISortedTreeValue<SortedTreeUInt32>
+    public abstract class CreateDualSingleValueBase
     {
-        public SortedTreeUInt32()
-        {
+        public abstract Type KeyTypeIfNotGeneric { get; }
 
-        }
-        public SortedTreeUInt32(uint value)
-        {
-            Value = value;
-        }
+        public abstract Type ValueTypeIfNotGeneric { get; }
 
-        public uint Value;
+        public abstract Guid KeyMethod { get; }
 
-        public SortedTreeKeyMethodsBase<SortedTreeUInt32> CreateKeyMethods()
-        {
-            return new SortedTreeKeyMethodsUInt32();
-        }
+        public abstract Guid ValueMethod { get; }
 
-        public SortedTreeMethodsBase<SortedTreeUInt32> CreateValueMethods()
-        {
-            return new SortedTreeValueMethodsUInt32();
-        }
-
-        public IEnumerable GetEncodingMethods()
-        {
-            return null;
-        }
-
-        public SortedTreeMethodsBase<SortedTreeUInt32> CreateBasicMethods()
-        {
-            return CreateValueMethods();
-        }
+        public abstract DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
+            where TKey : class,ISortedTreeType<TKey>, new()
+            where TValue : class,ISortedTreeType<TValue>, new();
     }
-  
 }

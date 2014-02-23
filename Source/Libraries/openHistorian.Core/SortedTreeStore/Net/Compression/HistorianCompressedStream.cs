@@ -187,12 +187,12 @@ namespace GSF.SortedTreeStore.Net.Compression
             size = 1;
 
             if (currentKey.Timestamp != m_prevTimestamp)
-                GSF.Compression.Write7Bit(stream, ref size, currentKey.Timestamp ^ m_prevTimestamp);
+                GSF.Encoding7Bit.Write(stream, ref size, currentKey.Timestamp ^ m_prevTimestamp);
 
-            GSF.Compression.Write7Bit(stream, ref size, currentKey.PointID ^ m_prevPointID);
+            GSF.Encoding7Bit.Write(stream, ref size, currentKey.PointID ^ m_prevPointID);
 
             if (currentKey.EntryNumber != 0)
-                GSF.Compression.Write7Bit(stream, ref size, currentKey.EntryNumber);
+                GSF.Encoding7Bit.Write(stream, ref size, currentKey.EntryNumber);
 
             if (currentValue.Value1 > uint.MaxValue)
             {

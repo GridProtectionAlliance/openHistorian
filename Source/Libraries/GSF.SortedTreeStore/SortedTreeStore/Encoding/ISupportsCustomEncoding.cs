@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  CreateHistorianCompressedStream.cs - Gbtc
+//  ISupportsCustomEncoding.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,36 +16,24 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/10/2013 - Steven E. Chisholm
+//  2/22/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
+using System.Collections;
 
-using System;
-using GSF.SortedTreeStore.Collection;
-using GSF.SortedTreeStore.Tree.TreeNodes;
-using openHistorian.Collections;
-using GSF.SortedTreeStore.Net.Initialization;
-
-namespace GSF.SortedTreeStore.Net.Compression
+namespace GSF.SortedTreeStore.Encoding
 {
-    class CreateScadaPointCollection
-        : CreatePointCollectionBase
+    /// <summary>
+    /// An interface that assist in the initialization and registration of customized encoding methods.
+    /// </summary>
+    public interface ISupportsCustomEncoding
     {
-     
         /// <summary>
-        /// Creates a class
+        /// Gets all available encoding methods for a specific type. May return null if none exists.
         /// </summary>
-        public CreateScadaPointCollection()
-            : base(typeof(ScadaKey), typeof(ScadaValue))
-        {
-        }
-
-        public override PointCollectionBase<TKey, TValue> Create<TKey, TValue>(int capacity)
-        {
-            return (PointCollectionBase<TKey, TValue>)((object)new HistorianPointCollection(capacity));
-        }
+        /// <returns>null or an IEnumerable of all encoding methods.</returns>
+        IEnumerable GetEncodingMethods();
     }
 }

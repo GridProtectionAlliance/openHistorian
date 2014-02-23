@@ -235,19 +235,19 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             if (currentKey.Timestamp != prevKey.Timestamp)
             {
                 stream[0] |= 0x10; //Set bit T
-                Compression.Write7Bit(stream, ref size, currentKey.Timestamp - prevKey.Timestamp);
-                Compression.Write7Bit(stream, ref size, currentKey.PointID);
+                Encoding7Bit.Write(stream, ref size, currentKey.Timestamp - prevKey.Timestamp);
+                Encoding7Bit.Write(stream, ref size, currentKey.PointID);
             }
             else
             {
-                Compression.Write7Bit(stream, ref size, currentKey.PointID - prevKey.PointID);
+                Encoding7Bit.Write(stream, ref size, currentKey.PointID - prevKey.PointID);
             }
 
 
             if (currentKey.EntryNumber != 0)
             {
                 stream[0] |= 0x08; //Set bit E
-                Compression.Write7Bit(stream, ref size, currentKey.EntryNumber);
+                Encoding7Bit.Write(stream, ref size, currentKey.EntryNumber);
             }
 
             if (currentValue.Value1 > uint.MaxValue)
@@ -265,13 +265,13 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             if (currentValue.Value2 != 0)
             {
                 stream[0] |= 0x02; //Set Bit V2
-                Compression.Write7Bit(stream, ref size, currentValue.Value2);
+                Encoding7Bit.Write(stream, ref size, currentValue.Value2);
             }
             if (currentValue.Value3 != 0)
             {
                 //ToDo: Special encoding of flag fields
                 stream[0] |= 0x01; //Set Bit V3
-                Compression.Write7Bit(stream, ref size, currentValue.Value3);
+                Encoding7Bit.Write(stream, ref size, currentValue.Value3);
             }
             return size;
         }
@@ -337,19 +337,19 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             size = 1;
             if ((code & 16) != 0) //T is set
             {
-                currentKey.Timestamp = prevKey.Timestamp + Compression.Read7BitUInt64(stream, ref size);
-                currentKey.PointID = Compression.Read7BitUInt64(stream, ref size);
+                currentKey.Timestamp = prevKey.Timestamp + Encoding7Bit.ReadUInt64(stream, ref size);
+                currentKey.PointID = Encoding7Bit.ReadUInt64(stream, ref size);
             }
             else
             {
                 currentKey.Timestamp = prevKey.Timestamp;
-                currentKey.PointID = prevKey.PointID + Compression.Read7BitUInt64(stream, ref size);
+                currentKey.PointID = prevKey.PointID + Encoding7Bit.ReadUInt64(stream, ref size);
             }
 
 
             if ((code & 8) != 0) //E is set)
             {
-                currentKey.EntryNumber = Compression.Read7BitUInt64(stream, ref size);
+                currentKey.EntryNumber = Encoding7Bit.ReadUInt64(stream, ref size);
             }
             else
             {
@@ -369,7 +369,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
             if ((code & 2) != 0) //V2 is set)
             {
-                currentValue.Value2 = Compression.Read7BitUInt64(stream, ref size);
+                currentValue.Value2 = Encoding7Bit.ReadUInt64(stream, ref size);
             }
             else
             {
@@ -378,7 +378,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
             if ((code & 1) != 0) //V3 is set)
             {
-                currentValue.Value3 = Compression.Read7BitUInt64(stream, ref size);
+                currentValue.Value3 = Encoding7Bit.ReadUInt64(stream, ref size);
             }
             else
             {
