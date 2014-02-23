@@ -76,11 +76,11 @@ namespace GSF.SortedTreeStore.Engine
             return IsEqualTo(other);
         }
 
-        public abstract SortedTreeKeyMethodsBase<TKey> CreateKeyMethods();
+        public abstract SortedTreeTypeMethodsBase<TKey> CreateKeyMethods();
 
         public abstract IEnumerable GetEncodingMethods();
 
-        public SortedTreeMethodsBase<TKey> CreateBasicMethods()
+        public SortedTreeTypeMethodsBase<TKey> CreateValueMethods()
         {
             return CreateKeyMethods();
         }

@@ -33,14 +33,14 @@ namespace GSF.SortedTreeStore.Types
     {
         public ulong Value1;
         public ulong Value2;
-        public SortedTreeKeyMethodsBase<SortedTreeUInt128> CreateKeyMethods()
+        public SortedTreeTypeMethodsBase<SortedTreeUInt128> CreateKeyMethods()
         {
             return new SortedTreeKeyMethodsUInt128();
         }
 
-        public SortedTreeMethodsBase<SortedTreeUInt128> CreateValueMethods()
+        public SortedTreeTypeMethodsBase<SortedTreeUInt128> CreateValueMethods()
         {
-            return new SortedTreeValueMethodsUInt128();
+            return new SortedTreeKeyMethodsUInt128();
         }
 
         public IEnumerable GetEncodingMethods()
@@ -48,7 +48,7 @@ namespace GSF.SortedTreeStore.Types
             return null;
         }
 
-        public SortedTreeMethodsBase<SortedTreeUInt128> CreateBasicMethods()
+        public SortedTreeTypeMethodsBase<SortedTreeUInt128> CreateBasicMethods()
         {
             return CreateValueMethods();
         }

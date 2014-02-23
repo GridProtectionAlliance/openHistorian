@@ -22,13 +22,12 @@
 //******************************************************************************************************
 
 using System;
-using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Collections
 {
     internal class ValueMethodsHistorianValue
-        : SortedTreeMethodsBase<HistorianValue>
+        : SortedTreeTypeMethodsBase<HistorianValue>
     {
         // {24DDE7DC-67F9-42B6-A11B-E27C3E62D9EF}
         public static Guid TypeGuid = new Guid(0x24dde7dc, 0x67f9, 0x42b6, 0xa1, 0x1b, 0xe2, 0x7c, 0x3e, 0x62, 0xd9, 0xef);
@@ -72,6 +71,38 @@ namespace openHistorian.Collections
             {
                 return TypeGuid;
             }
+        }
+
+        public override void SetMin(HistorianValue key)
+        {
+            key.Value1 = 0;
+            key.Value2 = 0;
+            key.Value3 = 0;
+        }
+
+        public override void SetMax(HistorianValue key)
+        {
+            key.Value1 = ulong.MaxValue;
+            key.Value2 = ulong.MaxValue;
+            key.Value3 = ulong.MaxValue;
+        }
+
+        public override int CompareTo(HistorianValue left, HistorianValue right)
+        {
+            if (left.Value1 < right.Value1)
+                return -1;
+            if (left.Value1 > right.Value1)
+                return 1;
+            if (left.Value2 < right.Value2)
+                return -1;
+            if (left.Value2 > right.Value2)
+                return 1;
+            if (left.Value3 < right.Value3)
+                return -1;
+            if (left.Value3 > right.Value3)
+                return 1;
+
+            return 0;
         }
     }
 }

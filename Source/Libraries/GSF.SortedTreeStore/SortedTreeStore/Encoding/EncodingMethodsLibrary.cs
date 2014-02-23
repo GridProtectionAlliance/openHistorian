@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
@@ -69,7 +70,8 @@ namespace GSF.SortedTreeStore.Encoding
             Register(new CreateFixedSizeDualSingleEncoding());
         }
 
-        public static void Register(ISupportsCustomEncoding type)
+        public static void Register<T>(ISortedTreeValue<T> type)
+            where T : class, new()
         {
             lock (SyncRoot)
             {
@@ -160,7 +162,7 @@ namespace GSF.SortedTreeStore.Encoding
         }
 
         public static SingleValueEncodingBase<T> GetEncodingMethod<T>(Guid compressionMethod)
-            where T : class, ISupportsCustomEncoding, ISortedTreeType<T>, new()
+            where T : class, ISortedTreeValue<T>, new()
         {
             Type valueType = typeof(T);
             CreateSingleValueBase customEncoding;
@@ -181,8 +183,8 @@ namespace GSF.SortedTreeStore.Encoding
         }
 
         public static DoubleValueEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(Guid compressionMethod)
-            where TKey : class, ISupportsCustomEncoding, ISortedTreeType<TKey>, new()
-            where TValue : class, ISupportsCustomEncoding, ISortedTreeType<TValue>, new()
+            where TKey : class, ISortedTreeValue<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             Type keyType = typeof(TKey);
             Type valueType = typeof(TValue);
@@ -213,8 +215,8 @@ namespace GSF.SortedTreeStore.Encoding
         }
 
         public static DoubleValueEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(Guid keyEncodingMethod, Guid valueEncodingMethod)
-            where TKey : class, ISupportsCustomEncoding, ISortedTreeType<TKey>, new()
-            where TValue : class, ISupportsCustomEncoding, ISortedTreeType<TValue>, new()
+            where TKey : class, ISortedTreeValue<TKey>, new()
+            where TValue : class, ISortedTreeValue<TValue>, new()
         {
             Type keyType = typeof(TKey);
             Type valueType = typeof(TValue);

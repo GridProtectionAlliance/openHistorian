@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
@@ -36,7 +37,7 @@ namespace GSF.SortedTreeStore.Encoding
         public abstract Guid ValueMethod { get; }
 
         public abstract DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
-            where TKey : class,ISortedTreeType<TKey>, new()
-            where TValue : class,ISortedTreeType<TValue>, new();
+            where TKey : class,ISortedTreeValue<TKey>, new()
+            where TValue : class,ISortedTreeValue<TValue>, new();
     }
 }

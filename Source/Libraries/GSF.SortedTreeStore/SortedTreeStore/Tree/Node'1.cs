@@ -53,7 +53,7 @@ namespace GSF.SortedTreeStore.Tree
         private byte* m_pointerAfterHeader;
         private long m_pointerReadVersion;
         private long m_pointerWriteVersion;
-        protected SortedTreeKeyMethodsBase<TKey> KeyMethods;
+        protected SortedTreeTypeMethodsBase<TKey> KeyMethods;
         protected byte Level;
         protected int BlockSize;
         protected BinaryStreamBase Stream;

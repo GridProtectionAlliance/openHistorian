@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeKeyMethodsBase`1.cs - Gbtc
+//  SortedTreeTypeMethodsBase`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -18,6 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  4/12/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
+//  2/22/2014 - Steven E. Chisholm
+//       Combined Value and Key methods into a single class.
 //     
 //******************************************************************************************************
 
@@ -38,14 +40,47 @@ namespace GSF.SortedTreeStore.Tree
     /// for vastly superiour performance.
     /// </remarks>
     /// <typeparam name="TKey"></typeparam>
-    public abstract class SortedTreeKeyMethodsBase<TKey>
-        : SortedTreeMethodsBase<TKey>, IComparer<TKey>
+    public abstract class SortedTreeTypeMethodsBase<TKey>
+        : IComparer<TKey>
         where TKey : class, new()
     {
-
         protected TKey TempKey = new TKey();
         protected TKey TempKey2 = new TKey();
         protected int LastFoundIndex;
+
+        protected SortedTreeTypeMethodsBase()
+        {
+            Size = GetSize();
+        }
+
+        /// <summary>
+        /// The fixed size of this value
+        /// </summary>
+        public int Size
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Clears the key
+        /// </summary>
+        /// <param name="data"></param>
+        public abstract void Clear(TKey data);
+        /// <summary>
+        /// Gets the size of this class when serialized
+        /// </summary>
+        /// <returns></returns>
+        protected abstract int GetSize();
+
+        /// <summary>
+        /// The Guid uniquely defining this type. 
+        /// It is important to uniquely tie 1 type to 1 guid.
+        /// </summary>
+        public abstract Guid GenericTypeGuid
+        {
+            get;
+        }
 
         /// <summary>
         /// Sets the provided key to it's minimum value
@@ -103,7 +138,7 @@ namespace GSF.SortedTreeStore.Tree
         {
             Memory.Copy(source, destination, Size);
         }
-
+        
         /// <summary>
         /// Copies the source to the destination
         /// </summary>
@@ -115,6 +150,7 @@ namespace GSF.SortedTreeStore.Tree
             Write(ptr, source);
             Read(ptr, destination);
         }
+        
         /// <summary>
         /// Reads the provided key from the stream.
         /// </summary>
@@ -141,6 +177,7 @@ namespace GSF.SortedTreeStore.Tree
             }
             Read(ptr, data);
         }
+       
         /// <summary>
         /// Writes the provided data to the BinaryWriter
         /// </summary>
@@ -166,7 +203,7 @@ namespace GSF.SortedTreeStore.Tree
             Write(ptr, data);
             stream.Write(ptr, Size);
         }
-
+        
         /// <summary>
         /// Does a binary search on the data to find the best location for the <see cref="key"/>
         /// </summary>
@@ -371,13 +408,14 @@ namespace GSF.SortedTreeStore.Tree
         {
             return CompareTo(left, right) >= 0;
         }
+     
         /// <summary>
         /// Gets if left == right.
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public override bool IsEqual(TKey left, TKey right)
+        public virtual bool IsEqual(TKey left, TKey right)
         {
             return CompareTo(left, right) == 0;
         }
@@ -391,6 +429,7 @@ namespace GSF.SortedTreeStore.Tree
         {
             return CompareTo(left, right) == 0;
         }
+    
         /// <summary>
         /// Compares Left to Right
         /// </summary>
@@ -439,6 +478,24 @@ namespace GSF.SortedTreeStore.Tree
         {
             return CompareTo(x, y);
         }
+
+
+     
+        /// <summary>
+        /// Reads the key from the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
+        public abstract unsafe void Read(byte* stream, TKey data);
+        /// <summary>
+        /// Writes the key to the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
+        public abstract unsafe void Write(byte* stream, TKey data);
+
+       
+      
 
     }
 }

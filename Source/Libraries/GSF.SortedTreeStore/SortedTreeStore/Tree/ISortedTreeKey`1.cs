@@ -29,14 +29,14 @@ namespace GSF.SortedTreeStore.Tree
     /// The interface that is required to use as a key in <see cref="SortedTree"/> 
     /// </summary>
     /// <typeparam name="TKey">A class that has a default constructor</typeparam>
-    public interface ISortedTreeKey<TKey> : ISupportsCustomEncoding, ISortedTreeType<TKey>
+    public interface ISortedTreeKey<TKey> : ISortedTreeValue<TKey>
         where TKey : class, new()
     {
         /// <summary>
         /// Creates a class that contains the necessary methods for the SortedTree.
         /// </summary>
         /// <returns></returns>
-        SortedTreeKeyMethodsBase<TKey> CreateKeyMethods();
+        SortedTreeTypeMethodsBase<TKey> CreateKeyMethods();
 
     }
 }

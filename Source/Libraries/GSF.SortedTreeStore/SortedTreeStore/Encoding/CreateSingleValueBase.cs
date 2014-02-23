@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
@@ -32,6 +33,6 @@ namespace GSF.SortedTreeStore.Encoding
         public abstract Guid Method { get; }
 
         public abstract SingleValueEncodingBase<T> Create<T>()
-            where T : class,ISortedTreeType<T>, new();
+            where T : class,ISortedTreeValue<T>, new();
     }
 }

@@ -137,12 +137,12 @@ namespace openHistorian.Collections
             }
         }
 
-        public SortedTreeMethodsBase<HistorianValue> CreateValueMethods()
+        public SortedTreeTypeMethodsBase<HistorianValue> CreateValueMethods()
         {
             return new ValueMethodsHistorianValue();
         }
 
-        public SortedTreeMethodsBase<HistorianValue> CreateBasicMethods()
+        public SortedTreeTypeMethodsBase<HistorianValue> CreateBasicMethods()
         {
             return CreateValueMethods();
         }

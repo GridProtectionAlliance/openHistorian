@@ -39,7 +39,7 @@ namespace GSF.SortedTreeStore.Filters
             where TKey : EngineKeyBase<TKey>, new()
         {
             private bool m_isEndReached;
-            private SortedTreeKeyMethodsBase<TKey> m_keyMethods;
+            private SortedTreeTypeMethodsBase<TKey> m_keyMethods;
 
             private readonly ulong m_start;
             private readonly ulong m_stop;

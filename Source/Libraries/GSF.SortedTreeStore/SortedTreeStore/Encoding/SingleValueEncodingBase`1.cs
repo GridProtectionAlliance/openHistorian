@@ -26,6 +26,10 @@ using GSF.IO.Unmanaged;
 
 namespace GSF.SortedTreeStore.Encoding
 {
+    /// <summary>
+    /// Base Class that allows compressing of a single value
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class SingleValueEncodingBase<T>
     {
         public abstract bool UsesPreviousValue { get; }

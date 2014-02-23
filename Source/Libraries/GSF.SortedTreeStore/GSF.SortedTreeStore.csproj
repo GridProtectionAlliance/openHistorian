@@ -114,10 +114,8 @@
     <Compile Include="SortedTreeStore\Encoding\CreateDualSingleValueBase.cs" />
     <Compile Include="SortedTreeStore\Encoding\CreateCombinedValuesBase.cs" />
     <Compile Include="SortedTreeStore\Encoding\FixedSize\FixedSizeSingleEncoding.cs" />
-    <Compile Include="SortedTreeStore\Encoding\ISortedTreeType.cs" />
     <Compile Include="SortedTreeStore\Encoding\SingleValueEncodingBase`1.cs" />
     <Compile Include="SortedTreeStore\Encoding\EncodingMethodsLibrary.cs" />
-    <Compile Include="SortedTreeStore\Encoding\ISupportsCustomEncoding.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\BufferedArchiveStream%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\UnionReader`2.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\SequentialReaderStream%272.cs" />
@@ -177,7 +175,7 @@
     <Compile Include="Collections\SortedListConstructor.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTree%272.cs" />
     <Compile Include="SortedTreeStore\Tree\SparseIndex%271.cs" />
-    <Compile Include="SortedTreeStore\Tree\SortedTreeKeyMethodsBase%271.cs" />
+    <Compile Include="SortedTreeStore\Tree\SortedTreeTypeMethodsBase%271.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeNodeBase%272.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeNodeBase_Abstract%272.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeNodeBase_Get%272.cs" />
@@ -185,7 +183,6 @@
     <Compile Include="SortedTreeStore\Tree\SortedTreeNodeBase_Remove%272.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeNodeBase_Update%272.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeScannerBase%272.cs" />
-    <Compile Include="SortedTreeStore\Tree\SortedTreeValueMethodsBase%271.cs" />
     <Compile Include="Collections\ILargeArray`1.cs" />
     <Compile Include="Collections\IsolatedNode`1.cs" />
     <Compile Include="Collections\IsolatedQueue`1.cs" />
@@ -201,11 +198,9 @@
     <Compile Include="Collections\SupportsReadonlyAutoBase`1.cs" />
     <Compile Include="Collections\SupportsReadonlyBase`1.cs" />
     <Compile Include="SortedTreeStore\Engine\EngineKeyBase%271.cs" />
-    <Compile Include="SortedTreeStore\Types\UInt128\SortedTreeValueMethodsUInt128.cs" />
     <Compile Include="SortedTreeStore\Types\UInt128\SortedTreeUInt128.cs" />
     <Compile Include="SortedTreeStore\Types\UInt128\SortedTreeKeyMethodsUInt128.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeKeyMethodsUInt32.cs" />
-    <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeValueMethodsUInt32.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeUInt32.cs" />
     <Compile Include="SortedTreeStore\Net\Compression\CompressedStream.cs" />
     <Compile Include="SortedTreeStore\Net\Compression\CreateCompressedStream.cs" />

@@ -35,8 +35,8 @@ namespace GSF.SortedTreeStore.Collection
         where TKey : class, ISortedTreeKey<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
-        SortedTreeKeyMethodsBase<TKey> m_keyMethods;
-        SortedTreeMethodsBase<TValue> m_valueMethods;
+        SortedTreeTypeMethodsBase<TKey> m_keyMethods;
+        SortedTreeTypeMethodsBase<TValue> m_valueMethods;
 
         public PointCollection(int capacity)
         {

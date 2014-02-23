@@ -42,14 +42,14 @@ namespace GSF.SortedTreeStore.Types
 
         public uint Value;
 
-        public SortedTreeKeyMethodsBase<SortedTreeUInt32> CreateKeyMethods()
+        public SortedTreeTypeMethodsBase<SortedTreeUInt32> CreateKeyMethods()
         {
             return new SortedTreeKeyMethodsUInt32();
         }
 
-        public SortedTreeMethodsBase<SortedTreeUInt32> CreateValueMethods()
+        public SortedTreeTypeMethodsBase<SortedTreeUInt32> CreateValueMethods()
         {
-            return new SortedTreeValueMethodsUInt32();
+            return new SortedTreeKeyMethodsUInt32();
         }
 
         public IEnumerable GetEncodingMethods()
@@ -57,7 +57,7 @@ namespace GSF.SortedTreeStore.Types
             return null;
         }
 
-        public SortedTreeMethodsBase<SortedTreeUInt32> CreateBasicMethods()
+        public SortedTreeTypeMethodsBase<SortedTreeUInt32> CreateBasicMethods()
         {
             return CreateValueMethods();
         }

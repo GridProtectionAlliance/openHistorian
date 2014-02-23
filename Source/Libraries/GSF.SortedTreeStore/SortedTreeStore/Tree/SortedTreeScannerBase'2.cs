@@ -54,8 +54,8 @@ namespace GSF.SortedTreeStore.Tree
         private readonly TKey m_tempKey;
         //private TKey m_lowerKey;
         //private TKey m_upperKey;
-        protected SortedTreeKeyMethodsBase<TKey> KeyMethods;
-        protected SortedTreeMethodsBase<TValue> ValueMethods;
+        protected SortedTreeTypeMethodsBase<TKey> KeyMethods;
+        protected SortedTreeTypeMethodsBase<TValue> ValueMethods;
 
         /// <summary>
         /// The index of the current node.

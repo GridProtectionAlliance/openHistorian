@@ -50,8 +50,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private int m_pointCount;
         private int m_remainingPoints;
         private bool m_isReading;
-        private readonly SortedTreeKeyMethodsBase<TKey> m_keyMethods;
-        private readonly SortedTreeMethodsBase<TValue> m_valueMethods;
+        private readonly SortedTreeTypeMethodsBase<TKey> m_keyMethods;
+        private readonly SortedTreeTypeMethodsBase<TValue> m_valueMethods;
 
         /// <summary>
         /// Creates a point stream cache

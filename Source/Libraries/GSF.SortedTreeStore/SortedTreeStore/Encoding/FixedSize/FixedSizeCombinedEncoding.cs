@@ -68,17 +68,17 @@ namespace GSF.SortedTreeStore.Encoding
 
     public class FixedSizeCombinedEncoding<TKey, TValue>
         : DoubleValueEncodingBase<TKey, TValue>
-        where TKey : class,ISortedTreeType<TKey>, new()
-        where TValue : class,ISortedTreeType<TValue>, new()
+        where TKey : class,ISortedTreeValue<TKey>, new()
+        where TValue : class,ISortedTreeValue<TValue>, new()
     {
 
-        SortedTreeMethodsBase<TKey> m_keyMethods;
-        SortedTreeMethodsBase<TValue> m_valueMethods;
+        SortedTreeTypeMethodsBase<TKey> m_keyMethods;
+        SortedTreeTypeMethodsBase<TValue> m_valueMethods;
 
         public FixedSizeCombinedEncoding()
         {
-            m_keyMethods = new TKey().CreateBasicMethods();
-            m_valueMethods = new TValue().CreateBasicMethods();
+            m_keyMethods = new TKey().CreateValueMethods();
+            m_valueMethods = new TValue().CreateValueMethods();
         }
 
         public override bool UsesPreviousKey

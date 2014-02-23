@@ -67,7 +67,8 @@ namespace GSF.SortedTreeStore.Tree
             Register(new CreateDualFixedSizeNode());
         }
 
-        public static void Register(ISupportsCustomEncoding type)
+        public static void Register<T>(ISortedTreeValue<T> type) 
+            where T : class, new()
         {
             lock (SyncRoot)
             {

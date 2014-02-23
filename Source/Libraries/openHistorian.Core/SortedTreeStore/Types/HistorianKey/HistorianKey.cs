@@ -137,7 +137,7 @@ namespace openHistorian.Collections
             }
         }
 
-        public override SortedTreeKeyMethodsBase<HistorianKey> CreateKeyMethods()
+        public override SortedTreeTypeMethodsBase<HistorianKey> CreateKeyMethods()
         {
             return new KeyMethodsHistorianKey();
         }

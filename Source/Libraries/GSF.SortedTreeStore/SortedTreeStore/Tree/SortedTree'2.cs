@@ -53,8 +53,8 @@ namespace GSF.SortedTreeStore.Tree
         private Guid m_treeNodeType;
         private int m_blockSize;
         private bool m_isInitialized;
-        protected SortedTreeKeyMethodsBase<TKey> KeyMethods;
-        protected SortedTreeMethodsBase<TValue> ValueMethods;
+        protected SortedTreeTypeMethodsBase<TKey> KeyMethods;
+        protected SortedTreeTypeMethodsBase<TValue> ValueMethods;
 
 
         #endregion
