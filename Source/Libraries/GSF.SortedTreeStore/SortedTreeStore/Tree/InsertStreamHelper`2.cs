@@ -104,13 +104,13 @@ namespace GSF.SortedTreeStore.Tree
             if (IsKVP1)
             {
                 IsValid = Stream.Read(Key2, Value2);
-                IsStillSequential = KeyMethods.IsLessThan(Key1, Key2);
+                IsStillSequential = Key1.IsLessThan( Key2);
                 IsKVP1 = false;
             }
             else
             {
                 IsValid = Stream.Read(Key1, Value1);
-                IsStillSequential = KeyMethods.IsLessThan(Key2, Key1);
+                IsStillSequential = Key2.IsLessThan( Key1);
                 IsKVP1 = true;
             }
         }

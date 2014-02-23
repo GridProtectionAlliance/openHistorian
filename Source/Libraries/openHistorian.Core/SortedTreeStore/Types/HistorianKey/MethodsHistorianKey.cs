@@ -38,12 +38,12 @@ namespace openHistorian.Collections
             return 24;
         }
 
-        public override void Clear(HistorianKey key)
-        {
-            key.Timestamp = 0;
-            key.PointID = 0;
-            key.EntryNumber = 0;
-        }
+        //public override void Clear(HistorianKey key)
+        //{
+        //    key.Timestamp = 0;
+        //    key.PointID = 0;
+        //    key.EntryNumber = 0;
+        //}
 
         public override void SetMin(HistorianKey key)
         {
@@ -77,28 +77,28 @@ namespace openHistorian.Collections
             return 0;
         }
 
-        public override bool IsLessThan(HistorianKey left, HistorianKey right)
-        {
-            if (left.Timestamp != right.Timestamp)
-                return left.Timestamp < right.Timestamp;
+        //public override bool IsLessThan(HistorianKey left, HistorianKey right)
+        //{
+        //    if (left.Timestamp != right.Timestamp)
+        //        return left.Timestamp < right.Timestamp;
 
-            //Implide left.Timestamp == right.Timestamp
-            if (left.PointID != right.PointID)
-                return left.PointID < right.PointID;
+        //    //Implide left.Timestamp == right.Timestamp
+        //    if (left.PointID != right.PointID)
+        //        return left.PointID < right.PointID;
 
-            //Implide left.EntryNumber == right.EntryNumber
-            return left.EntryNumber < right.EntryNumber;
+        //    //Implide left.EntryNumber == right.EntryNumber
+        //    return left.EntryNumber < right.EntryNumber;
 
-            //if (left.Timestamp == right.Timestamp)
-            //{
-            //    if (left.PointID == right.PointID)
-            //    {
-            //        return left.EntryNumber < right.EntryNumber;
-            //    }
-            //    return left.PointID < right.PointID;
-            //}
-            //return left.Timestamp < right.Timestamp;
-        }
+        //    //if (left.Timestamp == right.Timestamp)
+        //    //{
+        //    //    if (left.PointID == right.PointID)
+        //    //    {
+        //    //        return left.EntryNumber < right.EntryNumber;
+        //    //    }
+        //    //    return left.PointID < right.PointID;
+        //    //}
+        //    //return left.Timestamp < right.Timestamp;
+        //}
 
         //public override bool IsGreaterThan(HistorianKey left, HistorianKey right)
         //{
@@ -138,18 +138,18 @@ namespace openHistorian.Collections
         //    //    || (left.Timestamp == right.Timestamp && left.PointID == right.PointID && left.EntryNumber < right.EntryNumber);
         //}
 
-        public override bool IsLessThanOrEqualTo(HistorianKey left, HistorianKey right)
-        {
-            //if (left.Timestamp != right.Timestamp)
-            //    return left.Timestamp < right.Timestamp;
-            //if (left.PointID != right.PointID)
-            //    return left.PointID < right.PointID;
-            //return left.EntryNumber <= right.EntryNumber;
+        //public override bool IsLessThanOrEqualTo(HistorianKey left, HistorianKey right)
+        //{
+        //    //if (left.Timestamp != right.Timestamp)
+        //    //    return left.Timestamp < right.Timestamp;
+        //    //if (left.PointID != right.PointID)
+        //    //    return left.PointID < right.PointID;
+        //    //return left.EntryNumber <= right.EntryNumber;
 
-            return left.Timestamp < right.Timestamp
-                || (left.Timestamp == right.Timestamp && left.PointID < right.PointID)
-                || (left.Timestamp == right.Timestamp && left.PointID == right.PointID && left.EntryNumber < right.EntryNumber);
-        }
+        //    return left.Timestamp < right.Timestamp
+        //        || (left.Timestamp == right.Timestamp && left.PointID < right.PointID)
+        //        || (left.Timestamp == right.Timestamp && left.PointID == right.PointID && left.EntryNumber < right.EntryNumber);
+        //}
 
         //public override bool IsLessThanOrEqualTo(HistorianKey left, HistorianKey right)
         //{

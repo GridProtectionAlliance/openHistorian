@@ -35,7 +35,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns>True if added, False on a duplicate key error</returns>
         public virtual bool TryInsert(TKey key, TValue value)
         {
-            if (KeyMethods.IsBetween(LowerKey, key, UpperKey))
+            if (key.IsBetween(LowerKey, UpperKey))
             {
                 int index = ~GetIndexOf(key);
                 if (index < 0)
@@ -68,7 +68,7 @@ namespace GSF.SortedTreeStore.Tree
             if (RecordCount > 0)
             {
                 Read(RecordCount - 1, key, value);
-                if (KeyMethods.IsGreaterThanOrEqualTo(key, stream.Key))
+                if (key.IsGreaterThanOrEqualTo(stream.Key))
                     return;
             }
 

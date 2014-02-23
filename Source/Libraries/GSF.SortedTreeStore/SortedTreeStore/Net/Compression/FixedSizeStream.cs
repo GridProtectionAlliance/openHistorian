@@ -66,8 +66,8 @@ namespace GSF.SortedTreeStore.Net.Compression
         public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
             stream.Write(true);
-            KeyMethods.Write(stream, currentKey);
-            ValueMethods.Write(stream, currentValue);
+            currentKey.Write(stream);
+            currentValue.Write(stream);
         }
 
         public override unsafe int Encode(byte* stream, TKey currentKey, TValue currentValue)
@@ -79,8 +79,8 @@ namespace GSF.SortedTreeStore.Net.Compression
         {
             if (!stream.ReadBoolean())
                 return false;
-            KeyMethods.Read(stream, key);
-            ValueMethods.Read(stream, value);
+            key.Read(stream);
+            value.Read(stream);
             return true;
         }
 

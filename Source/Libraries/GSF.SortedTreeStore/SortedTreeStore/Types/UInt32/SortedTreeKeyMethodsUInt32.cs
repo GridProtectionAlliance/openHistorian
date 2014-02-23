@@ -37,10 +37,10 @@ namespace GSF.SortedTreeStore.Types
             return 4;
         }
 
-        public override void Clear(SortedTreeUInt32 key)
-        {
-            key.Value = 0;
-        }
+        //public override void Clear(SortedTreeUInt32 key)
+        //{
+        //    key.Value = 0;
+        //}
 
         public override void SetMin(SortedTreeUInt32 key)
         {
@@ -80,23 +80,23 @@ namespace GSF.SortedTreeStore.Types
             destination.Value = source.Value;
         }
 
-        public override bool IsBetween(SortedTreeUInt32 lowerBounds, SortedTreeUInt32 key, SortedTreeUInt32 upperBounds)
-        {
-            uint v1 = lowerBounds.Value;
-            uint v2 = key.Value;
-            uint v3 = upperBounds.Value;
-            return v1 <= v2 & v2 < v3;
-        }
+        //public override bool IsBetween(SortedTreeUInt32 lowerBounds, SortedTreeUInt32 key, SortedTreeUInt32 upperBounds)
+        //{
+        //    uint v1 = lowerBounds.Value;
+        //    uint v2 = key.Value;
+        //    uint v3 = upperBounds.Value;
+        //    return v1 <= v2 & v2 < v3;
+        //}
 
-        public override bool IsLessThan(SortedTreeUInt32 left, SortedTreeUInt32 right)
-        {
-            return left.Value < right.Value;
-        }
+        //public override bool IsLessThan(SortedTreeUInt32 left, SortedTreeUInt32 right)
+        //{
+        //    return left.Value < right.Value;
+        //}
 
-        public override bool IsLessThanOrEqualTo(SortedTreeUInt32 left, SortedTreeUInt32 right)
-        {
-            return left.Value <= right.Value;
-        }
+        //public override bool IsLessThanOrEqualTo(SortedTreeUInt32 left, SortedTreeUInt32 right)
+        //{
+        //    return left.Value <= right.Value;
+        //}
 
         //ToDo: Origional
         public override unsafe int BinarySearch(byte* pointer, SortedTreeUInt32 key2, int recordCount, int keyValueSize)

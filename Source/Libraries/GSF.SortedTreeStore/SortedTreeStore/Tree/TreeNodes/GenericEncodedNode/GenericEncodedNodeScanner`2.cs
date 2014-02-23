@@ -58,8 +58,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             m_nextOffset = 0;
             m_prevKey = new TKey();
             m_prevValue = new TValue();
-            KeyMethods.Clear(m_prevKey);
-            ValueMethods.Clear(m_prevValue);
+            m_prevKey.Clear();
+            m_prevValue.Clear();
         }
 
         /// <summary>
@@ -68,8 +68,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         protected override void ResetEncoder()
         {
             m_nextOffset = 0;
-            KeyMethods.Clear(m_prevKey);
-            ValueMethods.Clear(m_prevValue);
+            m_prevKey.Clear();
+            m_prevValue.Clear();
         }
 
         protected override void InternalPeek(TKey key, TValue value)
@@ -111,7 +111,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             byte* stream = Pointer + m_nextOffset;
             int length = m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
 
-            if (KeyMethods.IsLessThan(key, upperBounds))
+            if (key.IsLessThan( upperBounds))
             {
                 KeyMethods.Copy(key, m_prevKey);
                 ValueMethods.Copy(value, m_prevValue);
@@ -129,7 +129,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             byte* stream = Pointer + m_nextOffset;
             int length = m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
 
-            if (KeyMethods.IsLessThan(key, upperBounds))
+            if (key.IsLessThan( upperBounds))
             {
                 KeyMethods.Copy(key, m_prevKey);
                 ValueMethods.Copy(value, m_prevValue);

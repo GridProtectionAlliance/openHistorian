@@ -59,8 +59,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             m_prevValue = new TValue();
             m_nullKey = new TKey();
             m_nullValue = new TValue();
-            KeyMethods.Clear(m_nullKey);
-            ValueMethods.Clear(m_nullValue);
+            m_nullKey.Clear();
+            m_nullValue.Clear();
 
             NodeIndexChanged += OnNodeIndexChanged;
             ClearNodeCache();
@@ -155,8 +155,9 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 }
                 else
                 {
-                    KeyMethods.Clear(stream.PrevKey);
-                    ValueMethods.Clear(stream.PrevValue);
+                    
+                    stream.PrevKey.Clear();
+                    stream.PrevValue.Clear();
                 }
 
             TryAgain:
@@ -190,7 +191,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                     m_nextOffset = m_currentOffset + length;
                     //Inlined stream.Next()
                     stream.IsValid = stream.Stream.Read(stream.Key2, stream.Value2);
-                    stream.IsStillSequential = KeyMethods.IsLessThan(stream.Key1, stream.Key2);
+                    stream.IsStillSequential = stream.Key1.IsLessThan(stream.Key2);
                     stream.IsKVP1 = false;
                     //End Inlined
                     goto TryAgain;
@@ -214,10 +215,10 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                     additionalValidBytes += length;
                     recordsAdded++;
                     m_nextOffset = m_currentOffset + length;
-                   
+
                     //Inlined stream.Next()
                     stream.IsValid = stream.Stream.Read(stream.Key1, stream.Value1);
-                    stream.IsStillSequential = KeyMethods.IsLessThan(stream.Key2, stream.Key1);
+                    stream.IsStillSequential = stream.Key2.IsLessThan(stream.Key1);
                     stream.IsKVP1 = true;
                     //End Inlined
 
@@ -333,7 +334,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 SeekTo(key, buffer);
             if (m_currentIndex == RecordCount) //Beyond the end of the list
                 return ~RecordCount;
-            if (KeyMethods.IsEqual(m_currentKey, key))
+            if (m_currentKey.IsEqual(key))
                 return m_currentIndex;
             return ~m_currentIndex;
         }
@@ -476,21 +477,21 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         private void SeekTo(TKey key, byte* buffer)
         {
             //ToDo: Optimize this seek algorithm
-            if (m_currentIndex == 0 && KeyMethods.IsLessThan(key, m_prevKey))
+            if (m_currentIndex == 0 && key.IsLessThan(m_prevKey))
                 return;
-            if (m_currentIndex >= 0 && KeyMethods.IsLessThan(m_prevKey, key))
+            if (m_currentIndex >= 0 && m_prevKey.IsLessThan(key))
             {
-                if (!KeyMethods.IsLessThan(m_currentKey, key) || m_currentIndex == RecordCount)
+                if (!m_currentKey.IsLessThan(key) || m_currentIndex == RecordCount)
                 {
                     return;
                 }
-                while (Read() && KeyMethods.IsLessThan(m_currentKey, key))
+                while (Read() && m_currentKey.IsLessThan(key))
                     ;
             }
             else
             {
                 ClearNodeCache();
-                while (Read() && KeyMethods.IsLessThan(m_currentKey, key))
+                while (Read() && m_currentKey.IsLessThan(key))
                     ;
             }
         }
@@ -528,10 +529,10 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             m_nextOffset = HeaderSize;
             m_currentOffset = HeaderSize;
             m_currentIndex = -1;
-            KeyMethods.Clear(m_prevKey);
-            ValueMethods.Clear(m_prevValue);
-            KeyMethods.Clear(m_currentKey);
-            ValueMethods.Clear(m_currentValue);
+            m_prevKey.Clear();
+            m_prevValue.Clear();
+            m_currentKey.Clear();
+            m_currentValue.Clear();
         }
 
         private bool Read()

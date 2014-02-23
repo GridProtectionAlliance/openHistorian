@@ -124,7 +124,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             m_firstTable.UpdateCachedValue();
 
             //Check Condition 1
-            if (m_firstTable.CacheIsValid && m_keyMethods.IsLessThan(m_firstTable.CacheKey, m_readWhileUpperBounds))
+            if (m_firstTable.CacheIsValid && m_firstTable.CacheKey.IsLessThan( m_readWhileUpperBounds))
                 return false;
 
             //Since condition 2 and 3 can occur at the same time, verifying the sort of the Archive Stream is a good thing to do.
@@ -243,7 +243,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
         {
             foreach (var table in m_sortedArchiveStreams.Items)
             {
-                if (table.CacheIsValid && m_keyMethods.IsLessThan(table.CacheKey, key))
+                if (table.CacheIsValid && table.CacheKey.IsLessThan( key))
                 {
                     table.SeekToKeyAndUpdateCacheValue(key);
                 }

@@ -24,8 +24,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using GSF.IO;
 using GSF.IO.Unmanaged;
 
@@ -41,7 +39,6 @@ namespace GSF.SortedTreeStore.Tree
     /// </remarks>
     /// <typeparam name="T"></typeparam>
     public class SortedTreeTypeMethods<T>
-        : IComparer<T>
         where T : SortedTreeTypeBase<T>, new()
     {
         protected T TempKey = new T();
@@ -61,16 +58,7 @@ namespace GSF.SortedTreeStore.Tree
             get;
             private set;
         }
-
-        /// <summary>
-        /// Clears the key
-        /// </summary>
-        /// <param name="data"></param>
-        public virtual void Clear(T data)
-        {
-            data.Clear();
-        }
-
+        
         /// <summary>
         /// Gets the size of this class when serialized
         /// </summary>
@@ -151,6 +139,7 @@ namespace GSF.SortedTreeStore.Tree
             SetMax(TempKey);
             Write(stream, TempKey);
         }
+
         /// <summary>
         /// Writes the minimum value to the provided stream
         /// </summary>
@@ -160,13 +149,14 @@ namespace GSF.SortedTreeStore.Tree
             SetMin(TempKey);
             Write(stream, TempKey);
         }
+
         /// <summary>
         /// Writes null to the provided stream (hint: Clear state)
         /// </summary>
         /// <param name="stream"></param>
         public virtual unsafe void WriteNull(byte* stream)
         {
-            Clear(TempKey);
+            TempKey.Clear();
             Write(stream, TempKey);
         }
 
@@ -191,56 +181,7 @@ namespace GSF.SortedTreeStore.Tree
             Write(ptr, source);
             Read(ptr, destination);
         }
-
-        /// <summary>
-        /// Reads the provided key from the stream.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="data"></param>
-        public virtual unsafe void Read(BinaryStreamBase stream, T data)
-        {
-            data.Read(stream);
-        }
-
-        /// <summary>
-        /// Reads the provided key from the BinaryReader.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="data"></param>
-        public virtual unsafe void Read(BinaryReader reader, T data)
-        {
-            byte* ptr = stackalloc byte[Size];
-            for (int x = 0; x < Size; x++)
-            {
-                ptr[x] = reader.ReadByte();
-            }
-            Read(ptr, data);
-        }
-
-        /// <summary>
-        /// Writes the provided data to the BinaryWriter
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="data"></param>
-        public virtual unsafe void Write(BinaryWriter writer, T data)
-        {
-            byte* ptr = stackalloc byte[Size];
-            Write(ptr, data);
-            for (int x = 0; x < Size; x++)
-            {
-                writer.Write(ptr[x]);
-            }
-        }
-        /// <summary>
-        /// Writes the provided data to the Stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="data"></param>
-        public virtual unsafe void Write(BinaryStreamBase stream, T data)
-        {
-            data.Write(stream);
-        }
-
+        
         /// <summary>
         /// Does a binary search on the data to find the best location for the <see cref="key"/>
         /// </summary>
@@ -255,7 +196,7 @@ namespace GSF.SortedTreeStore.Tree
             if (LastFoundIndex == recordCount - 1)
             {
                 Read(pointer + keyValueSize * LastFoundIndex, compareKey);
-                if (IsGreaterThan(key, compareKey)) //Key > CompareKey
+                if (key.IsGreaterThan(compareKey)) //Key > CompareKey
                 {
                     LastFoundIndex++;
                     return ~recordCount;
@@ -264,7 +205,7 @@ namespace GSF.SortedTreeStore.Tree
             else if (LastFoundIndex < recordCount)
             {
                 Read(pointer + keyValueSize * (LastFoundIndex + 1), compareKey);
-                if (IsEqual(key, compareKey))
+                if (key.IsEqual(compareKey))
                 {
                     LastFoundIndex++;
                     return LastFoundIndex;
@@ -294,9 +235,9 @@ namespace GSF.SortedTreeStore.Tree
                 LastFoundIndex = Math.Min(LastFoundIndex, recordCount - 1);
                 Read(pointer + keyPointerSize * LastFoundIndex, compareKey);
 
-                if (IsEqual(key, compareKey)) //Are Equal
+                if (key.IsEqual(compareKey)) //Are Equal
                     return LastFoundIndex;
-                if (IsGreaterThan(key, compareKey)) //Key > CompareKey
+                if (key.IsGreaterThan(compareKey)) //Key > CompareKey
                 {
                     //Value is greater, check the next key
                     LastFoundIndex++;
@@ -307,9 +248,9 @@ namespace GSF.SortedTreeStore.Tree
 
                     Read(pointer + keyPointerSize * LastFoundIndex, compareKey);
 
-                    if (IsEqual(key, compareKey)) //Are Equal
+                    if (key.IsEqual(compareKey)) //Are Equal
                         return LastFoundIndex;
-                    if (IsGreaterThan(key, compareKey)) //Key > CompareKey
+                    if (key.IsGreaterThan(compareKey)) //Key > CompareKey
                         searchLowerBoundsIndex = LastFoundIndex + 1;
                     else
                         return ~LastFoundIndex;
@@ -324,9 +265,9 @@ namespace GSF.SortedTreeStore.Tree
                     LastFoundIndex--;
                     Read(pointer + keyPointerSize * LastFoundIndex, compareKey);
 
-                    if (IsEqual(key, compareKey)) //Are Equal
+                    if (key.IsEqual(compareKey)) //Are Equal
                         return LastFoundIndex;
-                    if (IsGreaterThan(key, compareKey)) //Key > CompareKey
+                    if (key.IsGreaterThan(compareKey)) //Key > CompareKey
                     {
                         LastFoundIndex++;
                         return ~(LastFoundIndex);
@@ -342,12 +283,12 @@ namespace GSF.SortedTreeStore.Tree
 
                 Read(pointer + keyPointerSize * currentTestIndex, compareKey);
 
-                if (IsEqual(key, compareKey)) //Are Equal
+                if (key.IsEqual(compareKey)) //Are Equal
                 {
                     LastFoundIndex = currentTestIndex;
                     return currentTestIndex;
                 }
-                if (IsGreaterThan(key, compareKey)) //Key > CompareKey
+                if (key.IsGreaterThan(compareKey)) //Key > CompareKey
                     searchLowerBoundsIndex = currentTestIndex + 1;
                 else
                     searchHigherBoundsIndex = currentTestIndex - 1;
@@ -359,62 +300,6 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         #region [ Compare Operations ]
-
-        /// <summary>
-        /// Gets if lowerBounds &lt;= key &lt; upperBounds
-        /// </summary>
-        /// <param name="lowerBounds"></param>
-        /// <param name="key"></param>
-        /// <param name="upperBounds"></param>
-        /// <returns></returns>
-        public virtual bool IsBetween(T lowerBounds, T key, T upperBounds)
-        {
-            return IsLessThanOrEqualTo(lowerBounds, key) && IsLessThan(key, upperBounds);
-        }
-
-        /// <summary>
-        /// Gets if left &lt;= right.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual bool IsLessThanOrEqualTo(T left, T right)
-        {
-            return CompareTo(left, right) <= 0;
-        }
-
-        /// <summary>
-        /// Gets if left &lt; right.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual bool IsLessThan(T left, T right)
-        {
-            return CompareTo(left, right) < 0;
-        }
-
-        /// <summary>
-        /// Gets if left != right.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual bool IsNotEqual(T left, T right)
-        {
-            return CompareTo(left, right) != 0;
-        }
-
-        /// <summary>
-        /// Gets if left &gt; right.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual bool IsGreaterThan(T left, T right)
-        {
-            return CompareTo(left, right) > 0;
-        }
 
         /// <summary>
         /// Gets if left &gt;= right.
@@ -436,39 +321,6 @@ namespace GSF.SortedTreeStore.Tree
         public virtual unsafe bool IsGreaterThan(byte* left, T right)
         {
             return CompareTo(left, right) > 0;
-        }
-
-        /// <summary>
-        /// Gets if left &gt;= right.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual bool IsGreaterThanOrEqualTo(T left, T right)
-        {
-            return CompareTo(left, right) >= 0;
-        }
-
-        /// <summary>
-        /// Gets if left == right.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual bool IsEqual(T left, T right)
-        {
-            return CompareTo(left, right) == 0;
-        }
-
-        /// <summary>
-        /// Gets if left == right.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual unsafe bool IsEqual(T left, byte* right)
-        {
-            return CompareTo(left, right) == 0;
         }
 
         /// <summary>
@@ -508,24 +360,7 @@ namespace GSF.SortedTreeStore.Tree
             return CompareTo(TempKey, right);
         }
 
-        /// <summary>
-        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
-        /// </summary>
-        /// <returns>
-        /// A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>, as shown in the following table.Value Meaning Less than zero<paramref name="x"/> is less than <paramref name="y"/>.Zero<paramref name="x"/> equals <paramref name="y"/>.Greater than zero<paramref name="x"/> is greater than <paramref name="y"/>.
-        /// </returns>
-        /// <param name="x">The first object to compare.</param><param name="y">The second object to compare.</param>
-        public int Compare(T x, T y)
-        {
-            return CompareTo(x, y);
-        }
-
-
         #endregion
-
-
-
-
 
     }
 }

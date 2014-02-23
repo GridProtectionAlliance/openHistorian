@@ -87,8 +87,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 throw new Exception("Cannot write to a stream while it is being read.");
 
             m_pointCount++;
-            m_keyMethods.Write(m_queue, key);
-            m_valueMethods.Write(m_queue, value);
+            key.Write(m_queue);
+            value.Write(m_queue);
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
             while (stream.Read(key, value))
             {
                 m_pointCount++;
-                m_keyMethods.Write(m_queue, key);
-                m_valueMethods.Write(m_queue, value);
+                key.Write(m_queue);
+                value.Write(m_queue);
             }
         }
 
@@ -124,8 +124,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
             if (m_remainingPoints > 0)
             {
-                m_keyMethods.Read(m_queue, key);
-                m_valueMethods.Read(m_queue, value);
+                key.Read(m_queue);
+                value.Read(m_queue);
                 m_remainingPoints--;
                 return true;
             }

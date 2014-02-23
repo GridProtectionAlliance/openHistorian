@@ -209,8 +209,8 @@ namespace GSF.SortedTreeStore.Tree
                 //If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
-                    KeyMethods.Clear(key);
-                    ValueMethods.Clear(value);
+                    key.Clear();
+                    value.Clear();
                     EOS = true;
                     return false;
                 }
@@ -253,7 +253,7 @@ namespace GSF.SortedTreeStore.Tree
                 //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
-                    if (KeyMethods.IsLessThan(UpperKey, upperBounds))
+                    if (UpperKey.IsLessThan(upperBounds))
                     {
                         InternalRead(key, value);
                         return true;
@@ -272,8 +272,8 @@ namespace GSF.SortedTreeStore.Tree
                 //If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
-                    KeyMethods.Clear(key);
-                    ValueMethods.Clear(value);
+                    key.Clear();
+                    value.Clear();
                     EOS = true;
                     return false;
                 }
@@ -285,7 +285,7 @@ namespace GSF.SortedTreeStore.Tree
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            if (KeyMethods.IsLessThan(UpperKey, upperBounds))
+            if (UpperKey.IsLessThan(upperBounds))
             {
                 InternalRead(key, value);
                 return true;
@@ -315,7 +315,7 @@ namespace GSF.SortedTreeStore.Tree
         {
             if (StreamPointer.Version == PointerVersion && IndexOfNextKeyValue < RecordCount)
             {
-                if (KeyMethods.IsLessThan(UpperKey, upperBounds))
+                if (UpperKey.IsLessThan(upperBounds))
                 {
                     return InternalRead(key, value, filter);
                 }
@@ -332,8 +332,8 @@ namespace GSF.SortedTreeStore.Tree
                 //If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
-                    KeyMethods.Clear(key);
-                    ValueMethods.Clear(value);
+                    key.Clear();
+                    value.Clear();
                     EOS = true;
                     return false;
                 }
@@ -345,7 +345,7 @@ namespace GSF.SortedTreeStore.Tree
                 RefreshPointer();
             }
             //Reads the next key in the sequence.
-            if (KeyMethods.IsLessThan(UpperKey, upperBounds))
+            if (UpperKey.IsLessThan(upperBounds))
             {
                 return InternalRead(key, value, filter);
             }
@@ -387,8 +387,8 @@ namespace GSF.SortedTreeStore.Tree
                 //If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
-                    KeyMethods.Clear(key);
-                    ValueMethods.Clear(value);
+                    key.Clear();
+                    value.Clear();
                     EOS = true;
                     return false;
                 }

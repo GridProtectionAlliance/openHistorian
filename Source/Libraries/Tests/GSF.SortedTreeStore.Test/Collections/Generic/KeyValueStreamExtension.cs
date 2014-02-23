@@ -61,7 +61,7 @@ namespace GSF.SortedTreeStore.Tree
                 if (!m_baseStream.IsValid)
                     throw new Exception("Should be valid");
                 if (IsValid)
-                    if (m_keyMethods.IsGreaterThanOrEqualTo(CurrentKey, m_baseStream.CurrentKey))// CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))
+                    if (CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))// CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))
                         throw new Exception("Stream is not sequential");
 
                 IsValid = true;

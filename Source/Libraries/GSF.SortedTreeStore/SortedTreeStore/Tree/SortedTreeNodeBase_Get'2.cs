@@ -160,7 +160,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns>True if the value exists, False if not found.</returns>
         public virtual bool TryGet(TKey key, TValue value)
         {
-            if (KeyMethods.IsBetween(LowerKey, key, UpperKey))
+            if (key.IsBetween(LowerKey, UpperKey))
             {
                 int index = GetIndexOf(key);
                 if (index < 0)

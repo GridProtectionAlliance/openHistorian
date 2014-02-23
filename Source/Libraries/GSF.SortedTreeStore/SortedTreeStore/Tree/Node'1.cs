@@ -337,8 +337,8 @@ namespace GSF.SortedTreeStore.Tree
             m_validBytes = (ushort)HeaderSize;
             m_leftSiblingNodeIndex = uint.MaxValue;
             m_rightSiblingNodeIndex = uint.MaxValue;
-            KeyMethods.Clear(UpperKey);
-            KeyMethods.Clear(LowerKey);
+            UpperKey.Clear();
+            LowerKey.Clear();
         }
 
         /// <summary>
@@ -420,8 +420,8 @@ namespace GSF.SortedTreeStore.Tree
         public bool IsKeyInsideBounds(TKey key)
         {
             return (NodeIndex != uint.MaxValue) &&
-                   (LeftSiblingNodeIndex == uint.MaxValue || KeyMethods.IsLessThanOrEqualTo(LowerKey, key)) &&
-                   (RightSiblingNodeIndex == uint.MaxValue || KeyMethods.IsLessThan(key, UpperKey));
+                   (LeftSiblingNodeIndex == uint.MaxValue || LowerKey.IsLessThanOrEqualTo(key)) &&
+                   (RightSiblingNodeIndex == uint.MaxValue || key.IsLessThan(UpperKey));
         }
 
         /// <summary>

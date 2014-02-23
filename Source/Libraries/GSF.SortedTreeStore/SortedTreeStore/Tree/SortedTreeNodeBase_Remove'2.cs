@@ -37,8 +37,8 @@ namespace GSF.SortedTreeStore.Tree
         public bool TryRemove(TKey key)
         {
             if (ValidBytes > m_minRecordNodeBytes &&
-                KeyMethods.IsLessThanOrEqualTo(LowerKey, key) &&
-                KeyMethods.IsLessThan(key, UpperKey))
+                LowerKey.IsLessThanOrEqualTo(key) &&
+                key.IsLessThan(UpperKey))
             {
                 int index = GetIndexOf(key);
                 if (index < 0)

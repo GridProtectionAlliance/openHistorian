@@ -23,7 +23,10 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using GSF.IO;
+using GSF.IO.Unmanaged;
 
 namespace GSF.SortedTreeStore.Tree
 {
@@ -32,66 +35,9 @@ namespace GSF.SortedTreeStore.Tree
     /// </summary>
     /// <typeparam name="T">A class that has a default constructor</typeparam>
     public abstract class SortedTreeTypeBase<T>
-        : IComparable<T>, IEquatable<T>
+        : IComparable<T>, IEquatable<T>, IComparer<T>
         where T : SortedTreeTypeBase<T>, new()
     {
-        /// <summary>
-        /// Creates a class that contains the necessary methods for the SortedTree.
-        /// </summary>
-        /// <returns></returns>
-        public virtual SortedTreeTypeMethods<T> CreateValueMethods()
-        {
-            return new SortedTreeTypeMethods<T>();
-        }
-
-        /// <summary>
-        /// Gets all available encoding methods for a specific type. May return null if none exists.
-        /// </summary>
-        /// <returns>null or an IEnumerable of all encoding methods.</returns>
-        public virtual IEnumerable GetEncodingMethods()
-        {
-            return null;
-        }
-
-
-        /// <summary>
-        /// Compares the current instance to <see cref="other"/>.
-        /// </summary>
-        /// <param name="other">the key to compare to</param>
-        /// <returns></returns>
-        public abstract int CompareTo(T other);
-
-        /// <summary>
-        /// Is the current instance equal to <see cref="other"/>
-        /// </summary>
-        /// <param name="other">the key to compare to</param>
-        /// <returns></returns>
-        public bool IsEqualTo(T other)
-        {
-            return CompareTo(other) == 0;
-        }
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <returns>
-        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-        /// </returns>
-        /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(T other)
-        {
-            return IsEqualTo(other);
-        }
-
-        /// <summary>
-        /// Sets the provided key to it's minimum value
-        /// </summary>
-        public abstract void SetMin();
-
-        /// <summary>
-        /// Sets the privided key to it's maximum value
-        /// </summary>
-        public abstract void SetMax();
 
         /// <summary>
         /// The Guid uniquely defining this type. 
@@ -104,6 +50,23 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <returns></returns>
         public abstract int GetSize { get; }
+
+        /// <summary>
+        /// Compares the current instance to <see cref="other"/>.
+        /// </summary>
+        /// <param name="other">the key to compare to</param>
+        /// <returns></returns>
+        public abstract int CompareTo(T other);
+        
+        /// <summary>
+        /// Sets the provided key to it's minimum value
+        /// </summary>
+        public abstract void SetMin();
+
+        /// <summary>
+        /// Sets the privided key to it's maximum value
+        /// </summary>
+        public abstract void SetMax();
 
         /// <summary>
         /// Clears the key
@@ -122,6 +85,170 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         public abstract void Write(BinaryStreamBase stream);
 
+        /// <summary>
+        /// Reads the key from the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        public virtual unsafe void Read(byte* stream)
+        {
+            var reader = new BinaryStreamPointerWrapper(stream, GetSize);
+            Read(reader);
+        }
+
+        /// <summary>
+        /// Writes the key to the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        public virtual unsafe void Write(byte* stream)
+        {
+            var writer = new BinaryStreamPointerWrapper(stream, GetSize);
+            Write(writer);
+        }
+
+        /// <summary>
+        /// Reads the provided key from the BinaryReader.
+        /// </summary>
+        /// <param name="reader"></param>
+        public virtual unsafe void Read(BinaryReader reader)
+        {
+            byte* ptr = stackalloc byte[GetSize];
+            for (int x = 0; x < GetSize; x++)
+            {
+                ptr[x] = reader.ReadByte();
+            }
+            Read(ptr);
+        }
+
+        /// <summary>
+        /// Writes the provided data to the BinaryWriter
+        /// </summary>
+        /// <param name="writer"></param>
+        public virtual unsafe void Write(BinaryWriter writer)
+        {
+            byte* ptr = stackalloc byte[GetSize];
+            Write(ptr);
+            for (int x = 0; x < GetSize; x++)
+            {
+                writer.Write(ptr[x]);
+            }
+        }
+
+        /// <summary>
+        /// Creates a class that contains the necessary methods for the SortedTree.
+        /// </summary>
+        /// <returns></returns>
+        public virtual SortedTreeTypeMethods<T> CreateValueMethods()
+        {
+            return new SortedTreeTypeMethods<T>();
+        }
+
+        /// <summary>
+        /// Gets all available encoding methods for a specific type. May return null if none exists.
+        /// </summary>
+        /// <returns>null or an IEnumerable of all encoding methods.</returns>
+        public virtual IEnumerable GetEncodingMethods()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Is the current instance equal to <see cref="other"/>
+        /// </summary>
+        /// <param name="other">the key to compare to</param>
+        /// <returns></returns>
+        public virtual bool IsEqualTo(T other)
+        {
+            return CompareTo(other) == 0;
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public virtual bool Equals(T other)
+        {
+            return IsEqualTo(other);
+        }
+
+        public virtual int Compare(T x, T y)
+        {
+            return x.CompareTo(y);
+        }
+
+        /// <summary>
+        /// Gets if lowerBounds &lt;= key &lt; upperBounds
+        /// </summary>
+        /// <param name="lowerBounds"></param>
+        /// <param name="upperBounds"></param>
+        /// <returns></returns>
+        public virtual bool IsBetween(T lowerBounds, T upperBounds)
+        {
+            //return !IsGreaterThan(lowerBounds) && IsLessThan(upperBounds);
+            return lowerBounds.IsLessThanOrEqualTo((T)this) && IsLessThan(upperBounds);
+        }
+
+        /// <summary>
+        /// Gets if left &lt;= right.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public virtual bool IsLessThanOrEqualTo(T right)
+        {
+            return CompareTo(right) <= 0;
+        }
+
+        /// <summary>
+        /// Gets if left &lt; right.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public virtual bool IsLessThan(T right)
+        {
+            return CompareTo(right) < 0;
+        }
+
+        /// <summary>
+        /// Gets if left != right.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public virtual bool IsNotEqual(T right)
+        {
+            return CompareTo(right) != 0;
+        }
+
+        /// <summary>
+        /// Gets if left &gt; right.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public virtual bool IsGreaterThan(T right)
+        {
+            return CompareTo(right) > 0;
+        }
+
+        /// <summary>
+        /// Gets if left &gt;= right.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public virtual bool IsGreaterThanOrEqualTo(T right)
+        {
+            return CompareTo(right) >= 0;
+        }
+
+        /// <summary>
+        /// Gets if left == right.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public virtual bool IsEqual(T right)
+        {
+            return CompareTo(right) == 0;
+        }
 
     }
 }

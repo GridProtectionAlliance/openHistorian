@@ -87,12 +87,12 @@ namespace GSF.SortedTreeStore.Encoding
 
         public override unsafe void Compress(BinaryStreamBase stream, T prevValue, T value)
         {
-            m_methods.Write(stream,value);
+            value.Write(stream);
         }
 
         public override unsafe void Decompress(BinaryStreamBase stream, T prevValue, T value)
         {
-            m_methods.Read(stream, value);
+            value.Read(stream);
         }
 
         public override SingleValueEncodingBase<T> Clone()

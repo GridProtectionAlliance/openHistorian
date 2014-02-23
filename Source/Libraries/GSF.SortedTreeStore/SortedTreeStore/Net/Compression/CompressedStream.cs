@@ -105,8 +105,8 @@ namespace GSF.SortedTreeStore.Net.Compression
 
         public override void ResetEncoder()
         {
-            KeyMethods.Clear(prevKey);
-            ValueMethods.Clear(prevValue);
+            prevKey.Clear();
+            prevValue.Clear();
         }
     }
 }

@@ -232,7 +232,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             m_firstTable.UpdateCachedValue();
 
             //Check Condition 1
-            if (m_firstTable.CacheIsValid && m_keyMethods.IsLessThan(m_firstTable.CacheKey, m_readWhileUpperBounds))
+            if (m_firstTable.CacheIsValid && m_firstTable.CacheKey.IsLessThan( m_readWhileUpperBounds))
                 return false;
 
             //Since condition 2 and 3 can occur at the same time, verifying the sort of the Archive Stream is a good thing to do.
@@ -241,9 +241,8 @@ namespace GSF.SortedTreeStore.Engine.Reader
             if (EOS)
                 return false;
 
-
             //Check if Condition 3's exception occured.
-            if (m_keyMethods.IsEqual(m_firstTable.CacheKey, m_keySeekFilter.EndOfFrame))
+            if (m_firstTable.CacheKey.IsEqual(m_keySeekFilter.EndOfFrame))
             {
                 //This is the exception clause. I will advance the frame, but will still need to return the current point.
                 m_firstTable.Scanner.Read(key, value);
@@ -254,7 +253,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             }
 
             //Check if condition 3 occured
-            if (m_keyMethods.IsGreaterThan(m_firstTable.CacheKey, m_keySeekFilter.EndOfFrame))
+            if (m_firstTable.CacheKey.IsGreaterThan( m_keySeekFilter.EndOfFrame))
             {
                 AdvanceSeekableFilter(true, m_firstTable.CacheKey);
                 SetReadWhileUpperBoundsValue();
@@ -331,14 +330,14 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 if (isValid)
                 {
                     //If the current point is within this window
-                    if (m_keyMethods.IsGreaterThanOrEqualTo(key, m_keySeekFilter.StartOfFrame) &&
-                        m_keyMethods.IsLessThanOrEqualTo(key, m_keySeekFilter.EndOfFrame))
+                    if (key.IsGreaterThanOrEqualTo(m_keySeekFilter.StartOfFrame) &&
+                        key.IsLessThanOrEqualTo(m_keySeekFilter.EndOfFrame))
                     {
                         return true;
                     }
 
                     //If the current point is after this window, seek to the next window.
-                    if (m_keyMethods.IsGreaterThan(key, m_keySeekFilter.EndOfFrame))
+                    if (key.IsGreaterThan( m_keySeekFilter.EndOfFrame))
                         goto TryAgain;
                 }
 
@@ -410,7 +409,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
         {
             foreach (var table in m_sortedArchiveStreams.Items)
             {
-                if (table.CacheIsValid && m_keyMethods.IsLessThan(table.CacheKey, key))
+                if (table.CacheIsValid && table.CacheKey.IsLessThan( key))
                 {
                     table.SeekToKeyAndUpdateCacheValue(key);
                 }
@@ -500,7 +499,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             //If there is a key seek filter. adjust this bounds if necessary
             if (m_keySeekFilter != null)
             {
-                if (m_keyMethods.IsLessThan(m_keySeekFilter.EndOfFrame, m_readWhileUpperBounds))
+                if (m_keySeekFilter.EndOfFrame.IsLessThan( m_readWhileUpperBounds))
                 {
                     m_keyMethods.Copy(m_keySeekFilter.EndOfFrame, m_readWhileUpperBounds);
                 }

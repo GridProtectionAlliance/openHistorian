@@ -107,14 +107,14 @@ namespace GSF.SortedTreeStore.Encoding
 
         public override void Compress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
         {
-            m_keyMethods.Write(stream, key);
-            m_valueMethods.Write(stream, value);
+            key.Write(stream);
+            value.Write(stream);
         }
 
         public override void Decompress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
         {
-            m_keyMethods.Read(stream, key);
-            m_valueMethods.Read(stream, value);
+            key.Read(stream);
+            value.Read(stream);
         }
 
         public override DoubleValueEncodingBase<TKey, TValue> Clone()

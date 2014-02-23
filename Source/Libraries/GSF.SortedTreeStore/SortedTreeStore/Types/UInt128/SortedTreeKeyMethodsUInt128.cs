@@ -37,11 +37,11 @@ namespace GSF.SortedTreeStore.Types
             return 16;
         }
 
-        public override void Clear(SortedTreeUInt128 key)
-        {
-            key.Value1 = 0;
-            key.Value2 = 0;
-        }
+        //public override void Clear(SortedTreeUInt128 key)
+        //{
+        //    key.Value1 = 0;
+        //    key.Value2 = 0;
+        //}
 
         public override void SetMin(SortedTreeUInt128 key)
         {
@@ -88,23 +88,23 @@ namespace GSF.SortedTreeStore.Types
             }
         }
 
-        public override bool IsBetween(SortedTreeUInt128 lowerBounds, SortedTreeUInt128 key, SortedTreeUInt128 upperBounds)
-        {
-            ulong key1 = key.Value1;
-            ulong key2 = key.Value2;
-            return (lowerBounds.Value1 < key1 || (lowerBounds.Value1 == key1 && lowerBounds.Value2 <= key2)) &&
-                   (key1 < upperBounds.Value1 || (key1 == upperBounds.Value1 && key2 < upperBounds.Value2));
-        }
+        //public override bool IsBetween(SortedTreeUInt128 lowerBounds, SortedTreeUInt128 key, SortedTreeUInt128 upperBounds)
+        //{
+        //    ulong key1 = key.Value1;
+        //    ulong key2 = key.Value2;
+        //    return (lowerBounds.Value1 < key1 || (lowerBounds.Value1 == key1 && lowerBounds.Value2 <= key2)) &&
+        //           (key1 < upperBounds.Value1 || (key1 == upperBounds.Value1 && key2 < upperBounds.Value2));
+        //}
 
-        public override bool IsLessThan(SortedTreeUInt128 left, SortedTreeUInt128 right)
-        {
-            return left.Value1 < right.Value1 || (left.Value1 == right.Value1 && left.Value2 < right.Value2);
-        }
+        //public override bool IsLessThan(SortedTreeUInt128 left, SortedTreeUInt128 right)
+        //{
+        //    return left.Value1 < right.Value1 || (left.Value1 == right.Value1 && left.Value2 < right.Value2);
+        //}
 
-        public override bool IsLessThanOrEqualTo(SortedTreeUInt128 left, SortedTreeUInt128 right)
-        {
-            return left.Value1 < right.Value1 || (left.Value1 == right.Value1 && left.Value2 <= right.Value2);
-        }
+        //public override bool IsLessThanOrEqualTo(SortedTreeUInt128 left, SortedTreeUInt128 right)
+        //{
+        //    return left.Value1 < right.Value1 || (left.Value1 == right.Value1 && left.Value2 <= right.Value2);
+        //}
 
         ////ToDo: Origional
         public override unsafe int BinarySearch(byte* pointer, SortedTreeUInt128 key, int recordCount, int keyValueSize)

@@ -40,11 +40,11 @@ namespace GSF.SortedTreeStore.Tree
 
             NavigateToNode(oldKey);
 
-            if (KeyMethods.IsLessThan(newKey, LowerKey))
+            if (newKey.IsLessThan( LowerKey))
             {
                 throw new Exception("Should never be here");
             }
-            if (KeyMethods.IsGreaterThan(newKey, UpperKey))
+            if (newKey.IsGreaterThan(UpperKey))
             {
                 throw new Exception("Should never be here");
             }

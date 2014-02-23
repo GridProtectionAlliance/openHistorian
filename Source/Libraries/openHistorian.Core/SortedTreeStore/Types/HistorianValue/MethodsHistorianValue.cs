@@ -44,12 +44,12 @@ namespace openHistorian.Collections
             *(ulong*)(stream + 16) = data.Value3;
         }
 
-        public override void Clear(HistorianValue data)
-        {
-            data.Value1 = 0;
-            data.Value2 = 0;
-            data.Value3 = 0;
-        }
+        //public override void Clear(HistorianValue data)
+        //{
+        //    data.Value1 = 0;
+        //    data.Value2 = 0;
+        //    data.Value3 = 0;
+        //}
 
         public override unsafe void Read(byte* stream, HistorianValue data)
         {
