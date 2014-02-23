@@ -22,10 +22,7 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Engine.Reader;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
 {

@@ -23,7 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Net.Initialization;
 
 namespace GSF.SortedTreeStore.Net.Compression

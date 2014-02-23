@@ -35,7 +35,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
     /// <typeparam name="TValue"></typeparam>
     public abstract class SortedTreeEngineReaderBase<TKey, TValue>
         : IDisposable
-        where TKey : class, ISortedTreeValue<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : class, new()
     {
         ///// <summary>

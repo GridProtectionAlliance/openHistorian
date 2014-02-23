@@ -31,7 +31,7 @@ namespace GSF.SortedTreeStore.Tree
     /// </summary>
     /// <typeparam name="TKey">The key that the SortedTree contains.</typeparam>
     public unsafe class Node<TKey>
-        where TKey : class, ISortedTreeValue<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
     {
         /// <summary>
         /// Occurs when the node index is changed or cleared.

@@ -40,7 +40,7 @@ namespace GSF.SortedTreeStore.Net
     public class SortedTreeServerSocket<TKey, TValue>
         : IDisposable
         where TKey : EngineKeyBase<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private volatile bool m_isRunning = true;
         private TcpListener m_listener;

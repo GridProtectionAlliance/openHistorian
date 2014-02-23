@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
@@ -33,8 +32,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     /// <typeparam name="TValue"></typeparam>
     public abstract unsafe class EncodedNodeBase<TKey, TValue>
         : SortedTreeNodeBase<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         int m_maximumStorageSize;
         int m_nextOffset;

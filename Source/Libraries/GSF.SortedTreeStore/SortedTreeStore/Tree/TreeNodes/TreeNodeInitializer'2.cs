@@ -30,8 +30,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     internal class TreeNodeInitializer<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private readonly CreateTreeNodeBase m_treeNode;
 

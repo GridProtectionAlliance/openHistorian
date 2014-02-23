@@ -21,12 +21,8 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using GSF.SortedTreeStore.Filters;
-using GSF.Threading;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Reader
@@ -35,7 +31,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
     internal class UnionReader<TKey, TValue>
         : TreeStream<TKey, TValue>
         where TKey : EngineKeyBase<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
 
         SortedTreeTypeMethodsBase<TKey> m_keyMethods;

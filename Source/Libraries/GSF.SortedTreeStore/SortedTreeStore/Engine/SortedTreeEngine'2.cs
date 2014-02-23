@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Engine.Writer;
@@ -37,7 +36,7 @@ namespace GSF.SortedTreeStore.Engine
     public class SortedTreeEngine<TKey, TValue>
         : SortedTreeEngineBase<TKey, TValue>
         where TKey : EngineKeyBase<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         #region [ Members ]
 

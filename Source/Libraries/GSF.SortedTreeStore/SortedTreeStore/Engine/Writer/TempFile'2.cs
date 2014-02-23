@@ -29,8 +29,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
 {
 
     public class TempFile<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private SortedTreeTable<TKey, TValue> m_sortedTreeFile;
         private readonly ArchiveList<TKey, TValue> m_archiveList;

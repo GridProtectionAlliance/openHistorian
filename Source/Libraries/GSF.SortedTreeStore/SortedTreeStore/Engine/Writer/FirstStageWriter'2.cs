@@ -33,8 +33,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// A collection of settings for <see cref="FirstStageWriter{TKey,TValue}"/>.
     /// </summary>
     public struct FirstStageWriterSettings<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         /// <summary>
         /// The time interval in milliseconds after which automatic data commits occur.
@@ -63,8 +63,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// Handles how data is initially taken from prestage chunks and serialized to the disk.
     /// </summary>
     public class FirstStageWriter<TKey, TValue> : IDisposable
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         /// <summary>
         /// Event that notifies that a certain sequence number has been committed.

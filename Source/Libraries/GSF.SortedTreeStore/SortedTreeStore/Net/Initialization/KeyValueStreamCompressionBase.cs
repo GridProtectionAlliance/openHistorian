@@ -29,8 +29,8 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Net.Initialization
 {
     public abstract class KeyValueStreamCompressionBase<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         protected SortedTreeTypeMethodsBase<TKey> KeyMethods;
         protected SortedTreeTypeMethodsBase<TValue> ValueMethods;

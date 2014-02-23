@@ -22,11 +22,7 @@
 //
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using GSF.SortedTreeStore.Filters;
-using GSF.Threading;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Reader
@@ -39,7 +35,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
     internal class SortedTreeEngineReaderSequential<TKey, TValue>
         : SortedTreeEngineReaderBase<TKey, TValue>
         where TKey : EngineKeyBase<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private readonly ArchiveList<TKey, TValue> m_list;
         private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;

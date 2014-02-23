@@ -36,8 +36,8 @@ namespace GSF.SortedTreeStore.Tree
     /// <typeparam name="TValue"></typeparam>
     public abstract partial class SortedTreeNodeBase<TKey, TValue>
         : Node<TKey>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         #region [ Members ]
 

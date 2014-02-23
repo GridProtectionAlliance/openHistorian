@@ -38,8 +38,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// </remarks>
     public class PointStreamCache<TKey, TValue>
         : TreeStream<TKey, TValue>, IDisposable
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         //ToDo: Automatically detect size and shrink the queue if need be. 
         //This might be acomplished by keeping the size over the past 10 times

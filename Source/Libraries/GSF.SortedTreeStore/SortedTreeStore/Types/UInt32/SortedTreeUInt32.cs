@@ -21,15 +21,13 @@
 //     
 //******************************************************************************************************
 
-using System;
 using System.Collections;
-using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Types
 {
     public class SortedTreeUInt32
-        : ISortedTreeValue<SortedTreeUInt32>
+        : SortedTreeTypeBase<SortedTreeUInt32>
     {
         public SortedTreeUInt32()
         {
@@ -42,25 +40,16 @@ namespace GSF.SortedTreeStore.Types
 
         public uint Value;
 
-        public SortedTreeTypeMethodsBase<SortedTreeUInt32> CreateKeyMethods()
+        public override SortedTreeTypeMethodsBase<SortedTreeUInt32> CreateValueMethods()
         {
             return new SortedTreeKeyMethodsUInt32();
         }
 
-        public SortedTreeTypeMethodsBase<SortedTreeUInt32> CreateValueMethods()
-        {
-            return new SortedTreeKeyMethodsUInt32();
-        }
-
-        public IEnumerable GetEncodingMethods()
+        public override IEnumerable GetEncodingMethods()
         {
             return null;
         }
-
-        public SortedTreeTypeMethodsBase<SortedTreeUInt32> CreateBasicMethods()
-        {
-            return CreateValueMethods();
-        }
+        
     }
   
 }

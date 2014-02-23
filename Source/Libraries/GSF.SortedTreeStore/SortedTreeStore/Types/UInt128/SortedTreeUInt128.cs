@@ -21,37 +21,27 @@
 //     
 //******************************************************************************************************
 
-using System;
 using System.Collections;
-using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Types
 {
     public class SortedTreeUInt128
-        : ISortedTreeValue<SortedTreeUInt128>
+        : SortedTreeTypeBase<SortedTreeUInt128>
     {
         public ulong Value1;
         public ulong Value2;
-        public SortedTreeTypeMethodsBase<SortedTreeUInt128> CreateKeyMethods()
+        
+        public override SortedTreeTypeMethodsBase<SortedTreeUInt128> CreateValueMethods()
         {
             return new SortedTreeKeyMethodsUInt128();
         }
 
-        public SortedTreeTypeMethodsBase<SortedTreeUInt128> CreateValueMethods()
-        {
-            return new SortedTreeKeyMethodsUInt128();
-        }
-
-        public IEnumerable GetEncodingMethods()
+        public override IEnumerable GetEncodingMethods()
         {
             return null;
         }
-
-        public SortedTreeTypeMethodsBase<SortedTreeUInt128> CreateBasicMethods()
-        {
-            return CreateValueMethods();
-        }
+        
     }
 
 }

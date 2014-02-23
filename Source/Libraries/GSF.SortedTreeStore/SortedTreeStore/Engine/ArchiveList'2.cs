@@ -37,8 +37,8 @@ namespace GSF.SortedTreeStore.Engine
     /// </summary>
     public partial class ArchiveList<TKey, TValue>
         : IDisposable
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private bool m_disposed;
         private readonly object m_syncRoot = new object();

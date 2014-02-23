@@ -7,8 +7,8 @@ namespace GSF.SortedTreeStore.Tree
     public static class KeyValueStreamExtension
     {
         public static TreeStreamSequential<TKey, TValue> TestSequential<TKey, TValue>(this TreeStream<TKey, TValue> stream)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             return new TreeStreamSequential<TKey, TValue>(stream);
         }
@@ -22,8 +22,8 @@ namespace GSF.SortedTreeStore.Tree
     /// <typeparam name="TValue"></typeparam>
     public class TreeStreamSequential<TKey, TValue>
         : TreeStream<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
 
         bool m_isEndOfStream;

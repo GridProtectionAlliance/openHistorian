@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ISortedTreeValue`1.cs - Gbtc
+//  SortedTreeTypeBase`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,19 +29,19 @@ namespace GSF.SortedTreeStore.Tree
     /// The interface that is required to use as a value in <see cref="SortedTree"/> 
     /// </summary>
     /// <typeparam name="T">A class that has a default constructor</typeparam>
-    public interface ISortedTreeValue<T> 
+    public abstract class SortedTreeTypeBase<T> 
         where T : class, new()
     {
         /// <summary>
         /// Creates a class that contains the necessary methods for the SortedTree.
         /// </summary>
         /// <returns></returns>
-        SortedTreeTypeMethodsBase<T> CreateValueMethods();
+        public abstract SortedTreeTypeMethodsBase<T> CreateValueMethods();
 
         /// <summary>
         /// Gets all available encoding methods for a specific type. May return null if none exists.
         /// </summary>
         /// <returns>null or an IEnumerable of all encoding methods.</returns>
-        IEnumerable GetEncodingMethods();
+        public abstract IEnumerable GetEncodingMethods();
     }
 }

@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
@@ -34,7 +33,7 @@ namespace GSF.SortedTreeStore.Engine
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     public abstract class EngineKeyBase<TKey>
-        : IComparable<TKey>, IEquatable<TKey>, ISortedTreeValue<TKey>
+        : SortedTreeTypeBase<TKey>, IComparable<TKey>, IEquatable<TKey>
         where TKey : class,new()
     {
         /// <summary>
@@ -75,10 +74,6 @@ namespace GSF.SortedTreeStore.Engine
         {
             return IsEqualTo(other);
         }
-
-        public abstract SortedTreeTypeMethodsBase<TKey> CreateValueMethods();
-
-        public abstract IEnumerable GetEncodingMethods();
         
     }
 }

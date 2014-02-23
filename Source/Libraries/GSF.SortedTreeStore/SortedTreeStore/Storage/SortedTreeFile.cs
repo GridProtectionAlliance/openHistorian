@@ -175,8 +175,8 @@ namespace GSF.SortedTreeStore.Storage
         /// </remarks>
         /// <returns>null if table does not exist</returns>
         public SortedTreeTable<TKey, TValue> OpenTable<TKey, TValue>()
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             return OpenTable<TKey, TValue>(GetFileName<TKey, TValue>());
         }
@@ -189,8 +189,8 @@ namespace GSF.SortedTreeStore.Storage
         /// <param name="fileName">the filename to open</param>
         /// <returns>null if table does not exist</returns>
         private SortedTreeTable<TKey, TValue> OpenTable<TKey, TValue>(SubFileName fileName)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             if (!m_openedFiles.ContainsKey(fileName))
             {
@@ -210,8 +210,8 @@ namespace GSF.SortedTreeStore.Storage
         /// <param name="storageMethod">The method of compression to utilize in this table.</param>
         /// <returns></returns>
         public SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(Guid storageMethod)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             SubFileName fileName = GetFileName<TKey, TValue>();
             if (!m_openedFiles.ContainsKey(fileName))
@@ -232,8 +232,8 @@ namespace GSF.SortedTreeStore.Storage
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
         private SubFileName GetFileName<TKey, TValue>()
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             Guid keyType = new TKey().CreateValueMethods().GenericTypeGuid;
             Guid valueType = new TValue().CreateValueMethods().GenericTypeGuid;
@@ -241,8 +241,8 @@ namespace GSF.SortedTreeStore.Storage
         }
 
         private void CreateArchiveFile<TKey, TValue>(SubFileName fileName, Guid storageMethod)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             using (TransactionalEdit trans = m_fileStructure.BeginEdit())
             {

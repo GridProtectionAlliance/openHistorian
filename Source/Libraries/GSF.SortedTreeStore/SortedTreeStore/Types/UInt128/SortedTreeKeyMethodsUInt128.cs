@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Types

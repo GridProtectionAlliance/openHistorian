@@ -67,7 +67,7 @@ namespace GSF.SortedTreeStore.Tree
             Register(new CreateDualFixedSizeNode());
         }
 
-        public static void Register<T>(ISortedTreeValue<T> type) 
+        public static void Register<T>(SortedTreeTypeBase<T> type) 
             where T : class, new()
         {
             lock (SyncRoot)
@@ -140,8 +140,8 @@ namespace GSF.SortedTreeStore.Tree
 
 
         static CreateTreeNodeBase GetTreeNode<TKey, TValue>(Guid compressionMethod)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             Type keyType = typeof(TKey);
             Type valueType = typeof(TValue);
@@ -172,8 +172,8 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         static CreateTreeNodeBase GetTreeNode<TKey, TValue>(Guid keyEncodingMethod, Guid valueEncodingMethod)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             Type keyType = typeof(TKey);
             Type valueType = typeof(TValue);
@@ -203,31 +203,31 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         internal static TreeNodeInitializer<TKey, TValue> GetTreeNodeInitializer<TKey, TValue>(Guid compressionMethod)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
 
             return new TreeNodeInitializer<TKey, TValue>(GetTreeNode<TKey, TValue>(compressionMethod));
         }
 
         internal static TreeNodeInitializer<TKey, TValue> GetTreeNodeInitializer<TKey, TValue>(Guid keyEncodingMethod, Guid valueEncodingMethod)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
 
             return new TreeNodeInitializer<TKey, TValue>(GetTreeNode<TKey, TValue>(keyEncodingMethod, valueEncodingMethod));
         }
 
         internal static SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(Guid compressionMethod, byte level)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             return GetTreeNode<TKey, TValue>(compressionMethod).Create<TKey, TValue>(level);
         }
 
         internal static SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(Guid keyEncodingMethod, Guid valueEncodingMethod, byte level)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             return GetTreeNode<TKey, TValue>(keyEncodingMethod, valueEncodingMethod).Create<TKey, TValue>(level);
         }

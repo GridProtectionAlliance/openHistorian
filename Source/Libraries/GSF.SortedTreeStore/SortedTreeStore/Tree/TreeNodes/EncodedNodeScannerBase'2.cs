@@ -33,8 +33,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     /// <typeparam name="TValue"></typeparam>
     public abstract class EncodedNodeScannerBase<TKey, TValue>
         : SortedTreeScannerBase<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         TKey m_tmpKey;
         TValue m_tmpValue;

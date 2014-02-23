@@ -33,7 +33,7 @@ namespace GSF.SortedTreeStore.Tree
     /// Contains information on how to parse the index nodes of the SortedTree
     /// </summary>
     public sealed class SparseIndex<TKey>
-        where TKey : class, ISortedTreeValue<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
     {
         #region [ Members ]
 

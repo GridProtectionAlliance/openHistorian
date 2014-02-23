@@ -26,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace GSF.SortedTreeStore.Engine
 {

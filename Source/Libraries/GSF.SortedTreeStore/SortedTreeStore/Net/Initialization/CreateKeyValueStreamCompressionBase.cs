@@ -73,7 +73,7 @@ namespace GSF.SortedTreeStore.Net.Initialization
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
         public abstract KeyValueStreamCompressionBase<TKey, TValue> Create<TKey, TValue>()
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new();
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new();
     }
 }

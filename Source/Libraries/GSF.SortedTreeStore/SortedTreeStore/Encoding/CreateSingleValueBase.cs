@@ -33,6 +33,6 @@ namespace GSF.SortedTreeStore.Encoding
         public abstract Guid Method { get; }
 
         public abstract SingleValueEncodingBase<T> Create<T>()
-            where T : class,ISortedTreeValue<T>, new();
+            where T : SortedTreeTypeBase<T>, new();
     }
 }

@@ -32,8 +32,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     public class WriteProcessorSettings<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         /// <summary>
         /// The settings for the precommitted stage

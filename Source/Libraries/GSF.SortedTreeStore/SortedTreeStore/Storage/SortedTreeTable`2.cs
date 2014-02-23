@@ -32,8 +32,8 @@ namespace GSF.SortedTreeStore.Storage
     /// </summary>
     public partial class SortedTreeTable<TKey, TValue>
         : IDisposable
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         #region [ Members ]
 

@@ -28,7 +28,6 @@ using System.Net.Sockets;
 using GSF.Net;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Net.Initialization;
 
 namespace GSF.SortedTreeStore.Net
@@ -48,7 +47,7 @@ namespace GSF.SortedTreeStore.Net
     public partial class SortedTreeStoreClient<TKey, TValue> :
         HistorianCollection<TKey, TValue>, IDisposable
         where TKey : EngineKeyBase<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private TcpClient m_client;
         private NetworkBinaryStream m_stream;

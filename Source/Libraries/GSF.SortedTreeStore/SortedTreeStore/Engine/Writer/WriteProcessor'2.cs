@@ -35,7 +35,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     public class WriteProcessor<TKey, TValue>
         : IDisposable
         where TKey : EngineKeyBase<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private readonly ArchiveList<TKey, TValue> m_archiveList;
 

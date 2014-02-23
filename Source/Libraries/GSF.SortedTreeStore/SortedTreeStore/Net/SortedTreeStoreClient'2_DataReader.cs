@@ -25,7 +25,6 @@
 using System;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Filters;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Net
 {

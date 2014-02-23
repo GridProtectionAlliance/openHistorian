@@ -102,6 +102,19 @@ namespace GSF.SortedTreeStore.Tree
         public abstract int CompareTo(TKey left, TKey right);
 
         /// <summary>
+        /// Reads the key from the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
+        public abstract unsafe void Read(byte* stream, TKey data);
+        /// <summary>
+        /// Writes the key to the stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="data"></param>
+        public abstract unsafe void Write(byte* stream, TKey data);
+
+        /// <summary>
         /// Writes the maximum value to the provided stream
         /// </summary>
         /// <param name="stream"></param>
@@ -150,7 +163,7 @@ namespace GSF.SortedTreeStore.Tree
             Write(ptr, source);
             Read(ptr, destination);
         }
-        
+
         /// <summary>
         /// Reads the provided key from the stream.
         /// </summary>
@@ -321,6 +334,8 @@ namespace GSF.SortedTreeStore.Tree
             return ~searchLowerBoundsIndex;
         }
 
+        #region [ Compare Operations ]
+
         /// <summary>
         /// Gets if lowerBounds &lt;= key &lt; upperBounds
         /// </summary>
@@ -398,6 +413,7 @@ namespace GSF.SortedTreeStore.Tree
         {
             return CompareTo(left, right) > 0;
         }
+       
         /// <summary>
         /// Gets if left &gt;= right.
         /// </summary>
@@ -419,6 +435,7 @@ namespace GSF.SortedTreeStore.Tree
         {
             return CompareTo(left, right) == 0;
         }
+
         /// <summary>
         /// Gets if left == right.
         /// </summary>
@@ -480,22 +497,11 @@ namespace GSF.SortedTreeStore.Tree
         }
 
 
-     
-        /// <summary>
-        /// Reads the key from the stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="data"></param>
-        public abstract unsafe void Read(byte* stream, TKey data);
-        /// <summary>
-        /// Writes the key to the stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="data"></param>
-        public abstract unsafe void Write(byte* stream, TKey data);
+        #endregion
 
-       
-      
+
+
+
 
     }
 }

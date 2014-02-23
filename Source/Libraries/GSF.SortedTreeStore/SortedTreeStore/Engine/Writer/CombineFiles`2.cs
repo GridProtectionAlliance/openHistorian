@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.Threading;
@@ -36,8 +35,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// A collection of settings for <see cref="CombineFiles{TKey,TValue}"/>.
     /// </summary>
     public class CombineFilesSettings<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         public long TargetSize;
         public string NameMatch;
@@ -51,7 +50,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// </summary>
     public class CombineFiles<TKey, TValue> : IDisposable
         where TKey : EngineKeyBase<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         /// <summary>
         /// Execute every 10 seconds

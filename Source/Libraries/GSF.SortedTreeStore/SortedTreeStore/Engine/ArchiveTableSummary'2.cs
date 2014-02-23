@@ -32,8 +32,8 @@ namespace GSF.SortedTreeStore.Engine
     /// along with its most recent snapshot.
     /// </summary>
     public class ArchiveTableSummary<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         #region [ Members ]
 

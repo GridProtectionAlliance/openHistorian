@@ -37,7 +37,7 @@ namespace GSF.SortedTreeStore.Encoding
         public abstract Guid ValueMethod { get; }
 
         public abstract DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
-            where TKey : class,ISortedTreeValue<TKey>, new()
-            where TValue : class,ISortedTreeValue<TValue>, new();
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new();
     }
 }

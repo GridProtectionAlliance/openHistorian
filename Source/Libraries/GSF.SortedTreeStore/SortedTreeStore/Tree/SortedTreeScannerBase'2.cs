@@ -35,8 +35,8 @@ namespace GSF.SortedTreeStore.Tree
     /// <typeparam name="TValue"></typeparam>
     public abstract unsafe class SortedTreeScannerBase<TKey, TValue>
         : SeekableTreeStream<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private const int OffsetOfVersion = 0;
         private const int OffsetOfNodeLevel = OffsetOfVersion + sizeof(byte);

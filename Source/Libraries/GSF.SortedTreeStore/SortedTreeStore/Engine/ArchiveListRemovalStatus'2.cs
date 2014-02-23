@@ -32,8 +32,8 @@ namespace GSF.SortedTreeStore.Engine
     /// function to determine when a resource is no longer being used.
     /// </summary>
     public class ArchiveListRemovalStatus<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private bool m_isBeingUsed;
         private readonly SortedTreeTable<TKey, TValue> m_sortedTree;

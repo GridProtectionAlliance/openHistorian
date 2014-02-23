@@ -37,7 +37,7 @@ namespace openHistorian.Collections
     /// The standard value used in the OpenHistorian.
     /// </summary>
     public class HistorianValue
-        : ISortedTreeValue<HistorianValue>
+        : SortedTreeTypeBase<HistorianValue>
     {
         /// <summary>
         /// Value 1 should be where the first 64 bits of the field is stored. For 32 bit values, use this field only.
@@ -137,25 +137,12 @@ namespace openHistorian.Collections
             }
         }
 
-        public SortedTreeTypeMethodsBase<HistorianValue> CreateValueMethods()
+        public override SortedTreeTypeMethodsBase<HistorianValue> CreateValueMethods()
         {
             return new ValueMethodsHistorianValue();
         }
 
-        public SortedTreeTypeMethodsBase<HistorianValue> CreateBasicMethods()
-        {
-            return CreateValueMethods();
-        }
-
-        //void ISortedTreeValue<HistorianValue>.RegisterCustomValueImplementations()
-        //{
-        //    CreateHistorianCompressionDelta.Register();
-        //    CreateHistorianCompressionTs.Register();
-        //    CreateHistorianCompressedStream.Register();
-        //    CreateHistorianPointCollection.Register();
-        //}
-
-        public IEnumerable GetEncodingMethods()
+        public override IEnumerable GetEncodingMethods()
         {
             return null;
 

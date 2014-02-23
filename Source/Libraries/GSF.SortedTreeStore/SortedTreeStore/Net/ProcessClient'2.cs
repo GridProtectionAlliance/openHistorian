@@ -29,7 +29,6 @@ using GSF.Net;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Filters;
-using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Net.Initialization;
 
@@ -38,7 +37,7 @@ namespace GSF.SortedTreeStore.Net
     internal class ProcessClient<TKey, TValue>
         : IDisposable
         where TKey : EngineKeyBase<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         public event SocketErrorEventHandler SocketError;
 

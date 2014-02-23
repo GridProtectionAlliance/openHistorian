@@ -76,8 +76,8 @@ namespace GSF.SortedTreeStore.Net.Initialization
         }
         
         public static KeyValueStreamCompressionBase<TKey, TValue> CreateKeyValueStreamCompression<TKey, TValue>(Guid compressionMethod)
-            where TKey : class, ISortedTreeValue<TKey>, new()
-            where TValue : class, ISortedTreeValue<TValue>, new()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
             Type keyType = typeof(TKey);
             Type valueType = typeof(TValue);

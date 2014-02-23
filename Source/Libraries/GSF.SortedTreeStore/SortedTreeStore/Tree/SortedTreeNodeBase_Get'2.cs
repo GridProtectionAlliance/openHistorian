@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
-using System.Text;
 
 namespace GSF.SortedTreeStore.Tree
 {

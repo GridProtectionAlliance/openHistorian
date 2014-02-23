@@ -21,18 +21,12 @@
 //     
 //******************************************************************************************************
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace GSF.SortedTreeStore.Tree
 {
 
     public class InsertStreamHelper<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         public SortedTreeTypeMethodsBase<TKey> KeyMethods;
 

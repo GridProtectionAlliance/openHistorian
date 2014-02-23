@@ -34,8 +34,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
     /// <typeparam name="TValue"></typeparam>
     public unsafe class FixedSizeNode<TKey, TValue>
         : SortedTreeNodeBase<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         int m_maxRecordsPerNode;
 

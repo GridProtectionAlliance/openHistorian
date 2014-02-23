@@ -35,8 +35,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     /// <typeparam name="TValue"></typeparam>
     public unsafe class GenericEncodedNodeScanner<TKey, TValue>
                 : EncodedNodeScannerBase<TKey, TValue>
-        where TKey : class, ISortedTreeValue<TKey>, new()
-        where TValue : class, ISortedTreeValue<TValue>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         DoubleValueEncodingBase<TKey, TValue> m_encoding;
 

@@ -23,7 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode;
 
 namespace GSF.SortedTreeStore.Tree
