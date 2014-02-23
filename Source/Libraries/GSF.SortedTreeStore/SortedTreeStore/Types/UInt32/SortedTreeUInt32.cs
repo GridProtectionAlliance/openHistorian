@@ -21,7 +21,9 @@
 //     
 //******************************************************************************************************
 
+using System;
 using System.Collections;
+using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Types
@@ -29,6 +31,9 @@ namespace GSF.SortedTreeStore.Types
     public class SortedTreeUInt32
         : SortedTreeTypeBase<SortedTreeUInt32>
     {
+
+        public uint Value;
+
         public SortedTreeUInt32()
         {
 
@@ -38,9 +43,8 @@ namespace GSF.SortedTreeStore.Types
             Value = value;
         }
 
-        public uint Value;
 
-        public override SortedTreeTypeMethodsBase<SortedTreeUInt32> CreateValueMethods()
+        public override SortedTreeTypeMethods<SortedTreeUInt32> CreateValueMethods()
         {
             return new SortedTreeKeyMethodsUInt32();
         }
@@ -49,7 +53,53 @@ namespace GSF.SortedTreeStore.Types
         {
             return null;
         }
-        
+
+        public override int CompareTo(SortedTreeUInt32 other)
+        {
+            return Value.CompareTo(other.Value);
+        }
+
+        public override void SetMin()
+        {
+            Value = uint.MinValue;
+        }
+
+        public override void SetMax()
+        {
+            Value = uint.MaxValue;
+        }
+
+        public override Guid GenericTypeGuid
+        {
+            get
+            {
+                // {03F4BD3A-D9CF-4358-B175-A9D38BE6715A}
+                return new Guid(0x03f4bd3a, 0xd9cf, 0x4358, 0xb1, 0x75, 0xa9, 0xd3, 0x8b, 0xe6, 0x71, 0x5a);
+            }
+        }
+
+        public override int GetSize
+        {
+            get
+            {
+                return 4;
+            }
+        }
+
+        public override void Clear()
+        {
+            Value = 0;
+        }
+
+        public override void Read(BinaryStreamBase stream)
+        {
+            Value = stream.ReadUInt32();
+        }
+
+        public override void Write(BinaryStreamBase stream)
+        {
+            stream.Write(Value);
+        }
     }
-  
+
 }

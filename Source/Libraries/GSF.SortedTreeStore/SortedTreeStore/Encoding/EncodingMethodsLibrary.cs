@@ -71,7 +71,7 @@ namespace GSF.SortedTreeStore.Encoding
         }
 
         public static void Register<T>(SortedTreeTypeBase<T> type)
-            where T : class, new()
+            where T : SortedTreeTypeBase<T>, new()
         {
             lock (SyncRoot)
             {

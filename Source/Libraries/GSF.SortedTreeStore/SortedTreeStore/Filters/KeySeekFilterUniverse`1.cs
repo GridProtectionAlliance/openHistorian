@@ -37,7 +37,7 @@ namespace GSF.SortedTreeStore.Filters
         where TKey : EngineKeyBase<TKey>, new()
     {
         private bool m_isEndReached;
-        private SortedTreeTypeMethodsBase<TKey> m_keyMethods;
+        private SortedTreeTypeMethods<TKey> m_keyMethods;
 
         public KeySeekFilterUniverse()
         {

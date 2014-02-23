@@ -28,7 +28,7 @@ namespace GSF.SortedTreeStore.Tree
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        public SortedTreeTypeMethodsBase<TKey> KeyMethods;
+        public SortedTreeTypeMethods<TKey> KeyMethods;
 
         public bool IsStillSequential;
         public bool IsValid;

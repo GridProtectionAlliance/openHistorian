@@ -41,7 +41,7 @@ namespace GSF.SortedTreeStore.Engine
         private readonly TKey m_lastKey;
         private readonly SortedTreeTable<TKey, TValue> m_sortedTreeTable;
         private readonly SortedTreeTableSnapshotInfo<TKey, TValue> m_activeSnapshotInfo;
-        private readonly SortedTreeTypeMethodsBase<TKey> m_keyMethods;
+        private readonly SortedTreeTypeMethods<TKey> m_keyMethods;
 
         #endregion
 

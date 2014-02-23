@@ -26,10 +26,9 @@ using System;
 using System.Collections;
 using System.Text;
 using GSF;
-using GSF.SortedTreeStore;
+using GSF.IO;
 using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Tree.TreeNodes;
 
 namespace openHistorian.Collections
 {
@@ -52,6 +51,24 @@ namespace openHistorian.Collections
         /// </summary>
         public ulong Value3;
 
+        public override int CompareTo(HistorianValue other)
+        {
+            if (Value1 < other.Value1)
+                return -1;
+            if (Value1 > other.Value1)
+                return 1;
+            if (Value2 < other.Value2)
+                return -1;
+            if (Value2 > other.Value2)
+                return 1;
+            if (Value3 < other.Value3)
+                return -1;
+            if (Value3 > other.Value3)
+                return 1;
+
+            return 0;
+        }
+
         /// <summary>
         /// Is the current instance equal to <see cref="other"/>
         /// </summary>
@@ -62,14 +79,59 @@ namespace openHistorian.Collections
             return Value1 == other.Value1 && Value2 == other.Value2 && Value3 == other.Value3;
         }
 
-        /// <summary>
-        /// Sets the value to the default values.
-        /// </summary>
-        public void Clear()
+        public override void SetMin()
         {
             Value1 = 0;
             Value2 = 0;
             Value3 = 0;
+        }
+
+        public override void SetMax()
+        {
+            Value1 = ulong.MaxValue;
+            Value2 = ulong.MaxValue;
+            Value3 = ulong.MaxValue;
+        }
+
+        public override Guid GenericTypeGuid
+        {
+            get
+            {
+                // {24DDE7DC-67F9-42B6-A11B-E27C3E62D9EF}
+                return new Guid(0x24dde7dc, 0x67f9, 0x42b6, 0xa1, 0x1b, 0xe2, 0x7c, 0x3e, 0x62, 0xd9, 0xef);
+            }
+        }
+
+        public override int GetSize
+        {
+            get
+            {
+                return 24;
+            }
+        }
+
+        /// <summary>
+        /// Sets the value to the default values.
+        /// </summary>
+        public override void Clear()
+        {
+            Value1 = 0;
+            Value2 = 0;
+            Value3 = 0;
+        }
+
+        public override void Read(BinaryStreamBase stream)
+        {
+            Value1 = stream.ReadUInt64();
+            Value2 = stream.ReadUInt64();
+            Value3 = stream.ReadUInt64();
+        }
+
+        public override void Write(BinaryStreamBase stream)
+        {
+            stream.Write(Value1);
+            stream.Write(Value2);
+            stream.Write(Value3);
         }
 
         /// <summary>
@@ -137,7 +199,7 @@ namespace openHistorian.Collections
             }
         }
 
-        public override SortedTreeTypeMethodsBase<HistorianValue> CreateValueMethods()
+        public override SortedTreeTypeMethods<HistorianValue> CreateValueMethods()
         {
             return new ValueMethodsHistorianValue();
         }

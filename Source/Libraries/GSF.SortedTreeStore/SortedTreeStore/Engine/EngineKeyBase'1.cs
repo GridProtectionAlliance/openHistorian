@@ -33,8 +33,8 @@ namespace GSF.SortedTreeStore.Engine
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     public abstract class EngineKeyBase<TKey>
-        : SortedTreeTypeBase<TKey>, IComparable<TKey>, IEquatable<TKey>
-        where TKey : class,new()
+        : SortedTreeTypeBase<TKey>
+        where TKey : SortedTreeTypeBase<TKey>, new()
     {
         /// <summary>
         /// The timestamp stored as native ticks. 
@@ -46,34 +46,7 @@ namespace GSF.SortedTreeStore.Engine
         /// </summary>
         public ulong PointID;
 
-        /// <summary>
-        /// Compares the current instance to <see cref="other"/>.
-        /// </summary>
-        /// <param name="other">the key to compare to</param>
-        /// <returns></returns>
-        public abstract int CompareTo(TKey other);
 
-        /// <summary>
-        /// Is the current instance equal to <see cref="other"/>
-        /// </summary>
-        /// <param name="other">the key to compare to</param>
-        /// <returns></returns>
-        public bool IsEqualTo(TKey other)
-        {
-            return CompareTo(other) == 0;
-        }
 
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <returns>
-        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-        /// </returns>
-        /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(TKey other)
-        {
-            return IsEqualTo(other);
-        }
-        
     }
 }

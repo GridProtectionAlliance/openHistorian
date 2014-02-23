@@ -27,7 +27,7 @@ using GSF.SortedTreeStore.Tree;
 namespace openHistorian.Collections
 {
     internal class ValueMethodsHistorianValue
-        : SortedTreeTypeMethodsBase<HistorianValue>
+        : SortedTreeTypeMethods<HistorianValue>
     {
         // {24DDE7DC-67F9-42B6-A11B-E27C3E62D9EF}
         public static Guid TypeGuid = new Guid(0x24dde7dc, 0x67f9, 0x42b6, 0xa1, 0x1b, 0xe2, 0x7c, 0x3e, 0x62, 0xd9, 0xef);

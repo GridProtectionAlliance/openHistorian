@@ -44,7 +44,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
         private long m_pointCount;
 
         bool m_keyMatchIsUniverse;
-        SortedTreeTypeMethodsBase<TKey> m_keyMethods;
+        SortedTreeTypeMethods<TKey> m_keyMethods;
 
         KeySeekFilterBase<TKey> m_keySeekFilter;
         KeyMatchFilterBase<TKey> m_keyMatchFilter;

@@ -43,7 +43,7 @@ namespace GSF.SortedTreeStore.Tree
         private readonly SortedTreeUInt32 m_value;
         private BinaryStreamBase m_stream;
         private Func<uint> m_getNextNewNodeIndex;
-        private readonly SortedTreeTypeMethodsBase<TKey> m_keyMethods;
+        private readonly SortedTreeTypeMethods<TKey> m_keyMethods;
         private SortedTreeNodeBase<TKey, SortedTreeUInt32>[] m_nodes;
         private readonly TreeNodeInitializer<TKey, SortedTreeUInt32> m_initializer;
 

@@ -28,8 +28,8 @@ namespace GSF.SortedTreeStore.Tree
 
         bool m_isEndOfStream;
         TreeStream<TKey, TValue> m_baseStream;
-        SortedTreeTypeMethodsBase<TKey> m_keyMethods;
-        SortedTreeTypeMethodsBase<TValue> m_valueMethods;
+        SortedTreeTypeMethods<TKey> m_keyMethods;
+        SortedTreeTypeMethods<TValue> m_valueMethods;
 
         public TreeStreamSequential(TreeStream<TKey, TValue> baseStream)
         {

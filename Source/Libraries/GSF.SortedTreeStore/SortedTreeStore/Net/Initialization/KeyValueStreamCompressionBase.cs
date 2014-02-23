@@ -32,8 +32,8 @@ namespace GSF.SortedTreeStore.Net.Initialization
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        protected SortedTreeTypeMethodsBase<TKey> KeyMethods;
-        protected SortedTreeTypeMethodsBase<TValue> ValueMethods;
+        protected SortedTreeTypeMethods<TKey> KeyMethods;
+        protected SortedTreeTypeMethods<TValue> ValueMethods;
         protected KeyValueStreamCompressionBase()
         {
             KeyMethods = new TKey().CreateValueMethods();

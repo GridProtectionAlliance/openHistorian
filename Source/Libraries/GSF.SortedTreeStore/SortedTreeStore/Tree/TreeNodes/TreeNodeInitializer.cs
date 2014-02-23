@@ -67,8 +67,8 @@ namespace GSF.SortedTreeStore.Tree
             Register(new CreateDualFixedSizeNode());
         }
 
-        public static void Register<T>(SortedTreeTypeBase<T> type) 
-            where T : class, new()
+        public static void Register<T>(SortedTreeTypeBase<T> type)
+            where T : SortedTreeTypeBase<T>, new()
         {
             lock (SyncRoot)
             {

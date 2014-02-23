@@ -47,8 +47,8 @@ namespace GSF.SortedTreeStore.Tree
                 node.CreateEmptyNode(1);
 
 
-                SortedTreeTypeMethodsBase<TKey> keyMethods = new TKey().CreateValueMethods();
-                SortedTreeTypeMethodsBase<TValue> valueMethods = new TValue().CreateValueMethods();
+                SortedTreeTypeMethods<TKey> keyMethods = new TKey().CreateValueMethods();
+                SortedTreeTypeMethods<TValue> valueMethods = new TValue().CreateValueMethods();
 
                 TKey key = new TKey();
                 TKey key2 = new TKey();

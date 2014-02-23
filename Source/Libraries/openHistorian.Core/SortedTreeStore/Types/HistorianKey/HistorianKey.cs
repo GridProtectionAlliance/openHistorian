@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections;
+using GSF.IO;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Tree;
@@ -60,7 +61,7 @@ namespace openHistorian.Collections
         /// <summary>
         /// Sets all of the values in this class to their minimum value
         /// </summary>
-        public void SetMin()
+        public override void SetMin()
         {
             Timestamp = 0;
             PointID = 0;
@@ -70,21 +71,52 @@ namespace openHistorian.Collections
         /// <summary>
         /// Sets all of the values in this class to their maximum value
         /// </summary>
-        public void SetMax()
+        public override void SetMax()
         {
             Timestamp = ulong.MaxValue;
             PointID = ulong.MaxValue;
             EntryNumber = ulong.MaxValue;
         }
 
+        public override Guid GenericTypeGuid
+        {
+            get
+            {
+                // {6527D41B-9D04-4BFA-8133-05273D521D46}
+                return new Guid(0x6527d41b, 0x9d04, 0x4bfa, 0x81, 0x33, 0x05, 0x27, 0x3d, 0x52, 0x1d, 0x46);
+            }
+        }
+
+        public override int GetSize
+        {
+            get
+            {
+                return 24;
+            }
+        }
+
         /// <summary>
         /// Sets the key to the default values.
         /// </summary>
-        public void Clear()
+        public override void Clear()
         {
             Timestamp = 0;
             PointID = 0;
             EntryNumber = 0;
+        }
+
+        public override void Read(BinaryStreamBase stream)
+        {
+            Timestamp = stream.ReadUInt64();
+            PointID = stream.ReadUInt64();
+            EntryNumber = stream.ReadUInt64();
+        }
+
+        public override void Write(BinaryStreamBase stream)
+        {
+            stream.Write(Timestamp);
+            stream.Write(PointID);
+            stream.Write(EntryNumber);
         }
 
         /// <summary>
@@ -137,7 +169,7 @@ namespace openHistorian.Collections
             }
         }
 
-        public override SortedTreeTypeMethodsBase<HistorianKey> CreateValueMethods()
+        public override SortedTreeTypeMethods<HistorianKey> CreateValueMethods()
         {
             return new KeyMethodsHistorianKey();
         }

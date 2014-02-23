@@ -34,7 +34,7 @@ namespace GSF.SortedTreeStore.Filters
             : KeySeekFilterBase<TKey>
             where TKey : EngineKeyBase<TKey>, new()
         {
-            private SortedTreeTypeMethodsBase<TKey> m_keyMethods;
+            private SortedTreeTypeMethods<TKey> m_keyMethods;
 
             private ulong m_start;
             private ulong m_current;

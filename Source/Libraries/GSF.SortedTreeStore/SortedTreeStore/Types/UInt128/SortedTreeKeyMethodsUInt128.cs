@@ -27,7 +27,7 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Types
 {
     public class SortedTreeKeyMethodsUInt128
-        : SortedTreeTypeMethodsBase<SortedTreeUInt128>
+        : SortedTreeTypeMethods<SortedTreeUInt128>
     {
         // {655BB169-45E6-4370-9E9B-417ACF445ECB}
         public static Guid TypeGuid = new Guid(0x655bb169, 0x45e6, 0x4370, 0x9e, 0x9b, 0x41, 0x7a, 0xcf, 0x44, 0x5e, 0xcb);

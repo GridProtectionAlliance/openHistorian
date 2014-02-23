@@ -34,7 +34,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
 
-        SortedTreeTypeMethodsBase<TKey> m_keyMethods;
+        SortedTreeTypeMethods<TKey> m_keyMethods;
         private List<BufferedArchiveStream<TKey, TValue>> m_tablesOrigList;
         CustomSortHelper<BufferedArchiveStream<TKey, TValue>> m_sortedArchiveStreams;
         BufferedArchiveStream<TKey, TValue> m_firstTable;

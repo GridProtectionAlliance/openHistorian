@@ -21,7 +21,9 @@
 //     
 //******************************************************************************************************
 
+using System;
 using System.Collections;
+using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Types
@@ -32,7 +34,7 @@ namespace GSF.SortedTreeStore.Types
         public ulong Value1;
         public ulong Value2;
         
-        public override SortedTreeTypeMethodsBase<SortedTreeUInt128> CreateValueMethods()
+        public override SortedTreeTypeMethods<SortedTreeUInt128> CreateValueMethods()
         {
             return new SortedTreeKeyMethodsUInt128();
         }
@@ -41,7 +43,66 @@ namespace GSF.SortedTreeStore.Types
         {
             return null;
         }
-        
+
+        public override int CompareTo(SortedTreeUInt128 other)
+        {
+            if (Value1 < other.Value1)
+                return -1;
+            if (Value1 > other.Value1)
+                return 1;
+            if (Value2 < other.Value2)
+                return -1;
+            if (Value2 > other.Value2)
+                return 1;
+            return 0;
+        }
+
+        public override void SetMin()
+        {
+            Value1 = ulong.MinValue;
+            Value2 = ulong.MinValue;
+        }
+
+        public override void SetMax()
+        {
+            Value1 = ulong.MaxValue;
+            Value2 = ulong.MaxValue;
+        }
+
+        public override Guid GenericTypeGuid
+        {
+            get
+            {
+                // {655BB169-45E6-4370-9E9B-417ACF445ECB}
+                return new Guid(0x655bb169, 0x45e6, 0x4370, 0x9e, 0x9b, 0x41, 0x7a, 0xcf, 0x44, 0x5e, 0xcb);
+            }
+        }
+
+        public override int GetSize
+        {
+            get
+            {
+                return 16;
+            }
+        }
+
+        public override void Clear()
+        {
+            Value1 = 0;
+            Value2 = 0;
+        }
+
+        public override void Read(BinaryStreamBase stream)
+        {
+            Value1 = stream.ReadUInt64();
+            Value2 = stream.ReadUInt64();
+        }
+
+        public override void Write(BinaryStreamBase stream)
+        {
+            stream.Write(Value1);
+            stream.Write(Value2);
+        }
     }
 
 }

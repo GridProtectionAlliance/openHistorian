@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeTypeMethodsBase`1.cs - Gbtc
+//  SortedTreeTypeMethods`1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -39,16 +39,16 @@ namespace GSF.SortedTreeStore.Tree
     /// There are many functions that are generically implemented in this class that can be overridden
     /// for vastly superiour performance.
     /// </remarks>
-    /// <typeparam name="TKey"></typeparam>
-    public abstract class SortedTreeTypeMethodsBase<TKey>
-        : IComparer<TKey>
-        where TKey : class, new()
+    /// <typeparam name="T"></typeparam>
+    public class SortedTreeTypeMethods<T>
+        : IComparer<T>
+        where T : SortedTreeTypeBase<T>, new()
     {
-        protected TKey TempKey = new TKey();
-        protected TKey TempKey2 = new TKey();
+        protected T TempKey = new T();
+        protected T TempKey2 = new T();
         protected int LastFoundIndex;
 
-        protected SortedTreeTypeMethodsBase()
+        public SortedTreeTypeMethods()
         {
             Size = GetSize();
         }
@@ -66,32 +66,48 @@ namespace GSF.SortedTreeStore.Tree
         /// Clears the key
         /// </summary>
         /// <param name="data"></param>
-        public abstract void Clear(TKey data);
+        public virtual void Clear(T data)
+        {
+            data.Clear();
+        }
+
         /// <summary>
         /// Gets the size of this class when serialized
         /// </summary>
         /// <returns></returns>
-        protected abstract int GetSize();
+        protected virtual int GetSize()
+        {
+            return TempKey.GetSize;
+        }
 
         /// <summary>
         /// The Guid uniquely defining this type. 
         /// It is important to uniquely tie 1 type to 1 guid.
         /// </summary>
-        public abstract Guid GenericTypeGuid
+        public virtual Guid GenericTypeGuid
         {
-            get;
+            get
+            {
+                return TempKey.GenericTypeGuid;
+            }
         }
 
         /// <summary>
         /// Sets the provided key to it's minimum value
         /// </summary>
         /// <param name="key"></param>
-        public abstract void SetMin(TKey key);
+        public virtual void SetMin(T key)
+        {
+            key.SetMin();
+        }
         /// <summary>
         /// Sets the privided key to it's maximum value
         /// </summary>
         /// <param name="key"></param>
-        public abstract void SetMax(TKey key);
+        public virtual void SetMax(T key)
+        {
+            key.SetMax();
+        }
 
         /// <summary>
         /// Compares two keys together
@@ -99,20 +115,32 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public abstract int CompareTo(TKey left, TKey right);
+        public virtual int CompareTo(T left, T right)
+        {
+            return left.CompareTo(right);
+        }
 
         /// <summary>
         /// Reads the key from the stream
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="data"></param>
-        public abstract unsafe void Read(byte* stream, TKey data);
+        public virtual unsafe void Read(byte* stream, T data)
+        {
+            var reader = new BinaryStreamPointerWrapper(stream, Size);
+            data.Read(reader);
+        }
+
         /// <summary>
         /// Writes the key to the stream
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="data"></param>
-        public abstract unsafe void Write(byte* stream, TKey data);
+        public virtual unsafe void Write(byte* stream, T data)
+        {
+            var writer = new BinaryStreamPointerWrapper(stream, Size);
+            data.Write(writer);
+        }
 
         /// <summary>
         /// Writes the maximum value to the provided stream
@@ -151,13 +179,13 @@ namespace GSF.SortedTreeStore.Tree
         {
             Memory.Copy(source, destination, Size);
         }
-        
+
         /// <summary>
         /// Copies the source to the destination
         /// </summary>
         /// <param name="source"></param>
         /// <param name="destination"></param>
-        public virtual unsafe void Copy(TKey source, TKey destination)
+        public virtual unsafe void Copy(T source, T destination)
         {
             byte* ptr = stackalloc byte[Size];
             Write(ptr, source);
@@ -169,11 +197,9 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="data"></param>
-        public virtual unsafe void Read(BinaryStreamBase stream, TKey data)
+        public virtual unsafe void Read(BinaryStreamBase stream, T data)
         {
-            byte* ptr = stackalloc byte[Size];
-            stream.ReadAll(ptr, Size);
-            Read(ptr, data);
+            data.Read(stream);
         }
 
         /// <summary>
@@ -181,7 +207,7 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="data"></param>
-        public virtual unsafe void Read(BinaryReader reader, TKey data)
+        public virtual unsafe void Read(BinaryReader reader, T data)
         {
             byte* ptr = stackalloc byte[Size];
             for (int x = 0; x < Size; x++)
@@ -190,13 +216,13 @@ namespace GSF.SortedTreeStore.Tree
             }
             Read(ptr, data);
         }
-       
+
         /// <summary>
         /// Writes the provided data to the BinaryWriter
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="data"></param>
-        public virtual unsafe void Write(BinaryWriter writer, TKey data)
+        public virtual unsafe void Write(BinaryWriter writer, T data)
         {
             byte* ptr = stackalloc byte[Size];
             Write(ptr, data);
@@ -210,13 +236,11 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="data"></param>
-        public virtual unsafe void Write(BinaryStreamBase stream, TKey data)
+        public virtual unsafe void Write(BinaryStreamBase stream, T data)
         {
-            byte* ptr = stackalloc byte[Size];
-            Write(ptr, data);
-            stream.Write(ptr, Size);
+            data.Write(stream);
         }
-        
+
         /// <summary>
         /// Does a binary search on the data to find the best location for the <see cref="key"/>
         /// </summary>
@@ -225,9 +249,9 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="recordCount"></param>
         /// <param name="keyValueSize"></param>
         /// <returns></returns>
-        public virtual unsafe int BinarySearch(byte* pointer, TKey key, int recordCount, int keyValueSize)
+        public virtual unsafe int BinarySearch(byte* pointer, T key, int recordCount, int keyValueSize)
         {
-            TKey compareKey = TempKey;
+            T compareKey = TempKey;
             if (LastFoundIndex == recordCount - 1)
             {
                 Read(pointer + keyValueSize * LastFoundIndex, compareKey);
@@ -257,11 +281,11 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="recordCount"></param>
         /// <param name="keyPointerSize"></param>
         /// <returns></returns>
-        protected virtual unsafe int BinarySearch2(byte* pointer, TKey key, int recordCount, int keyPointerSize)
+        protected virtual unsafe int BinarySearch2(byte* pointer, T key, int recordCount, int keyPointerSize)
         {
             if (recordCount == 0)
                 return ~0;
-            TKey compareKey = TempKey;
+            T compareKey = TempKey;
             int searchLowerBoundsIndex = 0;
             int searchHigherBoundsIndex = recordCount - 1;
 
@@ -343,7 +367,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="key"></param>
         /// <param name="upperBounds"></param>
         /// <returns></returns>
-        public virtual bool IsBetween(TKey lowerBounds, TKey key, TKey upperBounds)
+        public virtual bool IsBetween(T lowerBounds, T key, T upperBounds)
         {
             return IsLessThanOrEqualTo(lowerBounds, key) && IsLessThan(key, upperBounds);
         }
@@ -354,7 +378,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual bool IsLessThanOrEqualTo(TKey left, TKey right)
+        public virtual bool IsLessThanOrEqualTo(T left, T right)
         {
             return CompareTo(left, right) <= 0;
         }
@@ -365,7 +389,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual bool IsLessThan(TKey left, TKey right)
+        public virtual bool IsLessThan(T left, T right)
         {
             return CompareTo(left, right) < 0;
         }
@@ -376,7 +400,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual bool IsNotEqual(TKey left, TKey right)
+        public virtual bool IsNotEqual(T left, T right)
         {
             return CompareTo(left, right) != 0;
         }
@@ -387,7 +411,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual bool IsGreaterThan(TKey left, TKey right)
+        public virtual bool IsGreaterThan(T left, T right)
         {
             return CompareTo(left, right) > 0;
         }
@@ -398,7 +422,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual unsafe bool IsGreaterThan(TKey left, byte* right)
+        public virtual unsafe bool IsGreaterThan(T left, byte* right)
         {
             return CompareTo(left, right) > 0;
         }
@@ -409,29 +433,29 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual unsafe bool IsGreaterThan(byte* left, TKey right)
+        public virtual unsafe bool IsGreaterThan(byte* left, T right)
         {
             return CompareTo(left, right) > 0;
         }
-       
+
         /// <summary>
         /// Gets if left &gt;= right.
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual bool IsGreaterThanOrEqualTo(TKey left, TKey right)
+        public virtual bool IsGreaterThanOrEqualTo(T left, T right)
         {
             return CompareTo(left, right) >= 0;
         }
-     
+
         /// <summary>
         /// Gets if left == right.
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual bool IsEqual(TKey left, TKey right)
+        public virtual bool IsEqual(T left, T right)
         {
             return CompareTo(left, right) == 0;
         }
@@ -442,18 +466,18 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual unsafe bool IsEqual(TKey left, byte* right)
+        public virtual unsafe bool IsEqual(T left, byte* right)
         {
             return CompareTo(left, right) == 0;
         }
-    
+
         /// <summary>
         /// Compares Left to Right
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual unsafe int CompareTo(TKey left, byte* right)
+        public virtual unsafe int CompareTo(T left, byte* right)
         {
             Read(right, TempKey);
             return CompareTo(left, TempKey);
@@ -478,7 +502,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public virtual unsafe int CompareTo(byte* left, TKey right)
+        public virtual unsafe int CompareTo(byte* left, T right)
         {
             Read(left, TempKey);
             return CompareTo(TempKey, right);
@@ -491,7 +515,7 @@ namespace GSF.SortedTreeStore.Tree
         /// A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>, as shown in the following table.Value Meaning Less than zero<paramref name="x"/> is less than <paramref name="y"/>.Zero<paramref name="x"/> equals <paramref name="y"/>.Greater than zero<paramref name="x"/> is greater than <paramref name="y"/>.
         /// </returns>
         /// <param name="x">The first object to compare.</param><param name="y">The second object to compare.</param>
-        public int Compare(TKey x, TKey y)
+        public int Compare(T x, T y)
         {
             return CompareTo(x, y);
         }

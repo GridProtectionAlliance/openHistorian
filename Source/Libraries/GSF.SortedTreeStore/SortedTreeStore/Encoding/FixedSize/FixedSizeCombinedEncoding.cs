@@ -72,8 +72,8 @@ namespace GSF.SortedTreeStore.Encoding
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
 
-        SortedTreeTypeMethodsBase<TKey> m_keyMethods;
-        SortedTreeTypeMethodsBase<TValue> m_valueMethods;
+        SortedTreeTypeMethods<TKey> m_keyMethods;
+        SortedTreeTypeMethods<TValue> m_valueMethods;
 
         public FixedSizeCombinedEncoding()
         {

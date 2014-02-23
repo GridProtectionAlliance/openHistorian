@@ -62,7 +62,7 @@ namespace GSF.SortedTreeStore.Encoding
         : SingleValueEncodingBase<T>
         where T : SortedTreeTypeBase<T>, new()
     {
-        SortedTreeTypeMethodsBase<T> m_methods;
+        SortedTreeTypeMethods<T> m_methods;
 
         public FixedSizeSingleEncoding()
         {

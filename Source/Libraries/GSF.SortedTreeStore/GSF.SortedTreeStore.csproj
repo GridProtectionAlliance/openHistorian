@@ -174,7 +174,7 @@
     <Compile Include="Collections\SortedListConstructor.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTree%272.cs" />
     <Compile Include="SortedTreeStore\Tree\SparseIndex%271.cs" />
-    <Compile Include="SortedTreeStore\Tree\SortedTreeTypeMethodsBase%271.cs" />
+    <Compile Include="SortedTreeStore\Tree\SortedTreeTypeMethods%271.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeNodeBase%272.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeNodeBase_Abstract%272.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeNodeBase_Get%272.cs" />

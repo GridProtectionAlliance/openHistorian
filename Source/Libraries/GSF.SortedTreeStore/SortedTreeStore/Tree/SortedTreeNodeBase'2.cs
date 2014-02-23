@@ -46,7 +46,7 @@ namespace GSF.SortedTreeStore.Tree
         private Node<TKey> m_tempNode2;
         private int m_minRecordNodeBytes;
         private Func<uint> m_getNextNewNodeIndex;
-        protected SortedTreeTypeMethodsBase<TValue> ValueMethods;
+        protected SortedTreeTypeMethods<TValue> ValueMethods;
         protected SparseIndex<TKey> SparseIndex;
         private bool m_initialized;
 
