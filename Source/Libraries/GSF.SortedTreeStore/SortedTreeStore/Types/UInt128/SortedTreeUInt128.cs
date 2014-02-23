@@ -29,7 +29,7 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Types
 {
     public class SortedTreeUInt128
-        : ISortedTreeKey<SortedTreeUInt128>, ISortedTreeValue<SortedTreeUInt128>
+        : ISortedTreeValue<SortedTreeUInt128>
     {
         public ulong Value1;
         public ulong Value2;

@@ -32,7 +32,7 @@ namespace GSF.SortedTreeStore.Collection
 {
     unsafe public class PointCollection<TKey, TValue>
         : PointCollectionBase<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         SortedTreeTypeMethodsBase<TKey> m_keyMethods;
@@ -40,7 +40,7 @@ namespace GSF.SortedTreeStore.Collection
 
         public PointCollection(int capacity)
         {
-            m_keyMethods = new TKey().CreateKeyMethods();
+            m_keyMethods = new TKey().CreateValueMethods();
             m_valueMethods = new TValue().CreateValueMethods();
             Initialize(capacity, m_keyMethods.Size, m_valueMethods.Size);
         }

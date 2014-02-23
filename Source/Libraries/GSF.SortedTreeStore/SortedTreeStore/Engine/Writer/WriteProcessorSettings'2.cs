@@ -32,7 +32,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     public class WriteProcessorSettings<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         /// <summary>

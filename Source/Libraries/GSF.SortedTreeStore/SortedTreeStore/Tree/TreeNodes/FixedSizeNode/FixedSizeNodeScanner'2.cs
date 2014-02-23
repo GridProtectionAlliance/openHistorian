@@ -34,7 +34,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
     /// <typeparam name="TValue"></typeparam>
     public class FixedSizeNodeScanner<TKey, TValue>
         : SortedTreeScannerBase<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         readonly int m_keyValueSize;

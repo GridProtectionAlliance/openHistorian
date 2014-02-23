@@ -21,7 +21,7 @@ namespace GSF.SortedTreeStore.Tree
         private const int Max = 1000000;
 
         public static void TestNode<TKey, TValue>(SortedTreeNodeBase<TKey, TValue> node, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count)
-            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TKey : class, ISortedTreeValue<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
         {
             int Max = count;
@@ -47,7 +47,7 @@ namespace GSF.SortedTreeStore.Tree
                 node.CreateEmptyNode(1);
 
 
-                SortedTreeTypeMethodsBase<TKey> keyMethods = new TKey().CreateKeyMethods();
+                SortedTreeTypeMethodsBase<TKey> keyMethods = new TKey().CreateValueMethods();
                 SortedTreeTypeMethodsBase<TValue> valueMethods = new TValue().CreateValueMethods();
 
                 TKey key = new TKey();
@@ -104,7 +104,7 @@ namespace GSF.SortedTreeStore.Tree
 
 
         internal static void TestSpeed<TKey, TValue>(TreeNodeInitializer<TKey, TValue> nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
-            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TKey : class, ISortedTreeValue<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
         {
             int Max = count;

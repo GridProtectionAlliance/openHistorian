@@ -32,7 +32,7 @@ namespace GSF.SortedTreeStore.Engine
     /// along with its most recent snapshot.
     /// </summary>
     public class ArchiveTableSummary<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
@@ -49,7 +49,7 @@ namespace GSF.SortedTreeStore.Engine
 
         public ArchiveTableSummary(SortedTreeTable<TKey, TValue> file)
         {
-            m_keyMethods = new TKey().CreateKeyMethods();
+            m_keyMethods = new TKey().CreateValueMethods();
             m_sortedTreeTable = file;
             m_activeSnapshotInfo = file.AcquireReadSnapshot();
             m_firstKey = file.FirstKey;

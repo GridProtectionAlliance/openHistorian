@@ -48,7 +48,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
         public UnionReader(List<ArchiveTableSummary<TKey, TValue>> tables)
         {
-            m_keyMethods = new TKey().CreateKeyMethods();
+            m_keyMethods = new TKey().CreateValueMethods();
             m_tablesOrigList = new List<BufferedArchiveStream<TKey, TValue>>();
 
             foreach (var table in tables)

@@ -29,14 +29,14 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Net.Initialization
 {
     public abstract class KeyValueStreamCompressionBase<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         protected SortedTreeTypeMethodsBase<TKey> KeyMethods;
         protected SortedTreeTypeMethodsBase<TValue> ValueMethods;
         protected KeyValueStreamCompressionBase()
         {
-            KeyMethods = new TKey().CreateKeyMethods();
+            KeyMethods = new TKey().CreateValueMethods();
             ValueMethods = new TValue().CreateValueMethods();
         }
 

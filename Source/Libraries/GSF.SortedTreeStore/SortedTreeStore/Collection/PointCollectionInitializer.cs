@@ -63,7 +63,7 @@ namespace GSF.SortedTreeStore.Collection
         }
 
         public static PointCollectionBase<TKey, TValue> Create<TKey, TValue>(int capacity)
-            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TKey : class, ISortedTreeValue<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
         {
             Type keyType = typeof(TKey);

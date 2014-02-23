@@ -33,7 +33,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     /// <typeparam name="TValue"></typeparam>
     public abstract unsafe class EncodedNodeBase<TKey, TValue>
         : SortedTreeNodeBase<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         int m_maximumStorageSize;

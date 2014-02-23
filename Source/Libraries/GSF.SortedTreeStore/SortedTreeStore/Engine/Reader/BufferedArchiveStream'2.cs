@@ -30,7 +30,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
 {
     public class BufferedArchiveStream<TKey, TValue>
         : IDisposable
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         public SortedTreeScannerBase<TKey, TValue> Scanner;

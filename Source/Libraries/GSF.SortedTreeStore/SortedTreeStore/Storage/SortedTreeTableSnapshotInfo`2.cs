@@ -31,7 +31,7 @@ namespace GSF.SortedTreeStore.Storage
     /// transactions to have snapshot isolation of the entire data set.
     /// </summary>
     public class SortedTreeTableSnapshotInfo<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]

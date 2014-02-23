@@ -31,7 +31,7 @@ namespace GSF.SortedTreeStore.Tree
 {
 
     public class InsertStreamHelper<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         public SortedTreeTypeMethodsBase<TKey> KeyMethods;
@@ -90,7 +90,7 @@ namespace GSF.SortedTreeStore.Tree
             Value1 = new TValue();
             Value2 = new TValue();
             IsKVP1 = false;
-            KeyMethods = Key1.CreateKeyMethods();
+            KeyMethods = Key1.CreateValueMethods();
             IsStillSequential = true;
 
             if (IsKVP1)

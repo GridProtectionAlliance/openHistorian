@@ -31,7 +31,7 @@ namespace GSF.SortedTreeStore.Engine
     /// Provides a list of resources that each system transaction could be using.
     /// </summary>
     public class ArchiveListSnapshot<TKey, TValue> : IDisposable
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private bool m_disposed;

@@ -52,7 +52,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     }
 
     public class PrestageArgs<TKey, TValue>
-          where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new()
     {
         public PointStreamCache<TKey, TValue> Stream;
@@ -68,7 +68,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// </remarks>
     public class PrestageWriter<TKey, TValue>
         : IDisposable
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private bool m_disposed;

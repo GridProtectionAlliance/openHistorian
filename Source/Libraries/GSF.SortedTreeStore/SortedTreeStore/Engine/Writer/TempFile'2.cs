@@ -29,7 +29,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
 {
 
     public class TempFile<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private SortedTreeTable<TKey, TValue> m_sortedTreeFile;

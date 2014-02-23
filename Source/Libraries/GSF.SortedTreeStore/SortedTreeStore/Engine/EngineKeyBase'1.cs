@@ -34,7 +34,7 @@ namespace GSF.SortedTreeStore.Engine
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     public abstract class EngineKeyBase<TKey>
-        : IComparable<TKey>, IEquatable<TKey>, ISortedTreeKey<TKey>
+        : IComparable<TKey>, IEquatable<TKey>, ISortedTreeValue<TKey>
         where TKey : class,new()
     {
         /// <summary>
@@ -76,13 +76,9 @@ namespace GSF.SortedTreeStore.Engine
             return IsEqualTo(other);
         }
 
-        public abstract SortedTreeTypeMethodsBase<TKey> CreateKeyMethods();
+        public abstract SortedTreeTypeMethodsBase<TKey> CreateValueMethods();
 
         public abstract IEnumerable GetEncodingMethods();
-
-        public SortedTreeTypeMethodsBase<TKey> CreateValueMethods()
-        {
-            return CreateKeyMethods();
-        }
+        
     }
 }

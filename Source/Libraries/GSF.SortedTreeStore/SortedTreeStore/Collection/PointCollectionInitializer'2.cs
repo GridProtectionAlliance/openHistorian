@@ -26,7 +26,7 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Collection
 {
     internal class PointCollectionInitializer<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private readonly CreatePointCollectionBase m_base;

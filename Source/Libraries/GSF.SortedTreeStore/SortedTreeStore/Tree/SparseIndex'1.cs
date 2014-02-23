@@ -33,7 +33,7 @@ namespace GSF.SortedTreeStore.Tree
     /// Contains information on how to parse the index nodes of the SortedTree
     /// </summary>
     public sealed class SparseIndex<TKey>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
     {
         #region [ Members ]
 
@@ -95,7 +95,7 @@ namespace GSF.SortedTreeStore.Tree
             m_initializer = TreeNodeInitializer.GetTreeNodeInitializer<TKey, SortedTreeUInt32>(encodingMethod);
             m_key = new TKey();
             m_value = new SortedTreeUInt32();
-            m_keyMethods = m_key.CreateKeyMethods();
+            m_keyMethods = m_key.CreateValueMethods();
 
         }
 

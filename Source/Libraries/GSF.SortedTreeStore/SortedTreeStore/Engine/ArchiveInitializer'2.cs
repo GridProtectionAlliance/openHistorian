@@ -35,7 +35,7 @@ namespace GSF.SortedTreeStore.Engine
     /// Creates new archive files based on user settings.
     /// </summary>
     public class ArchiveInitializer<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         private string m_prefix;

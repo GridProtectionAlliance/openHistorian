@@ -61,7 +61,7 @@ namespace GSF.SortedTreeStore.Collection
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
         public abstract PointCollectionBase<TKey, TValue> Create<TKey, TValue>(int capacity)
-            where TKey : class, ISortedTreeKey<TKey>, new()
+            where TKey : class, ISortedTreeValue<TKey>, new()
             where TValue : class, ISortedTreeValue<TValue>, new();
     }
 }

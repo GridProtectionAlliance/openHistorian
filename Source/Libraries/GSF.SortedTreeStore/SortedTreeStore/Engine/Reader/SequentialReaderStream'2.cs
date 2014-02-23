@@ -65,7 +65,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                                    ValueMatchFilterBase<TValue> valueMatchFilter)
         {
             m_pointCount = 0;
-            m_keyMethods = new TKey().CreateKeyMethods();
+            m_keyMethods = new TKey().CreateValueMethods();
             m_keySeekFilter = keySeekFilter;
             m_keyMatchFilter = keyMatchFilter;
             m_valueMatchFilter = valueMatchFilter;

@@ -31,7 +31,7 @@ namespace GSF.SortedTreeStore.Tree
     /// </summary>
     /// <typeparam name="TKey">The key that the SortedTree contains.</typeparam>
     public unsafe class Node<TKey>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
     {
         /// <summary>
         /// Occurs when the node index is changed or cleared.
@@ -75,7 +75,7 @@ namespace GSF.SortedTreeStore.Tree
         protected Node(byte level, byte version)
         {
             Level = level;
-            KeyMethods = new TKey().CreateKeyMethods();
+            KeyMethods = new TKey().CreateValueMethods();
             Version = version;
             KeySize = KeyMethods.Size;
         }

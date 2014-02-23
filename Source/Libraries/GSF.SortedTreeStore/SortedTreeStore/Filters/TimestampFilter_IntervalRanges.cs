@@ -55,7 +55,7 @@ namespace GSF.SortedTreeStore.Filters
                 EndOfFrame = new TKey();
                 StartOfRange = new TKey();
                 EndOfRange = new TKey();
-                m_keyMethods = StartOfFrame.CreateKeyMethods();
+                m_keyMethods = StartOfFrame.CreateValueMethods();
             }
 
             /// <summary>

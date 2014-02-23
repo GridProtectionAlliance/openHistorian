@@ -29,7 +29,7 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Types
 {
     public class SortedTreeUInt32
-        : ISortedTreeKey<SortedTreeUInt32>, ISortedTreeValue<SortedTreeUInt32>
+        : ISortedTreeValue<SortedTreeUInt32>
     {
         public SortedTreeUInt32()
         {

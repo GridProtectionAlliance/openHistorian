@@ -33,7 +33,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// A collection of settings for <see cref="FirstStageWriter{TKey,TValue}"/>.
     /// </summary>
     public struct FirstStageWriterSettings<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         /// <summary>
@@ -63,7 +63,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// Handles how data is initially taken from prestage chunks and serialized to the disk.
     /// </summary>
     public class FirstStageWriter<TKey, TValue> : IDisposable
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         /// <summary>

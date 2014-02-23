@@ -31,7 +31,7 @@ namespace GSF.SortedTreeStore.Net.Compression
 {
     public class CompressedStream<TKey, TValue>
         : KeyValueStreamCompressionBase<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         TKey prevKey;

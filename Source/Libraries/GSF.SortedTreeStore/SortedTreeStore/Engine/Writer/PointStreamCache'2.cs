@@ -38,7 +38,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// </remarks>
     public class PointStreamCache<TKey, TValue>
         : TreeStream<TKey, TValue>, IDisposable
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         //ToDo: Automatically detect size and shrink the queue if need be. 
@@ -58,7 +58,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// </summary>
         public PointStreamCache()
         {
-            m_keyMethods = new TKey().CreateKeyMethods();
+            m_keyMethods = new TKey().CreateValueMethods();
             m_valueMethods = new TValue().CreateValueMethods();
             m_queue = new BinaryStream(allocatesOwnMemory: true);
             m_isReading = false;

@@ -27,7 +27,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
     internal class CreateGenericEncodedNode<TKey, TValue>
         : CreateTreeNodeBase
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         DoubleValueEncodingBase<TKey, TValue> m_encoding;
@@ -50,7 +50,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     /// <typeparam name="TValue"></typeparam>
     public unsafe class GenericEncodedNode<TKey, TValue>
         : EncodedNodeBase<TKey, TValue>
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         DoubleValueEncodingBase<TKey, TValue> m_encoding;

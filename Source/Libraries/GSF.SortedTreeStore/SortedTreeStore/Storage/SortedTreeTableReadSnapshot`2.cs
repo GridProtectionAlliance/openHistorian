@@ -33,7 +33,7 @@ namespace GSF.SortedTreeStore.Storage
     /// </summary>
     public class SortedTreeTableReadSnapshot<TKey, TValue>
         : IDisposable
-        where TKey : class, ISortedTreeKey<TKey>, new()
+        where TKey : class, ISortedTreeValue<TKey>, new()
         where TValue : class, ISortedTreeValue<TValue>, new()
     {
         #region [ Members ]
