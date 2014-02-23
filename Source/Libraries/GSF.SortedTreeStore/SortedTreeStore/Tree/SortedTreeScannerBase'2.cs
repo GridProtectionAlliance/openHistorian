@@ -411,7 +411,7 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         public virtual void SeekToStart()
         {
-            KeyMethods.SetMin(m_tempKey);
+            m_tempKey.SetMin();
             SeekToKey(m_tempKey);
         }
 
@@ -447,8 +447,8 @@ namespace GSF.SortedTreeStore.Tree
             RecordCount = *(ushort*)(ptr + OffsetOfRecordCount);
             LeftSiblingNodeIndex = *(uint*)(ptr + OffsetOfLeftSibling);
             RightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
-            KeyMethods.Read(ptr + OffsetOfLowerBounds, LowerKey);
-            KeyMethods.Read(ptr + OffsetOfUpperBounds, UpperKey);
+            LowerKey.Read(ptr + OffsetOfLowerBounds);
+            UpperKey.Read(ptr + OffsetOfUpperBounds);
             IndexOfNextKeyValue = 0;
             OnNoadReload();
         }

@@ -129,7 +129,7 @@ namespace GSF.SortedTreeStore.Tree
         private void NewNodeThenInsert(TKey key, TValue value)
         {
             TKey dividingKey = new TKey(); //m_tempKey;
-            KeyMethods.Copy(key, dividingKey);
+            key.CopyTo(dividingKey);
 
             uint newNodeIndex = m_getNextNewNodeIndex();
             if (!IsRightSiblingIndexNull)
@@ -164,13 +164,13 @@ namespace GSF.SortedTreeStore.Tree
             if (IsKeyInsideBounds(key))
             {
                 InsertUnlessFull(~GetIndexOf(key), key, value);
-                KeyMethods.Copy(UpperKey, dividingKey);
+                UpperKey.CopyTo(dividingKey);
             }
             else
             {
                 SeekToRightSibling();
                 InsertUnlessFull(~GetIndexOf(key), key, value);
-                KeyMethods.Copy(LowerKey, dividingKey);
+                LowerKey.CopyTo(dividingKey);
             }
 
             SparseIndex.Add(dividingKey, newNodeIndex, (byte)(Level + 1));

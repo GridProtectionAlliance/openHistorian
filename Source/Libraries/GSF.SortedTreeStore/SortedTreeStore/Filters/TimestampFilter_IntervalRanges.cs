@@ -101,9 +101,9 @@ namespace GSF.SortedTreeStore.Filters
                 m_start = start;
                 m_stop = stop;
 
-                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.SetMin();
                 StartOfRange.Timestamp = m_start;
-                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.SetMax();
                 EndOfRange.Timestamp = m_stop;
 
                 m_current = start;
@@ -154,7 +154,7 @@ namespace GSF.SortedTreeStore.Filters
                 }
                 set
                 {
-                    m_keyMethods.SetMin(StartOfFrame);
+                    StartOfFrame.SetMin();
                     StartOfFrame.Timestamp = value;
                 }
             }
@@ -167,7 +167,7 @@ namespace GSF.SortedTreeStore.Filters
                 }
                 set
                 {
-                    m_keyMethods.SetMax(EndOfFrame);
+                    EndOfFrame.SetMax();
                     EndOfFrame.Timestamp = value;
                 }
             }

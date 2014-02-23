@@ -45,37 +45,37 @@ namespace openHistorian.Collections
         //    key.EntryNumber = 0;
         //}
 
-        public override void SetMin(HistorianKey key)
-        {
-            key.Timestamp = ulong.MinValue;
-            key.PointID = ulong.MinValue;
-            key.EntryNumber = ulong.MinValue;
-        }
+        //public override void SetMin(HistorianKey key)
+        //{
+        //    key.Timestamp = ulong.MinValue;
+        //    key.PointID = ulong.MinValue;
+        //    key.EntryNumber = ulong.MinValue;
+        //}
 
-        public override void SetMax(HistorianKey key)
-        {
-            key.Timestamp = ulong.MaxValue;
-            key.PointID = ulong.MaxValue;
-            key.EntryNumber = ulong.MaxValue;
-        }
+        //public override void SetMax(HistorianKey key)
+        //{
+        //    key.Timestamp = ulong.MaxValue;
+        //    key.PointID = ulong.MaxValue;
+        //    key.EntryNumber = ulong.MaxValue;
+        //}
 
-        public override int CompareTo(HistorianKey left, HistorianKey right)
-        {
-            if (left.Timestamp < right.Timestamp)
-                return -1;
-            if (left.Timestamp > right.Timestamp)
-                return 1;
-            if (left.PointID < right.PointID)
-                return -1;
-            if (left.PointID > right.PointID)
-                return 1;
-            if (left.EntryNumber < right.EntryNumber)
-                return -1;
-            if (left.EntryNumber > right.EntryNumber)
-                return 1;
+        //public override int CompareTo(HistorianKey left, HistorianKey right)
+        //{
+        //    if (left.Timestamp < right.Timestamp)
+        //        return -1;
+        //    if (left.Timestamp > right.Timestamp)
+        //        return 1;
+        //    if (left.PointID < right.PointID)
+        //        return -1;
+        //    if (left.PointID > right.PointID)
+        //        return 1;
+        //    if (left.EntryNumber < right.EntryNumber)
+        //        return -1;
+        //    if (left.EntryNumber > right.EntryNumber)
+        //        return 1;
 
-            return 0;
-        }
+        //    return 0;
+        //}
 
         //public override bool IsLessThan(HistorianKey left, HistorianKey right)
         //{
@@ -189,39 +189,39 @@ namespace openHistorian.Collections
         //    return IsLessThanOrEqualTo(lowerBounds, key) && IsLessThan(key, upperBounds);
         //}
 
-        public override unsafe void Write(byte* stream, HistorianKey data)
-        {
-            *(ulong*)stream = data.Timestamp;
-            *(ulong*)(stream + 8) = data.PointID;
-            *(ulong*)(stream + 16) = data.EntryNumber;
-        }
+        //public override unsafe void Write(byte* stream, HistorianKey data)
+        //{
+        //    *(ulong*)stream = data.Timestamp;
+        //    *(ulong*)(stream + 8) = data.PointID;
+        //    *(ulong*)(stream + 16) = data.EntryNumber;
+        //}
 
-        public override unsafe void Read(byte* stream, HistorianKey data)
-        {
-            data.Timestamp = *(ulong*)stream;
-            data.PointID = *(ulong*)(stream + 8);
-            data.EntryNumber = *(ulong*)(stream + 16);
-        }
+        //public override unsafe void Read(byte* stream, HistorianKey data)
+        //{
+        //    data.Timestamp = *(ulong*)stream;
+        //    data.PointID = *(ulong*)(stream + 8);
+        //    data.EntryNumber = *(ulong*)(stream + 16);
+        //}
 
-        public override unsafe void Copy(HistorianKey source, HistorianKey destination)
-        {
-            destination.Timestamp = source.Timestamp;
-            destination.PointID = source.PointID;
-            destination.EntryNumber = source.EntryNumber;
-        }
+        //public override unsafe void Copy(HistorianKey source, HistorianKey destination)
+        //{
+        //    destination.Timestamp = source.Timestamp;
+        //    destination.PointID = source.PointID;
+        //    destination.EntryNumber = source.EntryNumber;
+        //}
 
         //public override unsafe void Read(GSF.IO.BinaryStreamBase stream, HistorianKey data)
         //{
 
         //}
 
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
+        //public override Guid GenericTypeGuid
+        //{
+        //    get
+        //    {
+        //        return TypeGuid;
+        //    }
+        //}
 
         //public override bool IsLessThan(HistorianKey left, HistorianKey right)
         //{

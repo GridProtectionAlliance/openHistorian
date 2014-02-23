@@ -361,7 +361,7 @@ namespace GSF.SortedTreeStore.Tree
             rootNode.CreateEmptyNode(RootNodeIndexAddress);
 
             //Insert the first entry in the root node.
-            m_keyMethods.SetMin(m_key);
+            m_key.SetMin();
             m_value.Value = oldRootNode;
             rootNode.TryInsert(m_key, m_value);
 

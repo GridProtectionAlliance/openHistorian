@@ -82,8 +82,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         {
             byte* stream = Pointer + m_nextOffset;
             int length = m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
-            KeyMethods.Copy(key, m_prevKey);
-            ValueMethods.Copy(value, m_prevValue);
+            key.CopyTo(m_prevKey);
+            value.CopyTo(m_prevValue);
             m_nextOffset += length;
             IndexOfNextKeyValue++;
         }
@@ -93,8 +93,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         TryAgain:
             byte* stream = Pointer + m_nextOffset;
             int length = m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
-            KeyMethods.Copy(key, m_prevKey);
-            ValueMethods.Copy(value, m_prevValue);
+            key.CopyTo(m_prevKey);
+            value.CopyTo(m_prevValue);
             m_nextOffset += length;
             IndexOfNextKeyValue++;
 
@@ -113,8 +113,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
             if (key.IsLessThan( upperBounds))
             {
-                KeyMethods.Copy(key, m_prevKey);
-                ValueMethods.Copy(value, m_prevValue);
+                key.CopyTo(m_prevKey);
+                value.CopyTo(m_prevValue);
                 m_nextOffset += length;
                 IndexOfNextKeyValue++;
                 return true;
@@ -131,8 +131,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
             if (key.IsLessThan( upperBounds))
             {
-                KeyMethods.Copy(key, m_prevKey);
-                ValueMethods.Copy(value, m_prevValue);
+                key.CopyTo(m_prevKey);
+                value.CopyTo(m_prevValue);
                 m_nextOffset += length;
                 IndexOfNextKeyValue++;
 

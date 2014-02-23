@@ -65,8 +65,8 @@ namespace GSF.SortedTreeStore.Tree
                         throw new Exception("Stream is not sequential");
 
                 IsValid = true;
-                m_keyMethods.Copy(m_baseStream.CurrentKey, CurrentKey); //m_baseStream.CurrentKey.CopyTo(CurrentKey);
-                m_valueMethods.Copy(m_baseStream.CurrentValue, CurrentValue); // m_baseStream.CurrentValue.CopyTo(CurrentValue);
+                m_baseStream.CurrentKey.CopyTo(CurrentKey); //m_baseStream.CurrentKey.CopyTo(CurrentKey);
+                m_baseStream.CurrentValue.CopyTo(CurrentValue); // m_baseStream.CurrentValue.CopyTo(CurrentValue);
                 return true;
             }
             else

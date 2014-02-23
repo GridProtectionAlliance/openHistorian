@@ -43,50 +43,50 @@ namespace GSF.SortedTreeStore.Types
         //    key.Value2 = 0;
         //}
 
-        public override void SetMin(SortedTreeUInt128 key)
-        {
-            key.Value1 = ulong.MinValue;
-            key.Value2 = ulong.MinValue;
-        }
+        //public override void SetMin(SortedTreeUInt128 key)
+        //{
+        //    key.Value1 = ulong.MinValue;
+        //    key.Value2 = ulong.MinValue;
+        //}
 
-        public override void SetMax(SortedTreeUInt128 key)
-        {
-            key.Value1 = ulong.MaxValue;
-            key.Value2 = ulong.MaxValue;
-        }
+        //public override void SetMax(SortedTreeUInt128 key)
+        //{
+        //    key.Value1 = ulong.MaxValue;
+        //    key.Value2 = ulong.MaxValue;
+        //}
 
-        public override int CompareTo(SortedTreeUInt128 left, SortedTreeUInt128 right)
-        {
-            if (left.Value1 < right.Value1)
-                return -1;
-            if (left.Value1 > right.Value1)
-                return 1;
-            if (left.Value2 < right.Value2)
-                return -1;
-            if (left.Value2 > right.Value2)
-                return 1;
-            return 0;
-        }
+        //public override int CompareTo(SortedTreeUInt128 left, SortedTreeUInt128 right)
+        //{
+        //    if (left.Value1 < right.Value1)
+        //        return -1;
+        //    if (left.Value1 > right.Value1)
+        //        return 1;
+        //    if (left.Value2 < right.Value2)
+        //        return -1;
+        //    if (left.Value2 > right.Value2)
+        //        return 1;
+        //    return 0;
+        //}
 
-        public override unsafe void Write(byte* stream, SortedTreeUInt128 data)
-        {
-            *(ulong*)stream = data.Value1;
-            *(ulong*)(stream + 8) = data.Value2;
-        }
+        //public override unsafe void Write(byte* stream, SortedTreeUInt128 data)
+        //{
+        //    *(ulong*)stream = data.Value1;
+        //    *(ulong*)(stream + 8) = data.Value2;
+        //}
 
-        public override unsafe void Read(byte* stream, SortedTreeUInt128 data)
-        {
-            data.Value1 = *(ulong*)stream;
-            data.Value2 = *(ulong*)(stream + 8);
-        }
+        //public override unsafe void Read(byte* stream, SortedTreeUInt128 data)
+        //{
+        //    data.Value1 = *(ulong*)stream;
+        //    data.Value2 = *(ulong*)(stream + 8);
+        //}
 
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
+        //public override Guid GenericTypeGuid
+        //{
+        //    get
+        //    {
+        //        return TypeGuid;
+        //    }
+        //}
 
         //public override bool IsBetween(SortedTreeUInt128 lowerBounds, SortedTreeUInt128 key, SortedTreeUInt128 upperBounds)
         //{

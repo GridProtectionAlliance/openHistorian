@@ -75,14 +75,14 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
 
         protected override void Read(int index, TValue value)
         {
-            ValueMethods.Read(GetReadPointerAfterHeader() + KeySize + index * KeyValueSize, value);
+            value.Read(GetReadPointerAfterHeader() + KeySize + index * KeyValueSize);
         }
 
         protected override void Read(int index, TKey key, TValue value)
         {
             byte* ptr = GetReadPointerAfterHeader() + index * KeyValueSize;
-            KeyMethods.Read(ptr, key);
-            ValueMethods.Read(ptr + KeySize, value);
+            key.Read(ptr);
+            value.Read(ptr + KeySize);
         }
 
         protected override bool RemoveUnlessOverflow(int index)
@@ -112,8 +112,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
             }
 
             //Insert the data
-            KeyMethods.Write(start, key);
-            ValueMethods.Write(start + KeySize, value);
+            key.Write(start);
+            value.Write(start + KeySize);
 
             //save the header
             IncrementOneRecord(KeyValueSize);
@@ -141,7 +141,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
             long targetStartingAddress = newNodeIndex * BlockSize + HeaderSize;
 
             //lookup the dividing key
-            KeyMethods.Read(Stream.GetReadPointer(sourceStartingAddress, KeySize), dividingKey);
+            dividingKey.Read(Stream.GetReadPointer(sourceStartingAddress, KeySize));
 
             //do the copy
             Stream.Copy(sourceStartingAddress, targetStartingAddress, recordsInTheSecondNode * KeyValueSize);

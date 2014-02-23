@@ -58,8 +58,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         protected override unsafe void InternalRead(TKey key, TValue value)
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
-            KeyMethods.Read(ptr, key);
-            ValueMethods.Read(ptr + m_keySize, value);
+            key.Read(ptr);
+            value.Read(ptr + m_keySize);
             IndexOfNextKeyValue++;
         }
 
@@ -67,8 +67,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         {
         TryAgain:
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
-            KeyMethods.Read(ptr, key);
-            ValueMethods.Read(ptr + m_keySize, value);
+            key.Read(ptr);
+            value.Read(ptr + m_keySize);
             IndexOfNextKeyValue++;
             if (filter.Contains(key))
                 return true;
@@ -80,8 +80,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         protected override unsafe void InternalPeek(TKey key, TValue value)
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
-            KeyMethods.Read(ptr, key);
-            ValueMethods.Read(ptr + m_keySize, value);
+            key.Read(ptr);
+            value.Read(ptr + m_keySize);
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         protected override unsafe bool InternalReadWhile(TKey key, TValue value, TKey upperBounds)
         {
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
-            KeyMethods.Read(ptr, key);
-            ValueMethods.Read(ptr + m_keySize, value);
+            key.Read(ptr);
+            value.Read(ptr + m_keySize);
             if (key.IsLessThan( upperBounds))
             {
                 IndexOfNextKeyValue++;
@@ -107,8 +107,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         {
         TryAgain:
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
-            KeyMethods.Read(ptr, key);
-            ValueMethods.Read(ptr + m_keySize, value);
+            key.Read(ptr);
+            value.Read(ptr + m_keySize);
             if (key.IsLessThan( upperBounds))
             {
                 IndexOfNextKeyValue++;

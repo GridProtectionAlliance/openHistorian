@@ -70,8 +70,8 @@ namespace GSF.SortedTreeStore.Filters
         public override void Reset()
         {
             m_isEndReached = false;
-            m_keyMethods.SetMin(StartOfRange);
-            m_keyMethods.SetMax(EndOfRange);
+            StartOfRange.SetMin();
+            EndOfRange.SetMax();
         }
 
         public override bool NextWindow()
@@ -80,8 +80,8 @@ namespace GSF.SortedTreeStore.Filters
             {
                 return false;
             }
-            m_keyMethods.SetMin(StartOfRange);
-            m_keyMethods.SetMax(EndOfRange);
+            StartOfRange.SetMin();
+            EndOfRange.SetMax();
             m_isEndReached = true;
             return true;
         }

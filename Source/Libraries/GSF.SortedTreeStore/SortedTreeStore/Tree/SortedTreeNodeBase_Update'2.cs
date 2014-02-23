@@ -40,7 +40,7 @@ namespace GSF.SortedTreeStore.Tree
 
             NavigateToNode(oldKey);
 
-            if (newKey.IsLessThan( LowerKey))
+            if (newKey.IsLessThan(LowerKey))
             {
                 throw new Exception("Should never be here");
             }
@@ -93,7 +93,7 @@ namespace GSF.SortedTreeStore.Tree
                     throw new Exception("Cannot update the key because the sorting gets messed up");
             }
 
-            KeyMethods.Write(ptr, newKey);
+            newKey.Write(ptr);
         }
 
         private void InternalUpdateValue(TKey key, TValue value)
@@ -105,7 +105,7 @@ namespace GSF.SortedTreeStore.Tree
                 throw new KeyNotFoundException();
 
             ptr = GetWritePointer() + HeaderSize + index * KeyValueSize + KeySize;
-            ValueMethods.Write(ptr, value);
+            value.Write(ptr);
         }
     }
 }

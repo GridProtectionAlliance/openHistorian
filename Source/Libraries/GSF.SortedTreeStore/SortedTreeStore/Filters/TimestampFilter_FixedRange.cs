@@ -58,9 +58,9 @@ namespace GSF.SortedTreeStore.Filters
             {
                 m_start = stream.ReadUInt64();
                 m_stop = stream.ReadUInt64();
-                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.SetMin();
                 StartOfRange.Timestamp = m_start;
-                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.SetMax();
                 EndOfRange.Timestamp = m_stop;
             }
 
@@ -74,9 +74,9 @@ namespace GSF.SortedTreeStore.Filters
             {
                 m_start = firstTime;
                 m_stop = lastTime;
-                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.SetMin();
                 StartOfRange.Timestamp = m_start;
-                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.SetMax();
                 EndOfRange.Timestamp = m_stop;
             }
 
@@ -90,9 +90,9 @@ namespace GSF.SortedTreeStore.Filters
                 {
                     return false;
                 }
-                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.SetMin();
                 StartOfRange.Timestamp = m_start;
-                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.SetMax();
                 EndOfRange.Timestamp = m_stop;
                 m_isEndReached = true;
                 return true;
@@ -108,9 +108,9 @@ namespace GSF.SortedTreeStore.Filters
             public override void Reset()
             {
                 m_isEndReached = false;
-                m_keyMethods.SetMin(StartOfRange);
+                StartOfRange.SetMin();
                 StartOfRange.Timestamp = m_start;
-                m_keyMethods.SetMax(EndOfRange);
+                EndOfRange.SetMax();
                 EndOfRange.Timestamp = m_stop;
             }
 

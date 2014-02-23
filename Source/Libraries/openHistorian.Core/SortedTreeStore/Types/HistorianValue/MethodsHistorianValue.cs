@@ -37,12 +37,12 @@ namespace openHistorian.Collections
             return 24;
         }
 
-        public override unsafe void Write(byte* stream, HistorianValue data)
-        {
-            *(ulong*)stream = data.Value1;
-            *(ulong*)(stream + 8) = data.Value2;
-            *(ulong*)(stream + 16) = data.Value3;
-        }
+        //public override unsafe void Write(byte* stream, HistorianValue data)
+        //{
+        //    *(ulong*)stream = data.Value1;
+        //    *(ulong*)(stream + 8) = data.Value2;
+        //    *(ulong*)(stream + 16) = data.Value3;
+        //}
 
         //public override void Clear(HistorianValue data)
         //{
@@ -51,58 +51,58 @@ namespace openHistorian.Collections
         //    data.Value3 = 0;
         //}
 
-        public override unsafe void Read(byte* stream, HistorianValue data)
-        {
-            data.Value1 = *(ulong*)stream;
-            data.Value2 = *(ulong*)(stream + 8);
-            data.Value3 = *(ulong*)(stream + 16);
-        }
+        //public override unsafe void Read(byte* stream, HistorianValue data)
+        //{
+        //    data.Value1 = *(ulong*)stream;
+        //    data.Value2 = *(ulong*)(stream + 8);
+        //    data.Value3 = *(ulong*)(stream + 16);
+        //}
 
-        public override unsafe void Copy(HistorianValue source, HistorianValue destination)
-        {
-            destination.Value1 = source.Value1;
-            destination.Value2 = source.Value2;
-            destination.Value3 = source.Value3;
-        }
+        //public override unsafe void Copy(HistorianValue source, HistorianValue destination)
+        //{
+        //    destination.Value1 = source.Value1;
+        //    destination.Value2 = source.Value2;
+        //    destination.Value3 = source.Value3;
+        //}
 
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
+        //public override Guid GenericTypeGuid
+        //{
+        //    get
+        //    {
+        //        return TypeGuid;
+        //    }
+        //}
 
-        public override void SetMin(HistorianValue key)
-        {
-            key.Value1 = 0;
-            key.Value2 = 0;
-            key.Value3 = 0;
-        }
+        //public override void SetMin(HistorianValue key)
+        //{
+        //    key.Value1 = 0;
+        //    key.Value2 = 0;
+        //    key.Value3 = 0;
+        //}
 
-        public override void SetMax(HistorianValue key)
-        {
-            key.Value1 = ulong.MaxValue;
-            key.Value2 = ulong.MaxValue;
-            key.Value3 = ulong.MaxValue;
-        }
+        //public override void SetMax(HistorianValue key)
+        //{
+        //    key.Value1 = ulong.MaxValue;
+        //    key.Value2 = ulong.MaxValue;
+        //    key.Value3 = ulong.MaxValue;
+        //}
 
-        public override int CompareTo(HistorianValue left, HistorianValue right)
-        {
-            if (left.Value1 < right.Value1)
-                return -1;
-            if (left.Value1 > right.Value1)
-                return 1;
-            if (left.Value2 < right.Value2)
-                return -1;
-            if (left.Value2 > right.Value2)
-                return 1;
-            if (left.Value3 < right.Value3)
-                return -1;
-            if (left.Value3 > right.Value3)
-                return 1;
+        //public override int CompareTo(HistorianValue left, HistorianValue right)
+        //{
+        //    if (left.Value1 < right.Value1)
+        //        return -1;
+        //    if (left.Value1 > right.Value1)
+        //        return 1;
+        //    if (left.Value2 < right.Value2)
+        //        return -1;
+        //    if (left.Value2 > right.Value2)
+        //        return 1;
+        //    if (left.Value3 < right.Value3)
+        //        return -1;
+        //    if (left.Value3 > right.Value3)
+        //        return 1;
 
-            return 0;
-        }
+        //    return 0;
+        //}
     }
 }

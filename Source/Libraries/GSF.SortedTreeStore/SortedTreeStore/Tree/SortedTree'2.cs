@@ -308,8 +308,8 @@ namespace GSF.SortedTreeStore.Tree
             {
                 return;
             }
-            KeyMethods.SetMax(lowerBounds);
-            KeyMethods.SetMin(upperBounds);
+            lowerBounds.SetMax();
+            upperBounds.SetMin();
         }
 
         #endregion

@@ -112,7 +112,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             if (index == RecordCount)
                 throw new Exception();
             SeekTo(index);
-            ValueMethods.Copy(m_currentValue, value);
+            m_currentValue.CopyTo(value);
         }
 
         protected override void Read(int index, TKey key, TValue value)
@@ -120,8 +120,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             if (index == RecordCount)
                 throw new Exception();
             SeekTo(index);
-            KeyMethods.Copy(m_currentKey, key);
-            ValueMethods.Copy(m_currentValue, value);
+            m_currentKey.CopyTo(key);
+            m_currentValue.CopyTo(value);
         }
 
         protected override bool RemoveUnlessOverflow(int index)
@@ -150,8 +150,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 if (RecordCount > 0)
                 {
-                    KeyMethods.Copy(m_currentKey, stream.PrevKey);
-                    ValueMethods.Copy(m_currentValue, stream.PrevValue);
+                    m_currentKey.CopyTo(stream.PrevKey);
+                    m_currentValue.CopyTo(stream.PrevValue);
                 }
                 else
                 {
@@ -263,8 +263,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 //WinApi.MoveMemory(GetWritePointer() + m_nextOffset, buffer, length);
                 IncrementOneRecord(length);
 
-                KeyMethods.Copy(key, m_currentKey);
-                ValueMethods.Copy(value, m_currentValue);
+                key.CopyTo(m_currentKey);
+                value.CopyTo(m_currentValue);
                 m_nextOffset = m_currentOffset + length;
                 //ResetPositionCached();
 
@@ -296,8 +296,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
                 IncrementOneRecord(shiftDelta);
 
-                KeyMethods.Copy(key, m_currentKey);
-                ValueMethods.Copy(value, m_currentValue);
+                key.CopyTo(m_currentKey);
+                value.CopyTo(m_currentValue);
                 m_nextOffset = m_currentOffset + shiftDelta1;
 
                 //ResetPositionCached();
@@ -359,7 +359,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 int bytesToMove = ValidBytes - m_nextOffset;
 
                 //lookup the dividing key
-                KeyMethods.Copy(m_currentKey, dividingKey);
+                m_currentKey.CopyTo(dividingKey);
 
                 //do the copy
                 Stream.Copy(sourceStartingAddress, targetStartingAddress, bytesToMove);
@@ -542,8 +542,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 throw new Exception("Read past the end of the stream");
             }
 
-            KeyMethods.Copy(m_currentKey, m_prevKey);
-            ValueMethods.Copy(m_currentValue, m_prevValue);
+            m_currentKey.CopyTo(m_prevKey);
+            m_currentValue.CopyTo(m_prevValue);
             m_currentOffset = m_nextOffset;
             m_currentIndex++;
 

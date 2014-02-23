@@ -276,8 +276,8 @@ namespace GSF.SortedTreeStore.Tree
             }
             set
             {
-                KeyMethods.Write(GetWritePointer() + OffsetOfLowerBounds, value);
-                KeyMethods.Copy(value, m_lowerKey);
+                value.Write(GetWritePointer() + OffsetOfLowerBounds);
+                value.CopyTo(m_lowerKey);
             }
         }
 
@@ -294,8 +294,8 @@ namespace GSF.SortedTreeStore.Tree
             }
             set
             {
-                KeyMethods.Write(GetWritePointer() + OffsetOfUpperBounds, value);
-                KeyMethods.Copy(value, m_upperKey);
+                value.Write(GetWritePointer() + OffsetOfUpperBounds);
+                value.CopyTo(m_upperKey);
             }
         }
 
@@ -366,8 +366,8 @@ namespace GSF.SortedTreeStore.Tree
                 m_validBytes = *(ushort*)(ptr + OffsetOfValidBytes);
                 m_leftSiblingNodeIndex = *(uint*)(ptr + OffsetOfLeftSibling);
                 m_rightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
-                KeyMethods.Read(ptr + OffsetOfLowerBounds, LowerKey);
-                KeyMethods.Read(ptr + OffsetOfUpperBounds, UpperKey);
+                LowerKey.Read(ptr + OffsetOfLowerBounds);
+                UpperKey.Read(ptr + OffsetOfUpperBounds);
             }
         }
 
@@ -408,8 +408,8 @@ namespace GSF.SortedTreeStore.Tree
             *(ushort*)(ptr + OffsetOfValidBytes) = validBytes;
             *(uint*)(ptr + OffsetOfLeftSibling) = leftSibling;
             *(uint*)(ptr + OffsetOfRightSibling) = rightSibling;
-            KeyMethods.Write(ptr + OffsetOfLowerBounds, lowerKey);
-            KeyMethods.Write(ptr + OffsetOfUpperBounds, upperKey);
+            lowerKey.Write(ptr + OffsetOfLowerBounds);
+            upperKey.Write(ptr + OffsetOfUpperBounds);
         }
 
         /// <summary>

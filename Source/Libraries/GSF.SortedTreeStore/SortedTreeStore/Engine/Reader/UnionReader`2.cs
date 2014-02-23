@@ -54,7 +54,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
             m_sortedArchiveStreams = new CustomSortHelper<BufferedArchiveStream<TKey, TValue>>(m_tablesOrigList, CompareStreams);
 
-            m_keyMethods.SetMin(m_readWhileUpperBounds);
+            m_readWhileUpperBounds.SetMin();
             SeekToKey(m_readWhileUpperBounds);
         }
 
@@ -124,7 +124,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             m_firstTable.UpdateCachedValue();
 
             //Check Condition 1
-            if (m_firstTable.CacheIsValid && m_firstTable.CacheKey.IsLessThan( m_readWhileUpperBounds))
+            if (m_firstTable.CacheIsValid && m_firstTable.CacheKey.IsLessThan(m_readWhileUpperBounds))
                 return false;
 
             //Since condition 2 and 3 can occur at the same time, verifying the sort of the Archive Stream is a good thing to do.
@@ -186,7 +186,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 }
             }
         }
-        
+
         /// <summary>
         /// Compares two Archive Streams together for proper sorting.
         /// </summary>
@@ -201,7 +201,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 return 1;
             if (!item2.CacheIsValid)
                 return -1;
-            return m_keyMethods.CompareTo(item1.CacheKey, item2.CacheKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
+            return item1.CacheKey.CompareTo(item2.CacheKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
         {
             foreach (var table in m_sortedArchiveStreams.Items)
             {
-                if (table.CacheIsValid && table.CacheKey.IsLessThan( key))
+                if (table.CacheIsValid && table.CacheKey.IsLessThan(key))
                 {
                     table.SeekToKeyAndUpdateCacheValue(key);
                 }
@@ -322,13 +322,13 @@ namespace GSF.SortedTreeStore.Engine.Reader
         {
             if (m_sortedArchiveStreams.Items.Length > 1 && m_sortedArchiveStreams[1].CacheIsValid)
             {
-                m_keyMethods.Copy(m_sortedArchiveStreams[1].CacheKey, m_nextArchiveStreamLowerBounds);
+                m_sortedArchiveStreams[1].CacheKey.CopyTo(m_nextArchiveStreamLowerBounds);
             }
             else
             {
-                m_keyMethods.SetMax(m_nextArchiveStreamLowerBounds);
+                m_nextArchiveStreamLowerBounds.SetMax();
             }
-            m_keyMethods.Copy(m_nextArchiveStreamLowerBounds, m_readWhileUpperBounds);
+            m_nextArchiveStreamLowerBounds.CopyTo(m_readWhileUpperBounds);
         }
 
     }

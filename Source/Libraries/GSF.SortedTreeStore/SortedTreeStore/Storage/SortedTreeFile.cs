@@ -235,8 +235,8 @@ namespace GSF.SortedTreeStore.Storage
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            Guid keyType = new TKey().CreateValueMethods().GenericTypeGuid;
-            Guid valueType = new TValue().CreateValueMethods().GenericTypeGuid;
+            Guid keyType = new TKey().GenericTypeGuid;
+            Guid valueType = new TValue().GenericTypeGuid;
             return SubFileName.Create(PrimaryArchiveType, keyType, valueType);
         }
 

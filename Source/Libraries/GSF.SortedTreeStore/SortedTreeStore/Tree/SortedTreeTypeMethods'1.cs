@@ -58,7 +58,7 @@ namespace GSF.SortedTreeStore.Tree
             get;
             private set;
         }
-        
+
         /// <summary>
         /// Gets the size of this class when serialized
         /// </summary>
@@ -67,77 +67,15 @@ namespace GSF.SortedTreeStore.Tree
         {
             return TempKey.GetSize;
         }
-
-        /// <summary>
-        /// The Guid uniquely defining this type. 
-        /// It is important to uniquely tie 1 type to 1 guid.
-        /// </summary>
-        public virtual Guid GenericTypeGuid
-        {
-            get
-            {
-                return TempKey.GenericTypeGuid;
-            }
-        }
-
-        /// <summary>
-        /// Sets the provided key to it's minimum value
-        /// </summary>
-        /// <param name="key"></param>
-        public virtual void SetMin(T key)
-        {
-            key.SetMin();
-        }
-        /// <summary>
-        /// Sets the privided key to it's maximum value
-        /// </summary>
-        /// <param name="key"></param>
-        public virtual void SetMax(T key)
-        {
-            key.SetMax();
-        }
-
-        /// <summary>
-        /// Compares two keys together
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual int CompareTo(T left, T right)
-        {
-            return left.CompareTo(right);
-        }
-
-        /// <summary>
-        /// Reads the key from the stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="data"></param>
-        public virtual unsafe void Read(byte* stream, T data)
-        {
-            var reader = new BinaryStreamPointerWrapper(stream, Size);
-            data.Read(reader);
-        }
-
-        /// <summary>
-        /// Writes the key to the stream
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="data"></param>
-        public virtual unsafe void Write(byte* stream, T data)
-        {
-            var writer = new BinaryStreamPointerWrapper(stream, Size);
-            data.Write(writer);
-        }
-
+        
         /// <summary>
         /// Writes the maximum value to the provided stream
         /// </summary>
         /// <param name="stream"></param>
         public virtual unsafe void WriteMax(byte* stream)
         {
-            SetMax(TempKey);
-            Write(stream, TempKey);
+            TempKey.SetMax();
+            TempKey.Write(stream);
         }
 
         /// <summary>
@@ -146,8 +84,8 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream"></param>
         public virtual unsafe void WriteMin(byte* stream)
         {
-            SetMin(TempKey);
-            Write(stream, TempKey);
+            TempKey.SetMin();
+            TempKey.Write(stream);
         }
 
         /// <summary>
@@ -157,7 +95,7 @@ namespace GSF.SortedTreeStore.Tree
         public virtual unsafe void WriteNull(byte* stream)
         {
             TempKey.Clear();
-            Write(stream, TempKey);
+            TempKey.Write(stream);
         }
 
         /// <summary>
@@ -171,18 +109,6 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Copies the source to the destination
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="destination"></param>
-        public virtual unsafe void Copy(T source, T destination)
-        {
-            byte* ptr = stackalloc byte[Size];
-            Write(ptr, source);
-            Read(ptr, destination);
-        }
-        
-        /// <summary>
         /// Does a binary search on the data to find the best location for the <see cref="key"/>
         /// </summary>
         /// <param name="pointer"></param>
@@ -195,7 +121,7 @@ namespace GSF.SortedTreeStore.Tree
             T compareKey = TempKey;
             if (LastFoundIndex == recordCount - 1)
             {
-                Read(pointer + keyValueSize * LastFoundIndex, compareKey);
+                compareKey.Read(pointer + keyValueSize * LastFoundIndex);
                 if (key.IsGreaterThan(compareKey)) //Key > CompareKey
                 {
                     LastFoundIndex++;
@@ -204,7 +130,7 @@ namespace GSF.SortedTreeStore.Tree
             }
             else if (LastFoundIndex < recordCount)
             {
-                Read(pointer + keyValueSize * (LastFoundIndex + 1), compareKey);
+                compareKey.Read(pointer + keyValueSize * (LastFoundIndex + 1));
                 if (key.IsEqual(compareKey))
                 {
                     LastFoundIndex++;
@@ -233,7 +159,7 @@ namespace GSF.SortedTreeStore.Tree
             if (LastFoundIndex <= recordCount)
             {
                 LastFoundIndex = Math.Min(LastFoundIndex, recordCount - 1);
-                Read(pointer + keyPointerSize * LastFoundIndex, compareKey);
+                compareKey.Read(pointer + keyPointerSize * LastFoundIndex);
 
                 if (key.IsEqual(compareKey)) //Are Equal
                     return LastFoundIndex;
@@ -246,7 +172,7 @@ namespace GSF.SortedTreeStore.Tree
                     if (LastFoundIndex == recordCount)
                         return ~recordCount;
 
-                    Read(pointer + keyPointerSize * LastFoundIndex, compareKey);
+                    compareKey.Read(pointer + keyPointerSize * LastFoundIndex);
 
                     if (key.IsEqual(compareKey)) //Are Equal
                         return LastFoundIndex;
@@ -263,7 +189,7 @@ namespace GSF.SortedTreeStore.Tree
                         return ~0;
 
                     LastFoundIndex--;
-                    Read(pointer + keyPointerSize * LastFoundIndex, compareKey);
+                    compareKey.Read(pointer + keyPointerSize * LastFoundIndex);
 
                     if (key.IsEqual(compareKey)) //Are Equal
                         return LastFoundIndex;
@@ -281,7 +207,7 @@ namespace GSF.SortedTreeStore.Tree
             {
                 int currentTestIndex = searchLowerBoundsIndex + (searchHigherBoundsIndex - searchLowerBoundsIndex >> 1);
 
-                Read(pointer + keyPointerSize * currentTestIndex, compareKey);
+                compareKey.Read(pointer + keyPointerSize * currentTestIndex);
 
                 if (key.IsEqual(compareKey)) //Are Equal
                 {
@@ -331,8 +257,8 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe int CompareTo(T left, byte* right)
         {
-            Read(right, TempKey);
-            return CompareTo(left, TempKey);
+            TempKey.Read(right);
+            return left.CompareTo(TempKey);
         }
 
         /// <summary>
@@ -343,9 +269,9 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe int CompareTo(byte* left, byte* right)
         {
-            Read(left, TempKey);
-            Read(right, TempKey2);
-            return CompareTo(TempKey, TempKey2);
+            TempKey.Read(left);
+            TempKey2.Read(right);
+            return TempKey.CompareTo(TempKey2);
         }
 
         /// <summary>
@@ -356,8 +282,8 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe int CompareTo(byte* left, T right)
         {
-            Read(left, TempKey);
-            return CompareTo(TempKey, right);
+            TempKey.Read(left);
+            return TempKey.CompareTo(right);
         }
 
         #endregion

@@ -134,6 +134,17 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
+        /// Copies the source to the destination
+        /// </summary>
+        /// <param name="destination"></param>
+        public virtual unsafe void CopyTo(T destination)
+        {
+            byte* ptr = stackalloc byte[GetSize];
+            Write(ptr);
+            destination.Read(ptr);
+        }
+
+        /// <summary>
         /// Creates a class that contains the necessary methods for the SortedTree.
         /// </summary>
         /// <returns></returns>

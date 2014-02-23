@@ -190,8 +190,8 @@ namespace GSF.SortedTreeStore.Tree
             TKey oldLowerKey = new TKey();
             TKey newLowerKey = new TKey();
 
-            KeyMethods.Copy(rightNode.LowerKey, oldLowerKey);
-            KeyMethods.Read(rightNode.GetReadPointerAfterHeader(), newLowerKey); //ToDo: Make Generic
+            rightNode.LowerKey.CopyTo(oldLowerKey);
+            newLowerKey.Read(rightNode.GetReadPointerAfterHeader()); //ToDo: Make Generic
             rightNode.LowerKey = newLowerKey;
             leftNode.UpperKey = newLowerKey;
 

@@ -42,43 +42,43 @@ namespace GSF.SortedTreeStore.Types
         //    key.Value = 0;
         //}
 
-        public override void SetMin(SortedTreeUInt32 key)
-        {
-            key.Value = uint.MinValue;
-        }
+        //public override void SetMin(SortedTreeUInt32 key)
+        //{
+        //    key.Value = uint.MinValue;
+        //}
 
-        public override void SetMax(SortedTreeUInt32 key)
-        {
-            key.Value = uint.MaxValue;
-        }
+        //public override void SetMax(SortedTreeUInt32 key)
+        //{
+        //    key.Value = uint.MaxValue;
+        //}
 
-        public override int CompareTo(SortedTreeUInt32 left, SortedTreeUInt32 right)
-        {
-            return left.Value.CompareTo(right.Value);
-        }
+        //public override int CompareTo(SortedTreeUInt32 left, SortedTreeUInt32 right)
+        //{
+        //    return left.Value.CompareTo(right.Value);
+        //}
 
-        public override unsafe void Write(byte* stream, SortedTreeUInt32 data)
-        {
-            *(uint*)stream = data.Value;
-        }
+        //public override unsafe void Write(byte* stream, SortedTreeUInt32 data)
+        //{
+        //    *(uint*)stream = data.Value;
+        //}
 
-        public override unsafe void Read(byte* stream, SortedTreeUInt32 data)
-        {
-            data.Value = *(uint*)stream;
-        }
+        //public override unsafe void Read(byte* stream, SortedTreeUInt32 data)
+        //{
+        //    data.Value = *(uint*)stream;
+        //}
 
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
+        //public override Guid GenericTypeGuid
+        //{
+        //    get
+        //    {
+        //        return TypeGuid;
+        //    }
+        //}
 
-        public override unsafe void Copy(SortedTreeUInt32 source, SortedTreeUInt32 destination)
-        {
-            destination.Value = source.Value;
-        }
+        //public override unsafe void Copy(SortedTreeUInt32 source, SortedTreeUInt32 destination)
+        //{
+        //    destination.Value = source.Value;
+        //}
 
         //public override bool IsBetween(SortedTreeUInt32 lowerBounds, SortedTreeUInt32 key, SortedTreeUInt32 upperBounds)
         //{

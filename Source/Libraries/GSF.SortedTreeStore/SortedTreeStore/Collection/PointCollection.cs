@@ -53,8 +53,8 @@ namespace GSF.SortedTreeStore.Collection
             }
             fixed (byte* lp = &RawData[DequeuePosition - 48])
             {
-                m_keyMethods.Write(lp, key);
-                m_valueMethods.Write(lp + KeySize, value);
+                key.Write(lp);
+                value.Write(lp + KeySize);
                 DequeuePosition -= 48;
             }
         }
@@ -65,7 +65,7 @@ namespace GSF.SortedTreeStore.Collection
                 throw new Exception();
             fixed (byte* lp = RawData)
             {
-                m_keyMethods.Read(lp + DequeuePosition, key);
+                key.Read(lp + DequeuePosition);
             }
         }
 
@@ -75,8 +75,8 @@ namespace GSF.SortedTreeStore.Collection
                 throw new Exception();
             fixed (byte* lp = RawData)
             {
-                m_keyMethods.Write(lp + EnqueuePosition, key);
-                m_valueMethods.Write(lp + EnqueuePosition + KeySize, value);
+                key.Write(lp + EnqueuePosition);
+                value.Write(lp + EnqueuePosition + KeySize);
                 EnqueuePosition += PointSize;
             }
         }
@@ -87,8 +87,8 @@ namespace GSF.SortedTreeStore.Collection
                 throw new Exception();
             fixed (byte* lp = RawData)
             {
-                m_keyMethods.Read(lp + DequeuePosition, key);
-                m_valueMethods.Read(lp + DequeuePosition + KeySize, value);
+                key.Read(lp + DequeuePosition);
+                value.Read(lp + DequeuePosition + KeySize);
                 DequeuePosition += PointSize;
             }
             if (IsEmpty)

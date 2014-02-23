@@ -79,8 +79,8 @@ namespace GSF.SortedTreeStore.Net.Compression
             //KeyMethods.WriteCompressed(stream, currentKey, prevKey);
             //ValueMethods.WriteCompressed(stream, currentValue, prevValue);
 
-            KeyMethods.Copy(currentKey, prevKey);
-            ValueMethods.Copy(currentValue, prevValue);
+            currentKey.CopyTo(prevKey);
+            currentValue.CopyTo(prevValue);
         }
 
         public override unsafe int Encode(byte* stream, TKey currentKey, TValue currentValue)
@@ -97,8 +97,8 @@ namespace GSF.SortedTreeStore.Net.Compression
             //KeyMethods.ReadCompressed(stream, key, prevKey);
             //ValueMethods.ReadCompressed(stream, value, prevValue);
 
-            KeyMethods.Copy(key, prevKey);
-            ValueMethods.Copy(value, prevValue);
+            key.CopyTo(prevKey);
+            value.CopyTo(prevValue);
 
             return true;
         }

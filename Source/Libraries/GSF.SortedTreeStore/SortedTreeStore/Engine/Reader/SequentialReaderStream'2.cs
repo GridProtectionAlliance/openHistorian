@@ -232,7 +232,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             m_firstTable.UpdateCachedValue();
 
             //Check Condition 1
-            if (m_firstTable.CacheIsValid && m_firstTable.CacheKey.IsLessThan( m_readWhileUpperBounds))
+            if (m_firstTable.CacheIsValid && m_firstTable.CacheKey.IsLessThan(m_readWhileUpperBounds))
                 return false;
 
             //Since condition 2 and 3 can occur at the same time, verifying the sort of the Archive Stream is a good thing to do.
@@ -253,7 +253,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             }
 
             //Check if condition 3 occured
-            if (m_firstTable.CacheKey.IsGreaterThan( m_keySeekFilter.EndOfFrame))
+            if (m_firstTable.CacheKey.IsGreaterThan(m_keySeekFilter.EndOfFrame))
             {
                 AdvanceSeekableFilter(true, m_firstTable.CacheKey);
                 SetReadWhileUpperBoundsValue();
@@ -337,7 +337,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     }
 
                     //If the current point is after this window, seek to the next window.
-                    if (key.IsGreaterThan( m_keySeekFilter.EndOfFrame))
+                    if (key.IsGreaterThan(m_keySeekFilter.EndOfFrame))
                         goto TryAgain;
                 }
 
@@ -367,7 +367,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 return 1;
             if (!item2.CacheIsValid)
                 return -1;
-            return m_keyMethods.CompareTo(item1.CacheKey, item2.CacheKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
+            return item1.CacheKey.CompareTo(item2.CacheKey);// item1.CurrentKey.CompareTo(item2.CurrentKey);
         }
 
         /// <summary>
@@ -409,7 +409,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
         {
             foreach (var table in m_sortedArchiveStreams.Items)
             {
-                if (table.CacheIsValid && table.CacheKey.IsLessThan( key))
+                if (table.CacheIsValid && table.CacheKey.IsLessThan(key))
                 {
                     table.SeekToKeyAndUpdateCacheValue(key);
                 }
@@ -488,20 +488,20 @@ namespace GSF.SortedTreeStore.Engine.Reader
         {
             if (m_sortedArchiveStreams.Items.Length > 1 && m_sortedArchiveStreams[1].CacheIsValid)
             {
-                m_keyMethods.Copy(m_sortedArchiveStreams[1].CacheKey, m_nextArchiveStreamLowerBounds);
+                m_sortedArchiveStreams[1].CacheKey.CopyTo(m_nextArchiveStreamLowerBounds);
             }
             else
             {
-                m_keyMethods.SetMax(m_nextArchiveStreamLowerBounds);
+                m_nextArchiveStreamLowerBounds.SetMax();
             }
-            m_keyMethods.Copy(m_nextArchiveStreamLowerBounds, m_readWhileUpperBounds);
+            m_nextArchiveStreamLowerBounds.CopyTo(m_readWhileUpperBounds);
 
             //If there is a key seek filter. adjust this bounds if necessary
             if (m_keySeekFilter != null)
             {
-                if (m_keySeekFilter.EndOfFrame.IsLessThan( m_readWhileUpperBounds))
+                if (m_keySeekFilter.EndOfFrame.IsLessThan(m_readWhileUpperBounds))
                 {
-                    m_keyMethods.Copy(m_keySeekFilter.EndOfFrame, m_readWhileUpperBounds);
+                    m_keySeekFilter.EndOfFrame.CopyTo(m_readWhileUpperBounds);
                 }
             }
         }
