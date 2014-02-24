@@ -25,7 +25,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using GSF.IO.Unmanaged;
 
 namespace GSF.IO.Unmanaged
 {

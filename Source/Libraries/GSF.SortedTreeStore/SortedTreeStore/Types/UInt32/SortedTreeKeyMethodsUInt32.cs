@@ -29,76 +29,7 @@ namespace GSF.SortedTreeStore.Types
     public class SortedTreeKeyMethodsUInt32
         : SortedTreeTypeMethods<SortedTreeUInt32>
     {
-        // {03F4BD3A-D9CF-4358-B175-A9D38BE6715A}
-        public static Guid TypeGuid = new Guid(0x03f4bd3a, 0xd9cf, 0x4358, 0xb1, 0x75, 0xa9, 0xd3, 0x8b, 0xe6, 0x71, 0x5a);
 
-        //protected override int GetSize()
-        //{
-        //    return 4;
-        //}
-
-        //public override void Clear(SortedTreeUInt32 key)
-        //{
-        //    key.Value = 0;
-        //}
-
-        //public override void SetMin(SortedTreeUInt32 key)
-        //{
-        //    key.Value = uint.MinValue;
-        //}
-
-        //public override void SetMax(SortedTreeUInt32 key)
-        //{
-        //    key.Value = uint.MaxValue;
-        //}
-
-        //public override int CompareTo(SortedTreeUInt32 left, SortedTreeUInt32 right)
-        //{
-        //    return left.Value.CompareTo(right.Value);
-        //}
-
-        //public override unsafe void Write(byte* stream, SortedTreeUInt32 data)
-        //{
-        //    *(uint*)stream = data.Value;
-        //}
-
-        //public override unsafe void Read(byte* stream, SortedTreeUInt32 data)
-        //{
-        //    data.Value = *(uint*)stream;
-        //}
-
-        //public override Guid GenericTypeGuid
-        //{
-        //    get
-        //    {
-        //        return TypeGuid;
-        //    }
-        //}
-
-        //public override unsafe void Copy(SortedTreeUInt32 source, SortedTreeUInt32 destination)
-        //{
-        //    destination.Value = source.Value;
-        //}
-
-        //public override bool IsBetween(SortedTreeUInt32 lowerBounds, SortedTreeUInt32 key, SortedTreeUInt32 upperBounds)
-        //{
-        //    uint v1 = lowerBounds.Value;
-        //    uint v2 = key.Value;
-        //    uint v3 = upperBounds.Value;
-        //    return v1 <= v2 & v2 < v3;
-        //}
-
-        //public override bool IsLessThan(SortedTreeUInt32 left, SortedTreeUInt32 right)
-        //{
-        //    return left.Value < right.Value;
-        //}
-
-        //public override bool IsLessThanOrEqualTo(SortedTreeUInt32 left, SortedTreeUInt32 right)
-        //{
-        //    return left.Value <= right.Value;
-        //}
-
-        //ToDo: Origional
         public override unsafe int BinarySearch(byte* pointer, SortedTreeUInt32 key2, int recordCount, int keyValueSize)
         {
             int lastFoundIndex = LastFoundIndex;

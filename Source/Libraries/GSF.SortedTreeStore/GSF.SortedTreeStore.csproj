@@ -197,8 +197,6 @@
     <Compile Include="Collections\SupportsReadonlyAutoBase`1.cs" />
     <Compile Include="Collections\SupportsReadonlyBase`1.cs" />
     <Compile Include="SortedTreeStore\Engine\EngineKeyBase%271.cs" />
-    <Compile Include="SortedTreeStore\Types\UInt128\SortedTreeUInt128.cs" />
-    <Compile Include="SortedTreeStore\Types\UInt128\SortedTreeKeyMethodsUInt128.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeKeyMethodsUInt32.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeUInt32.cs" />
     <Compile Include="SortedTreeStore\Net\Compression\CompressedStream.cs" />

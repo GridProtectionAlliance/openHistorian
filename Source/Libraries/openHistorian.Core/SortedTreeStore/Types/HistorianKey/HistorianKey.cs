@@ -26,7 +26,6 @@ using System.Collections;
 using GSF.IO;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Net.Compression;
-using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
@@ -38,17 +37,6 @@ namespace openHistorian.Collections
     public class HistorianKey
         : EngineKeyBase<HistorianKey>
     {
-        // These values are inherited from base class:
-        ///// <summary>
-        ///// The timestamp stored as native ticks. 
-        ///// </summary>
-        //public ulong Timestamp;
-
-        ///// <summary>
-        ///// The id number of the point.
-        ///// </summary>
-        //public ulong PointID;
-
         // TODO: Engine, not user, should accommodate incrementing EntryNumber for duplicates.
         /// <summary>
         /// The number of the entry. This allows for duplicate values to be stored using the same Timestamp and PointID.
@@ -57,6 +45,23 @@ namespace openHistorian.Collections
         /// When writing data, this property is managed by the historian engine. Do not change this value in your code.
         /// </remarks>
         public ulong EntryNumber;
+
+        public override Guid GenericTypeGuid
+        {
+            get
+            {
+                // {6527D41B-9D04-4BFA-8133-05273D521D46}
+                return new Guid(0x6527d41b, 0x9d04, 0x4bfa, 0x81, 0x33, 0x05, 0x27, 0x3d, 0x52, 0x1d, 0x46);
+            }
+        }
+
+        public override int Size
+        {
+            get
+            {
+                return 24;
+            }
+        }
 
         /// <summary>
         /// Sets all of the values in this class to their minimum value
@@ -76,23 +81,6 @@ namespace openHistorian.Collections
             Timestamp = ulong.MaxValue;
             PointID = ulong.MaxValue;
             EntryNumber = ulong.MaxValue;
-        }
-
-        public override Guid GenericTypeGuid
-        {
-            get
-            {
-                // {6527D41B-9D04-4BFA-8133-05273D521D46}
-                return new Guid(0x6527d41b, 0x9d04, 0x4bfa, 0x81, 0x33, 0x05, 0x27, 0x3d, 0x52, 0x1d, 0x46);
-            }
-        }
-
-        public override int Size
-        {
-            get
-            {
-                return 24;
-            }
         }
 
         /// <summary>
@@ -117,6 +105,13 @@ namespace openHistorian.Collections
             stream.Write(Timestamp);
             stream.Write(PointID);
             stream.Write(EntryNumber);
+        }
+
+        public override void CopyTo(HistorianKey destination)
+        {
+            destination.Timestamp = Timestamp;
+            destination.PointID = PointID;
+            destination.EntryNumber = EntryNumber;
         }
 
         /// <summary>
@@ -169,11 +164,6 @@ namespace openHistorian.Collections
             }
         }
 
-        public override SortedTreeTypeMethods<HistorianKey> CreateValueMethods()
-        {
-            return new KeyMethodsHistorianKey();
-        }
-
         public override IEnumerable GetEncodingMethods()
         {
             var list = new ArrayList();
@@ -191,5 +181,82 @@ namespace openHistorian.Collections
         {
             return TimestampAsDate.ToString("MM/dd/yyyy HH:mm:ss.fffffff") + " " + PointID.ToString();
         }
+
+
+
+        #region [ Optional Overrides ]
+
+        // Read(byte*)
+        // Write(byte*)
+        // IsLessThan(T)
+        // IsEqualTo(T)
+        // IsGreaterThan(T)
+        // IsLessThanOrEqualTo(T)
+        // IsBetween(T,T)
+
+        public override unsafe void Read(byte* stream)
+        {
+            Timestamp = *(ulong*)stream;
+            PointID = *(ulong*)(stream + 8);
+            EntryNumber = *(ulong*)(stream + 16);
+        }
+        public override unsafe void Write(byte* stream)
+        {
+            *(ulong*)stream = Timestamp;
+            *(ulong*)(stream + 8) = PointID;
+            *(ulong*)(stream + 16) = EntryNumber;
+        }
+        public override bool IsLessThan(HistorianKey right)
+        {
+            if (Timestamp != right.Timestamp)
+                return Timestamp < right.Timestamp;
+
+            //Implide left.Timestamp == right.Timestamp
+            if (PointID != right.PointID)
+                return PointID < right.PointID;
+
+            //Implide left.EntryNumber == right.EntryNumber
+            return EntryNumber < right.EntryNumber;
+        }
+        public override bool IsEqualTo(HistorianKey right)
+        {
+            return Timestamp == right.Timestamp && PointID == right.PointID && EntryNumber == right.EntryNumber;
+        }
+        public override bool IsGreaterThan(HistorianKey right)
+        {
+            if (Timestamp != right.Timestamp)
+                return Timestamp > right.Timestamp;
+
+            //Implide left.Timestamp == right.Timestamp
+            if (PointID != right.PointID)
+                return PointID > right.PointID;
+
+            //Implide left.EntryNumber == right.EntryNumber
+            return EntryNumber > right.EntryNumber;
+        }
+        public override bool IsGreaterThanOrEqualTo(HistorianKey right)
+        {
+            if (Timestamp != right.Timestamp)
+                return Timestamp > right.Timestamp;
+
+            //Implide left.Timestamp == right.Timestamp
+            if (PointID != right.PointID)
+                return PointID > right.PointID;
+
+            //Implide left.EntryNumber == right.EntryNumber
+            return EntryNumber >= right.EntryNumber;
+        }
+
+        //public override bool IsBetween(HistorianKey lowerBounds, HistorianKey upperBounds)
+        //{
+        //    
+        //}
+
+        //public override SortedTreeTypeMethods<HistorianKey> CreateValueMethods()
+        //{
+        //    
+        //}
+
+        #endregion
     }
 }

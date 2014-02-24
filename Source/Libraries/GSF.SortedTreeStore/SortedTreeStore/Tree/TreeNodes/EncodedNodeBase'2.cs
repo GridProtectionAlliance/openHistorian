@@ -334,7 +334,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 SeekTo(key, buffer);
             if (m_currentIndex == RecordCount) //Beyond the end of the list
                 return ~RecordCount;
-            if (m_currentKey.IsEqual(key))
+            if (m_currentKey.IsEqualTo(key))
                 return m_currentIndex;
             return ~m_currentIndex;
         }

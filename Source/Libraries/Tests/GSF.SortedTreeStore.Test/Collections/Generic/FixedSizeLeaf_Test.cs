@@ -172,6 +172,14 @@ namespace GSF.SortedTreeStore.Tree
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
         }
 
+        [Test]
+        public void BenchmarkBigRandom()
+        {
+            TreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32> tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
+
+            LeafNodeTest.TestSpeed(tree, new RandomTest(), 5000, 4096);
+        }
+
         //        [Test]
         //        public void TestReverseSequently()
         //        {

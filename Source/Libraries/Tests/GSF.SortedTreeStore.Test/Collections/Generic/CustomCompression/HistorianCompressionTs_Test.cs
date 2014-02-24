@@ -189,5 +189,7 @@ namespace GSF.SortedTreeStore.Tree.CustomCompression
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
         }
+
+     
     }
 }

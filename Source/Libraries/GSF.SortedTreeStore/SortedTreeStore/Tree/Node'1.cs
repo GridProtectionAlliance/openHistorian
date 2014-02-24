@@ -378,7 +378,6 @@ namespace GSF.SortedTreeStore.Tree
         public void CreateEmptyNode(uint newNodeIndex)
         {
             var key = new TKey();
-
             byte* ptr = Stream.GetWritePointer(newNodeIndex * BlockSize, BlockSize);
             ptr[OffsetOfVersion] = Version;
             ptr[OffsetOfNodeLevel] = Level;
@@ -386,8 +385,10 @@ namespace GSF.SortedTreeStore.Tree
             *(ushort*)(ptr + OffsetOfValidBytes) = (ushort)HeaderSize;
             *(uint*)(ptr + OffsetOfLeftSibling) = uint.MaxValue;
             *(uint*)(ptr + OffsetOfRightSibling) = uint.MaxValue;
-            KeyMethods.WriteMin(ptr + OffsetOfLowerBounds);
-            KeyMethods.WriteMax(ptr + OffsetOfUpperBounds);
+            key.SetMin();
+            key.Write(ptr + OffsetOfLowerBounds);
+            key.SetMax();
+            key.Write(ptr + OffsetOfUpperBounds);
             SetNodeIndex(newNodeIndex);
         }
 

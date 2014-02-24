@@ -31,15 +31,16 @@ namespace GSF.SortedTreeStore.Collection
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-
-        SortedTreeTypeMethods<TKey> m_keyMethods;
-        SortedTreeTypeMethods<TValue> m_valueMethods;
+        TKey m_tmpKey1;
+        TKey m_tmpKey2;
+        TValue m_tmpValue;
 
         public PointCollection(int capacity)
         {
-            m_keyMethods = new TKey().CreateValueMethods();
-            m_valueMethods = new TValue().CreateValueMethods();
-            Initialize(capacity, new TKey().Size, new TValue().Size);
+            m_tmpKey1 = new TKey();
+            m_tmpKey2 = new TKey();
+            m_tmpValue = new TValue();
+            Initialize(capacity, m_tmpKey1.Size, m_tmpValue.Size);
         }
 
         public override void UnDequeue(TKey key, TValue value)
@@ -102,8 +103,8 @@ namespace GSF.SortedTreeStore.Collection
                 throw new Exception();
             fixed (byte* lp = RawData)
             {
-                m_keyMethods.Copy(keyValue, lp + EnqueuePosition);
-                m_valueMethods.Copy(keyValue + KeySize, lp + EnqueuePosition + KeySize);
+                m_tmpKey1.MethodCopy(keyValue, lp + EnqueuePosition);
+                m_tmpValue.MethodCopy(keyValue + KeySize, lp + EnqueuePosition + KeySize);
                 EnqueuePosition += PointSize;
             }
         }
@@ -118,7 +119,11 @@ namespace GSF.SortedTreeStore.Collection
                 return -1;
             fixed (byte* left = &RawData[DequeuePosition])
             fixed (byte* right = &other.RawData[other.DequeuePosition])
-                return m_keyMethods.CompareTo(left, right);
+            {
+                m_tmpKey1.Read(left);
+                m_tmpKey2.Read(right);
+                return m_tmpKey1.CompareTo(m_tmpKey2);
+            }
         }
 
         public override int CompareTo(TKey other)
@@ -127,7 +132,8 @@ namespace GSF.SortedTreeStore.Collection
                 return 1;
             fixed (byte* left = &RawData[DequeuePosition])
             {
-                return m_keyMethods.CompareTo(left, other);
+                m_tmpKey1.Read(left);
+                return m_tmpKey1.CompareTo(other);
             }
         }
 

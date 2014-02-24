@@ -240,7 +240,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 return false;
 
             //Check if Condition 3's exception occured.
-            if (m_firstTable.CacheKey.IsEqual(m_keySeekFilter.EndOfFrame))
+            if (m_firstTable.CacheKey.IsEqualTo(m_keySeekFilter.EndOfFrame))
             {
                 //This is the exception clause. I will advance the frame, but will still need to return the current point.
                 m_firstTable.Scanner.Read(key, value);

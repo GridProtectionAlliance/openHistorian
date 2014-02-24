@@ -73,7 +73,7 @@ namespace GSF.SortedTreeStore.Tree
                         randomizer.GetRandom(y, key, value);
                         if (!node.TryGet(key, value2))
                             throw new Exception();
-                        if (!value.IsEqual(value2))
+                        if (!value.IsEqualTo(value2))
                             throw new Exception();
                     }
 
@@ -85,9 +85,9 @@ namespace GSF.SortedTreeStore.Tree
                         randomizer.GetInSequence(y, key, value);
                         if (!scanner.Read())
                             throw new Exception();
-                        if (!key.IsEqual(scanner.CurrentKey))
+                        if (!key.IsEqualTo(scanner.CurrentKey))
                             throw new Exception();
-                        if (!value.IsEqual(scanner.CurrentValue))
+                        if (!value.IsEqualTo(scanner.CurrentValue))
                             throw new Exception();
                     }
                     if (scanner.Read())

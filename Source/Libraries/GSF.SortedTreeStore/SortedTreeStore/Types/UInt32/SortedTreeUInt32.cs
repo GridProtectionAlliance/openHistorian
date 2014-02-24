@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
@@ -43,32 +42,6 @@ namespace GSF.SortedTreeStore.Types
             Value = value;
         }
 
-
-        public override SortedTreeTypeMethods<SortedTreeUInt32> CreateValueMethods()
-        {
-            return new SortedTreeKeyMethodsUInt32();
-        }
-
-        public override IEnumerable GetEncodingMethods()
-        {
-            return null;
-        }
-
-        public override int CompareTo(SortedTreeUInt32 other)
-        {
-            return Value.CompareTo(other.Value);
-        }
-
-        public override void SetMin()
-        {
-            Value = uint.MinValue;
-        }
-
-        public override void SetMax()
-        {
-            Value = uint.MaxValue;
-        }
-
         public override Guid GenericTypeGuid
         {
             get
@@ -86,6 +59,26 @@ namespace GSF.SortedTreeStore.Types
             }
         }
 
+        public override void CopyTo(SortedTreeUInt32 destination)
+        {
+            destination.Value = Value;
+        }
+
+        public override int CompareTo(SortedTreeUInt32 other)
+        {
+            return Value.CompareTo(other.Value);
+        }
+
+        public override void SetMin()
+        {
+            Value = uint.MinValue;
+        }
+
+        public override void SetMax()
+        {
+            Value = uint.MaxValue;
+        }
+
         public override void Clear()
         {
             Value = 0;
@@ -100,6 +93,54 @@ namespace GSF.SortedTreeStore.Types
         {
             stream.Write(Value);
         }
+
+        #region [ Optional Overrides ]
+
+        // Read(byte*)
+        // Write(byte*)
+        // IsLessThan(T)
+        // IsEqualTo(T)
+        // IsGreaterThan(T)
+        // IsLessThanOrEqualTo(T)
+        // IsBetween(T,T)
+
+        public override unsafe void Read(byte* stream)
+        {
+            Value = *(uint*)(stream);
+        }
+        public override unsafe void Write(byte* stream)
+        {
+            *(uint*)(stream) = Value;
+        }
+        public override bool IsLessThan(SortedTreeUInt32 right)
+        {
+            return Value < right.Value;
+        }
+        public override bool IsEqualTo(SortedTreeUInt32 right)
+        {
+            return Value == right.Value;
+
+        }
+        public override bool IsGreaterThan(SortedTreeUInt32 right)
+        {
+            return Value > right.Value;
+
+        }
+        public override bool IsGreaterThanOrEqualTo(SortedTreeUInt32 right)
+        {
+            return Value >= right.Value;
+        }
+        public override bool IsBetween(SortedTreeUInt32 lowerBounds, SortedTreeUInt32 upperBounds)
+        {
+            return lowerBounds.Value <= Value && Value < upperBounds.Value;
+        }
+
+        public override SortedTreeTypeMethods<SortedTreeUInt32> CreateValueMethods()
+        {
+            return new SortedTreeKeyMethodsUInt32();
+        }
+
+        #endregion
     }
 
 }

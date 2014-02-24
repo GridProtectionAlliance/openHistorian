@@ -24,7 +24,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using GSF.IO;
 using GSF.IO.Unmanaged;
 
@@ -34,10 +33,27 @@ namespace GSF.SortedTreeStore.Tree
     /// The interface that is required to use as a value in <see cref="SortedTree"/> 
     /// </summary>
     /// <typeparam name="T">A class that has a default constructor</typeparam>
+    /// <remarks>
+    /// It is highly recommended to override many of the base class methods as many of these methods are slow.
+    /// 
+    /// The following methods should be overriden if possible:
+    /// Read(byte*)
+    /// Write(byte*)
+    /// IsLessThan(T)
+    /// IsEqualTo(T)
+    /// IsGreaterThan(T)
+    /// IsLessThanOrEqualTo(T)
+    /// IsBetween(T,T)
+    /// 
+    /// For better random I/O inserts, it is also a good idea to implement a custom
+    /// <see cref="SortedTreeTypeMethods{T}"/> that overrides 
+    /// the <see cref="SortedTreeTypeMethods{T}.BinarySearch"/> method.
+    /// </remarks>
     public abstract class SortedTreeTypeBase<T>
         : IComparable<T>, IEquatable<T>, IComparer<T>
         where T : SortedTreeTypeBase<T>, new()
     {
+
 
         /// <summary>
         /// The Guid uniquely defining this type. 
@@ -52,12 +68,30 @@ namespace GSF.SortedTreeStore.Tree
         public abstract int Size { get; }
 
         /// <summary>
+        /// Copies the source to the destination
+        /// </summary>
+        /// <param name="destination"></param>
+        public abstract void CopyTo(T destination);
+
+        /// <summary>
         /// Compares the current instance to <see cref="other"/>.
         /// </summary>
         /// <param name="other">the key to compare to</param>
         /// <returns></returns>
         public abstract int CompareTo(T other);
         
+        /// <summary>
+        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <returns>
+        /// A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>, as shown in the following table.Value Meaning Less than zero<paramref name="x"/> is less than <paramref name="y"/>.Zero<paramref name="x"/> equals <paramref name="y"/>.Greater than zero<paramref name="x"/> is greater than <paramref name="y"/>.
+        /// </returns>
+        /// <param name="x">The first object to compare.</param><param name="y">The second object to compare.</param>
+        public virtual int Compare(T x, T y)
+        {
+            return x.CompareTo(y);
+        }
+
         /// <summary>
         /// Sets the provided key to it's minimum value
         /// </summary>
@@ -106,45 +140,6 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Reads the provided key from the BinaryReader.
-        /// </summary>
-        /// <param name="reader"></param>
-        public virtual unsafe void Read(BinaryReader reader)
-        {
-            byte* ptr = stackalloc byte[Size];
-            for (int x = 0; x < Size; x++)
-            {
-                ptr[x] = reader.ReadByte();
-            }
-            Read(ptr);
-        }
-
-        /// <summary>
-        /// Writes the provided data to the BinaryWriter
-        /// </summary>
-        /// <param name="writer"></param>
-        public virtual unsafe void Write(BinaryWriter writer)
-        {
-            byte* ptr = stackalloc byte[Size];
-            Write(ptr);
-            for (int x = 0; x < Size; x++)
-            {
-                writer.Write(ptr[x]);
-            }
-        }
-
-        /// <summary>
-        /// Copies the source to the destination
-        /// </summary>
-        /// <param name="destination"></param>
-        public virtual unsafe void CopyTo(T destination)
-        {
-            byte* ptr = stackalloc byte[Size];
-            Write(ptr);
-            destination.Read(ptr);
-        }
-
-        /// <summary>
         /// Creates a class that contains the necessary methods for the SortedTree.
         /// </summary>
         /// <returns></returns>
@@ -163,13 +158,13 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Is the current instance equal to <see cref="other"/>
+        /// Is the current instance equal to <see cref="right"/>
         /// </summary>
-        /// <param name="other">the key to compare to</param>
+        /// <param name="right">the key to compare to</param>
         /// <returns></returns>
-        public virtual bool IsEqualTo(T other)
+        public virtual bool IsEqualTo(T right)
         {
-            return CompareTo(other) == 0;
+            return CompareTo(right) == 0;
         }
 
         /// <summary>
@@ -185,15 +180,13 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// Gets if left != right.
         /// </summary>
-        /// <returns>
-        /// A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>, as shown in the following table.Value Meaning Less than zero<paramref name="x"/> is less than <paramref name="y"/>.Zero<paramref name="x"/> equals <paramref name="y"/>.Greater than zero<paramref name="x"/> is greater than <paramref name="y"/>.
-        /// </returns>
-        /// <param name="x">The first object to compare.</param><param name="y">The second object to compare.</param>
-        public virtual int Compare(T x, T y)
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public virtual bool IsNotEqualTo(T right)
         {
-            return x.CompareTo(y);
+            return CompareTo(right) != 0;
         }
 
         /// <summary>
@@ -204,7 +197,6 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual bool IsBetween(T lowerBounds, T upperBounds)
         {
-            //return !IsGreaterThan(lowerBounds) && IsLessThan(upperBounds);
             return lowerBounds.IsLessThanOrEqualTo((T)this) && IsLessThan(upperBounds);
         }
 
@@ -229,16 +221,6 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Gets if left != right.
-        /// </summary>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual bool IsNotEqual(T right)
-        {
-            return CompareTo(right) != 0;
-        }
-
-        /// <summary>
         /// Gets if left &gt; right.
         /// </summary>
         /// <param name="right"></param>
@@ -259,13 +241,13 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Gets if left == right.
+        /// Executes a copy command without modifying the current class.
         /// </summary>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public virtual bool IsEqual(T right)
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        public virtual unsafe void MethodCopy(byte* source, byte* destination)
         {
-            return CompareTo(right) == 0;
+            Memory.Copy(source, destination, Size);
         }
 
     }

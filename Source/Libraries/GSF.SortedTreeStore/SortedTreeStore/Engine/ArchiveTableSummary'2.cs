@@ -125,7 +125,7 @@ namespace GSF.SortedTreeStore.Engine
             //If the archive file is empty, it will always be searched.  
             //Since this will likely never happen and has little performance 
             //implications, I have decided not to include logic that would exclude this case.
-            return !(startKey.IsGreaterThan(LastKey) || stopKey.IsLessThan( FirstKey));
+            return !(startKey.IsGreaterThan(LastKey) || stopKey.IsLessThan(FirstKey));
         }
 
         #endregion
