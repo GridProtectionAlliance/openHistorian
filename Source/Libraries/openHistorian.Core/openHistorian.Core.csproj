@@ -95,6 +95,7 @@
     <Compile Include="SortedTreeStore\Types\CustomCompression\Delta\HistorianCompressionDelta.cs" />
     <Compile Include="SortedTreeStore\Types\CustomCompression\Delta\HistorianCompressionDeltaScanner.cs" />
     <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\CreateHistorianCompressionTs.cs" />
+    <Compile Include="SortedTreeStore\Types\CustomCompression\HistorianStreamEncoding.cs" />
     <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTs.cs" />
     <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\HistorianCompressionTsScanner.cs" />
     <Compile Include="SortedTreeStore\Types\CustomCompression\Ts\TsCombinedEncoding.cs" />

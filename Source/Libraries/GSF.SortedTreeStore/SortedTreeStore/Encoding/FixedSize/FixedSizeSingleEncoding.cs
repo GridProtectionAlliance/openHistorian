@@ -69,6 +69,22 @@ namespace GSF.SortedTreeStore.Encoding
             m_size = new T().Size;
         }
 
+        public override bool ContainsEndOfStreamSymbol
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public override byte EndOfStreamSymbol
+        {
+            get
+            {
+                throw new NotSupportedException();
+            }
+        }
+
         public override bool UsesPreviousValue
         {
             get

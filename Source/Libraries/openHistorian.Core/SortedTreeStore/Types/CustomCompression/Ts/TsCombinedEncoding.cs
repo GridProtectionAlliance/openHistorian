@@ -97,6 +97,22 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             }
         }
 
+        public override bool ContainsEndOfStreamSymbol
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public override byte EndOfStreamSymbol
+        {
+            get
+            {
+                throw new NotSupportedException();
+            }
+        }
+
         public override unsafe int Compress(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
         {
             //ToDo: Make stage 1 still work on big endian processors.

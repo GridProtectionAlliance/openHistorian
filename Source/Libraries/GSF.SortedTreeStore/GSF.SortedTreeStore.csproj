@@ -137,6 +137,7 @@
     <Compile Include="SortedTreeStore\Filters\ValueMatchFilterUniverse`1.cs" />
     <Compile Include="SortedTreeStore\Filters\ValueMatchFilterBase`1.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollection.cs" />
+    <Compile Include="SortedTreeStore\Net\Compression\GenericEncodedCompressedStream.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableReadSnapshot`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableSnapshotInfo`2.cs" />

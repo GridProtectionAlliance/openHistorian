@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using System;
 using GSF.IO;
 
 namespace GSF.SortedTreeStore.Encoding
@@ -57,6 +58,22 @@ namespace GSF.SortedTreeStore.Encoding
             get
             {
                 return m_keyEncoding.MaxCompressionSize + m_valueEncoding.MaxCompressionSize;
+            }
+        }
+
+        public override bool ContainsEndOfStreamSymbol
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public override byte EndOfStreamSymbol
+        {
+            get
+            {
+                throw new NotSupportedException();
             }
         }
 

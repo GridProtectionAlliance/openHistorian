@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FixedSizeCombinedEncoding`1.cs - Gbtc
+//  TsCombinedEncoding`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,25 +22,24 @@
 //******************************************************************************************************
 
 using System;
+using GSF;
 using GSF.IO;
-using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Encoding;
+using openHistorian.Scada.AMI;
 
-namespace GSF.SortedTreeStore.Encoding
+namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
 {
-    public class CreateFixedSizeCombinedEncoding
-        : CreateCombinedValuesBase
+    public class CreateAmiCombinedEncoding
+         : CreateCombinedValuesBase
     {
-        // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
-        /// <summary>
-        /// The guid that represents the encoding method of this class
-        /// </summary>
-        public static readonly Guid TypeGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55);
+        // {FEB9D85C-DF2E-477E-A9F3-3ED6C7708A78}
+        public static Guid TypeGuid = new Guid(0xfeb9d85c, 0xdf2e, 0x477e, 0xa9, 0xf3, 0x3e, 0xd6, 0xc7, 0x70, 0x8a, 0x78);
 
         public override Type KeyTypeIfNotGeneric
         {
             get
             {
-                return null;
+                return typeof(AmiKey);
             }
         }
 
@@ -48,7 +47,7 @@ namespace GSF.SortedTreeStore.Encoding
         {
             get
             {
-                return null;
+                return typeof(AmiValue);
             }
         }
 
@@ -62,23 +61,14 @@ namespace GSF.SortedTreeStore.Encoding
 
         public override DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
         {
-            return new FixedSizeCombinedEncoding<TKey, TValue>();
+            return (DoubleValueEncodingBase<TKey, TValue>)(object)(new AmiCombinedEncoding());
         }
     }
 
-    public class FixedSizeCombinedEncoding<TKey, TValue>
-        : DoubleValueEncodingBase<TKey, TValue>
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
+    public class AmiCombinedEncoding
+        : DoubleValueEncodingBase<AmiKey, AmiValue>
     {
-        int m_keySize;
-        int m_valueSize;
 
-        public FixedSizeCombinedEncoding()
-        {
-            m_keySize = new TKey().Size;
-            m_valueSize = new TValue().Size;
-        }
 
         public override bool UsesPreviousKey
         {
@@ -100,7 +90,7 @@ namespace GSF.SortedTreeStore.Encoding
         {
             get
             {
-                return m_keySize + m_valueSize;
+                return 100;
             }
         }
 
@@ -120,21 +110,29 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
-        public override void Compress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public unsafe override void Compress(BinaryStreamBase stream, AmiKey prevKey, AmiValue prevValue, AmiKey key, AmiValue value)
         {
-            key.Write(stream);
-            value.Write(stream);
+            stream.Write(key.Timestamp);
+            stream.Write(key.PointID);
+            stream.Write(value.CollectedTime);
+            stream.Write(value.TableId);
+            stream.Write(value.DataLength);
+            stream.Write(value.Data, 0, value.DataLength);
         }
 
-        public override void Decompress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public unsafe override void Decompress(BinaryStreamBase stream, AmiKey prevKey, AmiValue prevValue, AmiKey key, AmiValue value)
         {
-            key.Read(stream);
-            value.Read(stream);
+            key.Timestamp = stream.ReadUInt64();
+            key.PointID = stream.ReadUInt64();
+            value.CollectedTime = stream.ReadUInt64();
+            value.TableId = stream.ReadInt32();
+            value.DataLength = stream.ReadUInt8();
+            stream.Read(value.Data, 0, value.DataLength);
         }
 
-        public override DoubleValueEncodingBase<TKey, TValue> Clone()
+        public override DoubleValueEncodingBase<AmiKey, AmiValue> Clone()
         {
-            return new FixedSizeCombinedEncoding<TKey, TValue>();
+            return this;
         }
     }
 }

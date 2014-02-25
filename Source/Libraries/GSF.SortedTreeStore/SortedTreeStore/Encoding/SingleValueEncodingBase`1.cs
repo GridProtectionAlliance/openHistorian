@@ -32,6 +32,29 @@ namespace GSF.SortedTreeStore.Encoding
     /// <typeparam name="T"></typeparam>
     public abstract class SingleValueEncodingBase<T>
     {
+        /// <summary>
+        /// Gets if the stream supports a symbol that 
+        /// represents that the end of the stream has been encountered.
+        /// </summary>
+        /// <remarks>
+        /// An example of a symbol would be the byte code 0xFF.
+        /// In this case, if the first byte of the
+        /// word is 0xFF, the encoding has specifically
+        /// designated this as the end of the stream. Therefore, calls to
+        /// Decompress will result in an end of stream exception.
+        /// 
+        /// Failing to reserve a code as the end of stream will mean that
+        /// streaming points will include its own symbol to represent the end of the
+        /// stream, taking 1 extra byte per point encoded.
+        /// </remarks>
+        public abstract bool ContainsEndOfStreamSymbol { get; }
+
+        /// <summary>
+        /// The byte code to use as the end of stream symbol.
+        /// May throw NotSupportedException if <see cref="ContainsEndOfStreamSymbol"/> is false.
+        /// </summary>
+        public abstract byte EndOfStreamSymbol { get; }
+
         public abstract bool UsesPreviousValue { get; }
 
         public abstract int MaxCompressionSize { get; }

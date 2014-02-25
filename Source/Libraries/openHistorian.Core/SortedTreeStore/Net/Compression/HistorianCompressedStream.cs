@@ -32,7 +32,6 @@ namespace GSF.SortedTreeStore.Net.Compression
     public class HistorianCompressedStream
         : KeyValueStreamCompressionBase<HistorianKey, HistorianValue>
     {
-
         ulong m_prevTimestamp;
         ulong m_prevPointID;
 
