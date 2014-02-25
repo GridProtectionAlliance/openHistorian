@@ -97,6 +97,7 @@ ECHO Checking in dependencies...
 %tfs% checkin "%sourcetools%ConfigCrypter.exe" /noprompt /comment:"Updated grid solutions framework tool: ConfigCrypter."
 %tfs% checkin "%sourcetools%ConfigurationEditor.exe" /noprompt /comment:"Updated grid solutions framework tool: ConfigurationEditor."
 %tfs% checkin "%sourcetools%NoInetFixUtil.exe" /noprompt /comment:"Updated grid solutions framework tool: NoInetFixUtil."
+%tfs% checkin "%targetschema%" /noprompt /recursive /comment:"Updated database schema definitions from GSF source."
 
 :Finalize
 ECHO.
