@@ -82,7 +82,7 @@ namespace GSF.SortedTreeStore.Net.Compression
 
         public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
-            m_encoding.Compress(stream, m_prevKey, m_prevValue, currentKey, currentValue);
+            m_encoding.Encode(stream, m_prevKey, m_prevValue, currentKey, currentValue);
             currentKey.CopyTo(m_prevKey);
             currentValue.CopyTo(m_prevValue);
         }
@@ -99,18 +99,11 @@ namespace GSF.SortedTreeStore.Net.Compression
                 if (stream.ReadUInt8() == 0)
                     return false;
             }
-            else
-            {
-                throw new NotImplementedException();
-                //ToDo: Implement a Peek() function on the stream.
-                //if (stream.Peek() == m_encoding.EndOfStreamSymbol)
-                //    return false;
-            }
-
-            m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
+            bool endOfStream;
+            m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
             key.CopyTo(m_prevKey);
             value.CopyTo(m_prevValue);
-            return true;
+            return endOfStream;
         }
 
         public override void ResetEncoder()

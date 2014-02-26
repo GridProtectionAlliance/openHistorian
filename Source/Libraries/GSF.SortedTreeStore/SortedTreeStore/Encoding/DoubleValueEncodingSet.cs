@@ -77,16 +77,33 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
-        public override void Compress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public override void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
         {
-            m_keyEncoding.Compress(stream, prevKey, key);
-            m_valueEncoding.Compress(stream, prevValue, value);
+            m_keyEncoding.Encode(stream, prevKey, key);
+            m_valueEncoding.Encode(stream, prevValue, value);
         }
 
-        public override void Decompress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public override void Decode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool endOfStream)
         {
-            m_keyEncoding.Decompress(stream, prevKey, key);
-            m_valueEncoding.Decompress(stream, prevValue, value);
+            m_keyEncoding.Decode(stream, prevKey, key,out endOfStream);
+            if (endOfStream)
+                return;
+            m_valueEncoding.Decode(stream, prevValue, value, out endOfStream);
+        }
+
+        public override unsafe int Decode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool endOfStream)
+        {
+            int length = m_keyEncoding.Decode(stream, prevKey, key, out endOfStream);
+            if (endOfStream)
+                return length;
+            length += m_valueEncoding.Decode(stream + length, prevValue, value, out endOfStream);
+            return length;
+        }
+        public override unsafe int Encode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        {
+            int length = m_keyEncoding.Encode(stream, prevKey, key);
+            length += m_valueEncoding.Encode(stream + length, prevValue, value);
+            return length;
         }
 
         public override DoubleValueEncodingBase<TKey, TValue> Clone()

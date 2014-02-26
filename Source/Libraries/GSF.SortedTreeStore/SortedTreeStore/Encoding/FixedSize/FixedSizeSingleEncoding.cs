@@ -101,13 +101,14 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
-        public override unsafe void Compress(BinaryStreamBase stream, T prevValue, T value)
+        public override unsafe void Encode(BinaryStreamBase stream, T prevValue, T value)
         {
             value.Write(stream);
         }
 
-        public override unsafe void Decompress(BinaryStreamBase stream, T prevValue, T value)
+        public override unsafe void Decode(BinaryStreamBase stream, T prevValue, T value, out bool endOfStream)
         {
+            endOfStream = false;
             value.Read(stream);
         }
 

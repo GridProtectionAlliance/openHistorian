@@ -113,7 +113,7 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             }
         }
 
-        public override unsafe int Compress(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
+        public override unsafe int Encode(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
         {
             //ToDo: Make stage 1 still work on big endian processors.
             int size = 0;
@@ -225,8 +225,9 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             }
             return size;
         }
-        public override unsafe int Decompress(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
+        public override unsafe int Decode(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool endOfStream)
         {
+            endOfStream = false;
             int size = 0;
             uint code = stream[0];
             //Compression Stages:
@@ -336,15 +337,16 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             return size;
         }
 
-        public unsafe override void Compress(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
+        public unsafe override void Encode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
         {
             byte* ptr = stackalloc byte[MaxCompressionSize];
-            int length = Compress(ptr, prevKey, prevValue, key, value);
+            int length = Encode(ptr, prevKey, prevValue, key, value);
             stream.Write(ptr, length);
         }
 
-        public unsafe override void Decompress(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
+        public unsafe override void Decode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool endOfStream)
         {
+            endOfStream = false;
             uint code = stream.ReadUInt8();
             byte b1;
             byte b2;

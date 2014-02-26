@@ -120,14 +120,15 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
-        public override void Compress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public override void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
         {
             key.Write(stream);
             value.Write(stream);
         }
 
-        public override void Decompress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public override void Decode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool endOfStream)
         {
+            endOfStream = false;
             key.Read(stream);
             value.Read(stream);
         }

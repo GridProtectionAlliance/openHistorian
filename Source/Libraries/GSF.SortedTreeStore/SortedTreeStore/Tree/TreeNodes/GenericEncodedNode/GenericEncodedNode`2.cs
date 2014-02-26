@@ -76,12 +76,13 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
 
         protected override int EncodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
         {
-            return m_encoding.Compress(stream, prevKey, prevValue, currentKey, currentValue);
+            return m_encoding.Encode(stream, prevKey, prevValue, currentKey, currentValue);
         }
 
         protected override int DecodeRecord(byte* stream, TKey prevKey, TValue prevValue, TKey currentKey, TValue currentValue)
         {
-            return m_encoding.Decompress(stream, prevKey, prevValue, currentKey, currentValue);
+            bool endOfStream;
+            return m_encoding.Decode(stream, prevKey, prevValue, currentKey, currentValue, out endOfStream);
         }
 
         protected override int MaximumStorageSize

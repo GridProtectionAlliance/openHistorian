@@ -75,13 +75,15 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         protected override void InternalPeek(TKey key, TValue value)
         {
             byte* stream = Pointer + m_nextOffset;
-            m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
+            bool endOfStream;
+            m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
         }
 
         protected override void InternalRead(TKey key, TValue value)
         {
             byte* stream = Pointer + m_nextOffset;
-            int length = m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
+            bool endOfStream;
+            int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
             key.CopyTo(m_prevKey);
             value.CopyTo(m_prevValue);
             m_nextOffset += length;
@@ -92,7 +94,8 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         {
         TryAgain:
             byte* stream = Pointer + m_nextOffset;
-            int length = m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
+            bool endOfStream;
+            int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
             key.CopyTo(m_prevKey);
             value.CopyTo(m_prevValue);
             m_nextOffset += length;
@@ -109,9 +112,10 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         protected override bool InternalReadWhile(TKey key, TValue value, TKey upperBounds)
         {
             byte* stream = Pointer + m_nextOffset;
-            int length = m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
+            bool endOfStream;
+            int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
 
-            if (key.IsLessThan( upperBounds))
+            if (key.IsLessThan(upperBounds))
             {
                 key.CopyTo(m_prevKey);
                 value.CopyTo(m_prevValue);
@@ -127,9 +131,10 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
         TryAgain:
 
             byte* stream = Pointer + m_nextOffset;
-            int length = m_encoding.Decompress(stream, m_prevKey, m_prevValue, key, value);
+            bool endOfStream;
+            int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
 
-            if (key.IsLessThan( upperBounds))
+            if (key.IsLessThan(upperBounds))
             {
                 key.CopyTo(m_prevKey);
                 value.CopyTo(m_prevValue);

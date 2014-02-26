@@ -110,7 +110,7 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             }
         }
 
-        public unsafe override void Compress(BinaryStreamBase stream, AmiKey prevKey, AmiValue prevValue, AmiKey key, AmiValue value)
+        public unsafe override void Encode(BinaryStreamBase stream, AmiKey prevKey, AmiValue prevValue, AmiKey key, AmiValue value)
         {
             stream.Write(key.Timestamp);
             stream.Write(key.PointID);
@@ -120,8 +120,9 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             stream.Write(value.Data, 0, value.DataLength);
         }
 
-        public unsafe override void Decompress(BinaryStreamBase stream, AmiKey prevKey, AmiValue prevValue, AmiKey key, AmiValue value)
+        public unsafe override void Decode(BinaryStreamBase stream, AmiKey prevKey, AmiValue prevValue, AmiKey key, AmiValue value, out bool endOfStream)
         {
+            endOfStream = false;
             key.Timestamp = stream.ReadUInt64();
             key.PointID = stream.ReadUInt64();
             value.CollectedTime = stream.ReadUInt64();

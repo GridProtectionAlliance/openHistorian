@@ -113,7 +113,7 @@ namespace GSF.SortedTreeStore.Net.Compression
             }
         }
 
-        public unsafe override void Compress(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey currentKey, HistorianValue currentValue)
+        public unsafe override void Encode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey currentKey, HistorianValue currentValue)
         {
             if (currentKey.Timestamp == prevKey.Timestamp
                 && ((currentKey.PointID ^ prevKey.PointID) < 64)
@@ -180,11 +180,15 @@ namespace GSF.SortedTreeStore.Net.Compression
 
         }
 
-        public override void Decompress(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
+        public override void Decode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool endOfStream)
         {
+            endOfStream = false;
             byte code = stream.ReadUInt8();
             if (code == 255)
-                throw new EndOfStreamException("End of the stream has been reached");
+            {
+                endOfStream = true;
+                return;
+            }
 
             if (code < 128)
             {

@@ -59,21 +59,21 @@ namespace GSF.SortedTreeStore.Encoding
 
         public abstract int MaxCompressionSize { get; }
 
-        public abstract void Compress(BinaryStreamBase stream, T prevValue, T value);
+        public abstract void Encode(BinaryStreamBase stream, T prevValue, T value);
 
-        public abstract void Decompress(BinaryStreamBase stream, T prevValue, T value);
+        public abstract void Decode(BinaryStreamBase stream, T prevValue, T value, out bool isEndOfStream);
 
-        public unsafe virtual int Compress(byte* stream, int length, T prevValue, T value)
+        public unsafe virtual int Encode(byte* stream, T prevValue, T value)
         {
-            var bs = new BinaryStreamPointerWrapper(stream, length);
-            Compress(bs, prevValue, value);
+            var bs = new BinaryStreamPointerWrapper(stream, MaxCompressionSize);
+            Encode(bs, prevValue, value);
             return (int)bs.Position;
         }
 
-        public unsafe virtual int Decompress(byte* stream, int length, T prevValue, T value)
+        public unsafe virtual int Decode(byte* stream, T prevValue, T value, out bool isEndOfStream)
         {
-            var bs = new BinaryStreamPointerWrapper(stream, length);
-            Decompress(bs, prevValue, value);
+            var bs = new BinaryStreamPointerWrapper(stream, MaxCompressionSize);
+            Decode(bs, prevValue, value, out isEndOfStream);
             return (int)bs.Position;
         }
 

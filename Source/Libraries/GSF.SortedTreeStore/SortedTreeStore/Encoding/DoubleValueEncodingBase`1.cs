@@ -57,23 +57,23 @@ namespace GSF.SortedTreeStore.Encoding
         /// </summary>
         public abstract byte EndOfStreamSymbol { get; }
 
-        public unsafe virtual int Compress(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public unsafe virtual int Encode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
         {
             var bs = new BinaryStreamPointerWrapper(stream, MaxCompressionSize);
-            Compress(bs, prevKey, prevValue, key, value);
+            Encode(bs, prevKey, prevValue, key, value);
             return (int)bs.Position;
         }
 
-        public unsafe virtual int Decompress(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public unsafe virtual int Decode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream)
         {
             var bs = new BinaryStreamPointerWrapper(stream, MaxCompressionSize);
-            Decompress(bs, prevKey, prevValue, key, value);
+            Decode(bs, prevKey, prevValue, key, value, out isEndOfStream);
             return (int)bs.Position;
         }
 
-        public abstract void Compress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value);
+        public abstract void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value);
 
-        public abstract void Decompress(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value);
+        public abstract void Decode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream);
 
         public abstract DoubleValueEncodingBase<TKey, TValue> Clone();
     }

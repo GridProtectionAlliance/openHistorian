@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 #if !DEBUG
-//#define RunAsService
+#define RunAsService
 #endif
 
 #if RunAsService
