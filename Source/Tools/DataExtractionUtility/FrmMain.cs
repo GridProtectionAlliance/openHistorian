@@ -6,9 +6,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DataExtractionUtility.Properties;
+using GSF;
 using GSF.IO;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Net;
@@ -231,6 +233,95 @@ namespace DataExtractionUtility
         //    }
         //}
 
+        //private void BtnExport_Click(object sender, EventArgs e)
+        //{
+        //    Settings.Default.Save();
+        //    if (m_meta == null)
+        //    {
+        //        MessageBox.Show("Please download the metadata first.");
+        //        return;
+        //    }
+        //    if (m_selectedMeasurements == null || m_selectedMeasurements.Count == 0)
+        //    {
+        //        MessageBox.Show("There are no measurements to extract");
+        //        return;
+        //    }
+        //    DateTime startTime = dateStartTime.Value;
+        //    DateTime stopTime = dateStopTime.Value;
+        //    if (startTime > stopTime)
+        //    {
+        //        MessageBox.Show("Start and Stop times are invalid");
+        //        return;
+        //    }
+        //    TimeSpan interval = Resolutions.GetInterval((string)cmbResolution.SelectedItem);
+
+
+        //    HistorianClientOptions clientOptions = new HistorianClientOptions();
+        //    clientOptions.DefaultDatabase = Settings.Default.HistorianInstanceName;
+        //    clientOptions.NetworkPort = Settings.Default.HistorianStreamingPort;
+        //    clientOptions.ServerNameOrIp = Settings.Default.ServerIP;
+        //    using (HistorianClient client = new HistorianClient(clientOptions))
+        //    {
+        //        m_readIndex = 0;
+        //        m_fillMeasurements.Clear();
+        //        m_measurementsInOrder.Clear();
+        //        foreach (var signal in m_selectedMeasurements)
+        //        {
+        //            var m = new Measurements();
+        //            m_fillMeasurements.Add((ulong)signal.PointID, m);
+        //            m_measurementsInOrder.Add(m);
+        //        }
+
+        //        KeySeekFilterBase<HistorianKey> timeFilter;
+        //        if (interval.Ticks != 0)
+        //            timeFilter = TimestampFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+        //        else
+        //            timeFilter = TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+
+        //        var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
+        //        var pointFilter = PointIDFilter.CreateFromList<HistorianKey>(points);
+
+        //        var database = client.GetDefaultDatabase();
+
+        //        using (var fillAdapter = database.GetPointStream(timeFilter, pointFilter).GetFillAdapter())
+        //        using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
+        //        {
+        //            var ultraStream = new UltraStreamWriter(csvStream);
+        //            //csvStream.AutoFlush = false;
+        //            csvStream.Write("Timestamp,");
+        //            foreach (var signal in m_selectedMeasurements)
+        //            {
+        //                csvStream.Write(signal.Description);
+        //                csvStream.Write(',');
+        //            }
+        //            csvStream.WriteLine();
+
+        //            m_readIndex++;
+        //            while (fillAdapter.Fill(FillData))
+        //            {
+        //                csvStream.Write(fillAdapter.FrameTime.ToString("MM/dd/yyyy hh:mm:ss.fffffff"));
+        //                csvStream.Write(',');
+
+        //                foreach (var signal in m_measurementsInOrder)
+        //                {
+        //                    if (signal.ReadNumber == m_readIndex)
+        //                    {
+        //                        ultraStream.Write(signal.Value);
+        //                    }
+        //                    ultraStream.Write(',');
+        //                }
+        //                ultraStream.Flush();
+        //                csvStream.WriteLine();
+        //                m_readIndex++;
+
+        //            }
+
+        //            csvStream.Flush();
+        //        }
+        //        database.Disconnect();
+        //    }
+        //}
+
         private void BtnExport_Click(object sender, EventArgs e)
         {
             Settings.Default.Save();
@@ -251,73 +342,102 @@ namespace DataExtractionUtility
                 MessageBox.Show("Start and Stop times are invalid");
                 return;
             }
+
+            BtnExport.Tag = BtnExport.Text;
+            BtnExport.Text = "Exporting...";
+            BtnExport.Enabled = false;
+            Cursor.Current = Cursors.WaitCursor;
+            Application.DoEvents();
+
             TimeSpan interval = Resolutions.GetInterval((string)cmbResolution.SelectedItem);
 
-
             HistorianClientOptions clientOptions = new HistorianClientOptions();
-            clientOptions.DefaultDatabase = Settings.Default.HistorianInstanceName;
-            clientOptions.NetworkPort = Settings.Default.HistorianStreamingPort;
-            clientOptions.ServerNameOrIp = Settings.Default.ServerIP;
-            using (HistorianClient client = new HistorianClient(clientOptions))
+            clientOptions.DefaultDatabase = TxtHistorianInstance.Text;
+            clientOptions.NetworkPort = int.Parse(TxtHistorianPort.Text);
+            clientOptions.ServerNameOrIp = TxtServerIP.Text;
+
+            Thread workerThread = new Thread(start =>
             {
-                m_readIndex = 0;
-                m_fillMeasurements.Clear();
-                m_measurementsInOrder.Clear();
-                foreach (var signal in m_selectedMeasurements)
+                long processingStartTime = DateTime.UtcNow.Ticks;
+
+                using (HistorianClient client = new HistorianClient(clientOptions))
                 {
-                    var m = new Measurements();
-                    m_fillMeasurements.Add((ulong)signal.PointID, m);
-                    m_measurementsInOrder.Add(m);
-                }
+                    m_readIndex = 0;
+                    m_fillMeasurements.Clear();
+                    m_measurementsInOrder.Clear();
 
-                KeySeekFilterBase<HistorianKey> timeFilter;
-                if (interval.Ticks != 0)
-                    timeFilter = TimestampFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
-                else
-                    timeFilter = TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
-
-                var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
-                var pointFilter = PointIDFilter.CreateFromList<HistorianKey>(points);
-
-                var database = client.GetDefaultDatabase();
-
-                using (var fillAdapter = database.GetPointStream(timeFilter, pointFilter).GetFillAdapter())
-                using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
-                {
-                    var ultraStream = new UltraStreamWriter(csvStream);
-                    //csvStream.AutoFlush = false;
-                    csvStream.Write("Timestamp,");
                     foreach (var signal in m_selectedMeasurements)
                     {
-                        csvStream.Write(signal.Description);
-                        csvStream.Write(',');
+                        var m = new Measurements();
+                        m_fillMeasurements.Add((ulong)signal.PointID, m);
+                        m_measurementsInOrder.Add(m);
                     }
-                    csvStream.WriteLine();
 
-                    m_readIndex++;
-                    while (fillAdapter.Fill(FillData))
+                    KeySeekFilterBase<HistorianKey> timeFilter;
+                    if (interval.Ticks != 0)
+                        timeFilter = TimestampFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
+                    else
+                        timeFilter = TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
+
+                    var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
+                    var pointFilter = PointIDFilter.CreateFromList<HistorianKey>(points);
+
+                    var database = client.GetDefaultDatabase();
+
+                    string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Export.csv");
+
+                    using (var fillAdapter = database.GetPointStream(timeFilter, pointFilter).GetFillAdapter())
+                    using (var csvStream = new StreamWriter(fileName))
                     {
-                        csvStream.Write(fillAdapter.FrameTime.ToString("MM/dd/yyyy hh:mm:ss.fffffff"));
-                        csvStream.Write(',');
-
-                        foreach (var signal in m_measurementsInOrder)
+                        var ultraStream = new UltraStreamWriter(csvStream);
+                        //csvStream.AutoFlush = false;
+                        csvStream.Write("Timestamp,");
+                        foreach (var signal in m_selectedMeasurements)
                         {
-                            if (signal.ReadNumber == m_readIndex)
-                            {
-                                ultraStream.Write(signal.Value);
-                            }
-                            ultraStream.Write(',');
+                            csvStream.Write(signal.Description);
+                            csvStream.Write(',');
                         }
-                        ultraStream.Flush();
                         csvStream.WriteLine();
+
                         m_readIndex++;
+                        while (fillAdapter.Fill(FillData))
+                        {
+                            csvStream.Write(fillAdapter.FrameTime.ToString("MM/dd/yyyy hh:mm:ss.fffffff"));
+                            csvStream.Write(',');
 
+                            foreach (var signal in m_measurementsInOrder)
+                            {
+                                if (signal.ReadNumber == m_readIndex)
+                                {
+                                    ultraStream.Write(signal.Value);
+                                }
+                                ultraStream.Write(',');
+                            }
+                            ultraStream.Flush();
+                            csvStream.WriteLine();
+                            m_readIndex++;
+                        }
+
+                        csvStream.Flush();
                     }
-
-                    csvStream.Flush();
+                    database.Disconnect();
                 }
-                database.Disconnect();
-            }
+
+                Ticks runtime = DateTime.UtcNow.Ticks - processingStartTime;
+
+                BeginInvoke(new Action<Ticks>(r => MessageBox.Show(r.ToElapsedTimeString(2), "Processing Time", MessageBoxButtons.OK, MessageBoxIcon.Information)), runtime);
+                BeginInvoke(new Action(RestoreExportButton));
+            });
+
+
+            workerThread.Start();
+        }
+
+        private void RestoreExportButton()
+        {
+            Cursor.Current = Cursors.Default;
+            BtnExport.Text = BtnExport.Tag.ToString();
+            BtnExport.Enabled = true;
         }
 
         int m_readIndex;

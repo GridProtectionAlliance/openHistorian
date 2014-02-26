@@ -206,6 +206,8 @@ namespace GSF.Net
                 while (count > 0)
                 {
                     receiveBufferLength = m_stream.Read(buffer, offset, count);
+                    if (receiveBufferLength == 0)
+                        throw new EndOfStreamException();
                     offset += receiveBufferLength;
                     count -= receiveBufferLength;
                 }
@@ -221,6 +223,8 @@ namespace GSF.Net
                 while (m_receiveLength < count)
                 {
                     receiveBufferLength = m_stream.Read(m_receiveBuffer, m_receiveLength, prebufferLength);
+                    if (receiveBufferLength == 0)
+                        throw new EndOfStreamException();
                     m_receiveLength += receiveBufferLength;
                     prebufferLength -= receiveBufferLength;
                 }
