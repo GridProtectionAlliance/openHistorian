@@ -29,13 +29,48 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
     /// Used to generically create a fixed size node.
     /// </summary>
     public class CreateDualFixedSizeNode
-        : CreateDualTreeNodeBase
+        : CreateTreeNodeBase
     {
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
         /// The guid that represents the encoding method of this class
         /// </summary>
-        public static readonly Guid TypeGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55);
+        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(
+            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55),
+            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55));
+
+        /// <summary>
+        /// The key type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
+        public override Type KeyTypeIfNotGeneric
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// The value type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
+        public override Type ValueTypeIfNotGeneric
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// The encoding method that defines this class.
+        /// </summary>
+        public override EncodingDefinition Method
+        {
+            get
+            {
+                return TypeGuid;
+            }
+        }
 
         /// <summary>
         /// Creates a <see cref="SortedTreeNodeBase{TKey,TValue}"/>.
@@ -49,38 +84,6 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
             return new FixedSizeNode<TKey, TValue>(level);
         }
 
-        public override Type KeyTypeIfNotGeneric
-        {
-            get
-            {
-                return null;
-            }
-        }
 
-        public override Type ValueTypeIfNotGeneric
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override Guid KeyMethod
-        {
-            get
-            {
-                return TypeGuid;
-
-            }
-        }
-
-        public override Guid ValueMethod
-        {
-            get
-            {
-                return TypeGuid;
-
-            }
-        }
     }
 }

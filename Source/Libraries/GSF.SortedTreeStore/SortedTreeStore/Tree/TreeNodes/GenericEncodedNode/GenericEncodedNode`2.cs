@@ -25,24 +25,6 @@ using GSF.SortedTreeStore.Encoding;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes
 {
-    internal class CreateGenericEncodedNode<TKey, TValue>
-        : CreateTreeNodeBase
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
-    {
-        DoubleValueEncodingBase<TKey, TValue> m_encoding;
-
-        public CreateGenericEncodedNode(DoubleValueEncodingBase<TKey, TValue> encoding)
-        {
-            m_encoding = encoding;
-        }
-
-        public override SortedTreeNodeBase<TKey1, TValue1> Create<TKey1, TValue1>(byte level)
-        {
-            return (SortedTreeNodeBase<TKey1, TValue1>)(object)new GenericEncodedNode<TKey, TValue>(m_encoding.Clone(), level);
-        }
-    }
-
     /// <summary>
     /// A TreeNode abstract class that is used for linearly encoding a class.
     /// </summary>

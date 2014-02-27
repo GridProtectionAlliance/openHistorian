@@ -22,227 +22,66 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
     /// <summary>
-    /// Contains all of the fundamental encoding methods. Types implementing <see cref="ISupportsCustomEncoding"/>
+    /// Contains all of the fundamental encoding methods. Types implementing <see cref="SortedTreeTypeBase{T}"/>
     /// will automatically register when passed to one of the child methods. 
     /// </summary>
     public static class EncodingMethodsLibrary
     {
-        private static readonly object SyncRoot;
-
-        private static readonly HashSet<Type> RegisteredTypes;
-        private static readonly Dictionary<Guid, CreateSingleValueBase> SingleEncoding;
-        private static readonly Dictionary<Tuple<Guid, Type>, CreateSingleValueBase> TypedSingleEncoding;
-
-        private static readonly Dictionary<Guid, CreateCombinedValuesBase> CombinedEncoding;
-        private static readonly Dictionary<Tuple<Guid, Type>, CreateCombinedValuesBase> KeyTypedCombinedEncoding;
-        private static readonly Dictionary<Tuple<Guid, Type>, CreateCombinedValuesBase> ValueTypedCombinedEncoding;
-        private static readonly Dictionary<Tuple<Guid, Type, Type>, CreateCombinedValuesBase> KeyValueTypedCombinedEncoding;
-
-        private static readonly Dictionary<Tuple<Guid, Guid>, CreateDualSingleValueBase> DualSingleEncoding;
-        private static readonly Dictionary<Tuple<Guid, Guid, Type>, CreateDualSingleValueBase> KeyTypedDualSingleEncoding;
-        private static readonly Dictionary<Tuple<Guid, Guid, Type>, CreateDualSingleValueBase> ValueTypedDualSingleEncoding;
-        private static readonly Dictionary<Tuple<Guid, Guid, Type, Type>, CreateDualSingleValueBase> KeyValueTypedDualSingleEncoding;
+        private static readonly SingleEncodingDictionary<CreateSingleValueEncodingBase> SingleEncoding;
+        private static readonly DualEncodingDictionary<CreateDoubleValueEncodingBase> DoubleEncoding;
 
         static EncodingMethodsLibrary()
         {
-            SyncRoot = new object();
-            RegisteredTypes = new HashSet<Type>();
-            SingleEncoding = new Dictionary<Guid, CreateSingleValueBase>();
-            TypedSingleEncoding = new Dictionary<Tuple<Guid, Type>, CreateSingleValueBase>();
-            CombinedEncoding = new Dictionary<Guid, CreateCombinedValuesBase>();
-            KeyTypedCombinedEncoding = new Dictionary<Tuple<Guid, Type>, CreateCombinedValuesBase>();
-            ValueTypedCombinedEncoding = new Dictionary<Tuple<Guid, Type>, CreateCombinedValuesBase>();
-            KeyValueTypedCombinedEncoding = new Dictionary<Tuple<Guid, Type, Type>, CreateCombinedValuesBase>();
-            DualSingleEncoding = new Dictionary<Tuple<Guid, Guid>, CreateDualSingleValueBase>();
-            KeyTypedDualSingleEncoding = new Dictionary<Tuple<Guid, Guid, Type>, CreateDualSingleValueBase>();
-            ValueTypedDualSingleEncoding = new Dictionary<Tuple<Guid, Guid, Type>, CreateDualSingleValueBase>();
-            KeyValueTypedDualSingleEncoding = new Dictionary<Tuple<Guid, Guid, Type, Type>, CreateDualSingleValueBase>();
+            SingleEncoding = new SingleEncodingDictionary<CreateSingleValueEncodingBase>();
+            DoubleEncoding = new DualEncodingDictionary<CreateDoubleValueEncodingBase>();
 
-            Register(new CreateFixedSizeSingleEncoding());
-            Register(new CreateFixedSizeCombinedEncoding());
-            Register(new CreateFixedSizeDualSingleEncoding());
+            SingleEncoding.Register(new CreateFixedSizeSingleEncoding());
+            DoubleEncoding.Register(new CreateFixedSizeCombinedEncoding());
+            DoubleEncoding.Register(new CreateFixedSizeDualSingleEncoding());
         }
 
-        public static void Register<T>(SortedTreeTypeBase<T> type)
+        /// <summary>
+        /// Gets the single encoding method if it exists in the database.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="encodingMethod"></param>
+        /// <returns></returns>
+        public static SingleValueEncodingBase<T> GetEncodingMethod<T>(Guid encodingMethod)
             where T : SortedTreeTypeBase<T>, new()
         {
-            lock (SyncRoot)
-            {
-                if (RegisteredTypes.Add(type.GetType()))
-                {
-                    IEnumerable encodingMethods = type.GetEncodingMethods();
-                    if (encodingMethods == null)
-                        return;
+            CreateSingleValueEncodingBase encoding;
 
-                    foreach (var method in encodingMethods)
-                    {
-                        var single = method as CreateSingleValueBase;
-                        var dual = method as CreateDualSingleValueBase;
-                        var combined = method as CreateCombinedValuesBase;
-
-                        if (single != null)
-                            Register(single);
-                        else if (dual != null)
-                            Register(dual);
-                        else if (combined != null)
-                            Register(combined);
-                    }
-                }
-            }
-        }
-
-        public static void Register(CreateSingleValueBase encoding)
-        {
-            lock (SyncRoot)
-            {
-                if (encoding.TypeIfNotGeneric == null)
-                {
-                    SingleEncoding.Add(encoding.Method, encoding);
-                }
-                else
-                {
-                    TypedSingleEncoding.Add(Tuple.Create(encoding.Method, encoding.TypeIfNotGeneric), encoding);
-                }
-            }
-        }
-
-        public static void Register(CreateCombinedValuesBase encoding)
-        {
-            lock (SyncRoot)
-            {
-                if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric == null)
-                {
-                    CombinedEncoding.Add(encoding.Method, encoding);
-                }
-                else if (encoding.KeyTypeIfNotGeneric != null && encoding.ValueTypeIfNotGeneric == null)
-                {
-                    KeyTypedCombinedEncoding.Add(Tuple.Create(encoding.Method, encoding.KeyTypeIfNotGeneric), encoding);
-                }
-                else if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric != null)
-                {
-                    ValueTypedCombinedEncoding.Add(Tuple.Create(encoding.Method, encoding.ValueTypeIfNotGeneric),
-                                                   encoding);
-                }
-                else
-                {
-                    KeyValueTypedCombinedEncoding.Add(Tuple.Create(encoding.Method, encoding.KeyTypeIfNotGeneric, encoding.ValueTypeIfNotGeneric), encoding);
-                }
-            }
-        }
-
-        public static void Register(CreateDualSingleValueBase encoding)
-        {
-            lock (SyncRoot)
-            {
-                if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric == null)
-                {
-                    DualSingleEncoding.Add(Tuple.Create(encoding.KeyMethod, encoding.ValueMethod), encoding);
-                }
-                else if (encoding.KeyTypeIfNotGeneric != null && encoding.ValueTypeIfNotGeneric == null)
-                {
-                    KeyTypedDualSingleEncoding.Add(
-                        Tuple.Create(encoding.KeyMethod, encoding.ValueMethod, encoding.KeyTypeIfNotGeneric), encoding);
-                }
-                else if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric != null)
-                {
-                    ValueTypedDualSingleEncoding.Add(Tuple.Create(encoding.KeyMethod, encoding.ValueMethod, encoding.ValueTypeIfNotGeneric), encoding);
-                }
-                else
-                {
-                    KeyValueTypedDualSingleEncoding.Add(Tuple.Create(encoding.KeyMethod, encoding.ValueMethod, encoding.KeyTypeIfNotGeneric, encoding.ValueTypeIfNotGeneric), encoding);
-                }
-            }
-        }
-
-        public static SingleValueEncodingBase<T> GetEncodingMethod<T>(Guid compressionMethod)
-            where T : SortedTreeTypeBase<T>, new()
-        {
-            Type valueType = typeof(T);
-            CreateSingleValueBase customEncoding;
-
-            lock (SyncRoot)
-            {
-                if (!RegisteredTypes.Contains(valueType))
-                {
-                    Register(new T());
-                }
-                if (TypedSingleEncoding.TryGetValue(Tuple.Create(compressionMethod, valueType), out customEncoding)
-                    || SingleEncoding.TryGetValue(compressionMethod, out customEncoding))
-                {
-                    return customEncoding.Create<T>();
-                }
-            }
+            if (SingleEncoding.TryGetEncodingMethod<T>(encodingMethod, out encoding))
+                return encoding.Create<T>();
+            
             throw new Exception("Type is not registered");
         }
 
-        public static DoubleValueEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(Guid compressionMethod)
+        /// <summary>
+        /// Gets the Double encoding method
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="encodingMethod"></param>
+        /// <returns></returns>
+        public static DoubleValueEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(EncodingDefinition encodingMethod)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            Type keyType = typeof(TKey);
-            Type valueType = typeof(TValue);
+            CreateDoubleValueEncodingBase encoding;
 
-            CreateCombinedValuesBase customEncoding;
+            if (DoubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
+                return encoding.Create<TKey, TValue>();
 
-            lock (SyncRoot)
-            {
-                if (!RegisteredTypes.Contains(keyType))
-                {
-                    Register(new TKey());
-                }
-                if (!RegisteredTypes.Contains(valueType))
-                {
-                    Register(new TValue());
-                }
+            if (encodingMethod.IsKeyValueEncoded)
+                throw new Exception("Type is not registered");
 
-                if (KeyValueTypedCombinedEncoding.TryGetValue(Tuple.Create(compressionMethod, keyType, valueType), out customEncoding)
-                    || KeyTypedCombinedEncoding.TryGetValue(Tuple.Create(compressionMethod, keyType), out customEncoding)
-                    || ValueTypedCombinedEncoding.TryGetValue(Tuple.Create(compressionMethod, valueType), out customEncoding)
-                    || CombinedEncoding.TryGetValue(compressionMethod, out customEncoding))
-                {
-                    return customEncoding.Create<TKey, TValue>();
-                }
-            }
-            throw new Exception("Type is not registered");
-
-        }
-
-        public static DoubleValueEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(Guid keyEncodingMethod, Guid valueEncodingMethod)
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
-        {
-            Type keyType = typeof(TKey);
-            Type valueType = typeof(TValue);
-
-            CreateDualSingleValueBase customEncoding;
-
-            lock (SyncRoot)
-            {
-                if (!RegisteredTypes.Contains(keyType))
-                {
-                    Register(new TKey());
-                }
-                if (!RegisteredTypes.Contains(valueType))
-                {
-                    Register(new TValue());
-                }
-
-                if (KeyValueTypedDualSingleEncoding.TryGetValue(Tuple.Create(keyEncodingMethod, valueEncodingMethod, keyType, valueType), out customEncoding)
-                    || KeyTypedDualSingleEncoding.TryGetValue(Tuple.Create(keyEncodingMethod, valueEncodingMethod, keyType), out customEncoding)
-                    || ValueTypedDualSingleEncoding.TryGetValue(Tuple.Create(keyEncodingMethod, valueEncodingMethod, valueType), out customEncoding)
-                    || DualSingleEncoding.TryGetValue(Tuple.Create(keyEncodingMethod, valueEncodingMethod), out customEncoding))
-                {
-                    return customEncoding.Create<TKey, TValue>();
-                }
-            }
-            return new DoubleValueEncodingSet<TKey, TValue>(GetEncodingMethod<TKey>(keyEncodingMethod), GetEncodingMethod<TValue>(valueEncodingMethod));
+            return new DoubleValueEncodingSet<TKey, TValue>(encodingMethod);
         }
     }
 }

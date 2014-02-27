@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  TreeNodeInitializer.cs - Gbtc
+//  CreateSingleValueEncodingBase.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,33 +16,28 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/26/2013 - Steven E. Chisholm
+//  2/21/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+using GSF.SortedTreeStore.Tree;
+
+namespace GSF.SortedTreeStore.Encoding
 {
     /// <summary>
-    /// Allows a tree node to be created from a <see cref="CreateSingleTreeNodeBase"/>. This is desired
-    /// to minimize the number of calls to <see cref="TreeNodeInitializer"/>.
+    /// The class that is used to construct an encoding method.
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    internal class TreeNodeInitializer<TKey, TValue>
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
+    public abstract class CreateSingleValueEncodingBase : CreateSingleValueBase
     {
-        private readonly CreateTreeNodeBase m_treeNode;
-
-        public TreeNodeInitializer(CreateTreeNodeBase treeNode)
-        {
-            m_treeNode = treeNode;
-        }
-
-        public SortedTreeNodeBase<TKey, TValue> CreateTreeNode(byte level)
-        {
-            return m_treeNode.Create<TKey, TValue>(level);
-        }
+        /// <summary>
+        /// Constructs a new class based on this encoding method. 
+        /// </summary>
+        /// <typeparam name="T">The type of this base class</typeparam>
+        /// <returns>
+        /// The encoding method
+        /// </returns>
+        public abstract SingleValueEncodingBase<T> Create<T>()
+            where T : SortedTreeTypeBase<T>, new();
     }
 }

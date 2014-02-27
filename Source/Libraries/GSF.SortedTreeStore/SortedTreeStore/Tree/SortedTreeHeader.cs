@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Data;
 using GSF.IO;
 
 namespace GSF.SortedTreeStore.Tree
@@ -40,88 +41,96 @@ namespace GSF.SortedTreeStore.Tree
     //Header 1:
     // byte Version = 1
     // Int BlockSize
-    // Guid KeyCompressionMethod = Guid.Empty if not valid
-    // Guid ValueCompressionMethod = Guid.Empty if not valid
-    // Guid KeyValueCompressionMethod = Guid.Empty if not Valid
+    // EncodingDefinition method
     // uint LastAllocatedBlock
     // uint RootNodeIndexAddress
     // byte RootNodeLevel
-    // bool IsEmpty
     //
-    
-    public class SortedTreeHeader
+
+    internal class SortedTreeHeader
     {
-        Guid m_sparseIndexType;
-        private Guid m_treeNodeType;
-        private int m_blockSize;
-        private uint m_lastAllocatedBlock;
-        private uint m_rootNodeIndexAddress;
-        private byte m_rootNodeLevel;
-        /// <summary>
-        /// Determines if the tree has any data in it.
-        /// </summary>
-        public bool IsEmpty
-        {
-            get;
-            private set;
-        }
+        public EncodingDefinition TreeNodeType;
+        public int BlockSize;
+        public uint LastAllocatedBlock;
+        public uint RootNodeIndexAddress;
+        public byte RootNodeLevel;
+      
+        private bool m_isDirty;
 
         /// <summary>
         /// Gets if the sorted tree needs to be flushed to the disk. 
         /// </summary>
         public bool IsDirty
         {
-            get;
-            private set;
+            get
+            {
+                return m_isDirty;
+            }
+            set
+            {
+                if (!value)
+                    throw new Exception();
+                m_isDirty = true;
+            }
         }
-
-        public SortedTreeHeader()
-        {
-
-        }
-
 
         /// <summary>
         /// Loads the header.
         /// </summary>
-        private void LoadHeader(BinaryStreamBase Stream)
+        public void LoadHeader(BinaryStreamBase stream)
         {
-            Stream.Position = 0;
-            if (m_sparseIndexType != Stream.ReadGuid())
-                throw new Exception("Header Corrupt");
-            if (m_treeNodeType != Stream.ReadGuid())
-                throw new Exception("Header Corrupt");
-            if (m_blockSize != Stream.ReadInt32())
-                throw new Exception("Header Corrupt");
-            if (Stream.ReadUInt8() != 0)
-                throw new Exception("Header Corrupt");
-            m_lastAllocatedBlock = Stream.ReadUInt32();
-            m_rootNodeIndexAddress = Stream.ReadUInt32();
-            m_rootNodeLevel = Stream.ReadUInt8();
-            IsEmpty = Stream.ReadBoolean();
+            stream.Position = 0;
+            byte version = stream.ReadUInt8();
+            if (version == 109)
+            {
+                stream.Position = 0;
+                if (SortedTree.FixedSizeNode != new EncodingDefinition(stream.ReadGuid()))
+                    throw new Exception("Header Corrupt");
+                if (TreeNodeType != new EncodingDefinition(stream.ReadGuid()))
+                    throw new Exception("Header Corrupt");
+                if (BlockSize != stream.ReadInt32())
+                    throw new Exception("Header Corrupt");
+                if (stream.ReadUInt8() != 0)
+                    throw new Exception("Header Corrupt");
+                LastAllocatedBlock = stream.ReadUInt32();
+                RootNodeIndexAddress = stream.ReadUInt32();
+                RootNodeLevel = stream.ReadUInt8();
+            }
+            else if (version == 1)
+            {
+                if (BlockSize != stream.ReadInt32())
+                    throw new Exception("Header Corrupt");
+                if (TreeNodeType != new EncodingDefinition(stream))
+                    throw new Exception("Header Corrupt");
+                LastAllocatedBlock = stream.ReadUInt32();
+                RootNodeIndexAddress = stream.ReadUInt32();
+                RootNodeLevel = stream.ReadUInt8();
+            }
+            else
+            {
+                throw new VersionNotFoundException();
+            }
         }
 
         /// <summary>
         /// Writes the first page of the SortedTree as long as the <see cref="IsDirty"/> flag is set.
         /// After returning, the IsDirty flag is cleared.
         /// </summary>
-        private void SaveHeader(BinaryStreamBase Stream)
+        public void SaveHeader(BinaryStreamBase stream)
         {
             if (!IsDirty)
                 return;
-            long oldPosotion = Stream.Position;
-            Stream.Position = 0;
-            Stream.Write(m_sparseIndexType);
-            Stream.Write(m_treeNodeType);
-            Stream.Write(m_blockSize);
-            Stream.Write((byte)0); //version
-            Stream.Write(m_lastAllocatedBlock);
-            Stream.Write(m_rootNodeIndexAddress); //Root Index
-            Stream.Write(m_rootNodeLevel); //Root Index
-            Stream.Write(IsEmpty);
+            long oldPosotion = stream.Position;
+            stream.Position = 0;
+            stream.Write((byte)1);
+            stream.Write(BlockSize);
+            TreeNodeType.Save(stream);
+            stream.Write(LastAllocatedBlock);
+            stream.Write(RootNodeIndexAddress); //Root Index
+            stream.Write(RootNodeLevel); //Root Index
 
-            Stream.Position = oldPosotion;
-            IsDirty = false;
+            stream.Position = oldPosotion;
+            m_isDirty = false;
         }
     }
 }

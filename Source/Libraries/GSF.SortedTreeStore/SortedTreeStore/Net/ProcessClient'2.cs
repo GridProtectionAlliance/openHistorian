@@ -26,11 +26,11 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using GSF.Net;
+using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Net.Initialization;
 
 namespace GSF.SortedTreeStore.Net
 {
@@ -47,7 +47,7 @@ namespace GSF.SortedTreeStore.Net
         private readonly HistorianCollection<TKey, TValue> m_historian;
         private SortedTreeEngineBase<TKey, TValue> m_sortedTreeEngine;
         private SortedTreeEngineReaderBase<TKey, TValue> m_historianReaderBase;
-        KeyValueStreamCompressionBase<TKey, TValue> m_compressionMode;
+        StreamEncodingBase<TKey, TValue> m_compressionMode;
 
         public ProcessClient(NetworkBinaryStream netStream, HistorianCollection<TKey, TValue> historian)
         {
@@ -121,7 +121,8 @@ namespace GSF.SortedTreeStore.Net
                 switch (command)
                 {
                     case ServerCommand.SetCompressionMode:
-                        m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(m_stream.ReadGuid());
+                        m_compressionMode =
+                            StreamEncoding.CreateStreamEncoding<TKey, TValue>(new EncodingDefinition(m_stream.ReadGuid()));
                         break;
                     case ServerCommand.ConnectToDatabase:
                         if (m_sortedTreeEngine != null)

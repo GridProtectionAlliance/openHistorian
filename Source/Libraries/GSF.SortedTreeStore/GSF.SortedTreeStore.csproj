@@ -107,13 +107,18 @@
     <Compile Include="Number.cs" />
     <Compile Include="SortedTreeStore\Collection\CreatePointCollectionBase.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionBase%272.cs" />
-    <Compile Include="SortedTreeStore\Encoding\DoubleValueEncodingSet.cs" />
-    <Compile Include="SortedTreeStore\Encoding\FixedSize\FixedSizeDualEncoding.cs" />
-    <Compile Include="SortedTreeStore\Encoding\FixedSize\FixedSizeCombinedEncoding.cs" />
-    <Compile Include="SortedTreeStore\Encoding\DoubleValueEncodingBase`1.cs" />
-    <Compile Include="SortedTreeStore\Encoding\CreateDualSingleValueBase.cs" />
-    <Compile Include="SortedTreeStore\Encoding\CreateCombinedValuesBase.cs" />
-    <Compile Include="SortedTreeStore\Encoding\FixedSize\FixedSizeSingleEncoding.cs" />
+    <Compile Include="SortedTreeStore\CreateSingleValueBase.cs" />
+    <Compile Include="SortedTreeStore\CreateDoubleValueBase.cs" />
+    <Compile Include="SortedTreeStore\Encoding\FixedSize\CreateFixedSizeCombinedEncoding.cs" />
+    <Compile Include="SortedTreeStore\Encoding\FixedSize\CreateFixedSizeSingleEncoding.cs" />
+    <Compile Include="SortedTreeStore\Encoding\SingleEncodingDictionary`1.cs" />
+    <Compile Include="SortedTreeStore\Encoding\DoubleValueEncodingSet`2.cs" />
+    <Compile Include="SortedTreeStore\Encoding\DualEncodingDictionary`1.cs" />
+    <Compile Include="SortedTreeStore\Encoding\FixedSize\CreateFixedSizeDualSingleEncoding.cs" />
+    <Compile Include="SortedTreeStore\Encoding\FixedSize\FixedSizeCombinedEncoding`2.cs" />
+    <Compile Include="SortedTreeStore\Encoding\DoubleValueEncodingBase`2.cs" />
+    <Compile Include="SortedTreeStore\Encoding\CreateDoubleValueEncodingBase.cs" />
+    <Compile Include="SortedTreeStore\Encoding\FixedSize\FixedSizeSingleEncoding`1.cs" />
     <Compile Include="SortedTreeStore\Encoding\SingleValueEncodingBase`1.cs" />
     <Compile Include="SortedTreeStore\Encoding\EncodingMethodsLibrary.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\BufferedArchiveStream%272.cs" />
@@ -137,7 +142,8 @@
     <Compile Include="SortedTreeStore\Filters\ValueMatchFilterUniverse`1.cs" />
     <Compile Include="SortedTreeStore\Filters\ValueMatchFilterBase`1.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollection.cs" />
-    <Compile Include="SortedTreeStore\Net\Compression\GenericEncodedCompressedStream.cs" />
+    <Compile Include="SortedTreeStore\Encoding\Stream\GenericStreamEncoding`2.cs" />
+    <Compile Include="SortedTreeStore\Encoding\Stream\CreateStreamEncodingBase.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableReadSnapshot`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableSnapshotInfo`2.cs" />
@@ -150,25 +156,23 @@
     <Compile Include="Collections\ContinuousQueue`1.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer%272.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer.cs" />
-    <Compile Include="SortedTreeStore\Encoding\CreateSingleValueBase.cs" />
+    <Compile Include="SortedTreeStore\Encoding\CreateSingleValueEncodingBase.cs" />
     <Compile Include="SortedTreeStore\Tree\InsertStreamHelper`2.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeTypeBase%271.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeHeader.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTree.cs" />
-    <Compile Include="SortedTreeStore\Tree\SortedTreeNodeCompressionType.cs" />
+    <Compile Include="SortedTreeStore\EncodingDefinition.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\CreateTreeNodeBase.cs" />
-    <Compile Include="SortedTreeStore\Tree\TreeNodes\CreateDualTreeNodeBase.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\EncodedNodeBase%272.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\EncodedNodeScannerBase%272.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\FixedSizeNode\CreateDualFixedSizeNode.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\FixedSizeNode\CreateFixedSizeNode.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\FixedSizeNode\FixedSizeNode%272.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\FixedSizeNode\FixedSizeNodeScanner%272.cs" />
-    <Compile Include="SortedTreeStore\Tree\TreeNodes\CreateSingleTreeNodeBase.cs" />
+    <Compile Include="SortedTreeStore\Tree\TreeNodes\GenericEncodedNode\CreateGenericEncodedNode.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\GenericEncodedNode\GenericEncodedNode`2.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\GenericEncodedNode\GenericEncodedNodeScanner`2.cs" />
     <Compile Include="SortedTreeStore\Tree\TreeNodes\TreeNodeInitializer.cs" />
-    <Compile Include="SortedTreeStore\Tree\TreeNodes\TreeNodeInitializer%272.cs" />
     <Compile Include="SortedTreeStore\TreeStream%272.cs" />
     <Compile Include="SortedTreeStore\Tree\Node%271.cs" />
     <Compile Include="SortedTreeStore\SeekableTreeStream%272.cs" />
@@ -200,17 +204,11 @@
     <Compile Include="SortedTreeStore\Engine\EngineKeyBase%271.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeKeyMethodsUInt32.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeUInt32.cs" />
-    <Compile Include="SortedTreeStore\Net\Compression\CompressedStream.cs" />
-    <Compile Include="SortedTreeStore\Net\Compression\CreateCompressedStream.cs" />
-    <Compile Include="SortedTreeStore\Net\Compression\CreateFixedSizeStream.cs" />
-    <Compile Include="SortedTreeStore\Net\Compression\FixedSizeStream.cs" />
     <Compile Include="SortedTreeStore\Net\SortedTreeStoreClient%272.cs" />
     <Compile Include="SortedTreeStore\Net\SortedTreeStoreClient%272_Database.cs" />
     <Compile Include="SortedTreeStore\Net\SortedTreeStoreClient%272_DataReader.cs" />
-    <Compile Include="SortedTreeStore\Net\Initialization\CreateKeyValueStreamCompressionBase.cs" />
-    <Compile Include="SortedTreeStore\Net\Initialization\KeyValueStreamCompression.cs" />
-    <Compile Include="SortedTreeStore\Net\Initialization\KeyValueStreamCompressionBase.cs" />
-    <Compile Include="SortedTreeStore\Net\Initialization\RegisterKeyValueStreamCompressionTypes.cs" />
+    <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncoding.cs" />
+    <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncodingBase`2.cs" />
     <Compile Include="SortedTreeStore\Net\ProcessClient%272.cs" />
     <Compile Include="SortedTreeStore\Net\SortedTreeServerSocket%272.cs" />
     <Compile Include="Encoding7Bit.cs" />
@@ -339,7 +337,10 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SortedTreeStore\Net\Compression\" />
+    <Folder Include="SortedTreeStore\Net\Initialization\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"

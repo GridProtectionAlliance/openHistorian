@@ -26,9 +26,9 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using GSF.Net;
+using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Net.Initialization;
 
 namespace GSF.SortedTreeStore.Net
 {
@@ -55,7 +55,7 @@ namespace GSF.SortedTreeStore.Net
         private Guid m_compressionMethod;
         string m_historianDatabaseString;
 
-        KeyValueStreamCompressionBase<TKey, TValue> m_compressionMode;
+        StreamEncodingBase<TKey, TValue> m_compressionMode;
 
         private readonly string m_defaultDatabase;
 
@@ -118,10 +118,10 @@ namespace GSF.SortedTreeStore.Net
 
                 //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateFixedSizeStream.TypeGuid);
                 //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateCompressedStream.TypeGuid);
-                m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(m_compressionMethod);
+                m_compressionMode = StreamEncoding.CreateStreamEncoding<TKey, TValue>(new EncodingDefinition(m_compressionMethod));
 
                 m_stream.Write((byte)ServerCommand.SetCompressionMode);
-                m_stream.Write(m_compressionMode.CompressionType);
+                m_stream.Write(m_compressionMode.EncodingMethod.KeyValueEncodingMethod);
                 m_stream.Write((byte)ServerCommand.ConnectToDatabase);
                 m_stream.Write(databaseName);
                 m_stream.Flush();

@@ -43,13 +43,13 @@ namespace GSF.SortedTreeStore.Engine
         private List<string> m_paths;
         private long m_requiredFreeSpaceForNewFile;
         private long m_initialSize;
-        private Guid m_compressionMethod;
+        private EncodingDefinition m_compressionMethod;
 
         private ArchiveInitializer()
         {
         }
 
-        public static ArchiveInitializer<TKey, TValue> CreateInMemory(Guid compressionMethod)
+        public static ArchiveInitializer<TKey, TValue> CreateInMemory(EncodingDefinition compressionMethod)
         {
             ArchiveInitializer<TKey, TValue> settings = new ArchiveInitializer<TKey, TValue>();
             settings.m_isMemoryArchive = true;
@@ -57,7 +57,7 @@ namespace GSF.SortedTreeStore.Engine
             return settings;
         }
 
-        public static ArchiveInitializer<TKey, TValue> CreateOnDisk(List<string> paths, Guid compressionMethod, string prefix)
+        public static ArchiveInitializer<TKey, TValue> CreateOnDisk(List<string> paths, EncodingDefinition compressionMethod, string prefix)
         {
             ArchiveInitializer<TKey, TValue> settings = new ArchiveInitializer<TKey, TValue>();
             settings.m_prefix = prefix;

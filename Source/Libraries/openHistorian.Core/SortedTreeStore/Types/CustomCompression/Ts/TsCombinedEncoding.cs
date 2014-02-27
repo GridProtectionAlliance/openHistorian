@@ -24,19 +24,20 @@
 using System;
 using GSF;
 using GSF.IO;
+using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Encoding;
 using openHistorian.Collections;
 
 namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
 {
     public class CreateTsCombinedEncoding
-         : CreateCombinedValuesBase
+         : CreateDoubleValueEncodingBase
     {
         // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}
         /// <summary>
         /// A unique identifier for this compression method.
         /// </summary>
-        public readonly static Guid TypeGuid = new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7);
+        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7));
 
         public override Type KeyTypeIfNotGeneric
         {
@@ -54,7 +55,7 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             }
         }
 
-        public override Guid Method
+        public override EncodingDefinition Method
         {
             get
             {
@@ -71,7 +72,13 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
     public class TsCombinedEncoding
         : DoubleValueEncodingBase<HistorianKey, HistorianValue>
     {
-
+        public override EncodingDefinition EncodingMethod
+        {
+            get
+            {
+                return CreateTsCombinedEncoding.TypeGuid;
+            }
+        }
 
         public override bool UsesPreviousKey
         {
@@ -225,9 +232,9 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             }
             return size;
         }
-        public override unsafe int Decode(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool endOfStream)
+        public override unsafe int Decode(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool isEndOfStream)
         {
-            endOfStream = false;
+            isEndOfStream = false;
             int size = 0;
             uint code = stream[0];
             //Compression Stages:
@@ -344,9 +351,9 @@ namespace openHistorian.SortedTreeStore.Types.CustomCompression.Ts
             stream.Write(ptr, length);
         }
 
-        public unsafe override void Decode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool endOfStream)
+        public unsafe override void Decode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool isEndOfStream)
         {
-            endOfStream = false;
+            isEndOfStream = false;
             uint code = stream.ReadUInt8();
             byte b1;
             byte b2;

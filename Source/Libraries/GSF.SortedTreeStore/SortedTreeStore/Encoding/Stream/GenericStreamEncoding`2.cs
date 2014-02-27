@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  CompressedStream.cs - Gbtc
+//  GenericStreamEncoding`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/10/2013 - Steven E. Chisholm
+//  2/24/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -25,22 +25,23 @@
 using System;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Net.Initialization;
 
-namespace GSF.SortedTreeStore.Net.Compression
+namespace GSF.SortedTreeStore.Encoding
 {
-    public class CompressedStream<TKey, TValue>
-        : KeyValueStreamCompressionBase<TKey, TValue>
+    public class GenericStreamEncoding<TKey, TValue>
+        : StreamEncodingBase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        TKey prevKey;
-        TValue prevValue;
+        DoubleValueEncodingBase<TKey, TValue> m_encoding;
+        TKey m_prevKey;
+        TValue m_prevValue;
 
-        public CompressedStream()
+        public GenericStreamEncoding(EncodingDefinition encodingMethod)
         {
-            prevKey = new TKey();
-            prevValue = new TValue();
+            m_encoding = EncodingMethodsLibrary.GetEncodingMethod<TKey, TValue>(encodingMethod);
+            m_prevKey = new TKey();
+            m_prevValue = new TValue();
         }
 
         public override bool SupportsPointerSerialization
@@ -55,58 +56,56 @@ namespace GSF.SortedTreeStore.Net.Compression
         {
             get
             {
-                return -1;
+                return m_encoding.MaxCompressionSize;
             }
         }
 
-        public override Guid CompressionType
+        public override EncodingDefinition EncodingMethod
         {
             get
             {
-                return CreateCompressedStream.TypeGuid;
+                return m_encoding.EncodingMethod;
             }
         }
 
         public override void WriteEndOfStream(BinaryStreamBase stream)
         {
-            stream.Write(false);
+            if (m_encoding.ContainsEndOfStreamSymbol)
+                stream.Write(m_encoding.EndOfStreamSymbol);
+            else
+                stream.Write((byte)0);
         }
 
         public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
-            throw new NotImplementedException();
-            stream.Write(true);
-            //KeyMethods.WriteCompressed(stream, currentKey, prevKey);
-            //ValueMethods.WriteCompressed(stream, currentValue, prevValue);
-
-            currentKey.CopyTo(prevKey);
-            currentValue.CopyTo(prevValue);
+            m_encoding.Encode(stream, m_prevKey, m_prevValue, currentKey, currentValue);
+            currentKey.CopyTo(m_prevKey);
+            currentValue.CopyTo(m_prevValue);
         }
 
         public override unsafe int Encode(byte* stream, TKey currentKey, TValue currentValue)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value)
         {
-            if (!stream.ReadBoolean())
-                return false;
-            throw new NotImplementedException();
-
-            //KeyMethods.ReadCompressed(stream, key, prevKey);
-            //ValueMethods.ReadCompressed(stream, value, prevValue);
-
-            key.CopyTo(prevKey);
-            value.CopyTo(prevValue);
-
-            return true;
+            if (!m_encoding.ContainsEndOfStreamSymbol)
+            {
+                if (stream.ReadUInt8() == 0)
+                    return false;
+            }
+            bool endOfStream;
+            m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
+            key.CopyTo(m_prevKey);
+            value.CopyTo(m_prevValue);
+            return endOfStream;
         }
 
         public override void ResetEncoder()
         {
-            prevKey.Clear();
-            prevValue.Clear();
+            m_prevKey.Clear();
+            m_prevValue.Clear();
         }
     }
 }

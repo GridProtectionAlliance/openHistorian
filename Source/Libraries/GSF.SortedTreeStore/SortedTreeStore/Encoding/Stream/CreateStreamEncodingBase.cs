@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateDualTreeNodeBase.cs - Gbtc
+//  CreateStreamEncodingBase.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,27 +16,30 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  4/26/2013 - Steven E. Chisholm
+//  8/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
-using System;
+using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Tree.TreeNodes
+namespace GSF.SortedTreeStore.Encoding
 {
     /// <summary>
-    /// A base class that allows for generically constructing any number of <see cref="SortedTreeNodeBase{TKey,TValue}"/> implementations.
+    /// A base class that allows for generically constructing any number of <see cref="T:openHistorian.Collections.Generic.TreeNodeBase`2"/> implementations.
     /// </summary>
-    public abstract class CreateDualTreeNodeBase : CreateTreeNodeBase
+    public abstract class CreateStreamEncodingBase
+        : CreateDoubleValueBase
     {
-        public abstract Type KeyTypeIfNotGeneric { get; }
 
-        public abstract Type ValueTypeIfNotGeneric { get; }
-
-        public abstract Guid KeyMethod { get; }
-
-        public abstract Guid ValueMethod { get; }
-
+        /// <summary>
+        /// Creates a compressed Stream
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns></returns>
+        public abstract StreamEncodingBase<TKey, TValue> Create<TKey, TValue>()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new();
     }
 }

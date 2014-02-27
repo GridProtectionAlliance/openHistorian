@@ -42,18 +42,12 @@ namespace GSF.SortedTreeStore.Tree
     {
         #region [ Members ]
 
-        private byte m_rootNodeLevel;
-        private uint m_rootNodeIndexAddress;
-        private uint m_lastAllocatedBlock;
         protected SparseIndex<TKey> Indexer;
         protected SortedTreeNodeBase<TKey, TValue> LeafStorage;
         private readonly TValue m_tempValue = new TValue();
 
-        private Guid m_sparseIndexType;
-        private Guid m_treeNodeType;
-        private int m_blockSize;
         private bool m_isInitialized;
-
+        private SortedTreeHeader m_header;
 
         #endregion
 
@@ -61,6 +55,7 @@ namespace GSF.SortedTreeStore.Tree
 
         internal SortedTree(BinaryStreamBase stream1, BinaryStreamBase stream2)
         {
+            m_header = new SortedTreeHeader();
             Stream = stream1;
             StreamLeaf = stream2;
             m_isInitialized = false;
@@ -73,50 +68,49 @@ namespace GSF.SortedTreeStore.Tree
                 throw new Exception("Duplicate calls to Initialize");
             m_isInitialized = true;
 
-            SortedTree.ReadHeader(Stream, out m_sparseIndexType, out m_treeNodeType, out m_blockSize);
+            SortedTree.ReadHeader(Stream, out m_header.TreeNodeType, out m_header.BlockSize);
             //Since m_loadHeader is currently null in the constructor, 
             //this will load as much data that this tree can load.
-            LoadHeader();
+            m_header.LoadHeader(Stream);
 
             Initialize();
 
-            LoadHeader();
+            m_header.LoadHeader(Stream);
         }
 
-        internal void InitializeCreate(Guid sparseIndexType, Guid treeNodeType, int blockSize)
+        internal void InitializeCreate(EncodingDefinition treeNodeType, int blockSize)
         {
             if (m_isInitialized)
                 throw new Exception("Duplicate calls to Initialize");
             m_isInitialized = true;
 
-            m_sparseIndexType = sparseIndexType;
-            m_treeNodeType = treeNodeType;
-            m_blockSize = blockSize;
-            
-            m_rootNodeLevel = 0;
-            m_rootNodeIndexAddress = 1;
-            m_lastAllocatedBlock = 1;
+            m_header.TreeNodeType = treeNodeType;
+            m_header.BlockSize = blockSize;
+
+            m_header.RootNodeLevel = 0;
+            m_header.RootNodeIndexAddress = 1;
+            m_header.LastAllocatedBlock = 1;
 
             Initialize();
 
-            LeafStorage.CreateEmptyNode(m_rootNodeIndexAddress);
-            IsDirty = true;
-            SaveHeader();
+            LeafStorage.CreateEmptyNode(m_header.RootNodeIndexAddress);
+            m_header.IsDirty = true;
+            m_header.SaveHeader(Stream);
         }
 
         private void Initialize()
         {
-            Indexer = new SparseIndex<TKey>(m_sparseIndexType);
-            LeafStorage = TreeNodeInitializer.CreateTreeNode<TKey, TValue>(m_treeNodeType, 0);
+            Indexer = new SparseIndex<TKey>();
+            LeafStorage = TreeNodeInitializer.CreateTreeNode<TKey, TValue>(m_header.TreeNodeType, 0);
             Indexer.RootHasChanged += IndexerOnRootHasChanged;
-            Indexer.Initialize(Stream, m_blockSize, GetNextNewNodeIndex, m_rootNodeLevel, m_rootNodeIndexAddress);
-            LeafStorage.Initialize(StreamLeaf, m_blockSize, GetNextNewNodeIndex, Indexer);
+            Indexer.Initialize(Stream, m_header.BlockSize, GetNextNewNodeIndex, m_header.RootNodeLevel, m_header.RootNodeIndexAddress);
+            LeafStorage.Initialize(StreamLeaf, m_header.BlockSize, GetNextNewNodeIndex, Indexer);
         }
 
         private void IndexerOnRootHasChanged(object sender, EventArgs eventArgs)
         {
-            m_rootNodeLevel = Indexer.RootNodeLevel;
-            m_rootNodeIndexAddress = Indexer.RootNodeIndexAddress;
+            m_header.RootNodeLevel = Indexer.RootNodeLevel;
+            m_header.RootNodeIndexAddress = Indexer.RootNodeIndexAddress;
             SetDirtyFlag();
         }
 
@@ -129,8 +123,10 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         public bool IsDirty
         {
-            get;
-            private set;
+            get
+            {
+                return m_header.IsDirty;
+            }
         }
 
         /// <summary>
@@ -151,7 +147,7 @@ namespace GSF.SortedTreeStore.Tree
         {
             get
             {
-                return m_blockSize;
+                return m_header.BlockSize;
             }
         }
 
@@ -181,7 +177,7 @@ namespace GSF.SortedTreeStore.Tree
         {
             if (!m_isInitialized)
                 throw new Exception("Class has not been initialized");
-            SaveHeader();
+            m_header.SaveHeader(Stream);
         }
 
         /// <summary>
@@ -189,7 +185,7 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         public void SetDirtyFlag()
         {
-            IsDirty = true;
+            m_header.IsDirty = true;
         }
 
         /// <summary>
@@ -213,7 +209,7 @@ namespace GSF.SortedTreeStore.Tree
             if (LeafStorage.TryInsert(key, value))
             {
                 if (IsDirty && AutoFlush)
-                    SaveHeader();
+                    m_header.SaveHeader(Stream);
                 return true;
             }
             return false;
@@ -246,7 +242,7 @@ namespace GSF.SortedTreeStore.Tree
                 helper.Next();
             }
             if (IsDirty && AutoFlush)
-                SaveHeader();
+                m_header.SaveHeader(Stream);
         }
 
 
@@ -261,7 +257,7 @@ namespace GSF.SortedTreeStore.Tree
             if (LeafStorage.TryRemove(key))
             {
                 if (IsDirty && AutoFlush)
-                    SaveHeader();
+                    m_header.SaveHeader(Stream);
                 return true;
             }
             return false;
@@ -328,55 +324,14 @@ namespace GSF.SortedTreeStore.Tree
         /// <remarks>Also saves the header data</remarks>
         protected uint GetNextNewNodeIndex()
         {
-            m_lastAllocatedBlock++;
+            m_header.LastAllocatedBlock++;
             SetDirtyFlag();
-            return m_lastAllocatedBlock;
+            return m_header.LastAllocatedBlock;
         }
 
         #endregion
 
         #region [ Private Methods ]
-
-        /// <summary>
-        /// Loads the header.
-        /// </summary>
-        private void LoadHeader()
-        {
-            Stream.Position = 0;
-            if (m_sparseIndexType != Stream.ReadGuid())
-                throw new Exception("Header Corrupt");
-            if (m_treeNodeType != Stream.ReadGuid())
-                throw new Exception("Header Corrupt");
-            if (m_blockSize != Stream.ReadInt32())
-                throw new Exception("Header Corrupt");
-            if (Stream.ReadUInt8() != 0)
-                throw new Exception("Header Corrupt");
-            m_lastAllocatedBlock = Stream.ReadUInt32();
-            m_rootNodeIndexAddress = Stream.ReadUInt32();
-            m_rootNodeLevel = Stream.ReadUInt8();
-        }
-
-        /// <summary>
-        /// Writes the first page of the SortedTree as long as the <see cref="IsDirty"/> flag is set.
-        /// After returning, the IsDirty flag is cleared.
-        /// </summary>
-        private void SaveHeader()
-        {
-            if (!IsDirty)
-                return;
-            long oldPosotion = Stream.Position;
-            Stream.Position = 0;
-            Stream.Write(m_sparseIndexType);
-            Stream.Write(m_treeNodeType);
-            Stream.Write(m_blockSize);
-            Stream.Write((byte)0); //version
-            Stream.Write(m_lastAllocatedBlock);
-            Stream.Write(m_rootNodeIndexAddress); //Root Index
-            Stream.Write(m_rootNodeLevel); //Root Index
-
-            Stream.Position = oldPosotion;
-            IsDirty = false;
-        }
 
         /// <summary>
         /// Opens a sorted tree using the provided stream.
@@ -428,7 +383,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="blockSize"></param>
         /// <param name="treeNodeType"></param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize, Guid treeNodeType)
+        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize, EncodingDefinition treeNodeType)
         {
             return Create(stream, stream, blockSize, treeNodeType);
         }
@@ -440,10 +395,10 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="blockSize"></param>
         /// <param name="treeNodeType"></param>
         /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize, Guid treeNodeType)
+        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize, EncodingDefinition treeNodeType)
         {
             SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream1, stream2);
-            tree.InitializeCreate(SortedTree.FixedSizeNode, treeNodeType, blockSize);
+            tree.InitializeCreate(treeNodeType, blockSize);
             return tree;
         }
 

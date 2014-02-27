@@ -26,14 +26,15 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     /// <summary>
     /// A base class that allows for generically constructing any number of <see cref="SortedTreeNodeBase{TKey,TValue}"/> implementations.
     /// </summary>
-    public abstract class CreateTreeNodeBase
+    public abstract class CreateTreeNodeBase 
+        : CreateDoubleValueBase
     {
         /// <summary>
         /// Creates a TreeNodeBase
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        /// <param name="level"></param>
+        /// <param name="level">the level of the tree node.</param>
         /// <returns></returns>
         public abstract SortedTreeNodeBase<TKey, TValue> Create<TKey, TValue>(byte level)
             where TKey : SortedTreeTypeBase<TKey>, new()

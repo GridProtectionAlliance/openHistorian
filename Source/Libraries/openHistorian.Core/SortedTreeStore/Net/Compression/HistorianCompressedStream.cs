@@ -22,15 +22,14 @@
 //
 //******************************************************************************************************
 
-using System;
 using GSF.IO;
+using GSF.SortedTreeStore.Net.Compression;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Net.Initialization;
 
-namespace GSF.SortedTreeStore.Net.Compression
+namespace GSF.SortedTreeStore.Encoding
 {
     public class HistorianCompressedStream
-        : KeyValueStreamCompressionBase<HistorianKey, HistorianValue>
+        : StreamEncodingBase<HistorianKey, HistorianValue>
     {
         ulong m_prevTimestamp;
         ulong m_prevPointID;
@@ -51,11 +50,11 @@ namespace GSF.SortedTreeStore.Net.Compression
             }
         }
 
-        public override Guid CompressionType
+        public override EncodingDefinition EncodingMethod
         {
             get
             {
-                return CreateHistorianCompressedStream.TypeGuid;
+                return new EncodingDefinition(CreateHistorianCompressedStream.TypeGuid);
             }
         }
 

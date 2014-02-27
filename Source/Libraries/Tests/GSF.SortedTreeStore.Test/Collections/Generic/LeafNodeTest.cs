@@ -41,7 +41,7 @@ namespace GSF.SortedTreeStore.Tree
             using (BinaryStream bs = new BinaryStream())
             {
                 const int pageSize = 512;
-                SparseIndex<TKey> sparse = new SparseIndex<TKey>(SortedTree.FixedSizeNode);
+                SparseIndex<TKey> sparse = new SparseIndex<TKey>();
                 sparse.Initialize(bs, pageSize, getNextKey, 0, 1);
                 node.Initialize(bs, pageSize, getNextKey, sparse);
                 node.CreateEmptyNode(1);
@@ -99,7 +99,7 @@ namespace GSF.SortedTreeStore.Tree
         }
 
 
-        internal static void TestSpeed<TKey, TValue>(TreeNodeInitializer<TKey, TValue> nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
+        internal static void TestSpeed<TKey, TValue>(CreateTreeNodeBase nodeInitializer, TreeNodeRandomizerBase<TKey, TValue> randomizer, int count, int pageSize)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
@@ -128,8 +128,8 @@ namespace GSF.SortedTreeStore.Tree
                 Console.WriteLine(StepTimer.Time(count, (sw) =>
                 {
                     nextKeyIndex = 2;
-                    node = nodeInitializer.CreateTreeNode(0);
-                    SparseIndex<TKey> sparse = new SparseIndex<TKey>(SortedTree.FixedSizeNode);
+                    node = nodeInitializer.Create<TKey,TValue>(0);
+                    SparseIndex<TKey> sparse = new SparseIndex<TKey>();
                     sparse.Initialize(bs, pageSize, getNextKey, 0, 1);
                     node.Initialize(bs, pageSize, getNextKey, sparse);
                     node.CreateEmptyNode(1);

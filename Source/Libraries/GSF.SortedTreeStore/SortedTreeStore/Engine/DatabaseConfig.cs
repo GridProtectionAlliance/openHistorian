@@ -65,9 +65,9 @@ namespace GSF.SortedTreeStore.Engine
             get;
             private set;
         }
-        public Guid CompressionMethod { get; set; }
+        public EncodingDefinition CompressionMethod { get; set; }
 
-        public DatabaseConfig(WriterMode writerMode, Guid compressionMethod, params string[] paths)
+        public DatabaseConfig(WriterMode writerMode, EncodingDefinition compressionMethod, params string[] paths)
         {
             CompressionMethod = SortedTree.FixedSizeNode;
             if (writerMode == WriterMode.OnDisk)

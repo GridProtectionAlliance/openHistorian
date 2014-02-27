@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RegisterKeyValueStreamCompressionTypes.cs - Gbtc
+//  StreamEncoding.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,28 +21,43 @@
 //     
 //******************************************************************************************************
 
-//******************************************************************************************************
-// This is where types for the KeyValueStreamCompression should be placed for registering. 
-//******************************************************************************************************
+using GSF.SortedTreeStore.Tree;
 
-using GSF.SortedTreeStore.Net.Compression;
-
-namespace GSF.SortedTreeStore.Net.Initialization
+namespace GSF.SortedTreeStore.Encoding
 {
-    internal static class RegisterKeyValueStreamCompressionTypes
-    {
-        private static bool s_compressedStreamHasBeenCalled = false;
-        
-        internal static void RegisterKeyValueStreamTypes()
-        {
-            if (s_compressedStreamHasBeenCalled)
-                return;
-            s_compressedStreamHasBeenCalled = true;
+    //public delegate SortedTreeKeyMethodsBase CreateKeyMethod();
 
-            KeyValueStreamCompression.Register(new CreateFixedSizeStream());
-            KeyValueStreamCompression.Register(new CreateCompressedStream());
-            //KeyValueStreamCompression.Register(new CreateHistorianCompressedStream());
-            
+    //public delegate SortedTreeValueMethodsBase CreateValueMethod();
+
+    public static class StreamEncoding
+    {
+
+        private static readonly DualEncodingDictionary<CreateStreamEncodingBase> DoubleEncoding;
+
+        //static Dictionary<Type, SortedTreeValueMethodsBase> s_valueMethods;
+
+        static StreamEncoding()
+        {
+            DoubleEncoding = new DualEncodingDictionary<CreateStreamEncodingBase>();
+
         }
+        
+        public static void Register(CreateStreamEncodingBase encoding)
+        {
+            DoubleEncoding.Register(encoding);
+        }
+        
+        internal static StreamEncodingBase<TKey, TValue> CreateStreamEncoding<TKey, TValue>(EncodingDefinition encodingMethod)
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
+        {
+            CreateStreamEncodingBase encoding;
+
+            if (DoubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
+                return encoding.Create<TKey, TValue>();
+            
+            return new GenericStreamEncoding<TKey, TValue>(encodingMethod);
+        }
+       
     }
 }

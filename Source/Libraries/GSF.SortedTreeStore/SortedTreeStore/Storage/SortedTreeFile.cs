@@ -209,7 +209,7 @@ namespace GSF.SortedTreeStore.Storage
         /// <typeparam name="TValue"></typeparam>
         /// <param name="storageMethod">The method of compression to utilize in this table.</param>
         /// <returns></returns>
-        public SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(Guid storageMethod)
+        public SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
@@ -240,7 +240,7 @@ namespace GSF.SortedTreeStore.Storage
             return SubFileName.Create(PrimaryArchiveType, keyType, valueType);
         }
 
-        private void CreateArchiveFile<TKey, TValue>(SubFileName fileName, Guid storageMethod)
+        private void CreateArchiveFile<TKey, TValue>(SubFileName fileName, EncodingDefinition storageMethod)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {

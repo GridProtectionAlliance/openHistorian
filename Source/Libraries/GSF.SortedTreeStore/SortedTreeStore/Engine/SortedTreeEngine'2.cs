@@ -50,7 +50,7 @@ namespace GSF.SortedTreeStore.Engine
 
         #region [ Constructors ]
 
-        public SortedTreeEngine(WriterMode writer, Guid compressionMethod, params string[] paths)
+        public SortedTreeEngine(WriterMode writer, EncodingDefinition compressionMethod, params string[] paths)
             : this(new DatabaseConfig(writer, compressionMethod, paths))
         {
         }

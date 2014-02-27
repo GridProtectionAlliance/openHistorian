@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  CreateDualSingleValueBase.cs - Gbtc
+//  StreamEncodingBase`2.cs - Gbtc
 //
-//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,28 +16,36 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/21/2014 - Steven E. Chisholm
+//  8/10/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//       
+//
 //******************************************************************************************************
 
-using System;
+using GSF.IO;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
-    public abstract class CreateDualSingleValueBase
+    public abstract class StreamEncodingBase<TKey, TValue>
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        public abstract Type KeyTypeIfNotGeneric { get; }
+        public abstract bool SupportsPointerSerialization { get; }
 
-        public abstract Type ValueTypeIfNotGeneric { get; }
+        public abstract int MaxCompressedSize { get; }
 
-        public abstract Guid KeyMethod { get; }
+        public abstract EncodingDefinition EncodingMethod { get; }
 
-        public abstract Guid ValueMethod { get; }
+        public abstract void WriteEndOfStream(BinaryStreamBase stream);
 
-        public abstract DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new();
+        public abstract void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue);
+
+        public unsafe abstract int Encode(byte* stream, TKey currentKey, TValue currentValue);
+
+        public abstract unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value);
+
+        public abstract void ResetEncoder();
+
     }
 }

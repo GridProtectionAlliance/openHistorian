@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FixedSizeCombinedEncoding`1.cs - Gbtc
+//  CreateFixedSizeCombinedEncoding`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,20 +22,25 @@
 //******************************************************************************************************
 
 using System;
-using GSF.IO;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
+    /// <summary>
+    /// A constructor class for this specific type of encoding.
+    /// </summary>
     public class CreateFixedSizeCombinedEncoding
-        : CreateCombinedValuesBase
+        : CreateDoubleValueEncodingBase
     {
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
         /// The guid that represents the encoding method of this class
         /// </summary>
-        public static readonly Guid TypeGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55);
+        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(
+            new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55));
 
+        /// <summary>
+        /// The key type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
         public override Type KeyTypeIfNotGeneric
         {
             get
@@ -44,6 +49,9 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// The value type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
         public override Type ValueTypeIfNotGeneric
         {
             get
@@ -52,7 +60,10 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
-        public override Guid Method
+        /// <summary>
+        /// The encoding method that defines this class.
+        /// </summary>
+        public override EncodingDefinition Method
         {
             get
             {
@@ -60,80 +71,13 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// Constructs a new class based on this encoding method. 
+        /// </summary>
+        /// <typeparam name="TKey">The key for this encoding method</typeparam>
+        /// <typeparam name="TValue">The value for this encoding method</typeparam>
+        /// <returns>The encoding method</returns>
         public override DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
-        {
-            return new FixedSizeCombinedEncoding<TKey, TValue>();
-        }
-    }
-
-    public class FixedSizeCombinedEncoding<TKey, TValue>
-        : DoubleValueEncodingBase<TKey, TValue>
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
-    {
-        int m_keySize;
-        int m_valueSize;
-
-        public FixedSizeCombinedEncoding()
-        {
-            m_keySize = new TKey().Size;
-            m_valueSize = new TValue().Size;
-        }
-
-        public override bool UsesPreviousKey
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public override bool UsesPreviousValue
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public override int MaxCompressionSize
-        {
-            get
-            {
-                return m_keySize + m_valueSize;
-            }
-        }
-
-        public override bool ContainsEndOfStreamSymbol
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public override byte EndOfStreamSymbol
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
-
-        public override void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
-        {
-            key.Write(stream);
-            value.Write(stream);
-        }
-
-        public override void Decode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool endOfStream)
-        {
-            endOfStream = false;
-            key.Read(stream);
-            value.Read(stream);
-        }
-
-        public override DoubleValueEncodingBase<TKey, TValue> Clone()
         {
             return new FixedSizeCombinedEncoding<TKey, TValue>();
         }

@@ -45,7 +45,7 @@ namespace GSF.SortedTreeStore.Tree
         private BinaryStreamBase m_stream;
         private Func<uint> m_getNextNewNodeIndex;
         private SortedTreeNodeBase<TKey, SortedTreeUInt32>[] m_nodes;
-        private readonly TreeNodeInitializer<TKey, SortedTreeUInt32> m_initializer;
+        private readonly CreateTreeNodeBase m_initializer;
 
         /// <summary>
         /// Gets the indexed address for the root node
@@ -89,10 +89,9 @@ namespace GSF.SortedTreeStore.Tree
         /// <summary>
         /// Creates a new sparse index. Be sure to initialize this class by calling <see cref="Initialize"/> before using this.
         /// </summary>
-        /// <param name="encodingMethod">The encoding that will be used with each node</param>
-        public SparseIndex(Guid encodingMethod)
+        public SparseIndex()
         {
-            m_initializer = TreeNodeInitializer.GetTreeNodeInitializer<TKey, SortedTreeUInt32>(encodingMethod);
+            m_initializer = TreeNodeInitializer.GetTreeNodeInitializer<TKey, SortedTreeUInt32>(SortedTree.FixedSizeNode);
             m_key = new TKey();
             m_keySize = m_key.Size;
             m_value = new SortedTreeUInt32();
@@ -383,7 +382,7 @@ namespace GSF.SortedTreeStore.Tree
             m_nodes = new SortedTreeNodeBase<TKey, SortedTreeUInt32>[count];
             for (int x = 0; x < m_nodes.Length; x++)
             {
-                m_nodes[x] = m_initializer.CreateTreeNode((byte)(x + 1));
+                m_nodes[x] = m_initializer.Create<TKey, SortedTreeUInt32>((byte)(x + 1));
                 m_nodes[x].Initialize(m_stream, m_blockSize, m_getNextNewNodeIndex, this);
             }
         }

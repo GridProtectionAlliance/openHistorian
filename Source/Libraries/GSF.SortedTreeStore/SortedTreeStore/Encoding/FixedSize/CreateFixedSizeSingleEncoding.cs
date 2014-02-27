@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FixedSizeSingleEncoding`1.cs - Gbtc
+//  CreateFixedSizeSingleEncoding`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,13 +22,14 @@
 //******************************************************************************************************
 
 using System;
-using GSF.IO;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
+    /// <summary>
+    /// Constructs a single encoding method for a fixed size encoding
+    /// </summary>
     public class CreateFixedSizeSingleEncoding
-        : CreateSingleValueBase
+        : CreateSingleValueEncodingBase
     {
         // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
@@ -36,6 +37,9 @@ namespace GSF.SortedTreeStore.Encoding
         /// </summary>
         public static readonly Guid TypeGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55);
 
+        /// <summary>
+        /// The type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
         public override Type TypeIfNotGeneric
         {
             get
@@ -44,6 +48,9 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// The encoding method as specified by a <see cref="Guid"/>.
+        /// </summary>
         public override Guid Method
         {
             get
@@ -52,67 +59,14 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// Constructs a new class based on this encoding method. 
+        /// </summary>
+        /// <typeparam name="T">The type of this base class</typeparam>
+        /// <returns>
+        /// The encoding method
+        /// </returns>
         public override SingleValueEncodingBase<T> Create<T>()
-        {
-            return new FixedSizeSingleEncoding<T>();
-        }
-    }
-
-    public class FixedSizeSingleEncoding<T>
-        : SingleValueEncodingBase<T>
-        where T : SortedTreeTypeBase<T>, new()
-    {
-        int m_size;
-
-        public FixedSizeSingleEncoding()
-        {
-            m_size = new T().Size;
-        }
-
-        public override bool ContainsEndOfStreamSymbol
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public override byte EndOfStreamSymbol
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
-
-        public override bool UsesPreviousValue
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public override int MaxCompressionSize
-        {
-            get
-            {
-                return m_size;
-            }
-        }
-
-        public override unsafe void Encode(BinaryStreamBase stream, T prevValue, T value)
-        {
-            value.Write(stream);
-        }
-
-        public override unsafe void Decode(BinaryStreamBase stream, T prevValue, T value, out bool endOfStream)
-        {
-            endOfStream = false;
-            value.Read(stream);
-        }
-
-        public override SingleValueEncodingBase<T> Clone()
         {
             return new FixedSizeSingleEncoding<T>();
         }

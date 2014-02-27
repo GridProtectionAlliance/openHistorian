@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  CreateCompressedStream.cs - Gbtc
+//  CreateDoubleValueBase.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,53 +16,33 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  8/10/2013 - Steven E. Chisholm
+//  2/22/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
-//
+//     
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Net.Initialization;
 
-namespace GSF.SortedTreeStore.Net.Compression
+namespace GSF.SortedTreeStore
 {
-    class CreateCompressedStream
-        : CreateKeyValueStreamCompressionBase
+    /// <summary>
+    /// The base class for all create type classes that involve a double value.
+    /// </summary>
+    public abstract class CreateDoubleValueBase
     {
+        /// <summary>
+        /// The key type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
+        public abstract Type KeyTypeIfNotGeneric { get; }
 
-        // {E7E8A378-340E-47DF-B29F-E65361AB32AB}
-        public readonly static Guid TypeGuid = new Guid(0xe7e8a378, 0x340e, 0x47df, 0xb2, 0x9f, 0xe6, 0x53, 0x61, 0xab, 0x32, 0xab);
+        /// <summary>
+        /// The value type supported by the encoded method. Can be null if the encoding is not type specific.
+        /// </summary>
+        public abstract Type ValueTypeIfNotGeneric { get; }
 
-
-
-        public override Type KeyTypeIfFixed
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override Type ValueTypeIfFixed
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override Guid GetTypeGuid
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
-
-        public override KeyValueStreamCompressionBase<TKey, TValue> Create<TKey, TValue>()
-        {
-            return new CompressedStream<TKey, TValue>();
-        }
+        /// <summary>
+        /// The encoding method that defines this class.
+        /// </summary>
+        public abstract EncodingDefinition Method { get; }
     }
 }

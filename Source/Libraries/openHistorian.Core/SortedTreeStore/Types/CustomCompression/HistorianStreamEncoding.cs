@@ -23,20 +23,17 @@
 //******************************************************************************************************
 
 using System;
-using System.IO;
 using GSF.IO;
-using GSF.SortedTreeStore.Encoding;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Net.Initialization;
 
-namespace GSF.SortedTreeStore.Net.Compression
+namespace GSF.SortedTreeStore.Encoding
 {
 
     public class CreateHistorianStreamEncoding
-         : CreateCombinedValuesBase
+         : CreateDoubleValueEncodingBase
     {
         // {0418B3A7-F631-47AF-BBFA-8B9BC0378328}
-        public readonly static Guid TypeGuid = new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28);
+        public static readonly EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0x0418b3a7, 0xf631, 0x47af, 0xbb, 0xfa, 0x8b, 0x9b, 0xc0, 0x37, 0x83, 0x28));
 
         public override Type KeyTypeIfNotGeneric
         {
@@ -54,7 +51,7 @@ namespace GSF.SortedTreeStore.Net.Compression
             }
         }
 
-        public override Guid Method
+        public override EncodingDefinition Method
         {
             get
             {
@@ -71,7 +68,13 @@ namespace GSF.SortedTreeStore.Net.Compression
     public class HistorianStreamEncoding
         : DoubleValueEncodingBase<HistorianKey, HistorianValue>
     {
-        
+        public override EncodingDefinition EncodingMethod
+        {
+            get
+            {
+                return CreateHistorianStreamEncoding.TypeGuid;
+            }
+        }
 
         public override bool UsesPreviousKey
         {
@@ -180,13 +183,13 @@ namespace GSF.SortedTreeStore.Net.Compression
 
         }
 
-        public override void Decode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool endOfStream)
+        public override void Decode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool isEndOfStream)
         {
-            endOfStream = false;
+            isEndOfStream = false;
             byte code = stream.ReadUInt8();
             if (code == 255)
             {
-                endOfStream = true;
+                isEndOfStream = true;
                 return;
             }
 
@@ -210,8 +213,8 @@ namespace GSF.SortedTreeStore.Net.Compression
                     value.Value2 = 0;
                     value.Value3 = 0;
                 }
-             
-                return ;
+
+                return;
             }
 
             if ((code & 64) != 0) //T is set
@@ -244,8 +247,8 @@ namespace GSF.SortedTreeStore.Net.Compression
                 value.Value3 = stream.ReadUInt32();
             else
                 value.Value3 = 0;
-           
-            return ;
+
+            return;
         }
 
         public override DoubleValueEncodingBase<HistorianKey, HistorianValue> Clone()

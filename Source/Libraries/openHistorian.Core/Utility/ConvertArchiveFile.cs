@@ -23,6 +23,7 @@
 
 using System;
 using System.IO;
+using GSF.SortedTreeStore;
 using openHistorian.Collections;
 using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore.Storage;
@@ -33,7 +34,7 @@ namespace openHistorian.Utility
 {
     public static class ConvertArchiveFile
     {
-        public static unsafe void ConvertVersion1File(string oldFileName, string newFileName, Guid compressionMethod, long max = long.MaxValue)
+        public static unsafe void ConvertVersion1File(string oldFileName, string newFileName, EncodingDefinition compressionMethod, long max = long.MaxValue)
         {
             //Guid compressionMethod = CreateFixedSizeNode.TypeGuid;
 

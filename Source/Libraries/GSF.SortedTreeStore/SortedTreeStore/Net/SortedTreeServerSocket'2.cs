@@ -50,7 +50,7 @@ namespace GSF.SortedTreeStore.Net
         private bool m_disposed;
 
         // TODO: Replace this with a connection string instead of a port - allows easier specification of interface, etc.
-        public SortedTreeServerSocket(int port, Guid compressionMethod, HistorianCollection<TKey, TValue> historian = null)
+        public SortedTreeServerSocket(int port, EncodingDefinition compressionMethod, HistorianCollection<TKey, TValue> historian = null)
         {
             if (historian == null)
             {

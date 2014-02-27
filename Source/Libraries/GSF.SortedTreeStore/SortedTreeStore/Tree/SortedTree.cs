@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 
-using System;
+using System.Data;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode;
 
@@ -36,26 +36,39 @@ namespace GSF.SortedTreeStore.Tree
         /// Reads the header data.
         /// </summary>
         /// <param name="stream"></param>
-        /// <param name="sparseIndexType"></param>
         /// <param name="treeNodeType"></param>
         /// <param name="blockSize"></param>
-        internal static void ReadHeader(BinaryStreamBase stream, out Guid sparseIndexType, out Guid treeNodeType, out int blockSize)
+        internal static void ReadHeader(BinaryStreamBase stream, out EncodingDefinition treeNodeType, out int blockSize)
         {
             stream.Position = 0;
-            sparseIndexType = stream.ReadGuid();
-            treeNodeType = stream.ReadGuid();
-            blockSize = stream.ReadInt32();
+            byte version = stream.ReadUInt8();
+            if (version == 109)
+            {
+                stream.Position = 0;
+                stream.ReadGuid();
+                treeNodeType = new EncodingDefinition(stream.ReadGuid());
+                blockSize = stream.ReadInt32();
+            }
+            else if (version == 1)
+            {
+                blockSize = stream.ReadInt32();
+                treeNodeType = new EncodingDefinition(stream);
+            }
+            else
+            {
+                throw new VersionNotFoundException();
+            }
         }
         /// <summary>
         /// A node where each element is fixed in size.
         /// </summary>
-        public static Guid FixedSizeNode
+        public static EncodingDefinition FixedSizeNode
         {
             get
             {
                 return CreateFixedSizeNode.TypeGuid;
             }
         }
-       
+
     }
 }

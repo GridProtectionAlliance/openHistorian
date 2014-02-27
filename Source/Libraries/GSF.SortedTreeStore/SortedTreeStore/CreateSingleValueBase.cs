@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FixedSizeDualSingleEncoding`1.cs - Gbtc
+//  CreateSingleValueBase.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,59 +16,28 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  2/21/2014 - Steven E. Chisholm
+//  2/22/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //     
 //******************************************************************************************************
 
 using System;
 
-namespace GSF.SortedTreeStore.Encoding
+namespace GSF.SortedTreeStore
 {
-    public class CreateFixedSizeDualSingleEncoding
-        : CreateDualSingleValueBase
+    /// <summary>
+    /// The base class for all create type classes that involve a double value.
+    /// </summary>
+    public abstract class CreateSingleValueBase
     {
-        // {1DEA326D-A63A-4F73-B51C-7B3125C6DA55}
         /// <summary>
-        /// The guid that represents the encoding method of this class
+        /// The type supported by the encoded method. Can be null if the encoding is not type specific.
         /// </summary>
-        public static readonly Guid TypeGuid = new Guid(0x1dea326d, 0xa63a, 0x4f73, 0xb5, 0x1c, 0x7b, 0x31, 0x25, 0xc6, 0xda, 0x55);
+        public abstract Type TypeIfNotGeneric { get; }
 
-        public override Type KeyTypeIfNotGeneric
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override Type ValueTypeIfNotGeneric
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override Guid KeyMethod
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
-
-        public override Guid ValueMethod
-        {
-            get
-            {
-                return TypeGuid;
-            }
-        }
-
-        public override DoubleValueEncodingBase<TKey, TValue> Create<TKey, TValue>()
-        {
-            return new FixedSizeCombinedEncoding<TKey, TValue>();
-        }
+        /// <summary>
+        /// The encoding method as specified by a <see cref="Guid"/>.
+        /// </summary>
+        public abstract Guid Method { get; }
     }
 }

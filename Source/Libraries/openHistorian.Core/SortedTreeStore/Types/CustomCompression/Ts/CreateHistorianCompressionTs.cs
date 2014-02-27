@@ -30,14 +30,14 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
     /// Used to generically create a fixed size node.
     /// </summary>
     public class CreateHistorianCompressionTs
-        : CreateSingleTreeNodeBase
+        : CreateTreeNodeBase
     {
 
         // {AACA05B5-6B72-4512-859A-F4B2DF394BF7}
         /// <summary>
         /// A unique identifier for this compression method.
         /// </summary>
-        public readonly static Guid TypeGuid = new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7);
+        public readonly static EncodingDefinition TypeGuid = new EncodingDefinition(new Guid(0xaaca05b5, 0x6b72, 0x4512, 0x85, 0x9a, 0xf4, 0xb2, 0xdf, 0x39, 0x4b, 0xf7));
 
         /// <summary>
         /// Creates a TreeNodeBase
@@ -67,7 +67,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             }
         }
 
-        public override Guid Method
+        public override EncodingDefinition Method
         {
             get
             {

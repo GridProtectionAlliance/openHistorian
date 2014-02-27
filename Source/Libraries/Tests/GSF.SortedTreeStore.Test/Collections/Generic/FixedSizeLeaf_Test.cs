@@ -151,7 +151,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void BenchmarkSequently()
         {
-            TreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32> tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new SequentialTest(), 500, 512);
         }
@@ -159,7 +159,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void BenchmarkReverseSequently()
         {
-            TreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32> tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new ReverseSequentialTest(), 500, 512);
         }
@@ -167,7 +167,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void BenchmarkRandom()
         {
-            TreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32> tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 500, 512);
         }
@@ -175,7 +175,7 @@ namespace GSF.SortedTreeStore.Tree
         [Test]
         public void BenchmarkBigRandom()
         {
-            TreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32> tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
+            var tree = TreeNodeInitializer.GetTreeNodeInitializer<SortedTreeUInt32, SortedTreeUInt32>(SortedTree.FixedSizeNode);
 
             LeafNodeTest.TestSpeed(tree, new RandomTest(), 5000, 4096);
         }

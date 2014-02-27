@@ -30,7 +30,6 @@ using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Net.Compression;
-using GSF.SortedTreeStore.Net.Initialization;
 
 namespace GSF.SortedTreeStore.Net
 {
