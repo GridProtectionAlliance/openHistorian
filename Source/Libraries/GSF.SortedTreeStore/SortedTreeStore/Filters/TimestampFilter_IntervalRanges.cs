@@ -28,7 +28,7 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Filters
 {
-    public partial class TimestampFilterNew
+    public partial class TimestampFilter
     {
         private class IntervalRanges<TKey>
             : SeekFilterBase<TKey>

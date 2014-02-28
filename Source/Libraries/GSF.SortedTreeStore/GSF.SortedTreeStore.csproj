@@ -132,20 +132,9 @@
     <Compile Include="SortedTreeStore\Filters\CreateFilterBase.cs" />
     <Compile Include="SortedTreeStore\Filters\FilterLibrary.cs" />
     <Compile Include="SortedTreeStore\Filters\MatchFilterBase`2.cs" />
+    <Compile Include="SortedTreeStore\Filters\MatchFilterUniverse`2.cs" />
+    <Compile Include="SortedTreeStore\Filters\SeekFilterUniverse`1.cs" />
     <Compile Include="SortedTreeStore\Filters\SeekFilterBase`1.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\KeySeekFilterUniverse`1.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\KeyMatchFilterUniverse`1.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\TimestampFilter_IntervalRanges.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\PointIDFilter_UlongHashSet.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\PointIDFilter_UIntHashSet.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\KeySeekFilterBase`1.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\KeyMatchFilterBase`1.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\PointIDFilter.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\PointIDFilter_BitArray.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\TimestampFilter.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\TimestampFilter_FixedRange.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\ValueMatchFilterUniverse`1.cs" />
-    <Compile Include="SortedTreeStore\Filters\Old\ValueMatchFilterBase`1.cs" />
     <Compile Include="SortedTreeStore\Collection\PointCollection.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\GenericStreamEncoding`2.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\CreateStreamEncodingBase.cs" />
@@ -350,8 +339,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SortedTreeStore\Net\Compression\" />
-    <Folder Include="SortedTreeStore\Net\Initialization\" />
+    <Folder Include="SortedTreeStore\Filters\Old\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

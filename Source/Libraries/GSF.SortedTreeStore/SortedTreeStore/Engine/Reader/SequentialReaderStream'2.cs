@@ -45,9 +45,8 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
         bool m_keyMatchIsUniverse;
 
-        KeySeekFilterBase<TKey> m_keySeekFilter;
-        KeyMatchFilterBase<TKey> m_keyMatchFilter;
-        ValueMatchFilterBase<TValue> m_valueMatchFilter;
+        SeekFilterBase<TKey> m_keySeekFilter;
+        MatchFilterBase<TKey,TValue> m_keyMatchFilter;
 
         private TimeoutOperation m_timeout;
         private List<BufferedArchiveStream<TKey, TValue>> m_tablesOrigList;
@@ -59,15 +58,13 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
         public SequentialReaderStream(ArchiveListSnapshot<TKey, TValue> snapshot,
                                    SortedTreeEngineReaderOptions readerOptions,
-                                   KeySeekFilterBase<TKey> keySeekFilter,
-                                   KeyMatchFilterBase<TKey> keyMatchFilter,
-                                   ValueMatchFilterBase<TValue> valueMatchFilter)
+                                   SeekFilterBase<TKey> keySeekFilter,
+                                   MatchFilterBase<TKey,TValue> keyMatchFilter)
         {
             m_pointCount = 0;
             m_keySeekFilter = keySeekFilter;
             m_keyMatchFilter = keyMatchFilter;
-            m_valueMatchFilter = valueMatchFilter;
-            m_keyMatchIsUniverse = (m_keyMatchFilter as KeyMatchFilterUniverse<TKey>) != null;
+            m_keyMatchIsUniverse = (m_keyMatchFilter as MatchFilterUniverse<TKey,TValue>) != null;
 
             if (readerOptions.Timeout.Ticks > 0)
             {
@@ -203,7 +200,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             return false;
         }
 
-        bool ReadWhileFollowupActions(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
+        bool ReadWhileFollowupActions(TKey key, TValue value, MatchFilterBase<TKey,TValue> filter)
         {
             //There are certain followup requirements when a ReadWhile method returns false.
             //Condition 1:
@@ -247,7 +244,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 AdvanceSeekableFilter(true, key);
                 SetReadWhileUpperBoundsValue();
 
-                return filter == null || filter.Contains(key);
+                return filter == null || filter.Contains(key,value);
             }
 
             //Check if condition 3 occured

@@ -52,16 +52,16 @@ namespace GSF.SortedTreeStore.Net
         private TcpClient m_client;
         private NetworkBinaryStream m_stream;
         private SortedTreeEngine m_sortedTreeEngine;
-        private Guid m_compressionMethod;
+        private EncodingDefinition m_encodingMethod;
         string m_historianDatabaseString;
 
         StreamEncodingBase<TKey, TValue> m_compressionMode;
 
         private readonly string m_defaultDatabase;
 
-        public SortedTreeStoreClient(HistorianClientOptions options, Guid compressionMethod)
+        public SortedTreeStoreClient(HistorianClientOptions options, EncodingDefinition encodingMethod)
         {
-            m_compressionMethod = compressionMethod;
+            m_encodingMethod = encodingMethod;
             IPAddress ip;
             if (!IPAddress.TryParse(options.ServerNameOrIp, out ip))
             {
@@ -95,7 +95,7 @@ namespace GSF.SortedTreeStore.Net
             m_client = new TcpClient();
             m_client.Connect(server);
             m_stream = new NetworkBinaryStream(m_client.Client);
-            m_stream.Write(1122334455667788991L);
+            m_stream.Write(1122334455667788992L);
             m_stream.Flush();
         }
 
@@ -118,10 +118,10 @@ namespace GSF.SortedTreeStore.Net
 
                 //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateFixedSizeStream.TypeGuid);
                 //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateCompressedStream.TypeGuid);
-                m_compressionMode = StreamEncoding.CreateStreamEncoding<TKey, TValue>(new EncodingDefinition(m_compressionMethod));
+                m_compressionMode = StreamEncoding.CreateStreamEncoding<TKey, TValue>(m_encodingMethod);
 
                 m_stream.Write((byte)ServerCommand.SetCompressionMode);
-                m_stream.Write(m_compressionMode.EncodingMethod.KeyValueEncodingMethod);
+                m_encodingMethod.Save(m_stream);
                 m_stream.Write((byte)ServerCommand.ConnectToDatabase);
                 m_stream.Write(databaseName);
                 m_stream.Flush();

@@ -169,7 +169,7 @@ namespace openHistorian.Data.Query
         /// <param name="signals">an IEnumerable of all of the signals to query as part of the results set.</param>
         /// <param name="readerOptions">The options that will be used when querying this data.</param>
         /// <returns></returns>
-        public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, KeySeekFilterBase<HistorianKey> timestamps, IEnumerable<ISignalWithType> signals, SortedTreeEngineReaderOptions readerOptions)
+        public static Dictionary<ulong, SignalDataBase> GetSignals(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, IEnumerable<ISignalWithType> signals, SortedTreeEngineReaderOptions readerOptions)
         {
             Dictionary<ulong, SignalDataBase> results = new Dictionary<ulong, SignalDataBase>();
 
@@ -188,8 +188,8 @@ namespace openHistorian.Data.Query
             {
                 HistorianKey key = new HistorianKey();
                 HistorianValue hvalue = new HistorianValue();
-                var keyParser = PointIDFilter.CreateFromList<HistorianKey>(signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
-                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(readerOptions, timestamps, keyParser, null);
+                var keyParser = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(signals.Where((x) => x.HistorianId.HasValue).Select((x) => x.HistorianId.Value));
+                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(readerOptions, timestamps, keyParser);
                 ulong time, point, quality, value;
                 while (stream.Read(key, hvalue))
                 {

@@ -422,7 +422,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             IndexOfNextKeyValue++;
         }
 
-        protected override bool InternalRead(HistorianKey key, HistorianValue value, KeyMatchFilterBase<HistorianKey> filter)
+        protected override bool InternalRead(HistorianKey key, HistorianValue value, MatchFilterBase<HistorianKey, HistorianValue> filter)
         {
             byte* stream = Pointer + m_nextOffset;
             int totalSize = 0;
@@ -457,15 +457,16 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 //key.Timestamp = prevTimestamp;
                 key.PointID += 1 + ((code >> 4) & 0x7);
                 //key.EntryNumber = 0;
-                if (!filter.Contains(key))
+
+                value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                value.Value2 = 0;
+                value.Value3 = 0;
+                if (!filter.Contains(key, value))
                 {
                     totalSize += 4;
                     stream += 4;
                     goto FilterFailed;
                 }
-                value.Value1 = (4u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
-                value.Value2 = 0;
-                value.Value3 = 0;
                 totalSize += 4;
             }
             else if (code < 0xC0)
@@ -474,15 +475,16 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 //key.Timestamp = prevTimestamp;
                 key.PointID += 1 + ((code >> 4) & 0x3);
                 //key.EntryNumber = 0;
-                if (!filter.Contains(key))
+
+                value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
+                value.Value2 = 0;
+                value.Value3 = 0;
+                if (!filter.Contains(key, value))
                 {
                     totalSize += 4;
                     stream += 4;
                     goto FilterFailed;
                 }
-                value.Value1 = (12u << 28) | (code & 0xF) << 24 | (uint)stream[1] << 16 | (uint)stream[2] << 8 | (uint)stream[3] << 0;
-                value.Value2 = 0;
-                value.Value3 = 0;
                 totalSize += 4;
             }
             else if (code < 0xD0)
@@ -491,15 +493,16 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 //prevTimestamp = prevTimestamp;
                 key.PointID += 1 + (code & 0xF);
                 //key.EntryNumber = 0;
-                if (!filter.Contains(key))
+
+                value.Value1 = 0;
+                value.Value2 = 0;
+                value.Value3 = 0;
+                if (!filter.Contains(key, value))
                 {
                     totalSize += 1;
                     stream += 1;
                     goto FilterFailed;
                 }
-                value.Value1 = 0;
-                value.Value2 = 0;
-                value.Value3 = 0;
                 totalSize += 1;
             }
             else if (code < 0xE0)
@@ -508,15 +511,16 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 //prevTimestamp = prevTimestamp;
                 key.PointID += 1 + (code & 0xF);
                 //key.EntryNumber = 0;
-                if (!filter.Contains(key))
+
+                value.Value1 = *(uint*)(stream + 1);
+                value.Value2 = 0;
+                value.Value3 = 0;
+                if (!filter.Contains(key, value))
                 {
                     totalSize += 5;
                     stream += 5;
                     goto FilterFailed;
                 }
-                value.Value1 = *(uint*)(stream + 1);
-                value.Value2 = 0;
-                value.Value3 = 0;
                 totalSize += 5;
                 //key.Timestamp = prevTimestamp;
             }
@@ -544,33 +548,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                     key.EntryNumber = 0;
                 }
 
-                if (!filter.Contains(key))
-                {
-                    key.EntryNumber = 0;
-                    size += 4 + ((byte)code & 4);
-                    //if ((code & 4) != 0) //V1 is set)
-                    //{
-                    //    size += 8;
-                    //}
-                    //else
-                    //{
-                    //    size += 4;
-                    //}
 
-                    if ((code & 2) != 0) //V2 is set)
-                    {
-                        size += Encoding7Bit.MeasureUInt64(stream, size);
-                    }
-
-                    if ((code & 1) != 0) //V3 is set)
-                    {
-                        size += Encoding7Bit.MeasureUInt64(stream, size);
-                    }
-
-                    totalSize += size;
-                    stream += size;
-                    goto FilterFailed;
-                }
 
 
                 if ((code & 4) != 0) //V1 is set)
@@ -600,6 +578,34 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 else
                 {
                     value.Value3 = 0;
+                }
+
+                if (!filter.Contains(key, value))
+                {
+                    key.EntryNumber = 0;
+                    size += 4 + ((byte)code & 4);
+                    //if ((code & 4) != 0) //V1 is set)
+                    //{
+                    //    size += 8;
+                    //}
+                    //else
+                    //{
+                    //    size += 4;
+                    //}
+
+                    if ((code & 2) != 0) //V2 is set)
+                    {
+                        size += Encoding7Bit.MeasureUInt64(stream, size);
+                    }
+
+                    if ((code & 1) != 0) //V3 is set)
+                    {
+                        size += Encoding7Bit.MeasureUInt64(stream, size);
+                    }
+
+                    totalSize += size;
+                    stream += size;
+                    goto FilterFailed;
                 }
                 totalSize += size;
             }
@@ -736,7 +742,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return false;
         }
 
-        protected override bool InternalReadWhile(HistorianKey key, HistorianValue value, HistorianKey upperBounds, KeyMatchFilterBase<HistorianKey> filter)
+        protected override bool InternalReadWhile(HistorianKey key, HistorianValue value, HistorianKey upperBounds, MatchFilterBase<HistorianKey, HistorianValue> filter)
         {
         TryAgain:
             byte* stream = Pointer + m_nextOffset;
@@ -858,7 +864,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 m_prevPointId = key.PointID;
                 m_nextOffset += size;
                 IndexOfNextKeyValue++;
-                if (filter.Contains(key))
+                if (filter.Contains(key, value))
                 {
                     return true;
                 }

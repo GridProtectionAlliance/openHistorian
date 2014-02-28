@@ -53,12 +53,8 @@ namespace GSF.SortedTreeStore.Engine.Reader
         /// <param name="readerOptions"></param>
         /// <param name="keySeekFilter"></param>
         /// <param name="keyMatchFilter"></param>
-        /// <param name="valueMatchFilter"></param>
         /// <returns></returns>
-        public abstract TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions,
-                                                      KeySeekFilterBase<TKey> keySeekFilter,
-                                                      KeyMatchFilterBase<TKey> keyMatchFilter,
-                                                      ValueMatchFilterBase<TValue> valueMatchFilter); 
+        public abstract TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter);
 
         /// <summary>
         /// Closes this reader

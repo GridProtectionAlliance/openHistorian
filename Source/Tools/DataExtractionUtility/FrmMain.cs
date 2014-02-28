@@ -373,14 +373,14 @@ namespace DataExtractionUtility
                         m_measurementsInOrder.Add(m);
                     }
 
-                    KeySeekFilterBase<HistorianKey> timeFilter;
+                    SeekFilterBase<HistorianKey> timeFilter;
                     if (interval.Ticks != 0)
                         timeFilter = TimestampFilter.CreateFromIntervalData<HistorianKey>(startTime, stopTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond));
                     else
                         timeFilter = TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime);
 
                     var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
-                    var pointFilter = PointIDFilter.CreateFromList<HistorianKey>(points);
+                    var pointFilter = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(points);
 
                     var database = client.GetDefaultDatabase();
 

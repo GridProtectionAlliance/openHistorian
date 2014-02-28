@@ -90,7 +90,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             IndexOfNextKeyValue++;
         }
 
-        protected override bool InternalRead(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
+        protected override bool InternalRead(TKey key, TValue value, MatchFilterBase<TKey, TValue> filter)
         {
         TryAgain:
             byte* stream = Pointer + m_nextOffset;
@@ -101,7 +101,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             m_nextOffset += length;
             IndexOfNextKeyValue++;
 
-            if (filter.Contains(key))
+            if (filter.Contains(key, value))
                 return true;
             if (IndexOfNextKeyValue >= RecordCount)
                 return false;
@@ -126,7 +126,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             return false;
         }
 
-        protected override bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, KeyMatchFilterBase<TKey> filter)
+        protected override bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter)
         {
         TryAgain:
 
@@ -141,7 +141,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 m_nextOffset += length;
                 IndexOfNextKeyValue++;
 
-                if (filter.Contains(key))
+                if (filter.Contains(key, value))
                     return true;
                 if (IndexOfNextKeyValue >= RecordCount)
                     return false;

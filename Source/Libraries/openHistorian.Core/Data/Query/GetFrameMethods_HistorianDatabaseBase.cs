@@ -58,7 +58,7 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime)
         {
-            return database.GetFrames(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime), null,null);
+            return database.GetFrames(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime), null);
         }
 
         /// <summary>
@@ -66,9 +66,9 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, KeySeekFilterBase<HistorianKey> timestamps, params ulong[] points)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, params ulong[] points)
         {
-            return database.GetFrames(SortedTreeEngineReaderOptions.Default, timestamps, PointIDFilter.CreateFromList<HistorianKey>(points), null);
+            return database.GetFrames(SortedTreeEngineReaderOptions.Default, timestamps, PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(points));
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace openHistorian.Data.Query
         /// <returns></returns>
         public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, params ulong[] points)
         {
-            return database.GetFrames(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime), PointIDFilter.CreateFromList<HistorianKey>(points), null);
+            return database.GetFrames(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime), PointIDFilter.CreateFromList<HistorianKey,HistorianValue>(points));
         }
 
         ///// <summary>
@@ -109,9 +109,9 @@ namespace openHistorian.Data.Query
         /// <param name="timestamps">the timestamps to query for</param>
         /// <param name="points">the points to query</param>
         /// <returns></returns>
-        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, KeySeekFilterBase<HistorianKey> timestamps, KeyMatchFilterBase<HistorianKey> points)
+        public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, MatchFilterBase<HistorianKey,HistorianValue> points)
         {
-            return database.GetFrames(SortedTreeEngineReaderOptions.Default, timestamps, points, null);
+            return database.GetFrames(SortedTreeEngineReaderOptions.Default, timestamps, points);
         }
 
         /// <summary>
@@ -123,12 +123,11 @@ namespace openHistorian.Data.Query
         /// <param name="options">A list of query options</param>
         /// <returns></returns>
         public static SortedList<DateTime, FrameData> GetFrames(this SortedTreeEngineBase<HistorianKey, HistorianValue> database,
-            SortedTreeEngineReaderOptions options, KeySeekFilterBase<HistorianKey> timestamps, KeyMatchFilterBase<HistorianKey> points,
-            ValueMatchFilterBase<HistorianValue> value)
+            SortedTreeEngineReaderOptions options, SeekFilterBase<HistorianKey> timestamps, MatchFilterBase<HistorianKey,HistorianValue> points)
         {
             using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
             {
-                return reader.Read(options, timestamps, points, value).GetFrames();
+                return reader.Read(options, timestamps, points).GetFrames();
             }
         }
 

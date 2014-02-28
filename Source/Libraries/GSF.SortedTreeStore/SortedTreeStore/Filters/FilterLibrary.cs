@@ -43,8 +43,8 @@ namespace GSF.SortedTreeStore.Filters
             SeekFilters = new Dictionary<Guid, CreateSeekFilterBase>();
             RegisteredTypes = new HashSet<Type>();
 
-            Register(new PointIDFilterNew());
-            Register(new TimestampFilterNew());
+            Register(new PointIDFilter());
+            Register(new TimestampFilter());
         }
 
         public static void Register<T>()

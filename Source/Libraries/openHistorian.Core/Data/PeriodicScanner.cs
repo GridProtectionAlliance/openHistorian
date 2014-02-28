@@ -65,12 +65,12 @@ namespace openHistorian.Data
             return sampleRate;
         }
 
-        public KeySeekFilterBase<HistorianKey> GetParser(DateTime startTime, DateTime endTime, uint sampleCount)
+        public SeekFilterBase<HistorianKey> GetParser(DateTime startTime, DateTime endTime, uint sampleCount)
         {
             return GetParser(startTime, endTime, (ulong)SuggestSamplesPerDay(startTime, endTime, sampleCount));
         }
 
-        public KeySeekFilterBase<HistorianKey> GetParser(DateTime startTime, DateTime endTime, ulong samplesPerDay)
+        public SeekFilterBase<HistorianKey> GetParser(DateTime startTime, DateTime endTime, ulong samplesPerDay)
         {
             long interval = (long)(TimeSpan.TicksPerDay / samplesPerDay);
 

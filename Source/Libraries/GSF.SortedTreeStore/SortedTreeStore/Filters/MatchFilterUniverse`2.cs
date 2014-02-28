@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  KeySeekFilterUniverse.cs - Gbtc
+//  MatchFilterUniverse`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,8 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.SortedTreeStore.Engine;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Filters
 {
@@ -32,21 +30,10 @@ namespace GSF.SortedTreeStore.Filters
     /// Represents no filter
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class KeySeekFilterUniverse<TKey>
-        : KeySeekFilterBase<TKey>
-        where TKey : EngineKeyBase<TKey>, new()
+    /// <typeparam name="TValue"></typeparam>
+    public class MatchFilterUniverse<TKey, TValue>
+        : MatchFilterBase<TKey, TValue>
     {
-        private bool m_isEndReached;
-
-        public KeySeekFilterUniverse()
-        {
-            StartOfFrame = new TKey();
-            EndOfFrame = new TKey();
-            StartOfRange = StartOfFrame;
-            EndOfRange = EndOfFrame;
-            Reset();
-        }
-
         public override Guid FilterType
         {
             get
@@ -55,32 +42,13 @@ namespace GSF.SortedTreeStore.Filters
             }
         }
 
-        public override void Load(BinaryStreamBase stream)
-        {
-            
-        }
-
         public override void Save(BinaryStreamBase stream)
         {
-            
+            throw new NotSupportedException();
         }
 
-        public override void Reset()
+        public override bool Contains(TKey key, TValue value)
         {
-            m_isEndReached = false;
-            StartOfRange.SetMin();
-            EndOfRange.SetMax();
-        }
-
-        public override bool NextWindow()
-        {
-            if (m_isEndReached)
-            {
-                return false;
-            }
-            StartOfRange.SetMin();
-            EndOfRange.SetMax();
-            m_isEndReached = true;
             return true;
         }
     }

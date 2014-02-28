@@ -163,11 +163,11 @@ namespace GSF.SortedTreeStore.Tree
 
         protected abstract void InternalRead(TKey key, TValue value);
 
-        protected abstract bool InternalRead(TKey key, TValue value, KeyMatchFilterBase<TKey> filter);
+        protected abstract bool InternalRead(TKey key, TValue value, MatchFilterBase<TKey,TValue> filter);
 
         protected abstract bool InternalReadWhile(TKey key, TValue value, TKey upperBounds);
 
-        protected abstract bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, KeyMatchFilterBase<TKey> filter);
+        protected abstract bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter);
 
         /// <summary>
         /// Using <see cref="Pointer"/> advance to the search location of the provided <see cref="key"/>
@@ -310,7 +310,7 @@ namespace GSF.SortedTreeStore.Tree
         ///     The end of the stream is reached.
         ///     The end of the current node has been reached.
         /// </returns>
-        public virtual bool ReadWhile(TKey key, TValue value, TKey upperBounds, KeyMatchFilterBase<TKey> filter)
+        public virtual bool ReadWhile(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter)
         {
             if (StreamPointer.Version == PointerVersion && IndexOfNextKeyValue < RecordCount)
             {
@@ -323,7 +323,7 @@ namespace GSF.SortedTreeStore.Tree
             return ReadWhileCatchAll(key, value, upperBounds, filter);
         }
 
-        protected bool ReadWhileCatchAll(TKey key, TValue value, TKey upperBounds, KeyMatchFilterBase<TKey> filter)
+        protected bool ReadWhileCatchAll(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter)
         {
             //If there are no more records in the current node.
             if (IndexOfNextKeyValue >= RecordCount)

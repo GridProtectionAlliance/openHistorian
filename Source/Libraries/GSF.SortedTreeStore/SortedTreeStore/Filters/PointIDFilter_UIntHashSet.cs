@@ -30,7 +30,7 @@ using GSF.SortedTreeStore.Engine;
 
 namespace GSF.SortedTreeStore.Filters
 {
-    public partial class PointIDFilterNew
+    public partial class PointIDFilter
     {
         /// <summary>
         /// A filter that uses a <see cref="BitArray"/> to set true and false values

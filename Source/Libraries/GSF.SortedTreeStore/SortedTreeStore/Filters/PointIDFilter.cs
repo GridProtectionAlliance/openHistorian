@@ -31,7 +31,7 @@ using GSF.SortedTreeStore.Engine;
 
 namespace GSF.SortedTreeStore.Filters
 {
-    public partial class PointIDFilterNew 
+    public partial class PointIDFilter
         : CreateFilterBase
     {
         // {2034A3E3-F92E-4749-9306-B04DC36FD743}
@@ -48,7 +48,7 @@ namespace GSF.SortedTreeStore.Filters
 
         public override MatchFilterBase<TKey, TValue> Create<TKey, TValue>(BinaryStreamBase stream)
         {
-            MethodInfo method = typeof(PointIDFilterNew).GetMethod("CreateFromStream");
+            MethodInfo method = typeof(PointIDFilter).GetMethod("CreateFromStream");
             MethodInfo generic = method.MakeGenericMethod(typeof(TKey), typeof(TValue));
             var rv = generic.Invoke(this, new[] {stream});
             return (MatchFilterBase<TKey, TValue>)rv;

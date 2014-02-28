@@ -95,7 +95,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             goto TryAgain;
         }
 
-        bool ReadWhileFollowupActions(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
+        bool ReadWhileFollowupActions(TKey key, TValue value, MatchFilterBase<TKey,TValue> filter)
         {
             //There are certain followup requirements when a ReadWhile method returns false.
             //Condition 1:

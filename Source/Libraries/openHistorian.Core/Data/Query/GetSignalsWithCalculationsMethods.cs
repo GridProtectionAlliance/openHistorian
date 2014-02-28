@@ -37,7 +37,7 @@ namespace openHistorian.Data.Query
             return database.GetSignalsWithCalculations(TimestampFilter.CreateFromRange<HistorianKey>(startTime, endTime), signals, SortedTreeEngineReaderOptions.Default);
         }
 
-        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, KeySeekFilterBase<HistorianKey> timestamps, IEnumerable<ISignalCalculation> signals, SortedTreeEngineReaderOptions readerOptions)
+        public static IDictionary<Guid, SignalDataBase> GetSignalsWithCalculations(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, IEnumerable<ISignalCalculation> signals, SortedTreeEngineReaderOptions readerOptions)
         {
             Dictionary<ulong, SignalDataBase> queryResults = database.GetSignals(timestamps, signals, readerOptions);
 

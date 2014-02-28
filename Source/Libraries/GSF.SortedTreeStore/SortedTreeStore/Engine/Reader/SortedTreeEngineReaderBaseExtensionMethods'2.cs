@@ -35,49 +35,49 @@ namespace GSF.SortedTreeStore.Engine.Reader
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(timestamp, timestamp), null, null);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(timestamp, timestamp), null);
         }
 
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, KeySeekFilterBase<TKey> timeFilter)
+        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, SeekFilterBase<TKey> timeFilter)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(SortedTreeEngineReaderOptions.Default, timeFilter, null, null);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, timeFilter, null);
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(SortedTreeEngineReaderOptions.Default, null, null, null);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, null, null);
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, ulong firstTime, ulong lastTime)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(firstTime, lastTime), null, null);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(firstTime, lastTime), null);
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, ulong firstTime, ulong lastTime, IEnumerable<ulong> pointIds)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(firstTime, lastTime), PointIDFilter.CreateFromList<TKey>(pointIds.ToList()),null);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(firstTime, lastTime), PointIDFilter.CreateFromList<TKey, TValue>(pointIds.ToList()));
         }
 
         public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, DateTime firstTime, DateTime lastTime, IEnumerable<ulong> pointIds)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(firstTime, lastTime), PointIDFilter.CreateFromList<TKey>(pointIds.ToList()), null);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<TKey>(firstTime, lastTime), PointIDFilter.CreateFromList<TKey,TValue>(pointIds.ToList()));
         }
 
-        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, KeySeekFilterBase<TKey> key1, IEnumerable<ulong> pointIds)
+        public static TreeStream<TKey, TValue> Read<TKey, TValue>(this SortedTreeEngineReaderBase<TKey, TValue> reader, SeekFilterBase<TKey> key1, IEnumerable<ulong> pointIds)
             where TKey : EngineKeyBase<TKey>, new()
             where TValue : class, new()
         {
-            return reader.Read(SortedTreeEngineReaderOptions.Default, key1, PointIDFilter.CreateFromList<TKey>(pointIds.ToList()), null);
+            return reader.Read(SortedTreeEngineReaderOptions.Default, key1, PointIDFilter.CreateFromList<TKey, TValue>(pointIds.ToList()));
         }
 
     }

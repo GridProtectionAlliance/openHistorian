@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ValueMatchFilterBase`1.cs - Gbtc
+//  SeekFilterUniverse.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,38 +23,60 @@
 
 using System;
 using GSF.IO;
+using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Filters
 {
     /// <summary>
-    /// Represents a match like finter based on the value
+    /// Represents no filter
     /// </summary>
-    /// <typeparam name="TValue"></typeparam>
-    public abstract class ValueMatchFilterBase<TValue>
+    /// <typeparam name="TKey"></typeparam>
+    public class SeekFilterUniverse<TKey>
+        : SeekFilterBase<TKey>
+        where TKey : EngineKeyBase<TKey>, new()
     {
-        /// <summary>
-        /// The filter guid 
-        /// </summary>
-        public abstract Guid FilterType { get; }
+        private bool m_isEndReached;
 
-        /// <summary>
-        /// Loads a filter from the provided <see cref="stream"/>.
-        /// </summary>
-        /// <param name="stream">The stream to load the filter from</param>
-        /// <returns></returns>
-        public abstract void Load(BinaryStreamBase stream);
+        public SeekFilterUniverse()
+        {
+            StartOfFrame = new TKey();
+            EndOfFrame = new TKey();
+            StartOfRange = StartOfFrame;
+            EndOfRange = EndOfFrame;
+            Reset();
+        }
 
-        /// <summary>
-        /// Serializes the filter to a stream
-        /// </summary>
-        /// <param name="stream">the stream to write to</param>
-        public abstract void Save(BinaryStreamBase stream);
+        public override Guid FilterType
+        {
+            get
+            {
+                return Guid.Empty;
+            }
+        }
 
-        /// <summary>
-        /// Determines if a value is contained in the filter
-        /// </summary>
-        /// <param name="value">the value to check</param>
-        /// <returns></returns>
-        public abstract bool Contains(TValue value);
+        public override void Save(BinaryStreamBase stream)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Reset()
+        {
+            m_isEndReached = false;
+            StartOfRange.SetMin();
+            EndOfRange.SetMax();
+        }
+
+        public override bool NextWindow()
+        {
+            if (m_isEndReached)
+            {
+                return false;
+            }
+            StartOfRange.SetMin();
+            EndOfRange.SetMax();
+            m_isEndReached = true;
+            return true;
+        }
     }
 }

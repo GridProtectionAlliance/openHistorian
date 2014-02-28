@@ -62,25 +62,42 @@ namespace GSF.SortedTreeStore.Net
             //    return new PointReader(m_client, () => m_reader = null);
             //}
 
-            public override TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, KeySeekFilterBase<TKey> keySeekFilter,
-                                        KeyMatchFilterBase<TKey> keyMatchFilter, ValueMatchFilterBase<TValue> valueMatchFilterBase)
+            public override TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter)
             {
                 if (m_reader != null)
                     throw new Exception("Sockets do not support concurrent readers.");
 
                 m_client.m_stream.Write((byte)ServerCommand.Read);
-
+                m_client.m_stream.Write((byte)1);
                 if (keySeekFilter == null)
-                    m_client.m_stream.Write((byte)0);
+                {
+                    m_client.m_stream.Write(false);
+                }
                 else
+                {
+                    m_client.m_stream.Write(true);
                     keySeekFilter.Save(m_client.m_stream);
+                }
 
                 if (keyMatchFilter == null)
-                    m_client.m_stream.Write((byte)0);
+                {
+                    m_client.m_stream.Write(false);
+                }
                 else
+                {
+                    m_client.m_stream.Write(true);
                     keyMatchFilter.Save(m_client.m_stream);
+                }
 
-                readerOptions.Save(m_client.m_stream);
+                if (readerOptions == null)
+                {
+                    m_client.m_stream.Write(false);
+                }
+                else
+                {
+                    m_client.m_stream.Write(true);
+                    readerOptions.Save(m_client.m_stream);
+                }
                 m_client.m_stream.Flush();
                 return new PointReader(m_client, () => m_reader = null);
             }

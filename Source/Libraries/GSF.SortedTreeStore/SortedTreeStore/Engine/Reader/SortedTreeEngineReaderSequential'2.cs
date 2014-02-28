@@ -59,20 +59,17 @@ namespace GSF.SortedTreeStore.Engine.Reader
         //    return new ReadStream(timestampFilter, pointIdFilter, m_snapshot, readerOptions);
         //}
 
-        public override TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, KeySeekFilterBase<TKey> keySeekFilter,
-                                        KeyMatchFilterBase<TKey> keyMatchFilter, ValueMatchFilterBase<TValue> valueMatchFilter)
+        public override TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter)
         {
             if (readerOptions == null)
                 readerOptions = SortedTreeEngineReaderOptions.Default;
             if (keySeekFilter == null)
-                keySeekFilter = new KeySeekFilterUniverse<TKey>();
+                keySeekFilter = new SeekFilterUniverse<TKey>();
             if (keyMatchFilter == null)
-                keyMatchFilter = new KeyMatchFilterUniverse<TKey>();
-            if (valueMatchFilter == null)
-                valueMatchFilter = new ValueMatchFilterUniverse<TValue>();
+                keyMatchFilter = new MatchFilterUniverse<TKey,TValue>();
 
             Stats.QueriesExecuted++;
-            return new SequentialReaderStream<TKey, TValue>(m_snapshot, readerOptions, keySeekFilter, keyMatchFilter, valueMatchFilter);
+            return new SequentialReaderStream<TKey, TValue>(m_snapshot, readerOptions, keySeekFilter, keyMatchFilter);
         }
 
         /// <summary>

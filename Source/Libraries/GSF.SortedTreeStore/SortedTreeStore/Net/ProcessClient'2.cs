@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Data;
 using System.Diagnostics;
 using System.Text;
 using GSF.Net;
@@ -78,7 +79,7 @@ namespace GSF.SortedTreeStore.Net
             try
             {
                 long code = m_stream.ReadInt64();
-                if (code != 1122334455667788991L)
+                if (code != 1122334455667788992L)
                 {
                     //m_stream.Write((byte)ServerResponse.Error);
                     //m_stream.Write("Wrong Username Or Password");
@@ -122,7 +123,7 @@ namespace GSF.SortedTreeStore.Net
                 {
                     case ServerCommand.SetCompressionMode:
                         m_compressionMode =
-                            StreamEncoding.CreateStreamEncoding<TKey, TValue>(new EncodingDefinition(m_stream.ReadGuid()));
+                            StreamEncoding.CreateStreamEncoding<TKey, TValue>(new EncodingDefinition(m_stream));
                         break;
                     case ServerCommand.ConnectToDatabase:
                         if (m_sortedTreeEngine != null)
@@ -197,14 +198,27 @@ namespace GSF.SortedTreeStore.Net
 
         private void ProcessRead()
         {
-            var key1Parser = TimestampFilter.CreateFromStream<TKey>(m_stream);
-            //QueryFilterTimestamp key1Parser = QueryFilterTimestamp.CreateFromStream(m_stream);
-            var key2Parser = PointIDFilter.CreateFromStream<TKey>(m_stream);
-            //QueryFilterPointId key2Parser = QueryFilterPointId.CreateFromStream(m_stream);
-            SortedTreeEngineReaderOptions readerOptions = new SortedTreeEngineReaderOptions(m_stream);
+            SeekFilterBase<TKey> key1Parser = null;
+            MatchFilterBase<TKey, TValue> key2Parser = null;
+            SortedTreeEngineReaderOptions readerOptions = null;
 
-            TreeStream<TKey, TValue> scanner = m_historianReaderBase.Read(readerOptions, key1Parser, key2Parser, null);
+            byte version = m_stream.ReadUInt8();
+            if (version == 1)
+            {
+                if (m_stream.ReadBoolean())
+                    key1Parser = FilterLibrary.GetSeekFilter<TKey>(m_stream.ReadGuid(), m_stream);
+                if (m_stream.ReadBoolean())
+                    key2Parser = FilterLibrary.GetMatchFilter<TKey, TValue>(m_stream.ReadGuid(), m_stream);
+                if (m_stream.ReadBoolean())
+                    readerOptions = new SortedTreeEngineReaderOptions(m_stream);
+            }
+            else
+            {
+                throw new VersionNotFoundException();
+            }
 
+
+            TreeStream<TKey, TValue> scanner = m_historianReaderBase.Read(readerOptions, key1Parser, key2Parser);
 
             m_compressionMode.ResetEncoder();
 

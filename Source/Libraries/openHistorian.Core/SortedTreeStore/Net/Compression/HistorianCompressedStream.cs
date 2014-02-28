@@ -54,7 +54,7 @@ namespace GSF.SortedTreeStore.Encoding
         {
             get
             {
-                return new EncodingDefinition(CreateHistorianCompressedStream.TypeGuid);
+                return CreateHistorianCompressedStream.TypeGuid;
             }
         }
 

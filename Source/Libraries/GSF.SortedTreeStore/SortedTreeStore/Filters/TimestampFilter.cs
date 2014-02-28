@@ -29,7 +29,7 @@ using GSF.SortedTreeStore.Engine;
 
 namespace GSF.SortedTreeStore.Filters
 {
-    public partial class TimestampFilterNew
+    public partial class TimestampFilter
         : CreateSeekFilterBase
     {
 
@@ -46,7 +46,7 @@ namespace GSF.SortedTreeStore.Filters
 
         public override SeekFilterBase<TKey> Create<TKey>(BinaryStreamBase stream)
         {
-            MethodInfo method = typeof(PointIDFilterNew).GetMethod("CreateFromStream");
+            MethodInfo method = typeof(PointIDFilter).GetMethod("CreateFromStream");
             MethodInfo generic = method.MakeGenericMethod(typeof(TKey));
             var rv = generic.Invoke(this, new[] { stream });
             return (SeekFilterBase<TKey>)rv;

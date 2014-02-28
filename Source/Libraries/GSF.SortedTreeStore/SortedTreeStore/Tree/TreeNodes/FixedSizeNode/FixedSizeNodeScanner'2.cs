@@ -61,14 +61,14 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
             IndexOfNextKeyValue++;
         }
 
-        protected override unsafe bool InternalRead(TKey key, TValue value, KeyMatchFilterBase<TKey> filter)
+        protected override unsafe bool InternalRead(TKey key, TValue value, MatchFilterBase<TKey, TValue> filter)
         {
         TryAgain:
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             key.Read(ptr);
             value.Read(ptr + KeySize);
             IndexOfNextKeyValue++;
-            if (filter.Contains(key))
+            if (filter.Contains(key, value))
                 return true;
             if (IndexOfNextKeyValue >= RecordCount)
                 return false;
@@ -90,7 +90,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             key.Read(ptr);
             value.Read(ptr + KeySize);
-            if (key.IsLessThan( upperBounds))
+            if (key.IsLessThan(upperBounds))
             {
                 IndexOfNextKeyValue++;
                 return true;
@@ -101,16 +101,16 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         /// <summary>
         /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the next KeyValue
         /// </summary>
-        protected override unsafe bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, KeyMatchFilterBase<TKey> filter)
+        protected override unsafe bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter)
         {
         TryAgain:
             byte* ptr = Pointer + IndexOfNextKeyValue * m_keyValueSize;
             key.Read(ptr);
             value.Read(ptr + KeySize);
-            if (key.IsLessThan( upperBounds))
+            if (key.IsLessThan(upperBounds))
             {
                 IndexOfNextKeyValue++;
-                if (filter.Contains(key))
+                if (filter.Contains(key, value))
                     return true;
                 if (IndexOfNextKeyValue >= RecordCount)
                     return false;
