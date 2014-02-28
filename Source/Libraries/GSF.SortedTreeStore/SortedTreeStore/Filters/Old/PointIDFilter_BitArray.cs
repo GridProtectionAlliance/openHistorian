@@ -29,13 +29,13 @@ using GSF.SortedTreeStore.Engine;
 
 namespace GSF.SortedTreeStore.Filters
 {
-    public partial class PointIDFilterNew
+    public partial class PointIDFilter
     {
         /// <summary>
         /// A filter that uses a <see cref="BitArray"/> to set true and false values
         /// </summary>
-        public class BitArrayFilter<TKey, TValue>
-            : MatchFilterBase<TKey, TValue>
+        public class BitArrayFilter<TKey>
+            : KeyMatchFilterBase<TKey>
             where TKey : EngineKeyBase<TKey>, new()
         {
             readonly BitArray m_points;
@@ -100,8 +100,13 @@ namespace GSF.SortedTreeStore.Filters
             {
                 get
                 {
-                    return FilterGuid;
+                    throw new NotImplementedException();
                 }
+            }
+
+            public override void Load(BinaryStreamBase stream)
+            {
+                throw new NotImplementedException();
             }
 
             public override void Save(BinaryStreamBase stream)
@@ -115,12 +120,43 @@ namespace GSF.SortedTreeStore.Filters
                 }
             }
 
-            public override bool Contains(TKey key, TValue value)
+            public override bool Contains(TKey key)
             {
                 int point = (int)key.PointID;
                 return (key.PointID <= MaxValue &&
                     ((ArrayBits[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
             }
+
+            /// <summary>
+            /// The boundaries of the page.
+            /// </summary>
+            /// <param name="lowerBounds">the lower inclusive bounds of the page</param>
+            /// <param name="upperBounds">the upper exclusive bounds of the page</param>
+            /// <returns></returns>
+            public override bool PageCannotContainPoints(TKey lowerBounds, TKey upperBounds)
+            {
+                //ToDo: Consider this implementation.  Could work very well with SCADA systems or a system with tens of thousands of points.
+                // lp = lower point;  up = upper point
+                // if either condition is true, the page cannot 
+                // contain the filter.
+                // Otherwise, it can.
+                //
+                // lp  up  [ filter ]
+                //
+                // or 
+                //
+                // [ filter ] lp   up
+                // 
+                if (m_points.SetCount == 0)
+                    return true;
+                if (lowerBounds.Timestamp != upperBounds.Timestamp)
+                    return false;
+                if (lowerBounds.PointID > MaxValue || upperBounds.PointID < MinValue)
+                    return true;
+
+                return false;
+            }
+
         }
     }
 }

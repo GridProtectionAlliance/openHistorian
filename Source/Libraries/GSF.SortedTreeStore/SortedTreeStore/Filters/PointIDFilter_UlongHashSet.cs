@@ -29,13 +29,13 @@ using GSF.SortedTreeStore.Engine;
 
 namespace GSF.SortedTreeStore.Filters
 {
-    public partial class PointIDFilter
+    public partial class PointIDFilterNew
     {
         /// <summary>
         /// A filter that uses a <see cref="BitArray"/> to set true and false values
         /// </summary>
-        class ULongHashSet<TKey>
-            : KeyMatchFilterBase<TKey>
+        class ULongHashSet<TKey,TValue>
+            : MatchFilterBase<TKey, TValue>
             where TKey : EngineKeyBase<TKey>, new()
         {
             ulong m_maxValue;
@@ -74,15 +74,10 @@ namespace GSF.SortedTreeStore.Filters
             {
                 get
                 {
-                    throw new NotImplementedException();
+                    return FilterGuid;
                 }
             }
-
-            public override void Load(BinaryStreamBase stream)
-            {
-                throw new NotImplementedException();
-            }
-
+            
             public override void Save(BinaryStreamBase stream)
             {
                 stream.Write((byte)2); //Stored as array of ulong[]
@@ -94,7 +89,7 @@ namespace GSF.SortedTreeStore.Filters
                 }
             }
 
-            public override bool Contains(TKey key)
+            public override bool Contains(TKey key, TValue value)
             {
                 return m_points.Contains(key.PointID);
             }

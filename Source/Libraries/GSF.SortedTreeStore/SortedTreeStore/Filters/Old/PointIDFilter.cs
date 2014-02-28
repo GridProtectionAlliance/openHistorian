@@ -21,37 +21,24 @@
 //     
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using GSF.IO;
 using GSF.SortedTreeStore.Engine;
 
 namespace GSF.SortedTreeStore.Filters
 {
-    public partial class PointIDFilterNew 
-        : CreateFilterBase
+    public partial class PointIDFilter
     {
-        // {2034A3E3-F92E-4749-9306-B04DC36FD743}
-        public static Guid FilterGuid = new Guid(0x2034a3e3, 0xf92e, 0x4749, 0x93, 0x06, 0xb0, 0x4d, 0xc3, 0x6f, 0xd7, 0x43);
-
-
-        public override Guid FilterType
+        /// <summary>
+        /// Creates a filter that is a universe filter that will not filter any points.
+        /// </summary>
+        /// <returns></returns>
+        public static KeyMatchFilterBase<TKey> CreateAllKeysValid<TKey>()
+            where TKey : EngineKeyBase<TKey>, new()
         {
-            get
-            {
-                return FilterGuid;
-            }
-        }
-
-        public override MatchFilterBase<TKey, TValue> Create<TKey, TValue>(BinaryStreamBase stream)
-        {
-            MethodInfo method = typeof(PointIDFilterNew).GetMethod("CreateFromStream");
-            MethodInfo generic = method.MakeGenericMethod(typeof(TKey), typeof(TValue));
-            var rv = generic.Invoke(this, new[] {stream});
-            return (MatchFilterBase<TKey, TValue>)rv;
+            return null;
         }
 
         /// <summary>
@@ -59,25 +46,26 @@ namespace GSF.SortedTreeStore.Filters
         /// </summary>
         /// <param name="listOfPointIDs">contains the list of pointIDs to include in the filter. List must support multiple enumerations</param>
         /// <returns></returns>
-        public static MatchFilterBase<TKey, TValue> CreateFromList<TKey, TValue>(IEnumerable<ulong> listOfPointIDs)
+        public static KeyMatchFilterBase<TKey> CreateFromList<TKey>(IEnumerable<ulong> listOfPointIDs)
             where TKey : EngineKeyBase<TKey>, new()
+
         {
-            MatchFilterBase<TKey, TValue> filter;
+            KeyMatchFilterBase<TKey> filter;
             ulong maxValue = 0;
             if (listOfPointIDs.Any())
                 maxValue = listOfPointIDs.Max();
 
             if (maxValue < 8 * 1024 * 64) //64KB of space, 524288
             {
-                filter = new BitArrayFilter<TKey, TValue>(listOfPointIDs, maxValue);
+                filter = new BitArrayFilter<TKey>(listOfPointIDs, maxValue);
             }
             else if (maxValue <= uint.MaxValue)
             {
-                filter = new UIntHashSet<TKey, TValue>(listOfPointIDs, maxValue);
+                filter = new UIntHashSet<TKey>(listOfPointIDs, maxValue);
             }
             else
             {
-                filter = new ULongHashSet<TKey, TValue>(listOfPointIDs, maxValue);
+                filter = new ULongHashSet<TKey>(listOfPointIDs, maxValue);
             }
             return filter;
         }
@@ -87,10 +75,10 @@ namespace GSF.SortedTreeStore.Filters
         /// </summary>
         /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
-        MatchFilterBase<TKey, TValue> CreateFromStream<TKey, TValue>(BinaryStreamBase stream)
+        public static KeyMatchFilterBase<TKey> CreateFromStream<TKey>(BinaryStreamBase stream)
             where TKey : EngineKeyBase<TKey>, new()
         {
-            MatchFilterBase<TKey, TValue> filter;
+            KeyMatchFilterBase<TKey> filter;
             byte version = stream.ReadUInt8();
             ulong maxValue;
             int count;
@@ -103,23 +91,22 @@ namespace GSF.SortedTreeStore.Filters
                     count = stream.ReadInt32();
                     if (maxValue < 8 * 1024 * 64) //64KB of space, 524288
                     {
-                        filter = new BitArrayFilter<TKey, TValue>(stream, count, maxValue);
+                        filter = new BitArrayFilter<TKey>(stream, count, maxValue);
                     }
                     else
                     {
-                        filter = new UIntHashSet<TKey, TValue>(stream, count, maxValue);
+                        filter = new UIntHashSet<TKey>(stream, count, maxValue);
                     }
                     break;
                 case 2:
                     maxValue = stream.ReadUInt64();
                     count = stream.ReadInt32();
-                    filter = new ULongHashSet<TKey, TValue>(stream, count, maxValue);
+                    filter = new ULongHashSet<TKey>(stream, count, maxValue);
                     break;
                 default:
                     throw new VersionNotFoundException("Unknown Version");
             }
             return filter;
         }
-
     }
 }

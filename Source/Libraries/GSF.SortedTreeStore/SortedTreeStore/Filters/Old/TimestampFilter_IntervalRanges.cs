@@ -28,10 +28,10 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Filters
 {
-    public partial class TimestampFilterNew
+    public partial class TimestampFilter
     {
         private class IntervalRanges<TKey>
-            : SeekFilterBase<TKey>
+            : KeySeekFilterBase<TKey>
             where TKey : EngineKeyBase<TKey>, new()
         {
 
@@ -201,9 +201,15 @@ namespace GSF.SortedTreeStore.Filters
             {
                 get
                 {
-                    return FilterGuid;
+                    throw new NotImplementedException();
                 }
             }
+
+            public override void Load(BinaryStreamBase stream)
+            {
+                throw new NotImplementedException();
+            }
+
 
         }
 
