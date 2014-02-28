@@ -34,7 +34,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// <typeparam name="TValue"></typeparam>
     public class WriteProcessor<TKey, TValue>
         : IDisposable
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private readonly ArchiveList<TKey, TValue> m_archiveList;
@@ -86,6 +86,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_prestage.Stop();
             m_stage0.Stop();
             m_stage1.Stop();
+            m_stage2.Stop();
         }
 
         public void SoftCommit()

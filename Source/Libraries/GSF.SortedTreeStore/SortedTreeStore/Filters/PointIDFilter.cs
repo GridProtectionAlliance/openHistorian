@@ -27,7 +27,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using GSF.IO;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Types;
 
 namespace GSF.SortedTreeStore.Filters
 {
@@ -60,7 +60,7 @@ namespace GSF.SortedTreeStore.Filters
         /// <param name="listOfPointIDs">contains the list of pointIDs to include in the filter. List must support multiple enumerations</param>
         /// <returns></returns>
         public static MatchFilterBase<TKey, TValue> CreateFromList<TKey, TValue>(IEnumerable<ulong> listOfPointIDs)
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             MatchFilterBase<TKey, TValue> filter;
             ulong maxValue = 0;
@@ -88,7 +88,7 @@ namespace GSF.SortedTreeStore.Filters
         /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
         MatchFilterBase<TKey, TValue> CreateFromStream<TKey, TValue>(BinaryStreamBase stream)
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             MatchFilterBase<TKey, TValue> filter;
             byte version = stream.ReadUInt8();

@@ -36,7 +36,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
     internal class SequentialReaderStream<TKey, TValue>
         : TreeStream<TKey, TValue>
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;

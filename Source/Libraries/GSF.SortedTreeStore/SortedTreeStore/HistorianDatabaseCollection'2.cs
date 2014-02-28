@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore
 {
@@ -33,7 +34,7 @@ namespace GSF.SortedTreeStore
     /// </summary>
     public class HistorianDatabaseCollection<TKey, TValue>
         : HistorianCollection<TKey, TValue>, IDisposable
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : class, new()
     {
         private bool m_disposed;

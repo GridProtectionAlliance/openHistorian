@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  EngineKeyBase'1.cs - Gbtc
+//  TimestampPointIDBase'1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,10 +21,9 @@
 //     
 //******************************************************************************************************
 
-using System;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Engine
+namespace GSF.SortedTreeStore.Types
 {
     /// <summary>
     /// Base implementation of a historian key. 
@@ -32,21 +31,13 @@ namespace GSF.SortedTreeStore.Engine
     /// necessary for the historian engine to operate
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public abstract class EngineKeyBase<TKey>
-        : SortedTreeTypeBase<TKey>
+    public abstract class TimestampPointIDBase<TKey>
+        : TimestampBase<TKey>
         where TKey : SortedTreeTypeBase<TKey>, new()
     {
-        /// <summary>
-        /// The timestamp stored as native ticks. 
-        /// </summary>
-        public ulong Timestamp;
-
         /// <summary>
         /// The id number of the point.
         /// </summary>
         public ulong PointID;
-
-
-
     }
 }

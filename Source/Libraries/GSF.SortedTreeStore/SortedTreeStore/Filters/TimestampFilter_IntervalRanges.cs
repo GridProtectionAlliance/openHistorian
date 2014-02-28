@@ -23,8 +23,7 @@
 
 using System;
 using GSF.IO;
-using GSF.SortedTreeStore.Engine;
-using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Types;
 
 namespace GSF.SortedTreeStore.Filters
 {
@@ -32,7 +31,7 @@ namespace GSF.SortedTreeStore.Filters
     {
         private class IntervalRanges<TKey>
             : SeekFilterBase<TKey>
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampBase<TKey>, new()
         {
 
             private ulong m_start;

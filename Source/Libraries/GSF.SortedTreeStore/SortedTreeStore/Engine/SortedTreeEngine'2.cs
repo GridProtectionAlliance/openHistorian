@@ -35,7 +35,7 @@ namespace GSF.SortedTreeStore.Engine
     /// </summary>
     public class SortedTreeEngine<TKey, TValue>
         : SortedTreeEngineBase<TKey, TValue>
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         #region [ Members ]

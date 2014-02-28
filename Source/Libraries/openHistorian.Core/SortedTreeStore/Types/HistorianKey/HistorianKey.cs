@@ -24,9 +24,9 @@
 using System;
 using System.Collections;
 using GSF.IO;
-using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Tree.TreeNodes;
+using GSF.SortedTreeStore.Types;
 using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
 namespace openHistorian.Collections
@@ -35,7 +35,7 @@ namespace openHistorian.Collections
     /// The standard key used for the historian.
     /// </summary>
     public class HistorianKey
-        : EngineKeyBase<HistorianKey>
+        : TimestampPointIDBase<HistorianKey>
     {
         // TODO: Engine, not user, should accommodate incrementing EntryNumber for duplicates.
         /// <summary>

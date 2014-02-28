@@ -23,7 +23,6 @@
 
 using System;
 using GSF.IO;
-using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Filters
@@ -34,7 +33,7 @@ namespace GSF.SortedTreeStore.Filters
     /// <typeparam name="TKey"></typeparam>
     public class SeekFilterUniverse<TKey>
         : SeekFilterBase<TKey>
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
     {
         private bool m_isEndReached;
 

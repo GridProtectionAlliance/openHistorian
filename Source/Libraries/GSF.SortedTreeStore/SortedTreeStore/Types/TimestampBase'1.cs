@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianCollection.cs - Gbtc
+//  TimestampBase'1.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,34 +16,28 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/14/2012 - Steven E. Chisholm
+//  4/12/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//
+//     
 //******************************************************************************************************
 
-
-using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore
+namespace GSF.SortedTreeStore.Types
 {
     /// <summary>
-    /// Contains a set of named HistorianDatabaseBase.
+    /// Base implementation of a historian key. 
+    /// These are the required functions that are 
+    /// necessary for the historian engine to operate
     /// </summary>
-    /// <typeparam name="TKey">They key type of the historian database. Must inherit HistorianKeyBase.</typeparam>
-    /// <typeparam name="TValue">The value type of the historian database.</typeparam>
-    public abstract class HistorianCollection<TKey, TValue>
+    /// <typeparam name="TKey"></typeparam>
+    public abstract class TimestampBase<TKey>
+        : SortedTreeTypeBase<TKey>
         where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : class, new()
     {
         /// <summary>
-        /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// The timestamp stored as native ticks. 
         /// </summary>
-        /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public abstract SortedTreeEngineBase<TKey, TValue> this[string databaseName]
-        {
-            get;
-        }
+        public ulong Timestamp;
     }
 }

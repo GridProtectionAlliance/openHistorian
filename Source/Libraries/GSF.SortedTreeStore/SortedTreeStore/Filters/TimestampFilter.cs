@@ -25,7 +25,7 @@ using System;
 using System.Data;
 using System.Reflection;
 using GSF.IO;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Types;
 
 namespace GSF.SortedTreeStore.Filters
 {
@@ -59,7 +59,7 @@ namespace GSF.SortedTreeStore.Filters
         /// <param name="lastTime">the last time of the query (inclusive)</param>
         /// <returns></returns>
         public static SeekFilterBase<TKey> CreateFromRange<TKey>(DateTime firstTime, DateTime lastTime)
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             return new FixedRange<TKey>((ulong)firstTime.Ticks, (ulong)lastTime.Ticks);
         }
@@ -71,7 +71,7 @@ namespace GSF.SortedTreeStore.Filters
         /// <param name="lastTime">the last time of the query (inclusive)</param>
         /// <returns></returns>
         public static SeekFilterBase<TKey> CreateFromRange<TKey>(ulong firstTime, ulong lastTime)
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             return new FixedRange<TKey>(firstTime, lastTime);
         }
@@ -91,7 +91,7 @@ namespace GSF.SortedTreeStore.Filters
         ///               Tolerance = 0.001 seconds.
         /// </remarks>
         public static SeekFilterBase<TKey> CreateFromIntervalData<TKey>(ulong firstTime, ulong lastTime, ulong mainInterval, ulong subInterval, ulong tolerance)
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             return new IntervalRanges<TKey>(firstTime, lastTime, mainInterval, subInterval, tolerance);
         }
@@ -110,7 +110,7 @@ namespace GSF.SortedTreeStore.Filters
         ///               Tolerance = 0.001 seconds.
         /// </remarks>
         public static SeekFilterBase<TKey> CreateFromIntervalData<TKey>(ulong firstTime, ulong lastTime, ulong interval, ulong tolerance)
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             return new IntervalRanges<TKey>(firstTime, lastTime, interval, interval, tolerance);
         }
@@ -130,7 +130,7 @@ namespace GSF.SortedTreeStore.Filters
         ///               Tolerance = 0.001 seconds.
         /// </remarks>
         public static SeekFilterBase<TKey> CreateFromIntervalData<TKey>(DateTime firstTime, DateTime lastTime, TimeSpan mainInterval, TimeSpan subInterval, TimeSpan tolerance)
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             return new IntervalRanges<TKey>((ulong)firstTime.Ticks, (ulong)lastTime.Ticks, (ulong)mainInterval.Ticks, (ulong)subInterval.Ticks, (ulong)tolerance.Ticks);
         }
@@ -149,7 +149,7 @@ namespace GSF.SortedTreeStore.Filters
         ///               Tolerance = 0.001 seconds.
         /// </remarks>
         public static SeekFilterBase<TKey> CreateFromIntervalData<TKey>(DateTime firstTime, DateTime lastTime, TimeSpan interval, TimeSpan tolerance)
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             return new IntervalRanges<TKey>((ulong)firstTime.Ticks, (ulong)lastTime.Ticks, (ulong)interval.Ticks, (ulong)interval.Ticks, (ulong)tolerance.Ticks);
         }
@@ -160,7 +160,7 @@ namespace GSF.SortedTreeStore.Filters
         /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
         SeekFilterBase<TKey> CreateFromStream<TKey>(BinaryStreamBase stream)
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             byte version = stream.ReadUInt8();
             switch (version)

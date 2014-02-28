@@ -46,7 +46,7 @@ namespace GSF.SortedTreeStore.Net
     /// </summary>
     public partial class SortedTreeStoreClient<TKey, TValue> :
         HistorianCollection<TKey, TValue>, IDisposable
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private TcpClient m_client;

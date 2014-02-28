@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.IO;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Types;
 using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 
 namespace openHistorian.Scada.AMI
 {
     public class AmiKey
-        : EngineKeyBase<AmiKey>
+        : TimestampPointIDBase<AmiKey>
     {
         /// <summary>
         /// Conviently type cast the Timestamp as <see cref="DateTime"/>.

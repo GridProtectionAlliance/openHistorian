@@ -49,7 +49,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
     /// in order to properly condition the data.
     /// </summary>
     public class CombineFiles<TKey, TValue> : IDisposable
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         /// <summary>

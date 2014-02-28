@@ -23,6 +23,7 @@
 
 using System;
 using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
 {
@@ -30,7 +31,7 @@ namespace GSF.SortedTreeStore.Engine
     /// Represents a single historian database.
     /// </summary>
     public abstract class SortedTreeEngineBase<TKey, TValue> : IDisposable
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : class, new()
     {
         /// <summary>

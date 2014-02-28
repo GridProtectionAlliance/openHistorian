@@ -30,7 +30,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
     internal class UnionReader<TKey, TValue>
         : TreeStream<TKey, TValue>
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
 

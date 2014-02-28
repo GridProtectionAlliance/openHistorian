@@ -202,7 +202,8 @@
     <Compile Include="Collections\ResourceQueueCollection`2.cs" />
     <Compile Include="Collections\SupportsReadonlyAutoBase`1.cs" />
     <Compile Include="Collections\SupportsReadonlyBase`1.cs" />
-    <Compile Include="SortedTreeStore\Engine\EngineKeyBase%271.cs" />
+    <Compile Include="SortedTreeStore\Types\TimestampBase%271.cs" />
+    <Compile Include="SortedTreeStore\Types\TimestampPointIDBase%271.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeKeyMethodsUInt32.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeUInt32.cs" />
     <Compile Include="SortedTreeStore\Net\SortedTreeStoreClient%272.cs" />

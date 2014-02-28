@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using GSF.Collections;
 using GSF.IO;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Types;
 
 namespace GSF.SortedTreeStore.Filters
 {
@@ -36,7 +36,7 @@ namespace GSF.SortedTreeStore.Filters
         /// </summary>
         class ULongHashSet<TKey,TValue>
             : MatchFilterBase<TKey, TValue>
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampPointIDBase<TKey>, new()
         {
             ulong m_maxValue;
             private readonly HashSet<ulong> m_points;

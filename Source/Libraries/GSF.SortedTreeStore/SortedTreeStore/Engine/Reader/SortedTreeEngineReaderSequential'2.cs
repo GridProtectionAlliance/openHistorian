@@ -34,7 +34,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
     /// <typeparam name="TValue"></typeparam>
     internal class SortedTreeEngineReaderSequential<TKey, TValue>
         : SortedTreeEngineReaderBase<TKey, TValue>
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private readonly ArchiveList<TKey, TValue> m_list;

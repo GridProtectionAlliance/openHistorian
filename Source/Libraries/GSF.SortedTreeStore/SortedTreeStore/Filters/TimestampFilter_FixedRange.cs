@@ -23,7 +23,7 @@
 
 using System;
 using GSF.IO;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Types;
 
 namespace GSF.SortedTreeStore.Filters
 {
@@ -31,7 +31,7 @@ namespace GSF.SortedTreeStore.Filters
     {
         private class FixedRange<TKey>
             : SeekFilterBase<TKey>
-            where TKey : EngineKeyBase<TKey>, new()
+            where TKey : TimestampBase<TKey>, new()
         {
             private bool m_isEndReached;
 

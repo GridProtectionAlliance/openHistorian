@@ -37,7 +37,7 @@ namespace GSF.SortedTreeStore.Net
 {
     internal class ProcessClient<TKey, TValue>
         : IDisposable
-        where TKey : EngineKeyBase<TKey>, new()
+        where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         public event SocketErrorEventHandler SocketError;
