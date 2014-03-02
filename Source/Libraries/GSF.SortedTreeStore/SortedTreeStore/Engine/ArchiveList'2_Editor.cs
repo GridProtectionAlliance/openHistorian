@@ -84,7 +84,7 @@ namespace GSF.SortedTreeStore.Engine
             /// Renews the snapshot of the partition file. This will acquire the latest 
             /// read transaction so all new snapshots will use this later version.
             /// </summary>
-            /// <param name="sortedTreehe file to update the snapshot on.</param>
+            /// <param name="sortedTree">file to update the snapshot on.</param>
             /// <returns></returns>
             public bool RenewSnapshot(SortedTreeTable<TKey, TValue> sortedTree)
             {
@@ -105,7 +105,7 @@ namespace GSF.SortedTreeStore.Engine
             /// <summary>
             /// Adds an archive file to the list with the given state information.
             /// </summary>
-            /// <param name="sortedTreehe archive table to add</param>
+            /// <param name="sortedTree">archive table to add</param>
             /// <param name="isLocked">the item added contains a write lock on the file.</param>
             public void Add(SortedTreeTable<TKey, TValue> sortedTree, bool isLocked)
             {
@@ -149,7 +149,7 @@ namespace GSF.SortedTreeStore.Engine
             /// <summary>
             /// Removes the supplied file from the <see cref="ArchiveList{TKey,TValue}"/> and queues it for deletion.
             /// </summary>
-            /// <param name="sortedTreehe file to remove and delete.</param>
+            /// <param name="sortedTree">file to remove and delete.</param>
             /// <returns></returns>
             public bool RemoveAndDelete(SortedTreeTable<TKey, TValue> sortedTree)
             {

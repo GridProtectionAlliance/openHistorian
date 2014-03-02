@@ -37,14 +37,14 @@ namespace openHistorian
     /// <summary>
     /// Represents a historian server instance that can be used to read and write time-series data.
     /// </summary>
-    public class HistorianServer 
+    public class HistorianServer
         : IDisposable
     {
         #region [ Members ]
 
         // Fields
-        private Dictionary<int, SortedTreeServerSocket<HistorianKey, HistorianValue>> m_sockets;
-        private HistorianDatabaseCollection<HistorianKey, HistorianValue> m_databases;
+        private Dictionary<int, SortedTreeServerSocket> m_sockets;
+        private SortedTreeCollection m_databases;
         private bool m_disposed;
 
         #endregion
@@ -57,10 +57,10 @@ namespace openHistorian
         public HistorianServer()
         {
             // Maintain a member level list of all established archive database engines
-            m_databases = new HistorianDatabaseCollection<HistorianKey, HistorianValue>();
+            m_databases = new SortedTreeCollection();
 
             // Maintain a member level list of socket connections so that they can be disposed later
-            m_sockets = new Dictionary<int, SortedTreeServerSocket<HistorianKey, HistorianValue>>();
+            m_sockets = new Dictionary<int, SortedTreeServerSocket>();
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace openHistorian
         {
             get
             {
-                return m_databases[databaseName] as HistorianDatabaseEngine;
+                return m_databases.GetDatabase(databaseName) as HistorianDatabaseEngine;
             }
         }
 
@@ -114,10 +114,10 @@ namespace openHistorian
         public void GetFullStatus(StringBuilder status)
         {
             status.AppendFormat("Historian Instances:");
-            foreach (var dbName in m_databases.GetDatabaseNames())
+            foreach (var dbInfo in m_databases.GetDatabaseInfo())
             {
-                status.AppendFormat("DB Name:{0}\r\n", dbName);
-                this[dbName].GetFullStatus(status);
+                status.AppendFormat("DB Name:{0}\r\n", dbInfo.DatabaseName);
+                this[dbInfo.DatabaseName].GetFullStatus(status);
             }
 
             status.AppendFormat("Socket Connections");
@@ -158,7 +158,7 @@ namespace openHistorian
 
                         if ((object)m_sockets != null)
                         {
-                            foreach (SortedTreeServerSocket<HistorianKey, HistorianValue> socketHistorian in m_sockets.Values)
+                            foreach (SortedTreeServerSocket socketHistorian in m_sockets.Values)
                             {
                                 if ((object)socketHistorian != null)
                                     socketHistorian.Dispose();
@@ -181,7 +181,7 @@ namespace openHistorian
         /// <returns>Default database instance.</returns>
         public HistorianDatabaseEngine GetDefaultDatabase()
         {
-            return m_databases["default"] as HistorianDatabaseEngine;
+            return m_databases.GetDatabase("default") as HistorianDatabaseEngine;
         }
 
         /// <summary>
@@ -193,23 +193,23 @@ namespace openHistorian
             HistorianDatabaseEngine databaseEngine;
 
             if (databaseInstance.InMemoryArchive)
-                databaseEngine = new HistorianDatabaseEngine(WriterMode.InMemory, databaseInstance.Paths);
+                databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
             else
-                databaseEngine = new HistorianDatabaseEngine(WriterMode.OnDisk, databaseInstance.Paths);
+                databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
 
-            m_databases.Add(databaseInstance.DatabaseName, databaseEngine);
+            m_databases.Add(databaseEngine);
 
             if (databaseInstance.IsNetworkHosted)
             {
                 // TODO: The "add" method can only add a new socket layer - not append new database to existing socket historian (note that this will work for time-series
                 // TODO: adapters, but not for general use case when sharing port for multiple databases is desired), to fix this SocketHistorian needs to be modified to
                 // TODO: allow dynamic addition of databases to its collection (or at least collection replacement)
-                HistorianDatabaseCollection<HistorianKey, HistorianValue> databaseCollection = new HistorianDatabaseCollection<HistorianKey, HistorianValue>();
-                databaseCollection.Add(databaseInstance.DatabaseName, databaseEngine);
+                SortedTreeCollection databaseCollection = new SortedTreeCollection();
+                databaseCollection.Add(databaseEngine);
 
                 lock (m_sockets)
                 {
-                    m_sockets.Add(databaseInstance.PortNumber, new SortedTreeServerSocket<HistorianKey, HistorianValue>(databaseInstance.PortNumber, CreateHistorianCompressionTs.TypeGuid, databaseCollection));
+                    m_sockets.Add(databaseInstance.PortNumber, new SortedTreeServerSocket(databaseInstance.PortNumber, databaseCollection));
                 }
             }
         }
@@ -220,13 +220,13 @@ namespace openHistorian
         /// <param name="databaseInstance"><see cref="HistorianDatabaseInstance"/> to remove.</param>
         public void RemoveDatabaseInstance(HistorianDatabaseInstance databaseInstance)
         {
-            SortedTreeServerSocket<HistorianKey, HistorianValue> sortedTreeServerSocket;
+            SortedTreeServerSocket sortedTreeServerSocket;
 
             lock (m_databases.SyncRoot)
             {
                 if (m_databases.Contains(databaseInstance.DatabaseName))
                 {
-                    m_databases[databaseInstance.DatabaseName].Dispose();
+                    m_databases.GetDatabase(databaseInstance.DatabaseName).Dispose();
                     m_databases.Remove(databaseInstance.DatabaseName);
                 }
             }
@@ -255,19 +255,19 @@ namespace openHistorian
         protected void Initialize(IEnumerable<HistorianDatabaseInstance> databaseInstances)
         {
             // Create socket specific historian database collections
-            Dictionary<int, HistorianDatabaseCollection<HistorianKey, HistorianValue>> socketDatabases = new Dictionary<int, HistorianDatabaseCollection<HistorianKey, HistorianValue>>();
-            HistorianDatabaseCollection<HistorianKey, HistorianValue> databaseCollection;
+            Dictionary<int, SortedTreeCollection> socketDatabases = new Dictionary<int, SortedTreeCollection>();
+            SortedTreeCollection databaseCollection;
             HistorianDatabaseEngine databaseEngine;
 
             // Initialize each archive database engine
             foreach (HistorianDatabaseInstance databaseInstance in databaseInstances)
             {
                 if (databaseInstance.InMemoryArchive)
-                    databaseEngine = new HistorianDatabaseEngine(WriterMode.InMemory, databaseInstance.Paths);
+                    databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
                 else
-                    databaseEngine = new HistorianDatabaseEngine(WriterMode.OnDisk, databaseInstance.Paths);
+                    databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
 
-                m_databases.Add(databaseInstance.DatabaseName, databaseEngine);
+                m_databases.Add(databaseEngine);
 
                 if (databaseInstance.IsNetworkHosted)
                 {
@@ -276,27 +276,27 @@ namespace openHistorian
 
                     if (!socketDatabases.TryGetValue(port, out databaseCollection))
                     {
-                        databaseCollection = new HistorianDatabaseCollection<HistorianKey, HistorianValue>();
+                        databaseCollection = new SortedTreeCollection();
                         socketDatabases.Add(port, databaseCollection);
                     }
 
                     // Add database associated with specific socket
-                    socketDatabases[port].Add(databaseInstance.DatabaseName, databaseEngine);
+                    socketDatabases[port].Add(databaseEngine);
                 }
             }
 
             // Create a new instance of the socket historian per-port with associated database collections
             lock (m_sockets)
             {
-                foreach (KeyValuePair<int, HistorianDatabaseCollection<HistorianKey, HistorianValue>> connection in socketDatabases)
+                foreach (KeyValuePair<int, SortedTreeCollection> connection in socketDatabases)
                 {
-                    m_sockets.Add(connection.Key, new SortedTreeServerSocket<HistorianKey, HistorianValue>(connection.Key, CreateHistorianCompressionTs.TypeGuid, connection.Value));
+                    m_sockets.Add(connection.Key, new SortedTreeServerSocket(connection.Key, connection.Value));
                 }
             }
         }
 
         #endregion
-        
+
     }
 
     #region [ Old Code ]

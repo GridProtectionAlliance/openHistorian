@@ -37,26 +37,23 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(serverDatabases))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.DefaultDatabase = "PPA";
                 clientOptions.NetworkPort = 38409;
                 clientOptions.ServerNameOrIp = "127.0.0.1"; //IP address of server.
 
                 using (HistorianClient client = new HistorianClient(clientOptions))
                 {
-                    var database = client.GetDefaultDatabase();
-                    using (var reader = database.OpenDataReader())
+                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
+                    using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
                     {
-                        using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
+                        csvStream.Write("Timestamp,PointID,Value,Quality");
+                        TreeStream<HistorianKey, HistorianValue> stream = database.Read(DateTime.MinValue, DateTime.MaxValue, new ulong[] { 1, 2, 3 });
+                        while (stream.Read())
                         {
-                            csvStream.Write("Timestamp,PointID,Value,Quality");
-                            TreeStream<HistorianKey, HistorianValue> stream = reader.Read(DateTime.MinValue, DateTime.MaxValue, new ulong[] { 1, 2, 3 });
-                            while (stream.Read())
-                            {
-                                csvStream.WriteLine("{0},{1},{2},{3}", stream.CurrentKey.TimestampAsDate, stream.CurrentKey.PointID, stream.CurrentValue.AsSingle, stream.CurrentValue.Value3);
-                            }
-                            csvStream.Flush();
+                            csvStream.WriteLine("{0},{1},{2},{3}", stream.CurrentKey.TimestampAsDate, stream.CurrentKey.PointID, stream.CurrentValue.AsSingle, stream.CurrentValue.Value3);
                         }
+                        csvStream.Flush();
                     }
                     database.Disconnect();
                 }

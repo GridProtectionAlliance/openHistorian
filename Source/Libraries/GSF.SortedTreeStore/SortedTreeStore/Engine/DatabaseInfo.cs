@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  NullTreeScanner.cs - Gbtc
+//  DatabaseInfo.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,49 +16,35 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/1/2012 - Steven E. Chisholm
+//  3/1/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
-//     
+//
 //******************************************************************************************************
 
-namespace GSF.SortedTreeStore
+using System;
+using GSF.SortedTreeStore.Tree;
+
+namespace GSF.SortedTreeStore.Engine
 {
-    /// <summary>
-    /// Represents an empty tree scanner. 
-    /// </summary>
-    /// <remarks>
-    /// This can be useful to return instead of null at times. Seeks will not throw exceptions and 
-    /// scans will yield no results.
-    /// To use this class. Call the static property <see cref="Instance"/>.
-    /// </remarks>
-    public class NullTreeScanner<TKey, TValue>
-        : SeekableTreeStream<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+    public class DatabaseInfo
     {
-        /// <summary>
-        /// Returns a static instance of this class
-        /// </summary>
-        public static SeekableTreeStream<TKey, TValue> Instance
+        public DatabaseInfo(string databaseName, SortedTreeTypeBase key, SortedTreeTypeBase value)
         {
-            get;
-            private set;
+            DatabaseName = databaseName;
+            KeyTypeID = key.GenericTypeGuid;
+            KeyType = key.GetType();
+            ValueTypeID = value.GenericTypeGuid;
+            ValueType = value.GetType();
         }
 
-        static NullTreeScanner()
-        {
-            Instance = new NullTreeScanner<TKey, TValue>();
-        }
+        public string DatabaseName { get; private set; }
 
-        public override bool Read(TKey key, TValue value)
-        {
-            return false;
-        }
+        public Guid KeyTypeID { get; private set; }
 
-        public override void SeekToKey(TKey key)
-        {
-        }
+        public Guid ValueTypeID { get; private set; }
 
+        public Type KeyType { get; private set; }
 
+        public Type ValueType { get; private set; }
     }
 }

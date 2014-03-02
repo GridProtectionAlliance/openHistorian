@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  HistorianDatabaseCollection.cs - Gbtc
+//  SortedTreeCollection.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -29,23 +29,17 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore
 {
-    /// <summary>
-    /// A simple way to implement <see cref="HistorianCollection{TKey,TValue}"/>.
-    /// </summary>
-    public class HistorianDatabaseCollection<TKey, TValue>
-        : HistorianCollection<TKey, TValue>, IDisposable
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : class, new()
+    public class SortedTreeCollection : IDisposable
     {
         private bool m_disposed;
 
         private readonly object m_syncRoot = new object();
 
-        private readonly SortedList<string, SortedTreeEngineBase<TKey, TValue>> m_databases;
+        private readonly SortedList<string, SortedTreeEngineBase> m_databases;
 
-        public HistorianDatabaseCollection()
+        public SortedTreeCollection()
         {
-            m_databases = new SortedList<string, SortedTreeEngineBase<TKey, TValue>>();
+            m_databases = new SortedList<string, SortedTreeEngineBase>();
         }
 
         //public HistorianDatabaseCollection(string configFileName)
@@ -54,20 +48,24 @@ namespace GSF.SortedTreeStore
         //    throw new NotImplementedException();
         //}
 
+        public SortedTreeEngineBase GetDatabase(string databaseName)
+        {
+            lock (m_syncRoot)
+            {
+                return m_databases[databaseName.ToUpper()];
+            }
+        }
+
         /// <summary>
         /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public override SortedTreeEngineBase<TKey, TValue> this[string databaseName]
+        public SortedTreeEngineBase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName) 
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            get
-            {
-                lock (m_syncRoot)
-                {
-                    return m_databases[databaseName.ToUpper()];
-                }
-            }
+            return (SortedTreeEngineBase<TKey, TValue>)(object)GetDatabase(databaseName);
         }
 
         //public IHistorianDatabase<TKey, TValue> ConnectToDatabase(string databaseName)
@@ -78,11 +76,11 @@ namespace GSF.SortedTreeStore
         //    }
         //}
 
-        public void Add(string databaseName, SortedTreeEngineBase<TKey, TValue> database)
+        public void Add(SortedTreeEngineBase database)
         {
             lock (m_syncRoot)
             {
-                m_databases.Add(databaseName.ToUpper(), database);
+                m_databases.Add(database.Info.DatabaseName.ToUpper(), database);
             }
         }
 
@@ -94,11 +92,18 @@ namespace GSF.SortedTreeStore
             }
         }
 
-        public List<string> GetDatabaseNames()
+        public List<DatabaseInfo> GetDatabaseInfo()
         {
+
             lock (m_syncRoot)
             {
-                return new List<string>(m_databases.Keys);
+                var lst = new List<DatabaseInfo>();
+
+                for (int x = 0; x < m_databases.Count; x++)
+                {
+                    lst.Add(m_databases.Values[x].Info);
+                }
+                return lst;
             }
         }
 
@@ -143,7 +148,7 @@ namespace GSF.SortedTreeStore
             if (!m_disposed)
             {
                 m_disposed = true;
-                foreach (SortedTreeEngineBase<TKey, TValue> db in m_databases.Values)
+                foreach (SortedTreeEngineBase db in m_databases.Values)
                 {
                     db.Dispose();
                 }

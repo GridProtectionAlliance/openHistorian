@@ -32,14 +32,14 @@ namespace openHistorianServiceHost
 
         private void StartStream(object args)
         {
-            HistorianClientOptions clientOptions = new HistorianClientOptions();
+            SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
             clientOptions.IsReadOnly = true;
             clientOptions.NetworkPort = 54996;
             clientOptions.ServerNameOrIp = "127.0.0.1";
 
             using (HistorianClient client = new HistorianClient(clientOptions))
             {
-                SortedTreeEngineBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase();
+                SortedTreeEngineBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
 
                 using (SortedTreeTable<HistorianKey, HistorianValue> file = SortedTreeFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
                 {

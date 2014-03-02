@@ -251,12 +251,24 @@ namespace GSF.SortedTreeStore
                          m_keyValueEncodingMethod.GetHashCode();
         }
 
+        /// <summary>
+        /// Checks for inequality
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator !=(EncodingDefinition a, EncodingDefinition b)
         {
             return !(a == b);
 
         }
 
+        /// <summary>
+        /// Checks for equality
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator ==(EncodingDefinition a, EncodingDefinition b)
         {
             return a.Equals(b);

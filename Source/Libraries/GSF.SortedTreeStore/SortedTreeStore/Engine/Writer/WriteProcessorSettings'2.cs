@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 
+using System.Collections.Generic;
 using System.Linq;
 using GSF.SortedTreeStore.Tree;
 
@@ -43,7 +44,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// The initial committed stage (usually in memory)
         /// </summary>
         public FirstStageWriterSettings<TKey, TValue> Stage0;
-        
+
         /// <summary>
         /// The first stange of data writen to the disk. Usually uncompressed since random inserts are still fast.
         /// </summary>
@@ -67,15 +68,15 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <param name="config">the config base to use</param>
         /// <param name="list">where to </param>
         /// <returns></returns>
-        public static WriteProcessorSettings<TKey, TValue> CreateFromSettings(DatabaseConfig config, ArchiveList<TKey, TValue> list)
+        public static WriteProcessorSettings<TKey, TValue> CreateFromSettings(WriterMode writeMode, List<string> savePaths, EncodingDefinition encoding, ArchiveList<TKey, TValue> list)
         {
-            if (config.WriterMode == WriterMode.InMemory)
-                return CreateInMemory(config, list);
+            if (writeMode == WriterMode.InMemory)
+                return CreateInMemory(encoding, list);
             else
-                return CreateOnDisk(config, list);
+                return CreateOnDisk(savePaths, encoding, list);
         }
 
-        static WriteProcessorSettings<TKey, TValue> CreateInMemory(DatabaseConfig config, ArchiveList<TKey, TValue> list)
+        static WriteProcessorSettings<TKey, TValue> CreateInMemory(EncodingDefinition encoding, ArchiveList<TKey, TValue> list)
         {
             WriteProcessorSettings<TKey, TValue> settings = new WriteProcessorSettings<TKey, TValue>();
 
@@ -92,14 +93,14 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 RolloverInterval = 1000,
                 RolloverSize = 1 * 1000 * 1000,
                 MaximumAllowedSize = 10 * 1000 * 1000,
-                TempFile = new TempFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode), ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod))
+                TempFile = new TempFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode), ArchiveInitializer<TKey, TValue>.CreateInMemory(encoding))
             };
 
             settings.Stage1 = new CombineFilesSettings<TKey, TValue>
                 {
                     ArchiveList = list,
                     TargetSize = 100 * 1014 * 1024,
-                    CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod),
+                    CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(encoding),
                     NameMatch = "-Stage1-"
                 };
 
@@ -107,16 +108,16 @@ namespace GSF.SortedTreeStore.Engine.Writer
             {
                 ArchiveList = list,
                 TargetSize = 100 * 1014 * 1024,
-                CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(config.CompressionMethod),
+                CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(encoding),
                 NameMatch = "-Stage2-"
             };
 
             return settings;
         }
 
-        static WriteProcessorSettings<TKey, TValue> CreateOnDisk(DatabaseConfig config, ArchiveList<TKey, TValue> list)
+        static WriteProcessorSettings<TKey, TValue> CreateOnDisk(List<string> savePaths, EncodingDefinition encoding, ArchiveList<TKey, TValue> list)
         {
-            var paths = config.Paths.GetSavePaths().ToList();
+            var paths = savePaths;
             WriteProcessorSettings<TKey, TValue> settings = new WriteProcessorSettings<TKey, TValue>();
 
             settings.Prestage = new PrestageSettings
@@ -131,14 +132,14 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 RolloverInterval = 10000,
                 RolloverSize = 100 * 1000 * 1000,
                 MaximumAllowedSize = 200 * 1000 * 1000,
-                TempFile = new TempFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode), ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage1"))
+                TempFile = new TempFile<TKey, TValue>(list, ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode), ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, encoding, "Stage1"))
             };
 
             settings.Stage1 = new CombineFilesSettings<TKey, TValue>
             {
                 ArchiveList = list,
                 TargetSize = 50 * 1014 * 1024,
-                CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage2"),
+                CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, encoding, "Stage2"),
                 NameMatch = "-Stage1-"
             };
 
@@ -146,7 +147,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             {
                 ArchiveList = list,
                 TargetSize = 1000 * 1014 * 1024,
-                CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, config.CompressionMethod, "Stage3"),
+                CreateNextStageFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(paths, encoding, "Stage3"),
                 NameMatch = "-Stage2-"
             };
 

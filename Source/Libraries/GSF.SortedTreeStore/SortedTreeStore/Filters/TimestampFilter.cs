@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using GSF.IO;
 using GSF.SortedTreeStore.Types;
 
@@ -46,7 +47,7 @@ namespace GSF.SortedTreeStore.Filters
 
         public override SeekFilterBase<TKey> Create<TKey>(BinaryStreamBase stream)
         {
-            MethodInfo method = typeof(PointIDFilter).GetMethod("CreateFromStream");
+            MethodInfo method = typeof(TimestampFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Instance);
             MethodInfo generic = method.MakeGenericMethod(typeof(TKey));
             var rv = generic.Invoke(this, new[] { stream });
             return (SeekFilterBase<TKey>)rv;
@@ -159,6 +160,7 @@ namespace GSF.SortedTreeStore.Filters
         /// </summary>
         /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.NoOptimization)]
         SeekFilterBase<TKey> CreateFromStream<TKey>(BinaryStreamBase stream)
             where TKey : TimestampPointIDBase<TKey>, new()
         {
@@ -176,6 +178,6 @@ namespace GSF.SortedTreeStore.Filters
             }
         }
 
-        
+
     }
 }

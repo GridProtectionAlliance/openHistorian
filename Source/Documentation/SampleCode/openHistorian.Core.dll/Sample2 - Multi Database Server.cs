@@ -84,19 +84,13 @@ namespace SampleCode.openHistorian.Server.dll
             using (HistorianServer server = new HistorianServer(serverDatabases))
             {
                 SortedTreeEngineBase<HistorianKey, HistorianValue> database = server["Scada"];
-                using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
-                {
-                    TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
-                    stream.Cancel();
-                }
+                TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, 100);
+                stream.Cancel();
                 database.Disconnect();
 
                 database = server["Synchrophasor"];
-                using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
-                {
-                    TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
-                    stream.Cancel();
-                }
+                stream = database.Read(0, 100);
+                stream.Cancel();
                 database.Disconnect();
             }
         }

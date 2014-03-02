@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeEngineReaderBase`2.cs - Gbtc
+//  SortedTreeEngineBase`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,50 +16,45 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/29/2012 - Steven E. Chisholm
+//  12/8/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
 //
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Filters;
-using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Engine.Reader
+namespace GSF.SortedTreeStore.Engine
 {
     /// <summary>
-    /// Creates a session that can read data from the historian.
+    /// Represents a single historian database.
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    public abstract class SortedTreeEngineReaderBase<TKey, TValue>
-        : IDisposable
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : class, new()
+    public abstract class SortedTreeEngineBase : IDisposable
     {
-        ///// <summary>
-        ///// Reads data from the historian with the provided filters.
-        ///// </summary>
-        ///// <param name="timestampFilter">filters for the timestamp</param>
-        ///// <param name="pointIdFilter">filters for the pointId</param>
-        ///// <param name="readerOptions">options for the reader, such as automatic timeouts.</param>
-        ///// <returns></returns>
-        //public abstract TreeStream<TKey, TValue> Read(QueryFilterTimestamp timestampFilter, QueryFilterPointId pointIdFilter, SortedTreeEngineReaderOptions readerOptions);
+        /// <summary>
+        /// Gets basic information about the current Database.
+        /// </summary>
+        public abstract DatabaseInfo Info { get; }
+        
+        /// <summary>
+        /// Forces a soft commit on the database. A soft commit 
+        /// only commits data to memory. This allows other clients to read the data.
+        /// While soft committed, this data could be lost during an unexpected shutdown.
+        /// Soft commits usually occur within microseconds. 
+        /// </summary>
+        public abstract void SoftCommit();
 
         /// <summary>
-        /// Reads data from the SortedTreeEngine with the provided read options and server side filters.
-        /// </summary>
-        /// <param name="readerOptions"></param>
-        /// <param name="keySeekFilter"></param>
-        /// <param name="keyMatchFilter"></param>
-        /// <returns></returns>
-        public abstract TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter);
+        /// Forces a commit to the disk subsystem. Once this returns, the data will not
+        /// be lost due to an application crash or unexpected shutdown.
+        /// Hard commits can take 100ms or longer depending on how much data has to be committed. 
+        /// This requires two consecutive hardware cache flushes.
+        ///  </summary>
+        public abstract void HardCommit();
 
         /// <summary>
-        /// Closes this reader
+        /// Disconnects from the current database. 
         /// </summary>
-        public abstract void Close();
+        public abstract void Disconnect();
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

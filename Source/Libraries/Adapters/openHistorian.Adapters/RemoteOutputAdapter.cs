@@ -55,7 +55,7 @@ namespace openHistorian.Adapters
         private string m_server;
         private int m_port;
         private bool m_outputIsForArchive;
-        private SortedTreeStoreClient<HistorianKey, HistorianValue> m_client;
+        private SortedTreeClient m_client;
         private HistorianInputQueue m_inputQueue;
         private long m_measurementsPublished;
         private bool m_disposed;
@@ -247,13 +247,13 @@ namespace openHistorian.Adapters
         /// </summary>
         protected override void AttemptConnection()
         {
-            HistorianClientOptions clientOptions = new HistorianClientOptions();
+            SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
             clientOptions.DefaultDatabase = DatabaseName;
             clientOptions.ServerNameOrIp = Server;
             clientOptions.NetworkPort = Port;
             clientOptions.IsReadOnly = false;
             m_client = new HistorianClient(clientOptions);
-            m_inputQueue = new HistorianInputQueue(() => m_client.GetDefaultDatabase());
+            m_inputQueue = new HistorianInputQueue(() => m_client.GetDefaultDatabase<HistorianKey, HistorianValue>());
         }
 
         /// <summary>

@@ -38,10 +38,10 @@ namespace openHistorian.Data.Query
     public class PointStream
             : TreeStream<HistorianKey, HistorianValue>, IDisposable
     {
-        SortedTreeEngineReaderBase<HistorianKey, HistorianValue> m_reader;
+        IDatabaseReader<HistorianKey, HistorianValue> m_reader;
         TreeStream<HistorianKey, HistorianValue> m_stream;
 
-        public PointStream(SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader, TreeStream<HistorianKey, HistorianValue> stream)
+        public PointStream(IDatabaseReader<HistorianKey, HistorianValue> reader, TreeStream<HistorianKey, HistorianValue> stream)
         {
             m_stream = stream;
             m_reader = reader;
@@ -99,7 +99,7 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static PointStream GetPointStream(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime)
+        public static PointStream GetPointStream(this IDatabaseReader<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime)
         {
             return database.GetPointStream(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime), null);
         }
@@ -109,7 +109,7 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static PointStream GetPointStream(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, params ulong[] points)
+        public static PointStream GetPointStream(this IDatabaseReader<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, params ulong[] points)
         {
             return database.GetPointStream(SortedTreeEngineReaderOptions.Default, timestamps, PointIDFilter.CreateFromList<HistorianKey,HistorianValue>(points));
         }
@@ -119,7 +119,7 @@ namespace openHistorian.Data.Query
         /// </summary>
         /// <param name="database">the database to use</param>
         /// <returns></returns>
-        public static PointStream GetPointStream(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, params ulong[] points)
+        public static PointStream GetPointStream(this IDatabaseReader<HistorianKey, HistorianValue> database, DateTime startTime, DateTime stopTime, params ulong[] points)
         {
             return database.GetPointStream(SortedTreeEngineReaderOptions.Default, TimestampFilter.CreateFromRange<HistorianKey>(startTime, stopTime), PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(points));
         }
@@ -152,7 +152,7 @@ namespace openHistorian.Data.Query
         /// <param name="timestamps">the timestamps to query for</param>
         /// <param name="points">the points to query</param>
         /// <returns></returns>
-        public static PointStream GetPointStream(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, MatchFilterBase<HistorianKey, HistorianValue> points)
+        public static PointStream GetPointStream(this IDatabaseReader<HistorianKey, HistorianValue> database, SeekFilterBase<HistorianKey> timestamps, MatchFilterBase<HistorianKey, HistorianValue> points)
         {
             return database.GetPointStream(SortedTreeEngineReaderOptions.Default, timestamps, points);
         }
@@ -165,11 +165,10 @@ namespace openHistorian.Data.Query
         /// <param name="points">the points to query</param>
         /// <param name="options">A list of query options</param>
         /// <returns></returns>
-        public static PointStream GetPointStream(this SortedTreeEngineBase<HistorianKey, HistorianValue> database,
+        public static PointStream GetPointStream(this IDatabaseReader<HistorianKey, HistorianValue> database,
             SortedTreeEngineReaderOptions options, SeekFilterBase<HistorianKey> timestamps, MatchFilterBase<HistorianKey, HistorianValue> points)
         {
-            var reader = database.OpenDataReader();
-            return new PointStream(reader, reader.Read(options, timestamps, points));
+            return new PointStream(database, database.Read(options, timestamps, points));
         }
 
 

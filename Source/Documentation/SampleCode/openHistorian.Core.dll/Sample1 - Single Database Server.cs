@@ -48,13 +48,10 @@ namespace SampleCode.openHistorian.Server.dll
             using (var server = new HistorianServer(db))
             {
                 var database = server.GetDefaultDatabase();
-                using (var reader = database.OpenDataReader())
+                var stream = database.Read(10, 800 - 1);
+                while (stream.Read())
                 {
-                    var stream = reader.Read(10, 800 - 1);
-                    while (stream.Read())
-                    {
-                        Console.WriteLine(stream.CurrentKey.Timestamp);
-                    }
+                    Console.WriteLine(stream.CurrentKey.Timestamp);
                 }
             }
         }

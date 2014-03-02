@@ -33,20 +33,19 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Reader
 {
-
     internal class SequentialReaderStream<TKey, TValue>
         : TreeStream<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        private readonly ArchiveListSnapshot<TKey, TValue> m_snapshot;
+        private ArchiveListSnapshot<TKey, TValue> m_snapshot;
         private volatile bool m_timedOut;
         private long m_pointCount;
 
         bool m_keyMatchIsUniverse;
 
         SeekFilterBase<TKey> m_keySeekFilter;
-        MatchFilterBase<TKey,TValue> m_keyMatchFilter;
+        MatchFilterBase<TKey, TValue> m_keyMatchFilter;
 
         private TimeoutOperation m_timeout;
         private List<BufferedArchiveStream<TKey, TValue>> m_tablesOrigList;
@@ -56,15 +55,19 @@ namespace GSF.SortedTreeStore.Engine.Reader
         TKey m_readWhileUpperBounds = new TKey();
         TKey m_nextArchiveStreamLowerBounds = new TKey();
 
-        public SequentialReaderStream(ArchiveListSnapshot<TKey, TValue> snapshot,
-                                   SortedTreeEngineReaderOptions readerOptions,
-                                   SeekFilterBase<TKey> keySeekFilter,
-                                   MatchFilterBase<TKey,TValue> keyMatchFilter)
+        public SequentialReaderStream(ArchiveList<TKey, TValue> archiveList, SortedTreeEngineReaderOptions readerOptions = null, SeekFilterBase<TKey> keySeekFilter = null, MatchFilterBase<TKey, TValue> keyMatchFilter = null)
         {
+            if (readerOptions == null)
+                readerOptions = SortedTreeEngineReaderOptions.Default;
+            if (keySeekFilter == null)
+                keySeekFilter = new SeekFilterUniverse<TKey>();
+            if (keyMatchFilter == null)
+                keyMatchFilter = new MatchFilterUniverse<TKey, TValue>();
+
             m_pointCount = 0;
             m_keySeekFilter = keySeekFilter;
             m_keyMatchFilter = keyMatchFilter;
-            m_keyMatchIsUniverse = (m_keyMatchFilter as MatchFilterUniverse<TKey,TValue>) != null;
+            m_keyMatchIsUniverse = (m_keyMatchFilter as MatchFilterUniverse<TKey, TValue>) != null;
 
             if (readerOptions.Timeout.Ticks > 0)
             {
@@ -72,7 +75,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 m_timeout.RegisterTimeout(readerOptions.Timeout, () => m_timedOut = true);
             }
 
-            m_snapshot = snapshot;
+            m_snapshot = archiveList.CreateNewClientResources();
             m_snapshot.UpdateSnapshot();
             m_tablesOrigList = new List<BufferedArchiveStream<TKey, TValue>>();
 
@@ -81,7 +84,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 ArchiveTableSummary<TKey, TValue> table = m_snapshot.Tables[x];
                 if (table != null)
                 {
-                    if (keySeekFilter == null || table.Contains(keySeekFilter.StartOfRange, keySeekFilter.EndOfRange))
+                    if (table.Contains(keySeekFilter.StartOfRange, keySeekFilter.EndOfRange))
                     {
                         m_tablesOrigList.Add(new BufferedArchiveStream<TKey, TValue>(x, table));
                     }
@@ -103,6 +106,11 @@ namespace GSF.SortedTreeStore.Engine.Reader
             {
                 Cancel();
             }
+        }
+
+        ~SequentialReaderStream()
+        {
+            Dispose(false);
         }
 
         public override void Cancel()
@@ -200,7 +208,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
             return false;
         }
 
-        bool ReadWhileFollowupActions(TKey key, TValue value, MatchFilterBase<TKey,TValue> filter)
+        bool ReadWhileFollowupActions(TKey key, TValue value, MatchFilterBase<TKey, TValue> filter)
         {
             //There are certain followup requirements when a ReadWhile method returns false.
             //Condition 1:
@@ -244,7 +252,7 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 AdvanceSeekableFilter(true, key);
                 SetReadWhileUpperBoundsValue();
 
-                return filter == null || filter.Contains(key,value);
+                return filter == null || filter.Contains(key, value);
             }
 
             //Check if condition 3 occured
@@ -499,6 +507,16 @@ namespace GSF.SortedTreeStore.Engine.Reader
                     m_keySeekFilter.EndOfFrame.CopyTo(m_readWhileUpperBounds);
                 }
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (m_snapshot != null)
+            {
+                m_snapshot.Dispose();
+                m_snapshot = null;
+            }
+
         }
 
     }

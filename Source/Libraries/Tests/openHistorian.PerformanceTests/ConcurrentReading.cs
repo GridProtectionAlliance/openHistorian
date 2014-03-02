@@ -118,23 +118,20 @@ namespace openHistorian.PerformanceTests
                 {
 
                     Stopwatch sw = new Stopwatch();
-                    HistorianClientOptions clientOptions = new HistorianClientOptions();
+                    SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                     clientOptions.NetworkPort = 12345;
                     clientOptions.ServerNameOrIp = "127.0.0.1";
 
                     using (var client = new HistorianClient(clientOptions))
                     {
-                        var database = client.GetDefaultDatabase();
+                        var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
                         HistorianKey key = new HistorianKey();
                         HistorianValue value = new HistorianValue();
 
                         sw.Start();
-                        using (var frameReader = database.OpenDataReader())
-                        {
-                            var scan = frameReader.Read(0, ulong.MaxValue, new ulong[] { 65, 953, 5562 });
-                            while (scan.Read(key, value))
-                                ;
-                        }
+                        var scan = database.Read(0, ulong.MaxValue, new ulong[] { 65, 953, 5562 });
+                        while (scan.Read(key, value))
+                            ;
                         sw.Stop();
                         database.Disconnect();
                     }
@@ -171,23 +168,20 @@ namespace openHistorian.PerformanceTests
                     int myId = Interlocked.Increment(ref ReaderNumber);
                     Stopwatch sw = new Stopwatch();
                     int pointCount = 0;
-                    HistorianClientOptions clientOptions = new HistorianClientOptions();
+                    SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                     clientOptions.NetworkPort = 12345;
                     clientOptions.ServerNameOrIp = "127.0.0.1";
 
                     using (var client = new HistorianClient(clientOptions))
                     {
-                        var database = client.GetDefaultDatabase();
+                        var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
                         HistorianKey key = new HistorianKey();
                         HistorianValue value = new HistorianValue();
 
                         sw.Start();
-                        using (var frameReader = database.OpenDataReader())
-                        {
-                            var scan = frameReader.Read((ulong)start.Ticks, ulong.MaxValue);//, new ulong[] { 65, 953, 5562 });
-                            while (scan.Read(key, value) && pointCount < PointsToRead)
-                                pointCount++;
-                        }
+                        var scan = database.Read((ulong)start.Ticks, ulong.MaxValue);//, new ulong[] { 65, 953, 5562 });
+                        while (scan.Read(key, value) && pointCount < PointsToRead)
+                            pointCount++;
                         sw.Stop();
                         database.Disconnect();
                     }

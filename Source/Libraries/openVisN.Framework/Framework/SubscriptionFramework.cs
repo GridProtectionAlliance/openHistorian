@@ -85,7 +85,7 @@ namespace openVisN.Framework
 
         public void Start(string ip, int port, string database)
         {
-            HistorianClientOptions options = new HistorianClientOptions();
+            SortedTreeClientOptions options = new SortedTreeClientOptions();
             options.IsReadOnly = true;
             options.ServerNameOrIp = ip;
             options.NetworkPort = port;

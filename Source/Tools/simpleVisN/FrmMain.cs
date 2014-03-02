@@ -56,7 +56,7 @@ namespace simpleVisN
                 dlgOpen.Filter = "openHistorian 2.0 file|*.d2";
                 if (dlgOpen.ShowDialog() == DialogResult.OK)
                 {
-                    m_archiveFile = new HistorianDatabaseEngine(WriterMode.None, dlgOpen.FileName);
+                    m_archiveFile = new HistorianDatabaseEngine("", WriterMode.None, dlgOpen.FileName);
                 }
             }
             BuildListOfAllPoints();
@@ -65,18 +65,15 @@ namespace simpleVisN
         private void BuildListOfAllPoints()
         {
             HashSet<ulong> keys = new HashSet<ulong>();
-            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = m_archiveFile.OpenDataReader())
+            TreeStream<HistorianKey, HistorianValue> scanner = m_archiveFile.Read(0, ulong.MaxValue);
+            ulong key1, key2, value1, value2;
+            while (scanner.Read())
             {
-                TreeStream<HistorianKey, HistorianValue> scanner = reader.Read(0, ulong.MaxValue);
-                ulong key1, key2, value1, value2;
-                while (scanner.Read())
-                {
-                    key1 = scanner.CurrentKey.Timestamp;
-                    key2 = scanner.CurrentKey.PointID;
-                    value1 = scanner.CurrentValue.Value3;
-                    value2 = scanner.CurrentValue.Value1;
-                    keys.Add(key2);
-                }
+                key1 = scanner.CurrentKey.Timestamp;
+                key2 = scanner.CurrentKey.PointID;
+                value1 = scanner.CurrentValue.Value3;
+                value2 = scanner.CurrentValue.Value1;
+                keys.Add(key2);
             }
             List<ulong> AllKeys = keys.ToList();
             AllKeys.Sort();

@@ -28,13 +28,13 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (var server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
-                
+
                 using (var client = new HistorianClient(clientOptions))
                 {
-                    var database = client.GetDefaultDatabase();
+                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
 
                     for (ulong x = 0; x < 1000; x++)
                     {
@@ -61,20 +61,17 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
                 using (var client = new HistorianClient(clientOptions))
                 {
-                    var database = client.GetDefaultDatabase();
-                    using (var reader = database.OpenDataReader())
-                    {
-                        var stream = reader.Read(0, 1000);
-                        while (stream.Read())
-                            Console.WriteLine(stream.CurrentKey.Timestamp);
+                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
+                    var stream = database.Read(0, 1000);
+                    while (stream.Read())
+                        Console.WriteLine(stream.CurrentKey.Timestamp);
 
-                    }
                     database.Disconnect();
                 }
             }

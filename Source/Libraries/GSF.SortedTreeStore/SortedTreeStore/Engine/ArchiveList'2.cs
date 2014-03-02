@@ -201,7 +201,7 @@ namespace GSF.SortedTreeStore.Engine
         /// Determines if the provided partition file is currently in use
         /// by any resource. 
         /// </summary>
-        /// <param name="sortedTreehe partition to search for.</param>
+        /// <param name="sortedTree"> partition to search for.</param>
         /// <returns></returns>
         public bool IsPartitionBeingUsed(SortedTreeTable<TKey, TValue> sortedTree)
         {

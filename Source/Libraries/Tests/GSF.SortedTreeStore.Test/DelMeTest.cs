@@ -18,26 +18,23 @@ namespace openHistorian
         [Test]
         public void SlowReading()
         {
-            HistorianClientOptions clientOptions = new HistorianClientOptions();
+            SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
             clientOptions.NetworkPort = 38402;
             clientOptions.ServerNameOrIp = "127.0.0.1";
             clientOptions.DefaultDatabase = "PPA";
 
             using (var server = new HistorianClient(clientOptions))
             {
-                var database = server.GetDefaultDatabase();
+                var database = server.GetDefaultDatabase<HistorianKey,HistorianValue>();
                 ////var reader = database.GetRawSignals(start, stop, new ulong[] { 3142011, 3142023 });
                 //var reader = database.GetRawSignals(start, stop, new ulong[] {  3142023 });
                 ////var reader = database.GetRawSignals(start, stop, new ulong[] { 3142011 });
                 //Console.WriteLine(reader.Count);
 
-                using (var reader = database.OpenDataReader())
-                {
-                    var stream = reader.Read();
-                    while (stream.Read())
-                        ;
-                    //System.Threading.Thread.Sleep(1);
-                }
+                var stream = database.Read();
+                while (stream.Read())
+                    ;
+                //System.Threading.Thread.Sleep(1);
 
 
                 database.Disconnect();
@@ -58,21 +55,18 @@ namespace openHistorian
                 DateTime stop = DateTime.Parse("4/17/2013 10:38 AM");
                 //DateTime stop = DateTime.Parse("4/17/2013 11:00 PM");
                 var database = server.GetDefaultDatabase();
-                
+
                 ////var reader = database.GetRawSignals(start, stop, new ulong[] { 3142011, 3142023 });
                 //var reader = database.GetRawSignals(start, stop, new ulong[] {  3142023 });
                 ////var reader = database.GetRawSignals(start, stop, new ulong[] { 3142011 });
                 //Console.WriteLine(reader.Count);
 
-                using (var reader = database.OpenDataReader())
-                {
-                    var stream = reader.Read(start, stop, new ulong[] { 3142023 });
-                    while (stream.Read())
-                        Console.WriteLine(stream.CurrentKey.Timestamp.ToString() + '\t' + stream.CurrentKey.TimestampAsDate.ToString() + '\t' + 
-                            stream.CurrentValue.Value1.ToString());
+                var stream = database.Read(start, stop, new ulong[] { 3142023 });
+                while (stream.Read())
+                    Console.WriteLine(stream.CurrentKey.Timestamp.ToString() + '\t' + stream.CurrentKey.TimestampAsDate.ToString() + '\t' +
+                        stream.CurrentValue.Value1.ToString());
 
-                }
-                
+
 
                 database.Disconnect();
             }
@@ -104,6 +98,6 @@ namespace openHistorian
             }
         }
 
-   
+
     }
 }

@@ -55,19 +55,11 @@ namespace openHistorian
         /// <summary>
         /// Creates a new <see cref="HistorianDatabaseEngine"/> instance.
         /// </summary>
+        /// <param name="databaseName">the name of the database.</param>
         /// <param name="writer">Writer options.</param>
         /// <param name="paths">Write paths.</param>
-        public HistorianDatabaseEngine(WriterMode writer, params string[] paths)
-            : base(writer, CreateHistorianCompressionTs.TypeGuid, paths)
-        {
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="HistorianDatabaseEngine"/> instance.
-        /// </summary>
-        /// <param name="settings">Database configuration settings.</param>
-        public HistorianDatabaseEngine(DatabaseConfig settings)
-            : base(settings)
+        public HistorianDatabaseEngine(string databaseName, WriterMode writer, params string[] paths)
+            : base(databaseName, writer, CreateHistorianCompressionTs.TypeGuid, paths)
         {
         }
 
@@ -88,22 +80,16 @@ namespace openHistorian
 
         IEnumerable<IDataPoint> IArchive.ReadData(IEnumerable<int> historianIDs, string startTime, string endTime)
         {
-            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = OpenDataReader())
-            {
-                ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
-                ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
-                return ReadDataStream(reader.Read(startTimestamp, endTimestamp, historianIDs.Select(pointID => (ulong)pointID)));
-            }
+            ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
+            ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
+            return ReadDataStream(this.Read(startTimestamp, endTimestamp, historianIDs.Select(pointID => (ulong)pointID)));
         }
 
         IEnumerable<IDataPoint> IArchive.ReadData(int historianID, string startTime, string endTime)
         {
-            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = OpenDataReader())
-            {
-                ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
-                ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
-                return ReadDataStream(reader.Read(startTimestamp, endTimestamp));
-            }
+            ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
+            ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
+            return ReadDataStream(this.Read(startTimestamp, endTimestamp));
         }
 
         private IEnumerable<IDataPoint> ReadDataStream(TreeStream<HistorianKey, HistorianValue> stream)
@@ -370,10 +356,7 @@ namespace openHistorian
             Ticks stopTime = DateTime.UtcNow.Ticks;
             Ticks startTime = stopTime - Ticks.PerSecond * 2;
 
-            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = OpenDataReader())
-            {
-                dataPoints = ReadDataStream(reader.Read((ulong)(long)startTime, (ulong)(long)stopTime, new[] { (ulong)historianID }));
-            }
+            dataPoints = ReadDataStream(this.Read((ulong)(long)startTime, (ulong)(long)stopTime, new[] { (ulong)historianID }));
 
             StateRecordDataPoint dataPoint = new StateRecordDataPoint(dataPoints.Last());
 

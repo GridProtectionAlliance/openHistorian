@@ -41,8 +41,8 @@ namespace GSF.SortedTreeStore.Engine
                 masterScan.SeekToStart();
                 var masterScanSequential = masterScan.TestSequential();
 
-                var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
-                var scanner = sequencer.Read().TestSequential();
+                var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
+                var scanner = sequencer.TestSequential();
 
                 int count = 0;
                 while (scanner.Read())
@@ -91,8 +91,8 @@ namespace GSF.SortedTreeStore.Engine
                 masterScan.SeekToStart();
                 var masterScanSequential = masterScan.TestSequential();
 
-                var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
-                var scanner = sequencer.Read().TestSequential();
+                var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
+                var scanner = sequencer.TestSequential();
 
                 while (scanner.Read())
                 {
@@ -137,8 +137,8 @@ namespace GSF.SortedTreeStore.Engine
                 masterScan.SeekToStart();
                 var masterScanSequential = masterScan.TestSequential();
 
-                var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
-                var scanner = sequencer.Read().TestSequential();
+                var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
+                var scanner = sequencer.TestSequential();
 
                 while (scanner.Read())
                 {
@@ -272,13 +272,13 @@ namespace GSF.SortedTreeStore.Engine
                 editor.Add(table1, false);
             }
 
-            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
 
             double sec = sw.TimeEvent(() =>
                 {
-                    var scanner = sequencer.Read();
+                    var scanner = sequencer;
                     while (scanner.Read())
                     {
                     }
@@ -305,13 +305,13 @@ namespace GSF.SortedTreeStore.Engine
                 editor.Add(table2, false);
             }
 
-            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
 
             double sec = sw.TimeEvent(() =>
             {
-                var scanner = sequencer.Read();
+                var scanner = sequencer;
                 while (scanner.Read())
                 {
                 }
@@ -341,13 +341,13 @@ namespace GSF.SortedTreeStore.Engine
                 editor.Add(table3, false);
             }
 
-            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
 
             DebugStopwatch sw = new DebugStopwatch();
 
             double sec = sw.TimeEvent(() =>
             {
-                var scanner = sequencer.Read();
+                var scanner = sequencer;
                 while (scanner.Read())
                 {
                 }
@@ -378,13 +378,13 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
-            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list,null,filter);
 
             DebugStopwatch sw = new DebugStopwatch();
             int xi = 0;
             double sec = sw.TimeEvent(() =>
             {
-                var scanner = sequencer.Read(filter);
+                var scanner = sequencer;
                 while (scanner.Read())
                 {
                     xi++;
@@ -427,8 +427,8 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
-            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
-            var frames = sequencer.Read(filter).GetFrames();
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list,null,filter);
+            var frames = sequencer.GetFrames();
             WriteToConsole(frames);
             list.Dispose();
             MemoryPoolTest.TestMemoryLeak();
@@ -452,8 +452,8 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
-            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
-            var frames = sequencer.Read(filter).GetFrames();
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list,null,filter);
+            var frames = sequencer.GetFrames();
             WriteToConsole(frames);
             list.Dispose();
             MemoryPoolTest.TestMemoryLeak();
@@ -486,8 +486,8 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
-            var sequencer = new SortedTreeEngineReaderSequential<HistorianKey, HistorianValue>(list);
-            var frames = sequencer.Read(filter).GetFrames();
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
+            var frames = sequencer.GetFrames();
             WriteToConsole(frames);
             list.Dispose();
             MemoryPoolTest.TestMemoryLeak();

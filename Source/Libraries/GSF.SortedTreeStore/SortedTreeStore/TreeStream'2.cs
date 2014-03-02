@@ -31,10 +31,12 @@ namespace GSF.SortedTreeStore
     /// </summary>
     /// <typeparam name="TKey">The key associated with the point</typeparam>
     /// <typeparam name="TValue">The value associated with the point</typeparam>
-    public abstract class TreeStream<TKey, TValue>
+    public abstract class TreeStream<TKey, TValue> : IDisposable
         where TKey : class, new()
         where TValue : class, new()
     {
+        private bool m_disposed;
+
         protected TreeStream()
         {
             CurrentKey = new TKey();
@@ -99,5 +101,27 @@ namespace GSF.SortedTreeStore
             EOS = true;
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public void Dispose()
+        {
+            if (!m_disposed)
+            {
+                Dispose(true);
+                m_disposed = true;
+            }
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="TreeStream{TKey,TValue}"/> object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            m_disposed = true;
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeStoreClient`2.cs - Gbtc
+//  SortedTreeClient.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,42 +26,26 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using GSF.Net;
-using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Net
 {
-
-    public class HistorianClientOptions
-    {
-        public bool IsReadOnly = true;
-        public int NetworkPort = 38402;
-        public string ServerNameOrIp = "localhost";
-        public string DefaultDatabase = "default";
-    }
-
     /// <summary>
     /// Connects to a socket based remoted historian database collection.
     /// </summary>
-    public partial class SortedTreeStoreClient<TKey, TValue> :
-        HistorianCollection<TKey, TValue>, IDisposable
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
+    public partial class SortedTreeClient
+        : IDisposable
     {
         private TcpClient m_client;
         private NetworkBinaryStream m_stream;
-        private SortedTreeEngine m_sortedTreeEngine;
-        private EncodingDefinition m_encodingMethod;
+        private SortedTreeEngineBase m_sortedTreeEngine;
         string m_historianDatabaseString;
-
-        StreamEncodingBase<TKey, TValue> m_compressionMode;
 
         private readonly string m_defaultDatabase;
 
-        public SortedTreeStoreClient(HistorianClientOptions options, EncodingDefinition encodingMethod)
+        public SortedTreeClient(SortedTreeClientOptions options)
         {
-            m_encodingMethod = encodingMethod;
             IPAddress ip;
             if (!IPAddress.TryParse(options.ServerNameOrIp, out ip))
             {
@@ -76,9 +60,11 @@ namespace GSF.SortedTreeStore.Net
         /// Gets the default database as defined in the constructor's options.
         /// </summary>
         /// <returns></returns>
-        public SortedTreeEngineBase<TKey, TValue> GetDefaultDatabase()
+        public SortedTreeEngineBase<TKey, TValue> GetDefaultDatabase<TKey, TValue>()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            return this[m_defaultDatabase];
+            return GetDatabase<TKey, TValue>(m_defaultDatabase);
         }
 
         //protected RemoteHistorian(IPEndPoint server)
@@ -92,45 +78,77 @@ namespace GSF.SortedTreeStore.Net
         /// <param name="server"></param>
         private void Start(IPEndPoint server)
         {
-            m_client = new TcpClient();
+            m_client = new TcpClient(AddressFamily.InterNetworkV6);
+            m_client.Client.DualMode = true;
             m_client.Connect(server);
             m_stream = new NetworkBinaryStream(m_client.Client);
-            m_stream.Write(1122334455667788992L);
+            m_stream.Write(1122334455667788993L);
             m_stream.Flush();
+
+            var command = (ServerResponse)m_stream.ReadUInt8();
+            switch (command)
+            {
+                case ServerResponse.UnhandledException:
+                    string exception = m_stream.ReadString();
+                    throw new Exception("Server UnhandledExcetion: \n" + exception);
+                case ServerResponse.UnknownProtocolIdentifier:
+                    throw new Exception("Client and server cannot agree on a protocol, this is commonly because they are running incompatible versions.");
+                case ServerResponse.ConnectedToRoot:
+                    break;
+                default:
+                    throw new Exception("Unknown server response: " + command.ToString());
+            }
         }
 
         /// <summary>
         /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
+        /// <param name="encodingMethod"></param>
         /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public override SortedTreeEngineBase<TKey, TValue> this[string databaseName]
+        public SortedTreeEngineBase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName, EncodingDefinition encodingMethod = null)
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            get
+            if ((object)encodingMethod == null)
+                encodingMethod = SortedTree.FixedSizeNode;
+
+            if (m_sortedTreeEngine != null)
             {
-                if (m_sortedTreeEngine != null)
-                {
-                    if (m_historianDatabaseString == databaseName)
-                        return m_sortedTreeEngine;
-
-                    throw new Exception("Can only connect to one database at a time. Please disconnect from database" + m_historianDatabaseString);
-                }
-
-                //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateFixedSizeStream.TypeGuid);
-                //m_compressionMode = KeyValueStreamCompression.CreateKeyValueStreamCompression<TKey, TValue>(CreateCompressedStream.TypeGuid);
-                m_compressionMode = StreamEncoding.CreateStreamEncoding<TKey, TValue>(m_encodingMethod);
-
-                m_stream.Write((byte)ServerCommand.SetCompressionMode);
-                m_encodingMethod.Save(m_stream);
-                m_stream.Write((byte)ServerCommand.ConnectToDatabase);
-                m_stream.Write(databaseName);
-                m_stream.Flush();
-
-                m_sortedTreeEngine = new SortedTreeEngine(this, () => m_sortedTreeEngine = null);
-                m_historianDatabaseString = databaseName;
-
-                return m_sortedTreeEngine;
+                throw new Exception("Can only connect to one database at a time. Please disconnect from database" + m_historianDatabaseString);
             }
+
+            m_stream.Write((byte)ServerCommand.ConnectToDatabase);
+            m_stream.Write(databaseName);
+            m_stream.Write(new TKey().GenericTypeGuid);
+            m_stream.Write(new TValue().GenericTypeGuid);
+            m_stream.Flush();
+
+            var command = (ServerResponse)m_stream.ReadUInt8();
+            switch (command)
+            {
+                case ServerResponse.UnhandledException:
+                    string exception = m_stream.ReadString();
+                    throw new Exception("Server UnhandledExcetion: \n" + exception);
+                case ServerResponse.DatabaseDoesNotExist:
+                    throw new Exception("Database does not exist on the server: " + databaseName);
+                case ServerResponse.DatabaseKeyUnknown:
+                    throw new Exception("Database key does not match that passed to this function");
+                case ServerResponse.DatabaseValueUnknown:
+                    throw new Exception("Database value does not match that passed to this function");
+                case ServerResponse.SuccessfullyConnectedToDatabase:
+                    break;
+                default:
+                    throw new Exception("Unknown server response: " + command.ToString());
+            }
+
+            var db = new SortedTreeClientEngine<TKey, TValue>(this, () => m_sortedTreeEngine = null);
+            m_sortedTreeEngine = db;
+            m_historianDatabaseString = databaseName;
+           
+            db.SetEncodingMode(encodingMethod);
+
+            return db;
         }
 
         /// <summary>
@@ -141,6 +159,7 @@ namespace GSF.SortedTreeStore.Net
         {
             if (m_sortedTreeEngine != null)
                 m_sortedTreeEngine.Dispose();
+            m_sortedTreeEngine = null;
 
             try
             {
@@ -151,7 +170,6 @@ namespace GSF.SortedTreeStore.Net
             {
 
             }
-
 
             if (m_client != null)
                 m_client.Close();

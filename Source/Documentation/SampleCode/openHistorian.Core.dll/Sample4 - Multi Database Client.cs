@@ -86,28 +86,22 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(serverDatabases))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.IsReadOnly = true;
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
                 using (HistorianClient client = new HistorianClient(clientOptions))
                 {
-                    SortedTreeEngineBase<HistorianKey, HistorianValue> database = client["Scada"];
-                    using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
-                    {
-                        TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
-                        stream.Cancel();
-                    }
+                    SortedTreeEngineBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey,HistorianValue>("Scada");
+                    TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, 100);
+                    stream.Cancel();
                     database.Disconnect();
 
-                    database = client["Synchrophasor"];
+                    database = client.GetDatabase<HistorianKey,HistorianValue>("Synchrophasor");
 
-                    using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
-                    {
-                        TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, 100);
-                        stream.Cancel();
-                    }
+                    stream = database.Read(0, 100);
+                    stream.Cancel();
                     database.Disconnect();
                 }
             }

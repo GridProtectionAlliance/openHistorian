@@ -351,7 +351,7 @@ namespace DataExtractionUtility
 
             TimeSpan interval = Resolutions.GetInterval((string)cmbResolution.SelectedItem);
 
-            HistorianClientOptions clientOptions = new HistorianClientOptions();
+            SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
             clientOptions.DefaultDatabase = TxtHistorianInstance.Text;
             clientOptions.NetworkPort = int.Parse(TxtHistorianPort.Text);
             clientOptions.ServerNameOrIp = TxtServerIP.Text;
@@ -382,7 +382,7 @@ namespace DataExtractionUtility
                     var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
                     var pointFilter = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(points);
 
-                    var database = client.GetDefaultDatabase();
+                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
 
                     string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Export.csv");
 

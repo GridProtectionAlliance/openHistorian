@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using GSF.IO;
 using GSF.SortedTreeStore.Types;
 
@@ -48,9 +49,9 @@ namespace GSF.SortedTreeStore.Filters
 
         public override MatchFilterBase<TKey, TValue> Create<TKey, TValue>(BinaryStreamBase stream)
         {
-            MethodInfo method = typeof(PointIDFilter).GetMethod("CreateFromStream");
+            MethodInfo method = typeof(PointIDFilter).GetMethod("CreateFromStream", BindingFlags.NonPublic | BindingFlags.Instance);
             MethodInfo generic = method.MakeGenericMethod(typeof(TKey), typeof(TValue));
-            var rv = generic.Invoke(this, new[] {stream});
+            var rv = generic.Invoke(this, new[] { stream });
             return (MatchFilterBase<TKey, TValue>)rv;
         }
 
@@ -87,6 +88,7 @@ namespace GSF.SortedTreeStore.Filters
         /// </summary>
         /// <param name="stream">The stream to load the filter from</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.NoOptimization)]
         MatchFilterBase<TKey, TValue> CreateFromStream<TKey, TValue>(BinaryStreamBase stream)
             where TKey : TimestampPointIDBase<TKey>, new()
         {

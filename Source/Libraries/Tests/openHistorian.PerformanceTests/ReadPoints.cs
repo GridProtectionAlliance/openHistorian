@@ -30,7 +30,7 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -72,25 +72,22 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
-                DateTime start =  DateTime.FromBinary(Convert.ToDateTime("2/1/2014").Date.Ticks + Convert.ToDateTime("6:00:00PM").TimeOfDay.Ticks).ToUniversalTime();
+                DateTime start = DateTime.FromBinary(Convert.ToDateTime("2/1/2014").Date.Ticks + Convert.ToDateTime("6:00:00PM").TimeOfDay.Ticks).ToUniversalTime();
 
                 using (var client = new HistorianClient(clientOptions))
                 {
-                    var database = client.GetDefaultDatabase();
+                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
                     HistorianKey key = new HistorianKey();
                     HistorianValue value = new HistorianValue();
 
                     sw.Start();
-                    using (var frameReader = database.OpenDataReader())
-                    {
-                        var scan = frameReader.Read((ulong)start.Ticks, ulong.MaxValue);
-                        while (scan.Read(key, value) && pointCount < 10000000)
-                            pointCount++;
-                    }
+                    var scan = database.Read((ulong)start.Ticks, ulong.MaxValue);
+                    while (scan.Read(key, value) && pointCount < 10000000)
+                        pointCount++;
                     sw.Stop();
 
                     //sw.Start();
@@ -121,7 +118,7 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -132,20 +129,14 @@ namespace openHistorian.PerformanceTests
                 HistorianKey key = new HistorianKey();
                 HistorianValue value = new HistorianValue();
 
-                using (var frameReader = database.OpenDataReader())
-                {
-                    var scan = frameReader.Read(0, ulong.MaxValue);
-                    while (scan.Read(key, value))// && pointCount < 1000000)
-                        ;
-                }
+                var scan = database.Read(0, ulong.MaxValue);
+                while (scan.Read(key, value))// && pointCount < 1000000)
+                    ;
 
                 sw.Start();
-                using (var frameReader = database.OpenDataReader())
-                {
-                    var scan = frameReader.Read(0, ulong.MaxValue);
-                    while (scan.Read(key, value))// && pointCount < 1000000)
-                        pointCount++;
-                }
+                scan = database.Read(0, ulong.MaxValue);
+                while (scan.Read(key, value))// && pointCount < 1000000)
+                    pointCount++;
                 //using (var frameReader = database.GetPointStream(DateTime.MinValue, DateTime.MaxValue))
                 //{
                 //    while (frameReader.Read())// && pointCount < 1000000)
@@ -181,28 +172,22 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
                 using (var client = new HistorianClient(clientOptions))
                 {
-                    var database = client.GetDefaultDatabase();
-                    using (var reader = database.OpenDataReader())
-                    {
-                        var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
-                        while (stream.Read())
-                            ;
-                    }
+                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
+                    var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
+                    while (stream.Read())
+                        ;
 
                     sw.Start();
-                    using (var reader = database.OpenDataReader())
-                    {
-                        var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
-                        while (stream.Read())
-                            pointCount++;
+                    stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
+                    while (stream.Read())
+                        pointCount++;
 
-                    }
                     sw.Stop();
                     database.Disconnect();
                 }
@@ -223,28 +208,22 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
                 //using (var client = new HistorianClient(clientOptions))
                 //{
                 var database = server.GetDefaultDatabase();
-                using (var reader = database.OpenDataReader())
-                {
-                    var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
-                    while (stream.Read())
-                        ;
-                }
+                var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
+                while (stream.Read())
+                    ;
 
                 sw.Start();
-                using (var reader = database.OpenDataReader())
-                {
-                    var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
-                    while (stream.Read())
-                        pointCount++;
+                stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
+                while (stream.Read())
+                    pointCount++;
 
-                }
                 sw.Stop();
                 database.Disconnect();
                 //}
@@ -276,28 +255,22 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
                 //using (var client = new HistorianClient(clientOptions))
                 //{
                 var database = server.GetDefaultDatabase();
-                using (var reader = database.OpenDataReader())
-                {
-                    var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
-                    while (stream.Read(key,value))
-                        ;
-                }
+                var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
+                while (stream.Read(key, value))
+                    ;
 
                 sw.Start();
-                using (var reader = database.OpenDataReader())
-                {
-                    var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, lst);
-                    while (stream.Read(key, value))
-                        pointCount++;
+                stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, lst);
+                while (stream.Read(key, value))
+                    pointCount++;
 
-                }
                 sw.Stop();
                 database.Disconnect();
                 //}
@@ -318,22 +291,19 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
                 using (var client = new HistorianClient(clientOptions))
                 {
-                    var database = client.GetDefaultDatabase();
+                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
 
-                    using (var reader = database.OpenDataReader())
-                    {
-                        var stream = reader.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
-                        while (stream.Read())
-                            pointCount++;
+                    var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
+                    while (stream.Read())
+                        pointCount++;
 
-                    }
                     database.Disconnect();
                 }
                 sw.Stop();

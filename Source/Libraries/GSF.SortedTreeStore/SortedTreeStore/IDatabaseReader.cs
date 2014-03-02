@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  HistorianCollection.cs - Gbtc
+//  IDatabaseReader`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,34 +16,36 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/14/2012 - Steven E. Chisholm
+//  3/1/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //
 //******************************************************************************************************
 
-
-using GSF.SortedTreeStore.Engine;
+using System;
+using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore
 {
+
     /// <summary>
-    /// Contains a set of named HistorianDatabaseBase.
+    /// An interface that is necessary for many of the transformations inside the SortedTreeStore to function.
     /// </summary>
-    /// <typeparam name="TKey">They key type of the historian database. Must inherit HistorianKeyBase.</typeparam>
-    /// <typeparam name="TValue">The value type of the historian database.</typeparam>
-    public abstract class HistorianCollection<TKey, TValue>
+    /// <typeparam name="TKey">A key type supported by the SortedTreeStore</typeparam>
+    /// <typeparam name="TValue">A value type supported by the SortedTreeStore</typeparam>
+    public interface IDatabaseReader<TKey, TValue> : IDisposable
         where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : class, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         /// <summary>
-        /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Reads data from the SortedTreeEngine with the provided read options and server side filters.
         /// </summary>
-        /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public abstract SortedTreeEngineBase<TKey, TValue> this[string databaseName]
-        {
-            get;
-        }
+        /// <param name="readerOptions"></param>
+        /// <param name="keySeekFilter"></param>
+        /// <param name="keyMatchFilter"></param>
+        /// <returns></returns>
+        TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter);
+
     }
 }

@@ -45,96 +45,79 @@ namespace GSF.SortedTreeStore.Engine
         OnDisk
     }
 
-    /// <summary>
-    /// Creates a configuration for the database to utilize.
-    /// </summary>
-    public class DatabaseConfig
-    {
-        public WriterMode WriterMode
-        {
-            get;
-            set;
-        }
+    ///// <summary>
+    ///// Creates a configuration for the database to utilize.
+    ///// </summary>
+    //public class DatabaseConfig
+    //{
+    //    public WriterMode WriterMode
+    //    {
+    //        get;
+    //        set;
+    //    }
 
-        /// <summary>
-        /// Gets all of the paths that are known by this historian.
-        /// A path can be a file name or a folder.
-        /// </summary>
-        public PathList Paths
-        {
-            get;
-            private set;
-        }
-        public EncodingDefinition CompressionMethod { get; set; }
+    //    /// <summary>
+    //    /// Gets all of the paths that are known by this historian.
+    //    /// A path can be a file name or a folder.
+    //    /// </summary>
+    //    public PathList Paths
+    //    {
+    //        get;
+    //        private set;
+    //    }
+    //    public EncodingDefinition CompressionMethod { get; set; }
 
-        public DatabaseConfig(WriterMode writerMode, EncodingDefinition compressionMethod, params string[] paths)
-        {
-            CompressionMethod = SortedTree.FixedSizeNode;
-            if (writerMode == WriterMode.OnDisk)
-                CompressionMethod = compressionMethod;
+    //    public DatabaseConfig(WriterMode writerMode, EncodingDefinition compressionMethod, params string[] paths)
+    //    {
+    //        CompressionMethod = SortedTree.FixedSizeNode;
+    //        if (writerMode == WriterMode.OnDisk)
+    //            CompressionMethod = compressionMethod;
 
-            Paths = new PathList();
-            WriterMode = writerMode;
-            foreach (string path in paths)
-            {
-                Paths.AddPath(path, writerMode == WriterMode.OnDisk);
-            }
-        }
+    //        Paths = new PathList();
+    //        WriterMode = writerMode;
+    //        foreach (string path in paths)
+    //        {
+    //            Paths.AddPath(path, writerMode == WriterMode.OnDisk);
+    //        }
+    //    }
 
-        public List<string> GetAttachedFiles()
-        {
-            var attachedFiles = new List<string>();
+        
+    //}
 
-            foreach (string path in Paths.GetPaths())
-            {
-                if (System.IO.File.Exists(path))
-                {
-                    attachedFiles.Add(path);
-                }
-                else if (Directory.Exists(path))
-                {
-                    attachedFiles.AddRange(Directory.GetFiles(path, "*.d2", SearchOption.TopDirectoryOnly));
-                }
-            }
+    //public class PathList
+    //{
+    //    private readonly List<string> m_paths = new List<string>();
+    //    private readonly List<string> m_savePaths = new List<string>();
 
-            return attachedFiles;
-        }
-    }
+    //    public IEnumerable<string> GetPaths()
+    //    {
+    //        return m_paths;
+    //    }
 
-    public class PathList
-    {
-        private readonly List<string> m_paths = new List<string>();
-        private readonly List<string> m_savePaths = new List<string>();
+    //    public IEnumerable<string> GetSavePaths()
+    //    {
+    //        return m_savePaths;
+    //    }
 
-        public IEnumerable<string> GetPaths()
-        {
-            return m_paths;
-        }
+    //    public void AddPath(string path, bool allowWritingToPath)
+    //    {
+    //        if (allowWritingToPath)
+    //        {
+    //            if (System.IO.File.Exists(path))
+    //                throw new Exception("Only directories can be written to, not files.");
+    //            if (!Directory.Exists(path))
+    //                throw new ArgumentException("Could not locate the specified directory", "path");
+    //        }
+    //        else
+    //        {
+    //            if (!(System.IO.File.Exists(path) || Directory.Exists(path)))
+    //                throw new ArgumentException("Could not locate the specified path", "path");
+    //        }
 
-        public IEnumerable<string> GetSavePaths()
-        {
-            return m_savePaths;
-        }
+    //        m_paths.Add(path);
+    //        if (allowWritingToPath)
+    //            m_savePaths.Add(path);
+    //    }
 
-        public void AddPath(string path, bool allowWritingToPath)
-        {
-            if (allowWritingToPath)
-            {
-                if (System.IO.File.Exists(path))
-                    throw new Exception("Only directories can be written to, not files.");
-                if (!Directory.Exists(path))
-                    throw new ArgumentException("Could not locate the specified directory", "path");
-            }
-            else
-            {
-                if (!(System.IO.File.Exists(path) || Directory.Exists(path)))
-                    throw new ArgumentException("Could not locate the specified path", "path");
-            }
-
-            m_paths.Add(path);
-            if (allowWritingToPath)
-                m_savePaths.Add(path);
-        }
-
-    }
+    //}
 }

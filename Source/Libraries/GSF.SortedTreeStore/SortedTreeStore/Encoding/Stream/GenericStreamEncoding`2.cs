@@ -78,6 +78,10 @@ namespace GSF.SortedTreeStore.Encoding
 
         public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
+            if (!m_encoding.ContainsEndOfStreamSymbol)
+            {
+                stream.Write((byte)1);
+            }
             m_encoding.Encode(stream, m_prevKey, m_prevValue, currentKey, currentValue);
             currentKey.CopyTo(m_prevKey);
             currentValue.CopyTo(m_prevValue);
@@ -99,7 +103,7 @@ namespace GSF.SortedTreeStore.Encoding
             m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out endOfStream);
             key.CopyTo(m_prevKey);
             value.CopyTo(m_prevValue);
-            return endOfStream;
+            return !endOfStream;
         }
 
         public override void ResetEncoder()

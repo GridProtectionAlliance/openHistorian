@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeServerSocket`2.cs - Gbtc
+//  ServerSocket.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,43 +27,31 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using GSF.Net;
-using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Engine;
 
 namespace GSF.SortedTreeStore.Net
 {
     // TODO: Need the ability to dynamically add and remove database instances from the socket historian - or maybe better - just "replace" the collection it's using...
     // TODO: Initial glance looks like replacement of collection might be simple...??
     /// <summary>
-    /// Hosts a <see cref="HistorianCollection{TKey,TValue}"/> on a network socket.
+    /// Hosts a <see cref="SortedTreeCollectionBase"/> on a network socket.
     /// </summary>
-    public class SortedTreeServerSocket<TKey, TValue>
+    public class SortedTreeServerSocket
         : IDisposable
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private volatile bool m_isRunning = true;
         private TcpListener m_listener;
-        private HistorianCollection<TKey, TValue> m_historian;
-        private readonly bool m_ownsHistorian;
+        private SortedTreeCollection m_historian;
         private readonly int m_port;
         private bool m_disposed;
+        private readonly List<ServerProcessClient> m_clients = new List<ServerProcessClient>();
 
         // TODO: Replace this with a connection string instead of a port - allows easier specification of interface, etc.
-        public SortedTreeServerSocket(int port, EncodingDefinition compressionMethod, HistorianCollection<TKey, TValue> historian = null)
+        public SortedTreeServerSocket(int port, SortedTreeCollection historian)
         {
             if (historian == null)
-            {
-                m_ownsHistorian = true;
-                HistorianDatabaseCollection<TKey, TValue> tmpHistorian = new HistorianDatabaseCollection<TKey, TValue>();
-                tmpHistorian.Add("Default", new SortedTreeEngine<TKey, TValue>(WriterMode.InMemory, compressionMethod));
-                m_historian = tmpHistorian;
-            }
-            else
-            {
-                m_historian = historian;
-            }
+                throw new ArgumentNullException("historian");
 
+            m_historian = historian;
             m_port = port;
 
             // TODO: Shouldn't we use GSF.Communications async library here for scalability? If not, why not? 
@@ -78,9 +66,6 @@ namespace GSF.SortedTreeStore.Net
             //socket.Start();
             ThreadPool.QueueUserWorkItem(ProcessDataRequests);
         }
-
-        private readonly List<ProcessClient<TKey, TValue>> m_clients = new List<ProcessClient<TKey, TValue>>();
-
 
         public void GetFullStatus(StringBuilder status)
         {
@@ -119,7 +104,7 @@ namespace GSF.SortedTreeStore.Net
 
             ThreadPool.QueueUserWorkItem(ProcessDataRequests);
 
-            ProcessClient<TKey, TValue> clientProcessing = new ProcessClient<TKey, TValue>(netStream, m_historian);
+            ServerProcessClient clientProcessing = new ServerProcessClient(netStream, m_historian);
             lock (m_clients)
             {
                 if (m_isRunning)
@@ -130,20 +115,22 @@ namespace GSF.SortedTreeStore.Net
                     return;
                 }
             }
-            clientProcessing.Run();
+            clientProcessing.RunClient();
             lock (m_clients)
             {
                 m_clients.Remove(clientProcessing);
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
             if (m_disposed)
             {
                 m_disposed = true;
-                if (m_ownsHistorian && m_historian != null)
-                    ((HistorianDatabaseCollection<TKey, TValue>)m_historian).Dispose();
                 if (m_listener != null)
                     m_listener.Stop();
                 m_historian = null;
@@ -151,12 +138,10 @@ namespace GSF.SortedTreeStore.Net
                 m_isRunning = false;
                 lock (m_clients)
                 {
-                    foreach (ProcessClient<TKey, TValue> client in m_clients)
+                    foreach (ServerProcessClient client in m_clients)
                         client.Dispose();
                     m_clients.Clear();
                 }
-                if (m_ownsHistorian && m_historian != null)
-                    ((HistorianDatabaseCollection<TKey, TValue>)m_historian).Shutdown(1);
             }
         }
     }

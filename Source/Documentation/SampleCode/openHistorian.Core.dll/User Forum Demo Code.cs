@@ -29,7 +29,7 @@ namespace HistorianDemos
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -40,7 +40,7 @@ namespace HistorianDemos
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    var sig = client.GetDefaultDatabase().GetFrames(startTime, stopTime);
+                    var sig = client.GetDefaultDatabase<HistorianKey, HistorianValue>().GetFrames(startTime, stopTime);
                     sw.Stop();
 
                     var sb = new StringBuilder();
@@ -70,7 +70,7 @@ namespace HistorianDemos
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -81,7 +81,7 @@ namespace HistorianDemos
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    var sig = client.GetDefaultDatabase().GetFrames(startTime, stopTime, 3736, 4466);
+                    var sig = client.GetDefaultDatabase<HistorianKey, HistorianValue>().GetFrames(startTime, stopTime, 3736, 4466);
                     sw.Stop();
 
                     var sb = new StringBuilder();
@@ -111,7 +111,7 @@ namespace HistorianDemos
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -122,7 +122,7 @@ namespace HistorianDemos
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    var sig = client.GetDefaultDatabase().GetFrames(startTime, stopTime, 3736, 4466).RoundToTolerance(1);
+                    var sig = client.GetDefaultDatabase<HistorianKey, HistorianValue>().GetFrames(startTime, stopTime, 3736, 4466).RoundToTolerance(1);
                     sw.Stop();
 
                     var sb = new StringBuilder();
@@ -152,7 +152,7 @@ namespace HistorianDemos
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -165,7 +165,7 @@ namespace HistorianDemos
 
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    var sig = client.GetDefaultDatabase().GetFrames(times, 3736, 4466).RoundToTolerance(1);
+                    var sig = client.GetDefaultDatabase<HistorianKey, HistorianValue>().GetFrames(times, 3736, 4466).RoundToTolerance(1);
                     sw.Stop();
 
                     var sb = new StringBuilder();

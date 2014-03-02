@@ -22,9 +22,13 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Engine.Writer;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
@@ -42,31 +46,49 @@ namespace GSF.SortedTreeStore.Engine
 
         // Fields
         //private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_pendingDispose;
+        TKey m_tmpKey;
+        TValue m_tmpValue;
         private readonly WriteProcessor<TKey, TValue> m_archiveWriter;
         private readonly ArchiveList<TKey, TValue> m_archiveList;
         private volatile bool m_disposed;
-
+        private string m_databaseName;
         #endregion
 
         #region [ Constructors ]
 
-        public SortedTreeEngine(WriterMode writer, EncodingDefinition compressionMethod, params string[] paths)
-            : this(new DatabaseConfig(writer, compressionMethod, paths))
+        public SortedTreeEngine(string databaseName, WriterMode writer, EncodingDefinition compressionMethod, params string[] paths)
         {
-        }
-
-        public SortedTreeEngine(DatabaseConfig settings)
-        {
+            m_tmpKey = new TKey();
+            m_tmpValue = new TValue();
+            m_databaseName = databaseName;
             //m_pendingDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
-            m_archiveList = new ArchiveList<TKey, TValue>(settings.GetAttachedFiles());
+            m_archiveList = new ArchiveList<TKey, TValue>(GetAttachedFiles(paths));
 
-            if (settings.WriterMode != WriterMode.None)
+            if (writer != WriterMode.None)
             {
-                WriteProcessorSettings<TKey, TValue> writeSettings = WriteProcessorSettings<TKey, TValue>.CreateFromSettings(settings, m_archiveList);
+                WriteProcessorSettings<TKey, TValue> writeSettings = WriteProcessorSettings<TKey, TValue>.CreateFromSettings(writer, paths.ToList(), compressionMethod, m_archiveList);
                 m_archiveWriter = new WriteProcessor<TKey, TValue>(writeSettings, m_archiveList);
             }
-
         }
+
+        List<string> GetAttachedFiles(string[] paths)
+        {
+            var attachedFiles = new List<string>();
+
+            foreach (string path in paths)
+            {
+                if (System.IO.File.Exists(path))
+                {
+                    attachedFiles.Add(path);
+                }
+                else if (Directory.Exists(path))
+                {
+                    attachedFiles.AddRange(Directory.GetFiles(path, "*.d2", SearchOption.TopDirectoryOnly));
+                }
+            }
+            return attachedFiles;
+        }
+
 
         #endregion
 
@@ -101,6 +123,14 @@ namespace GSF.SortedTreeStore.Engine
                 Write(key, value);
         }
 
+        public override DatabaseInfo Info
+        {
+            get
+            {
+                return new DatabaseInfo(m_databaseName, m_tmpKey, m_tmpValue);
+            }
+        }
+
         public override void SoftCommit()
         {
             //m_archiveWriter.SoftCommit();
@@ -115,19 +145,14 @@ namespace GSF.SortedTreeStore.Engine
         {
         }
 
-        /// <summary>
-        /// Opens a stream connection that can be used to read 
-        /// and write data to the current historian database.
-        /// </summary>
-        /// <returns></returns>
-        public override SortedTreeEngineReaderBase<TKey, TValue> OpenDataReader()
+
+        public override TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return new SortedTreeEngineReaderSequential<TKey, TValue>(m_archiveList);
-            //return new SortedTreeEngineReaderSequential<TKey, TValue>(m_archiveList);
-            //return new ArchiveReader<TKey, TValue>(m_archiveList);
+            Stats.QueriesExecuted++;
+            return new SequentialReaderStream<TKey, TValue>(m_archiveList, readerOptions, keySeekFilter, keyMatchFilter);
         }
 
         /// <summary>

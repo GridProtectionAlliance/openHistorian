@@ -23,6 +23,7 @@
 
 using System;
 using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
@@ -30,16 +31,19 @@ namespace GSF.SortedTreeStore.Engine
     /// <summary>
     /// Represents a single historian database.
     /// </summary>
-    public abstract class SortedTreeEngineBase<TKey, TValue> : IDisposable
+    public abstract class SortedTreeEngineBase<TKey, TValue> 
+        : SortedTreeEngineBase, IDatabaseReader<TKey,TValue> 
         where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : class, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         /// <summary>
-        /// Opens a stream connection that can be used to read 
-        /// and write data to the current historian database.
+        /// Reads data from the SortedTreeEngine with the provided read options and server side filters.
         /// </summary>
+        /// <param name="readerOptions"></param>
+        /// <param name="keySeekFilter"></param>
+        /// <param name="keyMatchFilter"></param>
         /// <returns></returns>
-        public abstract SortedTreeEngineReaderBase<TKey, TValue> OpenDataReader();
+        public abstract TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter);
 
         /// <summary>
         /// Writes the point stream to the database. 
@@ -53,32 +57,6 @@ namespace GSF.SortedTreeStore.Engine
         /// <param name="key"></param>
         /// <param name="value"></param>
         public abstract void Write(TKey key, TValue value);
-
-        /// <summary>
-        /// Forces a soft commit on the database. A soft commit 
-        /// only commits data to memory. This allows other clients to read the data.
-        /// While soft committed, this data could be lost during an unexpected shutdown.
-        /// Soft commits usually occur within microseconds. 
-        /// </summary>
-        public abstract void SoftCommit();
-
-        /// <summary>
-        /// Forces a commit to the disk subsystem. Once this returns, the data will not
-        /// be lost due to an application crash or unexpected shutdown.
-        /// Hard commits can take 100ms or longer depending on how much data has to be committed. 
-        /// This requires two consecutive hardware cache flushes.
-        ///  </summary>
-        public abstract void HardCommit();
-
-        /// <summary>
-        /// Disconnects from the current database. 
-        /// </summary>
-        public abstract void Disconnect();
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public abstract void Dispose();
+      
     }
 }

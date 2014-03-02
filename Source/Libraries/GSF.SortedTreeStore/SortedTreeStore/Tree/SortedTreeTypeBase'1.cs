@@ -22,10 +22,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using GSF.IO;
-using GSF.IO.Unmanaged;
 
 namespace GSF.SortedTreeStore.Tree
 {
@@ -50,23 +47,9 @@ namespace GSF.SortedTreeStore.Tree
     /// the <see cref="SortedTreeTypeMethods{T}.BinarySearch"/> method.
     /// </remarks>
     public abstract class SortedTreeTypeBase<T>
-        : IComparable<T>, IEquatable<T>, IComparer<T>
+        : SortedTreeTypeBase, IComparable<T>, IEquatable<T>, IComparer<T>
         where T : SortedTreeTypeBase<T>, new()
     {
-
-
-        /// <summary>
-        /// The Guid uniquely defining this type. 
-        /// It is important to uniquely tie 1 type to 1 guid.
-        /// </summary>
-        public abstract Guid GenericTypeGuid { get; }
-
-        /// <summary>
-        /// Gets the size of this class when serialized
-        /// </summary>
-        /// <returns></returns>
-        public abstract int Size { get; }
-
         /// <summary>
         /// Copies the source to the destination
         /// </summary>
@@ -93,68 +76,12 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Sets the provided key to it's minimum value
-        /// </summary>
-        public abstract void SetMin();
-
-        /// <summary>
-        /// Sets the privided key to it's maximum value
-        /// </summary>
-        public abstract void SetMax();
-
-        /// <summary>
-        /// Clears the key
-        /// </summary>
-        public abstract void Clear();
-
-        /// <summary>
-        /// Reads the provided key from the stream.
-        /// </summary>
-        /// <param name="stream"></param>
-        public abstract void Read(BinaryStreamBase stream);
-
-        /// <summary>
-        /// Writes the provided data to the BinaryWriter
-        /// </summary>
-        /// <param name="stream"></param>
-        public abstract void Write(BinaryStreamBase stream);
-
-        /// <summary>
-        /// Reads the key from the stream
-        /// </summary>
-        /// <param name="stream"></param>
-        public virtual unsafe void Read(byte* stream)
-        {
-            var reader = new BinaryStreamPointerWrapper(stream, Size);
-            Read(reader);
-        }
-
-        /// <summary>
-        /// Writes the key to the stream
-        /// </summary>
-        /// <param name="stream"></param>
-        public virtual unsafe void Write(byte* stream)
-        {
-            var writer = new BinaryStreamPointerWrapper(stream, Size);
-            Write(writer);
-        }
-
-        /// <summary>
         /// Creates a class that contains the necessary methods for the SortedTree.
         /// </summary>
         /// <returns></returns>
         public virtual SortedTreeTypeMethods<T> CreateValueMethods()
         {
             return new SortedTreeTypeMethods<T>();
-        }
-
-        /// <summary>
-        /// Gets all available encoding methods for a specific type. May return null if none exists.
-        /// </summary>
-        /// <returns>null or an IEnumerable of all encoding methods.</returns>
-        public virtual IEnumerable GetEncodingMethods()
-        {
-            return null;
         }
 
         /// <summary>
@@ -239,16 +166,5 @@ namespace GSF.SortedTreeStore.Tree
         {
             return CompareTo(right) >= 0;
         }
-
-        /// <summary>
-        /// Executes a copy command without modifying the current class.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="destination"></param>
-        public virtual unsafe void MethodCopy(byte* source, byte* destination)
-        {
-            Memory.Copy(source, destination, Size);
-        }
-
     }
 }

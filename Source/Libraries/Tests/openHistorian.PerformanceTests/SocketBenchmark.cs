@@ -112,7 +112,7 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                HistorianClientOptions clientOptions = new HistorianClientOptions();
+                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
                 clientOptions.IsReadOnly = true;
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
@@ -124,16 +124,13 @@ namespace SampleCode.openHistorian.Server.dll
                         count = 0;
                         using (HistorianClient client = new HistorianClient(clientOptions))
                         {
-                            SortedTreeEngineBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase();//.GetDatabase();
+                            SortedTreeEngineBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();//.GetDatabase();
                             //IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
-                            using (SortedTreeEngineReaderBase<HistorianKey, HistorianValue> reader = database.OpenDataReader())
+                            //TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue, new ulong[] { 2 });
+                            TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, ulong.MaxValue);
+                            while (stream.Read())
                             {
-                                //TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue, new ulong[] { 2 });
-                                TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue);
-                                while (stream.Read())
-                                {
-                                    count++;
-                                }
+                                count++;
                             }
                             database.Disconnect();
                         }

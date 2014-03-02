@@ -33,14 +33,13 @@ namespace GSF.SortedTreeStore.Net
     public enum ServerCommand : byte
     {
         ConnectToDatabase,
-        OpenReader,
         DisconnectDatabase,
-        DisconnectReader,
         Disconnect,
         Read,
         CancelRead,
         Write,
-        SetCompressionMode,
+        SetEncodingMethod,
+        GetAllDatabases
     }
 
     /// <summary>
@@ -48,10 +47,27 @@ namespace GSF.SortedTreeStore.Net
     /// </summary>
     public enum ServerResponse : byte
     {
-        Success,
-        Error,
-        DataPacket,
-        ProcessingComplete
+        UnhandledException,
+        UnknownProtocolIdentifier,
+        ConnectedToRoot,
+        ListOfDatabases,
+        DatabaseDoesNotExist,
+        DatabaseKeyUnknown,
+        DatabaseValueUnknown,
+        SuccessfullyConnectedToDatabase,
+        GoodBye,
+        UnknownCommand,
+        UnknownEncodingMethod,
+        EncodingMethodAccepted,
+        DatabaseDisconnected,
+        UnknownDatabaseCommand,
+        UnknownOrCorruptSeekFilter,
+        UnknownOrCorruptMatchFilter,
+        UnknownOrCorruptReaderOptions,
+        SerializingPoints,
+        ErrorWhileReading,
+        CanceledRead,
+        ReadComplete
     }
 
     #endregion

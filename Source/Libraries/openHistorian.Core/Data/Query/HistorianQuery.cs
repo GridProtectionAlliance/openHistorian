@@ -33,7 +33,7 @@ namespace openHistorian.Data.Query
 {
     public class HistorianQuery
     {
-        private readonly SortedTreeStoreClient<HistorianKey, HistorianValue> m_historian;
+        private readonly SortedTreeClient m_historian;
         private int m_samplesPerSecond = 30;
 
         public HistorianQuery(string server, int port)
@@ -42,7 +42,7 @@ namespace openHistorian.Data.Query
             //m_historian = new RemoteHistorian<HistorianKey, HistorianValue>(new IPEndPoint(ip, port));
         }
 
-        public HistorianQuery(SortedTreeStoreClient<HistorianKey, HistorianValue> historian)
+        public HistorianQuery(SortedTreeClient historian)
         {
             m_historian = historian;
         }
@@ -53,8 +53,8 @@ namespace openHistorian.Data.Query
             SortedTreeEngineBase<HistorianKey, HistorianValue> db = null;
             try
             {
-                db = m_historian.GetDefaultDatabase();
-               
+                db = m_historian.GetDefaultDatabase<HistorianKey, HistorianValue>();
+
                 //var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
 
                 PeriodicScanner scanner = new PeriodicScanner(m_samplesPerSecond);
