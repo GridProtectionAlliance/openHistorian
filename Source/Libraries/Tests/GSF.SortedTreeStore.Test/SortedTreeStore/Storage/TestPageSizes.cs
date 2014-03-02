@@ -10,7 +10,7 @@ using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using GSF.IO.FileStructure.Media;
 
-namespace openHistorian.UnitTests.Archive
+namespace GSF.SortedTreeStore.Storage
 {
     [TestFixture]
     public class TestPageSizes

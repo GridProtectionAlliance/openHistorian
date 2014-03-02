@@ -5,12 +5,13 @@ using System.IO;
 using GSF.SortedTreeStore;
 using NUnit.Framework;
 using GSF.SortedTreeStore.Storage;
+using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.IO.FileStructure.Media;
 
-namespace openHistorian.UnitTests.Archive
+namespace GSF.SortedTreeStore.Storage
 {
     [TestFixture]
     public class TestPageSizesBulk

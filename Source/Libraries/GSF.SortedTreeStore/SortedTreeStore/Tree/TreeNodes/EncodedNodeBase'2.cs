@@ -188,7 +188,9 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                     length = EncodeRecord(writePointer + m_nextOffset, stream.Key2, stream.Value2, stream.Key1, stream.Value1);
                     additionalValidBytes += length;
                     recordsAdded++;
+                    m_currentOffset = m_nextOffset;
                     m_nextOffset = m_currentOffset + length;
+
                     //Inlined stream.Next()
                     stream.IsValid = stream.Stream.Read(stream.Key2, stream.Value2);
                     stream.IsStillSequential = stream.Key1.IsLessThan(stream.Key2);
@@ -214,6 +216,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                     length = EncodeRecord(writePointer + m_nextOffset, stream.Key1, stream.Value1, stream.Key2, stream.Value2);
                     additionalValidBytes += length;
                     recordsAdded++;
+                    m_currentOffset = m_nextOffset;
                     m_nextOffset = m_currentOffset + length;
 
                     //Inlined stream.Next()
@@ -225,7 +228,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                     goto TryAgain;
                 }
             }
-        }
+         }
 
         /// <summary>
         /// Inserts a point before the current position.
