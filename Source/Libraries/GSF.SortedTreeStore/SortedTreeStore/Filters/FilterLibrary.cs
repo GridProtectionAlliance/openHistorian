@@ -120,7 +120,7 @@ namespace GSF.SortedTreeStore.Filters
 
                 if (Filters.TryGetValue(filter, out encoding))
                 {
-                    encoding.Create<TKey, TValue>(stream);
+                    return encoding.Create<TKey, TValue>(stream);
                 }
             }
             throw new Exception("Filter not found");

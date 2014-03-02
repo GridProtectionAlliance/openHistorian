@@ -49,23 +49,14 @@ namespace openHistorian.Data.Query
 
         public IDictionary<Guid, SignalDataBase> GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, IEnumerable<ISignalCalculation> signals)
         {
-            //ToDo: Modify the query base on the zoom level
-            SortedTreeEngineBase<HistorianKey, HistorianValue> db = null;
-            try
+            using (var db = m_historian.GetDefaultDatabase<HistorianKey, HistorianValue>())
             {
-                db = m_historian.GetDefaultDatabase<HistorianKey, HistorianValue>();
-
                 //var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
-
                 PeriodicScanner scanner = new PeriodicScanner(m_samplesPerSecond);
                 var timestamps = scanner.GetParser(startTime, endTime, 1500u);
                 SortedTreeEngineReaderOptions options = new SortedTreeEngineReaderOptions(TimeSpan.FromSeconds(1));
-                return db.GetSignalsWithCalculations(timestamps, signals, options);
-            }
-            finally
-            {
-                //if (db != null)
-                //    db.Disconnect();
+                var results = db.GetSignalsWithCalculations(timestamps, signals, options);
+                return results;
             }
         }
     }

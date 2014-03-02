@@ -168,7 +168,7 @@ namespace openHistorian.Collections
         {
             var list = new ArrayList();
             list.Add(new CreateTsCombinedEncoding());
-            list.Add(new CreateHistorianCompressionTs());
+            //list.Add(new CreateHistorianCompressionTs());
             return list;
 
             //CreateHistorianCompressionDelta.Register();

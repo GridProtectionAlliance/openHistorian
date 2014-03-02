@@ -33,6 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace NPlot
 {
@@ -81,6 +82,11 @@ namespace NPlot
         /// <param name="yAxis">The Y-Axis to draw against.</param>
         public void Draw(Graphics g, PhysicalAxis xAxis, PhysicalAxis yAxis)
         {
+            try
+            {
+
+          
+
             double xVal, yVal;
 
             int pointCount = m_lineData.Count;
@@ -111,7 +117,19 @@ namespace NPlot
 
                     if (!Double.IsNaN(xVal + yVal)) //Adding a NaN with anything yeilds NaN
                     {
+                        const float GDIMax = 1000000000f;
+                        const float GDIMin = -1000000000f;
                         PointF p1 = t.Transform(xVal, yVal);
+                        if (p1.X > GDIMax)
+                            p1.X = GDIMax;
+                        if (p1.X < GDIMin)
+                            p1.X = GDIMin;
+
+                        if (p1.Y > GDIMax)
+                            p1.Y = GDIMax;
+                        if (p1.Y < GDIMin)
+                            p1.Y = GDIMin;
+
                         if (p1 != lastPoint)
                         {
                             lastPoint = p1;
@@ -147,6 +165,12 @@ namespace NPlot
                     g.DrawLines(Pen, newArray);
                 }
                 StepTimer.Stop(sw);
+            }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                throw;
             }
         }
 
