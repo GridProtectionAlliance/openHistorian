@@ -87,7 +87,6 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// Creates a stage writer.
         /// </summary>
         /// <param name="settings">the settings for this stage</param>
-        /// <param name="onRollover">delegate to call when a file is done with this stage.</param>
         public FirstStageWriter(FirstStageWriterSettings<TKey, TValue> settings)
         {
             if (settings.RolloverSize > settings.MaximumAllowedSize)
@@ -98,7 +97,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_rolloverSize = settings.RolloverSize;
             m_maximumAllowedSize = settings.MaximumAllowedSize;
             m_syncRoot = new object();
-            m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground);
+            m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.Normal);
             m_rolloverTask.OnEvent += ProcessRollover;
             m_rolloverTask.Start(m_rolloverInterval);
         }

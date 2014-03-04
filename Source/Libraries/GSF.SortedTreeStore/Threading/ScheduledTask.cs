@@ -217,15 +217,16 @@ namespace GSF.Threading
         /// <param name="threadMode">
         /// Determines if this thread is to be a foreground or background thread.
         /// </param>
-        public ScheduledTask(ThreadingMode threadMode)
+        /// <param name="priority">Specifies the priority of the thread that executes the task. Not valid when using a ThreadPool thread</param>
+        public ScheduledTask(ThreadingMode threadMode, ThreadPriority priority = ThreadPriority.Normal)
         {
             if (threadMode == ThreadingMode.DedicatedForeground)
             {
-                m_workerThread = new DedicatedThread(ProcessRunningState, false);
+                m_workerThread = new DedicatedThread(ProcessRunningState, false, priority);
             }
             else if (threadMode == ThreadingMode.DedicatedBackground)
             {
-                m_workerThread = new DedicatedThread(ProcessRunningState, true);
+                m_workerThread = new DedicatedThread(ProcessRunningState, true, priority);
             }
             else if (threadMode == ThreadingMode.ThreadPool)
             {

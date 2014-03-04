@@ -53,7 +53,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
     public class PrestageArgs<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
         public PointStreamCache<TKey, TValue> Stream;
         public long SequenceNumber;
@@ -109,7 +109,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_rolloverPointCount = settings.RolloverPointCount;
             m_yieldThreadOnPointCount = settings.DelayOnPointCount;
             m_sleepThreadOnPointCount = m_yieldThreadOnPointCount + (int)Math.Max(1000f, m_yieldThreadOnPointCount * 0.25f);
-            m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground);
+            m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.AboveNormal);
             m_rolloverTask.OnEvent += ProcessRollover;
             m_rolloverTask.Start(m_rolloverInterval);
         }

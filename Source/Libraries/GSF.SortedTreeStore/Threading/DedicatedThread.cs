@@ -49,7 +49,8 @@ namespace GSF.Threading
         /// </summary>
         /// <param name="callback">the callback method to execute when running</param>
         /// <param name="isBackground">determines if the thread is supposed to be a background thread</param>
-        public DedicatedThread(Action callback, bool isBackground)
+        /// <param name="priority">specifies the priority of the thread</param>
+        public DedicatedThread(Action callback, bool isBackground, ThreadPriority priority)
         {
             m_sleepTime = 0;
             m_callback = new WeakAction(callback);
@@ -57,6 +58,7 @@ namespace GSF.Threading
             m_sleep = new ManualResetEvent(false);
             m_thread = new Thread(RunWorkerThread);
             m_thread.IsBackground = isBackground;
+            m_thread.Priority = priority;
             m_thread.Start();
         }
 

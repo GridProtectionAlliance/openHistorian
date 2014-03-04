@@ -84,7 +84,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
             m_rolloverComplete = new ManualResetEvent(false);
             m_syncRoot = new object();
-            m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground);
+            m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.BelowNormal);
             m_rolloverTask.OnEvent += OnExecute;
             m_rolloverTask.Start(ExecuteInterval);
         }
