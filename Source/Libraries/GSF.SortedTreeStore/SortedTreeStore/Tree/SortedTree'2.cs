@@ -300,8 +300,11 @@ namespace GSF.SortedTreeStore.Tree
         /// </remarks>
         public void GetKeyRange(TKey lowerBounds, TKey upperBounds)
         {
-            if (LeafStorage.TryGetFirstRecord(lowerBounds, m_tempValue) &&
-                LeafStorage.TryGetLastRecord(upperBounds, m_tempValue))
+            LeafStorage.SeekToFirstNode();
+            bool firstFound = LeafStorage.TryGetFirstRecord(lowerBounds, m_tempValue);
+            LeafStorage.SeekToLastNode();
+            bool lastFound = LeafStorage.TryGetLastRecord(upperBounds, m_tempValue);
+            if (firstFound && lastFound)
             {
                 return;
             }
@@ -360,7 +363,7 @@ namespace GSF.SortedTreeStore.Tree
         {
             return Create(stream, blockSize, SortedTree.FixedSizeNode);
         }
-       
+
         /// <summary>
         /// Creates a new SortedTree writing to the provided streams and using the specified compression metho for the tree node.
         /// </summary>

@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 
 namespace GSF.SortedTreeStore.Tree
@@ -92,17 +93,38 @@ namespace GSF.SortedTreeStore.Tree
         #region [ Methods ]
 
         /// <summary>
-        /// Gets the first record contained in this entire tree unless the tree is empty.
+        /// Seeks to the first node at this level of the tree
+        /// </summary>
+        public void SeekToFirstNode()
+        {
+            //Only need to do a seek if I'm not already on the first node.
+            if (NodeIndex == uint.MaxValue || LeftSiblingNodeIndex != uint.MaxValue)
+            {
+                SetNodeIndex(SparseIndex.GetFirstIndex(Level));
+            }
+        }
+        /// <summary>
+        /// Seeks to the last node at this level of the tree
+        /// </summary>
+        public void SeekToLastNode()
+        {
+            //Only need to do a seek if I'm not already on the last node.
+            if (NodeIndex == uint.MaxValue || RightSiblingNodeIndex != uint.MaxValue)
+            {
+                SetNodeIndex(SparseIndex.GetLastIndex(Level));
+            }
+        }
+
+        /// <summary>
+        /// Gets the first record contained in the current node of the tree.
         /// </summary>
         /// <param name="key">where to write the key</param>
         /// <param name="value">where to write the value</param>
         /// <returns>True if a value was found. False if the tree is empty</returns>
         public bool TryGetFirstRecord(TKey key, TValue value)
         {
-            if (NodeIndex == uint.MaxValue || LeftSiblingNodeIndex != uint.MaxValue)
-            {
-                SetNodeIndex(SparseIndex.GetFirstIndex());
-            }
+            if (NodeIndex == uint.MaxValue)
+                throw new Exception("Current node is null");
             if (RecordCount == 0)
                 return false;
             Read(0, key, value);
@@ -110,17 +132,30 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Gets the first record contained in this entire tree unless the tree is empty.
+        /// Gets the first record contained in the current node of the tree.
+        /// </summary>
+        /// <param name="value">where to write the value</param>
+        /// <returns>True if a value was found. False if the tree is empty</returns>
+        public bool TryGetFirstRecord(TValue value)
+        {
+            if (NodeIndex == uint.MaxValue)
+                throw new Exception("Current node is null");
+            if (RecordCount == 0)
+                return false;
+            Read(0, value);
+            return true;
+        }
+
+        /// <summary>
+        /// Gets the last record contained in the current node of the tree.
         /// </summary>
         /// <param name="key">where to write the key</param>
         /// <param name="value">where to write the value</param>
         /// <returns>True if a value was found. False if the tree is empty</returns>
         public bool TryGetLastRecord(TKey key, TValue value)
         {
-            if (NodeIndex == uint.MaxValue || RightSiblingNodeIndex != uint.MaxValue)
-            {
-                SetNodeIndex(SparseIndex.GetLastIndex());
-            }
+            if (NodeIndex == uint.MaxValue)
+                throw new Exception("Current node is null");
             if (RecordCount == 0)
                 return false;
             Read(RecordCount - 1, key, value);
@@ -128,9 +163,24 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
+        /// Gets the last record contained in the current node of the tree.
+        /// </summary>
+        /// <param name="value">where to write the value</param>
+        /// <returns>True if a value was found. False if the tree is empty</returns>
+        public bool TryGetLastRecord(TValue value)
+        {
+            if (NodeIndex == uint.MaxValue)
+                throw new Exception("Current node is null");
+            if (RecordCount == 0)
+                return false;
+            Read(RecordCount - 1, value);
+            return true;
+        }
+
+        /// <summary>
         /// Gets the provided key or the key that is directly to the right of this key.
         /// </summary>
-        /// <param name="key">the key to find. This value is left modified.</param>
+        /// <param name="key">the key to find. This value is not modifed</param>
         /// <param name="value">where to write the value.</param>
         public virtual void GetOrGetNext(TKey key, TValue value)
         {
@@ -144,7 +194,7 @@ namespace GSF.SortedTreeStore.Tree
                     //This case occurs if the search position is the beginning of the array. This is possible since the 
                     //node lower bouds does not have to point to the first key. In which case, I have to seek to the previous sibling. 
                     SeekToLeftSibling();
-                    if (!TryGetLastRecord(key, value))
+                    if (!TryGetLastRecord(value))
                         throw new KeyNotFoundException("There is no value");
                     return;
                 }

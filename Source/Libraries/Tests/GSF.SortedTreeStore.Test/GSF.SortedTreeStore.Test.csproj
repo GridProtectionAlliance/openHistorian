@@ -65,6 +65,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Generic\FixedSizeLeafUint_Test.cs" />
     <Compile Include="SortedTreeStore\Storage\TestPageSizes.cs" />
     <Compile Include="SortedTreeStore\Storage\TestPageSizesBulk.cs" />
     <Compile Include="BitMath.cs" />

@@ -106,10 +106,11 @@ namespace openHistorian.Scada.Test
         [Test]
         public void TestArchiveWriter()
         {
+            Random r = new Random(3);
             var KV2CEncoding = new EncodingDefinition(CreateFixedSizeSingleEncoding.TypeGuid, CreateFixedSizeSingleEncoding.TypeGuid);
             using (var KV2C = new SortedTreeEngine<AmiKey, AmiKey>("KV2CPQ", WriterMode.OnDisk, KV2CEncoding, "C:\\Temp\\AMI"))
             {
-                int count = 10000;
+                int count = 10000000;
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
                 var key = new AmiKey();
@@ -117,8 +118,8 @@ namespace openHistorian.Scada.Test
 
                 for (int x = count; x >=0 ; x--)
                 {
-                    Thread.Sleep(1);
-                    key.Timestamp = (uint)x;
+                    key.Timestamp = (ulong)r.Next();
+                    key.TableId = r.Next();
                     KV2C.Write(key, value);
                 }
 
@@ -173,7 +174,7 @@ namespace openHistorian.Scada.Test
             int count = 10000000;
             Stopwatch sw = new Stopwatch();
             using (var af = SortedTreeFile.CreateInMemory())
-            using (var table = af.OpenOrCreateTable<AmiKey, AmiValue>(CreateAmiCombinedEncoding.TypeGuid))
+            using (var table = af.OpenOrCreateTable<AmiKey, AmiValue>(SortedTree.FixedSizeNode))
             {
                 using (var edit = table.BeginEdit())
                 {

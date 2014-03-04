@@ -173,64 +173,64 @@ namespace openHistorian.Scada.AMI
         // IsLessThanOrEqualTo(T)
         // IsBetween(T,T)
 
-        //public override unsafe void Read(byte* stream)
-        //{
-        //    Timestamp = *(ulong*)stream;
-        //    PointID = *(ulong*)(stream + 8);
-        //    TableId = *(int*)(stream + 16);
-        //    CollectedTime = *(ulong*)(stream + 20);
-        //}
-        //public override unsafe void Write(byte* stream)
-        //{
-        //    *(ulong*)stream = Timestamp;
-        //    *(ulong*)(stream + 8) = PointID;
-        //    *(int*)(stream + 16) = TableId;
-        //    *(ulong*)(stream + 20) = CollectedTime;
-        //}
-        //public override bool IsLessThan(AmiKey right)
-        //{
-        //    if (Timestamp != right.Timestamp)
-        //        return Timestamp < right.Timestamp;
+        public override unsafe void Read(byte* stream)
+        {
+            Timestamp = *(ulong*)stream;
+            PointID = *(ulong*)(stream + 8);
+            TableId = *(int*)(stream + 16);
+            CollectedTime = *(ulong*)(stream + 20);
+        }
+        public override unsafe void Write(byte* stream)
+        {
+            *(ulong*)stream = Timestamp;
+            *(ulong*)(stream + 8) = PointID;
+            *(int*)(stream + 16) = TableId;
+            *(ulong*)(stream + 20) = CollectedTime;
+        }
+        public override bool IsLessThan(AmiKey right)
+        {
+            if (Timestamp != right.Timestamp)
+                return Timestamp < right.Timestamp;
 
-        //    if (PointID != right.PointID)
-        //        return PointID < right.PointID;
+            if (PointID != right.PointID)
+                return PointID < right.PointID;
 
-        //    if (TableId != right.TableId)
-        //        return TableId < right.TableId;
+            if (TableId != right.TableId)
+                return TableId < right.TableId;
 
-        //    return CollectedTime < right.CollectedTime;
-        //}
-        //public override bool IsEqualTo(AmiKey right)
-        //{
-        //    return Timestamp == right.Timestamp && PointID == right.PointID && 
-        //        TableId == right.TableId && CollectedTime == right.CollectedTime;
-        //}
-        //public override bool IsGreaterThan(AmiKey right)
-        //{
-        //    if (Timestamp != right.Timestamp)
-        //        return Timestamp > right.Timestamp;
+            return CollectedTime < right.CollectedTime;
+        }
+        public override bool IsEqualTo(AmiKey right)
+        {
+            return Timestamp == right.Timestamp && PointID == right.PointID &&
+                TableId == right.TableId && CollectedTime == right.CollectedTime;
+        }
+        public override bool IsGreaterThan(AmiKey right)
+        {
+            if (Timestamp != right.Timestamp)
+                return Timestamp > right.Timestamp;
 
-        //    if (PointID != right.PointID)
-        //        return PointID > right.PointID;
+            if (PointID != right.PointID)
+                return PointID > right.PointID;
 
-        //    if (TableId != right.TableId)
-        //        return TableId > right.TableId;
+            if (TableId != right.TableId)
+                return TableId > right.TableId;
 
-        //    return CollectedTime > right.CollectedTime;
-        //}
-        //public override bool IsGreaterThanOrEqualTo(AmiKey right)
-        //{
-        //    if (Timestamp != right.Timestamp)
-        //        return Timestamp > right.Timestamp;
+            return CollectedTime > right.CollectedTime;
+        }
+        public override bool IsGreaterThanOrEqualTo(AmiKey right)
+        {
+            if (Timestamp != right.Timestamp)
+                return Timestamp > right.Timestamp;
 
-        //    if (PointID != right.PointID)
-        //        return PointID > right.PointID;
+            if (PointID != right.PointID)
+                return PointID > right.PointID;
 
-        //    if (TableId != right.TableId)
-        //        return TableId > right.TableId;
+            if (TableId != right.TableId)
+                return TableId > right.TableId;
 
-        //    return CollectedTime >= right.CollectedTime;
-        //}
+            return CollectedTime >= right.CollectedTime;
+        }
 
        
 

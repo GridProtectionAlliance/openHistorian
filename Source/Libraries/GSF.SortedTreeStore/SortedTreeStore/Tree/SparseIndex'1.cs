@@ -40,8 +40,8 @@ namespace GSF.SortedTreeStore.Tree
         private bool m_isInitialized;
         private int m_blockSize;
         private int m_keySize;
-        private readonly TKey m_key;
-        private readonly SortedTreeUInt32 m_value;
+        private readonly TKey m_tmpKey;
+        private readonly SortedTreeUInt32 m_tmpValue;
         private BinaryStreamBase m_stream;
         private Func<uint> m_getNextNewNodeIndex;
         private SortedTreeNodeBase<TKey, SortedTreeUInt32>[] m_nodes;
@@ -92,10 +92,9 @@ namespace GSF.SortedTreeStore.Tree
         public SparseIndex()
         {
             m_initializer = TreeNodeInitializer.GetTreeNodeInitializer<TKey, SortedTreeUInt32>(SortedTree.FixedSizeNode);
-            m_key = new TKey();
-            m_keySize = m_key.Size;
-            m_value = new SortedTreeUInt32();
-
+            m_tmpKey = new TKey();
+            m_keySize = m_tmpKey.Size;
+            m_tmpValue = new SortedTreeUInt32();
         }
 
         /// <summary>
@@ -104,8 +103,10 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="stream">The stream to use to write the index</param>
         /// <param name="blockSize">The size of each node that will be used by this index.</param>
         /// <param name="getNextNewNodeIndex">A method to use when additional nodes must be allocated.</param>
-        /// <param name="rootNodeLevel"></param>
-        /// <param name="rootNodeIndexAddress"></param>
+        /// <param name="rootNodeLevel">the level of the root node.</param>
+        /// <param name="rootNodeIndexAddress">the address location for the root node.</param>
+        /// <exception cref="Exception">Throw of duplicate calls are made to this function</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the block size is not large enough to store at least 4 elements.</exception>
         public void Initialize(BinaryStreamBase stream, int blockSize, Func<uint> getNextNewNodeIndex, byte rootNodeLevel, uint rootNodeIndexAddress)
         {
             if (m_isInitialized)
@@ -133,45 +134,48 @@ namespace GSF.SortedTreeStore.Tree
         /// <summary>
         /// Gets the node index of the first leaf node in the tree.
         /// </summary>
-        /// <returns></returns>
-        public uint GetFirstIndex()
+        /// <param name="level">the level of the node requesting the lookup</param>
+        /// <returns>the index of the first leaf node</returns>
+        public uint GetFirstIndex(byte level)
         {
-            if (RootNodeLevel == 0)
+            if (RootNodeLevel == level)
                 return RootNodeIndexAddress;
+
             uint nodeIndexAddress = RootNodeIndexAddress;
             byte nodeLevel = RootNodeLevel;
-            while (true)
+            while (nodeLevel > level)
             {
                 SortedTreeNodeBase<TKey, SortedTreeUInt32> currentNode = GetNode(nodeLevel);
                 currentNode.SetNodeIndex(nodeIndexAddress);
-                currentNode.TryGetFirstRecord(m_key, m_value);
-                nodeIndexAddress = m_value.Value;
-                if (nodeLevel == 1)
-                    return nodeIndexAddress;
+                if (!currentNode.TryGetFirstRecord(m_tmpValue))
+                    throw new Exception("Node is empty");
+                nodeIndexAddress = m_tmpValue.Value;
                 nodeLevel--;
             }
+            return nodeIndexAddress;
         }
 
         /// <summary>
         /// Gets the node index of the last leaf node in the tree.
         /// </summary>
+        /// <param name="level">the level of the node requesting the lookup</param>
         /// <returns></returns>
-        public uint GetLastIndex()
+        public uint GetLastIndex(byte level)
         {
-            if (RootNodeLevel == 0)
+            if (RootNodeLevel == level)
                 return RootNodeIndexAddress;
             uint nodeIndexAddress = RootNodeIndexAddress;
             byte nodeLevel = RootNodeLevel;
-            while (true)
+            while (nodeLevel > level)
             {
                 SortedTreeNodeBase<TKey, SortedTreeUInt32> currentNode = GetNode(nodeLevel);
                 currentNode.SetNodeIndex(nodeIndexAddress);
-                currentNode.TryGetLastRecord(m_key, m_value);
-                nodeIndexAddress = m_value.Value;
-                if (nodeLevel == 1)
-                    return nodeIndexAddress;
+                if (!currentNode.TryGetLastRecord(m_tmpValue))
+                    throw new Exception("Node is empty");
+                nodeIndexAddress = m_tmpValue.Value;
                 nodeLevel--;
             }
+            return nodeIndexAddress;
         }
 
         /// <summary>
@@ -183,8 +187,9 @@ namespace GSF.SortedTreeStore.Tree
         {
             if (RootNodeLevel == 0)
                 return RootNodeIndexAddress;
-            FindNode(key, level + 1).GetOrGetNext(key, m_value);
-            return m_value.Value;
+            var node = FindNode(key, level + 1);
+            node.GetOrGetNext(key, m_tmpValue);
+            return m_tmpValue.Value;
         }
 
         /// <summary>
@@ -200,8 +205,9 @@ namespace GSF.SortedTreeStore.Tree
             if (level > RootNodeLevel)
                 throw new ArgumentOutOfRangeException("level", "Cannot be greater than the root node level.");
 
+            SortedTreeNodeBase<TKey, SortedTreeUInt32> currentNode;
             //Shortcut
-            SortedTreeNodeBase<TKey, SortedTreeUInt32> currentNode = GetNode(level);
+            currentNode = GetNode(level);
             if (currentNode.IsKeyInsideBounds(key))
                 return currentNode;
 
@@ -213,8 +219,8 @@ namespace GSF.SortedTreeStore.Tree
                 currentNode.SetNodeIndex(nodeIndexAddress);
                 if (nodeLevel == level)
                     return currentNode;
-                currentNode.TryGet(key, m_value);
-                nodeIndexAddress = m_value.Value;
+                currentNode.GetOrGetNext(key, m_tmpValue);
+                nodeIndexAddress = m_tmpValue.Value;
                 nodeLevel--;
             }
         }
@@ -283,8 +289,8 @@ namespace GSF.SortedTreeStore.Tree
                         node.RecordCount == 1)
                     {
                         RootNodeLevel--;
-                        node.TryGetFirstRecord(m_key, m_value);
-                        RootNodeIndexAddress = m_value.Value;
+                        node.TryGetFirstRecord(m_tmpKey, m_tmpValue);
+                        RootNodeIndexAddress = m_tmpValue.Value;
                         node.Clear();
                     }
                 }
@@ -360,13 +366,13 @@ namespace GSF.SortedTreeStore.Tree
             rootNode.CreateEmptyNode(RootNodeIndexAddress);
 
             //Insert the first entry in the root node.
-            m_key.SetMin();
-            m_value.Value = oldRootNode;
-            rootNode.TryInsert(m_key, m_value);
+            m_tmpKey.SetMin();
+            m_tmpValue.Value = oldRootNode;
+            rootNode.TryInsert(m_tmpKey, m_tmpValue);
 
             //Insert the second entry in the root node.
-            m_value.Value = leafNodeIndex;
-            rootNode.TryInsert(leafKey, m_value);
+            m_tmpValue.Value = leafNodeIndex;
+            rootNode.TryInsert(leafKey, m_tmpValue);
 
             OnRootHasChanged();
             //foreach (var node in m_nodes)
