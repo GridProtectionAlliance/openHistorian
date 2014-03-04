@@ -52,6 +52,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        public event UnhandledExceptionEventHandler Exception;
+
         /// <summary>
         /// Execute every 10 seconds
         /// </summary>
@@ -86,7 +88,14 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.BelowNormal);
             m_rolloverTask.OnEvent += OnExecute;
+            m_rolloverTask.OnException += OnException;
+
             m_rolloverTask.Start(ExecuteInterval);
+        }
+
+        void OnException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception(sender, e);
         }
 
         private void OnExecute(object sender, ScheduledTaskEventArgs e)

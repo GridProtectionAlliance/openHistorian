@@ -71,6 +71,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        public event UnhandledExceptionEventHandler Exception;
         private bool m_disposed;
         private bool m_stopped;
         private readonly int m_rolloverInterval;
@@ -111,7 +112,13 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_sleepThreadOnPointCount = m_yieldThreadOnPointCount + (int)Math.Max(1000f, m_yieldThreadOnPointCount * 0.25f);
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.AboveNormal);
             m_rolloverTask.OnEvent += ProcessRollover;
+            m_rolloverTask.OnException += OnException;
             m_rolloverTask.Start(m_rolloverInterval);
+        }
+
+        void OnException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception(sender, e);
         }
 
         /// <summary>

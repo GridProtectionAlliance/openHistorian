@@ -37,6 +37,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        public event UnhandledExceptionEventHandler Exception;
+
         private readonly ArchiveList<TKey, TValue> m_archiveList;
 
         private readonly PrestageWriter<TKey, TValue> m_prestage;
@@ -52,9 +54,21 @@ namespace GSF.SortedTreeStore.Engine.Writer
         {
             m_archiveList = list;
             m_stage2 = new CombineFiles<TKey, TValue>(settings.Stage2);
+            m_stage2.Exception += OnException;
+            
             m_stage1 = new CombineFiles<TKey, TValue>(settings.Stage1);
+            m_stage1.Exception += OnException;
+            
             m_stage0 = new FirstStageWriter<TKey, TValue>(settings.Stage0);
+            m_stage0.Exception += OnException;
+         
             m_prestage = new PrestageWriter<TKey, TValue>(settings.Prestage, m_stage0.AppendData);
+            m_prestage.Exception += OnException;
+        }
+
+        void OnException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception(sender, e);
         }
 
         /// <summary>

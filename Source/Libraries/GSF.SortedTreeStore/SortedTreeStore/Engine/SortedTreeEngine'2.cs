@@ -52,6 +52,8 @@ namespace GSF.SortedTreeStore.Engine
         private readonly ArchiveList<TKey, TValue> m_archiveList;
         private volatile bool m_disposed;
         private string m_databaseName;
+        public event UnhandledExceptionEventHandler Exception;
+
         #endregion
 
         #region [ Constructors ]
@@ -68,7 +70,13 @@ namespace GSF.SortedTreeStore.Engine
             {
                 WriteProcessorSettings<TKey, TValue> writeSettings = WriteProcessorSettings<TKey, TValue>.CreateFromSettings(writer, paths.ToList(), compressionMethod, m_archiveList);
                 m_archiveWriter = new WriteProcessor<TKey, TValue>(writeSettings, m_archiveList);
+                m_archiveWriter.Exception += m_archiveWriter_Exception;
             }
+        }
+
+        void m_archiveWriter_Exception(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception(sender, e);
         }
 
         List<string> GetAttachedFiles(string[] paths)

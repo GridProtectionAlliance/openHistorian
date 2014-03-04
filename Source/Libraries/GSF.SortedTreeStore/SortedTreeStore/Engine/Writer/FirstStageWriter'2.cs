@@ -66,6 +66,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        public event UnhandledExceptionEventHandler Exception;
         /// <summary>
         /// Event that notifies that a certain sequence number has been committed.
         /// </summary>
@@ -99,7 +100,13 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.Normal);
             m_rolloverTask.OnEvent += ProcessRollover;
+            m_rolloverTask.OnException += OnException;
             m_rolloverTask.Start(m_rolloverInterval);
+        }
+
+        void OnException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception(sender, e);
         }
 
         /// <summary>
