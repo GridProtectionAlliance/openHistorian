@@ -53,11 +53,10 @@ namespace GSF.SortedTreeStore.Tree
 
         #region [ Constructors ]
 
-        internal SortedTree(BinaryStreamBase stream1, BinaryStreamBase stream2)
+        internal SortedTree(BinaryStreamBase stream1)
         {
             m_header = new SortedTreeHeader();
             Stream = stream1;
-            StreamLeaf = stream2;
             m_isInitialized = false;
             AutoFlush = true;
         }
@@ -82,6 +81,10 @@ namespace GSF.SortedTreeStore.Tree
         {
             if (m_isInitialized)
                 throw new Exception("Duplicate calls to Initialize");
+            if ((object)treeNodeType == null)
+                throw new ArgumentNullException("treeNodeType");
+
+
             m_isInitialized = true;
 
             m_header.TreeNodeType = treeNodeType;
@@ -104,7 +107,7 @@ namespace GSF.SortedTreeStore.Tree
             LeafStorage = TreeNodeInitializer.CreateTreeNode<TKey, TValue>(m_header.TreeNodeType, 0);
             Indexer.RootHasChanged += IndexerOnRootHasChanged;
             Indexer.Initialize(Stream, m_header.BlockSize, GetNextNewNodeIndex, m_header.RootNodeLevel, m_header.RootNodeIndexAddress);
-            LeafStorage.Initialize(StreamLeaf, m_header.BlockSize, GetNextNewNodeIndex, Indexer);
+            LeafStorage.Initialize(Stream, m_header.BlockSize, GetNextNewNodeIndex, Indexer);
         }
 
         private void IndexerOnRootHasChanged(object sender, EventArgs eventArgs)
@@ -155,12 +158,6 @@ namespace GSF.SortedTreeStore.Tree
         /// Contains the stream for reading and writing.
         /// </summary>
         protected BinaryStreamBase Stream
-        {
-            get;
-            private set;
-        }
-
-        protected BinaryStreamBase StreamLeaf
         {
             get;
             private set;
@@ -348,17 +345,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public static SortedTree<TKey, TValue> Open(BinaryStreamBase stream)
         {
-            return Open(stream, stream);
-        }
-        /// <summary>
-        /// Opens a SortedTree using the provided streams. (two streams pointing to the same data source)
-        /// </summary>
-        /// <param name="stream1">the first stream</param>
-        /// <param name="stream2">the second stream</param>
-        /// <returns></returns>
-        public static SortedTree<TKey, TValue> Open(BinaryStreamBase stream1, BinaryStreamBase stream2)
-        {
-            SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream1, stream2);
+            SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream);
             tree.InitializeOpen();
             return tree;
         }
@@ -371,21 +358,11 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize)
         {
-            return Create(stream, stream, blockSize);
+            return Create(stream, blockSize, SortedTree.FixedSizeNode);
         }
+       
         /// <summary>
-        /// Creates a new FixedSize SortedTree using the provided streams.
-        /// </summary>
-        /// <param name="stream1"></param>
-        /// <param name="stream2"></param>
-        /// <param name="blockSize"></param>
-        /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize)
-        {
-            return Create(stream1, stream2, blockSize, SortedTree.FixedSizeNode);
-        }
-        /// <summary>
-        /// Creates a new SortedTree writing to the provided stream and using the specified compression metho for the tree node.
+        /// Creates a new SortedTree writing to the provided streams and using the specified compression metho for the tree node.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="blockSize"></param>
@@ -393,19 +370,9 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream, int blockSize, EncodingDefinition treeNodeType)
         {
-            return Create(stream, stream, blockSize, treeNodeType);
-        }
-        /// <summary>
-        /// Creates a new SortedTree writing to the provided streams and using the specified compression metho for the tree node.
-        /// </summary>
-        /// <param name="stream1"></param>
-        /// <param name="stream2"></param>
-        /// <param name="blockSize"></param>
-        /// <param name="treeNodeType"></param>
-        /// <returns></returns>
-        public static SortedTree<TKey, TValue> Create(BinaryStreamBase stream1, BinaryStreamBase stream2, int blockSize, EncodingDefinition treeNodeType)
-        {
-            SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream1, stream2);
+            if ((object)treeNodeType == null)
+                throw new ArgumentNullException("treeNodeType");
+            SortedTree<TKey, TValue> tree = new SortedTree<TKey, TValue>(stream);
             tree.InitializeCreate(treeNodeType, blockSize);
             return tree;
         }

@@ -7,12 +7,37 @@ using openHistorian.SortedTreeStore.Types.CustomCompression.Ts;
 namespace openHistorian.Scada.AMI
 {
     public class AmiKey
-        : TimestampPointIDBase<AmiKey>
+            : TimestampPointIDBase<AmiKey>
     {
-        /// <summary>
-        /// Conviently type cast the Timestamp as <see cref="DateTime"/>.
-        /// </summary>
-        public DateTime TimestampAsDate
+        public ulong CollectedTime;
+
+        public int TableId;
+
+        public ulong JobRunTime
+        {
+            get
+            {
+                return Timestamp;
+            }
+            set
+            {
+                Timestamp = value;
+            }
+        }
+
+        public ulong DeviceCode
+        {
+            get
+            {
+                return PointID;
+            }
+            set
+            {
+                PointID = value;
+            }
+        }
+
+        public DateTime JobRunTimeAsDate
         {
             get
             {
@@ -24,15 +49,15 @@ namespace openHistorian.Scada.AMI
             }
         }
 
-        public String DeviceId
+        public DateTime CollectedTimeAsDate
         {
             get
             {
-                return PointID.ToString();
+                return new DateTime((long)CollectedTime);
             }
             set
             {
-                PointID = ulong.Parse(value);
+                CollectedTime = (ulong)value.Ticks;
             }
         }
 
@@ -40,8 +65,8 @@ namespace openHistorian.Scada.AMI
         {
             get
             {
-                // {E311CA21-9DA4-4F6A-8E7B-37D9594604BE}
-                return new Guid(0xe311ca21, 0x9da4, 0x4f6a, 0x8e, 0x7b, 0x37, 0xd9, 0x59, 0x46, 0x04, 0xbe);
+                // {CA57E35C-BCBD-4E95-89F4-419A023FF09E}
+                return new Guid(0xca57e35c, 0xbcbd, 0x4e95, 0x89, 0xf4, 0x41, 0x9a, 0x02, 0x3f, 0xf0, 0x9e);
             }
         }
 
@@ -49,7 +74,7 @@ namespace openHistorian.Scada.AMI
         {
             get
             {
-                return 16;
+                return 28;
             }
         }
 
@@ -58,8 +83,10 @@ namespace openHistorian.Scada.AMI
         /// </summary>
         public override void SetMin()
         {
-            Timestamp = 0;
-            PointID = 0;
+            Timestamp = ulong.MinValue;
+            PointID = ulong.MinValue;
+            TableId = int.MinValue;
+            CollectedTime = ulong.MinValue;
         }
 
         /// <summary>
@@ -69,6 +96,8 @@ namespace openHistorian.Scada.AMI
         {
             Timestamp = ulong.MaxValue;
             PointID = ulong.MaxValue;
+            TableId = int.MaxValue;
+            CollectedTime = ulong.MaxValue;
         }
 
         /// <summary>
@@ -76,26 +105,35 @@ namespace openHistorian.Scada.AMI
         /// </summary>
         public override void Clear()
         {
+            //SetMin();
             Timestamp = 0;
             PointID = 0;
+            TableId = 0;
+            CollectedTime = 0;
         }
 
         public override void Read(BinaryStreamBase stream)
         {
             Timestamp = stream.ReadUInt64();
             PointID = stream.ReadUInt64();
+            TableId = stream.ReadInt32();
+            CollectedTime = stream.ReadUInt64();
         }
 
         public override void Write(BinaryStreamBase stream)
         {
             stream.Write(Timestamp);
             stream.Write(PointID);
+            stream.Write(TableId);
+            stream.Write(CollectedTime);
         }
 
         public override void CopyTo(AmiKey destination)
         {
             destination.Timestamp = Timestamp;
             destination.PointID = PointID;
+            destination.TableId = TableId;
+            destination.CollectedTime = CollectedTime;
         }
 
         /// <summary>
@@ -113,6 +151,14 @@ namespace openHistorian.Scada.AMI
                 return -1;
             if (PointID > other.PointID)
                 return 1;
+            if (TableId < other.TableId)
+                return -1;
+            if (TableId > other.TableId)
+                return 1;
+            if (CollectedTime < other.CollectedTime)
+                return -1;
+            if (CollectedTime > other.CollectedTime)
+                return 1;
             return 0;
         }
 
@@ -127,52 +173,66 @@ namespace openHistorian.Scada.AMI
         // IsLessThanOrEqualTo(T)
         // IsBetween(T,T)
 
-        public override unsafe void Read(byte* stream)
-        {
-            Timestamp = *(ulong*)stream;
-            PointID = *(ulong*)(stream + 8);
-        }
-        public override unsafe void Write(byte* stream)
-        {
-            *(ulong*)stream = Timestamp;
-            *(ulong*)(stream + 8) = PointID;
-        }
-        public override bool IsLessThan(AmiKey right)
-        {
-            if (Timestamp != right.Timestamp)
-                return Timestamp < right.Timestamp;
+        //public override unsafe void Read(byte* stream)
+        //{
+        //    Timestamp = *(ulong*)stream;
+        //    PointID = *(ulong*)(stream + 8);
+        //    TableId = *(int*)(stream + 16);
+        //    CollectedTime = *(ulong*)(stream + 20);
+        //}
+        //public override unsafe void Write(byte* stream)
+        //{
+        //    *(ulong*)stream = Timestamp;
+        //    *(ulong*)(stream + 8) = PointID;
+        //    *(int*)(stream + 16) = TableId;
+        //    *(ulong*)(stream + 20) = CollectedTime;
+        //}
+        //public override bool IsLessThan(AmiKey right)
+        //{
+        //    if (Timestamp != right.Timestamp)
+        //        return Timestamp < right.Timestamp;
 
-            //Implide left.Timestamp == right.Timestamp
-            return PointID < right.PointID;
-        }
-        public override bool IsEqualTo(AmiKey right)
-        {
-            return Timestamp == right.Timestamp && PointID == right.PointID;
-        }
-        public override bool IsGreaterThan(AmiKey right)
-        {
-            if (Timestamp != right.Timestamp)
-                return Timestamp > right.Timestamp;
+        //    if (PointID != right.PointID)
+        //        return PointID < right.PointID;
 
-            //Implide left.Timestamp == right.Timestamp
-            return PointID > right.PointID;
-        }
-        public override bool IsGreaterThanOrEqualTo(AmiKey right)
-        {
-            if (Timestamp != right.Timestamp)
-                return Timestamp > right.Timestamp;
+        //    if (TableId != right.TableId)
+        //        return TableId < right.TableId;
 
-            //Implide left.Timestamp == right.Timestamp
-            return PointID >= right.PointID;
+        //    return CollectedTime < right.CollectedTime;
+        //}
+        //public override bool IsEqualTo(AmiKey right)
+        //{
+        //    return Timestamp == right.Timestamp && PointID == right.PointID && 
+        //        TableId == right.TableId && CollectedTime == right.CollectedTime;
+        //}
+        //public override bool IsGreaterThan(AmiKey right)
+        //{
+        //    if (Timestamp != right.Timestamp)
+        //        return Timestamp > right.Timestamp;
 
-        }
+        //    if (PointID != right.PointID)
+        //        return PointID > right.PointID;
 
-        public override IEnumerable GetEncodingMethods()
-        {
-            var list = new ArrayList();
-            list.Add(new CreateAmiCombinedEncoding());
-            return list;
-        }
+        //    if (TableId != right.TableId)
+        //        return TableId > right.TableId;
+
+        //    return CollectedTime > right.CollectedTime;
+        //}
+        //public override bool IsGreaterThanOrEqualTo(AmiKey right)
+        //{
+        //    if (Timestamp != right.Timestamp)
+        //        return Timestamp > right.Timestamp;
+
+        //    if (PointID != right.PointID)
+        //        return PointID > right.PointID;
+
+        //    if (TableId != right.TableId)
+        //        return TableId > right.TableId;
+
+        //    return CollectedTime >= right.CollectedTime;
+        //}
+
+       
 
         //public override bool IsBetween(HistorianKey lowerBounds, HistorianKey upperBounds)
         //{

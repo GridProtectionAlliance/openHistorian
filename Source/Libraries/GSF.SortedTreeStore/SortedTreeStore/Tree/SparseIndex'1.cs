@@ -213,7 +213,7 @@ namespace GSF.SortedTreeStore.Tree
                 currentNode.SetNodeIndex(nodeIndexAddress);
                 if (nodeLevel == level)
                     return currentNode;
-                currentNode.TryGet(m_key, m_value);
+                currentNode.TryGet(key, m_value);
                 nodeIndexAddress = m_value.Value;
                 nodeLevel--;
             }

@@ -87,6 +87,9 @@ namespace GSF.SortedTreeStore.Encoding
         /// <param name="encoding"></param>
         public void Register(T encoding)
         {
+            if ((object)encoding == null)
+                throw new ArgumentNullException("encoding");
+
             lock (m_syncRoot)
             {
                 if (encoding.KeyTypeIfNotGeneric == null && encoding.ValueTypeIfNotGeneric == null)
@@ -120,6 +123,9 @@ namespace GSF.SortedTreeStore.Encoding
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
+            if ((object)encodingMethod == null)
+                throw new ArgumentNullException("encodingMethod");
+
             Type keyType = typeof(TKey);
             Type valueType = typeof(TValue);
 

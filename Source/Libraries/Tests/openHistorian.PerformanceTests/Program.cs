@@ -10,11 +10,15 @@ namespace openHistorian.PerformanceTests
         [STAThread]
         private static void Main()
         {
+            var m = new MeasureCompression();
+            m.Test();
+
+
             //var tree = new SortedTree256Test();
             //tree.SortedTree256Archive();
             //ReadPoints.TestReadPoints2();
             //ReadPoints.ReadAllPoints();
-            ReadPoints.TestReadFilteredPoints();
+            //ReadPoints.TestReadFilteredPoints();
             
             //Console.ReadLine();
         }

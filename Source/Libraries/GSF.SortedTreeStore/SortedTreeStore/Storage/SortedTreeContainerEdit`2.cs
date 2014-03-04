@@ -40,7 +40,6 @@ namespace GSF.SortedTreeStore.Storage
 
         private SubFileStream m_subStream;
         private BinaryStream m_binaryStream1;
-        private BinaryStream m_binaryStream2;
         private SortedTree<TKey, TValue> m_tree;
         private bool m_disposed;
 
@@ -52,8 +51,7 @@ namespace GSF.SortedTreeStore.Storage
         {
             m_subStream = currentTransaction.OpenFile(fileName);
             m_binaryStream1 = new BinaryStream(m_subStream);
-            m_binaryStream2 = new BinaryStream(m_subStream);
-            m_tree = SortedTree<TKey, TValue>.Open(m_binaryStream1, m_binaryStream2);
+            m_tree = SortedTree<TKey, TValue>.Open(m_binaryStream1);
             m_tree.AutoFlush = false;
         }
 
@@ -120,11 +118,6 @@ namespace GSF.SortedTreeStore.Storage
                     {
                         m_binaryStream1.Dispose();
                         m_binaryStream1 = null;
-                    }
-                    if (m_binaryStream2 != null)
-                    {
-                        m_binaryStream2.Dispose();
-                        m_binaryStream2 = null;
                     }
                     if (m_subStream != null)
                     {

@@ -34,7 +34,6 @@ namespace GSF.SortedTreeStore.Net
 {
     public partial class SortedTreeClient
     {
-
         private class SortedTreeClientEngine<TKey, TValue>
             : SortedTreeEngineBase<TKey, TValue>
             where TKey : SortedTreeTypeBase<TKey>, new()
@@ -148,7 +147,6 @@ namespace GSF.SortedTreeStore.Net
             {
                 if (m_reader != null)
                     throw new Exception("Sockets do not support writing while a reader is open. Dispose of reader.");
-
 
                 m_stream.Write((byte)ServerCommand.Write);
                 m_encodingMode.ResetEncoder();

@@ -47,6 +47,9 @@ namespace GSF.SortedTreeStore.Tree
 
         public static void Register(CreateTreeNodeBase encoding)
         {
+            if ((object)encoding == null)
+                throw new ArgumentNullException("encoding");
+
             DoubleEncoding.Register(encoding);
         }
 
@@ -54,11 +57,14 @@ namespace GSF.SortedTreeStore.Tree
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
+            if ((object)encodingMethod == null)
+                throw new ArgumentNullException("encodingMethod");
+
             CreateTreeNodeBase encoding;
 
             if (DoubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
                 return encoding;
-       
+
             return new CreateGenericEncodedNode<TKey, TValue>(EncodingMethodsLibrary.GetEncodingMethod<TKey, TValue>(encodingMethod));
         }
 
@@ -66,6 +72,9 @@ namespace GSF.SortedTreeStore.Tree
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
+            if ((object)encodingMethod == null)
+                throw new ArgumentNullException("encodingMethod");
+
             return GetTreeNodeInitializer<TKey, TValue>(encodingMethod).Create<TKey, TValue>(level);
         }
 

@@ -81,6 +81,7 @@
     <Compile Include="BenchmarkSockets.cs" />
     <Compile Include="ConcurrentReading.cs" />
     <Compile Include="DebugStopwatch.cs" />
+    <Compile Include="MeasureCompression.cs" />
     <Compile Include="NPlot\PlotSpeed.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

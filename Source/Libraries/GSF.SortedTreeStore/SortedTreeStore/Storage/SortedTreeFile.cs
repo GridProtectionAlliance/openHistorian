@@ -213,6 +213,9 @@ namespace GSF.SortedTreeStore.Storage
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
+            if ((object)storageMethod == null)
+                throw new ArgumentNullException("storageMethod");
+
             SubFileName fileName = GetFileName<TKey, TValue>();
             if (!m_openedFiles.ContainsKey(fileName))
             {
@@ -244,6 +247,9 @@ namespace GSF.SortedTreeStore.Storage
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
+            if ((object)storageMethod == null)
+                throw new ArgumentNullException("storageMethod");
+
             using (TransactionalEdit trans = m_fileStructure.BeginEdit())
             {
                 using (SubFileStream fs = trans.CreateFile(fileName))
@@ -299,7 +305,7 @@ namespace GSF.SortedTreeStore.Storage
             Dispose();
             if (m_filePath != string.Empty)
             {
-                System.IO.File.Delete(m_filePath);
+                File.Delete(m_filePath);
             }
         }
 
