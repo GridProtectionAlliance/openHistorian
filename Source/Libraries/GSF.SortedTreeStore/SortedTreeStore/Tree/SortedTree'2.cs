@@ -243,8 +243,15 @@ namespace GSF.SortedTreeStore.Tree
             LeafStorage.TryInsertSequentailStream(helper);
             while (helper.IsValid)
             {
-                LeafStorage.TryInsert(helper.Key, helper.Value);
-                helper.Next();
+                if (helper.IsKVP1)
+                {
+                    LeafStorage.TryInsert(helper.Key1, helper.Value1);
+                }
+                else
+                {
+                    LeafStorage.TryInsert(helper.Key2, helper.Value2);
+                }
+                helper.NextDoNotCheckSequential();
             }
             if (IsDirty && AutoFlush)
                 m_header.SaveHeader(Stream);

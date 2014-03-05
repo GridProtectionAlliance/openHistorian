@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  FixedSizeCombinedEncoding`1.cs - Gbtc
+//  HistorianFixedSizeCombinedEncoding`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,18 +24,15 @@
 using System;
 using GSF.IO;
 using GSF.SortedTreeStore.Tree;
+using openHistorian.Collections;
 
 namespace GSF.SortedTreeStore.Encoding
 {
     /// <summary>
     /// An encoding method that is fixed in size and calls the native read/write functions of the specified type.
     /// </summary>
-    /// <typeparam name="TKey">The type to use as the key</typeparam>
-    /// <typeparam name="TValue">The type to use as the value</typeparam>
-    public class FixedSizeCombinedEncoding<TKey, TValue>
-        : DoubleValueEncodingBase<TKey, TValue>
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
+    public class HistorianFixedSizeCombinedEncoding
+        : DoubleValueEncodingBase<HistorianKey, HistorianValue>
     {
         int m_keySize;
         int m_valueSize;
@@ -43,10 +40,10 @@ namespace GSF.SortedTreeStore.Encoding
         /// <summary>
         /// Creates a new class
         /// </summary>
-        public FixedSizeCombinedEncoding()
+        public HistorianFixedSizeCombinedEncoding()
         {
-            m_keySize = new TKey().Size;
-            m_valueSize = new TValue().Size;
+            m_keySize = 24;
+            m_valueSize = 24;
         }
 
         /// <summary>
@@ -144,10 +141,14 @@ namespace GSF.SortedTreeStore.Encoding
         /// <param name="key">the key to encode</param>
         /// <param name="value">the value to encode</param>
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
-        public override void Encode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public override void Encode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
         {
-            key.Write(stream);
-            value.Write(stream);
+            stream.Write(key.Timestamp);
+            stream.Write(key.PointID);
+            stream.Write(key.EntryNumber);
+            stream.Write(value.Value1);
+            stream.Write(value.Value2);
+            stream.Write(value.Value3);
         }
 
         /// <summary>
@@ -160,11 +161,15 @@ namespace GSF.SortedTreeStore.Encoding
         /// <param name="value">the place to store the decoded value</param>
         /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
         /// <returns>the number of bytes necessary to decode the next key/value.</returns>
-        public override void Decode(BinaryStreamBase stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream)
+        public override void Decode(BinaryStreamBase stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool isEndOfStream)
         {
             isEndOfStream = false;
-            key.Read(stream);
-            value.Read(stream);
+            key.Timestamp = stream.ReadUInt64();
+            key.PointID = stream.ReadUInt64();
+            key.EntryNumber = stream.ReadUInt64();
+            value.Value1 = stream.ReadUInt64();
+            value.Value2 = stream.ReadUInt64();
+            value.Value3 = stream.ReadUInt64();
         }
 
         /// <summary>
@@ -177,12 +182,16 @@ namespace GSF.SortedTreeStore.Encoding
         /// <param name="value">the place to store the decoded value</param>
         /// <param name="isEndOfStream">outputs true if the end of the stream symbol is detected. Not all encoding methods have an end of stream symbol and therefore will always return false.</param>
         /// <returns>the number of bytes necessary to decode the next key/value.</returns>
-        public override unsafe int Decode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value, out bool isEndOfStream)
+        public override unsafe int Decode(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value, out bool isEndOfStream)
         {
             isEndOfStream = false;
-            key.Read(stream);
-            value.Read(stream + m_keySize);
-            return m_keySize + m_valueSize;
+            key.Timestamp = *(ulong*)stream;
+            key.PointID = *(ulong*)(stream + 8);
+            key.EntryNumber = *(ulong*)(stream + 16);
+            value.Value1 = *(ulong*)(stream + 24);
+            value.Value2 = *(ulong*)(stream + 32);
+            value.Value3 = *(ulong*)(stream + 40);
+            return 48;
         }
 
         /// <summary>
@@ -194,20 +203,24 @@ namespace GSF.SortedTreeStore.Encoding
         /// <param name="key">the key to encode</param>
         /// <param name="value">the value to encode</param>
         /// <returns>the number of bytes necessary to encode this key/value.</returns>
-        public override unsafe int Encode(byte* stream, TKey prevKey, TValue prevValue, TKey key, TValue value)
+        public override unsafe int Encode(byte* stream, HistorianKey prevKey, HistorianValue prevValue, HistorianKey key, HistorianValue value)
         {
-            key.Write(stream);
-            value.Write(stream + m_keySize);
-            return m_keySize + m_valueSize;
+            *(ulong*)stream = key.Timestamp;
+            *(ulong*)(stream + 8) = key.PointID;
+            *(ulong*)(stream + 16) = key.EntryNumber;
+            *(ulong*)(stream + 24) = value.Value1;
+            *(ulong*)(stream + 32) = value.Value2;
+            *(ulong*)(stream + 40) = value.Value3;
+            return 48;
         }
 
         /// <summary>
         /// Clones this encoding method.
         /// </summary>
         /// <returns>A clone</returns>
-        public override DoubleValueEncodingBase<TKey, TValue> Clone()
+        public override DoubleValueEncodingBase<HistorianKey, HistorianValue> Clone()
         {
-            return new FixedSizeCombinedEncoding<TKey, TValue>();
+            return new HistorianFixedSizeCombinedEncoding();
         }
     }
 }

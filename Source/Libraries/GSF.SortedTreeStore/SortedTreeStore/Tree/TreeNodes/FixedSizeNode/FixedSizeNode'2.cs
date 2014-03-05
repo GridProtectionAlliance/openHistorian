@@ -23,6 +23,7 @@
 
 using System;
 using GSF.IO.Unmanaged;
+using GSF.SortedTreeStore.Encoding;
 
 namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
 {
@@ -37,7 +38,9 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+
         int m_maxRecordsPerNode;
+        DoubleValueEncodingBase<TKey, TValue> m_encoding;
 
         /// <summary>
         /// Creates a new class
@@ -46,6 +49,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         public FixedSizeNode(byte level)
             : base(level, version: 1)
         {
+            m_encoding = EncodingLibrary.GetEncodingMethod<TKey, TValue>(SortedTree.FixedSizeNode);
         }
 
         /// <summary>
@@ -80,9 +84,11 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
 
         protected override void Read(int index, TKey key, TValue value)
         {
+            bool eos;
             byte* ptr = GetReadPointerAfterHeader() + index * KeyValueSize;
-            key.Read(ptr);
-            value.Read(ptr + KeySize);
+            m_encoding.Decode(ptr, null, null, key, value, out eos);
+            //key.Read(ptr);
+            //value.Read(ptr + KeySize);
         }
 
         protected override bool RemoveUnlessOverflow(int index)
@@ -112,8 +118,10 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
             }
 
             //Insert the data
-            key.Write(start);
-            value.Write(start + KeySize);
+
+            m_encoding.Encode(start, null, null, key, value);
+            //key.Write(start);
+            //value.Write(start + KeySize);
 
             //save the header
             IncrementOneRecord(KeyValueSize);
@@ -123,7 +131,82 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         protected override void AppendSequentailStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull)
         {
             isFull = false;
-            //ToDo: Actually implement this method.
+            return;
+
+            //ToDo: Figure out why this code does not work.
+            int recordsAdded = 0;
+            int additionalValidBytes = 0;
+            byte* writePointer = GetWritePointerAfterHeader();
+            int offset = RecordCount * KeyValueSize;
+
+            if (RecordCount > 0)
+            {
+                byte* ptr = writePointer + (RecordCount - 1) * KeyValueSize;
+                stream.PrevKey.Read(ptr);
+                stream.PrevValue.Read(ptr + KeySize);
+            }
+            else
+            {
+                stream.PrevKey.Clear();
+                stream.PrevValue.Clear();
+            }
+
+        TryAgain:
+            if (!stream.IsValid || !stream.IsStillSequential)
+            {
+                isFull = false;
+                IncrementRecordCounts(recordsAdded, additionalValidBytes);
+                return;
+            }
+
+            int length;
+            if (stream.IsKVP1)
+            {
+                //Key1,Value1 are the current record
+                if (RemainingBytes - additionalValidBytes < KeyValueSize)
+                {
+                    isFull = true;
+                    IncrementRecordCounts(recordsAdded, additionalValidBytes);
+                    return;
+                }
+
+                stream.Key1.Write(writePointer + offset);
+                stream.Value1.Write(writePointer + offset + KeySize);
+                additionalValidBytes += KeyValueSize;
+                recordsAdded++;
+                offset += KeySize;
+
+                //Inlined stream.Next()
+                stream.IsValid = stream.Stream.Read(stream.Key2, stream.Value2);
+                stream.IsStillSequential = stream.Key1.IsLessThan(stream.Key2);
+                stream.IsKVP1 = false;
+                //End Inlined
+                goto TryAgain;
+            }
+            else
+            {
+                //Key2,Value2 are the current record
+                if (RemainingBytes - additionalValidBytes < KeyValueSize)
+                {
+                    isFull = true;
+                    IncrementRecordCounts(recordsAdded, additionalValidBytes);
+                    return;
+                }
+
+                stream.Key2.Write(writePointer + offset);
+                stream.Value2.Write(writePointer + offset + KeySize);
+                additionalValidBytes += KeyValueSize;
+                recordsAdded++;
+                offset += KeySize;
+
+                //Inlined stream.Next()
+                stream.IsValid = stream.Stream.Read(stream.Key1, stream.Value1);
+                stream.IsStillSequential = stream.Key2.IsLessThan(stream.Key1);
+                stream.IsKVP1 = true;
+                //End Inlined
+
+                goto TryAgain;
+            }
         }
 
         protected override int GetIndexOf(TKey key)

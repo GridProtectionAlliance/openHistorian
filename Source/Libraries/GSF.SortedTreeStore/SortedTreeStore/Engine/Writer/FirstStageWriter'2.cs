@@ -81,7 +81,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private long m_lastRolledOverSequenceNumber;
         private ScheduledTask m_rolloverTask;
         private readonly object m_syncRoot;
-        private readonly TempFile<TKey, TValue> m_stagingFile;
+        private TempFile<TKey, TValue> m_activeStagingFile;
+        private TempFile<TKey, TValue> m_workingStagingFile;
         private readonly ManualResetEvent m_rolloverComplete;
 
         /// <summary>
@@ -93,7 +94,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
             if (settings.RolloverSize > settings.MaximumAllowedSize)
                 throw new ArgumentOutOfRangeException("settings.MaximumAllowedSize", "must be greater than or equal to settings.RolloverSize");
             m_rolloverComplete = new ManualResetEvent(false);
-            m_stagingFile = settings.TempFile;
+            m_activeStagingFile = settings.TempFile;
+            m_workingStagingFile = settings.TempFile.Clone();
             m_rolloverInterval = settings.RolloverInterval;
             m_rolloverSize = settings.RolloverSize;
             m_maximumAllowedSize = settings.MaximumAllowedSize;
@@ -127,10 +129,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 if (m_stopped)
                     throw new Exception("No new points can be added. Point queue has been stopped.");
 
-                m_stagingFile.Append(args.Stream);
+                m_activeStagingFile.Append(args.Stream);
                 m_lastCommitedSequenceNumber = args.SequenceNumber;
 
-                currentSize = m_stagingFile.Size;
+                currentSize = m_activeStagingFile.Size;
 
                 if (currentSize > m_rolloverSize)
                     m_rolloverTask.Start();
@@ -162,10 +164,15 @@ namespace GSF.SortedTreeStore.Engine.Writer
             long sequenceNumber;
             lock (m_syncRoot)
             {
-                m_stagingFile.DumpToDisk();
+                var tmp = m_activeStagingFile;
+                m_activeStagingFile = m_workingStagingFile;
+                m_workingStagingFile = tmp;
                 sequenceNumber = m_lastCommitedSequenceNumber;
-                m_rolloverComplete.Set();
             }
+
+            m_workingStagingFile.DumpToDisk();
+            m_rolloverComplete.Set();
+
             m_lastRolledOverSequenceNumber = sequenceNumber;
         }
 

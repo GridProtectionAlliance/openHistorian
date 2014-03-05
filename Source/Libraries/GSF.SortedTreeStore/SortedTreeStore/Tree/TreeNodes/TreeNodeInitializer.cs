@@ -65,7 +65,7 @@ namespace GSF.SortedTreeStore.Tree
             if (DoubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
                 return encoding;
 
-            return new CreateGenericEncodedNode<TKey, TValue>(EncodingMethodsLibrary.GetEncodingMethod<TKey, TValue>(encodingMethod));
+            return new CreateGenericEncodedNode<TKey, TValue>(EncodingLibrary.GetEncodingMethod<TKey, TValue>(encodingMethod));
         }
 
         internal static SortedTreeNodeBase<TKey, TValue> CreateTreeNode<TKey, TValue>(EncodingDefinition encodingMethod, byte level)

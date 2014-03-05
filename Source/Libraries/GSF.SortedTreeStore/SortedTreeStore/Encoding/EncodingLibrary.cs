@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  EncodingMethodsLibrary.cs - Gbtc
+//  EncodingLibrary.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -30,12 +30,12 @@ namespace GSF.SortedTreeStore.Encoding
     /// Contains all of the fundamental encoding methods. Types implementing <see cref="SortedTreeTypeBase{T}"/>
     /// will automatically register when passed to one of the child methods. 
     /// </summary>
-    public static class EncodingMethodsLibrary
+    public static class EncodingLibrary
     {
         private static readonly SingleEncodingDictionary<CreateSingleValueEncodingBase> SingleEncoding;
         private static readonly DualEncodingDictionary<CreateDoubleValueEncodingBase> DoubleEncoding;
 
-        static EncodingMethodsLibrary()
+        static EncodingLibrary()
         {
             SingleEncoding = new SingleEncodingDictionary<CreateSingleValueEncodingBase>();
             DoubleEncoding = new DualEncodingDictionary<CreateDoubleValueEncodingBase>();

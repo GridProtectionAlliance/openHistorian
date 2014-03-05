@@ -112,5 +112,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
             m_sortedTreeFile = null;
         }
+
+        public TempFile<TKey, TValue> Clone()
+        {
+            return new TempFile<TKey, TValue>(m_archiveList, m_initialFile, m_finalFile);
+        }
     }
 }

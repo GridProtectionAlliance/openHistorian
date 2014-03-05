@@ -55,13 +55,13 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_archiveList = list;
             m_stage2 = new CombineFiles<TKey, TValue>(settings.Stage2);
             m_stage2.Exception += OnException;
-            
+
             m_stage1 = new CombineFiles<TKey, TValue>(settings.Stage1);
             m_stage1.Exception += OnException;
-            
+
             m_stage0 = new FirstStageWriter<TKey, TValue>(settings.Stage0);
             m_stage0.Exception += OnException;
-         
+
             m_prestage = new PrestageWriter<TKey, TValue>(settings.Prestage, m_stage0.AppendData);
             m_prestage.Exception += OnException;
         }
@@ -89,7 +89,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <returns>the transaction code so this write can be tracked.</returns>
         public long Write(TreeStream<TKey, TValue> stream)
         {
-            return m_prestage.Write(stream);
+            long value = long.MinValue;
+            while (stream.Read())
+                value = m_prestage.Write(stream.CurrentKey, stream.CurrentValue);
+            return value;
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  PointCollectionBase`2.cs - Gbtc
+//  PointBuffer`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,19 +22,43 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore.Encoding;
+using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Collection
 {
-    public abstract class PointCollectionBase<TKey, TValue>
-        where TKey : class, new()
-        where TValue : class, new()
+    public class PointBuffer<TKey, TValue>
+        : TreeStream<TKey,TValue> 
+        where TKey : SortedTreeTypeBase<TKey>, new()
+        where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        TKey m_tmpKey;
+        TValue m_tmpValue;
+
         public byte[] RawData;
         public int DequeuePosition;
         public int EnqueuePosition;
+
         public int PointSize { get; private set; }
-        public int KeySize { get; private set; }
-        public int ValueSize { get; private set; }
+
+        public int Count
+        {
+            get
+            {
+                return (EnqueuePosition - DequeuePosition) / PointSize;
+            }
+        }
+
+        DoubleValueEncodingBase<TKey, TValue> m_encoding;
+
+        public PointBuffer(int capacity)
+        {
+            m_tmpKey = new TKey();
+            m_tmpValue = new TValue();
+            m_encoding = EncodingLibrary.GetEncodingMethod<TKey, TValue>(SortedTree.FixedSizeNode);
+            PointSize = m_encoding.MaxCompressionSize;
+            RawData = new byte[capacity * PointSize];
+        }
 
         public bool ContainsPoints
         {
@@ -60,54 +84,52 @@ namespace GSF.SortedTreeStore.Collection
             }
         }
 
-
-        protected void Initialize(int capacity, int keySize, int valueSize)
-        {
-            PointSize = keySize + valueSize;
-            KeySize = keySize;
-            ValueSize = valueSize;
-            RawData = new byte[capacity * PointSize];
-        }
-
         public void Clear()
         {
             DequeuePosition = 0;
             EnqueuePosition = 0;
+            EOS = false;
         }
 
-        public abstract void UnDequeue(TKey key, TValue value);
-
-        public void Peek(TKey key, TValue value)
+        unsafe public bool TryEnqueue(TKey key, TValue value)
         {
-            throw new NotImplementedException();
+            if (IsFull)
+                return false;
+            fixed (byte* lp = RawData)
+            {
+                m_encoding.Encode(lp + EnqueuePosition, null, null, key, value);
+                EnqueuePosition += PointSize;
+            }
+            return true;
         }
-
-        public abstract void Peek(TKey key);
-
-        public void Dequeue()
+        
+        unsafe public void Dequeue(TKey key, TValue value)
         {
+            bool endOfStream;
             if (IsEmpty)
                 throw new Exception();
-            DequeuePosition += PointSize;
+            fixed (byte* lp = RawData)
+            {
+                m_encoding.Decode(lp + DequeuePosition, null, null, key, value, out endOfStream);
+                DequeuePosition += PointSize;
+            }
             if (IsEmpty)
                 Clear();
         }
 
-        public abstract void Enqueue(TKey key, TValue value);
-
-        public abstract void Dequeue(TKey key, TValue value);
-
-        unsafe public abstract void Enqueue(byte* keyValue);
-
-        public abstract int CompareTo(PointCollectionBase<TKey, TValue> other);
-
-        public abstract int CompareTo(TKey other);
-
-        public abstract bool CopyToWhileLessThan(PointCollectionBase<TKey, TValue> destination, TKey comparer);
-
-        public abstract bool CopyToIfLessThan(PointCollectionBase<TKey, TValue> destination, TKey comparer);
-
-        public abstract void CopyTo(PointCollectionBase<TKey, TValue> destination);
-
+        public unsafe override bool Read(TKey key, TValue value)
+        {
+            bool endOfStream;
+            if (IsEmpty)
+                return false;
+            fixed (byte* lp = RawData)
+            {
+                m_encoding.Decode(lp + DequeuePosition, null, null, key, value, out endOfStream);
+                DequeuePosition += PointSize;
+            }
+            if (IsEmpty)
+                Clear();
+            return true;
+        }
     }
 }

@@ -36,7 +36,7 @@ namespace GSF.SortedTreeStore.Collection
             m_base = treeNode;
         }
 
-        public PointCollectionBase<TKey, TValue> Create(int capacity)
+        public PointBuffer<TKey, TValue> Create(int capacity)
         {
             return m_base.Create<TKey, TValue>(capacity);
         }

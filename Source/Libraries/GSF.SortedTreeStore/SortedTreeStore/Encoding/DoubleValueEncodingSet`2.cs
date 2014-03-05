@@ -46,8 +46,8 @@ namespace GSF.SortedTreeStore.Encoding
         public DoubleValueEncodingSet(EncodingDefinition encodingMethod)
         {
             m_encodingMethod = encodingMethod;
-            m_keyEncoding = EncodingMethodsLibrary.GetEncodingMethod<TKey>(encodingMethod.KeyEncodingMethod);
-            m_valueEncoding = EncodingMethodsLibrary.GetEncodingMethod<TValue>(encodingMethod.ValueEncodingMethod);
+            m_keyEncoding = EncodingLibrary.GetEncodingMethod<TKey>(encodingMethod.KeyEncodingMethod);
+            m_valueEncoding = EncodingLibrary.GetEncodingMethod<TValue>(encodingMethod.ValueEncodingMethod);
         }
 
         public override EncodingDefinition EncodingMethod

@@ -27,7 +27,7 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Collection
 {
     /// <summary>
-    /// A base class that allows for generically constructing any number of <see cref="PointCollectionBase{TKey,TValue}"/> implementations.
+    /// A base class that allows for generically constructing any number of <see cref="PointBuffer{TKey,TValue}"/> implementations.
     /// </summary>
     public abstract class CreatePointCollectionBase
     {
@@ -60,7 +60,7 @@ namespace GSF.SortedTreeStore.Collection
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
-        public abstract PointCollectionBase<TKey, TValue> Create<TKey, TValue>(int capacity)
+        public abstract PointBuffer<TKey, TValue> Create<TKey, TValue>(int capacity)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new();
     }

@@ -24,6 +24,7 @@
 
 using System;
 using System.Threading;
+using GSF.SortedTreeStore.Collection;
 using GSF.Threading;
 using GSF.SortedTreeStore.Tree;
 
@@ -55,7 +56,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        public PointStreamCache<TKey, TValue> Stream;
+        public PointBuffer<TKey, TValue> Stream;
         public long SequenceNumber;
     }
 
@@ -80,8 +81,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private readonly int m_sleepThreadOnPointCount;
         private long m_sequenceId;
         private readonly object m_syncRoot;
-        private PointStreamCache<TKey, TValue> m_processingQueue;
-        private PointStreamCache<TKey, TValue> m_activeQueue;
+        private PointBuffer<TKey, TValue> m_processingQueue;
+        private PointBuffer<TKey, TValue> m_activeQueue;
         private ScheduledTask m_rolloverTask;
         private readonly Action<PrestageArgs<TKey, TValue>> m_onRollover;
 
@@ -101,10 +102,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
             m_sequenceId = 0;
             m_syncRoot = new object();
-            m_activeQueue = new PointStreamCache<TKey, TValue>();
-            m_processingQueue = new PointStreamCache<TKey, TValue>();
-            m_activeQueue.ClearAndSetWriting();
-            m_processingQueue.ClearAndSetWriting();
+            m_activeQueue = new PointBuffer<TKey, TValue>(10000);
+            m_processingQueue = new PointBuffer<TKey, TValue>(10000);
+            m_activeQueue.Clear();
+            m_processingQueue.Clear();
             m_onRollover = onRollover;
             m_rolloverInterval = settings.RolloverInterval;
             m_rolloverPointCount = settings.RolloverPointCount;
@@ -145,6 +146,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <remarks>Calls to this function are thread safe</remarks>
         public long Write(TKey key, TValue value)
         {
+        TryAgain:
+
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
@@ -154,43 +157,18 @@ namespace GSF.SortedTreeStore.Engine.Writer
             {
                 if (m_stopped)
                     throw new Exception("No new points can be added. Point queue has been stopped.");
+                if (!m_activeQueue.TryEnqueue(key, value))
+                {
+                    m_rolloverTask.Start();
+                    goto TryAgain;
+                }
                 m_sequenceId++;
-                m_activeQueue.Write(key, value);
                 sequenceId = m_sequenceId;
                 pointCount = m_activeQueue.Count;
                 if (pointCount == m_rolloverPointCount)
                     m_rolloverTask.Start();
             }
             DelayIfNeeded(pointCount - 1);
-            return sequenceId;
-        }
-
-        /// <summary>
-        /// Writes the provided stream to the prestage buffer
-        /// </summary>
-        /// <param name="stream">the stream to write</param>
-        /// <returns>the sequence number when this data will be committed</returns>
-        /// <remarks>Calls to this function are thread safe</remarks>
-        public long Write(TreeStream<TKey, TValue> stream)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            long sequenceId;
-            int pointCountBefore;
-            lock (m_syncRoot)
-            {
-                if (m_stopped)
-                    throw new Exception("No new points can be added. Point queue has been stopped.");
-                m_sequenceId++;
-                pointCountBefore = m_activeQueue.Count;
-                m_activeQueue.Write(stream);
-                sequenceId = m_sequenceId;
-                int pointCount = m_activeQueue.Count;
-                if (pointCount >= m_rolloverPointCount && pointCountBefore < m_rolloverPointCount)
-                    m_rolloverTask.Start();
-            }
-            DelayIfNeeded(pointCountBefore);
             return sequenceId;
         }
 
@@ -230,12 +208,11 @@ namespace GSF.SortedTreeStore.Engine.Writer
                     return;
 
                 //Swap active and processing.
-                PointStreamCache<TKey, TValue> stream = m_activeQueue;
+                PointBuffer<TKey, TValue> stream = m_activeQueue;
                 m_activeQueue = m_processingQueue;
                 m_processingQueue = stream;
 
-                m_activeQueue.ClearAndSetWriting();
-                stream.SetReadingFromBeginning();
+                m_activeQueue.Clear();
 
                 args = new PrestageArgs<TKey, TValue>()
                     {

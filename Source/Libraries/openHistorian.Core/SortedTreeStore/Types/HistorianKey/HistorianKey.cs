@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using GSF.IO;
+using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.SortedTreeStore.Types;
@@ -168,13 +169,15 @@ namespace openHistorian.Collections
         {
             var list = new ArrayList();
             list.Add(new CreateTsCombinedEncoding());
+            list.Add(new CreateHistorianFixedSizeCombinedEncoding());
+            list.Add(new CreateHistorianFixedSizeDualSingleEncoding());
             //list.Add(new CreateHistorianCompressionTs());
             return list;
 
             //CreateHistorianCompressionDelta.Register();
             //CreateHistorianCompressionTs.Register();
             CreateHistorianCompressedStream.Register();
-            CreateHistorianPointCollection.Register();
+            //CreateHistorianPointCollection.Register();
         }
 
         public override string ToString()

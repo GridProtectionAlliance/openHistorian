@@ -111,6 +111,21 @@ namespace GSF.SortedTreeStore.Tree
                 IsKVP1 = true;
             }
         }
+        public void NextDoNotCheckSequential()
+        {
+            if (IsKVP1)
+            {
+                IsValid = Stream.Read(Key2, Value2);
+                IsStillSequential = false;
+                IsKVP1 = false;
+            }
+            else
+            {
+                IsValid = Stream.Read(Key1, Value1);
+                IsStillSequential = false;
+                IsKVP1 = true;
+            }
+        }
 
     }
 }

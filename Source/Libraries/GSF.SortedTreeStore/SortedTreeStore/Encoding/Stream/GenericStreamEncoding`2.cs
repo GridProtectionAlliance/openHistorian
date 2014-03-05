@@ -39,7 +39,7 @@ namespace GSF.SortedTreeStore.Encoding
 
         public GenericStreamEncoding(EncodingDefinition encodingMethod)
         {
-            m_encoding = EncodingMethodsLibrary.GetEncodingMethod<TKey, TValue>(encodingMethod);
+            m_encoding = EncodingLibrary.GetEncodingMethod<TKey, TValue>(encodingMethod);
             m_prevKey = new TKey();
             m_prevValue = new TValue();
         }
