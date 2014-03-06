@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Net;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using NUnit.Framework;
 using GSF.SortedTreeStore.Storage;
@@ -62,18 +64,61 @@ namespace GSF.SortedTreeStore.Storage
         }
 
         [Test]
+        public void Test4096RandomHuge()
+        {
+            const uint count = 200000;
+            List<TestResults> lst = new List<TestResults>();
+            //TestRandom(4096, count);
+            //lst.Add(TestRandom(4096, count));
+            lst.Add(TestRandom(4096, count));
+
+            Console.Write("Size\t");
+            lst.ForEach((x) => Console.Write(x.PageSize.ToString() + '\t'));
+            Console.WriteLine();
+            Console.Write("Rate\t");
+            lst.ForEach((x) => Console.Write(x.Rate.ToString("0.000") + '\t'));
+            Console.WriteLine();
+            Console.Write("Read\t");
+            lst.ForEach((x) => Console.Write(x.ReadCount.ToString() + '\t'));
+            Console.WriteLine();
+            Console.Write("Write\t");
+            lst.ForEach((x) => Console.Write(x.WriteCount.ToString() + '\t'));
+            Console.WriteLine();
+            Console.Write("Checksum\t");
+            lst.ForEach((x) => Console.Write(x.ChecksumCount.ToString() + '\t'));
+            Console.WriteLine();
+            Console.Write("Lookups\t");
+            lst.ForEach((x) => Console.Write(x.Lookups.ToString() + '\t'));
+            Console.WriteLine();
+            Console.Write("Cached\t");
+            lst.ForEach((x) => Console.Write(x.CachedLookups.ToString() + '\t'));
+            Console.WriteLine();
+
+
+            //string fileName = @"c:\temp\testFile.d2";
+            //TestFile(1024, fileName);
+            //TestFile(2048, fileName);
+            //TestFile(4096, fileName);
+            //TestFile(4096 << 1, fileName);
+            //TestFile(4096 << 2, fileName);
+            //TestFile(4096 << 3, fileName);
+            //TestFile(4096 << 4, fileName);
+        }
+
+        [Test]
         public void Test4096Random()
         {
+            const uint count = 100000;
             List<TestResults> lst = new List<TestResults>();
-            TestRandom(512);
-            lst.Add(TestRandom(512));
-            lst.Add(TestRandom(1024));
-            lst.Add(TestRandom(2048));
-            lst.Add(TestRandom(4096));
-            lst.Add(TestRandom(4096 << 1));
-            lst.Add(TestRandom(4096 << 2));
-            lst.Add(TestRandom(4096 << 3));
-            lst.Add(TestRandom(4096 << 4));
+            TestRandom(512, count);
+            lst.Add(TestRandom(512, count));
+            lst.Add(TestRandom(1024, count));
+            lst.Add(TestRandom(2048, count));
+            lst.Add(TestRandom(4096, count));
+            lst.Add(TestRandom(4096 << 1, count));
+            lst.Add(TestRandom(4096 << 2, count));
+            lst.Add(TestRandom(4096 << 3, count));
+            lst.Add(TestRandom(4096 << 4, count));
 
             Console.Write("Size\t");
             lst.ForEach((x) => Console.Write(x.PageSize.ToString() + '\t'));
@@ -161,10 +206,9 @@ namespace GSF.SortedTreeStore.Storage
             };
         }
 
-        private TestResults TestRandom(int pageSize)
+        private TestResults TestRandom(int pageSize, uint count)
         {
             //StringBuilder sb = new StringBuilder();
-
             Random R = new Random(1);
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
@@ -179,22 +223,27 @@ namespace GSF.SortedTreeStore.Storage
             using (SortedTreeFile af = SortedTreeFile.CreateInMemory(pageSize))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
-                using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
+                uint pointPairs = count / 5000;
+                for (uint i = 0; i < pointPairs; i++)
                 {
-                    for (ulong x = 0; x < 100000; x++)
+                    uint max = i * 5000 + 5000;
+                    using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
                     {
-                        key.Timestamp = (uint)R.Next();
-                        key.PointID = 2 * x;
-                        value.Value3 = 3 * x;
-                        value.Value1 = 4 * x;
-                        //if ((x % 100) == 0)
-                        //    sb.AppendLine(x + "," + DiskIoSession.ReadCount + "," + DiskIoSession.WriteCount);
-                        //if (x == 1000)
-                        //    DiskIoSession.BreakOnIO = true;
-                        edit.AddPoint(key, value);
-                        //edit.AddPoint(uint.MaxValue - x, 2 * x, 3 * x, 4 * x);
+                        for (ulong x = i * 5000; x < max; x++)
+                        {
+                            key.Timestamp = (uint)R.Next();
+                            key.PointID = 2 * x;
+                            value.Value3 = 3 * x;
+                            value.Value1 = 4 * x;
+                            //if ((x % 100) == 0)
+                            //    sb.AppendLine(x + "," + DiskIoSession.ReadCount + "," + DiskIoSession.WriteCount);
+                            //if (x == 1000)
+                            //    DiskIoSession.BreakOnIO = true;
+                            edit.AddPoint(key, value);
+                            //edit.AddPoint(uint.MaxValue - x, 2 * x, 3 * x, 4 * x);
+                        }
+                        edit.Commit();
                     }
-                    edit.Commit();
                 }
                 //long cnt = af.Count();
             }
@@ -207,7 +256,58 @@ namespace GSF.SortedTreeStore.Storage
             return new TestResults()
             {
                 PageSize = pageSize,
-                Rate = (float)(.1 / sw.Elapsed.TotalSeconds),
+                Rate = (float)(count / sw.Elapsed.TotalSeconds / 1000000),
+                ReadCount = DiskIoSession.ReadCount,
+                WriteCount = DiskIoSession.WriteCount,
+                ChecksumCount = Stats.ChecksumCount,
+                Lookups = DiskIoSession.Lookups,
+                CachedLookups = DiskIoSession.CachedLookups
+            };
+        }
+
+        private TestResults TestRandomBinaryStream(int pageSize, uint count)
+        {
+            //StringBuilder sb = new StringBuilder();
+            Random R = new Random(1);
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            DiskIoSession.ReadCount = 0;
+            DiskIoSession.WriteCount = 0;
+            Stats.ChecksumCount = 0;
+            DiskIoSession.Lookups = 0;
+            DiskIoSession.CachedLookups = 0;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            using (BinaryStream bs = new BinaryStream(allocatesOwnMemory: true))
+            {
+                var table = SortedTree<HistorianKey, HistorianValue>.Create(bs, 4096);
+                for (ulong x = 0; x < count; x++)
+                {
+                    key.Timestamp = (uint)R.Next();
+                    key.PointID = 2 * x;
+                    value.Value3 = 3 * x;
+                    value.Value1 = 4 * x;
+                    //if ((x % 100) == 0)
+                    //    sb.AppendLine(x + "," + DiskIoSession.ReadCount + "," + DiskIoSession.WriteCount);
+                    //if (x == 1000)
+                    //    DiskIoSession.BreakOnIO = true;
+                    table.TryAdd(key, value);
+                    //edit.AddPoint(uint.MaxValue - x, 2 * x, 3 * x, 4 * x);
+                }
+
+            }
+
+            sw.Stop();
+
+            //File.WriteAllText(@"C:\temp\" + pageSize + ".csv",sb.ToString());
+
+
+            return new TestResults()
+            {
+                PageSize = pageSize,
+                Rate = (float)(count / sw.Elapsed.TotalSeconds / 1000000),
                 ReadCount = DiskIoSession.ReadCount,
                 WriteCount = DiskIoSession.WriteCount,
                 ChecksumCount = Stats.ChecksumCount,
@@ -239,7 +339,7 @@ namespace GSF.SortedTreeStore.Storage
                 File.Delete(fileName);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (SortedTreeFile af = SortedTreeFile.CreateFile(fileName,pageSize))
+            using (SortedTreeFile af = SortedTreeFile.CreateFile(fileName, pageSize))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(CreateHistorianCompressionTs.TypeGuid))
             using (SortedTreeTable<HistorianKey, HistorianValue>.Editor edit = af2.BeginEdit())
             {

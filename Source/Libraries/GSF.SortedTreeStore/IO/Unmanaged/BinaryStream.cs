@@ -240,11 +240,6 @@ namespace GSF.IO.Unmanaged
             }
         }
 
-        private long GetPosition()
-        {
-            return m_firstPosition + (m_current - m_first);
-        }
-
         private void SetPosition(long value)
         {
             if (m_firstPosition <= value && value < m_lastPosition)
@@ -321,9 +316,9 @@ namespace GSF.IO.Unmanaged
         public override byte* GetWritePointer(long position, int length)
         {
             Position = position;
-            if (RemainingWriteLength <= 0)
+            if (m_lastWrite - m_current <= 0) //RemainingWriteLength == (m_lastWrite - m_current)
                 UpdateLocalBuffer(true);
-            if (RemainingWriteLength < length)
+            if (m_lastWrite - m_current < length) //RemainingWriteLength == (m_lastWrite - m_current)
                 throw new Exception("Cannot get the provided length.");
             return m_current;
         }
@@ -331,9 +326,9 @@ namespace GSF.IO.Unmanaged
         public override byte* GetReadPointer(long position, int length)
         {
             SetPosition(position);
-            if (RemainingReadLength <= 0)
+            if (m_lastRead - m_current <= 0) //RemainingReadLength = (m_lastRead - m_current)
                 UpdateLocalBuffer(false);
-            if (RemainingReadLength < length)
+            if (m_lastRead - m_current < length) //RemainingReadLength = (m_lastRead - m_current)
                 throw new Exception("Cannot get the provided length.");
             return m_current;
         }
@@ -341,11 +336,11 @@ namespace GSF.IO.Unmanaged
         public override byte* GetReadPointer(long position, int length, out bool supportsWriting)
         {
             Position = position;
-            if (RemainingReadLength <= 0)
+            if (m_lastRead - m_current <= 0) //RemainingReadLength = (m_lastRead - m_current)
                 UpdateLocalBuffer(false);
-            if (RemainingReadLength < length)
+            if (m_lastRead - m_current < length) //RemainingReadLength = (m_lastRead - m_current)
                 throw new Exception("Cannot get the provided length.");
-            supportsWriting = (RemainingWriteLength >= length);
+            supportsWriting = (m_lastWrite - m_current >= length); //RemainingWriteLength == (m_lastWrite - m_current)
             return m_current;
         }
 
@@ -356,10 +351,10 @@ namespace GSF.IO.Unmanaged
         public override void UpdateLocalBuffer(bool isWriting)
         {
             //If the block block is already looked up, skip this step.
-            if (isWriting && RemainingWriteLength > 0 || !isWriting && RemainingReadLength > 0)
+            if (isWriting && m_lastWrite - m_current > 0 || !isWriting && m_lastRead - m_current > 0) //RemainingWriteLength == (m_lastWrite - m_current) //RemainingReadLength = (m_lastRead - m_current)
                 return;
 
-            long position = GetPosition();
+            long position = m_firstPosition + (m_current - m_first);
             m_args.Position = position;
             m_args.IsWriting = isWriting;
             IncrementPointer();
@@ -399,7 +394,7 @@ namespace GSF.IO.Unmanaged
             Position = source;
             UpdateLocalBuffer(false);
 
-            bool containsSource = (length <= RemainingReadLength);
+            bool containsSource = (length <= m_lastRead - m_current); //RemainingReadLength = (m_lastRead - m_current)
             bool containsDestination = (m_firstPosition <= destination && destination + length < m_lastPosition);
 
             if (containsSource && containsDestination)
@@ -696,9 +691,9 @@ namespace GSF.IO.Unmanaged
 
         public override void Write(byte* buffer, int length)
         {
-            if (RemainingWriteLength <= 0)
+            if (m_lastWrite - m_current <= 0) //RemainingWriteLength == (m_lastWrite - m_current)
                 UpdateLocalBuffer(true);
-            if (RemainingWriteLength < length)
+            if (m_lastWrite - m_current < length) //RemainingWriteLength == (m_lastWrite - m_current)
             {
                 base.Write(buffer, length);
                 return;
@@ -738,15 +733,15 @@ namespace GSF.IO.Unmanaged
             Write2(value, offset, count);
         }
 
-        
+
 
         private void Write2(byte[] value, int offset, int count)
         {
             while (count > 0)
             {
-                if (RemainingWriteLength <= 0)
+                if (m_lastWrite - m_current <= 0) //RemainingWriteLength == (m_lastWrite - m_current)
                     UpdateLocalBuffer(true);
-                int availableLength = Math.Min((int)RemainingWriteLength, count);
+                int availableLength = Math.Min((int)(m_lastWrite - m_current), count); //RemainingWriteLength == (m_lastWrite - m_current)
 
                 Marshal.Copy(value, offset, (IntPtr)m_current, availableLength);
                 m_current += availableLength;
@@ -1016,11 +1011,11 @@ namespace GSF.IO.Unmanaged
             return base.Read7BitUInt64();
         }
 
-       
+
 
         public override int Read(byte[] value, int offset, int count)
         {
-            if (RemainingReadLength >= count)
+            if (m_lastRead - m_current >= count) //RemainingReadLength = (m_lastRead - m_current)
             {
                 Marshal.Copy((IntPtr)(m_current), value, offset, count);
                 m_current += count;
@@ -1034,9 +1029,9 @@ namespace GSF.IO.Unmanaged
             int origionalCount = count;
             while (count > 0)
             {
-                if (RemainingReadLength <= 0)
+                if (m_lastRead - m_current <= 0) //RemainingReadLength = (m_lastRead - m_current)
                     UpdateLocalBuffer(false);
-                int availableLength = Math.Min((int)RemainingReadLength, count);
+                int availableLength = Math.Min((int)(m_lastRead - m_current), count); //RemainingReadLength = (m_lastRead - m_current)
 
                 Marshal.Copy((IntPtr)m_current, value, offset, availableLength);
 

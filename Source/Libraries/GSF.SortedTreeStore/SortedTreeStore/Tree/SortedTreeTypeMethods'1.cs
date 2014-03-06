@@ -42,7 +42,7 @@ namespace GSF.SortedTreeStore.Tree
     {
         protected T TempKey = new T();
         protected int LastFoundIndex;
-        
+
         /// <summary>
         /// Does a binary search on the data to find the best location for the <see cref="key"/>
         /// </summary>
@@ -53,11 +53,9 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         public virtual unsafe int BinarySearch(byte* pointer, T key, int recordCount, int keyValueSize)
         {
-            T compareKey = TempKey;
             if (LastFoundIndex == recordCount - 1)
             {
-                compareKey.Read(pointer + keyValueSize * LastFoundIndex);
-                if (key.IsGreaterThan(compareKey)) //Key > CompareKey
+                if (key.CompareTo(pointer + keyValueSize * LastFoundIndex) > 0) //Key > CompareKey
                 {
                     LastFoundIndex++;
                     return ~recordCount;
@@ -65,8 +63,7 @@ namespace GSF.SortedTreeStore.Tree
             }
             else if (LastFoundIndex < recordCount)
             {
-                compareKey.Read(pointer + keyValueSize * (LastFoundIndex + 1));
-                if (key.IsEqualTo(compareKey))
+                if (key.CompareTo(pointer + keyValueSize * (LastFoundIndex + 1)) == 0)
                 {
                     LastFoundIndex++;
                     return LastFoundIndex;
@@ -87,18 +84,18 @@ namespace GSF.SortedTreeStore.Tree
         {
             if (recordCount == 0)
                 return ~0;
-            T compareKey = TempKey;
             int searchLowerBoundsIndex = 0;
             int searchHigherBoundsIndex = recordCount - 1;
+            int compare;
 
             if (LastFoundIndex <= recordCount)
             {
                 LastFoundIndex = Math.Min(LastFoundIndex, recordCount - 1);
-                compareKey.Read(pointer + keyPointerSize * LastFoundIndex);
-
-                if (key.IsEqualTo(compareKey)) //Are Equal
+                
+                compare = key.CompareTo(pointer + keyPointerSize * LastFoundIndex);
+                if (compare == 0) //Are Equal
                     return LastFoundIndex;
-                if (key.IsGreaterThan(compareKey)) //Key > CompareKey
+                if (compare > 0) //Key > CompareKey
                 {
                     //Value is greater, check the next key
                     LastFoundIndex++;
@@ -107,11 +104,11 @@ namespace GSF.SortedTreeStore.Tree
                     if (LastFoundIndex == recordCount)
                         return ~recordCount;
 
-                    compareKey.Read(pointer + keyPointerSize * LastFoundIndex);
+                    compare = key.CompareTo(pointer + keyPointerSize * LastFoundIndex);
 
-                    if (key.IsEqualTo(compareKey)) //Are Equal
+                    if (compare == 0) //Are Equal
                         return LastFoundIndex;
-                    if (key.IsGreaterThan(compareKey)) //Key > CompareKey
+                    if (compare > 0) //Key > CompareKey
                         searchLowerBoundsIndex = LastFoundIndex + 1;
                     else
                         return ~LastFoundIndex;
@@ -124,11 +121,11 @@ namespace GSF.SortedTreeStore.Tree
                         return ~0;
 
                     LastFoundIndex--;
-                    compareKey.Read(pointer + keyPointerSize * LastFoundIndex);
+                    compare = key.CompareTo(pointer + keyPointerSize * LastFoundIndex);
 
-                    if (key.IsEqualTo(compareKey)) //Are Equal
+                    if (compare == 0) //Are Equal
                         return LastFoundIndex;
-                    if (key.IsGreaterThan(compareKey)) //Key > CompareKey
+                    if (compare > 0) //Key > CompareKey
                     {
                         LastFoundIndex++;
                         return ~(LastFoundIndex);
@@ -142,14 +139,14 @@ namespace GSF.SortedTreeStore.Tree
             {
                 int currentTestIndex = searchLowerBoundsIndex + (searchHigherBoundsIndex - searchLowerBoundsIndex >> 1);
 
-                compareKey.Read(pointer + keyPointerSize * currentTestIndex);
+                compare = key.CompareTo(pointer + keyPointerSize * currentTestIndex);
 
-                if (key.IsEqualTo(compareKey)) //Are Equal
+                if (compare == 0) //Are Equal
                 {
                     LastFoundIndex = currentTestIndex;
                     return currentTestIndex;
                 }
-                if (key.IsGreaterThan(compareKey)) //Key > CompareKey
+                if (compare > 0) //Key > CompareKey
                     searchLowerBoundsIndex = currentTestIndex + 1;
                 else
                     searchHigherBoundsIndex = currentTestIndex - 1;

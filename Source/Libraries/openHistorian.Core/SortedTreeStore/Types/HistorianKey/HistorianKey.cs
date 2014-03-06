@@ -137,6 +137,23 @@ namespace openHistorian.Collections
             return 0;
         }
 
+        public override unsafe int CompareTo(byte* stream)
+        {
+            if (Timestamp < *(ulong*)(stream))
+                return -1;
+            if (Timestamp > *(ulong*)(stream))
+                return 1;
+            if (PointID < *(ulong*)(stream + 8))
+                return -1;
+            if (PointID > *(ulong*)(stream + 8))
+                return 1;
+            if (EntryNumber < *(ulong*)(stream + 16))
+                return -1;
+            if (EntryNumber > *(ulong*)(stream + 16))
+                return 1;
+            return 0;
+        }
+
         /// <summary>
         /// Creates a clone of the HistorianKey
         /// </summary>

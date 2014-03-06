@@ -81,7 +81,7 @@ namespace GSF.SortedTreeStore.Tree
             var reader = new BinaryStreamPointerWrapper(stream, Size);
             Read(reader);
         }
-
+        
         /// <summary>
         /// Writes the key to the stream
         /// </summary>

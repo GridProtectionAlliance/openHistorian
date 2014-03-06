@@ -41,6 +41,7 @@ namespace GSF.SortedTreeStore.Tree
     /// IsGreaterThan(T)
     /// IsLessThanOrEqualTo(T)
     /// IsBetween(T,T)
+    /// CompareTo(byte*)
     /// 
     /// For better random I/O inserts, it is also a good idea to implement a custom
     /// <see cref="SortedTreeTypeMethods{T}"/> that overrides 
@@ -62,7 +63,7 @@ namespace GSF.SortedTreeStore.Tree
         /// <param name="other">the key to compare to</param>
         /// <returns></returns>
         public abstract int CompareTo(T other);
-        
+
         /// <summary>
         /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
         /// </summary>
@@ -73,6 +74,18 @@ namespace GSF.SortedTreeStore.Tree
         public virtual int Compare(T x, T y)
         {
             return x.CompareTo(y);
+        }
+
+        /// <summary>
+        /// Compares the current item to one written at the provided stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public virtual unsafe int CompareTo(byte* stream)
+        {
+            T other = new T();
+            other.Read(stream);
+            return CompareTo(other);
         }
 
         /// <summary>

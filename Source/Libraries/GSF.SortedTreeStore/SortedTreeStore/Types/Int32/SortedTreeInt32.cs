@@ -69,6 +69,11 @@ namespace GSF.SortedTreeStore.Types
             return Value.CompareTo(other.Value);
         }
 
+        public override unsafe int CompareTo(byte* stream)
+        {
+            return Value.CompareTo(*(int*)stream);
+        }
+
         public override void SetMin()
         {
             Value = int.MinValue;
