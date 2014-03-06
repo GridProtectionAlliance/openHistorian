@@ -85,6 +85,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private PointBuffer<TKey, TValue> m_activeQueue;
         private ScheduledTask m_rolloverTask;
         private readonly Action<PrestageArgs<TKey, TValue>> m_onRollover;
+        private ManualResetEvent m_waitForRolloverToComplete = new ManualResetEvent(false);
 
         /// <summary>
         /// Creates a prestage writer.
@@ -157,10 +158,12 @@ namespace GSF.SortedTreeStore.Engine.Writer
             {
                 if (m_stopped)
                     throw new Exception("No new points can be added. Point queue has been stopped.");
+
                 if (!m_activeQueue.TryEnqueue(key, value))
                 {
                     m_rolloverTask.Start();
-                    goto TryAgain;
+                    m_waitForRolloverToComplete.Reset();
+                    goto TryAgainWithWait;
                 }
                 m_sequenceId++;
                 sequenceId = m_sequenceId;
@@ -168,21 +171,26 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 if (pointCount == m_rolloverPointCount)
                     m_rolloverTask.Start();
             }
-            DelayIfNeeded(pointCount - 1);
+            //DelayIfNeeded(pointCount - 1);
             return sequenceId;
+
+
+        TryAgainWithWait:
+            m_waitForRolloverToComplete.WaitOne();
+            goto TryAgain;
         }
 
-        /// <summary>
-        /// Automatically delays the input if too many points are being written to the historian at once.
-        /// </summary>
-        /// <param name="pointCountBefore"></param>
-        private void DelayIfNeeded(int pointCountBefore)
-        {
-            if (pointCountBefore >= m_sleepThreadOnPointCount)
-                Thread.Sleep(1);
-            else if (pointCountBefore >= m_yieldThreadOnPointCount)
-                Thread.Sleep(0);
-        }
+        ///// <summary>
+        ///// Automatically delays the input if too many points are being written to the historian at once.
+        ///// </summary>
+        ///// <param name="pointCountBefore"></param>
+        //private void DelayIfNeeded(int pointCountBefore)
+        //{
+        //    if (pointCountBefore >= m_sleepThreadOnPointCount)
+        //        Thread.Sleep(1);
+        //    else if (pointCountBefore >= m_yieldThreadOnPointCount)
+        //        Thread.Sleep(0);
+        //}
 
         private void ProcessRollover(object sender, ScheduledTaskEventArgs e)
         {
@@ -219,8 +227,9 @@ namespace GSF.SortedTreeStore.Engine.Writer
                         Stream = stream,
                         SequenceNumber = m_sequenceId
                     };
-            }
 
+                m_waitForRolloverToComplete.Set();
+            }
             m_onRollover(args);
         }
 
@@ -236,18 +245,22 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 m_disposed = true;
                 try
                 {
+
                     if (m_rolloverTask != null)
                         m_rolloverTask.Dispose();
                     if (m_processingQueue != null)
                         m_processingQueue.Dispose();
                     if (m_activeQueue != null)
                         m_activeQueue.Dispose();
+                    if (m_waitForRolloverToComplete != null)
+                        m_waitForRolloverToComplete.Dispose();
                 }
                 finally
                 {
                     m_activeQueue = null;
                     m_processingQueue = null;
                     m_rolloverTask = null;
+                    m_waitForRolloverToComplete = null;
                 }
             }
         }
