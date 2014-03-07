@@ -1,46 +1,56 @@
--- =====================================================================================================
--- openHistorian.sql - Gbtc
+--  ----------------------------------------------------------------------------------------------------
+--  openHistorian Data Structures for Oracle - Gbtc
 --
--- openHistorian Data Structures for Oracle
+--  Copyright © 2011, Grid Protection Alliance.  All Rights Reserved.
 --
--- Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
--- Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
--- the NOTICE file distributed with this work for additional information regarding copyright ownership.
--- The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
--- not use this file except in compliance with the License. You may obtain a copy of the License at:
--- 
---     http://www.opensource.org/licenses/eclipse-1.0.php
--- 
--- Unless agreed to in writing, the subject software distributed under the License is distributed on an
--- "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
--- License for the specific language governing permissions and limitations.
+--  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+--  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+--  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+--  not use this file except in compliance with the License. You may obtain a copy of the License at:
+--
+--      http://www.opensource.org/licenses/eclipse-1.0.php
+--
+--  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+--  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+--  License for the specific language governing permissions and limitations.
 --
 --  Schema Modification History:
 --  ----------------------------------------------------------------------------------------------------
--- 07/18/2013 - J. Ritchie Carroll
---       Migrated original version of schema from similar TFS host applications.
--- 
--- =====================================================================================================
+--  05/07/2011 - J. Ritchie Carroll
+--       Generated original version of schema.
+--  03/27/2012 - prasanthgs
+--       Added ExceptionLog table for keeping recent exceptions.
+--  04/12/2012 - prasanthgs
+--       Reworked as per the comments of codeplex reviewers.
+--       Added new field Type to ErrorLog table. Removed ExceptionLog table.
+--  ----------------------------------------------------------------------------------------------------
 
 -- The following statements are used to create a tablespace, user, and schema.
 -- Be sure to change the password.
 -- CREATE TABLESPACE openHistorian_TS DATAFILE 'openHistorian.dbf' SIZE 20M AUTOEXTEND ON;
--- CREATE TABLESPACE OPG_INDEX DATAFILE 'opg_index.dbf' SIZE 20M AUTOEXTEND ON;
+-- CREATE TABLESPACE openHistorian_INDEX DATAFILE 'openHistorian_index.dbf' SIZE 20M AUTOEXTEND ON;
 -- CREATE USER openHistorian IDENTIFIED BY MyPassword DEFAULT TABLESPACE openHistorian_TS;
 -- GRANT UNLIMITED TABLESPACE TO openHistorian;
 -- GRANT CREATE SESSION TO openHistorian;
 -- ALTER SESSION SET CURRENT_SCHEMA = openHistorian;
 
+-- *******************************************************************************************
+-- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
+-- *******************************************************************************************
+CREATE VIEW SchemaVersion AS
+SELECT 1 AS VersionNumber
+FROM dual;
+
 CREATE TABLE ErrorLog(
     ID NUMBER NOT NULL,
     Source VARCHAR2(200) NOT NULL,
-    Type VARCHAR2(200) NULL,
+    Type VARCHAR2(4000),
     Message VARCHAR2(4000) NOT NULL,
     Detail VARCHAR2(4000) NULL,
     CreatedOn DATE NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_ErrorLog_ID ON ErrorLog (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_ErrorLog_ID ON ErrorLog (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE ErrorLog ADD CONSTRAINT PK_ErrorLog PRIMARY KEY (ID);
 
@@ -57,9 +67,9 @@ CREATE TABLE Runtime(
     SourceTable VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Runtime_Source ON Runtime (SourceID ASC, SourceTable ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Runtime_Source ON Runtime (SourceID ASC, SourceTable ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_Runtime_ID ON Runtime (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Runtime_ID ON Runtime (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Runtime ADD CONSTRAINT PK_Runtime PRIMARY KEY (SourceID, SourceTable);
 
@@ -106,7 +116,7 @@ CREATE TABLE Company(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Company_ID ON Company (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Company_ID ON Company (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Company ADD CONSTRAINT PK_Company PRIMARY KEY (ID);
 
@@ -138,7 +148,7 @@ CREATE TABLE Vendor(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Vendor_ID ON Vendor (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Vendor_ID ON Vendor (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Vendor ADD CONSTRAINT PK_Vendor PRIMARY KEY (ID);
 
@@ -160,7 +170,7 @@ CREATE TABLE Protocol(
     LoadOrder NUMBER DEFAULT 0 NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Protocol_ID ON Protocol (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Protocol_ID ON Protocol (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Protocol ADD CONSTRAINT PK_Protocol PRIMARY KEY (ID);
 
@@ -181,7 +191,7 @@ CREATE TABLE SignalType(
     EngineeringUnits VARCHAR2(10) NULL
 );
 
-CREATE UNIQUE INDEX IX_SignalType_ID ON SignalType (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_SignalType_ID ON SignalType (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE SignalType ADD CONSTRAINT PK_SignalType PRIMARY KEY (ID);
 
@@ -199,7 +209,7 @@ CREATE TABLE Interconnection(
     LoadOrder NUMBER DEFAULT 0 NULL
 );
 
-CREATE UNIQUE INDEX IX_Interconnection_ID ON Interconnection (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Interconnection_ID ON Interconnection (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Interconnection ADD CONSTRAINT PK_Interconnection PRIMARY KEY (ID);
 
@@ -230,9 +240,9 @@ CREATE TABLE Node(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Node_ID ON Node (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Node_ID ON Node (ID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_Node_Name ON Node (Name ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Node_Name ON Node (Name ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Node ADD CONSTRAINT PK_Node PRIMARY KEY (ID);
 
@@ -266,7 +276,7 @@ CREATE TABLE OtherDevice(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_OtherDevice_ID ON OtherDevice (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_OtherDevice_ID ON OtherDevice (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE OtherDevice ADD CONSTRAINT PK_OtherDevice PRIMARY KEY (ID);
 
@@ -317,11 +327,11 @@ CREATE TABLE Device(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Device_ID ON Device (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Device_ID ON Device (ID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_Device_UniqueID ON Device (UniqueID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Device_UniqueID ON Device (UniqueID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_Device_NodeID_Acronym ON Device (NodeID ASC, Acronym ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Device_NodeID_Acronym ON Device (NodeID ASC, Acronym ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Device ADD CONSTRAINT PK_Device PRIMARY KEY (ID);
 
@@ -344,7 +354,7 @@ CREATE TABLE VendorDevice(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_VendorDevice_ID ON VendorDevice (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_VendorDevice_ID ON VendorDevice (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE VendorDevice ADD CONSTRAINT PK_VendorDevice PRIMARY KEY (ID);
 
@@ -368,7 +378,7 @@ CREATE TABLE OutputStreamDeviceDigital(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_OutStreamDevDigital_ID ON OutputStreamDeviceDigital (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_OutStreamDevDigital_ID ON OutputStreamDeviceDigital (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE OutputStreamDeviceDigital ADD CONSTRAINT PK_OutStreamDevDigital PRIMARY KEY (ID);
 
@@ -394,7 +404,7 @@ CREATE TABLE OutputStreamDevicePhasor(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_OutStreamDevPhasor ON OutputStreamDevicePhasor (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_OutStreamDevPhasor ON OutputStreamDevicePhasor (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE OutputStreamDevicePhasor ADD CONSTRAINT PK_OutStreamDevPhasor PRIMARY KEY (ID);
 
@@ -420,7 +430,7 @@ CREATE TABLE OutputStreamDeviceAnalog(
 );
 
 
-CREATE UNIQUE INDEX IX_OutStreamDevAnalog ON OutputStreamDeviceAnalog (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_OutStreamDevAnalog ON OutputStreamDeviceAnalog (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE OutputStreamDeviceAnalog ADD CONSTRAINT PK_OutStreamDevAnalog PRIMARY KEY (ID);
 
@@ -453,9 +463,9 @@ CREATE TABLE Measurement(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Measurement_SignalID ON Measurement (SignalID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Measurement_SignalID ON Measurement (SignalID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_Measurement_PointID ON Measurement (PointID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Measurement_PointID ON Measurement (PointID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Measurement ADD CONSTRAINT PK_Measurement PRIMARY KEY (SignalID);
 
@@ -510,9 +520,9 @@ CREATE TABLE Statistic(
     LoadOrder NUMBER DEFAULT 0 NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Statistic_ID ON Statistic (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Statistic_ID ON Statistic (ID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_Statistic_Source_SigIndex ON Statistic (Source ASC, SignalIndex ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Statistic_Source_SigIndex ON Statistic (Source ASC, SignalIndex ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Statistic ADD CONSTRAINT PK_Statistic PRIMARY KEY (ID);
 
@@ -536,7 +546,7 @@ CREATE TABLE OutputStreamMeasurement(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_OutputStreamMeasurement_ID ON OutputStreamMeasurement (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_OutputStreamMeasurement_ID ON OutputStreamMeasurement (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE OutputStreamMeasurement ADD CONSTRAINT PK_OutputStreamMeasurement PRIMARY KEY (ID);
 
@@ -567,7 +577,7 @@ CREATE TABLE OutputStreamDevice(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_OutputStreamDevice_ID ON OutputStreamDevice (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_OutputStreamDevice_ID ON OutputStreamDevice (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE OutputStreamDevice ADD CONSTRAINT PK_OutputStreamDevice PRIMARY KEY (ID);
 
@@ -592,7 +602,7 @@ CREATE TABLE Phasor(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Phasor_ID ON Phasor (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Phasor_ID ON Phasor (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Phasor ADD CONSTRAINT PK_Phasor PRIMARY KEY (ID);
 
@@ -633,7 +643,7 @@ CREATE TABLE CalculatedMeasurement(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_CalculatedMeasurement_ID ON CalculatedMeasurement (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_CalculatedMeasurement_ID ON CalculatedMeasurement (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE CalculatedMeasurement ADD CONSTRAINT PK_CalculatedMeasurement PRIMARY KEY (ID);
 
@@ -659,7 +669,7 @@ CREATE TABLE CustomActionAdapter(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_CustomActionAdapter_ID ON CustomActionAdapter (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_CustomActionAdapter_ID ON CustomActionAdapter (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE CustomActionAdapter ADD CONSTRAINT PK_CustomActionAdapter PRIMARY KEY (ID);
 
@@ -689,7 +699,7 @@ CREATE TABLE Historian(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Historian_ID ON Historian (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Historian_ID ON Historian (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Historian ADD CONSTRAINT PK_Historian PRIMARY KEY (ID);
 
@@ -715,7 +725,7 @@ CREATE TABLE CustomInputAdapter(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_CustomInputAdapter ON CustomInputAdapter (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_CustomInputAdapter ON CustomInputAdapter (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE CustomInputAdapter ADD CONSTRAINT PK_CustomInputAdapter PRIMARY KEY (ID);
 
@@ -763,9 +773,9 @@ CREATE TABLE OutputStream(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_OutputStream_ID ON OutputStream (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_OutputStream_ID ON OutputStream (ID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_OutputStream_NodeID_Acronym ON OutputStream (NodeID ASC, Acronym ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_OutputStream_NodeID_Acronym ON OutputStream (NodeID ASC, Acronym ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE OutputStream ADD CONSTRAINT PK_OutputStream PRIMARY KEY (ID);
 
@@ -797,9 +807,9 @@ CREATE TABLE Alarm(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Alarm_ID ON Alarm (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Alarm_ID ON Alarm (ID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_Alarm_TagName ON Alarm (TagName ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Alarm_TagName ON Alarm (TagName ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Alarm ADD CONSTRAINT PK_Alarm PRIMARY KEY (ID);
 
@@ -825,7 +835,7 @@ CREATE TABLE CustomOutputAdapter(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_CustomOutputAdapter_ID ON CustomOutputAdapter (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_CustomOutputAdapter_ID ON CustomOutputAdapter (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE CustomOutputAdapter ADD CONSTRAINT PK_CustomOutputAdapter PRIMARY KEY (ID);
 
@@ -840,11 +850,11 @@ CREATE TABLE AccessLog (
     ID NUMBER NOT NULL,
     UserName VARCHAR2(200) NOT NULL,
     AccessGranted NUMBER NOT NULL,
-    "Comment" VARCHAR2(4000),
+    "COMMENT" VARCHAR2(4000),
     CreatedOn DATE NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_AccessLog_ID ON AccessLog (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_AccessLog_ID ON AccessLog (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE AccessLog ADD CONSTRAINT PK_AccessLog PRIMARY KEY (ID);
 
@@ -873,9 +883,9 @@ CREATE TABLE UserAccount (
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_UserAccount_ID ON UserAccount (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_UserAccount_ID ON UserAccount (ID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_UserAccount_Name ON Runtime (Name ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_UserAccount_Name ON UserAccount (Name ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE UserAccount ADD CONSTRAINT PK_UserAccount PRIMARY KEY (ID);
 
@@ -889,7 +899,9 @@ CREATE TABLE SecurityGroup (
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_SecurityGroup_ID ON SecurityGroup (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_SecurityGroup_ID ON SecurityGroup (ID ASC) TABLESPACE openHistorian_INDEX;
+
+CREATE UNIQUE INDEX IX_SecurityGroup_Name ON SecurityGroup (Name ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE SecurityGroup ADD CONSTRAINT PK_SecurityGroup PRIMARY KEY (ID);
 
@@ -904,7 +916,9 @@ CREATE TABLE ApplicationRole (
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_ApplicationRole ON ApplicationRole (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_ApplicationRole_ID ON ApplicationRole (ID ASC) TABLESPACE openHistorian_INDEX;
+
+CREATE UNIQUE INDEX IX_ApplicationRole_NodeID_Name ON ApplicationRole (NodeID ASC, Name ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE ApplicationRole ADD CONSTRAINT PK_ApplicationRole PRIMARY KEY (ID);
 
@@ -934,7 +948,7 @@ CREATE TABLE Subscriber (
     RemoteCertificateFile VARCHAR2(500) NULL,
     ValidPolicyErrors VARCHAR2(200) NULL,
     ValidChainFlags VARCHAR2(500) NULL,
-	AccessControlFilter VARCHAR2(4000) NULL,
+    AccessControlFilter VARCHAR2(4000) NULL,
     Enabled NUMBER DEFAULT 0 NOT NULL,
     CreatedOn DATE NOT NULL,
     CreatedBy VARCHAR2(200) NOT NULL,
@@ -942,9 +956,9 @@ CREATE TABLE Subscriber (
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_Subscriber_NodeID_ID ON Subscriber (NodeID ASC, ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Subscriber_NodeID_ID ON Subscriber (NodeID ASC, ID ASC) TABLESPACE openHistorian_INDEX;
 
-CREATE UNIQUE INDEX IX_Subscriber_NodeID_Acronym ON Subscriber (NodeID ASC, Acronym ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_Subscriber_NodeID_Acronym ON Subscriber (NodeID ASC, Acronym ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE Subscriber ADD CONSTRAINT PK_Subscriber PRIMARY KEY (NodeID, ID);
 
@@ -959,7 +973,7 @@ CREATE TABLE SubscriberMeasurement(
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_SubscriberMeasurement ON SubscriberMeasurement (NodeID ASC, SubscriberID ASC, SignalID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_SubscriberMeasurement ON SubscriberMeasurement (NodeID ASC, SubscriberID ASC, SignalID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE SubscriberMeasurement ADD CONSTRAINT PK_SubscriberMeasurement PRIMARY KEY (NodeID, SubscriberID, SignalID);
 
@@ -974,7 +988,7 @@ CREATE TABLE SubscriberMeasurementGroup (
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_SubscriberMeasurementGroup ON SubscriberMeasurementGroup (NodeID ASC, SubscriberID ASC, MeasurementGroupID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_SubscriberMeasurementGroup ON SubscriberMeasurementGroup (NodeID ASC, SubscriberID ASC, MeasurementGroupID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE SubscriberMeasurementGroup ADD CONSTRAINT PK_SubscriberMeasurementGroup PRIMARY KEY (NodeID, SubscriberID, MeasurementGroupID);
 
@@ -983,14 +997,14 @@ CREATE TABLE MeasurementGroup (
     ID NUMBER NOT NULL,
     Name VARCHAR2(200) NOT NULL,
     Description VARCHAR2(4000),
-	FilterExpression VARCHAR2(4000),
+    FilterExpression VARCHAR2(4000),
     CreatedOn DATE NOT NULL,
     CreatedBy VARCHAR2(200) NOT NULL,
     UpdatedOn DATE NOT NULL,
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_MeasurementGroup_ID ON MeasurementGroup (ID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_MeasurementGroup_ID ON MeasurementGroup (ID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE MeasurementGroup ADD CONSTRAINT PK_MeasurementGroup PRIMARY KEY (ID);
 
@@ -1011,7 +1025,7 @@ CREATE TABLE MeasurementGroupMeasurement (
     UpdatedBy VARCHAR2(200) NOT NULL
 );
 
-CREATE UNIQUE INDEX IX_MeasurementGroupMeasurement ON MeasurementGroupMeasurement (NodeID ASC, MeasurementGroupID ASC, SignalID ASC) TABLESPACE OPG_INDEX;
+CREATE UNIQUE INDEX IX_MeasurementGroupMeasurement ON MeasurementGroupMeasurement (NodeID ASC, MeasurementGroupID ASC, SignalID ASC) TABLESPACE openHistorian_INDEX;
 
 ALTER TABLE MeasurementGroupMeasurement ADD CONSTRAINT PK_MeasurementGroupMeasurement PRIMARY KEY (NodeID, MeasurementGroupID, SignalID);
 
@@ -1670,76 +1684,178 @@ CREATE TRIGGER Historian_RuntimeSync_Delete BEFORE DELETE ON Historian
 END;
 /
 
-CREATE TRIGGER AccessLog_InsertDefault BEFORE INSERT ON AccessLog 
-    FOR EACH ROW BEGIN SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+CREATE TRIGGER AccessLog_InsertDefault BEFORE INSERT ON AccessLog FOR EACH ROW BEGIN
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER ApplicationRole_InsertDefault BEFORE INSERT ON ApplicationRole FOR EACH ROW BEGIN
-    SELECT NEW_GUID() INTO :NEW.ID FROM dual;
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.ID IS NULL THEN
+        SELECT NEW_GUID() INTO :NEW.ID FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER SecurityGroup_InsertDefault BEFORE INSERT ON SecurityGroup FOR EACH ROW BEGIN
-    SELECT NEW_GUID() INTO :NEW.ID FROM dual;
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.ID IS NULL THEN
+        SELECT NEW_GUID() INTO :NEW.ID FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER UserAccount_InsertDefault BEFORE INSERT ON UserAccount FOR EACH ROW BEGIN
-    SELECT NEW_GUID() INTO :NEW.ID FROM dual;
-    SELECT SYSDATE + 90 INTO :NEW.ChangePasswordOn FROM dual;
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.ID IS NULL THEN
+        SELECT NEW_GUID() INTO :NEW.ID FROM dual;
+    END IF;
+    
+    IF :NEW.ChangePasswordOn IS NULL THEN
+        SELECT SYSDATE + 90 INTO :NEW.ChangePasswordOn FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER CalcMeasurement_InsertDefault BEFORE INSERT ON CalculatedMeasurement FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER Company_InsertDefault BEFORE INSERT ON Company FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER CustomActAdapter_InsertDefault BEFORE INSERT ON CustomActionAdapter FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER CustInputAdapter_InsertDefault BEFORE INSERT ON CustomInputAdapter FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER CustomOutAdapter_InsertDefault BEFORE INSERT ON CustomOutputAdapter FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
@@ -1748,143 +1864,332 @@ CREATE TRIGGER Device_InsertDefault BEFORE INSERT ON Device FOR EACH ROW BEGIN
         SELECT NEW_GUID() INTO :NEW.UniqueID FROM dual;
     END IF;
 
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER Historian_InsertDefault BEFORE INSERT ON Historian FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER Subscriber_InsertDefault BEFORE INSERT ON Subscriber FOR EACH ROW BEGIN
-    SELECT NEW_GUID() INTO :NEW.ID FROM dual;
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.ID IS NULL THEN
+        SELECT NEW_GUID() INTO :NEW.ID FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER Measurement_InsertDefault BEFORE INSERT ON Measurement FOR EACH ROW BEGIN
-    SELECT NEW_GUID() INTO :NEW.SignalID FROM dual;
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.SignalID IS NULL THEN
+        SELECT NEW_GUID() INTO :NEW.SignalID FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER Node_InsertDefault BEFORE INSERT ON Node FOR EACH ROW BEGIN
-    SELECT NEW_GUID() INTO :NEW.ID FROM dual;
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.ID IS NULL THEN
+        SELECT NEW_GUID() INTO :NEW.ID FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER OtherDevice_InsertDefault BEFORE INSERT ON OtherDevice FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER OutputStream_InsertDefault BEFORE INSERT ON OutputStream FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER OutStreamDevice_InsertDefault BEFORE INSERT ON OutputStreamDevice FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER OutStrDevAnalog_InsrtDefault BEFORE INSERT ON OutputStreamDeviceAnalog FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER OutStrDevDigital_InsrtDefault BEFORE INSERT ON OutputStreamDeviceDigital FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER OutStrDevPhasor_InsrtDefault BEFORE INSERT ON OutputStreamDevicePhasor FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER OutStrMeasurement_InsrtDefault BEFORE INSERT ON OutputStreamMeasurement FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER Phasor_InsertDefault BEFORE INSERT ON Phasor FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER Alarm_InsertDefault BEFORE INSERT ON Alarm FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER Vendor_InsertDefault BEFORE INSERT ON Vendor FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
 CREATE TRIGGER VendorDevice_InsertDefault BEFORE INSERT ON VendorDevice FOR EACH ROW BEGIN
-    SELECT USER INTO :NEW.CreatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
-    SELECT USER INTO :NEW.UpdatedBy FROM dual;
-    SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    IF :NEW.CreatedBy IS NULL THEN
+        SELECT USER INTO :NEW.CreatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedBy IS NULL THEN
+        SELECT USER INTO :NEW.UpdatedBy FROM dual;
+    END IF;
+    
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
-CREATE TRIGGER ErrorLog_InsertDefault BEFORE INSERT ON ErrorLog
-    FOR EACH ROW BEGIN SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+CREATE TRIGGER ErrorLog_InsertDefault BEFORE INSERT ON ErrorLog FOR EACH ROW BEGIN
+    IF :NEW.CreatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.CreatedOn FROM dual;
+    END IF;
 END;
 /
 
-CREATE TRIGGER AuditLog_InsertDefault BEFORE INSERT ON AuditLog
-    FOR EACH ROW BEGIN SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+CREATE TRIGGER AuditLog_InsertDefault BEFORE INSERT ON AuditLog FOR EACH ROW BEGIN
+    IF :NEW.UpdatedOn IS NULL THEN
+        SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
+    END IF;
 END;
 /
 
@@ -1909,4 +2214,3 @@ CREATE PACKAGE BODY context AS
     END;
 END;
 /
-

@@ -1,26 +1,29 @@
--- =====================================================================================================
--- openHistorian.sql - Gbtc
+--  ----------------------------------------------------------------------------------------------------
+--  openHistorian Data Structures for MySQL - Gbtc
 --
--- openHistorian Data Structures for MySQL
+--  Copyright © 2011, Grid Protection Alliance.  All Rights Reserved.
 --
--- Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
--- Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
--- the NOTICE file distributed with this work for additional information regarding copyright ownership.
--- The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
--- not use this file except in compliance with the License. You may obtain a copy of the License at:
--- 
---     http://www.opensource.org/licenses/eclipse-1.0.php
--- 
--- Unless agreed to in writing, the subject software distributed under the License is distributed on an
--- "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
--- License for the specific language governing permissions and limitations.
+--  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+--  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+--  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+--  not use this file except in compliance with the License. You may obtain a copy of the License at:
+--
+--      http://www.opensource.org/licenses/eclipse-1.0.php
+--
+--  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+--  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+--  License for the specific language governing permissions and limitations.
 --
 --  Schema Modification History:
 --  ----------------------------------------------------------------------------------------------------
--- 07/18/2013 - J. Ritchie Carroll
---       Migrated original version of schema from similar TFS host applications.
--- 
--- =====================================================================================================
+--  05/07/2011 - J. Ritchie Carroll
+--       Generated original version of schema.
+--  03/27/2012 - prasanthgs
+--       Added ExceptionLog table for keeping recent exceptions.
+--  04/12/2012 - prasanthgs
+--       Reworked as per the comments of codeplex reviewers.
+--       Added new field Type to ErrorLog table. Removed ExceptionLog table.
+--  ----------------------------------------------------------------------------------------------------
 
 CREATE DATABASE openHistorian CHARACTER SET = UTF8;
 USE openHistorian;
@@ -31,13 +34,19 @@ USE openHistorian;
 -- CREATE USER NewUser IDENTIFIED BY 'MyPassword';
 -- GRANT SELECT, UPDATE, INSERT, DELETE ON openHistorian.* TO NewUser;
 
+-- *******************************************************************************************
+-- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
+-- *******************************************************************************************
+CREATE VIEW SchemaVersion AS
+SELECT 1 AS VersionNumber;
+
 CREATE TABLE ErrorLog(
     ID INT AUTO_INCREMENT NOT NULL,
     Source VARCHAR(200) NOT NULL,
     Type VARCHAR(200) NULL,
     Message TEXT NOT NULL,
     Detail TEXT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
+    CreatedOn DATETIME NULL,
     CONSTRAINT PK_ErrorLog PRIMARY KEY (ID ASC)
 );
 
@@ -58,8 +67,8 @@ CREATE TABLE AuditLog(
     OriginalValue TEXT,
     NewValue TEXT,
     Deleted TINYINT NOT NULL DEFAULT 0,
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
+    UpdatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
     PRIMARY KEY (ID)
 );
 
@@ -70,10 +79,10 @@ CREATE TABLE Company(
     Name VARCHAR(200) NOT NULL,
     URL TEXT NULL,
     LoadOrder INT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
   CONSTRAINT PK_Company PRIMARY KEY (ID ASC)
 );
 
@@ -92,10 +101,10 @@ CREATE TABLE Vendor(
     PhoneNumber VARCHAR(200) NULL,
     ContactEmail VARCHAR(200) NULL,
     URL TEXT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_Vendor PRIMARY KEY (ID ASC)
 );
 
@@ -131,7 +140,7 @@ CREATE TABLE Interconnection(
 );
 
 CREATE TABLE Node(
-    ID NCHAR(36) NULL,
+    ID NCHAR(36) NOT NULL DEFAULT '',
     Name VARCHAR(200) NOT NULL,
     CompanyID INT NULL,
     Longitude DECIMAL(9, 6) NULL,
@@ -144,10 +153,10 @@ CREATE TABLE Node(
     Master TINYINT NOT NULL DEFAULT 0,
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_Node PRIMARY KEY (ID ASC),
     CONSTRAINT IX_NodeID_Name UNIQUE KEY (Name ASC)
 );
@@ -176,10 +185,10 @@ CREATE TABLE OtherDevice(
     Planned TINYINT NOT NULL DEFAULT 0,
     Desired TINYINT NOT NULL DEFAULT 0,
     InProgress TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_OtherDevice PRIMARY KEY (ID ASC)
 );
 
@@ -217,10 +226,10 @@ CREATE TABLE Device(
     MeasuredLines INT NULL,
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,	
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_Device PRIMARY KEY (ID ASC),
     CONSTRAINT IX_Device_UniqueID UNIQUE KEY (UniqueID ASC),
     CONSTRAINT IX_Device_NodeID_Acronym UNIQUE KEY (NodeID ASC, Acronym ASC)
@@ -232,10 +241,10 @@ CREATE TABLE VendorDevice(
     Name VARCHAR(200) NOT NULL,
     Description TEXT NULL,
     URL TEXT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_VendorDevice PRIMARY KEY (ID ASC)
 );
 
@@ -246,10 +255,10 @@ CREATE TABLE OutputStreamDeviceDigital(
     Label TEXT NOT NULL,
     MaskValue INT NOT NULL DEFAULT 0,
     LoadOrder INT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_OutputStreamDeviceDigital PRIMARY KEY (ID ASC)
 );
 
@@ -262,10 +271,10 @@ CREATE TABLE OutputStreamDevicePhasor(
     Phase NCHAR(1) NOT NULL DEFAULT N'+',
     ScalingValue INT NOT NULL DEFAULT 0,
     LoadOrder INT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_OutputStreamDevicePhasor PRIMARY KEY (ID ASC)
 );
 
@@ -277,16 +286,16 @@ CREATE TABLE OutputStreamDeviceAnalog(
     Type INT NOT NULL DEFAULT 0,
     ScalingValue INT NOT NULL DEFAULT 0,
     LoadOrder INT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_OutputStreamDeviceAnalog PRIMARY KEY (ID ASC)
 );
 
 CREATE TABLE Measurement(
     PointID INT AUTO_INCREMENT NOT NULL,
-    SignalID NCHAR(36) NULL,
+    SignalID NCHAR(36) NOT NULL DEFAULT '',
     HistorianID INT NULL,
     DeviceID INT NULL,
     PointTag VARCHAR(200) NOT NULL,
@@ -300,10 +309,10 @@ CREATE TABLE Measurement(
     Subscribed TINYINT NOT NULL DEFAULT 0,
     Internal TINYINT NOT NULL DEFAULT 1,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_Measurement PRIMARY KEY (SignalID ASC),
     CONSTRAINT IX_Measurement UNIQUE KEY (PointID ASC)
 );
@@ -359,10 +368,10 @@ CREATE TABLE OutputStreamMeasurement(
     HistorianID INT NULL,
     PointID INT NOT NULL,
     SignalReference VARCHAR(200) NOT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_OutputStreamMeasurement PRIMARY KEY (ID ASC)
 );
 
@@ -380,10 +389,10 @@ CREATE TABLE OutputStreamDevice(
     CoordinateFormat VARCHAR(15) NULL,
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_OutputStreamDevice PRIMARY KEY (ID ASC)
 );
 
@@ -395,10 +404,10 @@ CREATE TABLE Phasor(
     Phase NCHAR(1) NOT NULL DEFAULT N'+',
     DestinationPhasorID INT NULL,
     SourceIndex INT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_Phasor PRIMARY KEY (ID ASC)
 );
 
@@ -426,10 +435,10 @@ CREATE TABLE CalculatedMeasurement(
     DownsamplingMethod VARCHAR(15) NOT NULL DEFAULT N'LastReceived',
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_CalculatedMeasurement PRIMARY KEY (ID ASC)
 );
 
@@ -442,10 +451,10 @@ CREATE TABLE CustomActionAdapter(
     ConnectionString TEXT NULL,
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_CustomActionAdapter PRIMARY KEY (ID ASC)
 );
 
@@ -462,10 +471,10 @@ CREATE TABLE Historian(
     Description TEXT NULL,
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_Historian PRIMARY KEY (ID ASC)
 );
 
@@ -478,10 +487,10 @@ CREATE TABLE CustomInputAdapter(
     ConnectionString TEXT NULL,
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_CustomInputAdapter PRIMARY KEY (ID ASC)
 );
 
@@ -516,10 +525,10 @@ CREATE TABLE OutputStream(
     DigitalMaskValue INT NOT NULL DEFAULT -65536,
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_OutputStream PRIMARY KEY (ID ASC),
     CONSTRAINT IX_OutputStream_NodeID_Acronym UNIQUE KEY (NodeID ASC, Acronym ASC)
 );
@@ -539,10 +548,10 @@ CREATE TABLE Alarm(
     Hysteresis DOUBLE NULL,
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_Alarm PRIMARY KEY (ID ASC),
     CONSTRAINT IX_Alarm_TagName UNIQUE KEY (TagName ASC)
 );
@@ -556,10 +565,10 @@ CREATE TABLE CustomOutputAdapter(
     ConnectionString TEXT NULL,
     LoadOrder INT NOT NULL DEFAULT 0,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_CustomOutputAdapter PRIMARY KEY (ID ASC)
 );
 
@@ -567,51 +576,53 @@ CREATE TABLE AccessLog (
     ID INT(11) NOT NULL AUTO_INCREMENT,
     UserName VARCHAR(200) NOT NULL,
     AccessGranted TINYINT NOT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
+    CreatedOn DATETIME NULL,
     CONSTRAINT PK_AccessLog PRIMARY KEY (ID ASC)
 );
 
 CREATE TABLE UserAccount (
-    ID NCHAR(36) NOT NULL DEFAULT N'',
+    ID NCHAR(36) NOT NULL DEFAULT '',
     Name VARCHAR(200) NOT NULL,
-    Password VARCHAR(200) DEFAULT NULL,
-    FirstName VARCHAR(200) DEFAULT NULL,
-    LastName VARCHAR(200) DEFAULT NULL,
+    Password VARCHAR(200) NULL,
+    FirstName VARCHAR(200) NULL,
+    LastName VARCHAR(200) NULL,
     DefaultNodeID NCHAR(36) NOT NULL,
-    Phone VARCHAR(200) DEFAULT NULL,
-    Email VARCHAR(200) DEFAULT NULL,
+    Phone VARCHAR(200) NULL,
+    Email VARCHAR(200) NULL,
     LockedOut TINYINT NOT NULL DEFAULT 0,
     UseADAuthentication TINYINT NOT NULL DEFAULT 1,
-    ChangePasswordOn DATETIME DEFAULT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    ChangePasswordOn DATETIME NULL,
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_UserAccount PRIMARY KEY (ID ASC),
-    CONSTRAINT IX_UserAccount UNIQUE KEY (Name)
+    CONSTRAINT IX_UserAccount UNIQUE KEY (Name ASC)
 );
 
 CREATE TABLE SecurityGroup (
-    ID NCHAR(36) NOT NULL DEFAULT N'',
+    ID NCHAR(36) NOT NULL DEFAULT '',
     Name VARCHAR(200) NOT NULL,
     Description TEXT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    CONSTRAINT PK_SecurityGroup PRIMARY KEY (ID ASC)
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
+    CONSTRAINT PK_SecurityGroup PRIMARY KEY (ID ASC),
+    CONSTRAINT IX_SecurityGroup UNIQUE KEY (Name ASC)
 );
 
 CREATE TABLE ApplicationRole (
-    ID NCHAR(36) NOT NULL DEFAULT N'',
+    ID NCHAR(36) NOT NULL DEFAULT '',
     Name VARCHAR(200) NOT NULL,
     Description TEXT NULL,
     NodeID NCHAR(36) NOT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    CONSTRAINT PK_ApplicationRole PRIMARY KEY (ID ASC)  
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
+    CONSTRAINT PK_ApplicationRole PRIMARY KEY (ID ASC),
+    CONSTRAINT IX_ApplicationRole UNIQUE KEY (NodeID ASC, Name ASC)
 );
 
 CREATE TABLE ApplicationRoleSecurityGroup (
@@ -633,7 +644,7 @@ CREATE TABLE SecurityGroupUserAccount (
 
 CREATE TABLE Subscriber (
     NodeID NCHAR(36) NOT NULL,
-    ID NCHAR(36) NOT NULL DEFAULT N'',
+    ID NCHAR(36) NOT NULL DEFAULT '',
     Acronym VARCHAR(200) NOT NULL,
     Name VARCHAR(200) NULL,
     SharedSecret VARCHAR(200) NULL,
@@ -642,12 +653,12 @@ CREATE TABLE Subscriber (
     RemoteCertificateFile VARCHAR(500) NULL,
     ValidPolicyErrors VARCHAR(200) NULL,
     ValidChainFlags VARCHAR(500) NULL,
-	AccessControlFilter TEXT NULL,
+    AccessControlFilter TEXT NULL,
     Enabled TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_Subscriber PRIMARY KEY (NodeID ASC, ID ASC),
     CONSTRAINT IX_Subscriber_NodeID_Acronym UNIQUE KEY (NodeID ASC, Acronym ASC)
 );
@@ -657,10 +668,10 @@ CREATE TABLE SubscriberMeasurement(
     SubscriberID NCHAR(36) NOT NULL,
     SignalID NCHAR(36) NOT NULL,
     Allowed TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_SubscriberMeasurement PRIMARY KEY (NodeID ASC, SubscriberID ASC, SignalID ASC)
 );
 
@@ -669,10 +680,10 @@ CREATE TABLE SubscriberMeasurementGroup (
     SubscriberID NCHAR(36) NOT NULL,
     MeasurementGroupID INT NOT NULL,
     Allowed TINYINT NOT NULL DEFAULT 0,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_SubscriberMeasurementGroup PRIMARY KEY (NodeID ASC, SubscriberID ASC, MeasurementGroupID ASC)
 );
 
@@ -681,11 +692,11 @@ CREATE TABLE MeasurementGroup (
     ID INT AUTO_INCREMENT NOT NULL,
     Name VARCHAR(200) NOT NULL,
     Description TEXT NULL,
-	FilterExpression TEXT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    FilterExpression TEXT NULL,
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_MeasurementGroup PRIMARY KEY (ID ASC)
 );
 
@@ -693,10 +704,10 @@ CREATE TABLE MeasurementGroupMeasurement (
     NodeID NCHAR(36) NOT NULL,
     MeasurementGroupID INT NOT NULL,
     SignalID NCHAR(36) NOT NULL,
-    CreatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    CreatedBy VARCHAR(200) NOT NULL DEFAULT N'',
-    UpdatedOn DATETIME NOT NULL DEFAULT N'0000-00-00 00:00:00',
-    UpdatedBy VARCHAR(200) NOT NULL DEFAULT N'',
+    CreatedOn DATETIME NULL,
+    CreatedBy VARCHAR(200) NULL,
+    UpdatedOn DATETIME NULL,
+    UpdatedBy VARCHAR(200) NULL,
     CONSTRAINT PK_MeasurementGroupMeasurement PRIMARY KEY (NodeID ASC, MeasurementGroupID ASC, SignalID ASC)
 );
 
@@ -1280,163 +1291,161 @@ CREATE TRIGGER Historian_RuntimeSync_Delete BEFORE DELETE ON Historian
 FOR EACH ROW DELETE FROM Runtime WHERE SourceID = OLD.ID AND SourceTable = N'Historian';
 
 CREATE TRIGGER AccessLog_InsertDefault BEFORE INSERT ON AccessLog 
-FOR EACH ROW SET NEW.CreatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER ApplicationRole_InsertDefault BEFORE INSERT ON ApplicationRole 
-FOR EACH ROW SET NEW.ID = UUID(), NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.ID = IF(NEW.ID <> '', NEW.ID, UUID()), NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER SecurityGroup_InsertDefault BEFORE INSERT ON SecurityGroup 
-FOR EACH ROW SET NEW.ID = UUID(), NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.ID = IF(NEW.ID <> '', NEW.ID, UUID()), NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER UserAccount_InsertDefault BEFORE INSERT ON UserAccount 
-FOR EACH ROW SET NEW.ID = UUID(), NEW.ChangePasswordOn = ADDDATE(UTC_TIMESTAMP(), 90), NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.ID = IF(NEW.ID <> '', NEW.ID, UUID()), NEW.ChangePasswordOn = COALESCE(NEW.ChangePasswordOn, ADDDATE(UTC_TIMESTAMP(), 90)), NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER CalculatedMeasurement_InsertDefault BEFORE INSERT ON CalculatedMeasurement
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Company_InsertDefault BEFORE INSERT ON Company
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER CustomActionAdapter_InsertDefault BEFORE INSERT ON CustomActionAdapter
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER CustomInputAdapter_InsertDefault BEFORE INSERT ON CustomInputAdapter
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER CustomOutputAdapter_InsertDefault BEFORE INSERT ON CustomOutputAdapter
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Device_InsertDefault BEFORE INSERT ON Device
-FOR EACH ROW SET NEW.UniqueID = COALESCE(NEW.UniqueID, UUID()), NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.UniqueID = COALESCE(NEW.UniqueID, UUID()), NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Historian_InsertDefault BEFORE INSERT ON Historian
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Subscriber_InsertDefault BEFORE INSERT ON Subscriber
-FOR EACH ROW SET NEW.ID = UUID(), NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.ID = IF(NEW.ID <> '', NEW.ID, UUID()), NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Measurement_InsertDefault BEFORE INSERT ON Measurement
-FOR EACH ROW SET NEW.SignalID = UUID(), NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.SignalID = IF(NEW.SignalID <> '', NEW.SignalID, UUID()), NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Node_InsertDefault BEFORE INSERT ON Node
-FOR EACH ROW SET NEW.ID = UUID(), NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.ID = IF(NEW.ID <> '', NEW.ID, UUID()), NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER OtherDevice_InsertDefault BEFORE INSERT ON OtherDevice
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER OutputStream_InsertDefault BEFORE INSERT ON OutputStream
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER OutputStreamDevice_InsertDefault BEFORE INSERT ON OutputStreamDevice
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER OutputStreamDeviceAnalog_InsertDefault BEFORE INSERT ON OutputStreamDeviceAnalog
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER OutputStreamDeviceDigital_InsertDefault BEFORE INSERT ON OutputStreamDeviceDigital
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER OutputStreamDevicePhasor_InsertDefault BEFORE INSERT ON OutputStreamDevicePhasor
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER OutputStreamMeasurement_InsertDefault BEFORE INSERT ON OutputStreamMeasurement
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Phasor_InsertDefault BEFORE INSERT ON Phasor
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Alarm_InsertDefault BEFORE INSERT ON Alarm
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER Vendor_InsertDefault BEFORE INSERT ON Vendor
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER VendorDevice_InsertDefault BEFORE INSERT ON VendorDevice
-FOR EACH ROW SET NEW.CreatedBy = USER(), NEW.CreatedOn = UTC_TIMESTAMP(), NEW.UpdatedBy = USER(), NEW.UpdatedOn = UTC_TIMESTAMP();
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER ErrorLog_InsertDefault BEFORE INSERT ON ErrorLog FOR EACH ROW
-SET NEW.CreatedOn = UTC_TIMESTAMP();
+SET NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP());
 
 CREATE TRIGGER AuditLog_InsertDefault BEFORE INSERT ON AuditLog FOR EACH ROW
-SET NEW.UpdatedOn = UTC_TIMESTAMP();	
+SET NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());	
 
-/*
-CREATE FUNCTION StringToGuid(str CHAR(36)) RETURNS BINARY(16)
-RETURN CONCAT(UNHEX(LEFT(str, 8)), UNHEX(MID(str, 10, 4)), UNHEX(MID(str, 15, 4)), UNHEX(MID(str, 20, 4)), UNHEX(RIGHT(str, 12)));
+-- CREATE FUNCTION StringToGuid(str CHAR(36)) RETURNS BINARY(16)
+-- RETURN CONCAT(UNHEX(LEFT(str, 8)), UNHEX(MID(str, 10, 4)), UNHEX(MID(str, 15, 4)), UNHEX(MID(str, 20, 4)), UNHEX(RIGHT(str, 12)));
 
-CREATE FUNCTION GuidToString(guid BINARY(16)) RETURNS CHAR(36) 
-RETURN CONCAT(HEX(LEFT(guid, 4)), '-', HEX(MID(guid, 5, 2)), '-', HEX(MID(guid, 7, 2)), '-', HEX(MID(guid, 9, 2)), '-', HEX(RIGHT(guid, 6)));
+-- CREATE FUNCTION GuidToString(guid BINARY(16)) RETURNS CHAR(36) 
+-- RETURN CONCAT(HEX(LEFT(guid, 4)), '-', HEX(MID(guid, 5, 2)), '-', HEX(MID(guid, 7, 2)), '-', HEX(MID(guid, 9, 2)), '-', HEX(RIGHT(guid, 6)));
 
-CREATE FUNCTION NewGuid() RETURNS BINARY(16) 
-RETURN StringToGuid(UUID());
+-- CREATE FUNCTION NewGuid() RETURNS BINARY(16) 
+-- RETURN StringToGuid(UUID());
 
-DELIMITER $$
-CREATE PROCEDURE GetFormattedMeasurements(measurementSql TEXT, includeAdjustments TINYINT, OUT measurements TEXT)
-BEGIN
-    DECLARE done INT DEFAULT 0;
-    DECLARE measurementID INT;
-    DECLARE archiveSource VARCHAR(50);
-    DECLARE adder FLOAT DEFAULT 0.0;
-    DECLARE multiplier FLOAT DEFAULT 1.1;	
-    DECLARE selectedMeasurements CURSOR FOR SELECT * FROM temp;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+-- DELIMITER $$
+-- CREATE PROCEDURE GetFormattedMeasurements(measurementSql TEXT, includeAdjustments TINYINT, OUT measurements TEXT)
+-- BEGIN
+--     DECLARE done INT DEFAULT 0;
+--     DECLARE measurementID INT;
+--     DECLARE archiveSource VARCHAR(50);
+--     DECLARE adder FLOAT DEFAULT 0.0;
+--     DECLARE multiplier FLOAT DEFAULT 1.1;	
+--     DECLARE selectedMeasurements CURSOR FOR SELECT * FROM temp;
+--     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
-    CREATE TEMPORARY TABLE temp
-    (
-        MeasurementID INT,
-        ArchiveSource VARCHAR(50),
-        Adder FLOAT,
-        Multiplier FLOAT
-    )
-    TABLESPACE MEMORY;
+--     CREATE TEMPORARY TABLE temp
+--     (
+--         MeasurementID INT,
+--         ArchiveSource VARCHAR(50),
+--         Adder FLOAT,
+--         Multiplier FLOAT
+--     )
+--     TABLESPACE MEMORY;
     
-    SET @insertSQL = CONCAT('INSERT INTO temp ', measurementSql);
-    PREPARE stmt FROM @insertSQL;
-    EXECUTE stmt;
-    DEALLOCATE PREPARE stmt;
+--     SET @insertSQL = CONCAT('INSERT INTO temp ', measurementSql);
+--     PREPARE stmt FROM @insertSQL;
+--     EXECUTE stmt;
+--     DEALLOCATE PREPARE stmt;
 
-    OPEN selectedMeasurements;	
-    SET measurements = '';
+--     OPEN selectedMeasurements;	
+--     SET measurements = '';
     
-    -- Step through selected measurements
-    REPEAT
-        -- Get next row from measurements SQL
-        FETCH selectedMeasurements INTO measurementID, archiveSource, adder, multiplier;
+--     --  Step through selected measurements
+--     REPEAT
+--         --  Get next row from measurements SQL
+--         FETCH selectedMeasurements INTO measurementID, archiveSource, adder, multiplier;
 
-        IF NOT done THEN
-            IF LENGTH(measurements) > 0 THEN
-                SET measurements = CONCAT(measurements, ';');
-            END IF;
+--         IF NOT done THEN
+--             IF LENGTH(measurements) > 0 THEN
+--                 SET measurements = CONCAT(measurements, ';');
+--             END IF;
             
-            IF includeAdjustments <> 0 AND (adder <> 0.0 OR multiplier <> 1.0) THEN
-                SET measurements = CONCAT(measurements, archiveSource, ':', measurementID, ',', adder, ',', multiplier);
-            ELSE
-                SET measurements = CONCAT(measurements, archiveSource, ':', measurementID);
-            END IF;
+--             IF includeAdjustments <> 0 AND (adder <> 0.0 OR multiplier <> 1.0) THEN
+--                 SET measurements = CONCAT(measurements, archiveSource, ':', measurementID, ',', adder, ',', multiplier);
+--             ELSE
+--                 SET measurements = CONCAT(measurements, archiveSource, ':', measurementID);
+--             END IF;
 
-        END IF;
-    UNTIL done END REPEAT;
+--         END IF;
+--     UNTIL done END REPEAT;
 
-    CLOSE selectedMeasurements;
-    DROP TABLE temp;
-END$$
-DELIMITER ;
+--     CLOSE selectedMeasurements;
+--     DROP TABLE temp;
+-- END$$
+-- DELIMITER ;
 
-DELIMITER $$
-CREATE FUNCTION FormatMeasurements(measurementSql TEXT, includeAdjustments TINYINT)
-RETURNS TEXT 
-BEGIN
-  DECLARE measurements TEXT; 
+-- DELIMITER $$
+-- CREATE FUNCTION FormatMeasurements(measurementSql TEXT, includeAdjustments TINYINT)
+-- RETURNS TEXT 
+-- BEGIN
+--   DECLARE measurements TEXT; 
 
-    CALL GetFormattedMeasurements(measurementSql, includeAdjustments, measurements);
+--     CALL GetFormattedMeasurements(measurementSql, includeAdjustments, measurements);
 
-    IF LENGTH(measurements) > 0 THEN
-        SET measurements = CONCAT('{', measurements, '}');
-    ELSE
-        SET measurements = NULL;
-    END IF;
+--     IF LENGTH(measurements) > 0 THEN
+--         SET measurements = CONCAT('{', measurements, '}');
+--     ELSE
+--         SET measurements = NULL;
+--     END IF;
         
-    RETURN measurements;
-END$$
-DELIMITER ;
-*/
+--     RETURN measurements;
+-- END$$
+-- DELIMITER ;

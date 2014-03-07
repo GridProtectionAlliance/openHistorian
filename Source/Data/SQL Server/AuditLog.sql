@@ -1,7 +1,7 @@
 USE [openHistorian]
 GO
 
-CREATE PROCEDURE [dbo].[InsertIntoAuditLog] (@tableName VARCHAR(128), @primaryKeyColumn VARCHAR(128), @primaryKeyValue NVARCHAR(MAX), @deleted BIT = '0') AS	
+CREATE PROCEDURE [dbo].[InsertIntoAuditLog] (@tableName VARCHAR(128), @primaryKeyColumn VARCHAR(128), @primaryKeyValue NVARCHAR(MAX), @deleted BIT = '0', @inserted BIT = '0') AS	
 BEGIN
 
 	DECLARE @columnName varchar(100) 
@@ -16,9 +16,21 @@ BEGIN
 	WHILE @@FETCH_STATUS = 0 
 	BEGIN 
 
-		DECLARE @sql VARCHAR(MAX)		
-				
-		IF @deleted = '0'
+		DECLARE @sql VARCHAR(MAX)
+		
+		IF @deleted = '0' AND @inserted = '1'
+			SET @sql = 'INSERT INTO AuditLog (TableName, PrimaryKeyColumn, PrimaryKeyValue, ColumnName, OriginalValue, NewValue, Deleted, UpdatedBy) ' +
+					'SELECT ''' + @tableName + ''', ''' + @primaryKeyColumn + ''', ''' + @primaryKeyValue + ''', ''' + @columnName + ''', ' +
+					'NULL, CONVERT(NVARCHAR(MAX), #inserted.' + @columnName + '), ''0'', #inserted.UpdatedBy FROM #inserted'
+		ELSE IF @deleted = '1' AND @inserted = '0'
+			BEGIN
+				DECLARE @context VARCHAR(128)
+				SELECT @context = CASE WHEN CONTEXT_INFO() IS NULL THEN SUSER_NAME() ELSE CAST(CONTEXT_INFO() AS VARCHAR(128)) END
+				SET @sql = 'INSERT INTO AuditLog (TableName, PrimaryKeyColumn, PrimaryKeyValue, ColumnName, OriginalValue, NewValue, Deleted, UpdatedBy) ' +
+						'SELECT ''' + @tableName + ''', ''' + @primaryKeyColumn + ''', ''' + @primaryKeyValue + ''', ''' + @columnName + ''', ' +
+						'CONVERT(NVARCHAR(MAX), #deleted.' + @columnName + '), NULL, ''1'', ''' + @context + ''' FROM #deleted'
+			END
+		ELSE
 			SET @sql = 'DECLARE @oldVal NVARCHAR(MAX) ' +
 					'DECLARE @newVal NVARCHAR(MAX) ' +
 					'SELECT @oldVal = CONVERT(NVARCHAR(MAX), #deleted.' + @columnName + '), @newVal = CONVERT(NVARCHAR(MAX), #inserted.' + @columnName + ') FROM #deleted, #inserted ' +
@@ -28,14 +40,7 @@ BEGIN
 					'CONVERT(NVARCHAR(MAX), #deleted.' + @columnName + '), CONVERT(NVARCHAR(MAX), #inserted.' + @columnName + '), ''0'', #inserted.UpdatedBy ' +
 					'FROM #inserted, #deleted ' +
 					'END'
-		ELSE
-			BEGIN
-				DECLARE @context VARCHAR(128)
-				SELECT @context = CASE WHEN CONTEXT_INFO() IS NULL THEN SUSER_NAME() ELSE CAST(CONTEXT_INFO() AS VARCHAR(128)) END
-				SET @sql = 'INSERT INTO AuditLog (TableName, PrimaryKeyColumn, PrimaryKeyValue, ColumnName, OriginalValue, NewValue, Deleted, UpdatedBy) ' +
-						'SELECT ''' + @tableName + ''', ''' + @primaryKeyColumn + ''', ''' + @primaryKeyValue + ''', ''' + @columnName + ''', ' +
-						'CONVERT(NVARCHAR(MAX), #deleted.' + @columnName + '), NULL, ''1'', ''' + @context + ''' FROM #deleted'
-			END			
+
 		EXECUTE (@sql)
 		
 		FETCH NEXT FROM @cursorColumnNames INTO @columnName 
@@ -44,6 +49,31 @@ BEGIN
 	CLOSE @cursorColumnNames 
 	DEALLOCATE @cursorColumnNames
 	
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER UserAccount_AuditInsert 
+   ON  UserAccount
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+	
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted	
+
+	EXEC InsertIntoAuditLog 'UserAccount', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
 END
 GO
 
@@ -95,6 +125,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'UserAccount', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER SecurityGroup_AuditInsert 
+   ON  SecurityGroup
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'SecurityGroup', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -156,6 +211,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER ApplicationRole_AuditInsert 
+   ON  ApplicationRole
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'ApplicationRole', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER ApplicationRole_AuditUpdate 
    ON  ApplicationRole
    AFTER UPDATE
@@ -199,6 +279,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'ApplicationRole', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER CalculatedMeasurement_AuditInsert 
+   ON  CalculatedMeasurement
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'CalculatedMeasurement', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -260,6 +365,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER Company_AuditInsert
+   ON  Company
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'Company', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER Company_AuditUpdate 
    ON  Company
    AFTER UPDATE
@@ -303,6 +433,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'Company', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER CustomActionAdapter_AuditInsert
+   ON  CustomActionAdapter
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'CustomActionAdapter', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -364,6 +519,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER CustomInputAdapter_AuditInsert
+   ON  CustomInputAdapter
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'CustomInputAdapter', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER CustomInputAdapter_AuditUpdate 
    ON  CustomInputAdapter
    AFTER UPDATE
@@ -407,6 +587,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'CustomInputAdapter', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER CustomOutputAdapter_AuditInsert
+   ON  CustomOutputAdapter
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'CustomOutputAdapter', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -468,6 +673,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER Device_AuditInsert
+   ON  Device
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'Device', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER Device_AuditUpdate 
    ON  Device
    AFTER UPDATE
@@ -511,6 +741,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'Device', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER Historian_AuditInsert
+   ON  Historian
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'Historian', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -572,6 +827,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER Measurement_AuditInsert
+   ON  Measurement
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), SignalID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'Measurement', 'SignalID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER Measurement_AuditUpdate 
    ON  Measurement
    AFTER UPDATE
@@ -615,6 +895,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'Measurement', 'SignalID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER Node_AuditInsert
+   ON  Node
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'Node', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -676,6 +981,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER OtherDevice_AuditInsert
+   ON  OtherDevice
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'OtherDevice', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER OtherDevice_AuditUpdate 
    ON  OtherDevice
    AFTER UPDATE
@@ -719,6 +1049,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'OtherDevice', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER OutputStream_AuditInsert
+   ON  OutputStream
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'OutputStream', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -780,6 +1135,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER OutputStreamDevice_AuditInsert
+   ON  OutputStreamDevice
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'OutputStreamDevice', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER OutputStreamDevice_AuditUpdate 
    ON  OutputStreamDevice
    AFTER UPDATE
@@ -823,6 +1203,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'OutputStreamDevice', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER OutputStreamDeviceAnalog_AuditInsert
+   ON  OutputStreamDeviceAnalog
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'OutputStreamDeviceAnalog', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -884,6 +1289,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER OutputStreamDeviceDigital_AuditInserted
+   ON  OutputStreamDeviceDigital
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'OutputStreamDeviceDigital', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER OutputStreamDeviceDigital_AuditUpdate 
    ON  OutputStreamDeviceDigital
    AFTER UPDATE
@@ -927,6 +1357,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'OutputStreamDeviceDigital', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER OutputStreamDevicePhasor_AuditInsert
+   ON  OutputStreamDevicePhasor
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'OutputStreamDevicePhasor', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -988,6 +1443,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER OutputStreamMeasurement_AuditInsert
+   ON  OutputStreamMeasurement
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'OutputStreamMeasurement', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER OutputStreamMeasurement_AuditUpdate 
    ON  OutputStreamMeasurement
    AFTER UPDATE
@@ -1031,6 +1511,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'OutputStreamMeasurement', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER Phasor_AuditInsert
+   ON  Phasor
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'Phasor', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -1087,9 +1592,24 @@ BEGIN
 END
 GO
 
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
+CREATE TRIGGER Alarm_AuditInsert
+   ON  Alarm
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'Alarm', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
 GO
 
 CREATE TRIGGER Alarm_AuditUpdate 
@@ -1135,6 +1655,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'Alarm', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER Vendor_AuditInsert
+   ON  Vendor
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'Vendor', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO
@@ -1196,6 +1741,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER VendorDevice_AuditInsert
+   ON  VendorDevice
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'VendorDevice', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER VendorDevice_AuditUpdate 
    ON  VendorDevice
    AFTER UPDATE
@@ -1248,6 +1818,31 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+CREATE TRIGGER Subscriber_AuditInsert
+   ON  Subscriber
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'Subscriber', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 CREATE TRIGGER Subscriber_AuditUpdate 
    ON  Subscriber
    AFTER UPDATE
@@ -1291,6 +1886,31 @@ BEGIN
 	EXEC InsertIntoAuditLog 'Subscriber', 'ID', @id, '1'
 		
 	DROP TABLE #deleted
+
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER MeasurementGroup_AuditInsert
+   ON  MeasurementGroup
+   AFTER INSERT
+AS 
+BEGIN
+	
+	SET NOCOUNT ON;
+	
+	SELECT * INTO #inserted FROM inserted
+
+	DECLARE @id NVARCHAR(MAX)		
+	SELECT @id = CONVERT(NVARCHAR(MAX), ID) FROM #inserted
+	
+	EXEC InsertIntoAuditLog 'MeasurementGroup', 'ID', @id, '0', '1'
+	
+	DROP TABLE #inserted
 
 END
 GO

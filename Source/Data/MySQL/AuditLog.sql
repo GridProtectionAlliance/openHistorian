@@ -583,10 +583,10 @@ CREATE TRIGGER Device_AuditUpdate AFTER UPDATE ON Device
         IF OLD.Name != NEW.Name THEN
             INSERT INTO AuditLog SET TableName = 'Device', PrimaryKeyColumn = 'ID', PrimaryKeyValue = OLD.ID, ColumnName = 'Name', OriginalValue = OLD.Name, NewValue = NEW.Name, UpdatedBy = NEW.UpdatedBy;
         END IF;
-		
-		IF OLD.OriginalSource != NEW.OriginalSource THEN
-			INSERT INTO AuditLog SET TableName = 'Device', PrimaryKeyColumn = 'ID', PrimaryKeyValue = OLD.ID, ColumnName = 'OriginalSource', OriginalValue = OLD.OriginalSource, NewValue = NEW.OriginalSource, UpdatedBy = NEW.UpdatedBy;
-		END IF;
+        
+        IF OLD.OriginalSource != NEW.OriginalSource THEN
+            INSERT INTO AuditLog SET TableName = 'Device', PrimaryKeyColumn = 'ID', PrimaryKeyValue = OLD.ID, ColumnName = 'OriginalSource', OriginalValue = OLD.OriginalSource, NewValue = NEW.OriginalSource, UpdatedBy = NEW.UpdatedBy;
+        END IF;
     
         IF OLD.IsConcentrator != NEW.IsConcentrator THEN
             INSERT INTO AuditLog SET TableName = 'Device', PrimaryKeyColumn = 'ID', PrimaryKeyValue = OLD.ID, ColumnName = 'IsConcentrator', OriginalValue = OLD.IsConcentrator, NewValue = NEW.IsConcentrator, UpdatedBy = NEW.UpdatedBy;
@@ -1679,80 +1679,80 @@ CREATE TRIGGER Phasor_AuditDelete AFTER DELETE ON Phasor
     END$$
 
 CREATE TRIGGER Alarm_AuditUpdate AFTER UPDATE ON Alarm
-	FOR EACH ROW BEGIN
-	
-		IF OLD.NodeID != NEW.NodeID THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'NodeID', OriginalValue = OLD.NodeID, NewValue = NEW.NodeID, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.TagName != NEW.TagName THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'TagName', OriginalValue = OLD.TagName, NewValue = NEW.TagName, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.SignalID != NEW.SignalID THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'SignalID', OriginalValue = OLD.SignalID, NewValue = NEW.SignalID, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.AssociatedMeasurementID != NEW.AssociatedMeasurementID THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'AssociatedMeasurementID', OriginalValue = OLD.AssociatedMeasurementID, NewValue = NEW.AssociatedMeasurementID, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.Description != NEW.Description THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Description', OriginalValue = OLD.Description, NewValue = NEW.Description, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.Severity != NEW.Severity THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Severity', OriginalValue = OLD.Severity, NewValue = NEW.Severity, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.Operation != NEW.Operation THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Operation', OriginalValue = OLD.Operation, NewValue = NEW.Operation, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.SetPoint != NEW.SetPoint THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'SetPoint', OriginalValue = OLD.SetPoint, NewValue = NEW.SetPoint, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.Tolerance != NEW.Tolerance THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Tolerance', OriginalValue = OLD.Tolerance, NewValue = NEW.Tolerance, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.Delay != NEW.Delay THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Delay', OriginalValue = OLD.Delay, NewValue = NEW.Delay, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.Hysteresis != NEW.Hysteresis THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Hysteresis', OriginalValue = OLD.Hysteresis, NewValue = NEW.Hysteresis, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.LoadOrder != NEW.LoadOrder THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'LoadOrder', OriginalValue = OLD.LoadOrder, NewValue = NEW.LoadOrder, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-	
-		IF OLD.Enabled != NEW.Enabled THEN
-			INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Enabled', OriginalValue = OLD.Enabled, NewValue = NEW.Enabled, UpdatedBy = NEW.UpdatedBy;
-		END IF;
-		
-	END$$
-	
+    FOR EACH ROW BEGIN
+    
+        IF OLD.NodeID != NEW.NodeID THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'NodeID', OriginalValue = OLD.NodeID, NewValue = NEW.NodeID, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.TagName != NEW.TagName THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'TagName', OriginalValue = OLD.TagName, NewValue = NEW.TagName, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.SignalID != NEW.SignalID THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'SignalID', OriginalValue = OLD.SignalID, NewValue = NEW.SignalID, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.AssociatedMeasurementID != NEW.AssociatedMeasurementID THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'AssociatedMeasurementID', OriginalValue = OLD.AssociatedMeasurementID, NewValue = NEW.AssociatedMeasurementID, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.Description != NEW.Description THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Description', OriginalValue = OLD.Description, NewValue = NEW.Description, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.Severity != NEW.Severity THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Severity', OriginalValue = OLD.Severity, NewValue = NEW.Severity, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.Operation != NEW.Operation THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Operation', OriginalValue = OLD.Operation, NewValue = NEW.Operation, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.SetPoint != NEW.SetPoint THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'SetPoint', OriginalValue = OLD.SetPoint, NewValue = NEW.SetPoint, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.Tolerance != NEW.Tolerance THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Tolerance', OriginalValue = OLD.Tolerance, NewValue = NEW.Tolerance, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.Delay != NEW.Delay THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Delay', OriginalValue = OLD.Delay, NewValue = NEW.Delay, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.Hysteresis != NEW.Hysteresis THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Hysteresis', OriginalValue = OLD.Hysteresis, NewValue = NEW.Hysteresis, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.LoadOrder != NEW.LoadOrder THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'LoadOrder', OriginalValue = OLD.LoadOrder, NewValue = NEW.LoadOrder, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+    
+        IF OLD.Enabled != NEW.Enabled THEN
+            INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Enabled', OriginalValue = OLD.Enabled, NewValue = NEW.Enabled, UpdatedBy = NEW.UpdatedBy;
+        END IF;
+        
+    END$$
+    
 CREATE TRIGGER Alarm_AuditDelete AFTER DELETE ON Alarm
-	FOR EACH ROW BEGIN
-	
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'NodeID', OriginalValue = OLD.NodeID, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'TagName', OriginalValue = OLD.TagName, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'SignalID', OriginalValue = OLD.SignalID, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'AssociatedMeasurementID', OriginalValue = OLD.AssociatedMeasurementID, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Description', OriginalValue = OLD.Description, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Severity', OriginalValue = OLD.Severity, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Operation', OriginalValue = OLD.Operation, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'SetPoint', OriginalValue = OLD.SetPoint, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Tolerance', OriginalValue = OLD.Tolerance, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Delay', OriginalValue = OLD.Delay, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Hysteresis', OriginalValue = OLD.Hysteresis, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'LoadOrder', OriginalValue = OLD.LoadOrder, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-		INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Enabled', OriginalValue = OLD.Enabled, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
-	
-	END$$
+    FOR EACH ROW BEGIN
+    
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'NodeID', OriginalValue = OLD.NodeID, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'TagName', OriginalValue = OLD.TagName, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'SignalID', OriginalValue = OLD.SignalID, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'AssociatedMeasurementID', OriginalValue = OLD.AssociatedMeasurementID, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Description', OriginalValue = OLD.Description, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Severity', OriginalValue = OLD.Severity, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Operation', OriginalValue = OLD.Operation, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'SetPoint', OriginalValue = OLD.SetPoint, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Tolerance', OriginalValue = OLD.Tolerance, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Delay', OriginalValue = OLD.Delay, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Hysteresis', OriginalValue = OLD.Hysteresis, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'LoadOrder', OriginalValue = OLD.LoadOrder, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+        INSERT INTO AuditLog SET TableName = 'Alarm', PrimaryKeyColumn = 'ID', PrimaryKeyVAlue = OLD.ID, ColumnName = 'Enabled', OriginalValue = OLD.Enabled, NewValue = NULL, Deleted = '1', UpdatedBy = @context;
+    
+    END$$
 
 CREATE TRIGGER Vendor_AuditUpdate AFTER UPDATE ON Vendor
     FOR EACH ROW BEGIN
