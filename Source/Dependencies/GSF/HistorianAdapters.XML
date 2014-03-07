@@ -410,6 +410,11 @@
             Closes the archive file once the statistics are no longer needed.
             </summary>
         </member>
+        <member name="M:HistorianAdapters.StatisticsReader.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:HistorianAdapters.StatisticsReader"/> object.
+            </summary>
+        </member>
         <member name="P:HistorianAdapters.StatisticsReader.ArchiveFilePath">
             <summary>
             Path to the archive file (*_archive.d).

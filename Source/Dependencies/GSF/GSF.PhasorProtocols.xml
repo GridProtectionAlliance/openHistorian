@@ -6912,6 +6912,16 @@
             Gets or sets total device errors of this <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/>.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.Anonymous.ConfigurationCell.MeasurementsReceived">
+            <summary>
+            Gets or sets total measurements received for this <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.Anonymous.ConfigurationCell.MeasurementsExpected">
+            <summary>
+            Gets or sets total measurements expected to have been received for this <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/>.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.Anonymous.ConfigurationCell.Source">
             <summary>
             Gets or sets the reference to the source of this <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/>.

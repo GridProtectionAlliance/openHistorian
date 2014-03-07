@@ -1826,6 +1826,36 @@
             Returns the total number of frames in the <see cref="T:GSF.TimeSeries.FrameQueue"/>.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.IDevice">
+            <summary>
+            Represents a device that acts as a source of <see cref="T:GSF.TimeSeries.IMeasurement"/>s.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.IDevice.DataQualityErrors">
+            <summary>
+            Gets or sets total data quality errors of this <see cref="T:GSF.TimeSeries.IDevice"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.IDevice.TimeQualityErrors">
+            <summary>
+            Gets or sets total time quality errors of this <see cref="T:GSF.TimeSeries.IDevice"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.IDevice.DeviceErrors">
+            <summary>
+            Gets or sets total device errors of this <see cref="T:GSF.TimeSeries.IDevice"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.IDevice.MeasurementsReceived">
+            <summary>
+            Gets or sets total measurements received for this <see cref="T:GSF.TimeSeries.IDevice"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.IDevice.MeasurementsExpected">
+            <summary>
+            Gets or sets total measurements expected to have been received for this <see cref="T:GSF.TimeSeries.IDevice"/>.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.MeasurementValueFilterFunction">
             <summary>
             Method signature for function used to apply a value filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
@@ -5885,6 +5915,93 @@
             Gets or sets function used to handle exceptions.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.DataQualityReportingProcess">
+            <summary>
+            Represents the process that generates reports for the time-series service.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.DataQualityReportingProcess"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.Execute">
+            <summary>
+            Executes the reporting process to generate the report.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetArguments">
+            <summary>
+            Gets the command line arguments for the reporting process.
+            </summary>
+            <returns>The command line arguments for the reporting process.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.LoadSettings">
+            <summary>
+            Loads saved settings from the config file.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.SaveSettings">
+            <summary>
+            Saves settings to the config file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.ReportDate">
+            <summary>
+            Gets or sets the date of the report to be generated.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.PersistSettings">
+            <summary>
+            Determines whether the object settings are to be persisted to the config file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.SettingsCategory">
+            <summary>
+            Gets or sets the category name under which the object settings are persisted in the config file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.ArchiveFilePath">
+            <summary>
+            Gets or sets the path to the archive file to which
+            the statistics required for reporting are archived.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.ReportLocation">
+            <summary>
+            Gets or sets the directory to which reports will be written.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Title">
+            <summary>
+            Gets or sets the title to be displayed on reports.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Company">
+            <summary>
+            Gets or sets the name of the company to be displayed on reports.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Level4Threshold">
+            <summary>
+            Gets or sets the minimum percentage of measurements received from devices in level 4.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Level3Threshold">
+            <summary>
+            Gets or sets the minimum percentage of measurements received from devices in level 3.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Level4Alias">
+            <summary>
+            Gets or sets the alias for the level 4 category.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Level3Alias">
+            <summary>
+            Gets or sets the alias for the level 3 category.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.ServiceClientBase">
             <summary>
             Represents a client that can remotely access the time-series framework service host.
@@ -5956,6 +6073,137 @@
             </summary>
             <param name="sender">Sending object.</param>
             <param name="e">Event arguments, if any.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_DataQualityErrors(System.Object,System.String)">
+            <summary>
+            Calculates number of data quaility errors reported by device during last reporting interval.
+            </summary>
+            <param name="source">Source Device.</param>
+            <param name="arguments">Any needed arguments for statistic calculation.</param>
+            <returns>Data Quality Errors Statistic.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_TimeQualityErrors(System.Object,System.String)">
+            <summary>
+            Calculates number of time quality errors reported by device during last reporting interval.
+            </summary>
+            <param name="source">Source Device.</param>
+            <param name="arguments">Any needed arguments for statistic calculation.</param>
+            <returns>Time Quality Errors Statistic.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_DeviceErrors(System.Object,System.String)">
+            <summary>
+            Calculates number of device errors reported by device during last reporting interval.
+            </summary>
+            <param name="source">Source Device.</param>
+            <param name="arguments">Any needed arguments for statistic calculation.</param>
+            <returns>Device Errors Statistic.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_MeasurementsReceived(System.Object,System.String)">
+            <summary>
+            Calculates number of measurements received from device during last reporting interval.
+            </summary>
+            <param name="source">Source Device.</param>
+            <param name="arguments">Any needed arguments for statistic calculation.</param>
+            <returns>Measurements Received Statistic.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatistics.GetDeviceStatistic_MeasurementsExpected(System.Object,System.String)">
+            <summary>
+            Calculates expected number of measurements received from device during last reporting interval.
+            </summary>
+            <param name="source">Source Device.</param>
+            <param name="arguments">Any needed arguments for statistic calculation.</param>
+            <returns>Measurements Expected Statistic.</returns>
+        </member>
+        <member name="T:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1">
+            <summary>
+            Helper class for calculating device statistics.
+            </summary>
+            <typeparam name="T">The type of the devices whose statistics are to be calculated.</typeparam>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.#ctor(`0)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1"/> class.
+            </summary>
+            <param name="device">The device whose statistics are to be calculated using this helper.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.AddToMeasurementsReceived(System.Int32)">
+            <summary>
+            Increases the count of the number of measurements received from the device.
+            </summary>
+            <param name="count">The number of measurements received from the device since the last time this method was called.</param>
+            <remarks>
+            Call this each time measurements have been received by the device in order
+            to properly track the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/> statistic.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.Update">
+            <summary>
+            Updates the statistics for the number of measurements received and the number
+            of measurements expected in the <see cref="T:GSF.TimeSeries.IDevice"/> wrapped by this helper.
+            </summary>
+            <remarks>
+            Call this periodically, preferrably on a slow timer (e.g., once per second),
+            in order to update the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/> and
+            <see cref="P:GSF.TimeSeries.IDevice.MeasurementsExpected"/> statistics.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.Update(System.Int64)">
+            <summary>
+            Updates the statistics for the number of measurements received and the number
+            of measurements expected in the <see cref="T:GSF.TimeSeries.IDevice"/> wrapped by this helper.
+            </summary>
+            <param name="nowTicks">The current time, in ticks.</param>
+            <remarks>
+            Call this periodically, preferrably on a slow timer (e.g., once per second),
+            in order to update the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/> and
+            <see cref="P:GSF.TimeSeries.IDevice.MeasurementsExpected"/> statistics. This method is preferred
+            when tracking statistics for multiple <see cref="T:GSF.TimeSeries.IDevice"/>s to reduce the number
+            of calls to <see cref="P:System.DateTime.UtcNow"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.Reset">
+            <summary>
+            Resets the member variables used to track
+            statistics for the device wrapped by this helper.
+            </summary>
+            <remarks>
+            Call this when the connection to a device has been
+            reset to mark a starting point for statistics gathering.
+            Since the <see cref="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.Update(System.Int64)"/> method keeps track
+            of the time it was last called, it is necessary to call
+            this method during long periods of downtime where Update
+            was not being called in order to avoid momentary, unexpectedly
+            large values to be calculated for measurements expected.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.Reset(System.Int64)">
+            <summary>
+            Resets the member variables used to track
+            statistics for the device wrapped by this helper.
+            </summary>
+            <param name="nowTicks">The current time, in ticks.</param>
+            <remarks>
+            Call this when the connection to a device has been
+            reset to mark a starting point for statistics gathering.
+            Since the <see cref="M:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.Update(System.Int64)"/> method keeps track
+            of the time it was last called, it is necessary to call
+            this method during long periods of downtime where Update
+            was not being called in order to avoid momentary, unexpectedly
+            large values to be calculated for measurements expected.
+            This method is preferred when tracking statistics for multiple
+            <see cref="T:GSF.TimeSeries.IDevice"/>s to reduce the number of calls to
+            <see cref="P:System.DateTime.UtcNow"/>.
+            </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.Device">
+            <summary>
+            Gets the device whose statistics are being calculated using this helper.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Statistics.DeviceStatisticsHelper`1.ExpectedMeasurementsPerSecond">
+            <summary>
+            Gets or sets the number of measurements expected to be received from the device per second.
+            </summary>
         </member>
         <member name="T:GSF.TimeSeries.Statistics.StatisticCalculationFunction">
             <summary>
@@ -8053,6 +8301,16 @@
             <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
             <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.SubscribedDevice.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:GSF.TimeSeries.Transport.DataSubscriber.SubscribedDevice"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataSubscriber.SubscribedDevice.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.Transport.DataSubscriber.SubscribedDevice"/> object.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.DebugHostBase">
             <summary>
             Windows form application used to host the time-series framework service.
@@ -8363,6 +8621,13 @@
         <member name="M:GSF.TimeSeries.ServiceHostBase.StatusExportProcessHandler(System.String,System.Object[])">
             <summary>
             Event handler for scheduled adapter status export.
+            </summary>
+            <param name="name">Scheduled event name.</param>
+            <param name="parameters">Scheduled event parameters.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.ServiceHostBase.ReportingProcessHandler(System.String,System.Object[])">
+            <summary>
+            Event handler for scheduled reporting services.
             </summary>
             <param name="name">Scheduled event name.</param>
             <param name="parameters">Scheduled event parameters.</param>
@@ -9109,6 +9374,37 @@
         <member name="P:GSF.TimeSeries.Transport.SignalIndexCache.BinaryLength">
             <summary>
             Gets the length of the binary image.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.Transport.SourceDevice">
+            <summary>
+            Represents a device which acts as a source for
+            measurements provided to a <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.SourceDevice.DataQualityErrors">
+            <summary>
+            Gets or sets total data quality errors of this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.SourceDevice.TimeQualityErrors">
+            <summary>
+            Gets or sets total time quality errors of this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.SourceDevice.DeviceErrors">
+            <summary>
+            Gets or sets total device errors of this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.SourceDevice.MeasurementsReceived">
+            <summary>
+            Gets or sets total measurements received for this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.SourceDevice.MeasurementsExpected">
+            <summary>
+            Gets or sets total measurements expected to have been received for this <see cref="T:GSF.TimeSeries.Transport.SourceDevice"/>.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.Transport.SubscriptionInfo">

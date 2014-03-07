@@ -108,6 +108,24 @@
             Occurs when changes occur that affect whether or not the command should execute.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.UI.UserControls.DataQualityReportUserControl">
+            <summary>
+            Interaction logic for DataQualityReportUserControl.xaml
+            </summary>
+            <summary>
+            DataQualityReportUserControl
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.DataQualityReportUserControl.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.UserControls.DataQualityReportUserControl"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.UserControls.DataQualityReportUserControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.UI.Editors.FileDialogEditor">
             <summary>
             Interaction logic for FileDialogEditor.xaml
@@ -2129,6 +2147,78 @@
         <member name="P:GSF.TimeSeries.UI.ViewModels.Companies.IsNewRecord">
             <summary>
             Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel"/> object.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.Helper_ReceivedServiceResponse(System.Object,GSF.EventArgs{GSF.ServiceProcess.ServiceResponse})">
+            <summary>
+            Handles ReceivedServiceResponse event.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ServiceConnected">
+            <summary>
+            Gets or sets a flag to indicate whether the service is connected.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ConnectivityMessageVisibility">
+            <summary>
+            Gets a value that determines whether the connectivity message should be displayed.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportingEnabled">
+            <summary>
+            Gets or sets a flag that indicates whether reporting is currently enabled.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportLocation">
+            <summary>
+            Gets or sets the location to which reports will be generated.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportGenerationTimeText">
+            <summary>
+            Gets or sets the text used to display or modify the value of the <see cref="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportGenerationTime"/> property.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportGenerationTime">
+            <summary>
+            Gets or sets the report generation time.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ActualReportGenerationTimeText">
+            <summary>
+            Gets or sets the text for the actual report generation time, which may not match <see cref="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportGenerationTimeText"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportDate">
+            <summary>
+            Gets or sets the date of the report to be generated manually.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ChangeReportingEnabledCommand">
+            <summary>
+            Gets the command to change the enabled state of reporting services.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.UpdateReportingConfigCommand">
+            <summary>
+            Gets the command to update the configuration of the reporting services.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.GenerateReportCommand">
+            <summary>
+            Gets the command to generate a new report manually.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.ErrorLogViewModel.#ctor(System.Int32,System.Boolean)">

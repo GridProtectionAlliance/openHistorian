@@ -574,30 +574,6 @@
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetDeviceStatistic_DataQualityErrors(System.Object,System.String)">
-            <summary>
-            Calculates number of data quaility errors reported by device during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Data Quality Errors Statistic.</returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetDeviceStatistic_TimeQualityErrors(System.Object,System.String)">
-            <summary>
-            Calculates number of time quality errors reported by device during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Time Quality Errors Statistic.</returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetDeviceStatistic_DeviceErrors(System.Object,System.String)">
-            <summary>
-            Calculates number of device errors reported by device during last reporting interval.
-            </summary>
-            <param name="source">Source Device.</param>
-            <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Device Errros Statistic.</returns>
-        </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetInputStreamStatistic_TotalFrames(System.Object,System.String)">
             <summary>
             Calculates total number of frames received from input stream during last reporting interval.
@@ -1180,12 +1156,6 @@
             <param name="index">Index <see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
             <param name="count">Number of signals defined for this <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</param>
             <returns>Signal reference of given <see cref="T:GSF.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.</returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.GetHashCode">
-            <summary>
-            Returns the hash code for this instance.
-            </summary>
-            <returns>A 32-bit signed integer hash code.</returns>
         </member>
         <member name="P:PhasorProtocolAdapters.PhasorMeasurementMapper.IsConcentrator">
             <summary>

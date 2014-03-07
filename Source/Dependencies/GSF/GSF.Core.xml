@@ -25398,14 +25398,14 @@
             The difference between <see cref="T:GSF.Ticks"/> and <see cref="T:System.DateTime"/> is that <see cref="T:GSF.Ticks"/> is essentially a long
             integer (i.e., an <see cref="T:System.Int64"/>) which represents the number of ticks that have elapsed since 12:00:00 midnight,
             January 1, 0001 with each tick having a resolution of 100-nanoseconds. You would use <see cref="T:GSF.Ticks"/> in places where
-            you needed to directly represent time in high-resolution, i.e., time with subsecond accuracy, using an object that will
+            you needed to directly represent time in high-resolution, i.e., time with sub-second accuracy, using an object that will
             act like a long integer but handle time conversions. <see cref="T:GSF.Ticks"/> can also represent a "time period" (e.g., the
             number of ticks elapsed since a process started) and thus can also be used like a <see cref="T:System.TimeSpan"/>; when used in
             this manner the <see cref="M:GSF.Ticks.ToElapsedTimeString"/> method can be used to convert the <see cref="T:GSF.Ticks"/> value
             into a handy textual representation of elapsed years, days, hours, minutes and seconds.
             </para>
             <para>
-            This class behaves just like an <see cref="T:System.Int64"/> representing a time in ticks; it is implictly castable to and from
+            This class behaves just like an <see cref="T:System.Int64"/> representing a time in ticks; it is implicitly castable to and from
             an <see cref="T:System.Int64"/> and therefore can be generally used "as" an Int64 directly. It is also implicitly castable to and
             from a <see cref="T:System.DateTime"/>, a <see cref="T:System.TimeSpan"/>, an <see cref="T:GSF.NtpTimeTag"/> and a <see cref="T:GSF.UnixTimeTag"/>.
             </para>
@@ -25595,28 +25595,28 @@
         </member>
         <member name="M:GSF.Ticks.BaselinedTimestamp(GSF.BaselineTimeInterval)">
             <summary>
-            Creates a new <see cref="T:GSF.Ticks"/> value that represents a baselined timestamp, in 100-nanoseconds
+            Creates a new <see cref="T:GSF.Ticks"/> value that represents a base-lined timestamp, in 100-nanoseconds
             intervals, that begins at the beginning of the specified time interval.
             </summary>
             <param name="interval">
-            <see cref="T:GSF.BaselineTimeInterval"/> to which <see cref="T:GSF.Ticks"/> timestamp should be baselined.
+            <see cref="T:GSF.BaselineTimeInterval"/> to which <see cref="T:GSF.Ticks"/> timestamp should be base-lined.
             </param>
             <returns>
-            A new <see cref="T:GSF.Ticks"/> value that represents a baselined timestamp, in 100-nanoseconds intervals,
+            A new <see cref="T:GSF.Ticks"/> value that represents a base-lined timestamp, in 100-nanoseconds intervals,
             that begins at the specified <see cref="T:GSF.BaselineTimeInterval"/>.
             </returns>
             <remarks>
-            Baselining to the <see cref="F:GSF.BaselineTimeInterval.Second"/> would return the <see cref="T:GSF.Ticks"/>
+            Base-lining to the <see cref="F:GSF.BaselineTimeInterval.Second"/> would return the <see cref="T:GSF.Ticks"/>
             value starting at zero milliseconds.<br/>
-            Baselining to the <see cref="F:GSF.BaselineTimeInterval.Minute"/> would return the <see cref="T:GSF.Ticks"/>
+            Base-lining to the <see cref="F:GSF.BaselineTimeInterval.Minute"/> would return the <see cref="T:GSF.Ticks"/>
             value starting at zero seconds and milliseconds.<br/>
-            Baselining to the <see cref="F:GSF.BaselineTimeInterval.Hour"/> would return the <see cref="T:GSF.Ticks"/>
+            Base-lining to the <see cref="F:GSF.BaselineTimeInterval.Hour"/> would return the <see cref="T:GSF.Ticks"/>
             value starting at zero minutes, seconds and milliseconds.<br/>
-            Baselining to the <see cref="F:GSF.BaselineTimeInterval.Day"/> would return the <see cref="T:GSF.Ticks"/>
+            Base-lining to the <see cref="F:GSF.BaselineTimeInterval.Day"/> would return the <see cref="T:GSF.Ticks"/>
             value starting at zero hours, minutes, seconds and milliseconds.<br/>
-            Baselining to the <see cref="F:GSF.BaselineTimeInterval.Month"/> would return the <see cref="T:GSF.Ticks"/>
+            Base-lining to the <see cref="F:GSF.BaselineTimeInterval.Month"/> would return the <see cref="T:GSF.Ticks"/>
             value starting at day one, zero hours, minutes, seconds and milliseconds.<br/>
-            Baselining to the <see cref="F:GSF.BaselineTimeInterval.Year"/> would return the <see cref="T:GSF.Ticks"/>
+            Base-lining to the <see cref="F:GSF.BaselineTimeInterval.Year"/> would return the <see cref="T:GSF.Ticks"/>
             value starting at month one, day one, zero hours, minutes, seconds and milliseconds.
             </remarks>
         </member>
@@ -26222,6 +26222,83 @@
             style is not a System.Globalization.NumberStyles value. -or- style is not a combination of
             System.Globalization.NumberStyles.AllowHexSpecifier and System.Globalization.NumberStyles.HexNumber values.
             </exception>
+        </member>
+        <member name="M:GSF.Ticks.SubsecondDistribution(System.Int32)">
+            <summary>
+            Gets a sub-second time distribution in <see cref="T:GSF.Ticks"/> for the specified <paramref name="samplesPerSecond"/>.
+            </summary>
+            <param name="samplesPerSecond">Samples per second.</param>
+            <returns>Array of sub-second time distribution in <see cref="T:GSF.Ticks"/>.</returns>
+        </member>
+        <member name="M:GSF.Ticks.MillisecondDistribution(System.Int32)">
+            <summary>
+            Gets a sub-second time distribution in milliseconds for the specified <paramref name="samplesPerSecond"/>.
+            </summary>
+            <param name="samplesPerSecond">Samples per second.</param>
+            <returns>Array of sub-second time distribution in milliseconds.</returns>
+        </member>
+        <member name="M:GSF.Ticks.MicrosecondDistribution(System.Int32)">
+            <summary>
+            Gets a sub-second time distribution in microseconds for the specified <paramref name="samplesPerSecond"/>.
+            </summary>
+            <param name="samplesPerSecond">Samples per second.</param>
+            <returns>Array of sub-second time distribution in microseconds.</returns>
+        </member>
+        <member name="M:GSF.Ticks.AlignToSubsecondDistribution(GSF.Ticks,System.Int32,System.Int64)">
+            <summary>
+            Returns a floor-aligned sub-second distribution timestamp for given <paramref name="timestamp"/>.
+            </summary>
+            <param name="timestamp">Timestamp to align.</param>
+            <param name="samplesPerSecond">Samples per second to use for distribution.</param>
+            <param name="timeResolution">Defines the time resolution to use when aligning <paramref name="timestamp"/> to its proper distribution timestamp.</param>
+            <returns>A floor-aligned sub-second distribution timestamp for given <paramref name="timestamp"/>.</returns>
+            <remarks>
+            Time resolution value is typically a power of 10 based on the number of ticks per the desired resolution. The following table defines
+            common resolutions and their respective <paramref name="timeResolution"/> values:
+            <list type="table">
+                <listheader>
+                    <term>Resolution</term>
+                    <description>Time Resolution Value</description>
+                </listheader>
+                <item>
+                    <term>Seconds</term>
+                    <description><see cref="F:GSF.Ticks.PerSecond"/></description>
+                </item>
+                <item>
+                    <term>Milliseconds</term>
+                    <description><see cref="F:GSF.Ticks.PerMillisecond"/></description>
+                </item>
+                <item>
+                    <term>Microseconds</term>
+                    <description><see cref="F:GSF.Ticks.PerMicrosecond"/></description>
+                </item>
+                <item>
+                    <term>Ticks</term>
+                    <description>0</description>
+                </item>
+            </list>
+            If source timestamps have variation, i.e., they are not aligned within common distributions, the <paramref name="timeResolution"/>
+            can be adjusted to include slack to accommodate the variance. When including slack in the time resolution, the value will depend
+            on the <paramref name="samplesPerSecond"/>, for example: you could use 330,000 for 30 samples per second, 160,000 for 60 samples
+            per second, and 80,000 for 120 samples per second. Actual slack value may need to be more or less depending on the size of the
+            source timestamp variation.
+            </remarks>
+        </member>
+        <member name="M:GSF.Ticks.AlignToMillisecondDistribution(GSF.Ticks,System.Int32)">
+            <summary>
+            Returns a floor-aligned millisecond distribution timestamp for given <paramref name="timestamp"/>.
+            </summary>
+            <param name="timestamp">Timestamp to align.</param>
+            <param name="samplesPerSecond">Samples per second to use for distribution.</param>
+            <returns>A floor-aligned millisecond distribution timestamp for given <paramref name="timestamp"/>.</returns>
+        </member>
+        <member name="M:GSF.Ticks.AlignToMicrosecondDistribution(GSF.Ticks,System.Int32)">
+            <summary>
+            Returns a floor-aligned microsecond distribution timestamp for given <paramref name="timestamp"/>.
+            </summary>
+            <param name="timestamp">Timestamp to align.</param>
+            <param name="samplesPerSecond">Samples per second to use for distribution.</param>
+            <returns>A floor-aligned microsecond distribution timestamp for given <paramref name="timestamp"/>.</returns>
         </member>
         <member name="T:GSF.TimeSpanExtensions">
             <summary>

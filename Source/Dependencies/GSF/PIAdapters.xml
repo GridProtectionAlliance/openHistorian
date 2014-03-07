@@ -108,6 +108,11 @@
             Gets or sets the point class string used when automatically creating new PI points during the metadata update. On the PI server, this class should inherit from classic.
             </summary>
         </member>
+        <member name="P:PIAdapters.PIOutputAdapter.TagMapCacheFileName">
+            <summary>
+            Gets or sets the filename to be used for tag map cache.
+            </summary>
+        </member>
         <member name="T:PIAdapters.PIPBInputAdapter">
             <summary>
             Retrieves PI data for non-real time temporal sessions. The real-time PI input adapter is preferred for real-time data due to use of event pipes.
