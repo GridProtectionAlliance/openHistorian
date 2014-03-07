@@ -220,6 +220,12 @@
       <Component Id="openHistorianConfig" Permanent="yes">
         <File Id="openHistorian.exe.config" Name="$(var.openHistorian.TargetFileName).config" Source="$(var.openHistorian.TargetPath).config" />
       </Component>
+      <Component Id="StatHistorianReportGenerator">
+        <File Id="StatHistorianReportGenerator.exe" Name="StatHistorianReportGenerator.exe" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe" />
+      </Component>
+      <Component Id="StatHistorianReportGeneratorConfig">
+        <File Id="StatHistorianReportGenerator.exe.config" Name="StatHistorianReportGenerator.exe.config" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe.config" />
+      </Component>
       <Component Id="openHistorian.Core">
         <File Id="openHistorian.Core.dll" Name="$(var.openHistorian.Core.TargetFileName)" Source="$(var.openHistorian.Core.TargetPath)" />
       </Component>

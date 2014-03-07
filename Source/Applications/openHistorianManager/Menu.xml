@@ -66,7 +66,12 @@
       <MenuDataItem Icon="" MenuText="_Remote System Console" Description="Remote System Console" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.MonitoringUserControl" />
       <MenuDataItem Icon="" MenuText="_Error Log" Description="Error Log" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.ErrorLogUserControl" />
     </SubMenuItems>
-  </MenuDataItem> 
+  </MenuDataItem>
+  <MenuDataItem Icon="" MenuText="_Reporting" Description="PDC Reporting Components" Roles="*" UserControlAssembly="" UserControlPath="">
+    <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="Data Quality Reports" Description="Configure Data Quality Reports" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.DataQualityReportUserControl"/>
+    </SubMenuItems>
+  </MenuDataItem>
   <MenuDataItem Icon="" MenuText="_System" Description="Manage System Settings" Roles="*" UserControlAssembly="" UserControlPath="">
     <SubMenuItems>
       <MenuDataItem Icon="" MenuText="Manage _Nodes" Description="Manage Nodes" Roles="Administrator" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.NodeUserControl" />
