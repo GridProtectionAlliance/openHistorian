@@ -30,6 +30,13 @@ namespace GSF.Threading
     /// Provides a light weight exclusive lock that is approximately 2.5 times faster than <see cref="Monitor"/>.
     /// WARNING: This lock should be used in a Using block, and duplicate calls to Lock without releasing will cause a deadlock.
     /// </summary>
+    /// <remarks>
+    /// After writing this class I did some review of the methodology. 
+    /// Reviewing this article: http://www.adammil.net/blog/v111_Creating_High-Performance_Locks_and_Lock-free_Code_for_NET_.html
+    /// Brings up stability issues with the lock. Namely what happens when unhandled exceptions occurs when acquiring and releasing the lock.
+    /// I have intentionally left out any kind of protection against this as it severly reduces the speed of this code. Therefore
+    /// do not use this locking method where a Thread.Abort() might be used as a control method. 
+    /// </remarks>
     public class TinyLock
     {
         const int Unlocked = 0;

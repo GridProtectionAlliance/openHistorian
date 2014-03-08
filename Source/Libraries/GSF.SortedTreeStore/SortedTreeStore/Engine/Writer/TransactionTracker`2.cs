@@ -29,16 +29,24 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Writer
 {
+    /// <summary>
+    /// Handles the transactions and any waits/notifications associated with transaction numbers.
+    /// </summary>
+    /// <typeparam name="TKey">The key</typeparam>
+    /// <typeparam name="TValue">The value</typeparam>
+    /// <remarks>
+    /// Transaction IDs are long values, starting with zero. The reason behind this, even if 2 billion transactions
+    /// could happen per second, it would still take over 100 years without an application restart to loop around. 
+    /// Realistically a therotical peak would be 200 million transactions per second (An Interlocked.Increment).
+    /// </remarks>
     public class TransactionTracker<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        object m_syncRoot;
-        long m_transactionSoftCommitted;
-        long m_transactionHardCommitted;
-        PrebufferWriter<TKey, TValue> m_prebuffer;
-        FirstStageWriter<TKey, TValue> m_firstStageWriter;
 
+        /// <summary>
+        /// An internal class created for each thread that is waiting for a transaction to committ.
+        /// </summary>
         private class WaitForCommit : IDisposable
         {
             public long TransactionId { get; private set; }
@@ -69,9 +77,19 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
 
+        object m_syncRoot;
+        long m_transactionSoftCommitted;
+        long m_transactionHardCommitted;
+        PrebufferWriter<TKey, TValue> m_prebuffer;
+        FirstStageWriter<TKey, TValue> m_firstStageWriter;
         List<WaitForCommit> m_waitingForSoftCommit;
         List<WaitForCommit> m_waitingForHardCommit;
 
+        /// <summary>
+        /// Creates a new transaction tracker that monitors the provided buffers.
+        /// </summary>
+        /// <param name="prebuffer"></param>
+        /// <param name="firstStageWriter"></param>
         public TransactionTracker(PrebufferWriter<TKey, TValue> prebuffer, FirstStageWriter<TKey, TValue> firstStageWriter)
         {
             m_waitingForHardCommit = new List<WaitForCommit>();
@@ -82,10 +100,14 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_transactionHardCommitted = 0;
             m_prebuffer = prebuffer;
             m_firstStageWriter = firstStageWriter;
-            m_prebuffer.RolloverComplete += TransactionSoftCommitted;
+            m_firstStageWriter.RolloverComplete += TransactionSoftCommitted;
             m_firstStageWriter.SequenceNumberCommitted += TransactionHardCommitted;
         }
 
+        /// <summary>
+        /// Event handler.
+        /// </summary>
+        /// <param name="transactionId"></param>
         void TransactionSoftCommitted(long transactionId)
         {
             lock (m_syncRoot)
@@ -103,6 +125,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
 
+        /// <summary>
+        /// Event handler.
+        /// </summary>
+        /// <param name="transactionId"></param>
         void TransactionHardCommitted(long transactionId)
         {
             lock (m_syncRoot)
@@ -120,6 +146,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
 
+        /// <summary>
+        /// Wait for the specified transaction to commit to memory.
+        /// </summary>
+        /// <param name="transactionId"></param>
         public void WaitForSoftCommit(long transactionId)
         {
             lock (m_syncRoot)
@@ -141,9 +171,13 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
 
+        /// <summary>
+        /// Waits for the specified transaction to commit to the disk.
+        /// </summary>
+        /// <param name="transactionId"></param>
         public void WaitForHardCommit(long transactionId)
         {
-            bool triggerSoft = true;
+            bool triggerSoft = false;
             lock (m_syncRoot)
             {
                 if (m_transactionHardCommitted > transactionId)

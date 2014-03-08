@@ -40,26 +40,27 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        
+
         /// <summary>
         /// The stream of points that need to be rolled over. 
         /// </summary>
         public PointBuffer<TKey, TValue> Stream { get; private set; }
+
         /// <summary>
-        /// The sequence number assoicated with the points in this buffer. T
+        /// The transaction id assoicated with the points in this buffer. 
         /// This is the id of the last point in this buffer.
         /// </summary>
-        public long SequenceNumber { get; private set; }
+        public long TransactionId { get; private set; }
 
         /// <summary>
         /// Creates a set of args
         /// </summary>
         /// <param name="stream">the stream to specify</param>
-        /// <param name="sequenceNumber">the number to specify</param>
-        public PrebufferRolloverArgs(PointBuffer<TKey, TValue> stream, long sequenceNumber)
+        /// <param name="transactionId">the number to specify</param>
+        public PrebufferRolloverArgs(PointBuffer<TKey, TValue> stream, long transactionId)
         {
             Stream = stream;
-            SequenceNumber = sequenceNumber;
+            TransactionId = transactionId;
         }
     }
 
@@ -75,12 +76,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        /// <summary>
-        /// Occurs after a rollover operation has completed and provides the sequence number associated with
-        /// the rollover.
-        /// </summary>
-        public event Action<long> RolloverComplete;
-
+        
         /// <summary>
         /// An event handler that will raise any exceptions that go unhandled in the rollover process.
         /// </summary>
@@ -102,20 +98,22 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// The interval after which data is rolled over.
         /// </summary>
         private readonly int m_rolloverInterval;
+
         /// <summary>
         /// The point sequence number assigned to points when they are added to the prebuffer.
         /// </summary>
-        private long m_sequenceId;
+        private long m_latestTransactionId;
 
         /// <summary>
-        /// The sequenceId that is currently being processed by the rollover thread.
+        /// The Transaction Id that is currently being processed by the rollover thread.
+        /// Its possible that it has not completed rolling over yet.
         /// </summary>
-        private long m_rollingOverCurrentSequenceId;
+        private long m_currentTransactionIdRollingOver;
 
         private readonly object m_syncRoot;
         private readonly Action<PrebufferRolloverArgs<TKey, TValue>> m_onRollover;
         private ScheduledTask m_rolloverTask;
-        private ManualResetEvent m_waitForRolloverToComplete = new ManualResetEvent(false);
+        ManualResetEvent m_waitForRolloverToComplete;
         private PointBuffer<TKey, TValue> m_processingQueue;
         private PointBuffer<TKey, TValue> m_activeQueue;
 
@@ -128,8 +126,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
         {
             if (rolloverInterval < 10 || rolloverInterval > 1000)
                 throw new ArgumentOutOfRangeException("rolloverInterval", "Must be between 10ms and 1000ms");
+            if (m_onRollover == null)
+                throw new ArgumentNullException("onRollover");
 
-            m_sequenceId = 0;
+            m_latestTransactionId = 0;
             m_syncRoot = new object();
             m_activeQueue = new PointBuffer<TKey, TValue>(10000);
             m_processingQueue = new PointBuffer<TKey, TValue>(10000);
@@ -137,44 +137,41 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_processingQueue.Clear();
             m_onRollover = onRollover;
             m_rolloverInterval = rolloverInterval;
+            m_waitForRolloverToComplete = new ManualResetEvent(false);
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.AboveNormal);
             m_rolloverTask.OnEvent += ProcessRollover;
             m_rolloverTask.OnException += OnException;
             m_rolloverTask.Start(m_rolloverInterval);
         }
 
-        void OnException(object sender, UnhandledExceptionEventArgs e)
-        {
-            UnhandledExceptionEventHandler handler = Exception;
-            if (handler != null)
-                handler(sender, e);
-        }
-
         /// <summary>
-        /// Gets the latest seqence id which is a sequential counter 
-        /// based on the number of insert operations have occured.
+        /// Gets the latest transaction id which is a sequential counter 
+        /// based on the number of insert operations that have occured.
         /// </summary>
-        public long SequenceId
+        public long LatestTransactionId
         {
             get
             {
                 lock (m_syncRoot)
                 {
-                    return m_sequenceId;
+                    return m_latestTransactionId;
                 }
             }
         }
 
         /// <summary>
-        /// Triggers a rollover if the provided sequence id has not yet been committed.
+        /// Triggers a rollover if the provided transaction id has not yet been triggered.
         /// </summary>
-        /// <param name="sequenceId"></param>
-        public void Commit(long sequenceId)
+        /// <param name="transactionId"></param>
+        public void Commit(long transactionId)
         {
             lock (m_syncRoot)
             {
-                if (sequenceId > m_rollingOverCurrentSequenceId)
+                if (transactionId > m_currentTransactionIdRollingOver)
+                {
                     m_rolloverTask.Start();
+                    m_waitForRolloverToComplete.Reset();
+                }
             }
         }
 
@@ -183,7 +180,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// </summary>
         /// <param name="key">the key to write</param>
         /// <param name="value">the value to write</param>
-        /// <returns>the sequence number identifying this point</returns>
+        /// <returns>the transaction id identifying this point</returns>
         /// <remarks>Calls to this function are thread safe</remarks>
         public long Write(TKey key, TValue value)
         {
@@ -202,19 +199,24 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 {
                     m_rolloverTask.Start();
                     m_waitForRolloverToComplete.Reset();
-                    goto TryAgainWithWait;
+                    goto TryAgainAfterWait;
                 }
-                m_sequenceId++;
-                sequenceId = m_sequenceId;
+                m_latestTransactionId++;
+                sequenceId = m_latestTransactionId;
             }
             return sequenceId;
 
 
-        TryAgainWithWait:
+        TryAgainAfterWait:
             m_waitForRolloverToComplete.WaitOne();
             goto TryAgain;
         }
 
+        /// <summary>
+        /// Processes the rollover of this file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ProcessRollover(object sender, ScheduledTaskEventArgs e)
         {
             //the nature of how the ScheduledTask works 
@@ -251,13 +253,31 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
                 m_activeQueue.Clear();
 
-                args = new PrebufferRolloverArgs<TKey, TValue>(stream, m_sequenceId);
+                args = new PrebufferRolloverArgs<TKey, TValue>(stream, m_latestTransactionId);
                 m_waitForRolloverToComplete.Set();
-                m_rollingOverCurrentSequenceId = m_sequenceId;
+                m_currentTransactionIdRollingOver = m_latestTransactionId;
 
             }
             m_onRollover(args);
-            OnRolloverComplete(args.SequenceNumber);
+        }
+
+        /// <summary>
+        /// Stop all writing to this class.
+        /// Once stopped, it cannot be resumed.
+        /// All data is then immediately flushed to the output.
+        /// This method calls Dispose()
+        /// </summary>
+        /// <returns>the transaction number of the last point that written</returns>
+        public long Stop()
+        {
+            lock (m_syncRoot)
+            {
+                m_stopped = true;
+            }
+            m_rolloverTask.Dispose();
+            m_rolloverTask = null;
+            Dispose();
+            return m_latestTransactionId;
         }
 
         /// <summary>
@@ -290,31 +310,12 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 }
             }
         }
-
-        /// <summary>
-        /// Stop all writing to this class.
-        /// Once stopped, it cannot be resumed.
-        /// All data is then immediately flushed to the output.
-        /// This method calls Dispose()
-        /// </summary>
-        /// <returns>the sequence number of the last point that needs to be written to the computer.</returns>
-        public long Stop()
+        
+        void OnException(object sender, UnhandledExceptionEventArgs e)
         {
-            lock (m_syncRoot)
-            {
-                m_stopped = true;
-            }
-            m_rolloverTask.Dispose();
-            m_rolloverTask = null;
-            Dispose();
-            return m_sequenceId;
-        }
-
-        void OnRolloverComplete(long obj)
-        {
-            Action<long> handler = RolloverComplete;
+            UnhandledExceptionEventHandler handler = Exception;
             if (handler != null)
-                handler(obj);
+                handler(sender, e);
         }
 
     }

@@ -18,7 +18,7 @@
 //  ----------------------------------------------------------------------------------------------------
 //  1/12/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
+//   3/8/2014 - Added some logic behind the states so the Start() and Start(int) methods can be inlined.
 //
 //******************************************************************************************************
 
@@ -108,6 +108,15 @@ namespace GSF.Threading
     public class ScheduledTask
         : IDisposable
     {
+        /// <summary>
+        /// A state description, any state less than or equal to this satisfies the Start() Condition.
+        /// </summary>
+        public const int WillRunAgain = State.TerminateQueuedRunAgain;
+
+        /// <summary>
+        /// A state description, anything less than or equal to this satisifies the Start(delay) condition.
+        /// </summary>
+        public const int WillRunEventually = State.ScheduledToRunAfterDelay;
 
         /// <summary>
         /// State variables for the internal state machine.
@@ -115,55 +124,57 @@ namespace GSF.Threading
         private static class State
         {
             /// <summary>
-            /// A state to set the machine to when addional work needs to be done before finalizing the next state.
-            /// Never leave in this state, never change from this state unless you are the one who set this state.
-            /// </summary>
-            public const int PendingAction = 0;
-
-            /// <summary>
-            /// Indicates that the task is not running.
-            /// </summary>
-            public const int NotRunning = 1;
-
-            /// <summary>
-            /// Indicates that the task is scheduled to execute after a user specified delay
-            /// </summary>
-            public const int ScheduledToRunAfterDelay = 2;
-
-            /// <summary>
             /// Indicates the task has been queue for immediate execution, but has not started running yet.
             /// </summary>
-            public const int ScheduledToRun = 3;
-
-            /// <summary>
-            /// Indicates the task is currently running.
-            /// </summary>
-            public const int Running = 4;
-
+            public const int ScheduledToRun = 0;
             /// <summary>
             /// Indicates that the task is running, but has been requested to run again immediately after finishing.
             /// </summary>
-            public const int RunAgain = 5;
+            public const int RunAgain = 1;
+            /// <summary>
+            /// Indicates that the worker thread should run one more time before terminating.
+            /// </summary>
+            public const int TerminateQueuedRunAgain = 2;
+            
+            //Will Run Again before this position
 
             /// <summary>
             /// Indicates that the task is running, but has been requested to run again after a user specified interval.
             /// </summary>
-            public const int RunAgainAfterDelay = 6;
+            public const int RunAgainAfterDelay = 3;
 
             /// <summary>
-            /// Indicates that the worker thread should run one more time before terminating.
+            /// Indicates that the task is scheduled to execute after a user specified delay
             /// </summary>
-            public const int TerminateQueuedRunAgain = 7;
+            public const int ScheduledToRunAfterDelay = 4;
+
+            //Will Run Eventually, before this position.
+
+            /// <summary>
+            /// Indicates that the task is not running.
+            /// </summary>
+            public const int NotRunning = 5;
+
+            /// <summary>
+            /// Indicates the task is currently running.
+            /// </summary>
+            public const int Running = 6;
 
             /// <summary>
             /// Indicates that the worker thread should terminate before running the task.
             /// </summary>
-            public const int TerminateQueued = 8;
+            public const int TerminateQueued = 7;
 
             /// <summary>
             /// Indicates that the class has been Terminated and no more execution is possible.
             /// </summary>
-            public const int Terminated = 9;
+            public const int Terminated = 8;
+
+            /// <summary>
+            /// A state to set the machine to when addional work needs to be done before finalizing the next state.
+            /// Never leave in this state, never change from this state unless you are the one who set this state.
+            /// </summary>
+            public const int PendingAction = 100;
         }
 
         /// <summary>
@@ -285,6 +296,20 @@ namespace GSF.Threading
         /// </remarks>
         public void Start()
         {
+            //Tiny quick check that will likely be inlined by the compiler.
+            if (m_stateMachine > WillRunAgain)
+                StartSlower();
+        }
+
+        /// <summary>
+        /// Immediately starts the task. 
+        /// </summary>
+        /// <remarks>
+        /// If this is called after a Start(Delay) the timer will be short circuited 
+        /// and the process will still start immediately. 
+        /// </remarks>
+        void StartSlower()
+        {
             SpinWait wait = default(SpinWait);
 
             while (true)
@@ -328,9 +353,7 @@ namespace GSF.Threading
                     case State.PendingAction:
                         break;
                 }
-
-                //Interlocked.Increment(ref m_spinLock);
-                //wait.SpinOnce();
+                wait.SpinOnce();
             }
         }
 
@@ -356,6 +379,21 @@ namespace GSF.Threading
         /// reset or restart an existing timer.
         /// </remarks>
         public void Start(int delay)
+        {
+            //Tiny quick check that will likely be inlined by the compiler.
+            if (m_stateMachine > WillRunEventually)
+                StartSlower(delay);
+        }
+
+        /// <summary>
+        /// Starts a timer to run the task after a provided interval. 
+        /// </summary>
+        /// <param name="delay">the delay in milliseconds before the task should run</param>
+        /// <remarks>
+        /// If already running on a timer, this function will do nothing. Do not use this function to
+        /// reset or restart an existing timer.
+        /// </remarks>
+        void StartSlower(int delay)
         {
             SpinWait wait = new SpinWait();
 
@@ -391,7 +429,7 @@ namespace GSF.Threading
                     case State.PendingAction:
                         break;
                 }
-                //wait.SpinOnce();
+                wait.SpinOnce();
             }
         }
 

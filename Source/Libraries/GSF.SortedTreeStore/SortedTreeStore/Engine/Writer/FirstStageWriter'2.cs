@@ -44,6 +44,12 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// Event that notifies that a certain sequence number has been committed.
         /// </summary>
         public event Action<long> SequenceNumberCommitted;
+        /// <summary>
+        /// Occurs after a rollover operation has completed and provides the sequence number associated with
+        /// the rollover.
+        /// </summary>
+        public event Action<long> RolloverComplete;
+
 
         private bool m_stopped;
         private bool m_disposed;
@@ -76,12 +82,6 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_rolloverTask.Start(m_rolloverInterval);
         }
 
-        void OnException(object sender, UnhandledExceptionEventArgs e)
-        {
-            UnhandledExceptionEventHandler handler = Exception;
-            if (handler != null)
-                handler(sender, e);
-        }
 
         /// <summary>
         /// Appends this data to this stage. Also queues up for deletion if necessary.
@@ -102,7 +102,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
                     throw new Exception("No new points can be added. Point queue has been stopped.");
 
                 m_activeStagingFile.Append(args.Stream);
-                m_lastCommitedSequenceNumber = args.SequenceNumber;
+                m_lastCommitedSequenceNumber = args.TransactionId;
 
                 currentSize = m_activeStagingFile.Size;
 
@@ -114,7 +114,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
 
             if (SequenceNumberCommitted != null)
-                SequenceNumberCommitted(args.SequenceNumber);
+                SequenceNumberCommitted(args.TransactionId);
 
             if (currentSize > m_maximumAllowedSize)
                 m_rolloverComplete.WaitOne();
@@ -193,6 +193,22 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 if (sequenceId > m_lastRolledOverSequenceNumber)
                     m_rolloverTask.Start();
             }
+        }
+
+
+
+        void OnException(object sender, UnhandledExceptionEventArgs e)
+        {
+            UnhandledExceptionEventHandler handler = Exception;
+            if (handler != null)
+                handler(sender, e);
+        }
+
+        void OnRolloverComplete(long obj)
+        {
+            Action<long> handler = RolloverComplete;
+            if (handler != null)
+                handler(obj);
         }
     }
 }
