@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  TempFile`2.cs - Gbtc
+//  IncrementalStagingFile`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -27,8 +27,13 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Writer
 {
-
-    public class TempFile<TKey, TValue>
+    /// <summary>
+    /// A helper class for <see cref="FirstStageWriter{TKey,TValue}"/> that creates in memory files
+    /// that can be incrementally added to until they are dumped to the disk as a compressed file.
+    /// </summary>
+    /// <typeparam name="TKey">The key</typeparam>
+    /// <typeparam name="TValue">The value</typeparam>
+    public class IncrementalStagingFile<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
@@ -37,17 +42,38 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private readonly ArchiveInitializer<TKey, TValue> m_initialFile;
         private readonly ArchiveInitializer<TKey, TValue> m_finalFile;
 
-        /// <summary>
-        /// Constructs a staging file
-        /// </summary>
-        /// <param name="archiveList">the place to store the archive files when converted</param>
-        /// <param name="initialFile">the initializer that will create the archive files</param>
-        /// <param name="finalFile">the file that will be used to dump all of this data</param>
-        public TempFile(ArchiveList<TKey, TValue> archiveList, ArchiveInitializer<TKey, TValue> initialFile, ArchiveInitializer<TKey, TValue> finalFile)
+        private IncrementalStagingFile(ArchiveList<TKey, TValue> archiveList, ArchiveInitializer<TKey, TValue> initialFile, ArchiveInitializer<TKey, TValue> finalFile)
         {
-            m_initialFile = initialFile;
             m_archiveList = archiveList;
+            m_initialFile = initialFile;
             m_finalFile = finalFile;
+        }
+
+        /// <summary>
+        /// Creates an <see cref="IncrementalStagingFile{TKey,TValue}"/> that will save to memory upon completion.
+        /// </summary>
+        /// <param name="list">the list to create new archives on.</param>
+        /// <param name="encoding">the encoding method for the final file</param>
+        /// <returns></returns>
+        public static IncrementalStagingFile<TKey, TValue> CreateInMemory(ArchiveList<TKey, TValue> list, EncodingDefinition encoding)
+        {
+            var initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode);
+            var finalFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(encoding);
+            return new IncrementalStagingFile<TKey, TValue>(list, initialFile, finalFile);
+        }
+
+        /// <summary>
+        /// Creates an <see cref="IncrementalStagingFile{TKey,TValue}"/> that will save to disk upon completion.
+        /// </summary>
+        /// <param name="list">the list to create new archives on</param>
+        /// <param name="encoding">the encoding method for the final file</param>
+        /// <param name="savePath">the path to save files to</param>
+        /// <returns></returns>
+        public static IncrementalStagingFile<TKey, TValue> CreateOnDisk(ArchiveList<TKey, TValue> list, EncodingDefinition encoding, string savePath)
+        {
+            var initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode);
+            var finalFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(savePath, encoding, "Stage1");
+            return new IncrementalStagingFile<TKey, TValue>(list, initialFile, finalFile);
         }
 
         /// <summary>
@@ -89,6 +115,9 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
 
+        /// <summary>
+        /// Dumps all of the current data to the disk.
+        /// </summary>
         public void DumpToDisk()
         {
             if (m_sortedTreeFile == null)
@@ -113,9 +142,13 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_sortedTreeFile = null;
         }
 
-        public TempFile<TKey, TValue> Clone()
+        /// <summary>
+        /// Makes a clone of this initializer. 
+        /// </summary>
+        /// <returns></returns>
+        public IncrementalStagingFile<TKey, TValue> Clone()
         {
-            return new TempFile<TKey, TValue>(m_archiveList, m_initialFile, m_finalFile);
+            return new IncrementalStagingFile<TKey, TValue>(m_archiveList, m_initialFile, m_finalFile);
         }
     }
 }

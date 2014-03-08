@@ -30,7 +30,7 @@ using openHistorian.Collections;
 
 namespace GSF.SortedTreeStore.Net.Compression
 {
-    class CreateHistorianCompressedStream
+    public class CreateHistorianCompressedStream
         : CreateStreamEncodingBase
     {
         static CreateHistorianCompressedStream()

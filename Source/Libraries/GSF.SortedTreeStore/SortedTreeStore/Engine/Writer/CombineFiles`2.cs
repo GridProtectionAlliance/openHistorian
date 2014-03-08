@@ -95,7 +95,9 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
         void OnException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception(sender, e);
+            UnhandledExceptionEventHandler handler = Exception;
+            if (handler != null)
+                handler(sender, e);
         }
 
         private void OnExecute(object sender, ScheduledTaskEventArgs e)

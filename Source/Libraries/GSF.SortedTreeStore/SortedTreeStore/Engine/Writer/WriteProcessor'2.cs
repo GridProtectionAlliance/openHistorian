@@ -37,62 +37,89 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        public event UnhandledExceptionEventHandler Exception;
-
-        private readonly ArchiveList<TKey, TValue> m_archiveList;
-
-        private readonly PrestageWriter<TKey, TValue> m_prestage;
-        private readonly FirstStageWriter<TKey, TValue> m_stage0;
-        readonly CombineFiles<TKey, TValue> m_stage1;
-        readonly CombineFiles<TKey, TValue> m_stage2;
         /// <summary>
-        /// Creates a new class
+        /// An event handler that will raise any exceptions that go unhandled in the rollover process.
         /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="list"></param>
-        public WriteProcessor(WriteProcessorSettings<TKey, TValue> settings, ArchiveList<TKey, TValue> list)
+        public event UnhandledExceptionEventHandler Exception;
+        private readonly PrebufferWriter<TKey, TValue> m_prebuffer;
+        private readonly FirstStageWriter<TKey, TValue> m_stage0;
+        private readonly bool m_isMemoryOnly;
+        readonly TransactionTracker<TKey, TValue> m_transactionTracker;
+        private WriteProcessor(PrebufferWriter<TKey, TValue> prebuffer, FirstStageWriter<TKey, TValue> stage0, bool isMemoryOnly)
         {
-            m_archiveList = list;
-            m_stage2 = new CombineFiles<TKey, TValue>(settings.Stage2);
-            m_stage2.Exception += OnException;
-
-            m_stage1 = new CombineFiles<TKey, TValue>(settings.Stage1);
-            m_stage1.Exception += OnException;
-
-            m_stage0 = new FirstStageWriter<TKey, TValue>(settings.Stage0);
+            m_isMemoryOnly = isMemoryOnly;
+            m_prebuffer = prebuffer;
+            m_stage0 = stage0;
             m_stage0.Exception += OnException;
+            m_prebuffer.Exception += OnException;
+            m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_stage0);
+        }
 
-            m_prestage = new PrestageWriter<TKey, TValue>(settings.Prestage, m_stage0.AppendData);
-            m_prestage.Exception += OnException;
+        /// <summary>
+        /// Creates an in memory place to store points added to the SortedTreeStore.
+        /// </summary>
+        /// <param name="list">the list where to write to</param>
+        /// <param name="encoding">the encoding method to use once points have matured past the initial out of order insertion</param>
+        /// <param name="prebufferDuration">the maximum number of milliseconds that a point will wait in the prebuffer before being committed to a memory archive that clients can query.</param>
+        /// <param name="diskFlushInterval">the maximum number of milliseconds that a point will wait in the in-memory buffer before being flushed to the disk</param>
+        /// <returns></returns>
+        public static WriteProcessor<TKey, TValue> CreateInMemory(ArchiveList<TKey, TValue> list, EncodingDefinition encoding, int prebufferDuration = 100, int diskFlushInterval = 10000)
+        {
+            IncrementalStagingFile<TKey, TValue> incrementalStagingFile = IncrementalStagingFile<TKey, TValue>.CreateInMemory(list, encoding);
+            FirstStageWriter<TKey, TValue> firstStageWriter = new FirstStageWriter<TKey, TValue>(incrementalStagingFile, diskFlushInterval);
+            PrebufferWriter<TKey, TValue> prebuffer = new PrebufferWriter<TKey, TValue>(prebufferDuration, firstStageWriter.AppendData);
+            return new WriteProcessor<TKey, TValue>(prebuffer, firstStageWriter, true);
+
+        }
+
+        /// <summary>
+        /// Creates an in memory place to store points added to the SortedTreeStore.
+        /// </summary>
+        /// <param name="list">the list where to write to</param>
+        /// <param name="encoding">the encoding method to use once points have matured past the initial out of order insertion</param>
+        /// <param name="savePath">the path to save files to</param>
+        /// <param name="prebufferDuration">the maximum number of milliseconds that a point will wait in the prebuffer before being committed to a memory archive that clients can query.</param>
+        /// <param name="diskFlushInterval">the maximum number of milliseconds that a point will wait in the in-memory buffer before being flushed to the disk</param>
+        /// <returns></returns>
+        public static WriteProcessor<TKey, TValue> CreateOnDisk(ArchiveList<TKey, TValue> list, EncodingDefinition encoding, string savePath, int prebufferDuration = 100, int diskFlushInterval = 10000)
+        {
+            IncrementalStagingFile<TKey, TValue> incrementalStagingFile = IncrementalStagingFile<TKey, TValue>.CreateOnDisk(list, encoding, savePath);
+            FirstStageWriter<TKey, TValue> firstStageWriter = new FirstStageWriter<TKey, TValue>(incrementalStagingFile, diskFlushInterval);
+            PrebufferWriter<TKey, TValue> prebuffer = new PrebufferWriter<TKey, TValue>(prebufferDuration, firstStageWriter.AppendData);
+            return new WriteProcessor<TKey, TValue>(prebuffer, firstStageWriter, false);
         }
 
         void OnException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception(sender, e);
+            UnhandledExceptionEventHandler handler = Exception;
+            if (handler != null)
+                handler(sender, e);
         }
 
         /// <summary>
-        /// Writes the provided key/value to the historian.
+        /// Writes the provided key/value to the engine.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns>the transaction code so this write can be tracked.</returns>
         public long Write(TKey key, TValue value)
         {
-            return m_prestage.Write(key, value);
+            return m_prebuffer.Write(key, value);
         }
 
         /// <summary>
-        /// Writes the provided stream to the historian.
+        /// Writes the provided stream to the engine.
         /// </summary>
         /// <param name="stream"></param>
         /// <returns>the transaction code so this write can be tracked.</returns>
         public long Write(TreeStream<TKey, TValue> stream)
         {
-            long value = long.MinValue;
-            while (stream.Read())
-                value = m_prestage.Write(stream.CurrentKey, stream.CurrentValue);
-            return value;
+            long sequenceId = -1;
+            TKey key = new TKey();
+            TValue value = new TValue();
+            while (stream.Read(key, value))
+                sequenceId = m_prebuffer.Write(key, value);
+            return sequenceId;
         }
 
         /// <summary>
@@ -100,20 +127,36 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// </summary>
         public void Dispose()
         {
-            m_prestage.Stop();
+            m_prebuffer.Stop();
             m_stage0.Stop();
-            m_stage1.Stop();
-            m_stage2.Stop();
         }
 
-        public void SoftCommit()
+        /// <summary>
+        /// Blocks until the specified point has progressed beyond the prestage level and can be queried by the user.
+        /// </summary>
+        /// <param name="transactionId">the sequence number representing the desired point that was committed</param>
+        public void SoftCommit(long transactionId)
         {
-            throw new NotImplementedException();
+            m_transactionTracker.WaitForSoftCommit(transactionId);
         }
 
-        public void HardCommit()
+        /// <summary>
+        /// Blocks until the specified point has been committed to the disk subsystem. If running in a In-Memory mode, will return
+        /// as soon as it has been moved beyond the prestage level and can be queried by the user.
+        /// </summary>
+        /// <param name="transactionId">the sequence number representing the desired point that was committed</param>
+        public void HardCommit(long transactionId)
         {
-            throw new NotImplementedException();
+            if (m_isMemoryOnly)
+            {
+                SoftCommit(transactionId);
+            }
+            else
+            {
+                m_transactionTracker.WaitForHardCommit(transactionId);
+            }
         }
+
+
     }
 }

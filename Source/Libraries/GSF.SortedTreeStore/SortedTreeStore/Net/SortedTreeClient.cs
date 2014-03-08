@@ -34,7 +34,7 @@ namespace GSF.SortedTreeStore.Net
     /// <summary>
     /// Connects to a socket based remoted historian database collection.
     /// </summary>
-    public partial class SortedTreeClient
+    public class SortedTreeClient
         : IDisposable
     {
         private TcpClient m_client;
@@ -60,7 +60,7 @@ namespace GSF.SortedTreeStore.Net
         /// Gets the default database as defined in the constructor's options.
         /// </summary>
         /// <returns></returns>
-        public SortedTreeEngineBase<TKey, TValue> GetDefaultDatabase<TKey, TValue>()
+        public SortedTreeClientEngine<TKey, TValue> GetDefaultDatabase<TKey, TValue>()
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
@@ -106,7 +106,7 @@ namespace GSF.SortedTreeStore.Net
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <param name="encodingMethod"></param>
         /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public SortedTreeEngineBase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName, EncodingDefinition encodingMethod = null)
+        public SortedTreeClientEngine<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName, EncodingDefinition encodingMethod = null)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
@@ -142,7 +142,7 @@ namespace GSF.SortedTreeStore.Net
                     throw new Exception("Unknown server response: " + command.ToString());
             }
 
-            var db = new SortedTreeClientEngine<TKey, TValue>(this, () => m_sortedTreeEngine = null);
+            var db = new SortedTreeClientEngine<TKey, TValue>(m_stream, () => m_sortedTreeEngine = null);
             m_sortedTreeEngine = db;
             m_historianDatabaseString = databaseName;
            

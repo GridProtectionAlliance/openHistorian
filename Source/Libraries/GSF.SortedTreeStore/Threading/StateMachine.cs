@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  StateMachine.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -18,6 +18,8 @@
 //  ----------------------------------------------------------------------------------------------------
 //  1/13/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
+//  2/14/2014 - Steven E. Chisholm
+//       Migrated code to GSF.Core from the openHistorian project.
 //       
 //
 //******************************************************************************************************
@@ -34,6 +36,9 @@ namespace GSF.Threading
     /// </remarks>
     public class StateMachine
     {
+        /// <summary>
+        /// The internal state of the state machine.
+        /// </summary>
         private volatile int m_state;
 
         /// <summary>
@@ -43,6 +48,17 @@ namespace GSF.Threading
         public StateMachine(int initialState)
         {
             m_state = initialState;
+        }
+
+        /// <summary>
+        /// Gets the current state of the State Machine. 
+        /// </summary>
+        public int State
+        {
+            get
+            {
+                return m_state;
+            }
         }
 
         /// <summary>
@@ -58,18 +74,9 @@ namespace GSF.Threading
         }
 
         /// <summary>
-        /// Gets the current state of the State Machine. 
-        /// </summary>
-        public int State
-        {
-            get
-            {
-                return m_state;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of the state.
+        /// Sets the value of the state. 
+        /// Only call this method if you are certain that you are the only entity allowed to change 
+        /// from the current state to this state. This does not implement an atomic compare exchange.
         /// </summary>
         /// <param name="state"></param>
         public void SetState(int state)

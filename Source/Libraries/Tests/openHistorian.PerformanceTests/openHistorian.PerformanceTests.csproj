@@ -91,6 +91,7 @@
     <Compile Include="StepTimer.cs" />
     <Compile Include="StreamWriterTest.cs" />
     <Compile Include="Threading\ScheduledTask.cs" />
+    <Compile Include="Threading\TinyLock_Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

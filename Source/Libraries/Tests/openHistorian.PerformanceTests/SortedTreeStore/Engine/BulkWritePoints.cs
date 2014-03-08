@@ -6,7 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Net;
+using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using NUnit.Framework;
 using openHistorian.Collections;
@@ -51,6 +54,59 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             }
         }
 
+        [Test]
+        public void TestWriteSpeedSocket()
+        {
+            Thread th = new Thread(WriteSpeed);
+            th.IsBackground = true;
+            th.Start();
+
+            Quit = false;
+            foreach (var file in Directory.GetFiles("c:\\temp\\benchmark\\"))
+                File.Delete(file);
+
+            PointCount = 0;
+            var collection = new SortedTreeCollection();
+            using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
+            using (var socket = new SortedTreeServerSocket(13141, collection))
+            {
+                collection.Add(engine);
+
+                var options = new SortedTreeClientOptions();
+                options.ServerNameOrIp = "127.0.0.1";
+                options.NetworkPort = 13141;
+
+                using (var client = new SortedTreeClient(options))
+                using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
+                {
+                    db.SetEncodingMode(CreateHistorianCompressedStream.TypeGuid);
+
+                    engine.Exception += engine_Exception;
+                    Thread.Sleep(100);
+                    var key = new HistorianKey();
+                    var value = new HistorianValue();
+
+                    using (var writer = db.StartBulkWriting())
+                    {
+                        for (int x = 0; x < 100000000; x++)
+                        {
+                            key.PointID = (ulong)x;
+                            PointCount = x;
+                            writer.Write(key, value);
+                        }  
+                    }
+                   
+                    Quit = true;
+                    th.Join();
+                }
+            }
+
+            Console.WriteLine("Time (sec)\tPoints");
+            foreach (var kvp in PointSamples)
+            {
+                Console.WriteLine(kvp.Key.ToString() + "\t" + kvp.Value.ToString());
+            }
+        }
 
         [Test]
         public void TestWriteSpeed()

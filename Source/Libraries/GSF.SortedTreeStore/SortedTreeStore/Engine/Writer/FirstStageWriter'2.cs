@@ -30,42 +30,15 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Engine.Writer
 {
     /// <summary>
-    /// A collection of settings for <see cref="FirstStageWriter{TKey,TValue}"/>.
-    /// </summary>
-    public struct FirstStageWriterSettings<TKey, TValue>
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
-    {
-        /// <summary>
-        /// The time interval in milliseconds after which automatic data commits occur.
-        /// </summary>
-        public int RolloverInterval;
-
-        /// <summary>
-        /// The maximum desired number of points in the prebuffer before a commit now is requested.
-        /// </summary>
-        public long RolloverSize;
-
-        /// <summary>
-        /// The size that a file is permitted to get before entering a wait state to wait for a pending rollover
-        /// to complete.
-        /// </summary>
-        public long MaximumAllowedSize;
-
-        /// <summary>
-        /// The helping functions associated with writing a stage file.
-        /// </summary>
-        public TempFile<TKey, TValue> TempFile;
-
-    }
-
-    /// <summary>
     /// Handles how data is initially taken from prestage chunks and serialized to the disk.
     /// </summary>
     public class FirstStageWriter<TKey, TValue> : IDisposable
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        /// <summary>
+        /// An event handler that will raise any exceptions that go unhandled in the rollover process.
+        /// </summary>
         public event UnhandledExceptionEventHandler Exception;
         /// <summary>
         /// Event that notifies that a certain sequence number has been committed.
@@ -76,29 +49,26 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private bool m_disposed;
         private readonly int m_rolloverInterval;
         private readonly long m_rolloverSize;
-        private readonly long m_maximumAllowedSize;
         private long m_lastCommitedSequenceNumber;
         private long m_lastRolledOverSequenceNumber;
         private ScheduledTask m_rolloverTask;
         private readonly object m_syncRoot;
-        private TempFile<TKey, TValue> m_activeStagingFile;
-        private TempFile<TKey, TValue> m_workingStagingFile;
+        private IncrementalStagingFile<TKey, TValue> m_activeStagingFile;
+        private IncrementalStagingFile<TKey, TValue> m_workingStagingFile;
         private readonly ManualResetEvent m_rolloverComplete;
+        long m_maximumAllowedSize;
 
         /// <summary>
         /// Creates a stage writer.
         /// </summary>
-        /// <param name="settings">the settings for this stage</param>
-        public FirstStageWriter(FirstStageWriterSettings<TKey, TValue> settings)
+        public FirstStageWriter(IncrementalStagingFile<TKey, TValue> incrementalStagingFile, int rolloverInterval)
         {
-            if (settings.RolloverSize > settings.MaximumAllowedSize)
-                throw new ArgumentOutOfRangeException("settings.MaximumAllowedSize", "must be greater than or equal to settings.RolloverSize");
+            m_rolloverSize = 200 * 1024 * 1024;
+            m_maximumAllowedSize = 300 * 1024 * 1024;
             m_rolloverComplete = new ManualResetEvent(false);
-            m_activeStagingFile = settings.TempFile;
-            m_workingStagingFile = settings.TempFile.Clone();
-            m_rolloverInterval = settings.RolloverInterval;
-            m_rolloverSize = settings.RolloverSize;
-            m_maximumAllowedSize = settings.MaximumAllowedSize;
+            m_activeStagingFile = incrementalStagingFile;
+            m_workingStagingFile = incrementalStagingFile.Clone();
+            m_rolloverInterval = rolloverInterval;
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.Normal);
             m_rolloverTask.OnEvent += ProcessRollover;
@@ -108,7 +78,9 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
         void OnException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception(sender, e);
+            UnhandledExceptionEventHandler handler = Exception;
+            if (handler != null)
+                handler(sender, e);
         }
 
         /// <summary>
@@ -116,7 +88,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// </summary>
         /// <param name="args">arguments handed to this class from either the 
         /// PrestageWriter or another StageWriter of a previous generation</param>
-        public void AppendData(PrestageArgs<TKey, TValue> args)
+        public void AppendData(PrebufferRolloverArgs<TKey, TValue> args)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -207,6 +179,19 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 if (m_rolloverTask != null)
                     m_rolloverTask.Dispose();
                 m_rolloverTask = null;
+            }
+        }
+
+        /// <summary>
+        /// Triggers a rollover if the provided sequence id has not yet been committed.
+        /// </summary>
+        /// <param name="sequenceId"></param>
+        public void Commit(long sequenceId)
+        {
+            lock (m_syncRoot)
+            {
+                if (sequenceId > m_lastRolledOverSequenceNumber)
+                    m_rolloverTask.Start();
             }
         }
     }

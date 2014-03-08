@@ -58,7 +58,7 @@ namespace GSF.SortedTreeStore.Engine
 
         #region [ Constructors ]
 
-        public SortedTreeEngine(string databaseName, WriterMode writer, EncodingDefinition compressionMethod, params string[] paths)
+        public SortedTreeEngine(string databaseName, WriterMode writer, EncodingDefinition encodingMethod, params string[] paths)
         {
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
@@ -66,17 +66,24 @@ namespace GSF.SortedTreeStore.Engine
             //m_pendingDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_archiveList = new ArchiveList<TKey, TValue>(GetAttachedFiles(paths));
 
-            if (writer != WriterMode.None)
+            if (writer == WriterMode.InMemory)
             {
-                WriteProcessorSettings<TKey, TValue> writeSettings = WriteProcessorSettings<TKey, TValue>.CreateFromSettings(writer, paths.ToList(), compressionMethod, m_archiveList);
-                m_archiveWriter = new WriteProcessor<TKey, TValue>(writeSettings, m_archiveList);
-                m_archiveWriter.Exception += m_archiveWriter_Exception;
+                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateInMemory(m_archiveList, encodingMethod);
+                m_archiveWriter.Exception += OnException;
             }
+            else if (writer == WriterMode.OnDisk)
+            {
+                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateOnDisk(m_archiveList, encodingMethod, paths[0]);
+                m_archiveWriter.Exception += OnException;
+            }
+
         }
 
-        void m_archiveWriter_Exception(object sender, UnhandledExceptionEventArgs e)
+        void OnException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception(sender, e);
+            UnhandledExceptionEventHandler handler = Exception;
+            if (handler != null)
+                handler(sender, e);
         }
 
         List<string> GetAttachedFiles(string[] paths)
@@ -85,7 +92,7 @@ namespace GSF.SortedTreeStore.Engine
 
             foreach (string path in paths)
             {
-                if (System.IO.File.Exists(path))
+                if (File.Exists(path))
                 {
                     attachedFiles.Add(path);
                 }

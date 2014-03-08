@@ -23,9 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
@@ -39,11 +37,11 @@ namespace GSF.SortedTreeStore.Engine
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
         private string m_prefix;
+        private string m_path;
         private bool m_isMemoryArchive;
-        private List<string> m_paths;
         private long m_requiredFreeSpaceForNewFile;
         private long m_initialSize;
-        private EncodingDefinition m_compressionMethod;
+        private EncodingDefinition m_encodingMethod;
 
         private ArchiveInitializer()
         {
@@ -53,35 +51,24 @@ namespace GSF.SortedTreeStore.Engine
         {
             ArchiveInitializer<TKey, TValue> settings = new ArchiveInitializer<TKey, TValue>();
             settings.m_isMemoryArchive = true;
-            settings.m_compressionMethod = compressionMethod;
+            settings.m_encodingMethod = compressionMethod;
             return settings;
         }
 
-        public static ArchiveInitializer<TKey, TValue> CreateOnDisk(List<string> paths, EncodingDefinition compressionMethod, string prefix)
+        public static ArchiveInitializer<TKey, TValue> CreateOnDisk(string path, EncodingDefinition compressionMethod, string prefix)
         {
             ArchiveInitializer<TKey, TValue> settings = new ArchiveInitializer<TKey, TValue>();
             settings.m_prefix = prefix;
             settings.m_isMemoryArchive = false;
-            settings.m_paths = paths.ToList();
+            settings.m_path = path;
             settings.m_requiredFreeSpaceForNewFile = 1024 * 1024;
             settings.m_initialSize = 1024 * 1024;
-            settings.m_compressionMethod = compressionMethod;
+            settings.m_encodingMethod = compressionMethod;
             return settings;
         }
 
         /// <summary>
-        /// Gets if the <see cref="HistorianArchiveFile"/> that is created with this initializer is file backed.
-        /// </summary>
-        public bool IsFileBacked
-        {
-            get
-            {
-                return !m_isMemoryArchive;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="HistorianArchiveFile"/> based on the settings passed to this class.
+        /// Creates a new <see cref="SortedTreeTable{TKey,TValue}"/> based on the settings passed to this class.
         /// Once created, it is up to he caller to make sure that this class is properly disposed of.
         /// </summary>
         /// <returns></returns>
@@ -90,13 +77,13 @@ namespace GSF.SortedTreeStore.Engine
             if (m_isMemoryArchive)
             {
                 SortedTreeFile af = SortedTreeFile.CreateInMemory();
-                return af.OpenOrCreateTable<TKey, TValue>(m_compressionMethod);
+                return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
             else
             {
                 string fileName = CreateArchiveName();
                 SortedTreeFile af = SortedTreeFile.CreateFile(fileName);
-                return af.OpenOrCreateTable<TKey, TValue>(m_compressionMethod);
+                return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
         }
 
@@ -107,15 +94,12 @@ namespace GSF.SortedTreeStore.Engine
         private string CreateArchiveName()
         {
             long requiredFreeSpace = Math.Min(m_requiredFreeSpaceForNewFile, m_initialSize);
-            foreach (string path in m_paths)
+            long freeSpace, totalSpace;
+            if (WinApi.GetAvailableFreeSpace(m_path, out freeSpace, out totalSpace))
             {
-                long freeSpace, totalSpace;
-                if (WinApi.GetAvailableFreeSpace(path, out freeSpace, out totalSpace))
+                if (freeSpace >= requiredFreeSpace)
                 {
-                    if (freeSpace >= requiredFreeSpace)
-                    {
-                        return Path.Combine(path, DateTime.Now.Ticks.ToString() + "-" + m_prefix + "-" + Guid.NewGuid().ToString() + ".d2");
-                    }
+                    return Path.Combine(m_path, DateTime.Now.Ticks.ToString() + "-" + m_prefix + "-" + Guid.NewGuid().ToString() + ".d2");
                 }
             }
             throw new Exception("Out of free space");

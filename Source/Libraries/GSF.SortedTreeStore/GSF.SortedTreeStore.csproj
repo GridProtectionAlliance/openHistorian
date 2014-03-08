@@ -127,8 +127,9 @@
     <Compile Include="SortedTreeStore\Engine\Reader\UnionReader`2.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\SequentialReaderStream%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\CombineFiles`2.cs" />
-    <Compile Include="SortedTreeStore\Engine\Writer\TempFile%272.cs" />
+    <Compile Include="SortedTreeStore\Engine\Writer\IncrementalStagingFile%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\FirstStageWriter%272.cs" />
+    <Compile Include="SortedTreeStore\Engine\Writer\TransactionTracker`2.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateSeekFilterBase.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateFilterBase.cs" />
     <Compile Include="SortedTreeStore\Filters\FilterLibrary.cs" />
@@ -213,7 +214,7 @@
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeKeyMethodsUInt32.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeUInt32.cs" />
     <Compile Include="SortedTreeStore\Net\SortedTreeClient.cs" />
-    <Compile Include="SortedTreeStore\Net\SortedTreeClient_Engine`2.cs" />
+    <Compile Include="SortedTreeStore\Net\SortedTreeClientEngine`2.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncoding.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncodingBase`2.cs" />
     <Compile Include="SortedTreeStore\Net\ServerProcessClient.cs" />
@@ -227,10 +228,8 @@
     <Compile Include="SortedTreeStore\Engine\ArchiveList%272_Editor.cs" />
     <Compile Include="SortedTreeStore\Engine\ArchiveListRemovalStatus%272.cs" />
     <Compile Include="SortedTreeStore\Engine\ArchiveListSnapshot%272.cs" />
-    <Compile Include="SortedTreeStore\Engine\Writer\PointStreamCache%272.cs" />
-    <Compile Include="SortedTreeStore\Engine\Writer\PrestageWriter%272.cs" />
+    <Compile Include="SortedTreeStore\Engine\Writer\PrebufferWriter%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\WriteProcessor%272.cs" />
-    <Compile Include="SortedTreeStore\Engine\Writer\WriteProcessorSettings%272.cs" />
     <Compile Include="SortedTreeStore\Engine\DatabaseConfig.cs" />
     <Compile Include="SortedTreeStore\CustomSortHelper%271.cs" />
     <Compile Include="IO\FileStructure\BlockType.cs" />
@@ -290,6 +289,7 @@
     <Compile Include="Threading\ThreadSafeList_Enumerator.cs" />
     <Compile Include="Threading\ThreadSafeList_Iterator.cs" />
     <Compile Include="Threading\TimeoutOperation.cs" />
+    <Compile Include="Threading\TinyLock.cs" />
     <Compile Include="Threading\WeakAction.cs" />
     <Compile Include="Threading\WeakDelegateBase.cs" />
     <Compile Include="IO\Unmanaged\CollectionEventArgs.cs" />
@@ -298,6 +298,7 @@
     <Compile Include="IO\Unmanaged\MemoryPool_AllocationList.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool_CollectionEngine.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool_Settings.cs" />
+    <Compile Include="Threading\WorkerThread.cs" />
     <Compile Include="WinApi.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
