@@ -38,7 +38,7 @@ namespace GSF.Threading
         : CustomThreadBase
     {
         private Thread m_thread;
-        private WeakAction m_callback;
+        private WeakActionFast m_callback;
         private ManualResetEvent m_go;
         private ManualResetEvent m_sleep;
         private volatile int m_sleepTime;
@@ -53,7 +53,7 @@ namespace GSF.Threading
         public DedicatedThread(Action callback, bool isBackground, ThreadPriority priority)
         {
             m_sleepTime = 0;
-            m_callback = new WeakAction(callback);
+            m_callback = new WeakActionFast(callback);
             m_go = new ManualResetEvent(false);
             m_sleep = new ManualResetEvent(false);
             m_thread = new Thread(RunWorkerThread);

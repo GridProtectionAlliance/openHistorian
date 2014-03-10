@@ -175,6 +175,7 @@
     <Compile Include="SortedTreeStore\Filters\PointIDFilter_Test.cs" />
     <Compile Include="SortedTreeStore\VariousWritingSizes.cs" />
     <Compile Include="Streaming\TestNetworkClients.cs" />
+    <Compile Include="Threading\WeakWorkerThreadTest.cs" />
     <Compile Include="Threading\ScheduledTaskTest.cs" />
     <Compile Include="Threading\TreadSafeListTest.cs" />
     <Compile Include="Threading\WorkerTest.cs" />

@@ -26,7 +26,7 @@ namespace openHistorian.PerformanceTests.Threading
 
         void Test(ThreadingMode mode)
         {
-            const int Count = 100000000;
+            const int Count = 1000000000;
             Stopwatch sw = new Stopwatch();
             m_doWorkCount = 0;
             using (ScheduledTask work = new ScheduledTask(mode))

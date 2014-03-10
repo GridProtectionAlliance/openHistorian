@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace GSF.Threading
@@ -58,10 +59,11 @@ namespace GSF.Threading
         /// Duplicate calls to this within the same thread will cause a deadlock.
         /// </summary>
         /// <returns>A structure that will release the lock.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TinyLockRelease Lock()
         {
             if (Interlocked.CompareExchange(ref m_lock, Locked, Unlocked) != Unlocked)
-                return Lock2();
+                LockSlower();
             return m_release;
         }
         /// <summary>
@@ -69,12 +71,11 @@ namespace GSF.Threading
         /// used for the SpinLock when its not needed.
         /// </summary>
         /// <returns></returns>
-        TinyLockRelease Lock2()
+        void LockSlower()
         {
             SpinWait spin = default(SpinWait);
             while (Interlocked.CompareExchange(ref m_lock, Locked, Unlocked) != Unlocked)
                 spin.SpinOnce();
-            return m_release;
         }
 
         /// <summary>
@@ -95,6 +96,7 @@ namespace GSF.Threading
             /// <summary>
             /// Releases an acquired lock.
             /// </summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose()
             {
                 //A volatile write implies that even if this is inlined, the unlock will never be reordered above its current location.

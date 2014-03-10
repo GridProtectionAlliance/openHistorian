@@ -279,6 +279,10 @@
     <Compile Include="SortedTreeStore\Stats.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
+    <Compile Include="Threading\AdvTask.cs" />
+    <Compile Include="Threading\AdvWorkerThread.cs" />
+    <Compile Include="Threading\WeakActionFast.cs" />
+    <Compile Include="Threading\WeakWorkerThread_ThreadContainer.cs" />
     <Compile Include="Threading\ThreadpoolThread.cs" />
     <Compile Include="Threading\CustomThreadBase.cs" />
     <Compile Include="Threading\DedicatedThread.cs" />
@@ -298,6 +302,7 @@
     <Compile Include="IO\Unmanaged\MemoryPool_AllocationList.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool_CollectionEngine.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool_Settings.cs" />
+    <Compile Include="Threading\WeakWorkerThread.cs" />
     <Compile Include="Threading\WorkerThread.cs" />
     <Compile Include="WinApi.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

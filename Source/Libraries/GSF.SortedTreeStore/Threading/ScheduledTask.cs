@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  ScheduledTask.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -30,6 +30,7 @@
 //------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace GSF.Threading
@@ -135,7 +136,7 @@ namespace GSF.Threading
             /// Indicates that the worker thread should run one more time before terminating.
             /// </summary>
             public const int TerminateQueuedRunAgain = 2;
-            
+
             //Will Run Again before this position
 
             /// <summary>
@@ -188,7 +189,7 @@ namespace GSF.Threading
         /// <summary>
         /// The current state of the state machine.
         /// </summary>
-        private readonly StateMachine m_stateMachine;
+        public volatile int m_stateMachine;
 
         /// <summary>
         /// The delay time in milliseconds that has been requested when a RunAgainAfterDelay has been queued
@@ -221,6 +222,11 @@ namespace GSF.Threading
         /// </summary>
         public event UnhandledExceptionEventHandler OnException;
 
+        /// <summary>
+        /// A local reference to the callback delegate must be maintained to support
+        /// <see cref="WeakActionFast"/>.
+        /// </summary>
+        Action m_callback;
 
         /// <summary>
         /// Creates a task that can be manually scheduled to run.
@@ -231,23 +237,24 @@ namespace GSF.Threading
         /// <param name="priority">Specifies the priority of the thread that executes the task. Not valid when using a ThreadPool thread</param>
         public ScheduledTask(ThreadingMode threadMode, ThreadPriority priority = ThreadPriority.Normal)
         {
+            m_callback = ProcessRunningState;
             if (threadMode == ThreadingMode.DedicatedForeground)
             {
-                m_workerThread = new DedicatedThread(ProcessRunningState, false, priority);
+                m_workerThread = new DedicatedThread(m_callback, false, priority);
             }
             else if (threadMode == ThreadingMode.DedicatedBackground)
             {
-                m_workerThread = new DedicatedThread(ProcessRunningState, true, priority);
+                m_workerThread = new DedicatedThread(m_callback, true, priority);
             }
             else if (threadMode == ThreadingMode.ThreadPool)
             {
-                m_workerThread = new ThreadpoolThread(ProcessRunningState);
+                m_workerThread = new ThreadpoolThread(m_callback);
             }
             else
             {
                 throw new ArgumentOutOfRangeException("threadMode");
             }
-            m_stateMachine = new StateMachine(State.NotRunning);
+            m_stateMachine = State.NotRunning;
             m_hasQuitWaitHandle = new ManualResetEvent(false);
         }
 
@@ -294,6 +301,7 @@ namespace GSF.Threading
         /// If this is called after a Start(Delay) the timer will be short circuited 
         /// and the process will still start immediately. 
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Start()
         {
             //Tiny quick check that will likely be inlined by the compiler.
@@ -308,7 +316,7 @@ namespace GSF.Threading
         /// If this is called after a Start(Delay) the timer will be short circuited 
         /// and the process will still start immediately. 
         /// </remarks>
-        void StartSlower()
+        public void StartSlower()
         {
             SpinWait wait = default(SpinWait);
 
@@ -317,29 +325,29 @@ namespace GSF.Threading
                 switch (m_stateMachine)
                 {
                     case State.NotRunning:
-                        if (m_stateMachine.TryChangeState(State.NotRunning, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.NotRunning) == State.NotRunning)
                         {
                             m_workerThread.StartNow();
-                            m_stateMachine.SetState(State.ScheduledToRun);
+                            m_stateMachine = State.ScheduledToRun;
                             return;
                         }
                         break;
                     case State.ScheduledToRunAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.ScheduledToRunAfterDelay) == State.ScheduledToRunAfterDelay)
                         {
                             m_workerThread.ShortCircuitDelayRequest();
-                            m_stateMachine.SetState(State.ScheduledToRun);
+                            m_stateMachine = State.ScheduledToRun;
                             return;
                         }
                         break;
                     case State.Running:
-                        if (m_stateMachine.TryChangeState(State.Running, State.RunAgain))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.RunAgain, State.Running) == State.Running)
                         {
                             return;
                         }
                         break;
                     case State.RunAgainAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.RunAgainAfterDelay, State.RunAgain))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.RunAgain, State.RunAgainAfterDelay) == State.RunAgainAfterDelay)
                         {
                             return;
                         }
@@ -378,6 +386,7 @@ namespace GSF.Threading
         /// If already running on a timer, this function will do nothing. Do not use this function to
         /// reset or restart an existing timer.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Start(int delay)
         {
             //Tiny quick check that will likely be inlined by the compiler.
@@ -402,19 +411,19 @@ namespace GSF.Threading
                 switch (m_stateMachine)
                 {
                     case State.NotRunning:
-                        if (m_stateMachine.TryChangeState(State.NotRunning, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.NotRunning) == State.NotRunning)
                         {
                             m_workerThread.StartLater(delay);
-                            m_stateMachine.SetState(State.ScheduledToRunAfterDelay);
+                            m_stateMachine = State.ScheduledToRunAfterDelay;
                             return;
                         }
                         break;
                     case State.Running:
-                        if (m_stateMachine.TryChangeState(State.Running, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.Running) == State.Running)
                         {
                             m_workerThread.ResetTimer();
                             m_delayRequested = delay;
-                            m_stateMachine.SetState(State.RunAgainAfterDelay);
+                            m_stateMachine = State.RunAgainAfterDelay;
                             return;
                         }
                         break;
@@ -447,63 +456,63 @@ namespace GSF.Threading
                 switch (m_stateMachine)
                 {
                     case State.ScheduledToRun:
-                        if (m_stateMachine.TryChangeState(State.ScheduledToRun, State.Running))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.Running, State.ScheduledToRun) == State.ScheduledToRun)
                         {
                             ProcessClientCallback(isOnInterval: false, isRerun: false);
                         }
                         break;
                     case State.ScheduledToRunAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.Running))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.Running, State.ScheduledToRunAfterDelay) == State.ScheduledToRunAfterDelay)
                         {
                             ProcessClientCallback(isOnInterval: true, isRerun: false);
                         }
                         break;
                     case State.Running:
-                        if (m_stateMachine.TryChangeState(State.Running, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.Running) == State.Running)
                         {
                             m_workerThread.ResetTimer();
-                            m_stateMachine.SetState(State.NotRunning);
+                            m_stateMachine = State.NotRunning;
                             return;
                         }
                         break;
                     case State.RunAgain:
-                        if (m_stateMachine.TryChangeState(State.RunAgain, State.Running))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.Running, State.RunAgain) == State.RunAgain)
                         {
                             ProcessClientCallback(isOnInterval: false, isRerun: true);
                         }
                         break;
                     case State.RunAgainAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.RunAgainAfterDelay, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.RunAgainAfterDelay) == State.RunAgainAfterDelay)
                         {
                             m_workerThread.StartLater(m_delayRequested);
-                            m_stateMachine.SetState(State.ScheduledToRunAfterDelay);
+                            m_stateMachine = State.ScheduledToRunAfterDelay;
                             return;
                         }
                         break;
                     case State.TerminateQueued:
-                        if (m_stateMachine.TryChangeState(State.TerminateQueued, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.TerminateQueued) == State.TerminateQueued)
                         {
                             m_workerThread.StopExecution();
                             m_hasQuitWaitHandle.Set();
-                            m_stateMachine.SetState(State.Terminated);
+                            m_stateMachine = State.Terminated;
                             ProcessClientCallbackDisposing(false, false);
                             return;
                         }
                         break;
                     case State.TerminateQueuedRunAgain:
-                        if (m_stateMachine.TryChangeState(State.TerminateQueuedRunAgain, State.TerminateQueued))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.TerminateQueued, State.TerminateQueuedRunAgain) == State.TerminateQueuedRunAgain)
                         {
                             ProcessClientCallback(isOnInterval: false, isRerun: false);
                         }
                         break;
                     case State.Terminated:
-                        if (m_stateMachine.TryChangeState(State.Terminated, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.Terminated) == State.Terminated)
                         {
                             throw new Exception("InvalidState");
                         }
                         break;
                     case State.NotRunning:
-                        if (m_stateMachine.TryChangeState(State.NotRunning, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.NotRunning) == State.NotRunning)
                         {
                             throw new Exception("InvalidState");
                         }
@@ -526,43 +535,43 @@ namespace GSF.Threading
                 switch (m_stateMachine)
                 {
                     case State.NotRunning:
-                        if (m_stateMachine.TryChangeState(State.NotRunning, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.NotRunning) == State.NotRunning)
                         {
                             m_workerThread.StopExecution();
                             m_hasQuitWaitHandle.Set();
-                            m_stateMachine.SetState(State.Terminated);
+                            m_stateMachine = State.Terminated;
                             ProcessClientCallbackDisposing(false, false);
                             return;
                         }
                         break;
                     case State.ScheduledToRunAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.ScheduledToRunAfterDelay, State.PendingAction))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.ScheduledToRunAfterDelay) == State.ScheduledToRunAfterDelay)
                         {
                             m_workerThread.ShortCircuitDelayRequest();
-                            m_stateMachine.SetState(State.TerminateQueuedRunAgain);
+                            m_stateMachine = State.TerminateQueuedRunAgain;
                             return;
                         }
                         break;
                     case State.ScheduledToRun:
-                        if (m_stateMachine.TryChangeState(State.ScheduledToRun, State.TerminateQueuedRunAgain))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.TerminateQueuedRunAgain, State.ScheduledToRun) == State.ScheduledToRun)
                         {
                             return;
                         }
                         break;
                     case State.Running:
-                        if (m_stateMachine.TryChangeState(State.Running, State.TerminateQueued))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.TerminateQueued, State.Running) == State.Running)
                         {
                             return;
                         }
                         break;
                     case State.RunAgain:
-                        if (m_stateMachine.TryChangeState(State.RunAgain, State.TerminateQueuedRunAgain))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.TerminateQueuedRunAgain, State.RunAgain) == State.RunAgain)
                         {
                             return;
                         }
                         break;
                     case State.RunAgainAfterDelay:
-                        if (m_stateMachine.TryChangeState(State.RunAgainAfterDelay, State.TerminateQueuedRunAgain))
+                        if (Interlocked.CompareExchange(ref m_stateMachine, State.TerminateQueuedRunAgain, State.RunAgainAfterDelay) == State.RunAgainAfterDelay)
                         {
                             return;
                         }
