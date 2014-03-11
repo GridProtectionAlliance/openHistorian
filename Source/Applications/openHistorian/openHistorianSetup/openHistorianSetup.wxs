@@ -226,6 +226,9 @@
       <Component Id="StatHistorianReportGeneratorConfig">
         <File Id="StatHistorianReportGenerator.exe.config" Name="StatHistorianReportGenerator.exe.config" Source="$(var.ProjectDir)\StatHistorianReportGenerator.exe.config" />
       </Component>
+      <Component Id="Reports">
+        <File Id="Reports.dll" Name="Reports.dll" Source="$(var.SolutionDir)\Dependencies\GSF\Reports.dll" />
+      </Component>
       <Component Id="openHistorian.Core">
         <File Id="openHistorian.Core.dll" Name="$(var.openHistorian.Core.TargetFileName)" Source="$(var.openHistorian.Core.TargetPath)" />
       </Component>
