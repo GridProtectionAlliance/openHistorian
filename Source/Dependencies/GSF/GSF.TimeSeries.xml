@@ -7178,6 +7178,16 @@
             Default value for <see cref="P:GSF.TimeSeries.Transport.DataPublisher.AllowMetadataRefresh"/>.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.Transport.DataPublisher.DefaultAllowNaNValueFilter">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataPublisher.AllowNaNValueFilter"/>.
+            </summary>
+        </member>
+        <member name="F:GSF.TimeSeries.Transport.DataPublisher.DefaultForceNaNValueFilter">
+            <summary>
+            Default value for <see cref="P:GSF.TimeSeries.Transport.DataPublisher.ForceNaNValueFilter"/>.
+            </summary>
+        </member>
         <member name="F:GSF.TimeSeries.Transport.DataPublisher.DefaultUseBaseTimeOffsets">
             <summary>
             Default value for <see cref="P:GSF.TimeSeries.Transport.DataPublisher.UseBaseTimeOffsets"/>.
@@ -7487,6 +7497,16 @@
         <member name="P:GSF.TimeSeries.Transport.DataPublisher.AllowMetadataRefresh">
             <summary>
             Gets or sets flag that indicates if this publisher will allow synchronized subscriptions when requested by subscribers.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataPublisher.AllowNaNValueFilter">
+            <summary>
+            Gets or sets flag that indicates if this publisher will allow filtering of data which is not a number.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataPublisher.ForceNaNValueFilter">
+            <summary>
+            Gets or sets flag that indicates if this publisher will force filtering of data which is not a number.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataPublisher.UseBaseTimeOffsets">
@@ -9478,6 +9498,12 @@
             This flag determines the size of the timestamps transmitted as part of
             the compact measurement format when the server is using base time offsets.
             </remarks>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.SubscriptionInfo.RequestNaNValueFilter">
+            <summary>
+            Gets or sets the flag that determines whether to request that measurements
+            sent to the subscriber should be filtered by the publisher prior to sending them.
+            </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.SubscriptionInfo.StartTime">
             <summary>
