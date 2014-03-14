@@ -60,16 +60,16 @@
             this.tslStatusUpdate = new System.Windows.Forms.ToolStripStatusLabel();
             this.ChkSignalType = new System.Windows.Forms.CheckedListBox();
             this.GrpPointSelection = new System.Windows.Forms.GroupBox();
+            this.lblPointCount = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.lblPointCount = new System.Windows.Forms.Label();
-            this.btnCategoryCheckSelected = new System.Windows.Forms.Button();
             this.btnCategoryUncheckSelected = new System.Windows.Forms.Button();
+            this.btnCategoryCheckSelected = new System.Windows.Forms.Button();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label12 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.label13 = new System.Windows.Forms.Label();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
             this.label14 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -155,7 +155,7 @@
             this.TxtGEPPort.Name = "TxtGEPPort";
             this.TxtGEPPort.Size = new System.Drawing.Size(100, 20);
             this.TxtGEPPort.TabIndex = 8;
-            this.TxtGEPPort.Text = global::DataExtractionUtility.Properties.Settings.Default.HistorianGatewayPort.ToString();
+            this.TxtGEPPort.Text = "6175";
             // 
             // TxtServerIP
             // 
@@ -182,7 +182,7 @@
             this.TxtHistorianPort.Name = "TxtHistorianPort";
             this.TxtHistorianPort.Size = new System.Drawing.Size(100, 20);
             this.TxtHistorianPort.TabIndex = 4;
-            this.TxtHistorianPort.Text = global::DataExtractionUtility.Properties.Settings.Default.HistorianStreamingPort.ToString();
+            this.TxtHistorianPort.Text = "38402";
             // 
             // groupBox2
             // 
@@ -194,6 +194,7 @@
             this.groupBox2.Controls.Add(this.txtMaxFileSize);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.txtCsvMaxRowCount);
+            this.groupBox2.Enabled = false;
             this.groupBox2.Location = new System.Drawing.Point(12, 180);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(253, 138);
@@ -217,7 +218,7 @@
             this.txtCsvMaxFileCount.Name = "txtCsvMaxFileCount";
             this.txtCsvMaxFileCount.Size = new System.Drawing.Size(100, 20);
             this.txtCsvMaxFileCount.TabIndex = 14;
-            this.txtCsvMaxFileCount.Text = global::DataExtractionUtility.Properties.Settings.Default.CsvMaxFileCount.ToString();
+            this.txtCsvMaxFileCount.Text = "-1";
             // 
             // label9
             // 
@@ -235,7 +236,7 @@
             this.txtCsvMaxColumnCount.Name = "txtCsvMaxColumnCount";
             this.txtCsvMaxColumnCount.Size = new System.Drawing.Size(100, 20);
             this.txtCsvMaxColumnCount.TabIndex = 12;
-            this.txtCsvMaxColumnCount.Text = global::DataExtractionUtility.Properties.Settings.Default.CsvMaximumColumnCount.ToString();
+            this.txtCsvMaxColumnCount.Text = "1024";
             // 
             // label5
             // 
@@ -253,7 +254,7 @@
             this.txtMaxFileSize.Name = "txtMaxFileSize";
             this.txtMaxFileSize.Size = new System.Drawing.Size(100, 20);
             this.txtMaxFileSize.TabIndex = 2;
-            this.txtMaxFileSize.Text = global::DataExtractionUtility.Properties.Settings.Default.CsvMaxFileSizeMB.ToString();
+            this.txtMaxFileSize.Text = "10";
             // 
             // label7
             // 
@@ -271,7 +272,7 @@
             this.txtCsvMaxRowCount.Name = "txtCsvMaxRowCount";
             this.txtCsvMaxRowCount.Size = new System.Drawing.Size(100, 20);
             this.txtCsvMaxRowCount.TabIndex = 4;
-            this.txtCsvMaxRowCount.Text = global::DataExtractionUtility.Properties.Settings.Default.CsvMaxRowCount.ToString();
+            this.txtCsvMaxRowCount.Text = "500000";
             // 
             // groupBox3
             // 
@@ -358,9 +359,9 @@
             // 
             // BtnExport
             // 
-            this.BtnExport.Location = new System.Drawing.Point(166, 100);
+            this.BtnExport.Location = new System.Drawing.Point(141, 100);
             this.BtnExport.Name = "BtnExport";
-            this.BtnExport.Size = new System.Drawing.Size(75, 23);
+            this.BtnExport.Size = new System.Drawing.Size(106, 23);
             this.BtnExport.TabIndex = 0;
             this.BtnExport.Text = "Export";
             this.BtnExport.UseVisualStyleBackColor = true;
@@ -403,6 +404,15 @@
             this.GrpPointSelection.TabStop = false;
             this.GrpPointSelection.Text = "Point Selection";
             // 
+            // lblPointCount
+            // 
+            this.lblPointCount.AutoSize = true;
+            this.lblPointCount.Location = new System.Drawing.Point(6, 424);
+            this.lblPointCount.Name = "lblPointCount";
+            this.lblPointCount.Size = new System.Drawing.Size(65, 13);
+            this.lblPointCount.TabIndex = 8;
+            this.lblPointCount.Text = "Point Count:";
+            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
@@ -429,45 +439,15 @@
             this.tabPage1.Text = "Category";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // btnCategoryUncheckSelected
             // 
-            this.tabPage2.Controls.Add(this.label12);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(324, 387);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Device";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.label13);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(324, 387);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Points";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // tabPage4
-            // 
-            this.tabPage4.Controls.Add(this.label14);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(324, 387);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Summary";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // lblPointCount
-            // 
-            this.lblPointCount.AutoSize = true;
-            this.lblPointCount.Location = new System.Drawing.Point(6, 424);
-            this.lblPointCount.Name = "lblPointCount";
-            this.lblPointCount.Size = new System.Drawing.Size(65, 13);
-            this.lblPointCount.TabIndex = 8;
-            this.lblPointCount.Text = "Point Count:";
+            this.btnCategoryUncheckSelected.Location = new System.Drawing.Point(125, 343);
+            this.btnCategoryUncheckSelected.Name = "btnCategoryUncheckSelected";
+            this.btnCategoryUncheckSelected.Size = new System.Drawing.Size(113, 23);
+            this.btnCategoryUncheckSelected.TabIndex = 17;
+            this.btnCategoryUncheckSelected.Text = "Uncheck Selected";
+            this.btnCategoryUncheckSelected.UseVisualStyleBackColor = true;
+            this.btnCategoryUncheckSelected.Visible = false;
             // 
             // btnCategoryCheckSelected
             // 
@@ -479,15 +459,16 @@
             this.btnCategoryCheckSelected.UseVisualStyleBackColor = true;
             this.btnCategoryCheckSelected.Visible = false;
             // 
-            // btnCategoryUncheckSelected
+            // tabPage2
             // 
-            this.btnCategoryUncheckSelected.Location = new System.Drawing.Point(125, 343);
-            this.btnCategoryUncheckSelected.Name = "btnCategoryUncheckSelected";
-            this.btnCategoryUncheckSelected.Size = new System.Drawing.Size(113, 23);
-            this.btnCategoryUncheckSelected.TabIndex = 17;
-            this.btnCategoryUncheckSelected.Text = "Uncheck Selected";
-            this.btnCategoryUncheckSelected.UseVisualStyleBackColor = true;
-            this.btnCategoryUncheckSelected.Visible = false;
+            this.tabPage2.Controls.Add(this.label12);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(324, 375);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Device";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // label12
             // 
@@ -498,6 +479,16 @@
             this.label12.TabIndex = 0;
             this.label12.Text = "Comming Soon";
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.label13);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(324, 375);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Points";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
             // label13
             // 
             this.label13.AutoSize = true;
@@ -506,6 +497,16 @@
             this.label13.Size = new System.Drawing.Size(78, 13);
             this.label13.TabIndex = 1;
             this.label13.Text = "Comming Soon";
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.label14);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Size = new System.Drawing.Size(324, 375);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Summary";
+            this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // label14
             // 

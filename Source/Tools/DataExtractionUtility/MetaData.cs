@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using DataExtractionUtility.Properties;
 using GSF.TimeSeries;
@@ -35,7 +32,7 @@ namespace DataExtractionUtility
     public class MetaData
     {
         public List<MeasurementRow> Measurements;
-        public MetaData()
+        public MetaData(string serverIP, string gepPort)
         {
             Measurements = new List<MeasurementRow>();
 
