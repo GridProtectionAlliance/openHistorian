@@ -24,6 +24,7 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Threading;
 
 namespace GSF.Threading
@@ -40,58 +41,150 @@ namespace GSF.Threading
         /// The internal state of the state machine.
         /// </summary>
         private volatile int m_state;
+        private volatile int m_lockVersion;
+        int m_pendingState;
 
         /// <summary>
         /// Creates a new <see cref="StateMachine"/>
         /// </summary>
-        /// <param name="initialState">the state to initially set to</param>
-        public StateMachine(int initialState)
+        /// <param name="initialState">the initial state of the machine</param>
+        /// <param name="pendingState">the value that designates a pending state has been entered. 
+        /// Typically this state is used to lock the state machine while completing a series of tasks.</param>
+        public StateMachine(int initialState, int pendingState)
         {
             m_state = initialState;
+            m_pendingState = pendingState;
+            m_lockVersion = 1;
         }
 
         /// <summary>
-        /// Gets the current state of the State Machine. 
+        /// Acquires a lock on the state variable, swaping its current state with the pending state.
         /// </summary>
-        public int State
+        /// <returns>A disposable object that can be used to configure the state.</returns>
+        public LockState Lock()
         {
-            get
+            SpinWait wait = default(SpinWait);
+            while (true)
             {
-                return m_state;
+                int state = m_state;
+                if (state != m_pendingState)
+                    if (Interlocked.CompareExchange(ref m_state, m_pendingState, state) == state)
+                    {
+                        m_lockVersion++;
+                        return new LockState(this, m_lockVersion, state);
+                    }
+                wait.SpinOnce();
             }
         }
 
         /// <summary>
-        /// Attempts to change the state of this machine from <see cref="prevState"/> to <see cref="nextState"/>.
+        /// Attempts to release the lock on the state machine. 
         /// </summary>
-        /// <param name="prevState">The state to change from</param>
-        /// <param name="nextState">The state to change to</param>
-        /// <returns>True if the state changed from the previous state to the next state. 
-        /// False if unsuccessful.</returns>
-        public bool TryChangeState(int prevState, int nextState)
-        {
-            return (m_state == prevState && Interlocked.CompareExchange(ref m_state, nextState, prevState) == prevState);
-        }
-
-        /// <summary>
-        /// Sets the value of the state. 
-        /// Only call this method if you are certain that you are the only entity allowed to change 
-        /// from the current state to this state. This does not implement an atomic compare exchange.
-        /// </summary>
-        /// <param name="state"></param>
-        public void SetState(int state)
-        {
-            m_state = state;
-        }
-
-        /// <summary>
-        /// Implicity conversion of the state to the integer value of the state.
-        /// </summary>
-        /// <param name="machine"></param>
+        /// <param name="state">the state to set the lock to</param>
+        /// <param name="version">the verion number associated with this lock. Prevents duplicate calls.</param>
         /// <returns></returns>
-        public static implicit operator int(StateMachine machine)
+        bool TryRelease(int state, int version)
         {
-            return machine.State;
+            //Prevents duplicate calls.
+            if (m_lockVersion != version)
+                return false;
+            m_lockVersion++;
+            m_state = state;
+            return true;
         }
+
+        /// <summary>
+        /// A Disposable lock that will release the lock on a state machine.
+        /// </summary>
+        public struct LockState : IDisposable
+        {
+
+            StateMachine m_stateMachine;
+
+            /// <summary>
+            /// to prevent duplicate calls to Release();
+            /// </summary>
+            int m_version;
+
+            int m_state;
+
+            /// <summary>
+            /// Gets the state of the machine before the lock was acquired.
+            /// </summary>
+            public int State
+            {
+                get
+                {
+                    return m_state;
+                }
+            }
+
+            /// <summary>
+            /// Creates a lock around the state machine.
+            /// </summary>
+            /// <param name="machine"></param>
+            /// <param name="version"></param>
+            /// <param name="state"></param>
+            internal LockState(StateMachine machine, int version, int state)
+            {
+                m_stateMachine = machine;
+                m_version = version;
+                m_state = state;
+            }
+
+            /// <summary>
+            /// Same as <see cref="Release()"/>
+            /// Note, duplicate calls to this function will be ignored.
+            /// </summary>
+            public void Dispose()
+            {
+                m_stateMachine.TryRelease(m_state, m_version);
+                m_state = int.MinValue;
+            }
+
+            /// <summary>
+            /// Releases the lock on the state machine. Setting it back to it's previous state.
+            /// </summary>
+            public void Release()
+            {
+                if (!m_stateMachine.TryRelease(m_state, m_version))
+                    throw new Exception("Duplicate lock release on the state machine.");
+                m_state = int.MinValue;
+            }
+
+            /// <summary>
+            /// Releases the lock on the state machine. Setting its state to the provided variable.
+            /// Note, duplicate calls to this function will throw an exception.
+            /// </summary>
+            /// <param name="state">the state to set the machine to.</param>
+            public void Release(int state)
+            {
+                if (!m_stateMachine.TryRelease(state, m_version))
+                    throw new Exception("Duplicate lock release on the state machine.");
+                m_state = int.MinValue;
+            }
+
+            /// <summary>
+            /// Reacquires an existing lock that has been released. Note, the state variables might be different.
+            /// </summary>
+            public void Reacquire()
+            {
+                if (m_version == m_stateMachine.m_lockVersion) 
+                    throw new Exception("Lock has not yet been released. Release the lock before reacquring one.");
+                this = m_stateMachine.Lock();
+            }
+
+            /// <summary>
+            /// Gets the state of the state machine at the time of the lock.
+            /// </summary>
+            /// <param name="state"></param>
+            /// <returns></returns>
+            public static implicit operator int(LockState state)
+            {
+                return state.m_state;
+            }
+        }
+
+
     }
 }

@@ -126,7 +126,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         {
             if (rolloverInterval < 10 || rolloverInterval > 1000)
                 throw new ArgumentOutOfRangeException("rolloverInterval", "Must be between 10ms and 1000ms");
-            if (m_onRollover == null)
+            if (onRollover == null)
                 throw new ArgumentNullException("onRollover");
 
             m_latestTransactionId = 0;

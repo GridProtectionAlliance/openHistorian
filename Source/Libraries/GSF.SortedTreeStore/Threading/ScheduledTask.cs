@@ -492,10 +492,10 @@ namespace GSF.Threading
                     case State.TerminateQueued:
                         if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.TerminateQueued) == State.TerminateQueued)
                         {
-                            m_workerThread.StopExecution();
-                            m_hasQuitWaitHandle.Set();
                             m_stateMachine = State.Terminated;
+                            m_workerThread.StopExecution();
                             ProcessClientCallbackDisposing(false, false);
+                            m_hasQuitWaitHandle.Set();
                             return;
                         }
                         break;
@@ -537,10 +537,10 @@ namespace GSF.Threading
                     case State.NotRunning:
                         if (Interlocked.CompareExchange(ref m_stateMachine, State.PendingAction, State.NotRunning) == State.NotRunning)
                         {
-                            m_workerThread.StopExecution();
-                            m_hasQuitWaitHandle.Set();
                             m_stateMachine = State.Terminated;
+                            m_workerThread.StopExecution();
                             ProcessClientCallbackDisposing(false, false);
+                            m_hasQuitWaitHandle.Set();
                             return;
                         }
                         break;
