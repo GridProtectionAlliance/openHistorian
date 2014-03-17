@@ -32,7 +32,7 @@ namespace DataExtractionUtility
     public class MetaData
     {
         public List<MeasurementRow> Measurements;
-        public MetaData(string serverIP, string gepPort)
+        public MetaData()
         {
             Measurements = new List<MeasurementRow>();
 

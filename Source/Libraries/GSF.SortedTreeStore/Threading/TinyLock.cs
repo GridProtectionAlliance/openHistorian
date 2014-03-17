@@ -58,7 +58,10 @@ namespace GSF.Threading
         /// Acquires an exclusive lock on this class. Place call in a using block.
         /// Duplicate calls to this within the same thread will cause a deadlock.
         /// </summary>
-        /// <returns>A structure that will release the lock.</returns>
+        /// <returns>A structure that will release the lock. 
+        /// This struct will always be the exact same value. Therefore it can be 
+        /// stored once if desired, however, be careful when using it this way as inproper synchronization
+        /// will be easier to occur.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TinyLockRelease Lock()
         {

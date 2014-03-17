@@ -90,6 +90,7 @@
     <Compile Include="SortedTreeStore\Engine\BulkWritePoints.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="StreamWriterTest.cs" />
+    <Compile Include="Threading\SmallLock_Test.cs" />
     <Compile Include="Threading\ScheduledTask.cs" />
     <Compile Include="Threading\TinyLock_Test.cs" />
   </ItemGroup>

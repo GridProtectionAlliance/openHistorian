@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  WeakWorkerThread.cs - Gbtc
+//  WorkerThread.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  3/8/2014 - Steven E. Chisholm
+//  3/15/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
@@ -30,10 +30,11 @@ namespace GSF.Threading
 {
 
     /// <summary>
-    /// Callback method for the <see cref="WeakWorkerThread"/>.
+    /// Callback method for the <see cref="WorkerThread"/>.
     /// </summary>
     /// <param name="executionMode">the mode of execution that caused this event to raise.</param>
     public delegate void WorkerThreadCallback(WorkerThreadTimeoutResults executionMode);
+
     /// <summary>
     /// Metadata about why this worker was called.
     /// </summary>
@@ -86,55 +87,49 @@ namespace GSF.Threading
     /// disposal by returning true to the shouldDispose parameter passed to the callback function.
     /// 
     /// </remarks>
-    public partial class WeakWorkerThread
+    public partial class WorkerThread
         : IDisposable
     {
         /// <summary>
         /// State variables for the internal state machine.
         /// </summary>
-        private static class State
+        private enum State
         {
             /// <summary>
             /// Indicates that the task is not running.
             /// </summary>
-            public const int NotRunning = 1;
+            NotRunning = 1,
 
             /// <summary>
             /// Indicates that the task is scheduled to execute after a user specified delay
             /// </summary>
-            public const int ScheduledToRunAfterDelay = 2;
+            ScheduledToRunAfterDelay = 2,
 
             /// <summary>
             /// Indicates the task has been queue for immediate execution, but has not started running yet.
             /// </summary>
-            public const int ScheduledToRun = 3;
+            ScheduledToRun = 3,
 
             /// <summary>
             /// Indicates the task is currently running.
             /// </summary>
-            public const int RunningOnWorkerThread = 4;
+            RunningOnWorkerThread = 4,
 
             /// <summary>
             /// Indicates the task is running on the current thread.
             /// </summary>
-            public const int RunningOnMyThread = 5;
+            RunningOnMyThread = 5,
 
             /// <summary>
             /// Indicates that the class has been Terminated and no more execution is possible.
             /// </summary>
-            public const int Disposed = 6;
-
-            /// <summary>
-            /// A state to set the machine to when addional work needs to be done before finalizing the next state.
-            /// Never leave in this state, never change from this state unless you are the one who set this state.
-            /// </summary>
-            public const int PendingAction = 100;
+            Disposed = 6
         }
 
         #region [ State Variables ]
 
 
-        volatile bool m_runAgainOnMyThread;
+        bool m_runAgainOnMyThread;
         /// <summary>
         /// A state variable that means a RunOnMyThread has been called and the worker thread is no longer needed and can be canceled.
         /// Note, this should be a synchronized call since a race condition exists that might requeue work before the worker gets canceled.
@@ -142,19 +137,19 @@ namespace GSF.Threading
         /// <remarks>
         /// Only Cleared within <see cref="OnWorkerThreadRunning"/>. 
         /// </remarks>
-        volatile bool m_cancelingBackgroudWorker;
+        bool m_cancelingBackgroudWorker;
         /// <summary>
         /// A state variable that means the class should be disposed at its earliest convinence.
         /// </summary>
-        volatile bool m_disposing;
+        bool m_disposing;
         /// <summary>
         /// A state variable meaning that the worker thread is waiting for a signal from the user's current thread before beginning.
         /// </summary>
-        volatile bool m_workerThreadWaiting;
+        bool m_workerThreadWaiting;
         /// <summary>
         /// A state variable meaning that the current thread is awaiting a signal from the worker thread when complete.
         /// </summary>
-        volatile bool m_currentThreadWaiting;
+        bool m_currentThreadWaiting;
         /// <summary>
         /// A state variable meaning that the worker will run immediately at least once after this variable has returned true
         /// </summary>
@@ -166,13 +161,16 @@ namespace GSF.Threading
         /// <summary>
         /// A state variable storing the delay associated with a delayed start. This variable is only valid if a re-run was queued.
         /// </summary>
-        volatile int m_runDelay;
+        int m_runDelay;
 
-        volatile StateMachine m_stateMachine;
+        State m_state;
+
         /// <summary>
         /// A state variable containing the thread if of the current worker thread. A value less than 0 means invalid.
         /// </summary>
-        volatile int m_workerThreadId;
+        int m_workerThreadId;
+
+        object m_syncRoot;
 
         #endregion
 
@@ -180,7 +178,7 @@ namespace GSF.Threading
         ManualResetEvent m_workerThreadWait;
         ManualResetEvent m_disposingWait;
 
-        volatile WorkerThreadCallback m_callback;
+        WorkerThreadCallback m_callback;
 
         /// <summary>
         /// Used to prevent concurrent calls to the Dispose method.
@@ -190,18 +188,19 @@ namespace GSF.Threading
 
         //A reference of the delegate must be kept since ThreadContainer places this in a weak reference.
         //Otherwise it will get collected since only references to the delegate will be strong references.
-        Func<WorkerThreadTimeoutResults, bool> m_containerCallback;
+        Action<ThreadContainerArgs> m_containerCallback;
 
-        ThreadContainer m_thread;
+        ThreadContainerDedicated m_thread;
 
         /// <summary>
-        /// Creates a <see cref="WeakWorkerThread"/> that raises the provided event when invoked.
+        /// Creates a <see cref="WorkerThread"/> that raises the provided event when invoked.
         /// </summary>
         /// <param name="callback">the back to raise with the </param>
         /// <param name="isBackground">parameter to pass to the underlying thread</param>
         /// <param name="priority">parameter to pass to the underlying thread</param>
-        public WeakWorkerThread(WorkerThreadCallback callback, bool isBackground, ThreadPriority priority)
+        public WorkerThread(WorkerThreadCallback callback, bool isBackground, ThreadPriority priority)
         {
+            m_syncRoot = new object();
             m_disposing = false;
             m_workerThreadWaiting = false;
             m_workerThreadWait = new ManualResetEvent(false);
@@ -212,20 +211,27 @@ namespace GSF.Threading
             m_willRun = false;
             m_willRunAfterDelay = false;
             m_runDelay = 0;
-            m_stateMachine = new StateMachine(State.NotRunning, State.PendingAction);
+            m_state = State.NotRunning;
             m_disposingConcurrentCallLock = new object();
             m_callback = callback;
             m_containerCallback = OnWorkerThreadRunning;
-            m_thread = new ThreadContainer(m_containerCallback, isBackground, priority);
+            m_thread = new ThreadContainerDedicated(m_containerCallback, isBackground, priority);
         }
 
         /// <summary>
         /// Finalizer to dispose of the thread.
         /// </summary>
-        ~WeakWorkerThread()
+        ~WorkerThread()
         {
-            //ToDo: Consider a different path for the finalizer.
-            Dispose();
+            try
+            {
+                //If the finalizer has been called, the only important thing to do is dispose of the thread (since this finalizer can never be called)
+                m_thread.Dispose();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.ToString());
+            }
         }
 
         /// <summary>
@@ -233,89 +239,101 @@ namespace GSF.Threading
         /// </summary>
         /// <param name="info"></param>
         /// <returns></returns>
-        bool OnWorkerThreadRunning(WorkerThreadTimeoutResults info)
+        void OnWorkerThreadRunning(ThreadContainerArgs info)
         {
-            using (var state = m_stateMachine.Lock())
+            using (var @lock = new MonitorHelper(m_syncRoot, true))
             {
+                m_thread.Reset();
+                if (m_state == State.Disposed)
+                {
+                    info.ShouldQuit = true;
+                    return;
+                }
+
                 if (m_cancelingBackgroudWorker)
                 {
                     m_cancelingBackgroudWorker = false;
-                    return true;
+                    return;
                 }
 
-                if (state == State.Disposed)
-                    return false;
-
-                if (state == State.NotRunning)
+                if (m_state == State.NotRunning)
                     throw new Exception("Invalid State in OnWorkerThreadRunning: NotRunning");
 
-                if (state == State.RunningOnWorkerThread)
+                if (m_state == State.RunningOnWorkerThread)
                     throw new Exception("Invalid State in OnWorkerThreadRunning: RunningOnWorkerThread");
 
 
-                if (state == State.RunningOnMyThread)
+                if (m_state == State.RunningOnMyThread)
                 {
                     //Wait for state machine to be released
                     m_workerThreadWaiting = true;
                     m_workerThreadWait.Reset();
-                    state.Release();
+                    @lock.Exit();
                     m_workerThreadWait.WaitOne();
-                    state.Reacquire();
+                    //Upon exit, the state 
+                    @lock.Enter();
                 }
 
-                if (state == State.ScheduledToRunAfterDelay || state == State.ScheduledToRun || state == State.RunningOnWorkerThread)
+                if (m_state == State.ScheduledToRunAfterDelay ||
+                    m_state == State.ScheduledToRun ||
+                    m_state == State.RunningOnWorkerThread)
                 {
+
                     if (!m_disposing)
                     {
                         m_willRunAfterDelay = false;
                         m_willRun = false;
-                        state.Release(State.RunningOnWorkerThread);
-                        OnCallback(info);
-                        state.Reacquire();
-                        if (state != State.RunningOnWorkerThread)
-                            throw new Exception("Logic Error. State should not change");
+                        m_state = State.RunningOnWorkerThread;
+                        @lock.Exit();
+                        OnCallback(info.TimeoutResults);
+                        @lock.Enter();
+                        if (m_state != State.RunningOnWorkerThread)
+                            throw new Exception("Invalid State: " + m_state.ToString() + " Expecting RunningOnWorkerThread");
                     }
 
                     if (m_disposing)
                     {
-                        state.Release(State.RunningOnWorkerThread);
+                        m_state = State.RunningOnWorkerThread;
+                        @lock.Exit();
                         OnCallback(WorkerThreadTimeoutResults.Disposing);
-                        state.Reacquire();
-                        if (state != State.RunningOnWorkerThread)
-                            throw new Exception("Logic Error. State should not change");
+                        @lock.Enter();
+                        if (m_state != State.RunningOnWorkerThread)
+                            throw new Exception("Invalid State: " + m_state.ToString() + " Expecting RunningOnWorkerThread");
 
                         OnSetToDispose();
-                        state.Release(State.Disposed);
+                        m_state = State.Disposed;
+                        @lock.Exit();
                         InternalDispose();
-                        return false;
+                        info.ShouldQuit = true;
+                        return;
                     }
                 }
                 else
                 {
-                    throw new Exception("Invalid State: Expecting ScheduledToRunAfterDelay, ScheduledToRun, or RunningOnWorkerThread");
+                    throw new Exception("Invalid State: " + m_state.ToString() + " Expecting ScheduledToRunAfterDelay, ScheduledToRun, or RunningOnWorkerThread");
                 }
 
                 if (m_currentThreadWaiting)
                 {
                     m_currentThreadWaiting = false;
-                    state.Release(State.RunningOnMyThread); //Changing the state
+                    m_state = State.RunningOnMyThread; //Changing the state
                     m_currentThreadWait.Set();
                 }
                 else if (m_willRun)
                 {
-                    m_thread.Invoke();
-                    state.Release(State.ScheduledToRun);
+                    info.RepeatNow = true;
+                    m_state = State.ScheduledToRun;
                 }
                 else if (m_willRunAfterDelay)
                 {
-                    m_thread.Invoke(m_runDelay);
-                    state.Release(State.ScheduledToRunAfterDelay);
+                    info.RepeatAfterDelay = true;
+                    info.RepeatAfterDelayTime = m_runDelay;
+                    m_state = State.ScheduledToRunAfterDelay;
                 }
                 else
                 {
-                    state.Release(State.NotRunning);
+                    m_state = State.NotRunning;
                 }
-                return true;
             }
         }
 
@@ -328,56 +346,67 @@ namespace GSF.Threading
         {
         RinseAndRepeat:
 
-            using (var state = m_stateMachine.Lock())
+            using (var @lock = new MonitorHelper(m_syncRoot, true))
             {
-                if (state == State.Disposed)
+                if (m_state == State.Disposed)
                     return;
 
-                if (state == State.RunningOnMyThread)
+                if (m_state == State.RunningOnMyThread)
                 {
-                    m_runAgainOnMyThread = true;
-                    return;
+                    if (Thread.CurrentThread.ManagedThreadId == m_workerThreadId)
+                    {
+                        m_runAgainOnMyThread = true;
+                        return;
+                    }
+                    throw new NotSupportedException("Calling StartOnMyThread from different threads concurrently is not supported.");
                 }
 
-                if (state == State.RunningOnWorkerThread)
+                if (m_state == State.RunningOnWorkerThread)
                 {
                     m_workerThreadWaiting = true;
                     m_workerThreadWait.Reset();
-                    state.Release(State.RunningOnWorkerThread);
+                    @lock.Exit();
                     m_workerThreadWait.WaitOne();
-                    state.Reacquire();
+                    @lock.Enter();
                 }
 
-                if (state == State.NotRunning || state == State.ScheduledToRunAfterDelay || state == State.ScheduledToRun || state == State.RunningOnMyThread)
+                if (m_state == State.NotRunning ||
+                    m_state == State.ScheduledToRunAfterDelay ||
+                    m_state == State.ScheduledToRun ||
+                    m_state == State.RunningOnMyThread)
                 {
                     if (!m_disposing)
                     {
                         m_willRunAfterDelay = false;
                         m_willRun = false;
-                        state.Release(State.RunningOnWorkerThread);
+                        m_state = State.RunningOnMyThread;
+                        @lock.Exit();
                         OnCallback(WorkerThreadTimeoutResults.RunningOnLocalThread);
-                        state.Reacquire();
-                        if (state != State.RunningOnWorkerThread)
-                            throw new Exception("Logic Error. State should not change");
+                        @lock.Enter();
+                        if (m_state != State.RunningOnMyThread)
+                            throw new Exception("Invalid State: " + m_state.ToString() + " Expecting RunningOnMyThread");
                     }
 
                     if (m_disposing)
                     {
-                        state.Release(State.RunningOnWorkerThread);
+                        m_state = State.RunningOnMyThread;
+                        @lock.Exit();
                         OnCallback(WorkerThreadTimeoutResults.Disposing);
-                        state.Reacquire();
-                        if (state != State.RunningOnWorkerThread)
-                            throw new Exception("Logic Error. State should not change");
+                        @lock.Enter();
+
+                        if (m_state != State.RunningOnMyThread)
+                            throw new Exception("Invalid State: " + m_state.ToString() + " Expecting RunningOnMyThread");
 
                         OnSetToDispose();
-                        state.Release(State.Disposed);
+                        m_state = State.Disposed;
+                        @lock.Exit();
                         InternalDispose();
                         return;
                     }
                 }
                 else
                 {
-                    throw new Exception("Invalid State: Expecting ScheduledToRunAfterDelay, ScheduledToRun, or RunningOnWorkerThread");
+                    throw new Exception("Invalid State: " + m_state.ToString() + " Expecting NotRunning, ScheduledToRunAfterDelay, ScheduledToRun, or RunningOnWorkerThread");
                 }
 
                 if (m_runAgainOnMyThread)
@@ -388,22 +417,23 @@ namespace GSF.Threading
                 else if (m_workerThreadWaiting)
                 {
                     m_workerThreadWaiting = false;
-                    state.Release(State.RunningOnWorkerThread);
+                    m_state = State.RunningOnWorkerThread;
+                    @lock.Exit();
                     m_workerThreadWait.Set();
                 }
                 else if (m_willRun)
                 {
-                    m_thread.Invoke();
-                    state.Release(State.ScheduledToRun);
+                    m_thread.StartNow();
+                    m_state = State.ScheduledToRun;
                 }
                 else if (m_willRunAfterDelay)
                 {
-                    m_thread.Invoke(m_runDelay);
-                    state.Release(State.ScheduledToRunAfterDelay);
+                    m_thread.StartLater(m_runDelay);
+                    m_state = State.ScheduledToRunAfterDelay;
                 }
                 else
                 {
-                    state.Release(State.NotRunning);
+                    m_state = State.NotRunning;
                 }
             }
         }
@@ -426,26 +456,31 @@ namespace GSF.Threading
 
         void Start2()
         {
-            using (var state = m_stateMachine.Lock())
+            lock (m_syncRoot)
             {
-                if (state == State.RunningOnWorkerThread || state == State.RunningOnMyThread)
+                if (m_cancelingBackgroudWorker)
+                {
+                    m_cancelingBackgroudWorker = false;
+                    return;
+                }
+                if (m_state == State.RunningOnWorkerThread || m_state == State.RunningOnMyThread)
                 {
                     m_willRunAfterDelay = true;
                     m_willRun = true;
                 }
-                else if (state == State.NotRunning)
+                else if (m_state == State.NotRunning)
                 {
                     m_willRunAfterDelay = true;
                     m_willRun = true;
-                    m_thread.Invoke();
-                    state.Release(State.ScheduledToRun);
+                    m_thread.StartNow();
+                    m_state = State.ScheduledToRun;
                 }
-                else if (state == State.ScheduledToRunAfterDelay)
+                else if (m_state == State.ScheduledToRunAfterDelay)
                 {
                     m_willRunAfterDelay = true;
                     m_willRun = true;
                     m_thread.CancelTimer();
-                    state.Release(State.ScheduledToRun);
+                    m_state = State.ScheduledToRun;
                 }
             }
         }
@@ -466,19 +501,23 @@ namespace GSF.Threading
 
         void Start2(int delay)
         {
-            using (var state = m_stateMachine.Lock())
+            lock (m_syncRoot)
             {
-                if (state == State.NotRunning)
+                if (m_cancelingBackgroudWorker)
+                {
+                    m_cancelingBackgroudWorker = false;
+                    return;
+                }
+                if (m_state == State.NotRunning)
                 {
                     m_willRunAfterDelay = true;
-                    m_thread.Invoke(delay);
-                    state.Release(State.ScheduledToRunAfterDelay);
+                    m_thread.StartLater(delay);
+                    m_state = State.ScheduledToRunAfterDelay;
                 }
-                else if (state == State.RunningOnWorkerThread || state == State.RunningOnMyThread)
+                else if (m_state == State.RunningOnWorkerThread || m_state == State.RunningOnMyThread)
                 {
                     m_willRunAfterDelay = true;
                     m_runDelay = delay;
-                    state.Release();
                 }
             }
         }
@@ -488,17 +527,14 @@ namespace GSF.Threading
             m_workerThreadId = Thread.CurrentThread.ManagedThreadId;
             try
             {
-                lock (m_disposingConcurrentCallLock)
+                var callback = m_callback;
+                if (callback != null)
                 {
-                    var callback = m_callback;
-                    if (callback != null)
-                    {
-                        callback(results);
-                    }
-                    else
-                    {
-                        Dispose();
-                    }
+                    callback(results);
+                }
+                else
+                {
+                    Dispose();
                 }
             }
             catch (Exception ex)
@@ -518,25 +554,26 @@ namespace GSF.Threading
         /// </summary>
         public void Dispose()
         {
-            using (var state = m_stateMachine.Lock())
+            if (!m_disposing)
             {
-                if (state == State.Disposed)
-                    return;
+                lock (m_syncRoot)
+                {
+                    if (m_state == State.Disposed)
+                        return;
 
-                m_willRun = true;
-                m_willRunAfterDelay = true;
-                m_disposing = true;
-                if (state == State.NotRunning)
-                {
-                    OnSetToDispose();
-                    InternalDispose();
-                    state.Release(State.Disposed);
-                    return;
-                }
-                if (state == State.ScheduledToRunAfterDelay)
-                {
-                    m_thread.CancelTimer();
-                    state.Release(State.ScheduledToRun);
+                    m_willRun = true;
+                    m_willRunAfterDelay = true;
+                    m_disposing = true;
+                    if (m_state == State.NotRunning)
+                    {
+                        m_thread.StartNow();
+                        m_state = State.ScheduledToRun;
+                    }
+                    if (m_state == State.ScheduledToRunAfterDelay)
+                    {
+                        m_thread.CancelTimer();
+                        m_state = State.ScheduledToRun;
+                    }
                 }
             }
 
@@ -559,7 +596,6 @@ namespace GSF.Threading
             m_disposingWait.Set();
         }
 
-
         /// <summary>
         /// Disposes of the objects, waits until m_disposingWait to be signaled.
         /// </summary>
@@ -567,6 +603,7 @@ namespace GSF.Threading
         {
             lock (m_disposingConcurrentCallLock)
             {
+                GC.SuppressFinalize(this);
                 if (m_disposingWait != null)
                 {
                     m_disposingWait.WaitOne();
@@ -579,9 +616,5 @@ namespace GSF.Threading
                 }
             }
         }
-
-
     }
-
-
 }

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  StateMachine.cs - Gbtc
+//  StateMachine`1.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -18,42 +18,50 @@
 //  ----------------------------------------------------------------------------------------------------
 //  1/13/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//  2/14/2014 - Steven E. Chisholm
-//       Migrated code to GSF.Core from the openHistorian project.
-//       
+//  3/14/2014 - Steven E. Chisholm
+//       Changed state machine to be a lock/release based machine
 //
 //******************************************************************************************************
 
 using System;
-using System.Threading;
 
 namespace GSF.Threading
 {
     /// <summary>
     /// Helps facilitate a multithreaded state machine.
     /// </summary>
-    /// <remarks>
-    /// State machine variables must be integers since <see cref="Interlocked"/> methods require premitive types.
-    /// </remarks>
     public class StateMachine
     {
         /// <summary>
+        /// The release for the exclusive lock
+        /// </summary>
+        TinyLock.TinyLockRelease m_lockRelease;
+
+        /// <summary>
+        /// An exclusive lock
+        /// </summary>
+        TinyLock m_lock;
+
+        /// <summary>
         /// The internal state of the state machine.
         /// </summary>
-        private volatile int m_state;
-        private volatile int m_lockVersion;
-        int m_pendingState;
+        volatile int m_state;
+        
+        /// <summary>
+        /// An identifier to prevent duplicate lock releases from being issued.
+        /// </summary>
+        volatile int m_lockVersion;
 
         /// <summary>
         /// Creates a new <see cref="StateMachine"/>
         /// </summary>
         /// <param name="initialState">the initial state of the machine</param>
-        /// <param name="pendingState">the value that designates a pending state has been entered. 
-        /// Typically this state is used to lock the state machine while completing a series of tasks.</param>
-        public StateMachine(int initialState, int pendingState)
+        public StateMachine(int initialState)
         {
+            m_lock = new TinyLock();
+            m_lockRelease = m_lock.Lock();
+            m_lockRelease.Dispose();
             m_state = initialState;
-            m_pendingState = pendingState;
             m_lockVersion = 1;
         }
 
@@ -63,18 +71,8 @@ namespace GSF.Threading
         /// <returns>A disposable object that can be used to configure the state.</returns>
         public LockState Lock()
         {
-            SpinWait wait = default(SpinWait);
-            while (true)
-            {
-                int state = m_state;
-                if (state != m_pendingState)
-                    if (Interlocked.CompareExchange(ref m_state, m_pendingState, state) == state)
-                    {
-                        m_lockVersion++;
-                        return new LockState(this, m_lockVersion, state);
-                    }
-                wait.SpinOnce();
-            }
+            m_lock.Lock();
+            return new LockState(this, m_lockVersion, m_state);
         }
 
         /// <summary>
@@ -90,6 +88,7 @@ namespace GSF.Threading
                 return false;
             m_lockVersion++;
             m_state = state;
+            m_lockRelease.Dispose();
             return true;
         }
 
@@ -98,7 +97,6 @@ namespace GSF.Threading
         /// </summary>
         public struct LockState : IDisposable
         {
-
             StateMachine m_stateMachine;
 
             /// <summary>
@@ -139,17 +137,18 @@ namespace GSF.Threading
             public void Dispose()
             {
                 m_stateMachine.TryRelease(m_state, m_version);
-                m_state = int.MinValue;
+                m_state = default(int);
             }
 
             /// <summary>
             /// Releases the lock on the state machine. Setting it back to it's previous state.
+            /// Note, duplicate calls to this function will throw an exception.
             /// </summary>
             public void Release()
             {
                 if (!m_stateMachine.TryRelease(m_state, m_version))
                     throw new Exception("Duplicate lock release on the state machine.");
-                m_state = int.MinValue;
+                m_state = default(int);
             }
 
             /// <summary>
@@ -161,7 +160,7 @@ namespace GSF.Threading
             {
                 if (!m_stateMachine.TryRelease(state, m_version))
                     throw new Exception("Duplicate lock release on the state machine.");
-                m_state = int.MinValue;
+                m_state = default(int);
             }
 
             /// <summary>
@@ -169,7 +168,7 @@ namespace GSF.Threading
             /// </summary>
             public void Reacquire()
             {
-                if (m_version == m_stateMachine.m_lockVersion) 
+                if (m_version == m_stateMachine.m_lockVersion)
                     throw new Exception("Lock has not yet been released. Release the lock before reacquring one.");
                 this = m_stateMachine.Lock();
             }

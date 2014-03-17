@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  WeakWorkerThread`1.cs - Gbtc
+//  WorkerThread_ThreadContainerDedicated.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,25 +28,23 @@ using System.Threading;
 
 namespace GSF.Threading
 {
-
-
-
     /// <summary>
     /// A weak referenced <see cref="Thread"/> that will enter a pause state behind a weak reference
     /// so it can be garbaged collected if it's in a sleep state.
     /// </summary>
-    public partial class WeakWorkerThread
+    public partial class WorkerThread
     {
+        
 
-        private class ThreadContainer
-            : WeakReference
+        private class ThreadContainerDedicated
+            : ThreadContainerBase
         {
             private Thread m_thread;
             private ManualResetEvent m_threadPausedWaitHandler;
             private ManualResetEvent m_threadSleepWaitHandler;
             private volatile int m_sleepTime;
 
-            public ThreadContainer(Func<WorkerThreadTimeoutResults, bool> callback, bool isBackground, ThreadPriority priority)
+            public ThreadContainerDedicated(Action<ThreadContainerArgs> callback, bool isBackground, ThreadPriority priority)
                 : base(callback)
             {
                 m_threadPausedWaitHandler = new ManualResetEvent(false);
@@ -59,54 +57,47 @@ namespace GSF.Threading
 
             void ThreadLoop()
             {
-                WorkerThreadTimeoutResults state;
+                ThreadContainerArgs state = new ThreadContainerArgs();
                 while (true)
                 {
-                    state = WorkerThreadTimeoutResults.StartNow;
+                    state.Clear();
+                    state.TimeoutResults = WorkerThreadTimeoutResults.StartNow;
                     m_threadPausedWaitHandler.WaitOne(-1);
-                    m_threadPausedWaitHandler.Reset();
 
+                RunAgainAfterDelay:
                     if (m_sleepTime != 0)
                     {
                         if (m_threadSleepWaitHandler.WaitOne(m_sleepTime))
                         {
-                            state = WorkerThreadTimeoutResults.StartAfterPartialDelay;
+                            state.TimeoutResults = WorkerThreadTimeoutResults.StartAfterPartialDelay;
                         }
                         else
                         {
-                            state = WorkerThreadTimeoutResults.StartAfterFullDelay;
+                            state.TimeoutResults = WorkerThreadTimeoutResults.StartAfterFullDelay;
                         }
                     }
-                    m_threadSleepWaitHandler.Reset();
 
-                    if (!TryInvoke(state))
+
+
+                RunAgainNow:
+                    TryInvoke(state);
+                    if (state.ShouldQuit)
                     {
                         Quit();
                         return;
                     }
-                }
-            }
-
-            /// <summary>
-            /// Attempts to call the weak delegate. 
-            /// </summary>
-            /// <param name="state">state variables to pass</param>
-            /// <returns>True if successful and the delegate returned true. False if the code needs to exit</returns>
-            /// <remarks>
-            /// This method must not be inlined because a strong reference to this weak reference exists in this function. 
-            /// Inlining would put the strong reference in the sleeping method, preventing collection.
-            /// </remarks>
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            bool TryInvoke(WorkerThreadTimeoutResults state)
-            {
-                Func<WorkerThreadTimeoutResults, bool> callback = (Func<WorkerThreadTimeoutResults, bool>)Target;
-                if (callback != null)
-                {
-                    return callback(state);
-                }
-                else
-                {
-                    return false;
+                    if (state.RepeatNow)
+                    {
+                        state.Clear();
+                        state.TimeoutResults = WorkerThreadTimeoutResults.StartNow;
+                        goto RunAgainNow;
+                    }
+                    if (state.RepeatAfterDelay)
+                    {
+                        m_sleepTime = state.RepeatAfterDelayTime;
+                        state.Clear();
+                        goto RunAgainAfterDelay;
+                    }
                 }
             }
 
@@ -119,25 +110,37 @@ namespace GSF.Threading
                 m_thread = null;
             }
 
-            public void CancelTimer()
+            public override void Dispose()
             {
-                m_sleepTime = 0;
-                m_threadSleepWaitHandler.Set();
-                m_threadPausedWaitHandler.Set();
+                Target = null;
+                StartNow();
             }
 
-            public void Invoke()
+            public override void Reset()
             {
-                m_sleepTime = 0;
-                m_threadSleepWaitHandler.Set();
-                m_threadPausedWaitHandler.Set();
+                m_threadPausedWaitHandler.Reset();
+                m_threadSleepWaitHandler.Reset();
             }
 
-            public void Invoke(int delay)
+            public override void StartLater(int delay)
             {
                 m_sleepTime = delay;
                 m_threadPausedWaitHandler.Set();
             }
+
+            public override void CancelTimer()
+            {
+                m_threadSleepWaitHandler.Set();
+                m_threadPausedWaitHandler.Set();
+            }
+
+            public override void StartNow()
+            {
+                m_sleepTime = 0;
+                m_threadSleepWaitHandler.Set();
+                m_threadPausedWaitHandler.Set();
+            }
+
         }
     }
 }
