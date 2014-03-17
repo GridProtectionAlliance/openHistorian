@@ -3403,11 +3403,12 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
-        <member name="M:GSF.Historian.Files.ArchiveReader.Open(System.String)">
+        <member name="M:GSF.Historian.Files.ArchiveReader.Open(System.String,System.String)">
             <summary>
             Opens the <see cref="T:GSF.Historian.Files.ArchiveFile"/> for use.
             </summary>
             <param name="fileName">Archive .D archive file name.</param>
+            <param name="offloadLocation">Path to archive offload location.</param>
         </member>
         <member name="M:GSF.Historian.Files.ArchiveReader.ReadData(System.Int32)">
             <summary>
@@ -3600,6 +3601,11 @@
         <member name="P:GSF.Historian.Files.ArchiveReader.FileName">
             <summary>
             Gets the name of the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Historian.Files.ArchiveReader.ArchiveOffloadLocation">
+            <summary>
+            Gets the path to the offload location used by the <see cref="T:GSF.Historian.Files.ArchiveFile"/>.
             </summary>
         </member>
         <member name="P:GSF.Historian.Files.ArchiveReader.StateFile">
