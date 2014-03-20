@@ -53,7 +53,8 @@ namespace GSF.Threading
         public DedicatedThread(Action callback, bool isBackground, ThreadPriority priority)
         {
             m_sleepTime = 0;
-            m_callback = new WeakActionFast(callback);
+            object dontKeep;
+            m_callback = new WeakActionFast(callback, out dontKeep);
             m_go = new ManualResetEvent(false);
             m_sleep = new ManualResetEvent(false);
             m_thread = new Thread(RunWorkerThread);

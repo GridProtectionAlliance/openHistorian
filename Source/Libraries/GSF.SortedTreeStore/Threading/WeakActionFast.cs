@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace GSF.Threading
 {
@@ -31,31 +32,34 @@ namespace GSF.Threading
     /// This one does not use reflection, so calls will be faster.
     /// 
     /// HOWEVER: a strong reference MUST be maintained for 
-    /// the <see cref="Action"/> delegate passed to this class.
+    /// the <see cref="Action"/> delegate passed to this class. 
+    /// This reference is outputted in the constructor.
     /// 
     /// Careful consideration must be made when deciding 
     /// where to store this strong reference, as this strong reference
     /// will need to also lose reference. A good place would be 
     /// as a member variable of the object of the target method.
     /// </summary>
-    public class WeakActionFast 
+    public class WeakActionFast
         : WeakReference
     {
-
         /// <summary>
         /// Creates a high speed weak action 
         /// </summary>
-        /// <param name="target"></param>
-        public WeakActionFast(Action target)
+        /// <param name="target">the callback</param>
+        /// <param name="localStrongReference">a strong reference that must be 
+        /// maintained in the class that is the target of the action</param>
+        public WeakActionFast(Action target, out object localStrongReference)
             : base(target)
         {
-
+            localStrongReference = target;
         }
 
         /// <summary>
         /// Attempts to invoke the delegate to a weak reference object.
         /// </summary>
         /// <returns>True if successful, false if not</returns>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public bool TryInvoke()
         {
             Action target = (Action)Target;
@@ -64,5 +68,49 @@ namespace GSF.Threading
             target();
             return true;
         }
+    }
+
+    /// <summary>
+    /// Provides a high speed weak referenced action delegate.
+    /// This one does not use reflection, so calls will be faster.
+    /// 
+    /// HOWEVER: a strong reference MUST be maintained for 
+    /// the <see cref="Action"/> delegate passed to this class. 
+    /// This reference is outputted in the constructor.
+    /// 
+    /// Careful consideration must be made when deciding 
+    /// where to store this strong reference, as this strong reference
+    /// will need to also lose reference. A good place would be 
+    /// as a member variable of the object of the target method.
+    /// </summary>
+    public class WeakActionFast<T>
+        : WeakReference
+    {
+        /// <summary>
+        /// Creates a high speed weak action 
+        /// </summary>
+        /// <param name="target">the callback</param>
+        /// <param name="localStrongReference">a strong reference that must be 
+        /// maintained in the class that is the target of the action</param>
+        public WeakActionFast(Action<T> target, out object localStrongReference)
+            : base(target)
+        {
+            localStrongReference = target;
+        }
+
+        /// <summary>
+        /// Attempts to invoke the delegate to a weak reference object.
+        /// </summary>
+        /// <returns>True if successful, false if not</returns>
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public bool TryInvoke(T args)
+        {
+            Action<T> target = (Action<T>)Target;
+            if (target == null)
+                return false;
+            target(args);
+            return true;
+        }
+
     }
 }

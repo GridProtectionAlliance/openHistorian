@@ -281,11 +281,11 @@
     <Compile Include="Text\NaturalComparer.cs" />
     <Compile Include="Threading\AdvTask.cs" />
     <Compile Include="Threading\AdvWorkerThread.cs" />
-    <Compile Include="Threading\WorkerThread_ThreadContainerThreadpool.cs" />
-    <Compile Include="Threading\WorkerThread_ThreadContainerBase.cs" />
+    <Compile Include="Threading\ThreadContainerThreadpool.cs" />
+    <Compile Include="Threading\ThreadContainerBase.cs" />
     <Compile Include="Threading\MonitorHelper.cs" />
     <Compile Include="Threading\WeakActionFast.cs" />
-    <Compile Include="Threading\WorkerThread_ThreadContainerDedicated.cs" />
+    <Compile Include="Threading\ThreadContainerDedicated.cs" />
     <Compile Include="Threading\ThreadpoolThread.cs" />
     <Compile Include="Threading\CustomThreadBase.cs" />
     <Compile Include="Threading\DedicatedThread.cs" />
@@ -306,6 +306,7 @@
     <Compile Include="IO\Unmanaged\MemoryPool_CollectionEngine.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool_Settings.cs" />
     <Compile Include="Threading\WorkerThread.cs" />
+    <Compile Include="Threading\WorkerThreadBasic.cs" />
     <Compile Include="WinApi.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
