@@ -289,7 +289,6 @@
     <Compile Include="Threading\ThreadpoolThread.cs" />
     <Compile Include="Threading\CustomThreadBase.cs" />
     <Compile Include="Threading\DedicatedThread.cs" />
-    <Compile Include="Threading\ScheduledTask.cs" />
     <Compile Include="Threading\StateMachine.cs" />
     <Compile Include="Threading\SynchronousEvent.cs" />
     <Compile Include="Threading\ThreadSafeList.cs" />

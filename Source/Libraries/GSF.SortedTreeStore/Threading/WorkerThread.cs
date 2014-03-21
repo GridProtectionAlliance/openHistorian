@@ -190,16 +190,15 @@ namespace GSF.Threading
         //Otherwise it will get collected since only references to the delegate will be strong references.
         object m_containerCallback;
 
-        WorkerThreadBasic m_thread;
+        ScheduledTask m_thread;
 
         /// <summary>
         /// Creates a <see cref="WorkerThread"/> that raises the provided event when invoked.
         /// </summary>
         /// <param name="callback">the back to raise with the </param>
-        /// <param name="isDedicated"></param>
-        /// <param name="isBackground">parameter to pass to the underlying thread</param>
+        /// <param name="threadMode">parameter to pass to the underlying thread</param>
         /// <param name="priority">parameter to pass to the underlying thread</param>
-        public WorkerThread(WorkerThreadCallback callback, bool isDedicated = false, bool isBackground = true, ThreadPriority priority = ThreadPriority.Normal)
+        public WorkerThread(WorkerThreadCallback callback, ThreadingMode threadMode = ThreadingMode.ThreadPool, ThreadPriority priority = ThreadPriority.Normal)
         {
             m_syncRoot = new object();
             m_disposing = false;
@@ -215,7 +214,8 @@ namespace GSF.Threading
             m_state = State.NotRunning;
             m_disposingConcurrentCallLock = new object();
             m_callback = callback;
-            m_thread = new WorkerThreadBasic(OnWorkerThreadRunning, isDedicated, isBackground, priority);
+            m_thread = new ScheduledTask(threadMode, priority);
+            m_thread.OnRunning += OnWorkerThreadRunning;
         }
 
         void OnThreadDisposed()

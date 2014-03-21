@@ -81,8 +81,7 @@ namespace openHistorian.Queues
             m_pointStream = new StreamPoints(m_blocks, 1000);
             m_getDatabase = getDatabase;
             m_worker = new ScheduledTask(ThreadingMode.DedicatedForeground);
-            m_worker.OnRunWorker += WorkerDoWork;
-            m_worker.OnDispose += WorkerCleanUp;
+            m_worker.OnRunning += WorkerDoWork;
         }
 
         /// <summary>
@@ -123,7 +122,7 @@ namespace openHistorian.Queues
             m_worker.Start();
         }
 
-        private void WorkerDoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
+        private void WorkerDoWork(ThreadContainerCallbackReason threadContainerCallbackReason)
         {
             m_pointStream.Reset();
 
@@ -136,19 +135,16 @@ namespace openHistorian.Queues
             catch (Exception)
             {
                 m_database = null;
-                m_worker.Start(new TimeSpan(TimeSpan.TicksPerSecond * 1));
+                m_worker.Start(1000);
                 return;
             }
 
             if (m_pointStream.QuitOnPointCount)
                 m_worker.Start();
             else
-                m_worker.Start(new TimeSpan(TimeSpan.TicksPerSecond * 1));
+                m_worker.Start(1000);
         }
 
-        private void WorkerCleanUp(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
-        {
-        }
 
         private class StreamPoints
             : TreeStream<HistorianKey, HistorianValue>

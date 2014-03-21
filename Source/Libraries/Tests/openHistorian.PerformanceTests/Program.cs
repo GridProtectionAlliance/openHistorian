@@ -1,4 +1,5 @@
 ﻿using System;
+using openHistorian.PerformanceTests.Threading;
 
 namespace openHistorian.PerformanceTests
 {
@@ -10,8 +11,12 @@ namespace openHistorian.PerformanceTests
         [STAThread]
         private static void Main()
         {
-            var m = new MeasureCompression();
-            m.Test();
+            //var m = new MeasureCompression();
+            //m.Test();
+
+            var st = new ScheduledTaskTest();
+            st.TestTimed();
+            //st.Test();
 
 
             //var tree = new SortedTree256Test();
@@ -19,7 +24,7 @@ namespace openHistorian.PerformanceTests
             //ReadPoints.TestReadPoints2();
             //ReadPoints.ReadAllPoints();
             //ReadPoints.TestReadFilteredPoints();
-            
+
             //Console.ReadLine();
         }
     }

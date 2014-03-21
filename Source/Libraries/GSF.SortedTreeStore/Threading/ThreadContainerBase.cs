@@ -26,8 +26,29 @@ using System;
 
 namespace GSF.Threading
 {
-    internal abstract class ThreadContainerBase
+    internal abstract class ThreadContainerBase : IDisposable
     {
+        //internal class CallbackResponse
+        //{
+        //    public bool CallInternalStart;
+        //    public bool CallInternalStartDelay;
+        //    public int CallInternalStartDelayValue;
+        //    public bool CallInternalCancelTimer;
+        //    public bool CallInternalDispose;
+        //    public bool CallInternalAfterRunning;
+        //    public void Clear()
+        //    {
+        //        CallInternalStart = false;
+        //        CallInternalStartDelay = false;
+        //        CallInternalStartDelayValue = -1;
+        //        CallInternalCancelTimer = false;
+        //        CallInternalDispose = false;
+        //        CallInternalAfterRunning = false;
+        //    }
+        //}
+
+        bool m_disposed;
+
         WeakActionFast m_callback;
         protected ThreadContainerBase(WeakActionFast callback)
         {
@@ -37,13 +58,28 @@ namespace GSF.Threading
         protected void OnRunning()
         {
             if (!m_callback.TryInvoke())
-                InternalDispose();
+                Dispose();
         }
 
-        public abstract void InternalStart();
-        public abstract void InternalStart(int delay);
-        public abstract void InternalCancelTimer();
-        public abstract void InternalDispose();
-        public abstract void InternalAfterRunning();
+        public abstract void Start();
+        public abstract void Start(int delay);
+        public abstract void CancelTimer();
+
+        public abstract void AfterRunning();
+        protected abstract void InternalDispose();
+
+        public void Dispose()
+        {
+            //Since Dispose can be called from the running thread and from ScheduledTask, it needs to be synchronized.
+            lock (this)
+            {
+                if (m_disposed)
+                    return;
+                m_disposed = true;
+            }
+            InternalDispose();
+        }
+
+
     }
 }

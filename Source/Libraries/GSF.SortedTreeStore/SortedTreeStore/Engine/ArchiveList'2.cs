@@ -71,7 +71,7 @@ namespace GSF.SortedTreeStore.Engine
             m_filesToDelete = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_filesToDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_processRemovals = new ScheduledTask(ThreadingMode.DedicatedBackground);
-            m_processRemovals.OnRunWorker += m_processRemovals_OnRunWorker;
+            m_processRemovals.OnRunning += m_processRemovals_OnRunWorker;
             m_processRemovals.OnDispose += m_processRemovals_OnDispose;
             m_processRemovals.OnException += m_processRemovals_OnException;
             m_lockedFiles = new List<SortedTreeTable<TKey, TValue>>();
@@ -246,7 +246,7 @@ namespace GSF.SortedTreeStore.Engine
             }
         }
 
-        private void m_processRemovals_OnRunWorker(object sender, ScheduledTaskEventArgs e)
+        private void m_processRemovals_OnRunWorker(ThreadContainerCallbackReason threadContainerCallbackReason)
         {
             lock (m_syncRoot)
             {
@@ -275,7 +275,7 @@ namespace GSF.SortedTreeStore.Engine
             }
         }
 
-        private void m_processRemovals_OnDispose(object sender, ScheduledTaskEventArgs e)
+        private void m_processRemovals_OnDispose()
         {
             lock (m_syncRoot)
             {
@@ -287,9 +287,9 @@ namespace GSF.SortedTreeStore.Engine
             }
         }
 
-        void m_processRemovals_OnException(object sender, UnhandledExceptionEventArgs e)
+        void m_processRemovals_OnException(Exception e)
         {
-            System.Diagnostics.EventLog.WriteEntry("MyEventSource", (e.ExceptionObject).ToString(), System.Diagnostics.EventLogEntryType.Error);
+            System.Diagnostics.EventLog.WriteEntry("MyEventSource", e.ToString(), System.Diagnostics.EventLogEntryType.Error);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace GSF.Threading
     {
         const int Unlocked = 0;
         const int Locked = 1;
-        volatile int m_lock;
+        int m_lock;
         readonly TinyLockRelease m_release;
 
         /// <summary>
@@ -102,8 +102,10 @@ namespace GSF.Threading
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose()
             {
+                //Decided to do an Interlocked command as it implies a full memory fense.
+                Interlocked.Exchange(ref m_tinyLock.m_lock, Unlocked);
                 //A volatile write implies that even if this is inlined, the unlock will never be reordered above its current location.
-                m_tinyLock.m_lock = Unlocked;
+                //m_tinyLock.m_lock = Unlocked;
             }
         }
     }

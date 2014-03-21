@@ -139,7 +139,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_rolloverInterval = rolloverInterval;
             m_waitForRolloverToComplete = new ManualResetEvent(false);
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.AboveNormal);
-            m_rolloverTask.OnEvent += ProcessRollover;
+            m_rolloverTask.OnRunning += ProcessRollover;
             m_rolloverTask.OnException += OnException;
             m_rolloverTask.Start(m_rolloverInterval);
         }
@@ -217,7 +217,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ProcessRollover(object sender, ScheduledTaskEventArgs e)
+        private void ProcessRollover(ThreadContainerCallbackReason threadContainerCallbackReason)
         {
             //the nature of how the ScheduledTask works 
             //gaurentees that this function will not be called concurrently
@@ -225,7 +225,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             //The worker can be disposed either via the Stop() method or 
             //the Dispose() method.  If via the dispose method, then
             //don't do any cleanup.
-            if (m_disposed && e.IsDisposing)
+            if (m_disposed && threadContainerCallbackReason == ThreadContainerCallbackReason.Disposing)
             {
                 m_waitForRolloverToComplete.Set();
                 return;
@@ -311,11 +311,11 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
         
-        void OnException(object sender, UnhandledExceptionEventArgs e)
+        void OnException(Exception e)
         {
             UnhandledExceptionEventHandler handler = Exception;
             if (handler != null)
-                handler(sender, e);
+                handler(this, new UnhandledExceptionEventArgs(e,false));
         }
 
     }

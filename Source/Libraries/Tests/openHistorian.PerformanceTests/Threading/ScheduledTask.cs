@@ -31,8 +31,7 @@ namespace openHistorian.PerformanceTests.Threading
             m_doWorkCount = 0;
             using (ScheduledTask work = new ScheduledTask(mode))
             {
-                work.OnRunWorker += work_DoWork;
-                work.OnDispose += work_CleanupWork;
+                work.OnRunning += work_DoWork;
 
                 sw.Start();
                 for (int x = 0; x < 1000; x++)
@@ -45,8 +44,7 @@ namespace openHistorian.PerformanceTests.Threading
 
             using (ScheduledTask work = new ScheduledTask(mode))
             {
-                work.OnRunWorker += work_DoWork;
-                work.OnDispose += work_CleanupWork;
+                work.OnRunning += work_DoWork;
 
                 sw.Start();
                 for (int x = 0; x < Count; x++)
@@ -75,13 +73,12 @@ namespace openHistorian.PerformanceTests.Threading
         void TestTimed(ThreadingMode mode)
         {
 
-            const int Count = 100000000;
+            const int Count = 1000000000;
             Stopwatch sw = new Stopwatch();
             m_doWorkCount = 0;
             using (ScheduledTask work = new ScheduledTask(mode))
             {
-                work.OnRunWorker += work_DoWork;
-                work.OnDispose += work_CleanupWork;
+                work.OnRunning += work_DoWork;
 
                 sw.Start();
                 for (int x = 0; x < 1000; x++)
@@ -91,19 +88,19 @@ namespace openHistorian.PerformanceTests.Threading
                 }
 
                 sw.Stop();
+                work.DisposeAndWait();
             }
             m_doWorkCount = 0;
             sw.Reset();
 
             using (ScheduledTask work = new ScheduledTask(mode))
             {
-                work.OnRunWorker += work_DoWork;
-                work.OnDispose += work_CleanupWork;
+                work.OnRunning += work_DoWork;
 
                 sw.Start();
                 for (int x = 0; x < Count; x++)
                 {
-                    work.Start(1);
+                    work.Start(1000);
                     work.Start();
                 }
 
@@ -136,8 +133,7 @@ namespace openHistorian.PerformanceTests.Threading
             m_doWorkCount = 0;
             using (ScheduledTask work = new ScheduledTask(mode))
             {
-                work.OnRunWorker += work_DoWork;
-                work.OnDispose += work_CleanupWork;
+                work.OnRunning += work_DoWork;
 
                 sw.Start();
                 for (int x = 0; x < 1000; x++)
@@ -150,8 +146,7 @@ namespace openHistorian.PerformanceTests.Threading
 
             using (ScheduledTask work = new ScheduledTask(mode))
             {
-                work.OnRunWorker += work_DoWork;
-                work.OnDispose += work_CleanupWork;
+                work.OnRunning += work_DoWork;
 
 
                 sw.Start();
@@ -190,12 +185,7 @@ namespace openHistorian.PerformanceTests.Threading
         }
 
 
-        private void work_CleanupWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
-        {
-            //Thread.Sleep(100);
-        }
-
-        private void work_DoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
+        private void work_DoWork(ThreadContainerCallbackReason threadContainerCallbackReason)
         {
             m_doWorkCount++;
         }

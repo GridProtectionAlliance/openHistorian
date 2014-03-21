@@ -121,13 +121,13 @@ namespace openVisN.Framework
             m_syncEvent = new SynchronousEvent<QueryResultsEventArgs>();
             m_syncEvent.CustomEvent += m_syncEvent_CustomEvent;
             m_async = new ScheduledTask(ThreadingMode.DedicatedForeground);
-            m_async.OnRunWorker += AsyncDoWork;
+            m_async.OnRunning += AsyncDoWork;
             m_async.OnException += OnError;
             m_activeSignals = new List<MetadataBase>();
             m_syncRoot = new object();
         }
 
-        void OnError(object sender, UnhandledExceptionEventArgs e)
+        void OnError(Exception exception)
         {
             //string data = e.ExceptionObject.ToString();
             //File.WriteAllText("c:\\error.txt",data);
@@ -150,7 +150,7 @@ namespace openVisN.Framework
             }
         }
 
-        private void AsyncDoWork(object sender, ScheduledTaskEventArgs scheduledTaskEventArgs)
+        private void AsyncDoWork(ThreadContainerCallbackReason threadContainerCallbackReason)
         {
             if (BeforeExecuteQuery != null)
                 BeforeExecuteQuery(this, EventArgs.Empty);
@@ -195,7 +195,7 @@ namespace openVisN.Framework
             {
                 if (Mode == ExecutionMode.Automatic)
                 {
-                    m_async.Start(m_refreshInterval);
+                    m_async.Start(m_refreshInterval.Milliseconds);
                 }
             }
 
@@ -349,7 +349,7 @@ namespace openVisN.Framework
             m_disposing = true;
             Thread.MemoryBarrier();
             m_syncEvent.Dispose();
-            m_async.DisposeWithoutWait();
+            m_async.Dispose();
         }
     }
 }

@@ -87,25 +87,25 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_rolloverComplete = new ManualResetEvent(false);
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.BelowNormal);
-            m_rolloverTask.OnEvent += OnExecute;
+            m_rolloverTask.OnRunning += OnExecute;
             m_rolloverTask.OnException += OnException;
 
             m_rolloverTask.Start(ExecuteInterval);
         }
 
-        void OnException(object sender, UnhandledExceptionEventArgs e)
+        void OnException(Exception e)
         {
             UnhandledExceptionEventHandler handler = Exception;
             if (handler != null)
-                handler(sender, e);
+                handler(this, new UnhandledExceptionEventArgs(e, false));
         }
 
-        private void OnExecute(object sender, ScheduledTaskEventArgs e)
+        private void OnExecute(ThreadContainerCallbackReason threadContainerCallbackReason)
         {
             //The worker can be disposed either via the Stop() method or 
             //the Dispose() method.  If via the dispose method, then
             //don't do any cleanup.
-            if (m_disposed && e.IsDisposing)
+            if (m_disposed && threadContainerCallbackReason == ThreadContainerCallbackReason.Disposing)
                 return;
 
             //go ahead and schedule the next rollover since nothing

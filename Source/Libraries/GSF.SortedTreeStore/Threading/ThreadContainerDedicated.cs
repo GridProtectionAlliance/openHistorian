@@ -33,6 +33,7 @@ namespace GSF.Threading
         private Thread m_thread;
         private ManualResetEvent m_threadPausedWaitHandler;
         private ManualResetEvent m_threadSleepWaitHandler;
+
         private volatile int m_sleepTime;
 
         public ThreadContainerDedicated(WeakActionFast callback, bool isBackground, ThreadPriority priority)
@@ -55,6 +56,7 @@ namespace GSF.Threading
                     Quit();
                     return;
                 }
+
                 m_threadPausedWaitHandler.WaitOne(-1);
 
                 if (m_shouldQuit)
@@ -87,31 +89,34 @@ namespace GSF.Threading
             m_thread = null;
         }
 
-        public override void InternalDispose()
+        protected override void InternalDispose()
         {
-            m_shouldQuit = true;
-            InternalStart();
+            
+            
+            Start();
         }
 
-        public override void InternalAfterRunning()
+        public override void AfterRunning()
         {
+            m_sleepTime = 0;
             m_threadPausedWaitHandler.Reset();
             m_threadSleepWaitHandler.Reset();
         }
 
-        public override void InternalStart(int delay)
+        public override void Start(int delay)
         {
             m_sleepTime = delay;
             m_threadPausedWaitHandler.Set();
         }
 
-        public override void InternalCancelTimer()
+        public override void CancelTimer()
         {
+            m_sleepTime = 0;
             m_threadSleepWaitHandler.Set();
             m_threadPausedWaitHandler.Set();
         }
 
-        public override void InternalStart()
+        public override void Start()
         {
             m_sleepTime = 0;
             m_threadSleepWaitHandler.Set();

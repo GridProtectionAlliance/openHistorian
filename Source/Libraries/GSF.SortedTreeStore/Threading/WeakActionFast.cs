@@ -68,6 +68,11 @@ namespace GSF.Threading
             target();
             return true;
         }
+
+        public void Clear()
+        {
+            Target = null;
+        }
     }
 
     /// <summary>
@@ -110,6 +115,11 @@ namespace GSF.Threading
                 return false;
             target(args);
             return true;
+        }
+
+        public void Clear()
+        {
+            Target = null;
         }
 
     }

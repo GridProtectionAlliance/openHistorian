@@ -38,7 +38,7 @@ namespace openHistorian.PerformanceTests.Threading
         [Test]
         public void TestSmallLock_Lock()
         {
-            var tl = new MonitorHelper();
+            var tl = new MonitorHelper(new object(), false);
             const int count = 100000000;
             Stopwatch sw = new Stopwatch();
             sw.Start();

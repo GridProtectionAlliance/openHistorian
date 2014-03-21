@@ -46,13 +46,13 @@ namespace GSF.Threading
             m_waitObject = new ManualResetEvent(false);
         }
 
-        public override void InternalDispose()
+        protected override void InternalDispose()
         {
             m_waitObject.Dispose();
             m_waitObject = null;
         }
 
-        public override void InternalStart(int delay)
+        public override void Start(int delay)
         {
             m_waitObject.Reset();
             m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_waitObject, BeginRunOnTimer, null, delay, executeOnlyOnce: true);
@@ -68,12 +68,12 @@ namespace GSF.Threading
             OnRunning();
         }
 
-        public override void InternalCancelTimer()
+        public override void CancelTimer()
         {
             m_waitObject.Set();
         }
 
-        public override void InternalStart()
+        public override void Start()
         {
             ThreadPool.QueueUserWorkItem(BeginRunImmediately);
         }
@@ -83,7 +83,7 @@ namespace GSF.Threading
             OnRunning();
         }
 
-        public override void InternalAfterRunning()
+        public override void AfterRunning()
         {
 
         }

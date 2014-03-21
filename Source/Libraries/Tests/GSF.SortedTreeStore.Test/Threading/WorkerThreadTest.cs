@@ -12,7 +12,7 @@ namespace GSF.Threading.Test
         public void TestDisposed()
         {
             int count = 0;
-            var worker = new WorkerThread(Callback, true, false, ThreadPriority.Normal);
+            var worker = new WorkerThread(Callback, ThreadingMode.DedicatedBackground, ThreadPriority.Normal);
             WeakReference workerWeak = new WeakReference(worker);
             worker = null;
             GC.Collect();
@@ -45,7 +45,7 @@ namespace GSF.Threading.Test
 
             public NestedDispose()
             {
-                worker = new WorkerThread(Callback, true, false, ThreadPriority.Normal);
+                worker = new WorkerThread(Callback, ThreadingMode.DedicatedBackground, ThreadPriority.Normal);
             }
 
             void Callback(WorkerThreadTimeoutResults executionMode)
@@ -58,7 +58,7 @@ namespace GSF.Threading.Test
         [Test]
         public void Test()
         {
-            using (var work = new WorkerThread(Callback, true, false, ThreadPriority.Normal))
+            using (var work = new WorkerThread(Callback, ThreadingMode.DedicatedBackground, ThreadPriority.Normal))
             {
                 work.Start();
                 Thread.Sleep(100);
@@ -79,7 +79,7 @@ namespace GSF.Threading.Test
             m_callbackCount = 0;
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var work = new WorkerThread(Callback2, true, false, ThreadPriority.Normal))
+            using (var work = new WorkerThread(Callback2, ThreadingMode.DedicatedBackground, ThreadPriority.Normal))
             {
                 for (int x = 0; x < Calls; x++)
                 {
@@ -109,7 +109,7 @@ namespace GSF.Threading.Test
             m_callbackCount = 0;
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var work = new WorkerThread(Callback2, true, false, ThreadPriority.Normal))
+            using (var work = new WorkerThread(Callback2, ThreadingMode.DedicatedBackground, ThreadPriority.Normal))
             {
                 for (int x = 0; x < Calls; x++)
                 {
@@ -138,7 +138,7 @@ namespace GSF.Threading.Test
             m_callbackCount = 0;
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var work = new WorkerThread(Callback2, true, false, ThreadPriority.Normal))
+            using (var work = new WorkerThread(Callback2, ThreadingMode.DedicatedBackground, ThreadPriority.Normal))
             {
                 for (int x = 0; x < Calls; x++)
                 {
@@ -168,7 +168,7 @@ namespace GSF.Threading.Test
             m_callbackCount = 0;
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var work = new WorkerThread(Callback2, true, false, ThreadPriority.Normal))
+            using (var work = new WorkerThread(Callback2, ThreadingMode.DedicatedBackground, ThreadPriority.Normal))
             {
                 for (int x = 0; x < Calls; x++)
                 {
