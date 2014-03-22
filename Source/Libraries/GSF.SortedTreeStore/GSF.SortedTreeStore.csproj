@@ -281,6 +281,8 @@
     <Compile Include="Text\NaturalComparer.cs" />
     <Compile Include="Threading\AdvTask.cs" />
     <Compile Include="Threading\AdvWorkerThread.cs" />
+    <Compile Include="Threading\HalfLock.cs" />
+    <Compile Include="Threading\ReaderWriterLockSlim.cs" />
     <Compile Include="Threading\ThreadContainerThreadpool.cs" />
     <Compile Include="Threading\ThreadContainerBase.cs" />
     <Compile Include="Threading\MonitorHelper.cs" />

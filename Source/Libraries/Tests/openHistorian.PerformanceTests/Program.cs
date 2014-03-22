@@ -14,8 +14,18 @@ namespace openHistorian.PerformanceTests
             //var m = new MeasureCompression();
             //m.Test();
 
-            var st = new ScheduledTaskTest();
-            st.TestTimed();
+
+            var tl = new TinyLock_Test();
+            tl.TestTinyLock_Lock();
+            tl.TestMonitor();
+
+            var hl = new HalfLock_Test();
+            hl.TestTinyLock_Lock();
+            Console.ReadLine();
+
+            
+            //var st = new ThreadContainerBase_Test();
+            ////st.TestTimed();
             //st.Test();
 
 

@@ -131,8 +131,8 @@ namespace GSF.Threading
         State m_state;
         ThreadContainerCallbackReason m_runReason;
         bool m_disposing;
-        volatile bool m_runAgain;
-        volatile bool m_runAgainAfterDelay;
+        //volatile bool m_runAgain;
+        //volatile bool m_runAgainAfterDelay;
         int m_runAgainDelay;
         ThreadContainerBase m_thread;
         object m_weakCallbackToken;
@@ -146,15 +146,15 @@ namespace GSF.Threading
             m_disposeSync = new object();
             if (threadMode == ThreadingMode.DedicatedForeground)
             {
-                m_thread = new ThreadContainerDedicated(new WeakActionFast(OnRunningCallback, out m_weakCallbackToken), false, priority);
+                m_thread = new ThreadContainerDedicated(new WeakActionFast<ThreadContainerBase.CallbackArgs>(OnRunningCallback, out m_weakCallbackToken), false, priority);
             }
             else if (threadMode == ThreadingMode.DedicatedBackground)
             {
-                m_thread = new ThreadContainerDedicated(new WeakActionFast(OnRunningCallback, out m_weakCallbackToken), true, priority);
+                m_thread = new ThreadContainerDedicated(new WeakActionFast<ThreadContainerBase.CallbackArgs>(OnRunningCallback, out m_weakCallbackToken), true, priority);
             }
             else if (threadMode == ThreadingMode.ThreadPool)
             {
-                m_thread = new ThreadContainerThreadpool(new WeakActionFast(OnRunningCallback, out m_weakCallbackToken));
+                m_thread = new ThreadContainerThreadpool(new WeakActionFast<ThreadContainerBase.CallbackArgs>(OnRunningCallback, out m_weakCallbackToken));
             }
             else
             {
@@ -170,7 +170,7 @@ namespace GSF.Threading
         /// <summary>
         /// Executed by the worker.
         /// </summary>
-        protected void OnRunningCallback()
+        void OnRunningCallback(ThreadContainerBase.CallbackArgs args)
         {
             using (var @lock = new MonitorHelper(m_syncRoot, true))
             {
@@ -178,14 +178,15 @@ namespace GSF.Threading
 
                 if (m_disposing)
                 {
-                    m_thread.Dispose();
+                    args.ShouldDispose = true;
                     m_state = State.Disposed;
                     @lock.Exit();
                     TryCallback(ThreadContainerCallbackReason.Disposing);
                     return;
                 }
+
                 else if (m_state == State.ScheduledToRunAfterDelay ||
-                    m_state == State.ScheduledToRun)
+                    m_state == State.ScheduledToRun || m_state == State.NotRunning)
                 {
                     m_state = State.Running;
                 }
@@ -197,8 +198,8 @@ namespace GSF.Threading
                 //---------------------------
                 @lock.Exit();
 
-                m_runAgain = false;
-                m_runAgainAfterDelay = false;
+                //m_runAgain = false;
+                //m_runAgainAfterDelay = false;
 
                 TryCallback(runReason);
 
@@ -210,32 +211,32 @@ namespace GSF.Threading
 
                 if (m_disposing)
                 {
-                    m_thread.Dispose();
+                    args.ShouldDispose = true;
                     m_state = State.Disposed;
                     @lock.Exit();
                     TryCallback(ThreadContainerCallbackReason.Disposing);
                     return;
                 }
 
-                m_thread.AfterRunning();
+                m_state = State.NotRunning;
 
-                if (m_runAgain)
-                {
-                    m_thread.Start();
-                    m_state = State.ScheduledToRun;
-                }
-                else if (m_runAgainAfterDelay)
-                {
-                    m_runAgain = false;
-                    m_thread.Start(m_runAgainDelay);
-                    m_state = State.ScheduledToRunAfterDelay;
-                }
-                else
-                {
-                    m_runAgain = false;
-                    m_runAgainAfterDelay = false;
-                    m_state = State.NotRunning;
-                }
+                //if (m_runAgain)
+                //{
+                //    m_thread.Start();
+                //    m_state = State.ScheduledToRun;
+                //}
+                //else if (m_runAgainAfterDelay)
+                //{
+                //    m_runAgain = false;
+                //    m_thread.Start(m_runAgainDelay);
+                //    m_state = State.ScheduledToRunAfterDelay;
+                //}
+                //else
+                //{
+                //    m_runAgain = false;
+                //    m_runAgainAfterDelay = false;
+                //    m_state = State.NotRunning;
+                //}
             }
         }
 
@@ -249,41 +250,42 @@ namespace GSF.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Start()
         {
-            if (!m_runAgain)
-                StartSlower();
+            m_thread.Start();
+            //if (!m_runAgain)
+            //    StartSlower();
         }
 
-        void StartSlower()
-        {
-            lock (m_syncRoot)
-            {
-                if (m_disposing)
-                    return;
+        //void StartSlower()
+        //{
+        //    lock (m_syncRoot)
+        //    {
+        //        if (m_disposing)
+        //            return;
 
-                if (m_state == State.NotRunning)
-                {
-                    m_runAgain = true;
-                    m_runReason = ThreadContainerCallbackReason.Start;
-                    m_thread.Start();
-                    m_state = State.ScheduledToRun;
-                }
-                else if (m_state == State.ScheduledToRunAfterDelay)
-                {
-                    m_runAgain = true;
-                    m_runReason = ThreadContainerCallbackReason.StartPartialDelay;
-                    m_thread.CancelTimer();
-                    m_state = State.ScheduledToRun;
-                }
-                else if (m_state == State.ScheduledToRun)
-                {
-                    m_runAgain = true;
-                }
-                else if (m_state == State.Running)
-                {
-                    m_runAgain = true;
-                }
-            }
-        }
+        //        if (m_state == State.NotRunning)
+        //        {
+        //            m_runAgain = true;
+        //            m_runReason = ThreadContainerCallbackReason.Start;
+        //            m_thread.Start();
+        //            m_state = State.ScheduledToRun;
+        //        }
+        //        else if (m_state == State.ScheduledToRunAfterDelay)
+        //        {
+        //            m_runAgain = true;
+        //            m_runReason = ThreadContainerCallbackReason.StartPartialDelay;
+        //            m_thread.Start();
+        //            m_state = State.ScheduledToRun;
+        //        }
+        //        else if (m_state == State.ScheduledToRun)
+        //        {
+        //            m_runAgain = true;
+        //        }
+        //        else if (m_state == State.Running)
+        //        {
+        //            m_runAgain = true;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Starts a timer to run the task after a provided interval. 
@@ -296,52 +298,54 @@ namespace GSF.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Start(int delay)
         {
-            //Tiny quick check that will likely be inlined by the compiler.
-            if (!m_runAgainAfterDelay)
-                StartSlower(delay);
+            m_thread.Start(delay);
+
+            ////Tiny quick check that will likely be inlined by the compiler.
+            //if (!m_runAgainAfterDelay)
+            //    StartSlower(delay);
         }
 
-        void StartSlower(int delay)
-        {
-            lock (m_syncRoot)
-            {
-                if (m_disposing)
-                    return;
+        //void StartSlower(int delay)
+        //{
+        //    lock (m_syncRoot)
+        //    {
+        //        if (m_disposing)
+        //            return;
 
-                if (m_state == State.NotRunning)
-                {
-                    m_runAgainAfterDelay = true;
-                    m_runAgainDelay = delay;
-                    m_runReason = ThreadContainerCallbackReason.StartFullDelay;
-                    m_thread.Start(delay);
-                    m_state = State.ScheduledToRunAfterDelay;
-                }
-                else if (m_state == State.ScheduledToRunAfterDelay)
-                {
-                    m_runAgainAfterDelay = true;
-                }
-                else if (m_state == State.ScheduledToRun)
-                {
-                    m_runAgainAfterDelay = true;
-                }
-                else if (m_state == State.Running)
-                {
-                    if (m_runAgainAfterDelay)
-                    {
-                        m_runAgainDelay = Math.Min(m_runAgainDelay, delay);
-                    }
-                    else if (m_runAgain)
-                    {
-                        m_runAgainAfterDelay = true;
-                    }
-                    else
-                    {
-                        m_runAgainAfterDelay = true;
-                        m_runAgainDelay = delay;
-                    }
-                }
-            }
-        }
+        //        if (m_state == State.NotRunning)
+        //        {
+        //            m_runAgainAfterDelay = true;
+        //            m_runAgainDelay = delay;
+        //            m_runReason = ThreadContainerCallbackReason.StartFullDelay;
+        //            m_thread.Start(delay);
+        //            m_state = State.ScheduledToRunAfterDelay;
+        //        }
+        //        else if (m_state == State.ScheduledToRunAfterDelay)
+        //        {
+        //            m_runAgainAfterDelay = true;
+        //        }
+        //        else if (m_state == State.ScheduledToRun)
+        //        {
+        //            m_runAgainAfterDelay = true;
+        //        }
+        //        else if (m_state == State.Running)
+        //        {
+        //            if (m_runAgainAfterDelay)
+        //            {
+        //                m_runAgainDelay = Math.Min(m_runAgainDelay, delay);
+        //            }
+        //            else if (m_runAgain)
+        //            {
+        //                m_runAgainAfterDelay = true;
+        //            }
+        //            else
+        //            {
+        //                m_runAgainAfterDelay = true;
+        //                m_runAgainDelay = delay;
+        //            }
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Starts the disposing process of exiting the worker thread. Will invoke the callback one more time.
@@ -364,7 +368,7 @@ namespace GSF.Threading
                 }
                 else if (m_state == State.ScheduledToRunAfterDelay)
                 {
-                    m_thread.CancelTimer();
+                    m_thread.Start();
                     m_state = State.ScheduledToRun;
                 }
             }
@@ -431,9 +435,6 @@ namespace GSF.Threading
                 m_waitForDispose.Set();
                 InternalDisposeAllResources();
             }
-
         }
-
-
     }
 }

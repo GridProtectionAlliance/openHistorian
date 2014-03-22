@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace openHistorian.PerformanceTests.Threading
 {
     [TestFixture]
-    public class TinyLock_Test
+    public class HalfLock_Test
     {
         [Test]
         public void TestMonitor()
@@ -38,7 +38,7 @@ namespace openHistorian.PerformanceTests.Threading
         [Test]
         public void TestTinyLock_Lock()
         {
-            var tl = new TinyLock();
+            var tl = new HalfLock();
             const int count = 100000000;
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -55,13 +55,13 @@ namespace openHistorian.PerformanceTests.Threading
                 using (tl.Lock()) ;
                 using (tl.Lock()) ;
                 using (tl.Lock()) ;
-               
+
             }
             sw.Stop();
 
             Console.WriteLine((count * 10.0 / sw.Elapsed.TotalSeconds / 1000000));
         }
-        
+
         ManualResetEvent m_event;
         TinyLock m_sync;
         long m_value;
@@ -71,8 +71,8 @@ namespace openHistorian.PerformanceTests.Threading
         public void TestContention()
         {
             m_value = 0;
-            m_sync=new TinyLock();
-            m_event=new ManualResetEvent(true);
+            m_sync = new TinyLock();
+            m_event = new ManualResetEvent(true);
 
             for (int x = 0; x < 16; x++)
                 ThreadPool.QueueUserWorkItem(Adder);

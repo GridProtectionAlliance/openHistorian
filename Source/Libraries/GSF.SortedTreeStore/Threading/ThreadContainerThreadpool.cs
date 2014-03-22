@@ -22,7 +22,6 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Threading;
 
 namespace GSF.Threading
@@ -40,19 +39,19 @@ namespace GSF.Threading
         /// </summary>
         private ManualResetEvent m_waitObject;
 
-        public ThreadContainerThreadpool(WeakActionFast callback)
+        public ThreadContainerThreadpool(WeakActionFast<CallbackArgs> callback)
             : base(callback)
         {
             m_waitObject = new ManualResetEvent(false);
         }
 
-        protected override void InternalDispose()
+        protected override void InternalStart(int delay)
         {
-            m_waitObject.Dispose();
-            m_waitObject = null;
+            m_waitObject.Reset();
+            m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_waitObject, BeginRunOnTimer, null, delay, executeOnlyOnce: true);
         }
 
-        public override void Start(int delay)
+        protected override void InternalStart_FromWorkerThread(int delay)
         {
             m_waitObject.Reset();
             m_registeredHandle = ThreadPool.RegisterWaitForSingleObject(m_waitObject, BeginRunOnTimer, null, delay, executeOnlyOnce: true);
@@ -68,12 +67,17 @@ namespace GSF.Threading
             OnRunning();
         }
 
-        public override void CancelTimer()
+        protected override void InternalCancelTimer()
         {
             m_waitObject.Set();
         }
 
-        public override void Start()
+        protected override void InternalStart()
+        {
+            ThreadPool.QueueUserWorkItem(BeginRunImmediately);
+        }
+
+        protected override void InternalStart_FromWorkerThread()
         {
             ThreadPool.QueueUserWorkItem(BeginRunImmediately);
         }
@@ -83,7 +87,13 @@ namespace GSF.Threading
             OnRunning();
         }
 
-        public override void AfterRunning()
+        protected override void InternalDispose_FromWorkerThread()
+        {
+            m_waitObject.Dispose();
+            m_waitObject = null;
+        }
+
+        protected override void InternalDoNothing_FromWorkerThread()
         {
 
         }

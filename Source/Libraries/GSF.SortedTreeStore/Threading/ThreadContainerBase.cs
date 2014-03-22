@@ -23,63 +23,226 @@
 //******************************************************************************************************
 
 using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace GSF.Threading
 {
-    internal abstract class ThreadContainerBase : IDisposable
+    internal abstract class ThreadContainerBase
     {
-        //internal class CallbackResponse
-        //{
-        //    public bool CallInternalStart;
-        //    public bool CallInternalStartDelay;
-        //    public int CallInternalStartDelayValue;
-        //    public bool CallInternalCancelTimer;
-        //    public bool CallInternalDispose;
-        //    public bool CallInternalAfterRunning;
-        //    public void Clear()
-        //    {
-        //        CallInternalStart = false;
-        //        CallInternalStartDelay = false;
-        //        CallInternalStartDelayValue = -1;
-        //        CallInternalCancelTimer = false;
-        //        CallInternalDispose = false;
-        //        CallInternalAfterRunning = false;
-        //    }
-        //}
-
-        bool m_disposed;
-
-        WeakActionFast m_callback;
-        protected ThreadContainerBase(WeakActionFast callback)
+        public class CallbackArgs
         {
+            public bool ShouldDispose;
+            public void Clear()
+            {
+                ShouldDispose = false;
+            }
+        }
+
+        /// <summary>
+        /// State variables for the internal state machine.
+        /// </summary>
+        static class State
+        {
+            /// <summary>
+            /// Indicates that the task is not running.
+            /// </summary>
+            public const int NotRunning = 1;
+
+            /// <summary>
+            /// Indicates that the task is scheduled to execute after a user specified delay
+            /// </summary>
+            public const int ScheduledToRunAfterDelay = 2;
+
+            /// <summary>
+            /// Indicates the task has been queue for immediate execution, but has not started running yet.
+            /// </summary>
+            public const int ScheduledToRun = 3;
+
+            /// <summary>
+            /// Once in a running state, only the worker thread can change its state.
+            /// </summary>
+            public const int Running = 4;
+
+            /// <summary>
+            /// Once reaching this state, the effect of RunAgain being set will no longer be valid.
+            /// </summary>
+            public const int AfterRunning = 5;
+
+            /// <summary>
+            /// A disposed state
+            /// </summary>
+            public const int Disposed = 6;
+
+            public const int Invalid = -1;
+        }
+
+        volatile bool m_runAgain;
+
+        /// <summary>
+        /// A value less than 0 means false. 
+        /// </summary>
+        volatile int m_runAgainAfterDelay;
+
+        volatile int m_state;
+
+        WeakActionFast<CallbackArgs> m_callback;
+
+        CallbackArgs m_args;
+
+        protected ThreadContainerBase(WeakActionFast<CallbackArgs> callback)
+        {
+            m_args = new CallbackArgs();
+            m_args.Clear();
+
             m_callback = callback;
+            m_state = State.NotRunning;
         }
 
         protected void OnRunning()
         {
-            if (!m_callback.TryInvoke())
-                Dispose();
-        }
-
-        public abstract void Start();
-        public abstract void Start(int delay);
-        public abstract void CancelTimer();
-
-        public abstract void AfterRunning();
-        protected abstract void InternalDispose();
-
-        public void Dispose()
-        {
-            //Since Dispose can be called from the running thread and from ScheduledTask, it needs to be synchronized.
-            lock (this)
+            SpinWait wait = new SpinWait();
+            while (true)
             {
-                if (m_disposed)
-                    return;
-                m_disposed = true;
+                int state = m_state;
+                if (state == State.ScheduledToRun && Interlocked.CompareExchange(ref m_state, State.Running, State.ScheduledToRun) == State.ScheduledToRun)
+                    break;
+                if (state == State.ScheduledToRunAfterDelay && Interlocked.CompareExchange(ref m_state, State.Running, State.ScheduledToRunAfterDelay) == State.ScheduledToRunAfterDelay)
+                    break;
+                wait.SpinOnce();
             }
-            InternalDispose();
+            wait.Reset();
+
+            m_runAgain = false;
+            m_runAgainAfterDelay = -1;
+
+            Thread.MemoryBarrier();
+
+            bool failedRun = !m_callback.TryInvoke(m_args);
+
+            if (m_args.ShouldDispose || failedRun)
+            {
+                InternalDispose_FromWorkerThread();
+                Interlocked.Exchange(ref m_state, State.Disposed);
+                return;
+            }
+
+            Interlocked.Exchange(ref m_state, State.AfterRunning); //Notifies that the RunAgain and RunAgainAfterDelay variables are going to be used 
+            //                                                       to make decisions. Therefore, if setting these variables after this point, modifying the state machine will be 
+            //                                                       necessary
+
+            if (m_runAgain)
+            {
+                Interlocked.Exchange(ref m_state, State.ScheduledToRun);
+                InternalStart_FromWorkerThread();
+            }
+            else if (m_runAgainAfterDelay >= 0)
+            {
+                InternalStart_FromWorkerThread(m_runAgainAfterDelay);
+                Interlocked.Exchange(ref m_state, State.ScheduledToRunAfterDelay);
+            }
+            else
+            {
+                InternalDoNothing_FromWorkerThread();
+                Interlocked.Exchange(ref m_state, State.NotRunning);
+            }
         }
 
+        /// <summary>
+        /// Calls must be synchronized
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Start()
+        {
+            if (!m_runAgain)
+                StartSlower();
+        }
 
+        void StartSlower()
+        {
+            m_runAgain = true;
+            SpinWait wait = new SpinWait();
+            while (true)
+            {
+                int state = Interlocked.CompareExchange(ref m_state, 0, 0);
+                switch (state)
+                {
+                    case State.Disposed:
+                    case State.ScheduledToRun:
+                    case State.Running:
+                        return;
+                    case State.NotRunning:
+                        if (Interlocked.CompareExchange(ref m_state, State.Invalid, State.NotRunning) == State.NotRunning)
+                        {
+                            InternalStart();
+                            Interlocked.Exchange(ref m_state, State.ScheduledToRun);
+                            return;
+                        }
+                        break;
+                    case State.ScheduledToRunAfterDelay:
+                        if (Interlocked.CompareExchange(ref m_state, State.Invalid, State.ScheduledToRunAfterDelay) == State.ScheduledToRunAfterDelay)
+                        {
+                            InternalCancelTimer();
+                            Interlocked.Exchange(ref m_state, State.ScheduledToRun);
+                            return;
+                        }
+                        break;
+                    case State.AfterRunning:
+                    case State.Invalid:
+                        wait.SpinOnce();
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Calls must be synchronized
+        /// </summary>
+        /// <param name="delay"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Start(int delay)
+        {
+            if (m_runAgainAfterDelay >= 0)
+                return;
+            StartSlower(delay);
+        }
+
+        void StartSlower(int delay)
+        {
+            SpinWait wait = new SpinWait();
+            m_runAgainAfterDelay = delay;
+            while (true)
+            {
+                int state = Interlocked.CompareExchange(ref m_state, 0, 0);
+                switch (state)
+                {
+                    case State.Disposed:
+                    case State.ScheduledToRun:
+                    case State.Running:
+                    case State.ScheduledToRunAfterDelay:
+                    case State.NotRunning:
+                        if (Interlocked.CompareExchange(ref m_state, State.Invalid, State.NotRunning) == State.NotRunning)
+                        {
+                            m_runAgainAfterDelay = delay;
+                            InternalStart(delay);
+                            Interlocked.Exchange(ref m_state, State.ScheduledToRunAfterDelay);
+                        }
+                        break;
+                    case State.AfterRunning:
+                    case State.Invalid:
+                        wait.SpinOnce();
+                        break;
+                }
+            }
+        }
+
+        protected abstract void InternalStart_FromWorkerThread();
+        protected abstract void InternalStart_FromWorkerThread(int delay);
+        protected abstract void InternalDispose_FromWorkerThread();
+        protected abstract void InternalDoNothing_FromWorkerThread();
+
+        protected abstract void InternalStart();
+        protected abstract void InternalStart(int delay);
+        protected abstract void InternalCancelTimer();
     }
 }

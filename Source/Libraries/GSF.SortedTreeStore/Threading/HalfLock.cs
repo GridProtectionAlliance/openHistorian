@@ -38,20 +38,20 @@ namespace GSF.Threading
     /// I have intentionally left out any kind of protection against this as it severly reduces the speed of this code. Therefore
     /// do not use this locking method where a Thread.Abort() might be used as a control method. 
     /// </remarks>
-    public class TinyLock
+    public class HalfLock
     {
         const int Unlocked = 0;
         const int Locked = 1;
         int m_lock;
-        readonly TinyLockRelease m_release;
+        readonly HalfLockRelease m_release;
 
         /// <summary>
         /// Creates a <see cref="TinyLock"/>
         /// </summary>
-        public TinyLock()
+        public HalfLock()
         {
             m_lock = Unlocked;
-            m_release = new TinyLockRelease(this);
+            m_release = new HalfLockRelease(this);
         }
 
         /// <summary>
@@ -63,13 +63,13 @@ namespace GSF.Threading
         /// stored once if desired, however, be careful when using it this way as inproper synchronization
         /// will be easier to occur.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public TinyLockRelease Lock()
+        public HalfLockRelease Lock()
         {
             if (Interlocked.Exchange(ref m_lock, Locked) != Unlocked) //If I successfully changed the state from unlocked to locked, then I now acquire the lock.
                 LockSlower();
             return m_release;
         }
-        
+
         /// <summary>
         /// A nested call since 99% of the time, there will not be contention. This prevents stack space being
         /// used for the SpinLock when its not needed.
@@ -85,16 +85,16 @@ namespace GSF.Threading
         /// <summary>
         /// A structure that will allow releasing of a lock. This is returned by <see cref="Lock"/>.
         /// </summary>
-        public struct TinyLockRelease : IDisposable
+        public struct HalfLockRelease : IDisposable
         {
-            readonly TinyLock m_tinyLock;
-            internal TinyLockRelease(TinyLock tinyLock)
+            readonly HalfLock m_halfLock;
+            internal HalfLockRelease(HalfLock halfLock)
             {
-                if ((object)tinyLock == null)
-                    throw new ArgumentNullException("tinyLock");
-                if (tinyLock.m_release.m_tinyLock != null)
+                if ((object)halfLock == null)
+                    throw new ArgumentNullException("halfLock");
+                if (halfLock.m_release.m_halfLock != null)
                     throw new Exception("Object is already locked");
-                m_tinyLock = tinyLock;
+                m_halfLock = halfLock;
             }
 
             /// <summary>
@@ -103,10 +103,8 @@ namespace GSF.Threading
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose()
             {
-                //Decided to do an Interlocked command as it implies a full memory fense.
-                Interlocked.Exchange(ref m_tinyLock.m_lock, Unlocked);
                 //A volatile write implies that even if this is inlined, the unlock will never be reordered above its current location.
-                //m_tinyLock.m_lock = Unlocked;
+                m_halfLock.m_lock = Unlocked;
             }
         }
     }

@@ -29,16 +29,21 @@ namespace GSF.Threading
     internal class ThreadContainerDedicated
         : ThreadContainerBase
     {
+        volatile bool m_shouldReRunImmediately;
+        volatile bool m_shouldReRunAfterDelay;
+        volatile int m_shouldReRunAfterDelayValue;
+
         private volatile bool m_shouldQuit;
         private Thread m_thread;
         private ManualResetEvent m_threadPausedWaitHandler;
         private ManualResetEvent m_threadSleepWaitHandler;
-
         private volatile int m_sleepTime;
 
-        public ThreadContainerDedicated(WeakActionFast callback, bool isBackground, ThreadPriority priority)
+        public ThreadContainerDedicated(WeakActionFast<CallbackArgs> callback, bool isBackground, ThreadPriority priority)
             : base(callback)
         {
+            m_shouldReRunImmediately = false;
+            m_shouldReRunAfterDelay = false;
             m_threadPausedWaitHandler = new ManualResetEvent(false);
             m_threadSleepWaitHandler = new ManualResetEvent(false);
             m_thread = new Thread(ThreadLoop);
@@ -56,27 +61,30 @@ namespace GSF.Threading
                     Quit();
                     return;
                 }
-
-                m_threadPausedWaitHandler.WaitOne(-1);
-
-                if (m_shouldQuit)
+                else if (m_shouldReRunImmediately)
                 {
-                    Quit();
-                    return;
-                }
+                    m_shouldReRunImmediately = false;
 
-                if (m_sleepTime != 0)
+                    OnRunning();
+                }
+                else if (m_shouldReRunAfterDelay)
                 {
-                    m_threadSleepWaitHandler.WaitOne(m_sleepTime);
-                }
+                    m_shouldReRunAfterDelay = false;
 
-                if (m_shouldQuit)
+                    if (m_shouldReRunAfterDelayValue != 0)
+                        m_threadSleepWaitHandler.WaitOne(m_shouldReRunAfterDelayValue);
+
+                    OnRunning();
+                }
+                else
                 {
-                    Quit();
-                    return;
-                }
+                    m_threadPausedWaitHandler.WaitOne(-1);
 
-                OnRunning();
+                    if (m_sleepTime != 0)
+                        m_threadSleepWaitHandler.WaitOne(m_sleepTime);
+
+                    OnRunning();
+                }
             }
         }
 
@@ -89,39 +97,51 @@ namespace GSF.Threading
             m_thread = null;
         }
 
-        protected override void InternalDispose()
+        protected override void InternalStart()
         {
-            
-            
-            Start();
+            m_sleepTime = 0;
+            m_threadSleepWaitHandler.Set();
+            m_threadPausedWaitHandler.Set();
         }
 
-        public override void AfterRunning()
+        protected override void InternalStart_FromWorkerThread()
+        {
+            m_shouldReRunImmediately = true;
+        }
+
+        protected override void InternalStart(int delay)
+        {
+            m_sleepTime = delay;
+            m_threadPausedWaitHandler.Set();
+        }
+
+        protected override void InternalStart_FromWorkerThread(int delay)
+        {
+            m_shouldReRunAfterDelay = true;
+            m_shouldReRunAfterDelayValue = delay;
+            m_threadSleepWaitHandler.Reset();
+        }
+
+        protected override void InternalCancelTimer()
+        {
+            m_sleepTime = 0;
+            m_threadSleepWaitHandler.Set();
+            m_threadPausedWaitHandler.Set();
+        }
+
+        protected override void InternalDoNothing_FromWorkerThread()
         {
             m_sleepTime = 0;
             m_threadPausedWaitHandler.Reset();
             m_threadSleepWaitHandler.Reset();
         }
 
-        public override void Start(int delay)
+        protected override void InternalDispose_FromWorkerThread()
         {
-            m_sleepTime = delay;
-            m_threadPausedWaitHandler.Set();
+            m_shouldQuit = true;
         }
 
-        public override void CancelTimer()
-        {
-            m_sleepTime = 0;
-            m_threadSleepWaitHandler.Set();
-            m_threadPausedWaitHandler.Set();
-        }
 
-        public override void Start()
-        {
-            m_sleepTime = 0;
-            m_threadSleepWaitHandler.Set();
-            m_threadPausedWaitHandler.Set();
-        }
 
     }
 }
