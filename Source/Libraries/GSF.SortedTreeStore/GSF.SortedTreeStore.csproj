@@ -307,7 +307,7 @@
     <Compile Include="IO\Unmanaged\MemoryPool_CollectionEngine.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool_Settings.cs" />
     <Compile Include="Threading\WorkerThread.cs" />
-    <Compile Include="Threading\WorkerThreadBasic.cs" />
+    <Compile Include="Threading\ScheduledTask.cs" />
     <Compile Include="WinApi.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

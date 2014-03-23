@@ -88,7 +88,6 @@ namespace openHistorian.PerformanceTests.Threading
                 }
 
                 sw.Stop();
-                work.DisposeAndWait();
             }
             m_doWorkCount = 0;
             sw.Reset();

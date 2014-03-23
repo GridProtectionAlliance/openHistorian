@@ -22,7 +22,13 @@
 //
 //******************************************************************************************************
 
-using System;
+//------------------------------------------------------------------------------------------------------
+// Warning: This class contains very low-level logic and optimized to have minimal locking
+//          Before making any changes, be sure to consult the experts. Any bugs can introduce
+//          a race condition that will be very difficult to detect and fix.
+//          Additional Functional Requests should result in another class being created rather than modifying this one.
+//------------------------------------------------------------------------------------------------------
+
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -220,10 +226,10 @@ namespace GSF.Threading
                     case State.ScheduledToRun:
                     case State.Running:
                     case State.ScheduledToRunAfterDelay:
+                        return;
                     case State.NotRunning:
                         if (Interlocked.CompareExchange(ref m_state, State.Invalid, State.NotRunning) == State.NotRunning)
                         {
-                            m_runAgainAfterDelay = delay;
                             InternalStart(delay);
                             Interlocked.Exchange(ref m_state, State.ScheduledToRunAfterDelay);
                         }
