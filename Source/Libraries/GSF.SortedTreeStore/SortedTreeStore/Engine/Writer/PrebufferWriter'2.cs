@@ -215,8 +215,6 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <summary>
         /// Processes the rollover of this file.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ProcessRollover(ThreadContainerCallbackReason threadContainerCallbackReason)
         {
             //the nature of how the ScheduledTask works 

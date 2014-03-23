@@ -189,10 +189,11 @@ namespace GSF.Threading
             {
                 if (m_waitForDispose != null)
                 {
-                    m_thread = null;
-                    m_weakCallbackToken = null;
+                   
                     m_waitForDispose.WaitOne();
                     m_waitForDispose.Dispose();
+                    m_thread = null;
+                    m_weakCallbackToken = null;
                     m_waitForDispose = null;
                     GC.SuppressFinalize(this);
                 }

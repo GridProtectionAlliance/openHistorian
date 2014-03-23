@@ -42,17 +42,17 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// </summary>
         public event UnhandledExceptionEventHandler Exception;
         private readonly PrebufferWriter<TKey, TValue> m_prebuffer;
-        private readonly FirstStageWriter<TKey, TValue> m_stage0;
+        private readonly FirstStageWriter<TKey, TValue> m_firstStageWriter;
         private readonly bool m_isMemoryOnly;
         readonly TransactionTracker<TKey, TValue> m_transactionTracker;
-        private WriteProcessor(PrebufferWriter<TKey, TValue> prebuffer, FirstStageWriter<TKey, TValue> stage0, bool isMemoryOnly)
+        private WriteProcessor(PrebufferWriter<TKey, TValue> prebuffer, FirstStageWriter<TKey, TValue> firstStageWriter, bool isMemoryOnly)
         {
             m_isMemoryOnly = isMemoryOnly;
             m_prebuffer = prebuffer;
-            m_stage0 = stage0;
-            m_stage0.Exception += OnException;
+            m_firstStageWriter = firstStageWriter;
+            m_firstStageWriter.Exception += OnException;
             m_prebuffer.Exception += OnException;
-            m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_stage0);
+            m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         public void Dispose()
         {
             m_prebuffer.Stop();
-            m_stage0.Stop();
+            m_firstStageWriter.Stop();
         }
 
         /// <summary>

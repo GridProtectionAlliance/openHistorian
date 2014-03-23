@@ -195,8 +195,6 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
 
-
-
         void OnException(Exception e)
         {
             UnhandledExceptionEventHandler handler = Exception;
