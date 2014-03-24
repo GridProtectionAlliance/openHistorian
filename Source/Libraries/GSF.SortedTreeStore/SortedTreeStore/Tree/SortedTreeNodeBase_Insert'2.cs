@@ -47,7 +47,7 @@ namespace GSF.SortedTreeStore.Tree
             return TryInsert2(key, value);
         }
 
-        public virtual void TryInsertSequentailStream(InsertStreamHelper<TKey, TValue> stream)
+        public virtual void TryInsertSequentialStream(InsertStreamHelper<TKey, TValue> stream)
         {
             //First check to see if the sequentail insertion is valid.
             bool isFull;
@@ -74,7 +74,7 @@ namespace GSF.SortedTreeStore.Tree
 
         TryAgain:
 
-            AppendSequentailStream(stream, out isFull);
+            AppendSequentialStream(stream, out isFull);
 
             if (!stream.IsValid || !stream.IsStillSequential || !IsRightSiblingIndexNull)
                 return;

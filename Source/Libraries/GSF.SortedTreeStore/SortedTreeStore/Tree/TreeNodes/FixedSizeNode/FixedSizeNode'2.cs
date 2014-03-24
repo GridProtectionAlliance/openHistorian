@@ -128,28 +128,24 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
             return true;
         }
 
-        protected override void AppendSequentailStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull)
+        protected override void AppendSequentialStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull)
         {
-            isFull = false;
-            return;
+            //isFull = false;
+            //return;
 
             //ToDo: Figure out why this code does not work.
+
+            if (RecordCount >= m_maxRecordsPerNode)
+            {
+                isFull = true;
+                return;
+            }
+
             int recordsAdded = 0;
             int additionalValidBytes = 0;
+
             byte* writePointer = GetWritePointerAfterHeader();
             int offset = RecordCount * KeyValueSize;
-
-            if (RecordCount > 0)
-            {
-                byte* ptr = writePointer + (RecordCount - 1) * KeyValueSize;
-                stream.PrevKey.Read(ptr);
-                stream.PrevValue.Read(ptr + KeySize);
-            }
-            else
-            {
-                stream.PrevKey.Clear();
-                stream.PrevValue.Clear();
-            }
 
         TryAgain:
             if (!stream.IsValid || !stream.IsStillSequential)
@@ -158,8 +154,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
                 IncrementRecordCounts(recordsAdded, additionalValidBytes);
                 return;
             }
-
-            int length;
+            
             if (stream.IsKVP1)
             {
                 //Key1,Value1 are the current record
@@ -174,7 +169,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
                 stream.Value1.Write(writePointer + offset + KeySize);
                 additionalValidBytes += KeyValueSize;
                 recordsAdded++;
-                offset += KeySize;
+                offset += KeyValueSize;
 
                 //Inlined stream.Next()
                 stream.IsValid = stream.Stream.Read(stream.Key2, stream.Value2);
@@ -197,7 +192,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
                 stream.Value2.Write(writePointer + offset + KeySize);
                 additionalValidBytes += KeyValueSize;
                 recordsAdded++;
-                offset += KeySize;
+                offset += KeyValueSize;
 
                 //Inlined stream.Next()
                 stream.IsValid = stream.Stream.Read(stream.Key1, stream.Value1);

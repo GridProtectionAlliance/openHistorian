@@ -48,7 +48,14 @@ namespace GSF.SortedTreeStore.Tree
         /// <returns></returns>
         protected abstract bool InsertUnlessFull(int index, TKey key, TValue value);
 
-        protected abstract void AppendSequentailStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull);
+        /// <summary>
+        /// Requests that the current stream is inserted into the tree. Sequentail insertion can only occur while the stream
+        /// is in order and is entirely past the end of the tree. 
+        /// </summary>
+        /// <param name="stream">the stream data to insert</param>
+        /// <param name="isFull">if returning from this function while the node is not yet full, this means the stream 
+        /// can no longer be inserted sequentially and we must break out to the root and insert one at a time.</param>
+        protected abstract void AppendSequentialStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull);
 
         protected abstract int GetIndexOf(TKey key);
 

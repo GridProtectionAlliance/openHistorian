@@ -267,6 +267,19 @@ namespace openHistorian.Collections
             return EntryNumber >= right.EntryNumber;
         }
 
+        public override unsafe bool IsLessThanOrEqualTo(byte* left, byte* right)
+        {
+            if (*(ulong*)left != *(ulong*)right)
+                return *(ulong*)left < *(ulong*)right;
+
+            //Implide left.Timestamp == right.Timestamp
+            if (*(ulong*)(left + 8) != *(ulong*)(right + 8))
+                return *(ulong*)(left + 8) < *(ulong*)(right + 8);
+
+            //Implide left.EntryNumber == right.EntryNumber
+            return *(ulong*)(left + 16) <= *(ulong*)(right + 16);
+        }
+
         //public override bool IsBetween(HistorianKey lowerBounds, HistorianKey upperBounds)
         //{
         //    

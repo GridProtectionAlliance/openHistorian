@@ -44,7 +44,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <summary>
         /// The stream of points that need to be rolled over. 
         /// </summary>
-        public PointBuffer<TKey, TValue> Stream { get; private set; }
+        public SortedPointBuffer<TKey, TValue> Stream { get; private set; }
 
         /// <summary>
         /// The transaction id assoicated with the points in this buffer. 
@@ -57,7 +57,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// </summary>
         /// <param name="stream">the stream to specify</param>
         /// <param name="transactionId">the number to specify</param>
-        public PrebufferRolloverArgs(PointBuffer<TKey, TValue> stream, long transactionId)
+        public PrebufferRolloverArgs(SortedPointBuffer<TKey, TValue> stream, long transactionId)
         {
             Stream = stream;
             TransactionId = transactionId;
@@ -114,8 +114,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
         private readonly Action<PrebufferRolloverArgs<TKey, TValue>> m_onRollover;
         private ScheduledTask m_rolloverTask;
         ManualResetEvent m_waitForRolloverToComplete;
-        private PointBuffer<TKey, TValue> m_processingQueue;
-        private PointBuffer<TKey, TValue> m_activeQueue;
+        private SortedPointBuffer<TKey, TValue> m_processingQueue;
+        private SortedPointBuffer<TKey, TValue> m_activeQueue;
 
         /// <summary>
         /// Creates a prestage writer.
@@ -131,8 +131,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
             m_latestTransactionId = 0;
             m_syncRoot = new object();
-            m_activeQueue = new PointBuffer<TKey, TValue>(10000);
-            m_processingQueue = new PointBuffer<TKey, TValue>(10000);
+            m_activeQueue = new SortedPointBuffer<TKey, TValue>(10000);
+            m_processingQueue = new SortedPointBuffer<TKey, TValue>(10000);
             m_activeQueue.Clear();
             m_processingQueue.Clear();
             m_onRollover = onRollover;
@@ -245,12 +245,13 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 }
 
                 //Swap active and processing.
-                PointBuffer<TKey, TValue> stream = m_activeQueue;
+                SortedPointBuffer<TKey, TValue> stream = m_activeQueue;
                 m_activeQueue = m_processingQueue;
                 m_processingQueue = stream;
 
                 m_activeQueue.Clear();
 
+                stream.Sort();
                 args = new PrebufferRolloverArgs<TKey, TValue>(stream, m_latestTransactionId);
                 m_waitForRolloverToComplete.Set();
                 m_currentTransactionIdRollingOver = m_latestTransactionId;

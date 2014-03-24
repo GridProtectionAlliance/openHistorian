@@ -42,6 +42,7 @@ namespace GSF.SortedTreeStore.Tree
     /// IsLessThanOrEqualTo(T)
     /// IsBetween(T,T)
     /// CompareTo(byte*)
+    /// IsLessThanOrEqualTo(byte*, byte*)
     /// 
     /// For better random I/O inserts, it is also a good idea to implement a custom
     /// <see cref="SortedTreeTypeMethods{T}"/> that overrides 
@@ -158,6 +159,21 @@ namespace GSF.SortedTreeStore.Tree
         public virtual bool IsLessThan(T right)
         {
             return CompareTo(right) < 0;
+        }
+
+        /// <summary>
+        /// Function needed for presorting data. It is highly recommended that this function is overridden.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public unsafe virtual bool IsLessThanOrEqualTo(byte* left, byte* right)
+        {
+            T l = new T();
+            T r = new T();
+            l.Read(left);
+            r.Read(right);
+            return l.IsLessThanOrEqualTo(r);
         }
 
         /// <summary>

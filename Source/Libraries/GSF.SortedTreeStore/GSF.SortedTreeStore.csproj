@@ -105,6 +105,8 @@
     <Compile Include="IO\Unmanaged\BinaryStreamPointerWrapper.cs" />
     <Compile Include="Net\NetworkBinaryStream.cs" />
     <Compile Include="Number.cs" />
+    <Compile Include="SortedTreeStore\Collection\Copy of SortedPointBuffer%272.cs" />
+    <Compile Include="SortedTreeStore\Collection\SortedPointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\Collection\CreatePointCollectionBase.cs" />
     <Compile Include="SortedTreeStore\Collection\PointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\CreateSingleValueBase.cs" />

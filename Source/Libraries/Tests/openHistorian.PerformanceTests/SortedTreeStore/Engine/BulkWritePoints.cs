@@ -93,9 +93,9 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                             key.PointID = (ulong)x;
                             PointCount = x;
                             writer.Write(key, value);
-                        }  
+                        }
                     }
-                   
+
                     Quit = true;
                     th.Join();
                 }
@@ -130,6 +130,46 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                 for (int x = 0; x < 100000000; x++)
                 {
                     key.PointID = (ulong)x;
+                    PointCount = x;
+                    engine.Write(key, value);
+                }
+                Quit = true;
+                th.Join();
+            }
+
+            Console.WriteLine("Time (sec)\tPoints");
+            foreach (var kvp in PointSamples)
+            {
+                Console.WriteLine(kvp.Key.ToString() + "\t" + kvp.Value.ToString());
+            }
+        }
+
+        [Test]
+        public void TestWriteSpeedRandom()
+        {
+            Thread th = new Thread(WriteSpeed);
+            Random r = new Random(1);
+
+            th.IsBackground = true;
+            th.Start();
+
+            Quit = false;
+            foreach (var file in Directory.GetFiles("c:\\temp\\benchmark\\"))
+                File.Delete(file);
+
+            PointCount = 0;
+            using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
+            {
+                engine.Exception += engine_Exception;
+                Thread.Sleep(100);
+                var key = new HistorianKey();
+                var value = new HistorianValue();
+
+                for (int x = 0; x < 10000000; x++)
+                {
+                    key.Timestamp = (ulong)r.Next();
+                    key.PointID = (ulong)x;
+
                     PointCount = x;
                     engine.Write(key, value);
                 }

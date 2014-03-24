@@ -240,7 +240,7 @@ namespace GSF.SortedTreeStore.Tree
             //return;
 
             InsertStreamHelper<TKey, TValue> helper = new InsertStreamHelper<TKey, TValue>(stream);
-            LeafStorage.TryInsertSequentailStream(helper);
+            LeafStorage.TryInsertSequentialStream(helper);
             while (helper.IsValid)
             {
                 if (helper.IsKVP1)

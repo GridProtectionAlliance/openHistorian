@@ -139,7 +139,14 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
             //return true;
         }
 
-        protected override void AppendSequentailStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull)
+        /// <summary>
+        /// Requests that the current stream is inserted into the tree. Sequentail insertion can only occur while the stream
+        /// is in order and is entirely past the end of the tree. 
+        /// </summary>
+        /// <param name="stream">the stream data to insert</param>
+        /// <param name="isFull">if returning from this function while the node is not yet full, this means the stream 
+        /// can no longer be inserted sequentially and we must break out to the root and insert one at a time.</param>
+        protected override void AppendSequentialStream(InsertStreamHelper<TKey, TValue> stream, out bool isFull)
         {
             int recordsAdded = 0;
             int additionalValidBytes = 0;
@@ -155,7 +162,6 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes
                 }
                 else
                 {
-                    
                     stream.PrevKey.Clear();
                     stream.PrevValue.Clear();
                 }
