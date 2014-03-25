@@ -24963,6 +24963,178 @@
             Gets the maximum concurrent reader locks allowed.
             </summary>
         </member>
+        <member name="T:GSF.Threading.ISynchronizedOperation">
+            <summary>
+            Represents an operation that cannot run while it is already in progress.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ISynchronizedOperation.RunOnce">
+            <summary>
+            Executes the action on this thread or marks the
+            operation as pending if the operation is already running.
+            </summary>
+            <remarks>
+            When the operation is marked as pending, it will run again after the
+            operation that is currently running has completed. This is useful if
+            an update has invalidated the operation that is currently running and
+            will therefore need to be run again.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.ISynchronizedOperation.RunOnceAsync">
+            <summary>
+            Executes the action on another thread or marks the
+            operation as pending if the operation is already running.
+            </summary>
+            <remarks>
+            When the operation is marked as pending, it will run again after the
+            operation that is currently running has completed. This is useful if
+            an update has invalidated the operation that is currently running and
+            will therefore need to be run again.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.ISynchronizedOperation.TryRun">
+            <summary>
+            Attempts to execute the action on this thread.
+            Does nothing if the operation is already running.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ISynchronizedOperation.TryRunAsync">
+            <summary>
+            Attempts to execute the action on another thread.
+            Does nothing if the operation is already running.
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.LongSynchronizedOperation">
+            <summary>
+            Represents a long-running synchronized operation
+            that cannot run while it is already in progress.
+            </summary>
+            <remarks>
+            The action performed by the <see cref="T:GSF.Threading.LongSynchronizedOperation"/> is executed on
+            its own dedicated thread when running the operation asynchronously. When running on
+            its own thread, the action is executed in a tight loop until all pending operations
+            have been completed. This type of synchronized operation should be preferred if
+            operations may take a long time, block the thread, or put it to sleep. It is also
+            recommended to prefer this type of operation if the speed of the operation is not
+            critical or if completion of the operation is critical, such as when saving data
+            to a file.
+            </remarks>
+        </member>
+        <member name="T:GSF.Threading.SynchronizedOperationBase">
+            <summary>
+            Base class for operations that cannot run while they is already in progress.
+            </summary>
+            <remarks>
+            This class handles the synchronization between the methods defined in the
+            <see cref="T:GSF.Threading.ISynchronizedOperation"/> interface. Implementors should only need
+            to implement the <see cref="M:GSF.Threading.SynchronizedOperationBase.ExecuteActionAsync"/> method to provide a mechanism
+            for executing the action on a separate thread.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperationBase.#ctor(System.Action)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.SynchronizedOperationBase"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperationBase.#ctor(System.Action,System.Action{System.Exception})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.SynchronizedOperationBase"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+            <param name="exceptionAction">The action to be performed if an exception is thrown from the action.</param>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperationBase.RunOnce">
+            <summary>
+            Executes the action on this thread or marks the
+            operation as pending if the operation is already running.
+            </summary>
+            <remarks>
+            When the operation is marked as pending, it will run again after the
+            operation that is currently running has completed. This is useful if
+            an update has invalidated the operation that is currently running and
+            will therefore need to be run again.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperationBase.RunOnceAsync">
+            <summary>
+            Executes the action on another thread or marks the
+            operation as pending if the operation is already running.
+            </summary>
+            <remarks>
+            When the operation is marked as pending, it will run again after the
+            operation that is currently running has completed. This is useful if
+            an update has invalidated the operation that is currently running and
+            will therefore need to be run again.
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperationBase.TryRun">
+            <summary>
+            Attempts to execute the action on this thread.
+            Does nothing if the operation is already running.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperationBase.TryRunAsync">
+            <summary>
+            Attempts to execute the action on another thread.
+            Does nothing if the operation is already running.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperationBase.ExecuteAction">
+            <summary>
+            Executes the action once on the current thread.
+            </summary>
+            <returns>True if the action was pending and needs to run again; false otherwise.</returns>
+        </member>
+        <member name="M:GSF.Threading.SynchronizedOperationBase.ExecuteActionAsync">
+             <summary>
+             Executes the action on a separate thread.
+             </summary>
+             <remarks>
+             Implementors should call <see cref="M:GSF.Threading.SynchronizedOperationBase.ExecuteAction"/> on a separate thread
+             and check the return value. If it returns true, that means it needs to run
+             again. The following is a sample implementation using a regular dedicated
+             thread.
+             
+             <code>
+             protected override void ExecuteActionAsync()
+             {
+                 Thread actionThread = new Thread(() =&gt;
+                 {
+                     while (ExecuteAction())
+                     {
+                     }
+                 });
+            
+                 actionThread.Start();
+             }
+             </code>
+             </remarks>
+        </member>
+        <member name="M:GSF.Threading.LongSynchronizedOperation.#ctor(System.Action)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.LongSynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+        </member>
+        <member name="M:GSF.Threading.LongSynchronizedOperation.#ctor(System.Action,System.Action{System.Exception})">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Threading.LongSynchronizedOperation"/> class.
+            </summary>
+            <param name="action">The action to be performed during this operation.</param>
+            <param name="exceptionAction">The action to be performed if an exception is thrown from the action.</param>
+        </member>
+        <member name="M:GSF.Threading.LongSynchronizedOperation.ExecuteActionAsync">
+            <summary>
+            Executes the action on a separate thread.
+            </summary>
+        </member>
+        <member name="P:GSF.Threading.LongSynchronizedOperation.IsBackground">
+            <summary>
+            Gets or sets whether or not the thread
+            executing the action is a background thread.
+            </summary>
+        </member>
         <member name="T:GSF.Threading.ThreadType">
             <summary>
             Managed Thread Types
@@ -25266,19 +25438,14 @@
         </member>
         <member name="T:GSF.Threading.ReaderWriterSpinLock">
             <summary>
-            Represents a fast, lightweight reader/writer lock that uses spinning to perform locking with no thread affinity. No recursive
-            acquires or upgradable locks are allowed (i.e., all entered locks must be exited before entering another lock).
+            Represents a fast, lightweight reader/writer lock that uses spinning to perform locking. No recursive acquires or
+            upgradable locks are allowed (i.e., all entered locks must be exited before entering another lock).
             </summary>
             <remarks>
-            <para>
-            <see cref="T:GSF.Threading.ReaderWriterSpinLock"/> uses a single word of memory and only spins when contention arises so no events are necessary.
-            </para>
-            <para>
             This reader/writer lock uses <see cref="T:System.Threading.SpinWait"/> to spin the CPU instead of engaging event based locking. As a result it
             should only be used in cases where lock times are expected to be very small, reads are very frequent and writes are rare.
             If hold times for write locks can be lengthy, it will be better to use <see cref="T:System.Threading.ReaderWriterLockSlim"/> instead to avoid
             unnecessary CPU utilization due to spinning incurred by waiting reads.
-            </para>
             </remarks>
         </member>
         <member name="M:GSF.Threading.ReaderWriterSpinLock.EnterWriteLock">
@@ -25286,7 +25453,7 @@
             Enters the lock in write mode.
             </summary>
             <remarks>
-            Upon successful aquistion of a write lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.ReaderWriterSpinLock.ExitWriteLock"/>.
+            Upon successful acquisition of a write lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.ReaderWriterSpinLock.ExitWriteLock"/>.
             One <see cref="M:GSF.Threading.ReaderWriterSpinLock.ExitWriteLock"/> should be called for each <see cref="M:GSF.Threading.ReaderWriterSpinLock.EnterWriteLock"/>.
             </remarks>
         </member>
@@ -25300,7 +25467,7 @@
             Enters the lock in read mode.
             </summary>
             <remarks>
-            Upon successful aquistion of a read lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.ReaderWriterSpinLock.ExitReadLock"/>.
+            Upon successful acquisition of a read lock, use the <c>finally</c> block of a <c>try/finally</c> statement to call <see cref="M:GSF.Threading.ReaderWriterSpinLock.ExitReadLock"/>.
             One <see cref="M:GSF.Threading.ReaderWriterSpinLock.ExitReadLock"/> should be called for each <see cref="M:GSF.Threading.ReaderWriterSpinLock.EnterReadLock"/>.
             </remarks>
         </member>
@@ -25310,58 +25477,40 @@
             </summary>
             <exception cref="T:System.InvalidOperationException">Cannot exit read lock when there are no readers.</exception>
         </member>
-        <member name="T:GSF.Threading.SynchronizedOperation">
+        <member name="T:GSF.Threading.ShortSynchronizedOperation">
             <summary>
-            Represents an operation that cannot run while it is already in progress.
+            Represents a short-running synchronized operation
+            that cannot run while it is already in progress.
             </summary>
+            <remarks>
+            The action performed by the <see cref="T:GSF.Threading.ShortSynchronizedOperation"/> is executed on
+            the <see cref="T:System.Threading.ThreadPool"/> when running the operation asynchronously. When the
+            operation is set to pending, the action is executed in an asynchronous loop on the
+            thread pool until all pending operations have been completed. Since the action is
+            executed on the thread pool, it is best if it can be executed quickly, without
+            blocking the thread or putting it to sleep. If completion of the operation is
+            critical, such as when saving data to a file, this type of operation should not
+            be used since thread pool threads are background threads and will not prevent the
+            program from ending before the operation is complete.
+            </remarks>
         </member>
-        <member name="M:GSF.Threading.SynchronizedOperation.#ctor(System.Action)">
+        <member name="M:GSF.Threading.ShortSynchronizedOperation.#ctor(System.Action)">
             <summary>
-            Creates a new instance of the <see cref="T:GSF.Threading.SynchronizedOperation"/> class.
+            Creates a new instance of the <see cref="T:GSF.Threading.ShortSynchronizedOperation"/> class.
             </summary>
             <param name="action">The action to be performed during this operation.</param>
         </member>
-        <member name="M:GSF.Threading.SynchronizedOperation.#ctor(System.Action,System.Action{System.Exception})">
+        <member name="M:GSF.Threading.ShortSynchronizedOperation.#ctor(System.Action,System.Action{System.Exception})">
             <summary>
-            Creates a new instance of the <see cref="T:GSF.Threading.SynchronizedOperation"/> class.
+            Creates a new instance of the <see cref="T:GSF.Threading.ShortSynchronizedOperation"/> class.
             </summary>
             <param name="action">The action to be performed during this operation.</param>
             <param name="exceptionAction">The action to be performed if an exception is thrown from the action.</param>
         </member>
-        <member name="M:GSF.Threading.SynchronizedOperation.RunOnce">
+        <member name="M:GSF.Threading.ShortSynchronizedOperation.ExecuteActionAsync">
             <summary>
-            Executes the action on this thread or marks the
-            operation as pending if the operation is already running.
-            </summary>
-            <remarks>
-            When the operation is marked as pending, it will run again after the
-            operation that is currently running has completed. This is useful if
-            an update has invalidated the operation that is currently running and
-            will therefore need to be run again.
-            </remarks>
-        </member>
-        <member name="M:GSF.Threading.SynchronizedOperation.RunOnceAsync">
-            <summary>
-            Executes the action on another thread or marks the
-            operation as pending if the operation is already running.
-            </summary>
-            <remarks>
-            When the operation is marked as pending, it will run again after the
-            operation that is currently running has completed. This is useful if
-            an update has invalidated the operation that is currently running and
-            will therefore need to be run again.
-            </remarks>
-        </member>
-        <member name="M:GSF.Threading.SynchronizedOperation.TryRun">
-            <summary>
-            Attempts to execute the action on this thread.
-            Does nothing if the operation is already running.
-            </summary>
-        </member>
-        <member name="M:GSF.Threading.SynchronizedOperation.TryRunAsync">
-            <summary>
-            Attempts to execute the action on another thread.
-            Does nothing if the operation is already running.
+            Executes the action in an asynchronous loop on
+            the thread pool, as long as the operation is pending.
             </summary>
         </member>
         <member name="T:GSF.BaselineTimeInterval">

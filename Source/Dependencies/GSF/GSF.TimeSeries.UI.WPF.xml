@@ -2149,6 +2149,11 @@
             Gets flag that determines if <see cref="P:GSF.TimeSeries.UI.PagedViewModelBase`2.CurrentItem"/> is a new record.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel">
+            <summary>
+            View model for the <see cref="T:GSF.TimeSeries.UI.UserControls.DataQualityReportUserControl"/>.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel"/> class.
@@ -2181,9 +2186,21 @@
             Gets or sets a flag that indicates whether reporting is currently enabled.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.OriginalReportLocation">
+            <summary>
+            Gets or sets the original report location since the last
+            time settings were applied, before the user changed it.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportLocation">
             <summary>
             Gets or sets the location to which reports will be generated.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.OriginalReportGenerationTimeText">
+            <summary>
+            Gets the original report generation time text since the last
+            time settings were applied, before the user changed it.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportGenerationTimeText">
@@ -2196,14 +2213,31 @@
             Gets or sets the report generation time.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ActualReportGenerationTimeText">
-            <summary>
-            Gets or sets the text for the actual report generation time, which may not match <see cref="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportGenerationTimeText"/>.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ReportDate">
             <summary>
             Gets or sets the date of the report to be generated manually.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.OriginalIdleReportLifetime">
+            <summary>
+            Gets or sets the original idle report lifetime since the last
+            time settings were applied, before the user changed it.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.IdleReportLifetime">
+            <summary>
+            Gets or sets the amount of time to pass since the last time a
+            report was accessed before the report is purged automatically.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.AvailableReports">
+            <summary>
+            Gets the list of available reports.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.PendingReports">
+            <summary>
+            Gets the list of pending reports.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ChangeReportingEnabledCommand">
@@ -2211,14 +2245,44 @@
             Gets the command to change the enabled state of reporting services.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.UpdateReportingConfigCommand">
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ListReportsCommand">
             <summary>
-            Gets the command to update the configuration of the reporting services.
+            Gets the command to generate a new report manually.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.GenerateReportCommand">
             <summary>
             Gets the command to generate a new report manually.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ApplyReportingConfigCommand">
+            <summary>
+            Gets the command to update the configuration of the reporting services.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.AvailableReport">
+            <summary>
+            Represents a generated report that is available for download from the service.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.AvailableReport.#ctor(GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.AvailableReport"/> class.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.AvailableReport.Date">
+            <summary>
+            Gets or sets the name of the report.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.AvailableReport.Status">
+            <summary>
+            Gets or sets the status of the report.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.AvailableReport.GetReportCommand">
+            <summary>
+            Gets the command that retrieves the report from the service.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.ViewModels.ErrorLogViewModel.#ctor(System.Int32,System.Boolean)">

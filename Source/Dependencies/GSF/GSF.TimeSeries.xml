@@ -5925,16 +5925,29 @@
             Creates a new instance of the <see cref="T:GSF.TimeSeries.DataQualityReportingProcess"/> class.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.Execute">
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetReportsList">
             <summary>
-            Executes the reporting process to generate the report.
+            Returns the list of reports that are available from the report location.
             </summary>
+            <returns>The list of generated reports.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetArguments">
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetPendingReportsList">
             <summary>
-            Gets the command line arguments for the reporting process.
+            Returns the list of reports which are in the queue but are yet to be generated.
             </summary>
-            <returns>The command line arguments for the reporting process.</returns>
+            <returns>The list of pending reports.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GenerateReport(System.DateTime)">
+            <summary>
+            Queues up a report to be generated on a separate thread.
+            </summary>
+            <param name="reportDate">The date of the report to be generated.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.CleanReportLocation">
+            <summary>
+            Deletes reports from the <see cref="P:GSF.TimeSeries.DataQualityReportingProcess.ReportLocation"/> that have
+            been idle for the length of the <see cref="P:GSF.TimeSeries.DataQualityReportingProcess.IdleReportLifetime"/>.
+            </summary>
         </member>
         <member name="M:GSF.TimeSeries.DataQualityReportingProcess.LoadSettings">
             <summary>
@@ -5946,9 +5959,24 @@
             Saves settings to the config file.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.ReportDate">
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.Execute">
             <summary>
-            Gets or sets the date of the report to be generated.
+            Executes the reporting process to generate the report.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetArguments(System.DateTime)">
+            <summary>
+            Gets the command line arguments for the reporting process.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.IsReportFileName(System.String)">
+            <summary>
+            Determines whether the given path is a path to a report, based on the file name.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.DataQualityReportingProcess.GetProcessOwner(System.Int32)">
+            <summary>
+            Determines who is the owner of the given process.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.DataQualityReportingProcess.PersistSettings">
@@ -6000,6 +6028,12 @@
         <member name="P:GSF.TimeSeries.DataQualityReportingProcess.Level3Alias">
             <summary>
             Gets or sets the alias for the level 3 category.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.DataQualityReportingProcess.IdleReportLifetime">
+            <summary>
+            Gets or sets the minimum lifetime of a report
+            since the last time it was accessed, in days.
             </summary>
         </member>
         <member name="T:GSF.TimeSeries.ServiceClientBase">
@@ -8242,6 +8276,11 @@
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.UseTransactionForMetadata">
             <summary>
             Gets or sets flag that determines if meta-data synchronization should be performed within a transaction.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.DataSubscriber.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Transport.DataSubscriber"/>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataSubscriber.Status">
