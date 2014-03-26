@@ -2245,11 +2245,6 @@
             Gets the command to change the enabled state of reporting services.
             </summary>
         </member>
-        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ListReportsCommand">
-            <summary>
-            Gets the command to generate a new report manually.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.GenerateReportCommand">
             <summary>
             Gets the command to generate a new report manually.
