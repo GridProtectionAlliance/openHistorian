@@ -26,6 +26,7 @@ using System;
 using System.IO;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
+using GSF.SortedTreeStore.Types;
 
 namespace GSF.SortedTreeStore.Engine
 {
@@ -88,6 +89,26 @@ namespace GSF.SortedTreeStore.Engine
         }
 
         /// <summary>
+        /// Creates a new <see cref="SortedTreeTable{TKey,TValue}"/> based on the settings passed to this class.
+        /// Once created, it is up to he caller to make sure that this class is properly disposed of.
+        /// </summary>
+        /// <returns></returns>
+        public SortedTreeTable<TKey, TValue> CreateArchiveFile(TKey startKey, TKey endKey)
+        {
+            if (m_isMemoryArchive)
+            {
+                SortedTreeFile af = SortedTreeFile.CreateInMemory();
+                return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
+            }
+            else
+            {
+                string fileName = CreateArchiveName(startKey, endKey);
+                SortedTreeFile af = SortedTreeFile.CreateFile(fileName);
+                return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
+            }
+        }
+
+        /// <summary>
         /// Creates a new random file in one of the provided folders in a round robin fashion.
         /// </summary>
         /// <returns></returns>
@@ -100,6 +121,36 @@ namespace GSF.SortedTreeStore.Engine
                 if (freeSpace >= requiredFreeSpace)
                 {
                     return Path.Combine(m_path, DateTime.Now.Ticks.ToString() + "-" + m_prefix + "-" + Guid.NewGuid().ToString() + ".d2");
+                }
+            }
+            throw new Exception("Out of free space");
+        }
+
+        /// <summary>
+        /// Creates a new random file in one of the provided folders in a round robin fashion.
+        /// </summary>
+        /// <returns></returns>
+        private string CreateArchiveName(TKey startKey, TKey endKey)
+        {
+            IHasTimestampField startTime = startKey as IHasTimestampField;
+            IHasTimestampField endTime = endKey as IHasTimestampField;
+            DateTime startDate;
+            DateTime endDate;
+
+            if (startTime == null || endTime == null)
+                return CreateArchiveName();
+
+            if (!startTime.TryGetDateTime(out startDate) || !endTime.TryGetDateTime(out endDate))
+                return CreateArchiveName();
+
+
+            long requiredFreeSpace = Math.Min(m_requiredFreeSpaceForNewFile, m_initialSize);
+            long freeSpace, totalSpace;
+            if (WinApi.GetAvailableFreeSpace(m_path, out freeSpace, out totalSpace))
+            {
+                if (freeSpace >= requiredFreeSpace)
+                {
+                    return Path.Combine(m_path, DateTime.Now.Ticks.ToString() + "-" + m_prefix + "-" + startDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + startDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + ".d2");
                 }
             }
             throw new Exception("Out of free space");

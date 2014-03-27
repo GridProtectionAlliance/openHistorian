@@ -159,6 +159,30 @@ namespace GSF.SortedTreeStore.Tree
             RecordCount = 0;
         }
 
+        /// <summary>
+        /// Gets if the stream is always in sequential order. Do not return true unless it is Guaranteed that 
+        /// the data read from this stream is sequential.
+        /// </summary>
+        public override bool IsAlwaysSequential
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Gets if the stream will never return duplicate keys. Do not return true unless it is Guaranteed that 
+        /// the data read from this stream will never contain duplicates.
+        /// </summary>
+        public override bool NeverContainsDuplicates
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         protected abstract void InternalPeek(TKey key, TValue value);
 
         protected abstract void InternalRead(TKey key, TValue value);

@@ -105,6 +105,7 @@
     <Compile Include="IO\Unmanaged\BinaryStreamPointerWrapper.cs" />
     <Compile Include="Net\NetworkBinaryStream.cs" />
     <Compile Include="Number.cs" />
+    <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
     <Compile Include="SortedTreeStore\Collection\Copy of SortedPointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\Collection\SortedPointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\Collection\CreatePointCollectionBase.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="SortedTreeStore\Engine\Reader\UnionReader`2.cs" />
     <Compile Include="SortedTreeStore\Engine\Reader\SequentialReaderStream%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\CombineFiles`2.cs" />
+    <Compile Include="SortedTreeStore\Engine\Writer\IncrementalStagingCollection%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\IncrementalStagingFile%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\FirstStageWriter%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\TransactionTracker`2.cs" />
@@ -209,6 +211,7 @@
     <Compile Include="Collections\ResourceQueueCollection`2.cs" />
     <Compile Include="Collections\SupportsReadonlyAutoBase`1.cs" />
     <Compile Include="Collections\SupportsReadonlyBase`1.cs" />
+    <Compile Include="SortedTreeStore\Types\IHasTimestampField.cs" />
     <Compile Include="SortedTreeStore\Types\Int32\SortedTreeKeyMethodsInt32.cs" />
     <Compile Include="SortedTreeStore\Types\Int32\SortedTreeInt32.cs" />
     <Compile Include="SortedTreeStore\Types\TimestampBase%271.cs" />
@@ -279,6 +282,7 @@
     <Compile Include="IO\Unmanaged\UnmanagedMemoryStream_IoSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SortedTreeStore\Stats.cs" />
+    <Compile Include="SortedTreeStore\UnionTreeStreamReader`2.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
     <Compile Include="Threading\AdvTask.cs" />

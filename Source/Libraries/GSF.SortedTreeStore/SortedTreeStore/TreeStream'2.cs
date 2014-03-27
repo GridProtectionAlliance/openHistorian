@@ -81,6 +81,30 @@ namespace GSF.SortedTreeStore
         }
 
         /// <summary>
+        /// Gets if the stream is always in sequential order. Do not return true unless it is Guaranteed that 
+        /// the data read from this stream is sequential.
+        /// </summary>
+        public virtual bool IsAlwaysSequential
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets if the stream will never return duplicate keys. Do not return true unless it is Guaranteed that 
+        /// the data read from this stream will never contain duplicates.
+        /// </summary>
+        public virtual bool NeverContainsDuplicates
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Boolean indicating that the end of the stream has been reached.
         /// </summary>
         public bool EOS { get; protected set; }

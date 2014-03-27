@@ -76,7 +76,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
             CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
         }
 
-
         public void Dispose()
         {
             if (m_snapshot != null)

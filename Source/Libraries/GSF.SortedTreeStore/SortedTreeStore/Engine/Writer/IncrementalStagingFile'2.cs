@@ -123,7 +123,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             if (m_sortedTreeFile == null)
                 return;
 
-            var newFile = m_finalFile.CreateArchiveFile();
+            var newFile = m_finalFile.CreateArchiveFile(m_sortedTreeFile.FirstKey, m_sortedTreeFile.LastKey);
             using (var editor = newFile.BeginEdit())
             using (var reader = m_sortedTreeFile.BeginRead())
             {

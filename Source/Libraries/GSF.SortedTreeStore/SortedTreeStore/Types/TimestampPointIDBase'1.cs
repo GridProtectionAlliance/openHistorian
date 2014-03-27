@@ -21,6 +21,7 @@
 //     
 //******************************************************************************************************
 
+using System;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Types
@@ -39,5 +40,7 @@ namespace GSF.SortedTreeStore.Types
         /// The id number of the point.
         /// </summary>
         public ulong PointID;
+
+        
     }
 }

@@ -22,12 +22,10 @@
 //******************************************************************************************************
 
 using System.Collections.Generic;
-using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Reader
 {
-
     internal class UnionReader<TKey, TValue>
         : TreeStream<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
@@ -67,6 +65,22 @@ namespace GSF.SortedTreeStore.Engine.Reader
             }
         }
 
+        public override bool IsAlwaysSequential
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public override bool NeverContainsDuplicates
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override bool Read(TKey key, TValue value)
         {
             if (m_firstTableScanner != null)
@@ -87,15 +101,15 @@ namespace GSF.SortedTreeStore.Engine.Reader
                 Cancel();
                 return false;
             }
-
-            if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds) || ReadWhileFollowupActions(key, value, null))
+            if (m_firstTableScanner.ReadWhile(key, value, m_readWhileUpperBounds))
             {
                 return true;
             }
+            ReadWhileFollowupActions();
             goto TryAgain;
         }
 
-        bool ReadWhileFollowupActions(TKey key, TValue value, MatchFilterBase<TKey,TValue> filter)
+        void ReadWhileFollowupActions()
         {
             //There are certain followup requirements when a ReadWhile method returns false.
             //Condition 1:
@@ -123,16 +137,10 @@ namespace GSF.SortedTreeStore.Engine.Reader
 
             //Check Condition 1
             if (m_firstTable.CacheIsValid && m_firstTable.CacheKey.IsLessThan(m_readWhileUpperBounds))
-                return false;
+                return;
 
             //Since condition 2 and 3 can occur at the same time, verifying the sort of the Archive Stream is a good thing to do.
             VerifyArchiveStreamSortingOrder();
-
-            if (EOS)
-                return false;
-
-
-            return false;
         }
 
 
@@ -212,41 +220,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
             {
                 table.SeekToKeyAndUpdateCacheValue(key);
             }
-            m_sortedArchiveStreams.Sort();
-
-            //Remove any duplicates
-            RemoveDuplicatesIfExists();
-
-            if (m_sortedArchiveStreams.Items.Length > 0)
-            {
-                m_firstTable = m_sortedArchiveStreams[0];
-                m_firstTableScanner = m_firstTable.Scanner;
-            }
-            else
-            {
-                m_firstTable = null;
-                m_firstTableScanner = null;
-            }
-
-            SetReadWhileUpperBoundsValue();
-        }
-
-        /// <summary>
-        /// Seeks the streams only in the forward direction.
-        /// This means that if the current position in any stream is invalid or past this point,
-        /// the stream will not seek backwards.
-        /// </summary>
-        /// <param name="key">the key to seek to</param>
-        void SeekAllArchiveStreamsForward(TKey key)
-        {
-            foreach (var table in m_sortedArchiveStreams.Items)
-            {
-                if (table.CacheIsValid && table.CacheKey.IsLessThan(key))
-                {
-                    table.SeekToKeyAndUpdateCacheValue(key);
-                }
-            }
-            //Resorts the entire list.
             m_sortedArchiveStreams.Sort();
 
             //Remove any duplicates

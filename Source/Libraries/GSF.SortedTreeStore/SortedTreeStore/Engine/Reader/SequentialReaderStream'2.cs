@@ -134,6 +134,22 @@ namespace GSF.SortedTreeStore.Engine.Reader
             m_timedOut = true;
         }
 
+        public override bool IsAlwaysSequential
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public override bool NeverContainsDuplicates
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override bool Read(TKey key, TValue value)
         {
             if (!m_timedOut && m_firstTableScanner != null)

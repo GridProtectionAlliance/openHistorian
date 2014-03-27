@@ -59,7 +59,7 @@ namespace GSF.SortedTreeStore.Engine
         #region [ Properties ]
 
         /// <summary>
-        /// Gets the <see cref="HistorianArchiveFile"/> that this class represents.
+        /// Gets the <see cref="SortedTreeTable{TKey, TValue}"/> that this class represents.
         /// </summary>
         public SortedTreeTable<TKey, TValue> SortedTreeTable
         {
