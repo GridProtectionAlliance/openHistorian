@@ -4,209 +4,225 @@
         <name>Dnp3Adapters</name>
     </assembly>
     <members>
-        <member name="T:Dnp3Adapters.Dnp3InputAdapter">
+        <member name="T:DNP3Adapters.DNP3InputAdapter">
             <summary>
             DNP3 Adapter
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Dnp3InputAdapter.m_Manager">
+        <member name="F:DNP3Adapters.DNP3InputAdapter.m_Manager">
             <summary>
             DNP3 manager shared across all of the DNP3 input adapters
+            Concurrency level defaults to number of processors
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Dnp3InputAdapter.m_commsFileName">
+        <member name="F:DNP3Adapters.DNP3InputAdapter.m_commsFilePath">
             <summary>
             The filename for the communication configuration file
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Dnp3InputAdapter.m_mappingFileName">
+        <member name="F:DNP3Adapters.DNP3InputAdapter.m_mappingFilePath">
             <summary>
             The filename for the measurement mapping configuration file
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Dnp3InputAdapter.m_MasterConfig">
+        <member name="F:DNP3Adapters.DNP3InputAdapter.m_MasterConfig">
             <summary>
             Configuration for the master. Set during the Initialize call.
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Dnp3InputAdapter.m_MeasMap">
+        <member name="F:DNP3Adapters.DNP3InputAdapter.m_MeasMap">
             <summary>
             Configuration for the measurement map. Set during the Initialize call.
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Dnp3InputAdapter.m_portName">
+        <member name="F:DNP3Adapters.DNP3InputAdapter.m_Channel">
             <summary>
             Gets set during the AttemptConnection() call and using during AttemptDisconnect()
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Dnp3InputAdapter.m_numMeasurementsReceived">
+        <member name="F:DNP3Adapters.DNP3InputAdapter.m_numMeasurementsReceived">
             <summary>
             A counter of the number of measurements received
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Dnp3InputAdapter.m_active">
+        <member name="F:DNP3Adapters.DNP3InputAdapter.m_active">
             <summary>
             Flag that records wether or not the port/master have been added so that the resource can be cleaned
             up in the Dispose/AttemptDisconnect methods
             </summary>
         </member>
-        <member name="M:Dnp3Adapters.Dnp3InputAdapter.Initialize">
+        <member name="M:DNP3Adapters.DNP3InputAdapter.Initialize">
             <summary>
-            Initializes <see cref="T:Dnp3Adapters.Dnp3InputAdapter"/>
+            Initializes <see cref="T:DNP3Adapters.DNP3InputAdapter"/>
             </summary>
         </member>
-        <member name="M:Dnp3Adapters.Dnp3InputAdapter.Dispose(System.Boolean)">
+        <member name="M:DNP3Adapters.DNP3InputAdapter.Dispose(System.Boolean)">
             <summary>
-            Disposes the <see cref="T:Dnp3Adapters.Dnp3InputAdapter"/>
+            Disposes the <see cref="T:DNP3Adapters.DNP3InputAdapter"/>
             </summary>
             <param name="disposing"><c>true</c> if disposing</param>
         </member>
-        <member name="M:Dnp3Adapters.Dnp3InputAdapter.AttemptConnection">
+        <member name="M:DNP3Adapters.DNP3InputAdapter.AttemptConnection">
             <summary>
             Connection attempt method
             </summary>
         </member>
-        <member name="M:Dnp3Adapters.Dnp3InputAdapter.AttemptDisconnection">
+        <member name="M:DNP3Adapters.DNP3InputAdapter.AttemptDisconnection">
             <summary>
             Disconnect attempt method
             </summary>
         </member>
-        <member name="M:Dnp3Adapters.Dnp3InputAdapter.GetShortStatus(System.Int32)">
+        <member name="M:DNP3Adapters.DNP3InputAdapter.GetShortStatus(System.Int32)">
             <summary>
             Short status of adapter
             </summary>
             <param name="maxLength">Maximum length of status message</param>
             <returns>Short status of adapter</returns>
         </member>
-        <member name="P:Dnp3Adapters.Dnp3InputAdapter.CommsFileName">
+        <member name="P:DNP3Adapters.DNP3InputAdapter.CommsFilePath">
             <summary>
             Gets or sets the name of the xml file from which the communication parameters will be read
             </summary>
         </member>
-        <member name="P:Dnp3Adapters.Dnp3InputAdapter.MappingFileName">
+        <member name="P:DNP3Adapters.DNP3InputAdapter.MappingFilePath">
             <summary>
             Gets or sets the name of the xml file from which the measurement mapping is read
             </summary>
         </member>
-        <member name="P:Dnp3Adapters.Dnp3InputAdapter.UseAsyncConnect">
+        <member name="P:DNP3Adapters.DNP3InputAdapter.UseAsyncConnect">
             <summary>
             Async connection flag
             </summary>
         </member>
-        <member name="P:Dnp3Adapters.Dnp3InputAdapter.SupportsTemporalProcessing">
+        <member name="P:DNP3Adapters.DNP3InputAdapter.SupportsTemporalProcessing">
             <summary>
             Temporal support flag
             </summary>
         </member>
-        <member name="T:Dnp3Adapters.MasterConfiguration">
+        <member name="T:DNP3Adapters.MasterConfiguration">
             <summary>
             Master Configuration
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.MasterConfiguration.client">
+        <member name="F:DNP3Adapters.MasterConfiguration.client">
             <summary>
             All of the settings for the connection
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.MasterConfiguration.master">
+        <member name="F:DNP3Adapters.MasterConfiguration.master">
             <summary>
             All of the settings for the master
             </summary>
         </member>
-        <member name="T:Dnp3Adapters.TcpClientConfig">
+        <member name="T:DNP3Adapters.TcpClientConfig">
             <summary>
             TCP Client Configuration class.
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.TcpClientConfig.address">
+        <member name="F:DNP3Adapters.TcpClientConfig.address">
             <summary>
             IP address of host
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.TcpClientConfig.port">
+        <member name="F:DNP3Adapters.TcpClientConfig.port">
             <summary>
             TCP port for connection
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.TcpClientConfig.retryMs">
+        <member name="F:DNP3Adapters.TcpClientConfig.minRetryMs">
             <summary>
-            Connection retry interval in milliseconds
+            Minimum connection retry interval in milliseconds
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.TcpClientConfig.level">
+        <member name="F:DNP3Adapters.TcpClientConfig.maxRetryMs">
+            <summary>
+            Maximum connection retry interval in milliseconds
+            </summary>
+        </member>
+        <member name="F:DNP3Adapters.TcpClientConfig.level">
             <summary>
             DNP3 filter level for port messages
             </summary>
         </member>
-        <member name="T:Dnp3Adapters.MeasurementLookup">
+        <member name="T:DNP3Adapters.MeasurementLookup">
             <summary>
             Helper class that converts measurements and provides a lookup capbility
             </summary>
         </member>
-        <member name="T:Dnp3Adapters.Mapping">
+        <member name="T:DNP3Adapters.Mapping">
             <summary>
             Mapping
             </summary>
         </member>
-        <member name="M:Dnp3Adapters.Mapping.#ctor">
+        <member name="M:DNP3Adapters.Mapping.#ctor">
             <summary>
-            Creates a new <see cref="T:Dnp3Adapters.Mapping"/>.
+            Creates a new <see cref="T:DNP3Adapters.Mapping"/>.
             </summary>
         </member>
-        <member name="M:Dnp3Adapters.Mapping.#ctor(System.UInt32,System.String,System.UInt32)">
+        <member name="M:DNP3Adapters.Mapping.#ctor(System.UInt32,System.String,System.UInt32)">
             <summary>
-            Creates a new <see cref="T:Dnp3Adapters.Mapping"/> with the specified parameters.
+            Creates a new <see cref="T:DNP3Adapters.Mapping"/> with the specified parameters.
             </summary>
             <param name="id">ID</param>
             <param name="source">Source</param>
             <param name="index">Index</param>
         </member>
-        <member name="F:Dnp3Adapters.Mapping.tsfId">
+        <member name="F:DNP3Adapters.Mapping.tsfId">
             <summary>
             TSF ID
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Mapping.tsfSource">
+        <member name="F:DNP3Adapters.Mapping.tsfSource">
             <summary>
             TSF Source
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.Mapping.dnpIndex">
+        <member name="F:DNP3Adapters.Mapping.dnpIndex">
             <summary>
             DNP Index
             </summary>
         </member>
-        <member name="T:Dnp3Adapters.MeasurementMap">
+        <member name="T:DNP3Adapters.MeasurementMap">
             <summary>
             Measurement Map
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.MeasurementMap.binaryMap">
+        <member name="F:DNP3Adapters.MeasurementMap.binaryMap">
             <summary>
             Binary Map
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.MeasurementMap.analogMap">
+        <member name="F:DNP3Adapters.MeasurementMap.analogMap">
             <summary>
             Analog Map
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.MeasurementMap.counterMap">
+        <member name="F:DNP3Adapters.MeasurementMap.counterMap">
             <summary>
             Counter Map
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.MeasurementMap.controlStatusMap">
+        <member name="F:DNP3Adapters.MeasurementMap.frozenCounterMap">
+            <summary>
+            Fozen Counter Map
+            </summary>
+        </member>
+        <member name="F:DNP3Adapters.MeasurementMap.doubleBitBinaryMap">
+            <summary>
+            double bit binary map
+            </summary>
+        </member>
+        <member name="F:DNP3Adapters.MeasurementMap.controlStatusMap">
             <summary>
             Control Status Map
             </summary>
         </member>
-        <member name="F:Dnp3Adapters.MeasurementMap.setpointStatusMap">
+        <member name="F:DNP3Adapters.MeasurementMap.setpointStatusMap">
             <summary>
             Set Point Status Map
             </summary>
         </member>
-        <member name="T:Dnp3Adapters.TimeSeriesDataObserver">
+        <member name="T:DNP3Adapters.TimeSeriesSOEHandler">
             <summary>
             This is the data adapter that converts data from the dnp3 world to the TSF
             </summary>

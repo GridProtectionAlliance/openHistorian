@@ -2230,6 +2230,11 @@
             report was accessed before the report is purged automatically.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.ListReportsErrorMessage">
+            <summary>
+            Gets or sets the error message that displays when report listing fails.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.UI.ViewModels.DataQualityReportViewModel.AvailableReports">
             <summary>
             Gets the list of available reports.
