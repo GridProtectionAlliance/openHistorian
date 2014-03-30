@@ -3562,6 +3562,190 @@
             <param name="endOfRange">End of range character.</param>
             <returns><c>true</c> is the character is within the range.</returns>
         </member>
+        <member name="T:GSF.Collections.PriorityQueue`1">
+            <summary>
+            Represents a queue of items to which priority can be assigned.
+            </summary>
+            <typeparam name="T">The type of the items stored in the queue.</typeparam>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Collections.PriorityQueue`1"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.#ctor(System.Int32)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.Collections.PriorityQueue`1"/> class.
+            </summary>
+            <param name="capacity">The initial size of the underlying array.</param>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.Enqueue(System.Int32,`0)">
+            <summary>
+            Enqueues an item into the queue.
+            </summary>
+            <param name="priority">The priority of the item.</param>
+            <param name="item">The item to be enqueued.</param>
+            <remarks>
+            After adding an item to the queue, the heap will need to be fixed,
+            therefore this is an O(log n) operation.
+            </remarks>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.Dequeue">
+            <summary>
+            Gets the item with the highest priority and removes it from the queue.
+            </summary>
+            <returns>The item with the highest priority.</returns>
+            <remarks>
+            After removing an item from the queue, the heap will need to be fixed,
+            therefore this is an O(log n) operation.
+            </remarks>
+            <exception cref="T:System.InvalidOperationException">The queue is empty.</exception>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.Peek">
+            <summary>
+            Gets the item with the highest priority.
+            </summary>
+            <returns>The item with the highest priority.</returns>
+            <exception cref="T:System.InvalidOperationException">The queue is empty.</exception>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.GetPriority(System.Int32)">
+            <summary>
+            Gets the priority of the item at the given index.
+            </summary>
+            <param name="index">The index of the item.</param>
+            <returns>The priority of the item.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Index does not fall within the bounds of the queue.</exception>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.SetPriority(System.Int32,System.Int32)">
+            <summary>
+            Sets the priority of the item at the given index.
+            </summary>
+            <param name="index">The index of the item.</param>
+            <param name="priority">The new priority of the item.</param>
+            <remarks>
+            This method can be used to change the priority of the item
+            at the given index. After setting the priority, the queue
+            will have to fix the heap so this is an O(log n) operation.
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException">Index does not fall within the bounds of the queue.</exception>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.AdjustPriority(System.Int32)">
+            <summary>
+            Adds the given value to the priority of all values in the priority queue.
+            </summary>
+            <param name="delta">The amount by which to adjust priorities.</param>
+            <remarks>
+            This allows for adjusting the priorities of all items in the heap without
+            having to fix the heap each time a priority is changed. This can be useful
+            to increase the priorities of items that have been in the queue for significant
+            periods of time to prevent starvation. This is an O(n) operation.
+            </remarks>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>
+            A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+            </returns>
+            <remarks>
+            The enumerator performs an in-order traversal of the heap, so the caller should
+            expect that items will be iterated in no particular order. Any operations that
+            would modify the collection during iteration will cause the enumerator to throw
+            an <see cref="T:System.InvalidOperationException"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.Contains(`0)">
+            <summary>
+            Determines whether the <see cref="T:GSF.Collections.PriorityQueue`1"/> contains a specific value.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:GSF.Collections.PriorityQueue`1"/>.</param>
+            <returns>
+            true if <paramref name="item"/> is found in the <see cref="T:GSF.Collections.PriorityQueue`1"/>; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.IndexOf(`0)">
+            <summary>
+            Determines the index of a specific item in the <see cref="T:GSF.Collections.PriorityQueue`1"/>.
+            </summary>
+            <param name="item">The object to locate in the <see cref="T:GSF.Collections.PriorityQueue`1"/>.</param>
+            <returns>
+            The index of <paramref name="item"/> if found in the list; otherwise, -1.
+            </returns>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements of the <see cref="T:GSF.Collections.PriorityQueue`1"/> to an
+            <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+            </summary>
+            <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:GSF.Collections.PriorityQueue`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+            <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="array"/> is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
+            <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:GSF.Collections.PriorityQueue`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.</exception>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.RemoveAt(System.Int32)">
+            <summary>
+            Removes the <see cref="T:GSF.Collections.PriorityQueue`1"/> item at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the item to remove.</param>
+            <remarks>
+            After removing an item from the queue, the heap will need to be fixed,
+            therefore this is an O(log n) operation.
+            </remarks>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:GSF.Collections.PriorityQueue`1"/>.</exception>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.Remove(`0)">
+            <summary>
+            Removes the first occurrence of a specific object from the <see cref="T:GSF.Collections.PriorityQueue`1"/>.
+            </summary>
+            <param name="item">The object to remove from the <see cref="T:GSF.Collections.PriorityQueue`1"/>.</param>
+            <returns>
+            true if <paramref name="item"/> was successfully removed from the <see cref="T:GSF.Collections.PriorityQueue`1"/>; otherwise, false.
+            This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:GSF.Collections.PriorityQueue`1"/>.
+            </returns>
+            <remarks>
+            After removing an item from the queue, the heap will need to be fixed,
+            therefore this is an O(log n) operation.
+            </remarks>
+        </member>
+        <member name="M:GSF.Collections.PriorityQueue`1.Clear">
+            <summary>
+            Removes all items from the <see cref="T:GSF.Collections.PriorityQueue`1"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.Collections.PriorityQueue`1.Head">
+            <summary>
+            Gets the head of the queue. The value returned
+            is the same as the <see cref="M:GSF.Collections.PriorityQueue`1.Peek"/> method.
+            </summary>
+        </member>
+        <member name="P:GSF.Collections.PriorityQueue`1.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <returns>
+            The element at the specified index.
+            </returns>
+            <param name="index">The zero-based index of the element to get or set.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:GSF.Collections.PriorityQueue`1"/>.</exception>
+        </member>
+        <member name="P:GSF.Collections.PriorityQueue`1.Count">
+            <summary>
+            Gets the number of elements contained in the <see cref="T:GSF.Collections.PriorityQueue`1"/>.
+            </summary>
+            <returns>
+            The number of elements contained in the <see cref="T:GSF.Collections.PriorityQueue`1"/>.
+            </returns>
+        </member>
+        <member name="P:GSF.Collections.PriorityQueue`1.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the <see cref="T:GSF.Collections.PriorityQueue`1"/> is read-only.
+            </summary>
+            <returns>
+            False
+            </returns>
+        </member>
         <member name="T:GSF.Collections.AsyncDoubleBufferedQueue`1">
             <summary>
             Combines <see cref="T:GSF.Collections.AsyncQueue`1"/> and <see cref="T:GSF.Collections.DoubleBufferedQueue`1"/> to provide
