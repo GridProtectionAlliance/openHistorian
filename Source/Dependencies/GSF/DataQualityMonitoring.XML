@@ -24,11 +24,6 @@
             Starts the <see cref="T:DataQualityMonitoring.AlarmAdapter"/>, or restarts it if it is already running.
             </summary>
         </member>
-        <member name="M:DataQualityMonitoring.AlarmAdapter.Stop">
-            <summary>
-            Stops the <see cref="T:DataQualityMonitoring.AlarmAdapter"/>.
-            </summary>		
-        </member>
         <member name="M:DataQualityMonitoring.AlarmAdapter.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
             <summary>
             Queues a collection of measurements for processing.

@@ -3765,12 +3765,6 @@
             </summary>
             <param name="items">The items to be queued.</param>
         </member>
-        <member name="M:GSF.Collections.AsyncDoubleBufferedQueue`1.Dequeue">
-            <summary>
-            Dequeues a collection of items from the async double-buffered queue.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="E:GSF.Collections.AsyncDoubleBufferedQueue`1.ProcessException">
             <summary>
             Event that is raised if an exception is encountered while attempting to processing an item in the <see cref="T:GSF.Collections.AsyncDoubleBufferedQueue`1"/>.
@@ -3795,26 +3789,11 @@
             Creates a new <see cref="T:GSF.Collections.AsyncQueue`1"/>.
             </summary>
         </member>
-        <member name="M:GSF.Collections.AsyncQueue`1.GetEnumerator">
-            <summary>
-            Returns an enumerator that iterates through the <see cref="T:GSF.Collections.AsyncQueue`1"/>.
-            </summary>
-            <returns>An enumerator for the contents of the <see cref="T:GSF.Collections.AsyncQueue`1"/>.</returns>
-        </member>
         <member name="M:GSF.Collections.AsyncQueue`1.Enqueue(`0)">
             <summary>
             Enqueues an item for processing.
             </summary>
             <param name="item">Item to be queued for processing.</param>
-        </member>
-        <member name="M:GSF.Collections.AsyncQueue`1.OnProcessException(System.Exception)">
-            <summary>
-            Raises the base class <see cref="E:GSF.Collections.AsyncQueue`1.ProcessException"/> event.
-            </summary>
-            <remarks>
-            Derived classes cannot raise events of their base classes, so we expose event wrapper methods to accomodate as needed.
-            </remarks>
-            <param name="ex"><see cref="T:System.Exception"/> to be passed to ProcessException.</param>
         </member>
         <member name="E:GSF.Collections.AsyncQueue`1.ProcessException">
             <summary>
@@ -3824,26 +3803,20 @@
             Processing will not stop for any exceptions thrown by user processing function, but exceptions will be exposed through this event.
             </remarks>
         </member>
-        <member name="P:GSF.Collections.AsyncQueue`1.ProcessItemFunction">
-            <summary>
-            Gets or sets item processing function.
-            </summary>
-        </member>
         <member name="P:GSF.Collections.AsyncQueue`1.Count">
             <summary>
             Gets the total number of items currently in the queue.
+            </summary>
+        </member>
+        <member name="P:GSF.Collections.AsyncQueue`1.ProcessItemFunction">
+            <summary>
+            Gets or sets item processing function.
             </summary>
         </member>
         <member name="P:GSF.Collections.AsyncQueue`1.Enabled">
             <summary>
             Gets or sets flag that enables or disables processing.
             </summary>
-        </member>
-        <member name="T:GSF.Collections.AsyncQueue`1.ProcessItemFunctionSignature">
-            <summary>
-            Defines an item processing function for the <see cref="T:GSF.Collections.AsyncQueue`1"/>.
-            </summary>
-            <param name="item">Item to be processed.</param>
         </member>
         <member name="T:GSF.Collections.CollectionExtensions">
             <summary>
@@ -4433,15 +4406,6 @@
             or no items if none have been enqueued since last dequeue.
             </returns>
         </member>
-        <member name="M:GSF.Collections.DoubleBufferedQueue`1.OnProcessException(System.Exception)">
-            <summary>
-            Raises the base class <see cref="E:GSF.Collections.DoubleBufferedQueue`1.ProcessException"/> event.
-            </summary>
-            <remarks>
-            Derived classes cannot raise events of their base classes, so we expose event wrapper methods to accomodate as needed.
-            </remarks>
-            <param name="ex"><see cref="T:System.Exception"/> to be passed to ProcessException.</param>
-        </member>
         <member name="E:GSF.Collections.DoubleBufferedQueue`1.ProcessException">
             <summary>
             Event that is raised if an exception is encountered while attempting to processing an item in the <see cref="T:GSF.Collections.AsyncQueue`1"/>.
@@ -4454,12 +4418,6 @@
             <summary>
             Gets or sets item processing function.
             </summary>
-        </member>
-        <member name="T:GSF.Collections.DoubleBufferedQueue`1.ProcessItemsFunctionSignature">
-            <summary>
-            Defines an item processing function for the <see cref="T:GSF.Collections.AsyncQueue`1"/>.
-            </summary>
-            <param name="items">Items to be processed.</param>
         </member>
         <member name="T:GSF.Collections.ProcessDictionary`2">
             <summary>
@@ -25188,6 +25146,12 @@
             Does nothing if the operation is already running.
             </summary>
         </member>
+        <member name="P:GSF.Threading.ISynchronizedOperation.IsRunning">
+            <summary>
+            Gets a value to indicate whether the synchronized
+            operation is currently executing its action.
+            </summary>
+        </member>
         <member name="T:GSF.Threading.LongSynchronizedOperation">
             <summary>
             Represents a long-running synchronized operation
@@ -25294,6 +25258,12 @@
              }
              </code>
              </remarks>
+        </member>
+        <member name="P:GSF.Threading.SynchronizedOperationBase.IsRunning">
+            <summary>
+            Gets a value to indicate whether the synchronized
+            operation is currently executing its action.
+            </summary>
         </member>
         <member name="M:GSF.Threading.LongSynchronizedOperation.#ctor(System.Action)">
             <summary>
