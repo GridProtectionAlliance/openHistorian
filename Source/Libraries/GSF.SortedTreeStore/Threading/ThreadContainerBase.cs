@@ -98,6 +98,9 @@ namespace GSF.Threading
 
         protected ThreadContainerBase(WeakActionFast<CallbackArgs> callback)
         {
+            m_runAgain = false;
+            m_runAgainAfterDelay = -1;
+
             m_args = new CallbackArgs();
             m_args.Clear();
 

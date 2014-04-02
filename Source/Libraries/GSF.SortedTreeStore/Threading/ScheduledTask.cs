@@ -88,7 +88,10 @@ namespace GSF.Threading
         object m_disposeSync;
         volatile bool m_disposing;
 
-        ThreadContainerBase m_thread;
+        /// <summary>
+        /// This cannot be null, because it would cause duplicate calls to <see cref="Start"/> to throw a null referenced exception.
+        /// </summary>
+        readonly ThreadContainerBase m_thread;
         object m_weakCallbackToken;
         ManualResetEvent m_waitForDispose;
 
@@ -119,7 +122,6 @@ namespace GSF.Threading
             //By starting the thread inside the finalizer, the ThreadContainer will exit because its weak reference will be set to null.
             m_disposing = true;
             m_thread.Start();
-            m_thread = null;
         }
 
         /// <summary>
@@ -192,7 +194,6 @@ namespace GSF.Threading
                    
                     m_waitForDispose.WaitOne();
                     m_waitForDispose.Dispose();
-                    m_thread = null;
                     m_weakCallbackToken = null;
                     m_waitForDispose = null;
                     GC.SuppressFinalize(this);
