@@ -31,7 +31,7 @@ namespace GSF.IO.FileStructure
     /// <summary>
     /// This is used to generate the file name that will be used for the sub file. 
     /// </summary>
-    public class SubFileName 
+    public class SubFileName
         : IComparable<SubFileName>
     {
         public long RawValue1
@@ -112,11 +112,13 @@ namespace GSF.IO.FileStructure
 
         public static unsafe SubFileName Create(byte[] data)
         {
-            SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider();
-            byte[] hash = sha1.ComputeHash(data);
-            fixed (byte* lp = hash)
+            using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
             {
-                return new SubFileName(*(long*)(lp), *(long*)(lp + 8), *(int*)(lp + 16));
+                byte[] hash = sha1.ComputeHash(data);
+                fixed (byte* lp = hash)
+                {
+                    return new SubFileName(*(long*)(lp), *(long*)(lp + 8), *(int*)(lp + 16));
+                }
             }
         }
 

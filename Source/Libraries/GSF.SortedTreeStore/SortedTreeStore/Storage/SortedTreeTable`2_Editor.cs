@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore.Tree;
 using GSF.IO.FileStructure;
 
@@ -38,13 +39,18 @@ namespace GSF.SortedTreeStore.Storage
             private bool m_disposed;
             private SortedTreeTable<TKey, TValue> m_sortedTreeFile;
             private readonly TransactionalEdit m_currentTransaction;
-            private readonly SortedTreeContainerEdit<TKey, TValue> m_dataTree;
+            private SubFileStream m_subStream;
+            private BinaryStream m_binaryStream1;
+            private SortedTree<TKey, TValue> m_tree;
 
             internal Editor(SortedTreeTable<TKey, TValue> sortedTreeFile)
             {
                 m_sortedTreeFile = sortedTreeFile;
                 m_currentTransaction = m_sortedTreeFile.m_fileStructure.BeginEdit();
-                m_dataTree = new SortedTreeContainerEdit<TKey, TValue>(m_currentTransaction, sortedTreeFile.m_fileName);
+                m_subStream = m_currentTransaction.OpenFile(sortedTreeFile.m_fileName);
+                m_binaryStream1 = new BinaryStream(m_subStream);
+                m_tree = SortedTree<TKey, TValue>.Open(m_binaryStream1);
+                m_tree.AutoFlush = false;
             }
 
             /// <summary>
@@ -55,8 +61,24 @@ namespace GSF.SortedTreeStore.Storage
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
 
-                m_dataTree.GetKeyRange(m_sortedTreeFile.m_firstKey, m_sortedTreeFile.m_lastKey);
-                m_dataTree.Dispose();
+                GetKeyRange(m_sortedTreeFile.m_firstKey, m_sortedTreeFile.m_lastKey);
+
+                if (m_tree != null)
+                {
+                    m_tree.Flush();
+                    m_tree = null;
+                }
+                if (m_binaryStream1 != null)
+                {
+                    m_binaryStream1.Dispose();
+                    m_binaryStream1 = null;
+                }
+                if (m_subStream != null)
+                {
+                    m_subStream.Dispose();
+                    m_subStream = null;
+                }
+
                 m_currentTransaction.CommitAndDispose();
                 InternalDispose();
             }
@@ -68,9 +90,32 @@ namespace GSF.SortedTreeStore.Storage
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                m_dataTree.Dispose();
+               
+                if (m_tree != null)
+                {
+                    m_tree.Flush();
+                    m_tree = null;
+                }
+                if (m_binaryStream1 != null)
+                {
+                    m_binaryStream1.Dispose();
+                    m_binaryStream1 = null;
+                }
+                if (m_subStream != null)
+                {
+                    m_subStream.Dispose();
+                    m_subStream = null;
+                }
+
                 m_currentTransaction.RollbackAndDispose();
                 InternalDispose();
+            }
+
+            public void GetKeyRange(TKey firstKey, TKey lastKey)
+            {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                m_tree.GetKeyRange(firstKey, lastKey);
             }
 
             /// <summary>
@@ -82,7 +127,18 @@ namespace GSF.SortedTreeStore.Storage
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                m_dataTree.AddPoint(key, value);
+                m_tree.TryAdd(key, value);
+            }
+
+            /// <summary>
+            /// Adds all of the points to this archive file.
+            /// </summary>
+            /// <param name="stream"></param>
+            public void AddPoints(TreeStream<TKey, TValue> stream)
+            {
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                m_tree.TryAddRange(stream);
             }
 
             /// <summary>
@@ -93,19 +149,9 @@ namespace GSF.SortedTreeStore.Storage
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                return m_dataTree.GetDataRange();
+                return m_tree.CreateTreeScanner();
             }
 
-            /// <summary>
-            /// Adds all of the points to this archive file.
-            /// </summary>
-            /// <param name="scanner"></param>
-            public void AddPoints(TreeStream<TKey, TValue> scanner)
-            {
-                if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-                m_dataTree.AddPoints(scanner);
-            }
 
             /// <summary>
             /// Rollsback edits to the file.

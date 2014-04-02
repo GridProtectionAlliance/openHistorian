@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections;
+using System.IO;
 using GSF.IO;
 using GSF.IO.Unmanaged;
 
@@ -71,6 +72,23 @@ namespace GSF.SortedTreeStore.Tree
         /// </summary>
         /// <param name="stream"></param>
         public abstract void Write(BinaryStreamBase stream);
+
+       
+        public virtual unsafe void Read(Stream stream)
+        {
+            byte[] data = new byte[Size];
+            stream.Read(data, 0, data.Length);
+            fixed (byte* lp = data)
+                Read(lp);
+        }
+
+        public virtual unsafe void Write(Stream stream)
+        {
+            byte[] data = new byte[Size];
+            fixed (byte* lp = data)
+                Write(lp);
+            stream.Write(data, 0, data.Length);
+        }
 
         /// <summary>
         /// Reads the key from the stream

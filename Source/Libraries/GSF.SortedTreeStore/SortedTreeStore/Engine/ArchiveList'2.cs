@@ -48,6 +48,7 @@ namespace GSF.SortedTreeStore.Engine
         /// </summary>
         private readonly List<ArchiveTableSummary<TKey, TValue>> m_fileSummaries;
 
+
         private readonly List<SortedTreeTable<TKey, TValue>> m_lockedFiles;
 
         /// <summary>

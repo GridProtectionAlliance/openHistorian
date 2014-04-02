@@ -123,18 +123,6 @@ namespace GSF.IO.FileStructure
             }
         }
 
-        public byte[] UserData
-        {
-            get
-            {
-                return m_fileHeaderBlock.UserData;
-            }
-            set
-            {
-                m_fileHeaderBlock.UserData = value;
-            }
-        }
-
         #endregion
 
         #region [ Methods ]
@@ -186,18 +174,7 @@ namespace GSF.IO.FileStructure
             }
             throw new Exception("File does not exist");
         }
-        /// <summary>
-        /// Deletes all <see cref="SubFileMetaData"/> in this archive file.
-        /// </summary>
-        public void DeleteAllSubFiles()
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (m_openedFiles.Count > 0)
-                throw new Exception("Cannot delete SubFiles if SubFileStreams are opened in the edit transaction");
-            m_fileHeaderBlock.DeleteAllSubFiles();
-        }
-
+        
         /// <summary>
         /// This will cause the transaction to be written to the database.
         /// Also Calls Dispose()
@@ -259,7 +236,7 @@ namespace GSF.IO.FileStructure
         }
 
         /// <summary>
-        /// Releases all the resources used by the <see cref="TransactionalRead"/> object.
+        /// Releases all the resources used by the <see cref="ReadSnapshot"/> object.
         /// </summary>
         public void Dispose()
         {

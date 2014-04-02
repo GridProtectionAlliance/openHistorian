@@ -72,18 +72,19 @@ namespace GSF.SortedTreeStore.Engine
         /// Creates a new <see cref="SortedTreeTable{TKey,TValue}"/> based on the settings passed to this class.
         /// Once created, it is up to he caller to make sure that this class is properly disposed of.
         /// </summary>
+        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <returns></returns>
-        public SortedTreeTable<TKey, TValue> CreateArchiveFile()
+        public SortedTreeTable<TKey, TValue> CreateArchiveFile(Guid uniqueFileId = default(Guid))
         {
             if (m_isMemoryArchive)
             {
-                SortedTreeFile af = SortedTreeFile.CreateInMemory();
+                SortedTreeFile af = SortedTreeFile.CreateInMemory(4096, uniqueFileId);
                 return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
             else
             {
                 string fileName = CreateArchiveName();
-                SortedTreeFile af = SortedTreeFile.CreateFile(fileName);
+                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, 4096, uniqueFileId);
                 return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
         }
@@ -92,18 +93,21 @@ namespace GSF.SortedTreeStore.Engine
         /// Creates a new <see cref="SortedTreeTable{TKey,TValue}"/> based on the settings passed to this class.
         /// Once created, it is up to he caller to make sure that this class is properly disposed of.
         /// </summary>
+        /// <param name="startKey">the first key in the archive file</param>
+        /// <param name="endKey">the last key in the archive file</param>
+        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <returns></returns>
-        public SortedTreeTable<TKey, TValue> CreateArchiveFile(TKey startKey, TKey endKey)
+        public SortedTreeTable<TKey, TValue> CreateArchiveFile(TKey startKey, TKey endKey, Guid uniqueFileId = default(Guid))
         {
             if (m_isMemoryArchive)
             {
-                SortedTreeFile af = SortedTreeFile.CreateInMemory();
+                SortedTreeFile af = SortedTreeFile.CreateInMemory(4096, uniqueFileId);
                 return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
             else
             {
                 string fileName = CreateArchiveName(startKey, endKey);
-                SortedTreeFile af = SortedTreeFile.CreateFile(fileName);
+                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, 4096, uniqueFileId);
                 return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
         }

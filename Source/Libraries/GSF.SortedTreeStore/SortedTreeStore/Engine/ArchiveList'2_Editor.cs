@@ -161,7 +161,6 @@ namespace GSF.SortedTreeStore.Engine
                         status.SortedTree.BaseFile.Delete();
                         return true;
                     }
-                    status.SortedTree.BaseFile.EmptyFile();
                     m_collection.m_filesToDelete.Add(status);
                     m_collection.m_processRemovals.Start(1000);
                     return true;

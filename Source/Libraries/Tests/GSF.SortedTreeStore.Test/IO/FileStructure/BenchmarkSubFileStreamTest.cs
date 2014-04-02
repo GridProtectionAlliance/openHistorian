@@ -19,9 +19,9 @@ namespace GSF.SortedTreeStore.Storage.Test.FileStructure
             try
             {
                 //using (FileSystemSnapshotService service = FileSystemSnapshotService.CreateFile(file))
-                using (TransactionService service = TransactionService.CreateInMemory(BlockSize))
+                using (TransactionalFileStructure service = TransactionalFileStructure.CreateInMemory(BlockSize))
                 {
-                    using (TransactionalEdit edit = service.BeginEditTransaction())
+                    using (TransactionalEdit edit = service.BeginEdit())
                     {
                         SubFileStream fs = edit.CreateFile(SubFileName.Empty);
                         BinaryStream bs = new BinaryStream(fs);

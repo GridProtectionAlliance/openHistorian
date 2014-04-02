@@ -85,7 +85,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             {
                 if (m_sortedTreeFile == null)
                     return 0;
-                return m_sortedTreeFile.BaseFile.FileSize;
+                return m_sortedTreeFile.BaseFile.ArchiveSize;
             }
         }
 

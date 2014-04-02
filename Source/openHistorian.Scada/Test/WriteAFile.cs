@@ -45,7 +45,7 @@ namespace openHistorian.Scada.Test
                     edit.Commit();
                     sw.Stop();
 
-                    Console.WriteLine(af.FileSize / 1024.0 / 1024.0);
+                    Console.WriteLine(af.ArchiveSize / 1024.0 / 1024.0);
                     Console.WriteLine(count / sw.Elapsed.TotalSeconds / 1000000);
                 }
 
@@ -83,7 +83,7 @@ namespace openHistorian.Scada.Test
                     edit.Commit();
                     sw.Stop();
 
-                    Console.WriteLine(af.FileSize / 1024.0 / 1024.0);
+                    Console.WriteLine(af.ArchiveSize / 1024.0 / 1024.0);
                     Console.WriteLine(count / sw.Elapsed.TotalSeconds / 1000000);
                 }
 
@@ -191,7 +191,7 @@ namespace openHistorian.Scada.Test
                     edit.Commit();
                     sw.Stop();
 
-                    Console.WriteLine(af.FileSize / 1024.0 / 1024.0);
+                    Console.WriteLine(af.ArchiveSize / 1024.0 / 1024.0);
                     Console.WriteLine(count / sw.Elapsed.TotalSeconds / 1000000);
                 }
             }

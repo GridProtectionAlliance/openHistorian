@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  ArchiveFileSummary.cs - Gbtc
+//  ArchiveTableSummary`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -22,13 +22,14 @@
 //
 //******************************************************************************************************
 
+using System;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
 {
     /// <summary>
-    /// Contains an immutable class of the current partition
+    /// Contains an immutable class of the current table
     /// along with its most recent snapshot.
     /// </summary>
     public class ArchiveTableSummary<TKey, TValue>
@@ -41,22 +42,47 @@ namespace GSF.SortedTreeStore.Engine
         private readonly TKey m_lastKey;
         private readonly SortedTreeTable<TKey, TValue> m_sortedTreeTable;
         private readonly SortedTreeTableSnapshotInfo<TKey, TValue> m_activeSnapshotInfo;
-
+        private readonly string m_fileName;
+        private readonly Guid m_fileId;
         #endregion
 
         #region [ Constructors ]
 
-        public ArchiveTableSummary(SortedTreeTable<TKey, TValue> file)
+        /// <summary>
+        /// Creates a snapshot summary of a table.
+        /// </summary>
+        /// <param name="table">the table to take the read snapshot of.</param>
+        public ArchiveTableSummary(SortedTreeTable<TKey, TValue> table)
         {
-            m_sortedTreeTable = file;
-            m_activeSnapshotInfo = file.AcquireReadSnapshot();
-            m_firstKey = file.FirstKey;
-            m_lastKey = file.LastKey;
+            m_firstKey = new TKey();
+            m_lastKey = new TKey();
+            m_sortedTreeTable = table;
+            m_activeSnapshotInfo = table.AcquireReadSnapshot();
+            table.FirstKey.CopyTo(m_firstKey);
+            table.LastKey.CopyTo(m_lastKey);
+            m_fileName = m_sortedTreeTable.BaseFile.FileName;
+            m_fileId = m_sortedTreeTable.BaseFile.Snapshot.Header.ArchiveId;
         }
 
         #endregion
 
         #region [ Properties ]
+
+        public Guid FileId
+        {
+            get
+            {
+                return m_fileId;
+            }
+        }
+
+        public string FileName
+        {
+            get
+            {
+                return m_fileName;
+            }
+        }
 
         /// <summary>
         /// Gets the <see cref="SortedTreeTable{TKey, TValue}"/> that this class represents.
@@ -91,6 +117,9 @@ namespace GSF.SortedTreeStore.Engine
             }
         }
 
+        /// <summary>
+        /// Gets if this table is empty.
+        /// </summary>
         public bool IsEmpty
         {
             get
@@ -100,7 +129,7 @@ namespace GSF.SortedTreeStore.Engine
         }
 
         /// <summary>
-        /// Gets the most recent <see cref="ArchiveSnapshotInfo"/> of this class when it was instanced.
+        /// Gets the most recent <see cref="SortedTreeTableSnapshotInfo{TKey,TValue}"/> of this class when it was created.
         /// </summary>
         public SortedTreeTableSnapshotInfo<TKey, TValue> ActiveSnapshotInfo
         {
@@ -115,7 +144,7 @@ namespace GSF.SortedTreeStore.Engine
         #region [ Methods ]
 
         /// <summary>
-        /// Determines if this partition might contain data for the keys provided.
+        /// Determines if this table might contain data for the keys provided.
         /// </summary>
         /// <param name="startKey">the first key searching for</param>
         /// <param name="stopKey">the last key searching for</param>

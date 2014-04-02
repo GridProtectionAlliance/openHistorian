@@ -133,6 +133,8 @@
     <Compile Include="SortedTreeStore\Engine\Writer\IncrementalStagingCollection%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\IncrementalStagingFile%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\FirstStageWriter%272.cs" />
+    <Compile Include="SortedTreeStore\Engine\Writer\ManualCombineFiles.cs" />
+    <Compile Include="SortedTreeStore\Engine\Writer\RolloverPendingAction.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\TransactionTracker`2.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateSeekFilterBase.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateFilterBase.cs" />
@@ -158,8 +160,6 @@
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableSnapshotInfo`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2_Editor.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeFile.cs" />
-    <Compile Include="SortedTreeStore\Storage\SortedTreeContainer`2.cs" />
-    <Compile Include="SortedTreeStore\Storage\SortedTreeContainerEdit`2.cs" />
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\ContinuousQueue`1.cs" />
@@ -264,8 +264,7 @@
     <Compile Include="IO\FileStructure\SubFileStream_IoSession.cs" />
     <Compile Include="IO\FileStructure\TransactionalEdit.cs" />
     <Compile Include="IO\FileStructure\TransactionalFileStructure.cs" />
-    <Compile Include="IO\FileStructure\TransactionalRead.cs" />
-    <Compile Include="IO\FileStructure\TransactionService.cs" />
+    <Compile Include="IO\FileStructure\ReadSnapshot.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="SortedTreeStore\Engine\SortedTreeEngineBase%272.cs" />
     <Compile Include="SortedTreeStore\SortedTreeCollection.cs" />

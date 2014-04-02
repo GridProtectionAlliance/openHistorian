@@ -166,10 +166,11 @@ namespace GSF.IO.FileStructure.Media
         /// </summary>
         /// <param name="pool">the <see cref="MemoryPool"/> to allocate data from</param>
         /// <param name="fileStructureBlockSize">the block size of the file structure. Usually 4kb.</param>
+        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <returns></returns>
-        public static DiskMedium CreateMemoryFile(MemoryPool pool, int fileStructureBlockSize)
+        public static DiskMedium CreateMemoryFile(MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId)
         {
-            FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize);
+            FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize, uniqueFileId);
             MemoryPoolFile disk = new MemoryPoolFile(pool);
             return new DiskMedium(disk, header);
         }
@@ -182,14 +183,15 @@ namespace GSF.IO.FileStructure.Media
         /// will assume ownership of this <see cref="FileStream"/>.</param>
         /// <param name="pool">the <see cref="MemoryPool"/> to allocate data from</param>
         /// <param name="fileStructureBlockSize">the block size of the file structure. Usually 4kb.</param>
+        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
         /// <returns></returns>
         /// <remarks>
         /// This will not check if the file is truely a new file. If calling this with an existing
         /// archive file, it will overwrite the table of contents, corrupting the file.
         /// </remarks>
-        public static DiskMedium CreateFile(FileStream stream, MemoryPool pool, int fileStructureBlockSize)
+        public static DiskMedium CreateFile(FileStream stream, MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId)
         {
-            FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize);
+            FileHeaderBlock header = FileHeaderBlock.CreateNew(fileStructureBlockSize, uniqueFileId);
             BufferedFile disk = new BufferedFile(stream, pool, header, isNewFile: true);
             return new DiskMedium(disk, header);
         }

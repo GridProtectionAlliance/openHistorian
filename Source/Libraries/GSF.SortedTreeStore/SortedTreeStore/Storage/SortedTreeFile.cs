@@ -71,12 +71,13 @@ namespace GSF.SortedTreeStore.Storage
         /// Creates a new in memory archive file.
         /// </summary>
         /// <param name="blockSize">The number of bytes per block in the file.</param>
-        public static SortedTreeFile CreateInMemory(int blockSize = 4096)
+        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
+        public static SortedTreeFile CreateInMemory(int blockSize = 4096, Guid uniqueFileId = default(Guid))
         {
-            SortedTreeFile af = new SortedTreeFile();
-            af.m_filePath = string.Empty;
-            af.m_fileStructure = TransactionalFileStructure.CreateInMemory(blockSize);
-            return af;
+            SortedTreeFile file = new SortedTreeFile();
+            file.m_filePath = string.Empty;
+            file.m_fileStructure = TransactionalFileStructure.CreateInMemory(blockSize, uniqueFileId);
+            return file;
         }
 
         /// <summary>
@@ -84,12 +85,13 @@ namespace GSF.SortedTreeStore.Storage
         /// </summary>
         /// <param name="file">the path for the file.</param>
         /// <param name="blockSize">The number of bytes per block in the file.</param>
-        public static SortedTreeFile CreateFile(string file, int blockSize = 4096)
+        /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
+        public static SortedTreeFile CreateFile(string file, int blockSize = 4096, Guid uniqueFileId = default(Guid))
         {
             SortedTreeFile af = new SortedTreeFile();
             file = Path.GetFullPath(file);
             af.m_filePath = file;
-            af.m_fileStructure = TransactionalFileStructure.CreateFile(file, blockSize);
+            af.m_fileStructure = TransactionalFileStructure.CreateFile(file, blockSize, uniqueFileId);
             return af;
         }
 
@@ -105,7 +107,7 @@ namespace GSF.SortedTreeStore.Storage
             file = Path.GetFullPath(file);
             af.m_filePath = file;
             af.m_fileStructure = TransactionalFileStructure.OpenFile(file, isReadOnly);
-            if (af.m_fileStructure.ArchiveType != FileType)
+            if (af.m_fileStructure.Snapshot.Header.ArchiveType != FileType)
                 throw new Exception("Archive type is unknown");
             return af;
         }
@@ -151,9 +153,21 @@ namespace GSF.SortedTreeStore.Storage
         }
 
         /// <summary>
+        /// Gets the last committed read snapshot on the file system.
+        /// </summary>
+        /// <returns></returns>
+        public ReadSnapshot Snapshot
+        {
+            get
+            {
+                return m_fileStructure.Snapshot;
+            }
+        }
+
+        /// <summary>
         /// Gets the size of the file.
         /// </summary>
-        public long FileSize
+        public long ArchiveSize
         {
             get
             {
@@ -194,7 +208,7 @@ namespace GSF.SortedTreeStore.Storage
         {
             if (!m_openedFiles.ContainsKey(fileName))
             {
-                if (!m_fileStructure.ContainsSubFile(fileName))
+                if (!m_fileStructure.Snapshot.Header.ContainsSubFile(fileName))
                     return null;
                 m_openedFiles.Add(fileName, new SortedTreeTable<TKey, TValue>(m_fileStructure, fileName, this));
             }
@@ -219,7 +233,7 @@ namespace GSF.SortedTreeStore.Storage
             SubFileName fileName = GetFileName<TKey, TValue>();
             if (!m_openedFiles.ContainsKey(fileName))
             {
-                if (!m_fileStructure.ContainsSubFile(fileName))
+                if (!m_fileStructure.Snapshot.Header.ContainsSubFile(fileName))
                 {
                     CreateArchiveFile<TKey, TValue>(fileName, storageMethod);
                 }
@@ -255,7 +269,7 @@ namespace GSF.SortedTreeStore.Storage
                 using (SubFileStream fs = trans.CreateFile(fileName))
                 using (BinaryStream bs = new BinaryStream(fs))
                 {
-                    int blockSize = m_fileStructure.DataBlockSize;
+                    int blockSize = m_fileStructure.Snapshot.Header.DataBlockSize;
                     const int maxValue = 4096;
 
                     if (blockSize > maxValue)
@@ -306,18 +320,6 @@ namespace GSF.SortedTreeStore.Storage
             if (m_filePath != string.Empty)
             {
                 File.Delete(m_filePath);
-            }
-        }
-
-        /// <summary>
-        /// Removes all of the subfiles in the ArchiveFile, thus emptying the file.
-        /// </summary>
-        public void EmptyFile()
-        {
-            using (var edit = m_fileStructure.BeginEdit())
-            {
-                edit.DeleteAllSubFiles();
-                edit.CommitAndDispose();
             }
         }
 

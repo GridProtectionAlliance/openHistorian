@@ -143,7 +143,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
                     for (int x = 0; x < list.Count; x++)
                     {
-                        size += list[x].SortedTreeTable.BaseFile.FileSize;
+                        size += list[x].SortedTreeTable.BaseFile.ArchiveSize;
                         if (size > m_targetSize)
                         {
                             if (x != list.Count - 1)//If not the last entry

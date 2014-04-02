@@ -85,6 +85,23 @@ namespace GSF.SortedTreeStore.Engine
         }
 
         /// <summary>
+        /// Attempts to get the file for the provided fileId
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <returns></returns>
+        public ArchiveTableSummary<TKey, TValue> TryGetFile(Guid fileId)
+        {
+             if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+            foreach (var table in m_tables)
+            {
+                if (table.FileId == fileId)
+                    return table;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Gets if this class has been disposed.
         /// </summary>
         public bool IsDisposed

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SortedTreeTableReadSnapshot`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore.Tree;
 using GSF.IO.FileStructure;
 
@@ -38,16 +39,20 @@ namespace GSF.SortedTreeStore.Storage
     {
         #region [ Members ]
 
+        private SubFileStream m_subStream;
+        private BinaryStream m_binaryStream;
+        private SortedTree<TKey, TValue> m_tree;
         private bool m_disposed;
-        private SortedTreeContainer<TKey, TValue> m_dataTree;
 
         #endregion
 
         #region [ Constructors ]
 
-        internal SortedTreeTableReadSnapshot(TransactionalRead currentTransaction, SubFileName fileName)
+        internal SortedTreeTableReadSnapshot(ReadSnapshot currentTransaction, SubFileName fileName)
         {
-            m_dataTree = new SortedTreeContainer<TKey, TValue>(currentTransaction, fileName);
+            m_subStream = currentTransaction.OpenFile(fileName);
+            m_binaryStream = new BinaryStream(m_subStream);
+            m_tree = SortedTree<TKey, TValue>.Open(m_binaryStream);
         }
 
         #endregion
@@ -75,7 +80,7 @@ namespace GSF.SortedTreeStore.Storage
         /// <returns></returns>
         public SortedTreeScannerBase<TKey, TValue> GetTreeScanner()
         {
-            return m_dataTree.CreateTreeScanner();
+            return m_tree.CreateTreeScanner();
         }
         /// <summary>
         /// Returns the lower and upper bounds of the tree
@@ -86,7 +91,7 @@ namespace GSF.SortedTreeStore.Storage
         /// If the tree is empty, lowerBounds will be greater than upperBounds</remarks>
         public void GetKeyRange(TKey lowerBounds, TKey upperBounds)
         {
-            m_dataTree.GetKeyRange(lowerBounds, upperBounds);
+            m_tree.GetKeyRange(lowerBounds, upperBounds);
         }
 
         /// <summary>
@@ -99,14 +104,20 @@ namespace GSF.SortedTreeStore.Storage
             {
                 try
                 {
-                    if (m_dataTree != null)
+                    if (m_binaryStream != null)
                     {
-                        m_dataTree.Dispose();
-                        m_dataTree = null;
+                        m_binaryStream.Dispose();
+                    }
+                    if (m_subStream != null)
+                    {
+                        m_subStream.Dispose();
                     }
                 }
                 finally
                 {
+                    m_subStream = null;
+                    m_binaryStream = null;
+                    m_tree = null;
                     m_disposed = true;
                 }
             }

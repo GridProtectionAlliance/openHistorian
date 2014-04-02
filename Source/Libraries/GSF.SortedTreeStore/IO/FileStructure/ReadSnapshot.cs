@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  TransactionalRead.cs - Gbtc
+//  ReadSnapshot.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -32,7 +32,7 @@ namespace GSF.IO.FileStructure
     /// This is read only and will also block the main file from being deleted. 
     /// Therefore it is important to release this lock so the file can be deleted after a rollover.
     /// </summary>
-    public sealed class TransactionalRead
+    public class ReadSnapshot
     {
         #region [ Members ]
 
@@ -53,8 +53,8 @@ namespace GSF.IO.FileStructure
         /// <summary>
         /// Creates a readonly copy of a transaction.
         /// </summary>
-        /// <param name="dataReader"> </param>
-        internal TransactionalRead(DiskIo dataReader)
+        /// <param name="dataReader"></param>
+        internal ReadSnapshot(DiskIo dataReader)
         {
             if (dataReader == null)
                 throw new ArgumentNullException("dataReader");
@@ -67,13 +67,13 @@ namespace GSF.IO.FileStructure
         #region [ Properties ]
 
         /// <summary>
-        /// A list of all of the files in this collection.
+        /// Gets the header of the file structure.
         /// </summary>
-        public ReadonlyList<SubFileMetaData> Files
+        public FileHeaderBlock Header
         {
             get
             {
-                return m_fileHeaderBlock.Files;
+                return m_fileHeaderBlock;
             }
         }
 
@@ -100,9 +100,9 @@ namespace GSF.IO.FileStructure
         /// <returns></returns>
         public SubFileStream OpenFile(SubFileName fileName)
         {
-            for (int x = 0; x < Files.Count; x++)
+            for (int x = 0; x < m_fileHeaderBlock.Files.Count; x++)
             {
-                SubFileMetaData file = Files[x];
+                SubFileMetaData file = m_fileHeaderBlock.Files[x];
                 if (file.FileName == fileName)
                 {
                     return OpenFile(x);
@@ -111,17 +111,10 @@ namespace GSF.IO.FileStructure
             throw new Exception("File does not exist");
         }
 
+       
+
         #endregion
 
-        public bool ContainsSubFile(SubFileName fileName)
-        {
-            for (int x = 0; x < Files.Count; x++)
-            {
-                SubFileMetaData file = Files[x];
-                if (file.FileName == fileName)
-                    return true;
-            }
-            return false;
-        }
+        
     }
 }

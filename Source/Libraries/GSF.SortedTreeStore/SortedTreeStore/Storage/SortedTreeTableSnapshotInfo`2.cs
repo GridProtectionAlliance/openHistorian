@@ -37,7 +37,7 @@ namespace GSF.SortedTreeStore.Storage
         #region [ Members ]
 
         private readonly TransactionalFileStructure m_fileStructure;
-        private readonly TransactionalRead m_currentTransaction;
+        private readonly ReadSnapshot m_currentTransaction;
         private readonly SubFileName m_fileName;
 
         #endregion
@@ -48,7 +48,7 @@ namespace GSF.SortedTreeStore.Storage
         {
             m_fileName = fileName;
             m_fileStructure = fileStructure;
-            m_currentTransaction = m_fileStructure.BeginRead();
+            m_currentTransaction = m_fileStructure.Snapshot;
         }
 
         #endregion

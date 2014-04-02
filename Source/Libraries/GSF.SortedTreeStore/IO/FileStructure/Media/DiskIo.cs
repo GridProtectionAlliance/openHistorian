@@ -200,16 +200,16 @@ namespace GSF.IO.FileStructure.Media
 
         #endregion
 
-        public static DiskIo CreateMemoryFile(MemoryPool pool, int fileStructureBlockSize)
+        public static DiskIo CreateMemoryFile(MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId = default(Guid))
         {
-            DiskMedium disk = DiskMedium.CreateMemoryFile(pool, fileStructureBlockSize);
+            DiskMedium disk = DiskMedium.CreateMemoryFile(pool, fileStructureBlockSize, uniqueFileId);
             return new DiskIo(disk, false);
         }
 
-        public static DiskIo CreateFile(string fileName, MemoryPool pool, int fileStructureBlockSize)
+        public static DiskIo CreateFile(string fileName, MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId = default(Guid))
         {
             FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
-            DiskMedium disk = DiskMedium.CreateFile(fileStream, pool, fileStructureBlockSize);
+            DiskMedium disk = DiskMedium.CreateFile(fileStream, pool, fileStructureBlockSize, uniqueFileId);
             return new DiskIo(disk, false);
         }
 

@@ -28,7 +28,7 @@ using GSF.IO.FileStructure;
 namespace GSF.SortedTreeStore.Storage
 {
     /// <summary>
-    /// Represents a individual self-contained table. 
+    /// Represents an individual table contained within the file. 
     /// </summary>
     public partial class SortedTreeTable<TKey, TValue>
         : IDisposable
@@ -40,9 +40,10 @@ namespace GSF.SortedTreeStore.Storage
         private readonly SubFileName m_fileName;
         private readonly TKey m_firstKey;
         private readonly TKey m_lastKey;
-        private bool m_disposed;
         private readonly TransactionalFileStructure m_fileStructure;
         private Editor m_activeEditor;
+        private bool m_disposed;
+
         /// <summary>
         /// Gets the archive file where this table exists.
         /// </summary>
@@ -52,6 +53,12 @@ namespace GSF.SortedTreeStore.Storage
 
         #region [ Constructors ]
 
+        /// <summary>
+        /// Creates a SortedTreeTable
+        /// </summary>
+        /// <param name="fileStructure"></param>
+        /// <param name="fileName"></param>
+        /// <param name="baseFile"></param>
         internal SortedTreeTable(TransactionalFileStructure fileStructure, SubFileName fileName, SortedTreeFile baseFile)
         {
             BaseFile = baseFile;
@@ -59,7 +66,7 @@ namespace GSF.SortedTreeStore.Storage
             m_fileStructure = fileStructure;
             m_firstKey = new TKey();
             m_lastKey = new TKey();
-            using (SortedTreeTableReadSnapshot<TKey, TValue> snapshot = AcquireReadSnapshot().CreateReadSnapshot())
+            using (SortedTreeTableReadSnapshot<TKey, TValue> snapshot = BeginRead())
             {
                 snapshot.GetKeyRange(m_firstKey, m_lastKey);
             }

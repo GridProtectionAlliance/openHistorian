@@ -16,187 +16,178 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  9/30/2011 - Steven E. Chisholm
+//  10/14/2011 - Steven E. Chisholm
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
 using System;
 using System.IO;
+using System.Threading;
+using GSF.IO.FileStructure.Media;
 
 namespace GSF.IO.FileStructure
 {
-    public sealed class TransactionalFileStructure 
+    /// <summary>
+    /// This class is responsible for managing the transactions that occur on the file system.
+    /// Therefore, it keeps up with the latest snapshot of the file allocation table, 
+    /// permits only a single concurrent edit of the archive system, and determines when a file
+    /// can be deleted when there are no read or write transactions. It also containst the IO system.
+    /// </summary>
+    public class TransactionalFileStructure
         : IDisposable
     {
         #region [ Members ]
 
-        private TransactionService m_file;
-        private int m_blockSize;
+        /// <summary>
+        /// Determines if this object has been disposed.
+        /// </summary>
+        private bool m_disposed;
+
+        /// <summary>
+        /// Contains the disk IO subsystem for accessing the file.
+        /// </summary>
+        private DiskIo m_diskIo;
+
+        /// <summary>
+        /// Contains the current active transaction.  If this null, there is no active transaction.
+        /// </summary>
+        private TransactionalEdit m_currentTransaction;
+
+        /// <summary>
+        /// Contains the current read transaction.
+        /// </summary>
+        private ReadSnapshot m_currentReadTransaction;
 
         #endregion
 
         #region [ Constructors ]
 
-        private TransactionalFileStructure()
+        private TransactionalFileStructure(DiskIo diskIo)
         {
+            m_diskIo = diskIo;
+            m_currentReadTransaction = new ReadSnapshot(diskIo);
         }
 
         /// <summary>
-        /// Creates a new inMemory archive file
-        /// </summary>
-        public static TransactionalFileStructure CreateInMemory(int blockSize = 4096)
+        /// Creates a new archive file that is completely in memory
+        ///  </summary>
+        public static TransactionalFileStructure CreateInMemory(int blockSize, Guid uniqueFileId = default(Guid))
         {
-            TransactionalFileStructure fs = new TransactionalFileStructure();
-            fs.m_blockSize = blockSize;
-            fs.m_file = TransactionService.CreateInMemory(blockSize);
-            return fs;
+            DiskIo disk = DiskIo.CreateMemoryFile(Globals.MemoryPool, blockSize, uniqueFileId);
+            return new TransactionalFileStructure(disk);
         }
 
         /// <summary>
-        /// Creates a new archive file
+        /// Creates a new archive file using the provided file. File is editable.
         /// </summary>
-        public static TransactionalFileStructure CreateFile(string archiveFile, int blockSize = 4096)
+        public static TransactionalFileStructure CreateFile(string fileName, int blockSize, Guid uniqueFileId = default(Guid))
         {
-            if (archiveFile == null)
-                throw new ArgumentNullException("archiveFile");
-            if (File.Exists(archiveFile))
-                throw new Exception("ArchiveFile Already Exists");
+            if (fileName == null)
+                throw new ArgumentNullException("fileName");
+            if (File.Exists(fileName))
+                throw new Exception("fileName Already Exists");
 
-            TransactionalFileStructure fs = new TransactionalFileStructure();
-            fs.m_blockSize = blockSize;
-            fs.m_file = TransactionService.CreateFile(archiveFile, blockSize);
-            return fs;
+            DiskIo disk = DiskIo.CreateFile(fileName, Globals.MemoryPool, blockSize, uniqueFileId);
+            return new TransactionalFileStructure(disk);
         }
 
         /// <summary>
-        /// Creates a new archive file
+        /// Opens an existing file.
         /// </summary>
-        public static TransactionalFileStructure OpenFile(string archiveFile, bool isReadOnly)
+        public static TransactionalFileStructure OpenFile(string fileName, bool isReadOnly)
         {
-            if (archiveFile == null)
-                throw new ArgumentNullException("archiveFile");
-            if (!File.Exists(archiveFile))
-                throw new Exception("ArchiveFile Does Not Exists");
+            if (fileName == null)
+                throw new ArgumentNullException("fileName");
+            if (!File.Exists(fileName))
+                throw new Exception("fileName Does Not Exists");
 
-            TransactionalFileStructure fs = new TransactionalFileStructure();
-            fs.m_file = TransactionService.OpenFile(archiveFile, isReadOnly);
-            fs.m_blockSize = fs.m_file.BlockSize;
-            return fs;
+            DiskIo disk = DiskIo.OpenFile(fileName, Globals.MemoryPool, isReadOnly);
+            return new TransactionalFileStructure(disk);
         }
 
         #endregion
-
-        #region [ Properties ]
-
-        public int BlockSize
-        {
-            get
-            {
-                return m_blockSize;
-            }
-        }
-
-        public int DataBlockSize
-        {
-            get
-            {
-                return m_blockSize - FileStructureConstants.BlockFooterLength;
-            }
-        }
-
-        //public Guid ArchiveID
-        //{
-        //    get { throw new NotImplementedException(); }
-        //}
-
-        //public bool ReadOnly
-        //{
-        //    get { throw new NotImplementedException(); }
-        //}
-
-        //public List<object> FeatureList
-        //{
-        //    get { throw new NotImplementedException(); }
-        //}
 
         public long ArchiveSize
         {
             get
             {
-                return m_file.ArchiveSize;
+                return m_diskIo.FileSize;
             }
         }
 
-        public Guid ArchiveType
+        /// <summary>
+        /// Gets the last committed read snapshot on the file system.
+        /// </summary>
+        /// <returns></returns>
+        public ReadSnapshot Snapshot
         {
             get
             {
-                return m_file.ArchiveType;
+                return m_currentReadTransaction;
             }
         }
-
-        public byte[] UserData
-        {
-            get
-            {
-                return m_file.UserData;
-            }
-        }
-
-        //public long FreeSpace
-        //{
-        //    get { return m_file.FreeSpace; }
-        //}
-
-        //public Guid[] Features
-        //{
-        //    get { throw new NotImplementedException(); }
-        //}
-
-        //public DataStream OpenFeature(Guid FeatureID)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public DataStream CreateFeature(Guid FeatureID)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        #endregion
 
         #region [ Methods ]
 
+        /// <summary>
+        /// This will start a transactional edit on the file. 
+        /// </summary>
+        /// <returns></returns>
         public TransactionalEdit BeginEdit()
         {
-            return m_file.BeginEditTransaction();
+            if (m_diskIo.IsReadOnly)
+                throw new Exception("File has been opened in readonly mode");
+
+            TransactionalEdit transaction = new TransactionalEdit(m_diskIo, OnTransactionRolledBack, OnTransactionCommitted);
+            Interlocked.CompareExchange(ref m_currentTransaction, transaction, null);
+            if (m_currentTransaction != transaction)
+                throw new Exception("Only one edit transaction can exist at one time.");
+            return m_currentTransaction;
         }
 
-        public TransactionalRead BeginRead()
+        private void OnTransactionCommitted()
         {
-            return m_file.GetCurrentSnapshot();
+            m_currentReadTransaction = new ReadSnapshot(m_diskIo);
+            Thread.MemoryBarrier();
+            m_currentTransaction = null;
         }
 
-        //public long GrowArchive(long GrowAmount)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        private void OnTransactionRolledBack()
+        {
+            m_currentTransaction = null;
+        }
 
+        /// <summary>
+        /// Releases all the resources used by the <see cref="TransactionalFileStructure"/> object.
+        /// </summary>
         public void Dispose()
         {
-            if (m_file != null)
+            if (!m_disposed)
             {
-                m_file.Dispose();
-                m_file = null;
+                try
+                {
+                    if (m_currentTransaction != null)
+                    {
+                        m_currentTransaction.Dispose();
+                        m_currentTransaction = null;
+                    }
+
+                    if (m_diskIo != null)
+                    {
+                        m_diskIo.Dispose();
+                        m_diskIo = null;
+                    }
+                }
+                finally
+                {
+                    m_disposed = true; // Prevent duplicate dispose.
+                }
             }
         }
 
         #endregion
 
-        public bool ContainsSubFile(SubFileName fileName)
-        {
-            return m_file.GetCurrentSnapshot().ContainsSubFile(fileName);
-        }
+
     }
 }
