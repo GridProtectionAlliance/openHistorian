@@ -42,6 +42,7 @@ ECHO Getting latest version...
 %tfs% get %target1% /version:T /force /recursive /noprompt
 %tfs% get "%sourcetools%ConfigCrypter.exe" /version:T /force /recursive /noprompt
 %tfs% get "%sourcetools%ConfigurationEditor.exe" /version:T /force /recursive /noprompt
+%tfs% get "%sourcetools%StatHistorianReportGenerator.exe" /version:T /force /recursive /noprompt
 %tfs% get "%sourcetools%NoInetFixUtil.exe" /version:T /force /recursive /noprompt
 
 ECHO.
@@ -49,6 +50,7 @@ ECHO Checking out dependencies...
 %tfs% checkout %target1% /recursive /noprompt
 %tfs% checkout "%sourcetools%ConfigCrypter.exe" /noprompt
 %tfs% checkout "%sourcetools%ConfigurationEditor.exe" /noprompt
+%tfs% checkout "%sourcetools%StatHistorianReportGenerator.exe" /noprompt
 %tfs% checkout "%sourcetools%NoInetFixUtil.exe" /noprompt
 %tfs% checkout "%targetschema%" /recursive /noprompt
 
@@ -57,6 +59,7 @@ ECHO Updating dependencies...
 XCOPY %source1% %target1% /Y /E
 XCOPY "%frameworktools%ConfigCrypter\ConfigCrypter.exe" "%sourcetools%ConfigCrypter.exe" /Y
 XCOPY "%frameworktools%ConfigEditor\ConfigEditor.exe" "%sourcetools%ConfigurationEditor.exe" /Y
+XCOPY "%frameworktools%StatHistorianReportGenerator\StatHistorianReportGenerator.exe" "%sourcetools%StatHistorianReportGenerator.exe" /Y
 XCOPY "%frameworktools%NoInetFixUtil\NoInetFixUtil.exe" "%sourcetools%NoInetFixUtil.exe" /Y
 
 ECHO.
@@ -96,6 +99,7 @@ ECHO Checking in dependencies...
 %tfs% checkin %target1% /noprompt /recursive /comment:"Updated grid solutions framework dependencies."
 %tfs% checkin "%sourcetools%ConfigCrypter.exe" /noprompt /comment:"Updated grid solutions framework tool: ConfigCrypter."
 %tfs% checkin "%sourcetools%ConfigurationEditor.exe" /noprompt /comment:"Updated grid solutions framework tool: ConfigurationEditor."
+%tfs% checkin "%sourcetools%StatHistorianReportGenerator.exe" /noprompt /comment:"Updated grid solutions framework tool: StatHistorianReportGenerator."
 %tfs% checkin "%sourcetools%NoInetFixUtil.exe" /noprompt /comment:"Updated grid solutions framework tool: NoInetFixUtil."
 %tfs% checkin "%targetschema%" /noprompt /recursive /comment:"Updated database schema definitions from GSF source."
 
