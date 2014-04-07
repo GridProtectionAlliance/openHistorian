@@ -413,24 +413,11 @@
             Set the <paramref name="inputMeasurementKeysRestriction"/> to null to use full adapter I/O routing demands.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.RoutedMeasurementsHandler(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
+        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.GetRoutedMeasurementsHandler">
             <summary>
-            Event handler for distributing new measurements in a routed fashion.
+            Gets a handler for measurements that routes measurements to the appropriate consumers.
             </summary>
-            <param name="sender">Event source reference to adapter that generated new measurements.</param>
-            <param name="e">Event arguments containing a collection of new measurements.</param>
-            <remarks>
-            Time-series framework uses this handler to directly route new measurements to the action and output adapters.
-            </remarks>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.RoutedMeasurementsHandler(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
-            <summary>
-            Method for distributing new measurements in a routed fashion.
-            </summary>
-            <param name="newMeasurements">Collection of new measurements.</param>
-            <remarks>
-            Time-series framework uses this handler to directly route new measurements to the action and output adapters.
-            </remarks>
+            <returns>The measurement handler used for routing.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.RoutingTables.BroadcastMeasurementsHandler(System.Object,GSF.EventArgs{System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement}})">
             <summary>
@@ -464,11 +451,11 @@
             </summary>
             <param name="ex">Processing <see cref="T:System.Exception"/>.</param>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.HandleConnectOnDemandAdapters(GSF.TimeSeries.MeasurementKey[],GSF.TimeSeries.Adapters.IInputAdapter[],GSF.TimeSeries.Adapters.IActionAdapter[],GSF.TimeSeries.Adapters.IOutputAdapter[])">
+        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.HandleConnectOnDemandAdapters(System.Collections.Generic.ISet{GSF.TimeSeries.MeasurementKey},GSF.TimeSeries.Adapters.IInputAdapter[],GSF.TimeSeries.Adapters.IActionAdapter[],GSF.TimeSeries.Adapters.IOutputAdapter[])">
             <summary>
-            Starts or stops connect on demand adapters based on current state of demanded input or output measurements.
+            Starts or stops connect on demand adapters based on current state of demanded input or output signals.
             </summary>
-            <param name="inputMeasurementKeysRestriction">Input measurement keys restriction.</param>
+            <param name="inputMeasurementKeysRestriction">The set of signals to be produced by the chain of adapters to be handled.</param>
             <param name="inputAdapterCollection">Collection of input adapters at start of routing table calculation.</param>
             <param name="actionAdapterCollection">Collection of action adapters at start of routing table calculation.</param>
             <param name="outputAdapterCollection">Collection of output adapters at start of routing table calculation.</param>
@@ -476,22 +463,24 @@
             Set the <paramref name="inputMeasurementKeysRestriction"/> to null to use full adapter routing demands.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.TraverseMeasurementKeyDependencyChain(GSF.TimeSeries.MeasurementKey[],GSF.TimeSeries.Adapters.IInputAdapter[],GSF.TimeSeries.Adapters.IActionAdapter[],System.Collections.Generic.IEnumerable{GSF.TimeSeries.MeasurementKey}@,System.Collections.Generic.IEnumerable{GSF.TimeSeries.MeasurementKey}@)">
+        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.TraverseDependencyChain(System.Collections.Generic.ISet{GSF.TimeSeries.MeasurementKey},GSF.TimeSeries.Adapters.IInputAdapter[],GSF.TimeSeries.Adapters.IActionAdapter[],GSF.TimeSeries.Adapters.IOutputAdapter[])">
             <summary>
-            Calculates the input and output measurement key dependency chain based on a set of input measurement keys restriction.
+            Determines the set of adapters in the dependency chain that produces the set of signals in the
+            <paramref name="inputMeasurementKeysRestriction"/> and returns the set of input signals required by the
+            adapters in the chain and the set of output signals produced by the adapters in the chain.
             </summary>
-            <param name="inputMeasurementKeysRestriction">Input measurement keys restriction.</param>
+            <param name="inputMeasurementKeysRestriction">The set of signals that must be produced by the dependency chain.</param>
             <param name="inputAdapterCollection">Collection of input adapters at start of routing table calculation.</param>
             <param name="actionAdapterCollection">Collection of action adapters at start of routing table calculation.</param>
-            <param name="outputMeasurementKeys">Dependent output measurement keys to return.</param>
-            <param name="inputMeasurementKeys">Dependent input measurement keys to return.</param>
+            <param name="outputAdapterCollection">Collection of output adapters at start of routing table calculation.</param>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.NotifyHandler(System.Object,GSF.EventArgs{GSF.TimeSeries.IMeasurement})">
+        <member name="M:GSF.TimeSeries.Adapters.RoutingTables.TraverseDependencyChain(GSF.TimeSeries.Adapters.IInputAdapter[],GSF.TimeSeries.Adapters.IActionAdapter[],GSF.TimeSeries.Adapters.IOutputAdapter[])">
             <summary>
-            Event handler for notifying dependent adapters of updates to measurements.
+            Determines the set of adapters in the dependency chain for all adapters in the system which are either not connect or demand or are demanded.
             </summary>
-            <param name="sender">The source of the event.</param>
-            <param name="args">The measurement that was updated.</param>
+            <param name="inputAdapterCollection">Collection of input adapters at start of routing table calculation.</param>
+            <param name="actionAdapterCollection">Collection of action adapters at start of routing table calculation.</param>
+            <param name="outputAdapterCollection">Collection of output adapters at start of routing table calculation.</param>
         </member>
         <member name="E:GSF.TimeSeries.Adapters.RoutingTables.StatusMessage">
             <summary>
@@ -3008,12 +2997,6 @@
             Implementers should use value <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.
             </remarks>
         </member>
-        <member name="P:GSF.TimeSeries.Adapters.IAdapter.DependencyTimeout">
-            <summary>
-            Gets or sets the maximum time the system will wait on inter-adapter
-            dependencies before publishing queued measurements to an adapter.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.Adapters.IAdapter.AutoStart">
             <summary>
             Gets or sets flag indicating if adapter should automatically start or connect on demand.
@@ -3460,23 +3443,6 @@
             <remarks>
             Set to <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.
             </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.Dependencies">
-            <summary>
-            Gets or sets the comma-separated list of adapter names that this adapter depends on.
-            </summary>
-            <remarks>
-            Adapters can specify a list of adapters that it depends on. The measurement routing
-            system will hold on to measurements that need to be passed through an adapter's
-            dependencies. Those measurements will be routed to the dependent adapter when all of
-            its dependencies have finished processing them.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.DependencyTimeout">
-            <summary>
-            Gets or sets the maximum time the system will wait on inter-adapter
-            dependencies before publishing queued measurements to an adapter.
-            </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.AutoStart">
             <summary>
@@ -4040,12 +4006,6 @@
             <remarks>
             Set to <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.
             </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.DependencyTimeout">
-            <summary>
-            Gets or sets the maximum time the system will wait on inter-adapter
-            dependencies before publishing queued measurements to an adapter.
-            </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.AutoStart">
             <summary>
@@ -4700,23 +4660,6 @@
             Set to <see cref="F:System.Threading.Timeout.Infinite"/> to wait indefinitely.
             </remarks>
         </member>
-        <member name="P:GSF.TimeSeries.Adapters.AdapterBase.Dependencies">
-            <summary>
-            Gets or sets the comma-separated list of adapter names that this adapter depends on.
-            </summary>
-            <remarks>
-            Adapters can specify a list of adapters that it depends on. The measurement routing
-            system will hold on to measurements that need to be passed through an adapter's
-            dependencies. Those measurements will be routed to the dependent adapter when all of
-            its dependencies have finished processing them.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.AdapterBase.DependencyTimeout">
-            <summary>
-            Gets or sets the maximum time the system will wait on inter-adapter
-            dependencies before publishing queued measurements to an adapter.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.Adapters.AdapterBase.AutoStart">
             <summary>
             Gets or sets flag indicating if adapter should automatically start or otherwise connect on demand.
@@ -5018,23 +4961,6 @@
             Set to <c>null</c> apply no filter.
             </remarks>
         </member>
-        <member name="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.Dependencies">
-            <summary>
-            Gets or sets the comma-separated list of adapter names that this adapter depends on.
-            </summary>
-            <remarks>
-            Adapters can specify a list of adapters that it depends on. The measurement routing
-            system will hold on to measurements that need to be passed through an adapter's
-            dependencies. Those measurements will be routed to the dependent adapter when all of
-            its dependencies have finished processing them.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.DependencyTimeout">
-            <summary>
-            Gets or sets the maximum time the system will wait on inter-adapter
-            dependencies before publishing queued measurements to an adapter.
-            </summary>
-        </member>
         <member name="P:GSF.TimeSeries.Adapters.FacileActionAdapterBase.OutputSourceIDs">
             <summary>
             Gets or sets <see cref="P:GSF.TimeSeries.MeasurementKey.Source"/> values used to filter output measurements.
@@ -5155,6 +5081,13 @@
             </summary>
             <param name="adapter"><see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance to test.</param>
             <returns><c>true</c> if <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> has a temporal constraint defined.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Adapters.IAdapterExtensions.InputMeasurementKeys(GSF.TimeSeries.Adapters.IAdapter)">
+            <summary>
+            Returns the <see cref="T:GSF.TimeSeries.MeasurementKey"/> values of the <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> input measurements.
+            </summary>
+            <param name="adapter"><see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> instance input measurements to convert.</param>
+            <returns><see cref="T:GSF.TimeSeries.MeasurementKey"/> values of the <see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> input measurements.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.IAdapterExtensions.OutputMeasurementKeys(GSF.TimeSeries.Adapters.IAdapter)">
             <summary>
@@ -5640,23 +5573,6 @@
             <see cref="F:GSF.EventArgs`1.Argument"/> is total number of unprocessed measurements.
             </para>
             </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.OutputAdapterBase.Dependencies">
-            <summary>
-            Gets or sets the comma-separated list of adapter names that this adapter depends on.
-            </summary>
-            <remarks>
-            Adapters can specify a list of adapters that it depends on. The measurement routing
-            system will hold on to measurements that need to be passed through an adapter's
-            dependencies. Those measurements will be routed to the dependent adapter when all of
-            its dependencies have finished processing them.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.OutputAdapterBase.DependencyTimeout">
-            <summary>
-            Gets or sets the maximum time the system will wait on inter-adapter
-            dependencies before publishing queued measurements to an adapter.
-            </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.OutputAdapterBase.RequeueOnException">
             <summary>
@@ -7551,23 +7467,6 @@
         <member name="P:GSF.TimeSeries.Transport.DataPublisher.CipherKeyRotationPeriod">
             <summary>
             Gets or sets the cipher key rotation period.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.DataPublisher.Dependencies">
-            <summary>
-            Gets or sets the comma-separated list of adapter names that this adapter depends on.
-            </summary>
-            <remarks>
-            Adapters can specify a list of adapters that it depends on. The measurement routing
-            system will hold on to measurements that need to be passed through an adapter's
-            dependencies. Those measurements will be routed to the dependent adapter when all of
-            its dependencies have finished processing them.
-            </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Transport.DataPublisher.DependencyTimeout">
-            <summary>
-            Gets or sets the maximum time the system will wait on inter-adapter
-            dependencies before publishing queued measurements to an adapter.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Transport.DataPublisher.CacheMeasurementKeys">

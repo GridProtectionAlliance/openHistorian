@@ -245,17 +245,6 @@
             Gets or sets primary keys of input measurements the <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/> expects, if any.
             </summary>
         </member>
-        <member name="P:HistorianAdapters.LocalOutputAdapter.Dependencies">
-            <summary>
-            Gets or sets the comma-separated list of adapter names that this adapter depends on.
-            </summary>
-        </member>
-        <member name="P:HistorianAdapters.LocalOutputAdapter.DependencyTimeout">
-            <summary>
-            Gets or sets the maximum time the system will wait on inter-adapter
-            dependencies before publishing queued measurements to an adapter.
-            </summary>
-        </member>
         <member name="P:HistorianAdapters.LocalOutputAdapter.ArchivePath">
             <summary>
             Gets or sets the path to the archive.

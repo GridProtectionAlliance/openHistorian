@@ -6,98 +6,73 @@
     <members>
         <member name="T:DNP3Adapters.DNP3InputAdapter">
             <summary>
-            DNP3 Adapter
+            Input adapter that reads measurements from a remote dnp3 endpoint.
             </summary>
         </member>
-        <member name="F:DNP3Adapters.DNP3InputAdapter.m_Manager">
+        <member name="M:DNP3Adapters.DNP3InputAdapter.Dispose(System.Boolean)">
             <summary>
-            DNP3 manager shared across all of the DNP3 input adapters
-            Concurrency level defaults to number of processors
+            Releases the unmanaged resources used by the <see cref="T:DNP3Adapters.DNP3InputAdapter"/> object and optionally releases the managed resources.
             </summary>
-        </member>
-        <member name="F:DNP3Adapters.DNP3InputAdapter.m_commsFilePath">
-            <summary>
-            The filename for the communication configuration file
-            </summary>
-        </member>
-        <member name="F:DNP3Adapters.DNP3InputAdapter.m_mappingFilePath">
-            <summary>
-            The filename for the measurement mapping configuration file
-            </summary>
-        </member>
-        <member name="F:DNP3Adapters.DNP3InputAdapter.m_MasterConfig">
-            <summary>
-            Configuration for the master. Set during the Initialize call.
-            </summary>
-        </member>
-        <member name="F:DNP3Adapters.DNP3InputAdapter.m_MeasMap">
-            <summary>
-            Configuration for the measurement map. Set during the Initialize call.
-            </summary>
-        </member>
-        <member name="F:DNP3Adapters.DNP3InputAdapter.m_Channel">
-            <summary>
-            Gets set during the AttemptConnection() call and using during AttemptDisconnect()
-            </summary>
-        </member>
-        <member name="F:DNP3Adapters.DNP3InputAdapter.m_numMeasurementsReceived">
-            <summary>
-            A counter of the number of measurements received
-            </summary>
-        </member>
-        <member name="F:DNP3Adapters.DNP3InputAdapter.m_active">
-            <summary>
-            Flag that records wether or not the port/master have been added so that the resource can be cleaned
-            up in the Dispose/AttemptDisconnect methods
-            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
         <member name="M:DNP3Adapters.DNP3InputAdapter.Initialize">
             <summary>
             Initializes <see cref="T:DNP3Adapters.DNP3InputAdapter"/>
             </summary>
         </member>
-        <member name="M:DNP3Adapters.DNP3InputAdapter.Dispose(System.Boolean)">
-            <summary>
-            Disposes the <see cref="T:DNP3Adapters.DNP3InputAdapter"/>
-            </summary>
-            <param name="disposing"><c>true</c> if disposing</param>
-        </member>
         <member name="M:DNP3Adapters.DNP3InputAdapter.AttemptConnection">
             <summary>
-            Connection attempt method
+            Attempts to connect to data input source.
             </summary>
+            <remarks>
+            Derived classes should attempt connection to data input source here.  Any exceptions thrown
+            by this implementation will result in restart of the connection cycle.
+            </remarks>
         </member>
         <member name="M:DNP3Adapters.DNP3InputAdapter.AttemptDisconnection">
             <summary>
-            Disconnect attempt method
+            Attempts to disconnect from data input source.
             </summary>
+            <remarks>
+            Derived classes should attempt disconnect from data input source here.  Any exceptions thrown
+            by this implementation will be reported to host via <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.ProcessException"/> event.
+            </remarks>
         </member>
         <member name="M:DNP3Adapters.DNP3InputAdapter.GetShortStatus(System.Int32)">
             <summary>
-            Short status of adapter
+            Gets a short one-line status of this <see cref="T:DNP3Adapters.DNP3InputAdapter"/>.
             </summary>
-            <param name="maxLength">Maximum length of status message</param>
-            <returns>Short status of adapter</returns>
+            <param name="maxLength">Maximum number of available characters for display.</param>
+            <returns>A short one-line summary of the current status of this <see cref="T:DNP3Adapters.DNP3InputAdapter"/>.</returns>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.CommsFilePath">
             <summary>
-            Gets or sets the name of the xml file from which the communication parameters will be read
+            Gets or sets the name of the xml file from which the communication parameters will be read.
             </summary>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.MappingFilePath">
             <summary>
-            Gets or sets the name of the xml file from which the measurement mapping is read
-            </summary>
-        </member>
-        <member name="P:DNP3Adapters.DNP3InputAdapter.UseAsyncConnect">
-            <summary>
-            Async connection flag
+            Gets or sets the name of the xml file from which the measurement mapping is read.
             </summary>
         </member>
         <member name="P:DNP3Adapters.DNP3InputAdapter.SupportsTemporalProcessing">
             <summary>
-            Temporal support flag
+            Gets the flag indicating if this adapter supports temporal processing.
             </summary>
+        </member>
+        <member name="P:DNP3Adapters.DNP3InputAdapter.UseAsyncConnect">
+            <summary>
+            Gets flag that determines if the data input connects asynchronously.
+            </summary>
+            <remarks>
+            Derived classes should return true when data input source is connects asynchronously, otherwise return false.
+            </remarks>
+        </member>
+        <member name="M:DNP3Adapters.DNP3InputAdapter.IaonProxyLogHandler.Log(DNP3.Interface.LogEntry)">
+            <summary>
+            Handler for log entires.
+            </summary>
+            <param name="entry"><see cref="T:DNP3.Interface.LogEntry"/> to handle.</param>
         </member>
         <member name="T:DNP3Adapters.MasterConfiguration">
             <summary>

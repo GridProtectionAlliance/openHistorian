@@ -5547,11 +5547,6 @@
             </summary>
             <seealso cref="T:GSF.Historian.MetadataProviders.IMetadataProvider"/>
         </member>
-        <member name="M:GSF.Historian.MetadataProviders.MetadataProviders.Initialize">
-            <summary>
-            Initializes the <see cref="T:GSF.Historian.MetadataProviders.MetadataProviders"/>.
-            </summary>
-        </member>
         <member name="M:GSF.Historian.MetadataProviders.MetadataProviders.RefreshAll">
             <summary>
             <see cref="M:GSF.Historian.MetadataProviders.IMetadataProvider.Refresh"/>es the <see cref="P:GSF.Historian.MetadataProviders.IMetadataProvider.Metadata"/> using all loaded metadata provider <see cref="P:GSF.Adapters.AdapterLoader`1.Adapters"/>.
