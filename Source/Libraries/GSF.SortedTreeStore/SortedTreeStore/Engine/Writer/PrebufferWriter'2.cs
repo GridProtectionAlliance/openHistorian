@@ -80,7 +80,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <summary>
         /// An event handler that will raise any exceptions that go unhandled in the rollover process.
         /// </summary>
-        public event UnhandledExceptionEventHandler Exception;
+        public event EventHandler<EventArgs<Exception>> UnhandledException;
 
         /// <summary>
         /// Specifies that this class has been disposed.
@@ -139,8 +139,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_rolloverInterval = rolloverInterval;
             m_waitForRolloverToComplete = new ManualResetEvent(false);
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.AboveNormal);
-            m_rolloverTask.OnRunning += ProcessRollover;
-            m_rolloverTask.OnException += OnException;
+            m_rolloverTask.Running += m_rolloverTask_Running;
+            m_rolloverTask.UnhandledException += m_rolloverTask_UnhandledException;
             m_rolloverTask.Start(m_rolloverInterval);
         }
 
@@ -215,7 +215,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <summary>
         /// Processes the rollover of this file.
         /// </summary>
-        private void ProcessRollover(ThreadContainerCallbackReason threadContainerCallbackReason)
+        private void m_rolloverTask_Running(object sender, EventArgs<ScheduledTaskRunningReason> e)
         {
             //the nature of how the ScheduledTask works 
             //gaurentees that this function will not be called concurrently
@@ -223,7 +223,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             //The worker can be disposed either via the Stop() method or 
             //the Dispose() method.  If via the dispose method, then
             //don't do any cleanup.
-            if (m_disposed && threadContainerCallbackReason == ThreadContainerCallbackReason.Disposing)
+            if (m_disposed && e.Argument == ScheduledTaskRunningReason.Disposing)
             {
                 m_waitForRolloverToComplete.Set();
                 return;
@@ -310,11 +310,11 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
         
-        void OnException(Exception e)
+        void m_rolloverTask_UnhandledException(object sender, EventArgs<Exception> e)
         {
-            UnhandledExceptionEventHandler handler = Exception;
-            if (handler != null)
-                handler(this, new UnhandledExceptionEventArgs(e,false));
+
+            if (UnhandledException != null)
+                UnhandledException(sender, e);
         }
 
     }

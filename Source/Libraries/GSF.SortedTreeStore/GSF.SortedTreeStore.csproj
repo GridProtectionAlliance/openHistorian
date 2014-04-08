@@ -92,6 +92,9 @@
     <DocumentationFile>..\..\..\Build\Output\Release\Library\openHistorian.Core\GSF.SortedTreeStore.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GSF.Core">
+      <HintPath>..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -134,7 +137,7 @@
     <Compile Include="SortedTreeStore\Engine\Writer\IncrementalStagingFile%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\FirstStageWriter%272.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\ManualCombineFiles.cs" />
-    <Compile Include="SortedTreeStore\Engine\Writer\RolloverPendingAction.cs" />
+    <Compile Include="SortedTreeStore\Engine\Writer\RolloverLog`2.cs" />
     <Compile Include="SortedTreeStore\Engine\Writer\TransactionTracker`2.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateSeekFilterBase.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateFilterBase.cs" />
@@ -155,6 +158,7 @@
     <Compile Include="SortedTreeStore\IDatabaseReader.cs" />
     <Compile Include="SortedTreeStore\Net\SortedTreeClientOptions.cs" />
     <Compile Include="SortedTreeStore\Net\ServerProcessClientEngine`2.cs" />
+    <Compile Include="SortedTreeStore\Storage\FileFlags.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableReadSnapshot`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableSnapshotInfo`2.cs" />

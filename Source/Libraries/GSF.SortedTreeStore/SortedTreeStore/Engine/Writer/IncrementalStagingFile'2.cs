@@ -57,8 +57,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <returns></returns>
         public static IncrementalStagingFile<TKey, TValue> CreateInMemory(ArchiveList<TKey, TValue> list, EncodingDefinition encoding)
         {
-            var initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode);
-            var finalFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(encoding);
+            var initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);
+            var finalFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(encoding, FileFlags.Stage1);
             return new IncrementalStagingFile<TKey, TValue>(list, initialFile, finalFile);
         }
 
@@ -71,8 +71,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <returns></returns>
         public static IncrementalStagingFile<TKey, TValue> CreateOnDisk(ArchiveList<TKey, TValue> list, EncodingDefinition encoding, string savePath)
         {
-            var initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode);
-            var finalFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(savePath, encoding, "Stage1");
+            var initialFile = ArchiveInitializer<TKey, TValue>.CreateInMemory(SortedTree.FixedSizeNode, FileFlags.Stage0);
+            var finalFile = ArchiveInitializer<TKey, TValue>.CreateOnDisk(savePath, encoding, "Stage1", FileFlags.Stage1);
             return new IncrementalStagingFile<TKey, TValue>(list, initialFile, finalFile);
         }
 
@@ -111,7 +111,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
             {
-                edit.RenewSnapshot(m_sortedTreeFile);
+                edit.RenewSnapshot(m_sortedTreeFile.ArchiveId);
             }
         }
 
@@ -136,7 +136,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
             using (ArchiveList<TKey, TValue>.Editor edit = m_archiveList.AcquireEditLock())
             {
                 edit.Add(newFile, false);
-                edit.RemoveAndDelete(m_sortedTreeFile);
+                edit.TryRemoveAndDelete(m_sortedTreeFile.ArchiveId);
             }
 
             m_sortedTreeFile = null;

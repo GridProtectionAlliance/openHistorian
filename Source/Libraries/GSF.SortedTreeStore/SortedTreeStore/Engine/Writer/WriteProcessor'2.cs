@@ -40,7 +40,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <summary>
         /// An event handler that will raise any exceptions that go unhandled in the rollover process.
         /// </summary>
-        public event UnhandledExceptionEventHandler Exception;
+        public event EventHandler<EventArgs<Exception>> UnhandledException;
         private readonly PrebufferWriter<TKey, TValue> m_prebuffer;
         private readonly FirstStageWriter<TKey, TValue> m_firstStageWriter;
         private readonly bool m_isMemoryOnly;
@@ -50,8 +50,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_isMemoryOnly = isMemoryOnly;
             m_prebuffer = prebuffer;
             m_firstStageWriter = firstStageWriter;
-            m_firstStageWriter.Exception += OnException;
-            m_prebuffer.Exception += OnException;
+            m_firstStageWriter.UnhandledException += OnException;
+            m_prebuffer.UnhandledException += OnException;
             m_transactionTracker = new TransactionTracker<TKey, TValue>(m_prebuffer, m_firstStageWriter);
         }
 
@@ -89,11 +89,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
             return new WriteProcessor<TKey, TValue>(prebuffer, firstStageWriter, false);
         }
 
-        void OnException(object sender, UnhandledExceptionEventArgs e)
+        void OnException(object sender, EventArgs<Exception> e)
         {
-            UnhandledExceptionEventHandler handler = Exception;
-            if (handler != null)
-                handler(sender, e);
+            if (UnhandledException != null)
+                UnhandledException(sender, e);
         }
 
         /// <summary>

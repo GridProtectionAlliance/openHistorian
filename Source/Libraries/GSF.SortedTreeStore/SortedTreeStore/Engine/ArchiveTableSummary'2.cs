@@ -42,7 +42,6 @@ namespace GSF.SortedTreeStore.Engine
         private readonly TKey m_lastKey;
         private readonly SortedTreeTable<TKey, TValue> m_sortedTreeTable;
         private readonly SortedTreeTableSnapshotInfo<TKey, TValue> m_activeSnapshotInfo;
-        private readonly string m_fileName;
         private readonly Guid m_fileId;
         #endregion
 
@@ -60,7 +59,6 @@ namespace GSF.SortedTreeStore.Engine
             m_activeSnapshotInfo = table.AcquireReadSnapshot();
             table.FirstKey.CopyTo(m_firstKey);
             table.LastKey.CopyTo(m_lastKey);
-            m_fileName = m_sortedTreeTable.BaseFile.FileName;
             m_fileId = m_sortedTreeTable.BaseFile.Snapshot.Header.ArchiveId;
         }
 
@@ -68,19 +66,14 @@ namespace GSF.SortedTreeStore.Engine
 
         #region [ Properties ]
 
+        /// <summary>
+        /// Gets the ID for this file.
+        /// </summary>
         public Guid FileId
         {
             get
             {
                 return m_fileId;
-            }
-        }
-
-        public string FileName
-        {
-            get
-            {
-                return m_fileName;
             }
         }
 

@@ -59,8 +59,9 @@ namespace openHistorian
         /// <param name="writer">Writer options.</param>
         /// <param name="paths">Write paths.</param>
         public HistorianDatabaseEngine(string databaseName, WriterMode writer, params string[] paths)
-            : base(databaseName, writer, CreateHistorianCompressionTs.TypeGuid, paths)
+            : base(databaseName, writer, CreateHistorianCompressionTs.TypeGuid, paths[0])
         {
+            LoadFilesFromPaths(paths);
         }
 
         #endregion

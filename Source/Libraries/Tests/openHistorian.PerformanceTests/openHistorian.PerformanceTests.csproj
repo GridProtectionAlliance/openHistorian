@@ -59,6 +59,10 @@
     <StartupObject>openHistorian.PerformanceTests.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GSF.Core, Version=2.0.169.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.Historian, Version=2.0.68.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\GSF.Historian.dll</HintPath>

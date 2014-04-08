@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  RolloverPendingAction.cs - Gbtc
+//  RolloverLog`2.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -31,10 +31,42 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Writer
 {
-    public class RolloverPendingAction<TKey, TValue>
+    /// <summary>
+    /// Logs the rollover process so that it can be properly finished in the event of a power outage or process crash
+    /// </summary>
+    /// <typeparam name="TKey">The key</typeparam>
+    /// <typeparam name="TValue">The value</typeparam>
+    public class RolloverLog<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        /// <summary>
+        /// The verification status of the rollover process.
+        /// </summary>
+        public enum VerificationInformation
+        {
+            /// <summary>
+            /// Indicates that the rolled over file was never actually created
+            /// </summary>
+            NotStarted,
+            /// <summary>
+            /// Indicates that the file was being rolled over, but the final point was never committed to the disk.
+            /// </summary>
+            NotFinishedDestination,
+            /// <summary>
+            /// Indicates that all data was successfully rolled over, however, the source files were never deleted.
+            /// </summary>
+            NotDeletedSourceFiles,
+            /// <summary>
+            /// Indicates that the source files have been modified.
+            /// </summary>
+            Corrupt,
+            /// <summary>
+            /// Indicates that the rollover was successful, and now the log file can be deleted.
+            /// </summary>
+            RolloverComplete
+        }
+
         class FileDetails
         {
             public Guid FileId;
@@ -67,21 +99,27 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
         Guid m_keyGuid;
         Guid m_valueGuid;
-        List<FileDetails> m_sourceFile = new List<FileDetails>();
-        Guid m_destinationFileId;
+        List<FileDetails> m_sourceFiles = new List<FileDetails>();
+        Guid m_destinationFile;
         TKey m_startKey = new TKey();
         TKey m_endKey = new TKey();
         string m_savedFileName;
 
         static readonly System.Text.Encoding Unicode;
         static readonly byte[] Header;
-        static RolloverPendingAction()
+        static RolloverLog()
         {
             Unicode = System.Text.Encoding.Unicode;
             Header = Unicode.GetBytes("Historian 2.0 Rollover Log");
         }
 
-        public RolloverPendingAction(List<Guid> sourceFiles, Guid destinationFileId, ArchiveList<TKey, TValue> list)
+        /// <summary>
+        /// Creates a rollover log
+        /// </summary>
+        /// <param name="sourceFiles">All of the source files that will be combined into a destination file.</param>
+        /// <param name="destinationFile"></param>
+        /// <param name="list">the archive list so additional metadata can be looked up </param>
+        public RolloverLog(List<Guid> sourceFiles, Guid destinationFile, ArchiveList<TKey, TValue> list)
         {
             using (var resources = list.CreateNewClientResources())
             {
@@ -97,15 +135,19 @@ namespace GSF.SortedTreeStore.Engine.Writer
                     file.FileId = table.SortedTreeTable.BaseFile.Snapshot.Header.ArchiveId;
                     file.SnapshotSequenceNumber = table.SortedTreeTable.BaseFile.Snapshot.Header.SnapshotSequenceNumber;
 
-                    m_sourceFile.Add(file);
+                    m_sourceFiles.Add(file);
                 }
-                m_destinationFileId = destinationFileId;
+                m_destinationFile = destinationFile;
             }
-
         }
 
-        public RolloverPendingAction(string fileName)
+        /// <summary>
+        /// Opens a rollover log to check if the rollover was complete.
+        /// </summary>
+        /// <param name="fileName">the name of the log file</param>
+        public RolloverLog(string fileName)
         {
+            m_savedFileName = fileName;
             byte[] data = File.ReadAllBytes(fileName);
             if (data.Length < 20 + 1 + Header.Length)
                 throw new Exception("File Corrupt, Not enough length");
@@ -148,9 +190,9 @@ namespace GSF.SortedTreeStore.Engine.Writer
                     while (count > 0)
                     {
                         count--;
-                        m_sourceFile.Add(new FileDetails(reader));
+                        m_sourceFiles.Add(new FileDetails(reader));
                     }
-                    m_destinationFileId = new Guid(reader.ReadBytes(16));
+                    m_destinationFile = new Guid(reader.ReadBytes(16));
                     return;
 
 
@@ -160,8 +202,13 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
         }
 
+        /// <summary>
+        /// Writes the rollover log file to the disk
+        /// </summary>
+        /// <param name="filename"></param>
         public void Save(string filename)
         {
+            m_savedFileName = filename;
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream, Unicode);
             writer.Write(Header);
@@ -170,12 +217,12 @@ namespace GSF.SortedTreeStore.Engine.Writer
             writer.Write(m_valueGuid.ToByteArray());
             m_startKey.Write(stream);
             m_endKey.Write(stream);
-            writer.Write(m_sourceFile.Count);
-            foreach (var file in m_sourceFile)
+            writer.Write(m_sourceFiles.Count);
+            foreach (var file in m_sourceFiles)
             {
                 file.Save(writer);
             }
-            writer.Write(m_destinationFileId.ToByteArray());
+            writer.Write(m_destinationFile.ToByteArray());
 
             using (var sha = new SHA1Managed())
             {
@@ -185,29 +232,25 @@ namespace GSF.SortedTreeStore.Engine.Writer
             File.WriteAllBytes(filename, stream.ToArray());
         }
 
-        public enum VerificationInformation
-        {
-            NotStarted,
-            NotFinishedDestination,
-            NotDeletedSourceFiles,
-            Corrupt,
-            RolloverComplete
-        }
-
+        /// <summary>
+        /// Gets the verification status of the log file. Used to decide next steps.
+        /// </summary>
+        /// <param name="list">an archive list that can be used to verify the rollover status</param>
+        /// <returns></returns>
         public VerificationInformation Verify(ArchiveList<TKey, TValue> list)
         {
             using (var resources = list.CreateNewClientResources())
             {
                 resources.UpdateSnapshot();
 
-                var destination = resources.TryGetFile(m_destinationFileId);
+                var destination = resources.TryGetFile(m_destinationFile);
                 if (destination != null)
                 {
                     //The destination was created
                     if (destination.FirstKey.IsEqualTo(m_startKey) && destination.LastKey.IsEqualTo(m_endKey))
                     {
                         //All data was properly copied
-                        foreach (var file in m_sourceFile)
+                        foreach (var file in m_sourceFiles)
                         {
                             if (resources.TryGetFile(file.FileId) != null)
                                 return VerificationInformation.NotDeletedSourceFiles;
@@ -217,7 +260,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
                     return VerificationInformation.NotFinishedDestination;
                 }
                 //Destination was never created
-                foreach (var file in m_sourceFile)
+                foreach (var file in m_sourceFiles)
                 {
                     var table = resources.TryGetFile(file.FileId);
                     if (table == null)
@@ -229,7 +272,11 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
 
-        public void Rollover(ArchiveList<TKey, TValue> list)
+        /// <summary>
+        /// Rollbacks any partially committed data.
+        /// </summary>
+        /// <param name="list"></param>
+        public void Rollback(ArchiveList<TKey, TValue> list)
         {
             switch (Verify(list))
             {
@@ -237,35 +284,50 @@ namespace GSF.SortedTreeStore.Engine.Writer
                     throw new Exception("Corrupt");
                 case VerificationInformation.NotDeletedSourceFiles:
                     DeleteSources(list);
+                    DeleteLog();
                     return;
                 case VerificationInformation.NotStarted:
-                    StartRollover(list);
-                    DeleteSources(list);
+                    DeleteDestination(list);
+                    DeleteLog();
                     return;
                 case VerificationInformation.NotFinishedDestination:
                     DeleteDestination(list);
-                    StartRollover(list);
-                    DeleteSources(list);
+                    DeleteLog();
                     return;
                 case VerificationInformation.RolloverComplete:
-                    File.Delete(m_savedFileName);
+                    DeleteLog();
                     return;
+                default:
+                    throw new Exception("Unknown Enum");
             }
+        }
+
+        /// <summary>
+        /// Deletes the log file from the server
+        /// </summary>
+        public void DeleteLog()
+        {
+            File.Delete(m_savedFileName);
         }
 
         void DeleteDestination(ArchiveList<TKey, TValue> list)
         {
-
+            using (var edit = list.AcquireEditLock())
+            {
+                edit.TryRemoveAndDelete(m_destinationFile);
+            }
         }
+
         void DeleteSources(ArchiveList<TKey, TValue> list)
         {
-
+            using (var edit = list.AcquireEditLock())
+            {
+                foreach (var source in m_sourceFiles)
+                {
+                    if (edit.Contains(source.FileId))
+                        edit.TryRemoveAndDelete(source.FileId);
+                }
+            }
         }
-        void StartRollover(ArchiveList<TKey, TValue> list)
-        {
-
-        }
-
-
     }
 }

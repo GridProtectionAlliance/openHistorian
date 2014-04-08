@@ -58,10 +58,10 @@ namespace GSF.Threading
     /// <summary>
     /// Metadata about why this worker was called.
     /// </summary>
-    public enum ThreadContainerCallbackReason
+    public enum ScheduledTaskRunningReason
     {
         /// <summary>
-        /// A start without a delay was called.
+        /// A normal run was scheduled.
         /// </summary>
         Running,
         /// <summary>
@@ -70,31 +70,41 @@ namespace GSF.Threading
         Disposing,
     }
 
-    public class ScheduledTask : IDisposable
+    /// <summary>
+    /// A way to schedule a task to be executed on a seperate thread immediately, or after a given time delay.
+    /// </summary>
+    public class ScheduledTask
+        : IDisposable
     {
         /// <summary>
-        /// The worker event
+        /// Occurs every time the task should run.
         /// </summary>
-        public event Action<ThreadContainerCallbackReason> OnRunning;
-
-        public event Action OnDispose;
+        public event EventHandler<EventArgs<ScheduledTaskRunningReason>> Running;
 
         /// <summary>
-        /// Occurs when then <see cref="OnRunning"/> event throws an exception.
+        /// Occurs right before this task is disposed.
         /// </summary>
-        public event Action<Exception> OnException;
+        public event EventHandler Disposing;
 
+        /// <summary>
+        /// Occurs when <see cref="Running"/> or <see cref="Disposing"/> event throws an exception.
+        /// </summary>
+        public event EventHandler<EventArgs<Exception>> UnhandledException;
 
         object m_disposeSync;
         volatile bool m_disposing;
 
-        /// <summary>
-        /// This cannot be null, because it would cause duplicate calls to <see cref="Start"/> to throw a null referenced exception.
-        /// </summary>
+        // This cannot be null, because it would cause duplicate calls to Start to throw a null referenced exception.
         readonly ThreadContainerBase m_thread;
+        // A strong reference to the callback
         object m_weakCallbackToken;
         ManualResetEvent m_waitForDispose;
 
+        /// <summary>
+        /// Creates a <see cref="ScheduledTask"/>
+        /// </summary>
+        /// <param name="threadMode">the mannor in which the scheduled task executes</param>
+        /// <param name="priority">the thread priority to assign if a dedicated thread is used. This is ignored if using the threadpool</param>
         public ScheduledTask(ThreadingMode threadMode = ThreadingMode.ThreadPool, ThreadPriority priority = ThreadPriority.Normal)
         {
             m_waitForDispose = new ManualResetEvent(false);
@@ -117,31 +127,35 @@ namespace GSF.Threading
             }
         }
 
+        /// <summary>
+        /// Cleans up the <see cref="ThreadContainerBase"/> thread since that class likely will never be garbage collected.
+        /// </summary>
         ~ScheduledTask()
         {
             //By starting the thread inside the finalizer, the ThreadContainer will exit because its weak reference will be set to null.
             m_disposing = true;
+            Thread.MemoryBarrier();
             m_thread.Start();
         }
 
         /// <summary>
-        /// Executed by the worker.
+        /// Executed by the worker thread
         /// </summary>
         void OnRunningCallback(ThreadContainerBase.CallbackArgs args)
         {
             if (m_disposing)
             {
                 args.ShouldDispose = true;
-                TryCallback(ThreadContainerCallbackReason.Disposing);
+                TryCallback(ScheduledTaskRunningReason.Disposing);
                 return;
             }
 
-            TryCallback(ThreadContainerCallbackReason.Running);
+            TryCallback(ScheduledTaskRunningReason.Running);
 
             if (m_disposing)
             {
                 args.ShouldDispose = true;
-                TryCallback(ThreadContainerCallbackReason.Disposing);
+                TryCallback(ScheduledTaskRunningReason.Disposing);
                 return;
             }
         }
@@ -175,7 +189,7 @@ namespace GSF.Threading
 
         /// <summary>
         /// Starts the disposing process of exiting the worker thread. Will invoke the callback one more time.
-        /// duplicate calls are ignored. This method will block until the dispose has successfully completed..
+        /// Duplicate calls are ignored. This method will block until the dispose has successfully completed.
         /// </summary>
         public void Dispose()
         {
@@ -185,13 +199,15 @@ namespace GSF.Threading
             InternalDisposeAllResources();
         }
 
+        /// <summary>
+        /// Completes the disposal of the class.
+        /// </summary>
         void InternalDisposeAllResources()
         {
             lock (m_disposeSync)
             {
                 if (m_waitForDispose != null)
                 {
-                   
                     m_waitForDispose.WaitOne();
                     m_waitForDispose.Dispose();
                     m_weakCallbackToken = null;
@@ -201,19 +217,19 @@ namespace GSF.Threading
             }
         }
 
-        void TryCallback(ThreadContainerCallbackReason args)
+        void TryCallback(ScheduledTaskRunningReason args)
         {
             try
             {
-                if (OnRunning != null)
-                    OnRunning(args);
+                if (Running != null)
+                    Running(this, new EventArgs<ScheduledTaskRunningReason>(args));
             }
             catch (Exception ex)
             {
                 try
                 {
-                    if (OnException != null)
-                        OnException(ex);
+                    if (UnhandledException != null)
+                        UnhandledException(this, new EventArgs<Exception>(ex));
                 }
                 catch (Exception ex2)
                 {
@@ -221,19 +237,19 @@ namespace GSF.Threading
                 }
             }
 
-            if (args == ThreadContainerCallbackReason.Disposing)
+            if (args == ScheduledTaskRunningReason.Disposing)
             {
                 try
                 {
-                    if (OnDispose != null)
-                        OnDispose();
+                    if (Disposing != null)
+                        Disposing(this, EventArgs.Empty);
                 }
                 catch (Exception ex)
                 {
                     try
                     {
-                        if (OnException != null)
-                            OnException(ex);
+                        if (UnhandledException != null)
+                            UnhandledException(this, new EventArgs<Exception>(ex));
                     }
                     catch (Exception ex2)
                     {

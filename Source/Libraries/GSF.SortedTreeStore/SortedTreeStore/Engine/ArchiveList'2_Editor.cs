@@ -23,8 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading;
 using GSF.SortedTreeStore.Storage;
 
@@ -42,7 +41,6 @@ namespace GSF.SortedTreeStore.Engine
         {
             private bool m_disposed;
             private ArchiveList<TKey, TValue> m_collection;
-            private ReadOnlyCollection<ArchiveTableSummary<TKey, TValue>> m_archiveFiles;
 
             /// <summary>
             /// Creates an editor for the ArchiveList
@@ -51,55 +49,49 @@ namespace GSF.SortedTreeStore.Engine
             public Editor(ArchiveList<TKey, TValue> collection)
             {
                 m_collection = collection;
-                m_archiveFiles = new ReadOnlyCollection<ArchiveTableSummary<TKey, TValue>>(collection.m_fileSummaries);
                 Monitor.Enter(m_collection.m_syncRoot);
             }
 
             /// <summary>
-            /// Represents a readonly list of all of the partitions. 
-            /// To edit the partitions, call <see cref="Add"/>, <see cref="Remove"/>, or <see cref="RenewSnapshot"/>.
+            /// Attempts to acquire an edit lock on a file. 
             /// </summary>
-            public ReadOnlyCollection<ArchiveTableSummary<TKey, TValue>> ArchiveFiles
+            /// <param name="archiveId"></param>
+            /// <returns></returns>
+            public bool TryAcquireEditLock(Guid archiveId)
             {
-                get
+                if (m_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                if (m_collection.m_lockedFiles.Contains(archiveId))
                 {
-                    if (m_disposed)
-                        throw new ObjectDisposedException(GetType().FullName);
-                    return m_archiveFiles;
+                    return false;
                 }
+                m_collection.m_lockedFiles.Add(archiveId);
+                return true;
             }
 
             /// <summary>
             /// Releases an edit lock that was placed on an archive file.
             /// </summary>
-            /// <param name="sortedTree/param>
-            public void ReleaseEditLock(SortedTreeTable<TKey, TValue> sortedTree)
+            /// <param name="archiveId">the ID of the archive snapshot to renew</param>
+            public void ReleaseEditLock(Guid archiveId)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                m_collection.m_lockedFiles.Remove(sortedTree);
+                m_collection.m_lockedFiles.Remove(archiveId);
             }
 
             /// <summary>
-            /// Renews the snapshot of the partition file. This will acquire the latest 
+            /// Renews the snapshot of the archive file. This will acquire the latest 
             /// read transaction so all new snapshots will use this later version.
             /// </summary>
-            /// <param name="sortedTree">file to update the snapshot on.</param>
+            /// <param name="archiveId">the ID of the archive snapshot to renew</param>
             /// <returns></returns>
-            public bool RenewSnapshot(SortedTreeTable<TKey, TValue> sortedTree)
+            public void RenewSnapshot(Guid archiveId)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                List<ArchiveTableSummary<TKey, TValue>> partitions = m_collection.m_fileSummaries;
-                for (int x = 0; x < partitions.Count; x++)
-                {
-                    if (partitions[x].SortedTreeTable == sortedTree)
-                    {
-                        partitions[x] = new ArchiveTableSummary<TKey, TValue>(sortedTree);
-                        return true;
-                    }
-                }
-                return false;
+
+                m_collection.m_fileSummaries[archiveId] = new ArchiveTableSummary<TKey, TValue>(m_collection.m_fileSummaries[archiveId].SortedTreeTable);
             }
 
             /// <summary>
@@ -112,54 +104,71 @@ namespace GSF.SortedTreeStore.Engine
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
                 ArchiveTableSummary<TKey, TValue> summary = new ArchiveTableSummary<TKey, TValue>(sortedTree);
-                m_collection.m_fileSummaries.Add(summary);
+                m_collection.m_fileSummaries.Add(sortedTree.ArchiveId, summary);
                 if (isLocked)
-                    m_collection.m_lockedFiles.Add(sortedTree);
+                    m_collection.m_lockedFiles.Add(sortedTree.ArchiveId);
             }
 
             /// <summary>
-            /// Removes the first occurnace of <see cref="archive"/> from <see cref="ArchiveList{TKey,TValue}"/>.
+            /// Returns true if the archive list contains the provided file.
             /// </summary>
-            /// <param name="sortedTree">the partition to remove</param>
+            /// <param name="fileId"></param>
+            /// <returns></returns>
+            public bool Contains(Guid fileId)
+            {
+                return m_collection.m_fileSummaries.ContainsKey(fileId);
+            }
+
+            /// <summary>
+            /// Removes the <see cref="archiveId"/> from <see cref="ArchiveList{TKey,TValue}"/>.
+            /// </summary>
+            /// <param name="archiveId">the archive to remove</param>
             /// <param name="listRemovalStatus">A <see cref="ArchiveListRemovalStatus{TKey,TValue}"/> that can be used to determine
             /// when this resource is no longer being used and can be closed as a result.  
             /// Closing prematurely can cause erratic behaviour which may result in 
-            /// data coruption and the application crashing.  Value is null if no item can be found.</param>
+            /// data coruption and the application crashing.  Value is null if function returns false.</param>
             /// <returns>True if the item was removed, False otherwise.</returns>
-            /// <exception cref="Exception">Thrown if <see cref="archive"/> is not in this list.</exception>
-            public bool Remove(SortedTreeTable<TKey, TValue> sortedTree, out ArchiveListRemovalStatus<TKey, TValue> listRemovalStatus)
+            /// <remarks>
+            /// Also unlocks the archive file.
+            /// </remarks>
+            public bool TryRemove(Guid archiveId, out ArchiveListRemovalStatus<TKey, TValue> listRemovalStatus)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
-                List<ArchiveTableSummary<TKey, TValue>> partitions = m_collection.m_fileSummaries;
-                for (int x = 0; x < partitions.Count; x++)
+                var partitions = m_collection.m_fileSummaries;
+                if (!partitions.ContainsKey(archiveId))
                 {
-                    if (partitions[x].SortedTreeTable == sortedTree)
-                    {
-                        listRemovalStatus = new ArchiveListRemovalStatus<TKey, TValue>(partitions[x].SortedTreeTable, m_collection);
-                        partitions.RemoveAt(x);
-                        m_collection.m_lockedFiles.Remove(sortedTree);
-                        return true;
-                    }
+                    listRemovalStatus = null;
+                    return false;
                 }
-                listRemovalStatus = null;
-                return false;
+
+                var tree = partitions[archiveId].SortedTreeTable;
+                partitions.Remove(archiveId);
+                listRemovalStatus = new ArchiveListRemovalStatus<TKey, TValue>(tree, m_collection);
+                m_collection.m_lockedFiles.Remove(archiveId);
+                return true;
             }
 
             /// <summary>
             /// Removes the supplied file from the <see cref="ArchiveList{TKey,TValue}"/> and queues it for deletion.
             /// </summary>
             /// <param name="sortedTree">file to remove and delete.</param>
-            /// <returns></returns>
-            public bool RemoveAndDelete(SortedTreeTable<TKey, TValue> sortedTree)
+            /// <returns>true if deleted, false otherwise</returns>
+            public bool TryRemoveAndDelete(Guid sortedTree)
             {
                 ArchiveListRemovalStatus<TKey, TValue> status;
-                if (Remove(sortedTree, out status))
+                if (TryRemove(sortedTree, out status))
                 {
                     if (!status.IsBeingUsed)
                     {
                         status.SortedTree.BaseFile.Delete();
                         return true;
+                    }
+                    string fileName = status.SortedTree.BaseFile.FilePath;
+                    if (fileName != string.Empty)
+                    {
+                        string newFileName = Path.ChangeExtension(fileName, "~d2");
+                        File.WriteAllBytes(newFileName, new byte[0]);
                     }
                     m_collection.m_filesToDelete.Add(status);
                     m_collection.m_processRemovals.Start(1000);
@@ -175,12 +184,12 @@ namespace GSF.SortedTreeStore.Engine
             {
                 if (!m_disposed)
                 {
-                    Monitor.Exit(m_collection.m_syncRoot);
-                    m_archiveFiles = null;
-                    m_collection = null;
                     m_disposed = true;
+                    Monitor.Exit(m_collection.m_syncRoot);
+                    m_collection = null;
                 }
             }
+
         }
     }
 }

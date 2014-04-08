@@ -33,7 +33,7 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine.Reader
 {
-    internal class SequentialReaderStream<TKey, TValue>
+    internal class SequentialReaderStream<TKey, TValue> 
         : TreeStream<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
@@ -534,6 +534,6 @@ namespace GSF.SortedTreeStore.Engine.Reader
             }
 
         }
-
+        
     }
 }

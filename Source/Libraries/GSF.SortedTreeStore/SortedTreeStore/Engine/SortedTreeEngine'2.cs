@@ -52,38 +52,41 @@ namespace GSF.SortedTreeStore.Engine
         private readonly ArchiveList<TKey, TValue> m_archiveList;
         private volatile bool m_disposed;
         private string m_databaseName;
-        public event UnhandledExceptionEventHandler Exception;
+        public event EventHandler<EventArgs<Exception>> UnhandledException;
 
         #endregion
 
         #region [ Constructors ]
 
-        public SortedTreeEngine(string databaseName, WriterMode writer, EncodingDefinition encodingMethod, params string[] paths)
+        public SortedTreeEngine(string databaseName, WriterMode writer, EncodingDefinition encodingMethod, string writePath)
         {
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
             m_databaseName = databaseName;
-            //m_pendingDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
-            m_archiveList = new ArchiveList<TKey, TValue>(GetAttachedFiles(paths));
+            m_archiveList = new ArchiveList<TKey, TValue>();
+            m_archiveList.UnhandledException += OnException;
 
             if (writer == WriterMode.InMemory)
             {
                 m_archiveWriter = WriteProcessor<TKey, TValue>.CreateInMemory(m_archiveList, encodingMethod);
-                m_archiveWriter.Exception += OnException;
+                m_archiveWriter.UnhandledException += OnException;
             }
             else if (writer == WriterMode.OnDisk)
             {
-                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateOnDisk(m_archiveList, encodingMethod, paths[0]);
-                m_archiveWriter.Exception += OnException;
+                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateOnDisk(m_archiveList, encodingMethod, writePath);
+                m_archiveWriter.UnhandledException += OnException;
             }
-
         }
 
-        void OnException(object sender, UnhandledExceptionEventArgs e)
+        public void LoadFilesFromPaths(string[] paths)
         {
-            UnhandledExceptionEventHandler handler = Exception;
-            if (handler != null)
-                handler(sender, e);
+            m_archiveList.LoadFiles(GetAttachedFiles(paths));
+        }
+
+        void OnException(object sender, EventArgs<Exception> e)
+        {
+            if (UnhandledException != null)
+                UnhandledException(sender, e);
         }
 
         List<string> GetAttachedFiles(string[] paths)

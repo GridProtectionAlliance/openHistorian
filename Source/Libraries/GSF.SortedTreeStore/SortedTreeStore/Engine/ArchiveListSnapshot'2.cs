@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Threading;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Engine
@@ -34,6 +35,20 @@ namespace GSF.SortedTreeStore.Engine
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        /// <summary>
+        /// Signals that a disposal of this object has been requested. 
+        /// </summary>
+        /// <remarks>
+        /// A race condition exists such that this class gets a dispose request before the client
+        /// registers this event. Therefore, be sure to check <see cref="IsDisposeRequested"/>
+        /// after assigning the event handler.
+        /// </remarks>
+        public event Action DisposeRequested;
+
+        object m_syncDisposing;
+
+        private ManualResetEvent m_connectionDisposed;
+
         private bool m_disposed;
 
         /// <summary>
@@ -46,10 +61,7 @@ namespace GSF.SortedTreeStore.Engine
         /// </summary>
         private Action<ArchiveListSnapshot<TKey, TValue>> m_acquireResources;
 
-        /// <summary>
-        /// For future use. Will allow removing certain resources from the client. 
-        /// </summary>
-        public object ClientConnection;
+        bool m_isDisposeRequested;
 
         /// <summary>
         /// Contains an array of all of the resources currently used by this transaction.
@@ -57,11 +69,18 @@ namespace GSF.SortedTreeStore.Engine
         /// </summary>
         private ArchiveTableSummary<TKey, TValue>[] m_tables;
 
-
+        /// <summary>
+        /// Creates an <see cref="ArchiveListSnapshot{TKey,TValue}"/>.
+        /// </summary>
+        /// <param name="onDisposed"></param>
+        /// <param name="acquireResources"></param>
         public ArchiveListSnapshot(Action<ArchiveListSnapshot<TKey, TValue>> onDisposed, Action<ArchiveListSnapshot<TKey, TValue>> acquireResources)
         {
+            m_syncDisposing = new object();
             m_onDisposed = onDisposed;
             m_acquireResources = acquireResources;
+            m_tables = new ArchiveTableSummary<TKey, TValue>[0];
+            m_connectionDisposed = new ManualResetEvent(false);
         }
 
         /// <summary>
@@ -80,6 +99,8 @@ namespace GSF.SortedTreeStore.Engine
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
+                if (value == null)
+                    m_tables = new ArchiveTableSummary<TKey, TValue>[0];
                 m_tables = value;
             }
         }
@@ -91,14 +112,27 @@ namespace GSF.SortedTreeStore.Engine
         /// <returns></returns>
         public ArchiveTableSummary<TKey, TValue> TryGetFile(Guid fileId)
         {
-             if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
             foreach (var table in m_tables)
             {
                 if (table.FileId == fileId)
                     return table;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Gets if the engine is requesting that this snapshot gets disposed.
+        /// if this is true this means the engine is waiting for the release
+        /// of this object before it can continue its next task.
+        /// </summary>
+        public bool IsDisposeRequested
+        {
+            get
+            {
+                return m_isDisposeRequested;
+            }
         }
 
         /// <summary>
@@ -119,6 +153,16 @@ namespace GSF.SortedTreeStore.Engine
         {
             if (!m_disposed)
             {
+                m_connectionDisposed.Set();
+                lock (m_syncDisposing)
+                {
+                    if (m_connectionDisposed != null)
+                    {
+                        m_connectionDisposed.Dispose();
+                        m_connectionDisposed = null;
+                    }
+                }
+
                 if (m_onDisposed != null)
                     m_onDisposed.Invoke(this);
                 m_onDisposed = null;
@@ -135,6 +179,27 @@ namespace GSF.SortedTreeStore.Engine
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
             m_acquireResources.Invoke(this);
+        }
+
+        internal void Engine_BeginDropConnection()
+        {
+            m_isDisposeRequested = true;
+            Thread.MemoryBarrier();
+            if (DisposeRequested != null)
+                DisposeRequested();
+        }
+
+        internal void Engine_EndDropConnection()
+        {
+            lock (m_syncDisposing)
+            {
+                if (m_connectionDisposed != null)
+                {
+                    m_connectionDisposed.WaitOne();
+                    m_connectionDisposed.Dispose();
+                    m_connectionDisposed = null;
+                }
+            }
         }
     }
 }

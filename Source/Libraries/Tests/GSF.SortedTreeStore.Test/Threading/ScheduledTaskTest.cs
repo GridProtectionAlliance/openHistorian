@@ -42,10 +42,10 @@ namespace GSF.Threading.Test
             public NestedDispose()
             {
                 worker = new ScheduledTask(ThreadingMode.DedicatedForeground);
-                worker.OnRunning += Method;
+                worker.Running += Method;
             }
 
-            private void Method(ThreadContainerCallbackReason threadContainerCallbackReason)
+            private void Method(object sender, EventArgs eventArgs)
             {
             }
         }
@@ -56,8 +56,8 @@ namespace GSF.Threading.Test
         {
             using (ScheduledTask work = new ScheduledTask(ThreadingMode.DedicatedForeground))
             {
-                work.OnRunning += work_DoWork;
-                work.OnRunning += work_CleanupWork;
+                work.Running += work_DoWork;
+                work.Running += work_CleanupWork;
                 work.Start();
             }
             Debugger.Break();
@@ -68,12 +68,12 @@ namespace GSF.Threading.Test
             }
         }
 
-        private void work_CleanupWork(ThreadContainerCallbackReason threadContainerCallbackReason)
+        private void work_CleanupWork(object sender, EventArgs eventArgs)
         {
             Thread.Sleep(100);
         }
 
-        private void work_DoWork(ThreadContainerCallbackReason threadContainerCallbackReason)
+        private void work_DoWork(object sender, EventArgs eventArgs)
         {
             Thread.Sleep(100);
         }

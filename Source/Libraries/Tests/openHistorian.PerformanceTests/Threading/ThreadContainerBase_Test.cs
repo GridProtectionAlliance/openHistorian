@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using GSF;
 using GSF.IO.Unmanaged;
 using GSF.Threading;
 using NUnit.Framework;
@@ -121,7 +122,7 @@ namespace openHistorian.PerformanceTests.Threading
             m_doWorkCount = 0;
             using (ScheduledTask work = new ScheduledTask(mode))
             {
-                work.OnRunning += work_DoWork;
+                work.Running += work_DoWork;
 
                 sw.Start();
                 for (int x = 0; x < 1000; x++)
@@ -134,7 +135,7 @@ namespace openHistorian.PerformanceTests.Threading
 
             using (ScheduledTask work = new ScheduledTask(mode))
             {
-                work.OnRunning += work_DoWork;
+                work.Running += work_DoWork;
 
 
                 sw.Start();
@@ -173,7 +174,7 @@ namespace openHistorian.PerformanceTests.Threading
         }
 
 
-        private void work_DoWork(ThreadContainerCallbackReason threadContainerCallbackReason)
+        private void work_DoWork(object sender, EventArgs<ScheduledTaskRunningReason> eventArgs)
         {
             m_doWorkCount++;
         }

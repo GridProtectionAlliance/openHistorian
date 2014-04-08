@@ -28,7 +28,7 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Engine
 {
     /// <summary>
-    /// The return value of <see cref="ArchiveList{TKey,TValue}.Editor.Remove"/> provided to the calling
+    /// The return value of <see cref="ArchiveList{TKey,TValue}.Editor.TryRemove"/> provided to the calling
     /// function to determine when a resource is no longer being used.
     /// </summary>
     public class ArchiveListRemovalStatus<TKey, TValue>

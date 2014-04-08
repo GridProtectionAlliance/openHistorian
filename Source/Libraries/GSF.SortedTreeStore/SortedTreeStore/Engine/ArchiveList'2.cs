@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 using GSF.Threading;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
@@ -40,22 +41,33 @@ namespace GSF.SortedTreeStore.Engine
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+        /// <summary>
+        /// Occurs when an exception occurs
+        /// </summary>
+        public event EventHandler<EventArgs<Exception>> UnhandledException;
+
         private bool m_disposed;
-        private readonly object m_syncRoot = new object();
+
+        private bool m_disposing;
+
+        private readonly object m_syncRoot;
 
         /// <summary>
         /// Contains the list of all archives.
         /// </summary>
-        private readonly List<ArchiveTableSummary<TKey, TValue>> m_fileSummaries;
+        private readonly SortedList<Guid, ArchiveTableSummary<TKey, TValue>> m_fileSummaries;
 
-
-        private readonly List<SortedTreeTable<TKey, TValue>> m_lockedFiles;
+        /// <summary>
+        /// Contains all archives that are locked.
+        /// </summary>
+        private readonly List<Guid> m_lockedFiles;
 
         /// <summary>
         /// Contains all of the active snapshots of the archive lists
         /// This is used for determining when resources are no longer in use.
         /// </summary>
-        private readonly List<ArchiveListSnapshot<TKey, TValue>> m_allSnapshots;
+        private readonly List<WeakReference<ArchiveListSnapshot<TKey, TValue>>> m_allSnapshots;
+
         /// <summary>
         /// The scheduled task for removing items.
         /// </summary>
@@ -64,29 +76,32 @@ namespace GSF.SortedTreeStore.Engine
         private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_filesToDelete;
         private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_filesToDispose;
 
+
         /// <summary>
         /// Creates an ArchiveList
         /// </summary>
         public ArchiveList()
         {
+            m_syncRoot = new object();
             m_filesToDelete = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_filesToDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_processRemovals = new ScheduledTask(ThreadingMode.DedicatedBackground);
-            m_processRemovals.OnRunning += m_processRemovals_OnRunWorker;
-            m_processRemovals.OnDispose += m_processRemovals_OnDispose;
-            m_processRemovals.OnException += m_processRemovals_OnException;
-            m_lockedFiles = new List<SortedTreeTable<TKey, TValue>>();
-            m_fileSummaries = new List<ArchiveTableSummary<TKey, TValue>>();
-            m_allSnapshots = new List<ArchiveListSnapshot<TKey, TValue>>();
+            m_processRemovals.Running += ProcessRemovals_Running;
+            m_processRemovals.Disposing += ProcessRemovals_Disposing;
+            m_processRemovals.UnhandledException += ProcessRemovals_UnhandledException;
+            m_lockedFiles = new List<Guid>();
+            m_fileSummaries = new SortedList<Guid, ArchiveTableSummary<TKey, TValue>>();
+            m_allSnapshots = new List<WeakReference<ArchiveListSnapshot<TKey, TValue>>>();
         }
 
         /// <summary>
-        /// Creates an ArchiveList including all of the provided files.
+        /// Loads the specified files into the archive list.
         /// </summary>
         /// <param name="archiveFiles"></param>
-        public ArchiveList(IEnumerable<string> archiveFiles)
-            : this()
+        public void LoadFiles(IEnumerable<string> archiveFiles)
         {
+            var loadedFiles = new List<SortedTreeTable<TKey, TValue>>();
+
             foreach (string file in archiveFiles)
             {
                 try
@@ -100,12 +115,33 @@ namespace GSF.SortedTreeStore.Engine
                     }
                     else
                     {
-                        ArchiveTableSummary<TKey, TValue> archiveTableSummary = new ArchiveTableSummary<TKey, TValue>(table);
-                        m_fileSummaries.Add(archiveTableSummary);
+                        loadedFiles.Add(table);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    if (UnhandledException != null)
+                    {
+                        UnhandledException(this, new EventArgs<Exception>(ex));
+                    }
+                }
+            }
+
+            using (var edit = AcquireEditLock())
+            {
+                foreach (var file in loadedFiles)
+                {
+                    try
+                    {
+                        edit.Add(file, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (UnhandledException != null)
+                        {
+                            UnhandledException(this, new EventArgs<Exception>(ex));
+                        }
+                    }
                 }
             }
         }
@@ -122,8 +158,10 @@ namespace GSF.SortedTreeStore.Engine
         {
             lock (m_syncRoot)
             {
+                if (m_disposing)
+                    throw new Exception("Object is disposing");
                 ArchiveListSnapshot<TKey, TValue> resources = new ArchiveListSnapshot<TKey, TValue>(ReleaseClientResources, AcquireSnapshot);
-                m_allSnapshots.Add(resources);
+                m_allSnapshots.Add(new WeakReference<ArchiveListSnapshot<TKey, TValue>>(resources));
                 return resources;
             }
         }
@@ -136,7 +174,21 @@ namespace GSF.SortedTreeStore.Engine
         {
             lock (m_syncRoot)
             {
-                m_allSnapshots.Remove(archiveLists);
+                for (int x = m_allSnapshots.Count - 1; x >= 0; x--)
+                {
+                    ArchiveListSnapshot<TKey, TValue> snapshot;
+                    if (m_allSnapshots[x].TryGetTarget(out snapshot))
+                    {
+                        if (snapshot == archiveLists)
+                        {
+                            m_allSnapshots.RemoveAt(x);
+                        }
+                    }
+                    else
+                    {
+                        m_allSnapshots.RemoveAt(x);
+                    }
+                }
             }
         }
 
@@ -148,7 +200,8 @@ namespace GSF.SortedTreeStore.Engine
         {
             lock (m_syncRoot)
             {
-                transaction.Tables = m_fileSummaries.ToArray();
+                transaction.Tables = new ArchiveTableSummary<TKey, TValue>[m_fileSummaries.Count];
+                m_fileSummaries.Values.CopyTo(transaction.Tables, 0);
             }
         }
 
@@ -176,7 +229,7 @@ namespace GSF.SortedTreeStore.Engine
                 }
 
                 status.AppendFormat("Files In Archive: {0} \r\n", m_fileSummaries.Count);
-                foreach (var file in m_fileSummaries)
+                foreach (var file in m_fileSummaries.Values)
                 {
                     if (file.IsEmpty)
                         status.AppendFormat("Empty File - Name:{0}\r\n", file.SortedTreeTable.BaseFile.FilePath);
@@ -208,19 +261,27 @@ namespace GSF.SortedTreeStore.Engine
         {
             lock (m_syncRoot)
             {
-                foreach (ArchiveListSnapshot<TKey, TValue> resource in m_allSnapshots)
+                for (int k = m_allSnapshots.Count - 1; k >= 0; k--)
                 {
-                    ArchiveTableSummary<TKey, TValue>[] tables = resource.Tables;
-                    if (tables != null)
+                    ArchiveListSnapshot<TKey, TValue> snapshot;
+                    if (m_allSnapshots[k].TryGetTarget(out snapshot))
                     {
-                        for (int x = 0; x < tables.Length; x++)
+                        ArchiveTableSummary<TKey, TValue>[] tables = snapshot.Tables;
+                        if (tables != null)
                         {
-                            ArchiveTableSummary<TKey, TValue> summary = tables[x];
-                            if (summary != null && summary.SortedTreeTable == sortedTree)
+                            for (int x = 0; x < tables.Length; x++)
                             {
-                                return true;
+                                ArchiveTableSummary<TKey, TValue> summary = tables[x];
+                                if (summary != null && summary.SortedTreeTable == sortedTree)
+                                {
+                                    return true;
+                                }
                             }
                         }
+                    }
+                    else
+                    {
+                        m_allSnapshots.RemoveAt(k);
                     }
                 }
                 return false;
@@ -235,19 +296,45 @@ namespace GSF.SortedTreeStore.Engine
         {
             if (!m_disposed)
             {
-                using (Editor edit = AcquireEditLock())
+                ReleaseClientResources();
+                m_processRemovals.Dispose();
+                lock (m_syncRoot)
                 {
-                    foreach (ArchiveTableSummary<TKey, TValue> f in edit.ArchiveFiles)
+                    foreach (ArchiveTableSummary<TKey, TValue> f in m_fileSummaries.Values)
                     {
                         f.SortedTreeTable.BaseFile.Dispose();
                     }
                 }
-                m_processRemovals.Dispose();
                 m_disposed = true;
             }
         }
 
-        private void m_processRemovals_OnRunWorker(ThreadContainerCallbackReason threadContainerCallbackReason)
+        void ReleaseClientResources()
+        {
+            List<ArchiveListSnapshot<TKey, TValue>> tablesInUse = new List<ArchiveListSnapshot<TKey, TValue>>();
+
+            lock (m_syncRoot)
+            {
+                m_disposing = true;
+                for (int k = m_allSnapshots.Count - 1; k >= 0; k--)
+                {
+                    ArchiveListSnapshot<TKey, TValue> snapshot;
+                    if (m_allSnapshots[k].TryGetTarget(out snapshot))
+                    {
+                        tablesInUse.Add(snapshot);
+                    }
+                    else
+                    {
+                        m_allSnapshots.RemoveAt(k);
+                    }
+                }
+            }
+
+            tablesInUse.ForEach((x) => x.Engine_BeginDropConnection());
+            tablesInUse.ForEach((x) => x.Engine_EndDropConnection());
+        }
+
+        private void ProcessRemovals_Running(object sender, EventArgs<ScheduledTaskRunningReason> eventArgs)
         {
             lock (m_syncRoot)
             {
@@ -276,7 +363,7 @@ namespace GSF.SortedTreeStore.Engine
             }
         }
 
-        private void m_processRemovals_OnDispose()
+        private void ProcessRemovals_Disposing(object sender, EventArgs eventArgs)
         {
             lock (m_syncRoot)
             {
@@ -288,9 +375,10 @@ namespace GSF.SortedTreeStore.Engine
             }
         }
 
-        void m_processRemovals_OnException(Exception e)
+        void ProcessRemovals_UnhandledException(object sender, EventArgs<Exception> eventArgs)
         {
-            System.Diagnostics.EventLog.WriteEntry("MyEventSource", e.ToString(), System.Diagnostics.EventLogEntryType.Error);
+            if (UnhandledException != null)
+                UnhandledException(sender, eventArgs);
         }
     }
 }

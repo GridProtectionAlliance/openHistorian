@@ -23,6 +23,7 @@
 
 using System;
 using System.IO;
+using GSF;
 using GSF.Collections;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Engine;
@@ -125,7 +126,7 @@ namespace openHistorian.Queues
             m_pointStream = new StreamPoints(m_blocks, 1000);
             m_getDatabase = getDatabase;
             m_worker = new ScheduledTask(ThreadingMode.DedicatedForeground);
-            m_worker.OnRunning += WorkerDoWork;
+            m_worker.Running += WorkerDoWork;
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace openHistorian.Queues
             m_worker.Start();
         }
 
-        private void WorkerDoWork(ThreadContainerCallbackReason threadContainerCallbackReason)
+        private void WorkerDoWork(object sender, EventArgs<ScheduledTaskRunningReason> eventArgs)
         {
             m_pointStream.Reset();
 

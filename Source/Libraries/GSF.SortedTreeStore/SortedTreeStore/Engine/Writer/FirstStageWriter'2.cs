@@ -39,7 +39,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         /// <summary>
         /// An event handler that will raise any exceptions that go unhandled in the rollover process.
         /// </summary>
-        public event UnhandledExceptionEventHandler Exception;
+        public event EventHandler<EventArgs<Exception>> UnhandledException;
         /// <summary>
         /// Event that notifies that a certain sequence number has been committed.
         /// </summary>
@@ -77,8 +77,8 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_rolloverInterval = rolloverInterval;
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.Normal);
-            m_rolloverTask.OnRunning += ProcessRollover;
-            m_rolloverTask.OnException += OnException;
+            m_rolloverTask.Running += m_rolloverTask_Running;
+            m_rolloverTask.UnhandledException += m_rolloverTask_UnhandledException;
             m_rolloverTask.Start(m_rolloverInterval);
         }
 
@@ -120,12 +120,12 @@ namespace GSF.SortedTreeStore.Engine.Writer
                 m_rolloverComplete.WaitOne();
         }
 
-        private void ProcessRollover(ThreadContainerCallbackReason threadContainerCallbackReason)
+        private void m_rolloverTask_Running(object sender, EventArgs<ScheduledTaskRunningReason> e)
         {
             //The worker can be disposed either via the Stop() method or 
             //the Dispose() method.  If via the dispose method, then
             //don't do any cleanup.
-            if (m_disposed && threadContainerCallbackReason == ThreadContainerCallbackReason.Disposing)
+            if (m_disposed && e.Argument == ScheduledTaskRunningReason.Disposing)
                 return;
 
             //go ahead and schedule the next rollover since nothing
@@ -195,11 +195,10 @@ namespace GSF.SortedTreeStore.Engine.Writer
             }
         }
 
-        void OnException(Exception e)
+        void m_rolloverTask_UnhandledException(object sender, EventArgs<Exception> e)
         {
-            UnhandledExceptionEventHandler handler = Exception;
-            if (handler != null)
-                handler(this, new UnhandledExceptionEventArgs(e,false));
+            if (UnhandledException != null)
+                UnhandledException(sender, e);
         }
 
         void OnRolloverComplete(long obj)

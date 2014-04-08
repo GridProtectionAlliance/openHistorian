@@ -42,29 +42,46 @@ namespace GSF.SortedTreeStore.Engine
         private bool m_isMemoryArchive;
         private long m_requiredFreeSpaceForNewFile;
         private long m_initialSize;
+        private Guid[] m_flags;
         private EncodingDefinition m_encodingMethod;
 
         private ArchiveInitializer()
         {
         }
 
-        public static ArchiveInitializer<TKey, TValue> CreateInMemory(EncodingDefinition compressionMethod)
+        /// <summary>
+        /// Creates a <see cref="ArchiveInitializer{TKey,TValue}"/> that will reside in memory.
+        /// </summary>
+        /// <param name="encodingMethod">the encoding method to use for the archive file.</param>
+        /// <param name="flags">flags to include in the archive that is created.</param>
+        /// <returns></returns>
+        public static ArchiveInitializer<TKey, TValue> CreateInMemory(EncodingDefinition encodingMethod, params Guid[] flags)
         {
             ArchiveInitializer<TKey, TValue> settings = new ArchiveInitializer<TKey, TValue>();
+            settings.m_flags = flags;
             settings.m_isMemoryArchive = true;
-            settings.m_encodingMethod = compressionMethod;
+            settings.m_encodingMethod = encodingMethod;
             return settings;
         }
 
-        public static ArchiveInitializer<TKey, TValue> CreateOnDisk(string path, EncodingDefinition compressionMethod, string prefix)
+        /// <summary>
+        /// Creates a <see cref="ArchiveInitializer{TKey,TValue}"/> that will reside on the disk.
+        /// </summary>
+        /// <param name="path">the path to place the files.</param>
+        /// <param name="encodingMethod">the encoding method to use for the archive file.</param>
+        /// <param name="prefix">the prefix to affix to the files created.</param>
+        /// <param name="flags">flags to include in the archive that is created.</param>
+        /// <returns></returns>
+        public static ArchiveInitializer<TKey, TValue> CreateOnDisk(string path, EncodingDefinition encodingMethod, string prefix, params Guid[] flags)
         {
             ArchiveInitializer<TKey, TValue> settings = new ArchiveInitializer<TKey, TValue>();
+            settings.m_flags = flags;
             settings.m_prefix = prefix;
             settings.m_isMemoryArchive = false;
             settings.m_path = path;
             settings.m_requiredFreeSpaceForNewFile = 1024 * 1024;
             settings.m_initialSize = 1024 * 1024;
-            settings.m_encodingMethod = compressionMethod;
+            settings.m_encodingMethod = encodingMethod;
             return settings;
         }
 
@@ -78,13 +95,13 @@ namespace GSF.SortedTreeStore.Engine
         {
             if (m_isMemoryArchive)
             {
-                SortedTreeFile af = SortedTreeFile.CreateInMemory(4096, uniqueFileId);
+                SortedTreeFile af = SortedTreeFile.CreateInMemory(4096, uniqueFileId, m_flags);
                 return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
             else
             {
                 string fileName = CreateArchiveName();
-                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, 4096, uniqueFileId);
+                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, 4096, uniqueFileId, m_flags);
                 return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
         }
@@ -101,13 +118,13 @@ namespace GSF.SortedTreeStore.Engine
         {
             if (m_isMemoryArchive)
             {
-                SortedTreeFile af = SortedTreeFile.CreateInMemory(4096, uniqueFileId);
+                SortedTreeFile af = SortedTreeFile.CreateInMemory(4096, uniqueFileId, m_flags);
                 return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
             else
             {
                 string fileName = CreateArchiveName(startKey, endKey);
-                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, 4096, uniqueFileId);
+                SortedTreeFile af = SortedTreeFile.CreateFile(fileName, 4096, uniqueFileId, m_flags);
                 return af.OpenOrCreateTable<TKey, TValue>(m_encodingMethod);
             }
         }

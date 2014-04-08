@@ -72,11 +72,12 @@ namespace GSF.SortedTreeStore.Storage
         /// </summary>
         /// <param name="blockSize">The number of bytes per block in the file.</param>
         /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
-        public static SortedTreeFile CreateInMemory(int blockSize = 4096, Guid uniqueFileId = default(Guid))
+        /// <param name="flags">Flags to write to the file</param>
+        public static SortedTreeFile CreateInMemory(int blockSize = 4096, Guid uniqueFileId = default(Guid), params Guid[] flags)
         {
             SortedTreeFile file = new SortedTreeFile();
             file.m_filePath = string.Empty;
-            file.m_fileStructure = TransactionalFileStructure.CreateInMemory(blockSize, uniqueFileId);
+            file.m_fileStructure = TransactionalFileStructure.CreateInMemory(blockSize, uniqueFileId, flags);
             return file;
         }
 
@@ -86,12 +87,13 @@ namespace GSF.SortedTreeStore.Storage
         /// <param name="file">the path for the file.</param>
         /// <param name="blockSize">The number of bytes per block in the file.</param>
         /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
-        public static SortedTreeFile CreateFile(string file, int blockSize = 4096, Guid uniqueFileId = default(Guid))
+        /// <param name="flags">Flags to write to the file</param>
+        public static SortedTreeFile CreateFile(string file, int blockSize = 4096, Guid uniqueFileId = default(Guid), params Guid[] flags)
         {
             SortedTreeFile af = new SortedTreeFile();
             file = Path.GetFullPath(file);
             af.m_filePath = file;
-            af.m_fileStructure = TransactionalFileStructure.CreateFile(file, blockSize, uniqueFileId);
+            af.m_fileStructure = TransactionalFileStructure.CreateFile(file, blockSize, uniqueFileId, flags);
             return af;
         }
 

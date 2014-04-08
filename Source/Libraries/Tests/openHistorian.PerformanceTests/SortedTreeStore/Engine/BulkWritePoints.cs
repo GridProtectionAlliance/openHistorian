@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using GSF;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Engine;
 using GSF.SortedTreeStore.Net;
@@ -81,7 +82,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                 {
                     db.SetEncodingMode(CreateHistorianCompressedStream.TypeGuid);
 
-                    engine.Exception += engine_Exception;
+                    engine.UnhandledException += engine_Exception;
                     Thread.Sleep(100);
                     var key = new HistorianKey();
                     var value = new HistorianValue();
@@ -122,7 +123,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             PointCount = 0;
             using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
             {
-                engine.Exception += engine_Exception;
+                engine.UnhandledException += engine_Exception;
                 Thread.Sleep(100);
                 var key = new HistorianKey();
                 var value = new HistorianValue();
@@ -160,7 +161,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             PointCount = 0;
             using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
             {
-                engine.Exception += engine_Exception;
+                engine.UnhandledException += engine_Exception;
                 Thread.Sleep(100);
                 var key = new HistorianKey();
                 var value = new HistorianValue();
@@ -184,9 +185,9 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             }
         }
 
-        void engine_Exception(object sender, UnhandledExceptionEventArgs e)
+        void engine_Exception(object sender, EventArgs<Exception> e)
         {
-            Console.WriteLine(e.ExceptionObject.ToString());
+            Console.WriteLine(e.Argument.ToString());
         }
 
         void WriteSpeed()

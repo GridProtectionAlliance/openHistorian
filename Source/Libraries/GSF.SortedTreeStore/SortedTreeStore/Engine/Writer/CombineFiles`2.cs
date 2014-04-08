@@ -52,7 +52,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        public event UnhandledExceptionEventHandler Exception;
+        public event EventHandler<EventArgs<Exception>> UnhandledException;
 
         /// <summary>
         /// Execute every 10 seconds
@@ -87,25 +87,24 @@ namespace GSF.SortedTreeStore.Engine.Writer
             m_rolloverComplete = new ManualResetEvent(false);
             m_syncRoot = new object();
             m_rolloverTask = new ScheduledTask(ThreadingMode.DedicatedForeground, ThreadPriority.BelowNormal);
-            m_rolloverTask.OnRunning += OnExecute;
-            m_rolloverTask.OnException += OnException;
+            m_rolloverTask.Running += OnExecute;
+            m_rolloverTask.UnhandledException += OnException;
 
             m_rolloverTask.Start(ExecuteInterval);
         }
 
-        void OnException(Exception e)
+        void OnException(object sender, EventArgs<Exception> e)
         {
-            UnhandledExceptionEventHandler handler = Exception;
-            if (handler != null)
-                handler(this, new UnhandledExceptionEventArgs(e, false));
+            if (UnhandledException != null)
+                UnhandledException(sender, e);
         }
 
-        private void OnExecute(ThreadContainerCallbackReason threadContainerCallbackReason)
+        private void OnExecute(object sender, EventArgs<ScheduledTaskRunningReason> e)
         {
             //The worker can be disposed either via the Stop() method or 
             //the Dispose() method.  If via the dispose method, then
             //don't do any cleanup.
-            if (m_disposed && threadContainerCallbackReason == ThreadContainerCallbackReason.Disposing)
+            if (m_disposed && e.Argument == ScheduledTaskRunningReason.Disposing)
                 return;
 
             //go ahead and schedule the next rollover since nothing
@@ -177,7 +176,7 @@ namespace GSF.SortedTreeStore.Engine.Writer
 
                                 foreach (var table in list)
                                 {
-                                    edit.RemoveAndDelete(table.SortedTreeTable);
+                                    edit.TryRemoveAndDelete(table.FileId);
                                 }
                             }
                         }

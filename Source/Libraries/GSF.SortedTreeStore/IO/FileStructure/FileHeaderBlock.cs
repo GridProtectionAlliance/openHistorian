@@ -113,8 +113,9 @@ namespace GSF.IO.FileStructure
         /// </summary>
         /// <param name="blockSize">The block size to make the header</param>
         /// <param name="uniqueFileId">a guid that will be the unique identifier of this file. If Guid.Empty one will be generated in the constructor</param>
+        /// <param name="flags">Flags to write to the file</param>
         /// <returns></returns>
-        public static FileHeaderBlock CreateNew(int blockSize, Guid uniqueFileId = default(Guid))
+        public static FileHeaderBlock CreateNew(int blockSize, Guid uniqueFileId = default(Guid), params Guid[] flags)
         {
             FileHeaderBlock header = new FileHeaderBlock();
             header.m_blockSize = blockSize;
@@ -137,6 +138,9 @@ namespace GSF.IO.FileStructure
             header.m_archiveType = Guid.Empty;
             header.m_creationTime = DateTime.UtcNow;
             header.m_lastModifiedTime = header.m_creationTime;
+            foreach (var f in flags)
+                header.Flags.Add(f);
+            
             header.IsReadOnly = true;
             return header;
         }

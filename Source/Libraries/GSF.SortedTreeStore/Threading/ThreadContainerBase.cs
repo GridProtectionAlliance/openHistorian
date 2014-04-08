@@ -29,6 +29,7 @@
 //          Additional Functional Requests should result in another class being created rather than modifying this one.
 //------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -157,9 +158,6 @@ namespace GSF.Threading
             }
         }
 
-        /// <summary>
-        /// Calls must be synchronized
-        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Start()
         {
@@ -204,10 +202,6 @@ namespace GSF.Threading
             }
         }
 
-        /// <summary>
-        /// Calls must be synchronized
-        /// </summary>
-        /// <param name="delay"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Start(int delay)
         {
@@ -218,6 +212,9 @@ namespace GSF.Threading
 
         void StartSlower(int delay)
         {
+            if (delay < 0)
+                throw new ArgumentException("Cannot be less than zero", "delay");
+
             SpinWait wait = new SpinWait();
             m_runAgainAfterDelay = delay;
             while (true)
@@ -253,5 +250,6 @@ namespace GSF.Threading
         protected abstract void InternalStart();
         protected abstract void InternalStart(int delay);
         protected abstract void InternalCancelTimer();
+
     }
 }

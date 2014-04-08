@@ -109,6 +109,16 @@ namespace GSF.SortedTreeStore.Storage
             }
         }
 
+
+        public Guid ArchiveId
+        {
+            get
+            {
+                return BaseFile.Snapshot.Header.ArchiveId;
+            }
+        }
+
+
         #endregion
 
         #region [ Methods ]
