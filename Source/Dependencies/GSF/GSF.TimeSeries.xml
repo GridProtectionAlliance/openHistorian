@@ -1486,6 +1486,224 @@
             Gets reference count for this <see cref="T:GSF.TimeSeries.ConcentratorBase.FrameRateTimer"/>.
             </summary>
         </member>
+        <member name="T:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader">
+            <summary>
+            Represents a configuration loader that gets its configuration from a binary file.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.IConfigurationLoader">
+            <summary>
+            Represents the interface by which the time-series engine's
+            system configuration is loaded from a configuration source.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.IConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.IConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Augments the given configuration data set with the changes
+            tracked since the version of the given configuration data set.
+            </summary>
+            <param name="configuration">The configuration data set to be augmented.</param>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.IConfigurationLoader.StatusMessage">
+            <summary>
+            Occurs when the configuration loader has a message to provide about its current status.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.IConfigurationLoader.ProcessException">
+            <summary>
+            Occurs when the configuration loader encounters a non-catastrophic exception.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.IConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Not supported.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.StatusMessage">
+            <summary>
+            Occurs when the configuration loader has a message to provide about its current status.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.ProcessException">
+            <summary>
+            Occurs when the configuration loader encounters a non-catastrophic exception.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.FilePath">
+            <summary>
+            Gets or sets the path to the binary file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.BinaryFileConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.DataOperationFunction">
+            <summary>
+            Defines a method signature for a bootstrap data source operation.
+            </summary>
+            <param name="database">Connection to database.</param>
+            <param name="nodeIDQueryString">Formatted node ID Guid query string.</param>
+            <param name="trackingVersion">Latest version of the configuration to which data operations were previously applied.</param>
+            <param name="arguments">Optional data operation arguments.</param>
+            <param name="statusMessage">Reference to host status message function.</param>
+            <param name="processException">Reference to host process exception function.</param>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader">
+            <summary>
+            Represents a configuration loader that gets its configuration from a database connection.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Open">
+            <summary>
+            Opens the database connection.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Augments the given configuration data set with the changes
+            tracked since the version of the given configuration data set.
+            </summary>
+            <param name="configuration">The configuration data set to be augmented.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Close">
+            <summary>
+            Closes the database connection.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader"/> object.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.StatusMessage">
+            <summary>
+            Occurs when the configuration loader has a message to provide about its current status.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.ProcessException">
+            <summary>
+            Occurs when the configuration loader encounters a non-catastrophic exception.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.ConnectionString">
+            <summary>
+            Gets or sets the connection string which
+            defines how to connect to the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.DataProviderString">
+            <summary>
+            Gets or sets the data provider string, which determines the
+            .NET types to use when opening connections to the database.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.NodeIDQueryString">
+            <summary>
+            Gets or sets the string to use in queries when filtering results by node ID.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.DatabaseConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader">
+            <summary>
+            Represents a configuration loader that queries a web service for its configuration.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Not supported.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.StatusMessage">
+            <summary>
+            Occurs when the configuration loader has a message to provide about its current status.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.ProcessException">
+            <summary>
+            Occurs when the configuration loader encounters a non-catastrophic exception.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.URI">
+            <summary>
+            Gets or sets the URI for the web service.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.WebServiceConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
+        <member name="T:GSF.TimeSeries.Configuration.XMLConfigurationLoader">
+            <summary>
+            Represents a configuration loader that gets its configuration from an XML file.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.XMLConfigurationLoader.Load">
+            <summary>
+            Loads the entire configuration data set from scratch.
+            </summary>
+            <returns>The configuration data set.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.Configuration.XMLConfigurationLoader.Augment(System.Data.DataSet)">
+            <summary>
+            Not supported.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.XMLConfigurationLoader.StatusMessage">
+            <summary>
+            Occurs when the configuration loader has a message to provide about its current status.
+            </summary>
+        </member>
+        <member name="E:GSF.TimeSeries.Configuration.XMLConfigurationLoader.ProcessException">
+            <summary>
+            Occurs when the configuration loader encounters a non-catastrophic exception.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.XMLConfigurationLoader.FilePath">
+            <summary>
+            Gets or sets the path to the XML file.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Configuration.XMLConfigurationLoader.CanAugment">
+            <summary>
+            Gets the flag that indicates whether augmentation is supported by this configuration loader.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Frame">
             <summary>
             Implementation of a basic <see cref="T:GSF.TimeSeries.IFrame"/>.
@@ -6372,55 +6590,45 @@
             Defines a data operations to be performed at startup.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.PerformTimeSeriesStartupOperations(System.Data.IDbConnection,System.Type,System.String,System.String,System.Action{System.Object,GSF.EventArgs{System.String}},System.Action{System.Object,GSF.EventArgs{System.Exception}})">
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.PerformTimeSeriesStartupOperations(GSF.Data.AdoDataConnection,System.String,System.UInt64,System.String,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Delegates control to the data operations that are to be performed at startup.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateDefaultNode(System.Data.IDbConnection,System.String)">
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateDefaultNode(GSF.Data.AdoDataConnection,System.String)">
             <summary>
             Data operation to validate and ensure there is a node in the database.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateActiveMeasurements(System.Data.IDbConnection,System.String)">
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateActiveMeasurements(GSF.Data.AdoDataConnection,System.String)">
             <summary>
             Data operation to validate and ensure there is a record
             in the ConfigurationEntity table for ActiveMeasurements.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateAccountsAndGroups(System.Data.IDbConnection,System.String)">
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateAccountsAndGroups(GSF.Data.AdoDataConnection,System.String)">
             <summary>
             Data operation to validate accounts and groups to ensure
             that account names and group names are converted to SIDs.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateDataPublishers(System.Data.IDbConnection,System.String)">
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateDataPublishers(GSF.Data.AdoDataConnection,System.String)">
             <summary>
             Data operation to validate and ensure there is a record in the
             CustomActionAdapter table for the external and TLS data publishers.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateStatistics(System.Data.IDbConnection,System.String)">
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateStatistics(GSF.Data.AdoDataConnection,System.String)">
             <summary>
             Data operation to validate and ensure that certain records that
             are required for statistics calculations exist in the database.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateAlarming(System.Data.IDbConnection,System.String)">
+        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ValidateAlarming(GSF.Data.AdoDataConnection,System.String)">
             <summary>
             Data operation to validate and ensure that certain records
             that are required for alarming exist in the database.
             </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.TimeSeriesStartupOperations.ParameterizedQueryString(System.Type,System.String,System.String[])">
-            <summary>
-            Creates a parameterized query string for the underlying database type 
-            based on the given format string and the parameter names.
-            </summary>
-            <param name="connectionType">The adapter type used to determine the underlying database type.</param>
-            <param name="format">A composite format string.</param>
-            <param name="parameterNames">A string array that contains zero or more parameter names to format.</param>
-            <returns>A parameterized query string based on the given format and parameter names.</returns>
         </member>
         <member name="T:GSF.TimeSeries.BufferBlockMeasurement">
             <summary>
@@ -8429,17 +8637,6 @@
             Configuration source is a XML file.
             </summary>
         </member>
-        <member name="T:GSF.TimeSeries.DataOperationFunction">
-            <summary>
-            Defines a method signature for a bootstrap data source operation.
-            </summary>
-            <param name="connection">Connection to database.</param>
-            <param name="adapterType">Adapter type for database connection.</param>
-            <param name="nodeIDQueryString">Formatted node ID Guid query string.</param>
-            <param name="arguments">Optional data operation arguments.</param>
-            <param name="statusMessage">Reference to host status message function.</param>
-            <param name="processException">Reference to host process exception function.</param>
-        </member>
         <member name="T:GSF.TimeSeries.ServiceHostBase">
             <summary>
             Represents the time-series framework service host.
@@ -8674,12 +8871,6 @@
             <param name="requestInfo"><see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
         </member>
         <member name="M:GSF.TimeSeries.ServiceHostBase.ReloadConfigRequestHandler(GSF.ServiceProcess.ClientRequestInfo)">
-            <summary>
-            Manually reloads system configuration.
-            </summary>
-            <param name="requestInfo"><see cref="T:GSF.ServiceProcess.ClientRequestInfo"/> instance containing the client request.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.ServiceHostBase.AugmentConfigRequestHandler(GSF.ServiceProcess.ClientRequestInfo)">
             <summary>
             Manually reloads system configuration.
             </summary>

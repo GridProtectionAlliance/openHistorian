@@ -495,82 +495,71 @@
             </summary>
             <param name="command"><see cref="T:GSF.PhasorProtocols.DeviceCommand"/> to send to connected device.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.PhasorDataSourceValidation(System.Data.IDbConnection,System.Type,System.String,System.String,System.Action{System.Object,GSF.EventArgs{System.String}},System.Action{System.Object,GSF.EventArgs{System.Exception}})">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.PhasorDataSourceValidation(GSF.Data.AdoDataConnection,System.String,System.UInt64,System.String,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Apply start-up phasor data source validations
             </summary>
-            <param name="connection">The database connection.</param>
-            <param name="adapterType">The database adapter type.</param>
+            <param name="database">The database connection.</param>
             <param name="nodeIDQueryString">Current node ID in proper query format.</param>
+            <param name="trackingVersion">Latest version of the configuration to which data operations were previously applied.</param>
             <param name="arguments">Arguments, if any, to be used but the data source validation.</param>
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.ParameterizedQueryString(System.Type,System.String,System.String[])">
-            <summary>
-            Creates a parameterized query string for the underlying database type 
-            based on the given format string and the parameter names.
-            </summary>
-            <param name="adapterType">The adapter type used to determine the underlying database type.</param>
-            <param name="format">A composite format string.</param>
-            <param name="parameterNames">A string array that contains zero or more parameter names to format.</param>
-            <returns>A parameterized query string based on the given format and parameter names.</returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.CreateDefaultNode(System.Data.IDbConnection,System.String,System.Action{System.Object,GSF.EventArgs{System.String}},System.Action{System.Object,GSF.EventArgs{System.Exception}})">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.CreateDefaultNode(GSF.Data.AdoDataConnection,System.String,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Creates the default node for the Node table.
             </summary>
-            <param name="connection">The database connection.</param>
+            <param name="database">The database connection.</param>
             <param name="nodeIDQueryString">The ID of the node in the proper database format.</param>
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultConfigurationEntity(System.Data.IDbConnection,System.Action{System.Object,GSF.EventArgs{System.String}},System.Action{System.Object,GSF.EventArgs{System.Exception}})">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultConfigurationEntity(GSF.Data.AdoDataConnection,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Loads the default configuration for the ConfigurationEntity table.
             </summary>
-            <param name="connection">The database connection.</param>
+            <param name="database">The database connection.</param>
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultInterconnection(System.Data.IDbConnection,System.Action{System.Object,GSF.EventArgs{System.String}},System.Action{System.Object,GSF.EventArgs{System.Exception}})">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultInterconnection(GSF.Data.AdoDataConnection,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Loads the default configuration for the Interconnection table.
             </summary>
-            <param name="connection">The database connection.</param>
+            <param name="database">The database connection.</param>
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultProtocol(System.Data.IDbConnection,System.Action{System.Object,GSF.EventArgs{System.String}},System.Action{System.Object,GSF.EventArgs{System.Exception}})">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultProtocol(GSF.Data.AdoDataConnection,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Loads the default configuration for the Protocol table.
             </summary>
-            <param name="connection">The database connection.</param>
+            <param name="database">The database connection.</param>
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultSignalType(System.Data.IDbConnection,System.Action{System.Object,GSF.EventArgs{System.String}},System.Action{System.Object,GSF.EventArgs{System.Exception}})">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultSignalType(GSF.Data.AdoDataConnection,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Loads the default configuration for the SignalType table.
             </summary>
-            <param name="connection">The database connection.</param>
+            <param name="database">The database connection.</param>
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultStatistic(System.Data.IDbConnection,System.Action{System.Object,GSF.EventArgs{System.String}},System.Action{System.Object,GSF.EventArgs{System.Exception}})">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.LoadDefaultStatistic(GSF.Data.AdoDataConnection,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Loads the default configuration for the Statistic table.
             </summary>
-            <param name="connection">The database connection.</param>
+            <param name="database">The database connection.</param>
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>
-        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.EstablishDefaultMeasurementKeyCache(System.Data.IDbConnection,System.Type,System.Action{System.Object,GSF.EventArgs{System.String}},System.Action{System.Object,GSF.EventArgs{System.Exception}})">
+        <member name="M:PhasorProtocolAdapters.CommonPhasorServices.EstablishDefaultMeasurementKeyCache(GSF.Data.AdoDataConnection,System.Action{System.String},System.Action{System.Exception})">
             <summary>
             Establish default <see cref="T:GSF.TimeSeries.MeasurementKey"/> cache.
             </summary>
-            <param name="connection">The database connection.</param>
-            <param name="adapterType">The database adapter type.</param>
+            <param name="database">The database connection.</param>
             <param name="statusMessage">The delegate which will display a status message to the user.</param>
             <param name="processException">The delegate which will handle exception logging.</param>
         </member>

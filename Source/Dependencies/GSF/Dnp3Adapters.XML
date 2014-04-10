@@ -70,7 +70,7 @@
         </member>
         <member name="M:DNP3Adapters.DNP3InputAdapter.IaonProxyLogHandler.Log(DNP3.Interface.LogEntry)">
             <summary>
-            Handler for log entires.
+            Handler for log entries.
             </summary>
             <param name="entry"><see cref="T:DNP3.Interface.LogEntry"/> to handle.</param>
         </member>
