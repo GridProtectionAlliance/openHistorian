@@ -38,7 +38,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 1 AS VersionNumber
+SELECT 2 AS VersionNumber
 FROM dual;
 
 CREATE TABLE ErrorLog(
@@ -124,6 +124,24 @@ CREATE SEQUENCE SEQ_Company START WITH 1 INCREMENT BY 1;
 
 CREATE TRIGGER AI_Company BEFORE INSERT ON Company
     FOR EACH ROW BEGIN SELECT SEQ_Company.nextval INTO :NEW.ID FROM dual;
+END;
+/
+
+CREATE TABLE TrackedChange(
+    ID NUMBER NOT NULL,
+    TableName VARCHAR(200) NOT NULL,
+    PrimaryKeyColumn VARCHAR(200) NOT NULL,
+    PrimaryKeyValue VARCHAR(4000) NULL
+);
+
+CREATE UNIQUE INDEX IX_TrackedChange_ID ON TrackedChange (ID ASC) TABLESPACE openHistorian_INDEX;
+
+ALTER TABLE TrackedChange ADD CONSTRAINT PK_TrackedChange PRIMARY KEY (ID);
+
+CREATE SEQUENCE SEQ_TrackedChange START WITH 1 INCREMENT BY 1;
+
+CREATE TRIGGER AI_TrackedChange BEFORE INSERT ON TrackedChange
+    FOR EACH ROW BEGIN SELECT SEQ_TrackedChange.nextval INTO :NEW.ID FROM dual;
 END;
 /
 
@@ -1598,6 +1616,19 @@ SELECT MeasurementGroupMeasurement.MeasurementGroupID AS MeasurementGroupID, Mea
 MeasurementGroupMeasurement.SignalID AS SignalID, Measurement.PointID AS PointID, Measurement.PointTag AS PointTag, Measurement.SignalReference AS SignalReference
 FROM ((MeasurementGroupMeasurement JOIN MeasurementGroup ON (MeasurementGroupMeasurement.MeasurementGroupID = MeasurementGroup.ID)) JOIN Measurement ON (MeasurementGroupMeasurement.SignalID = Measurement.SignalID));
 
+CREATE VIEW TrackedTable AS
+SELECT 'Measurement' AS Name
+UNION
+SELECT 'ActiveMeasurement' AS Name
+UNION
+SELECT 'Device' AS Name
+UNION
+SELECT 'OutputStream' AS Name
+UNION
+SELECT 'OutputStreamDevice' AS Name
+UNION
+SELECT 'OutputStreamMeasurement' AS Name;
+
 CREATE FUNCTION NEW_GUID RETURN NCHAR AS
     guid VARCHAR2(36);
 BEGIN
@@ -1611,6 +1642,11 @@ BEGIN
         SUBSTR(guid, 21);
         
     RETURN LOWER(guid);
+END;
+/
+
+CREATE TRIGGER Node_AllMeasurementsGroup AFTER INSERT ON Node
+    FOR EACH ROW BEGIN INSERT INTO MeasurementGroup (NodeID, Name, Description, FilterExpression) VALUES(:NEW.ID, 'AllMeasurements', 'All measurements defined in ActiveMeasurements', 'FILTER ActiveMeasurements WHERE SignalID IS NOT NULL');
 END;
 /
 
@@ -2190,6 +2226,211 @@ CREATE TRIGGER AuditLog_InsertDefault BEFORE INSERT ON AuditLog FOR EACH ROW BEG
     IF :NEW.UpdatedOn IS NULL THEN
         SELECT SYSDATE INTO :NEW.UpdatedOn FROM dual;
     END IF;
+END;
+/
+
+-- ***********************
+-- Company Change Tracking
+-- ***********************
+
+CREATE TRIGGER Company_UpdateTracker AFTER UPDATE ON Company FOR EACH ROW
+BEGIN
+    CASE WHEN OLD.Acronym <> NEW.Acronym THEN
+        INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement WHERE Company = NEW.Acronym;
+    END;
+END;
+/
+
+-- **********************
+-- Device Change Tracking
+-- **********************
+
+CREATE TRIGGER Device_InsertTracker AFTER INSERT ON Device FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Device', 'ID', NEW.ID);
+END;
+/
+
+CREATE TRIGGER Device_UpdateTracker1 AFTER UPDATE ON Device FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Device', 'ID', NEW.ID);
+    
+    CASE WHEN OLD.NodeID <> NEW.NodeID
+           OR OLD.Acronym <> NEW.Acronym
+           OR OLD.IsConcentrator <> NEW.IsConcentrator
+           OR OLD.ParentID <> NEW.ParentID
+           OR OLD.FramesPerSecond <> NEW.FramesPerSecond
+           OR OLD.Longitude <> NEW.Longitude
+           OR OLD.Latitude <> NEW.Latitude
+           OR OLD.CompanyID <> NEW.CompanyID
+           OR OLD.ProtocolID <> NEW.ProtocolID
+           OR OLD.Enabled <> NEW.Enabled
+     THEN
+         INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE DeviceID = NEW.ID;
+     END;
+END;
+/
+
+CREATE TRIGGER Device_DeleteTracker AFTER DELETE ON Device FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Device', 'ID', OLD.ID);
+END;
+/
+
+-- *************************
+-- Historian Change Tracking
+-- *************************
+
+CREATE TRIGGER Historian_UpdateTracker AFTER UPDATE ON Historian FOR EACH ROW
+BEGIN
+    CASE WHEN OLD.NodeID <> NEW.NodeID
+           OR OLD.Acronym <> NEW.Acronym
+    THEN
+        INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE HistorianID = NEW.ID;
+    END;
+END;
+/
+
+-- ***************************
+-- Measurement Change Tracking
+-- ***************************
+
+CREATE TRIGGER Measurement_InsertTracker AFTER INSERT ON Measurement FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Measurement', 'PointID', NEW.PointID);
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE PointID = NEW.PointID AND SignalID IS NOT NULL;
+END;
+/
+
+CREATE TRIGGER Measurement_UpdateTracker AFTER UPDATE ON Measurement FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Measurement', 'PointID', NEW.PointID);
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('ActiveMeasurement', 'SignalID', NEW.SignalID);
+END;
+/
+
+CREATE TRIGGER Measurement_DeleteTracker AFTER DELETE ON Measurement FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Measurement', 'PointID', OLD.PointID);
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('ActiveMeasurement', 'SignalID', OLD.SignalID);
+END;
+/
+
+-- ****************************
+-- OutputStream Change Tracking
+-- ****************************
+
+CREATE TRIGGER OutputStream_InsertTracker AFTER INSERT ON OutputStream FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStream', 'ID', NEW.ID);
+END;
+/
+
+CREATE TRIGGER OutputStream_UpdateTracker AFTER UPDATE ON OutputStream FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStream', 'ID', NEW.ID);
+END;
+/
+
+CREATE TRIGGER OutputStream_DeleteTracker AFTER DELETE ON OutputStream FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStream', 'ID', OLD.ID);
+END;
+/
+
+-- **********************************
+-- OutputStreamDevice Change Tracking
+-- **********************************
+
+CREATE TRIGGER OutputStreamDevice_InsertTracker AFTER INSERT ON OutputStreamDevice FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamDevice', 'ID', NEW.ID);
+END;
+/
+
+CREATE TRIGGER OutputStreamDevice_UpdateTracker AFTER UPDATE ON OutputStreamDevice FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamDevice', 'ID', NEW.ID);
+END;
+/
+
+CREATE TRIGGER OutputStreamDevice_DeleteTracker AFTER DELETE ON OutputStreamDevice FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamDevice', 'ID', OLD.ID);
+END;
+/
+
+-- ***************************************
+-- OutputStreamMeasurement Change Tracking
+-- ***************************************
+
+CREATE TRIGGER OutputStreamMeasurement_InsertTracker AFTER INSERT ON OutputStreamMeasurement FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamMeasurement', 'ID', NEW.ID);
+END;
+/
+
+CREATE TRIGGER OutputStreamMeasurement_UpdateTracker AFTER UPDATE ON OutputStreamMeasurement FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamMeasurement', 'ID', NEW.ID);
+END;
+/
+
+CREATE TRIGGER OutputStreamMeasurement_DeleteTracker AFTER DELETE ON OutputStreamMeasurement FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamMeasurement', 'ID', OLD.ID);
+END;
+/
+
+-- **********************
+-- Phasor Change Tracking
+-- **********************
+
+CREATE TRIGGER Phasor_UpdateTracker1 AFTER UPDATE ON Phasor FOR EACH ROW
+BEGIN
+    CASE WHEN OLD.Type <> NEW.Type
+           OR OLD.Phase <> NEW.Phase
+    THEN
+        INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement WHERE PhasorID = NEW.ID;
+    END;
+END;
+/
+
+CREATE TRIGGER Phasor_UpdateTracker2 AFTER UPDATE ON Phasor FOR EACH ROW
+BEGIN
+    CASE WHEN OLD.DeviceID <> NEW.DeviceID
+           OR OLD.SourceIndex <> NEW.SourceIndex
+    THEN
+        INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE DeviceID = OLD.DeviceID AND PhasorSourceIndex = OLD.SourceIndex;
+        INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE DeviceID = NEW.DeviceID AND PhasorSourceIndex = NEW.SourceIndex;
+    END;
+END;
+/
+
+-- ************************
+-- Protocol Change Tracking
+-- ************************
+
+CREATE TRIGGER Protocol_UpdateTracker AFTER UPDATE ON Protocol FOR EACH ROW
+BEGIN
+    CASE WHEN OLD.Acronym <> NEW.Acronym
+           OR OLD.Type <> NEW.Type
+    THEN
+        INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement WHERE Protocol = NEW.Acronym;
+    END;
+END;
+/
+
+-- **************************
+-- SignalType Change Tracking
+-- **************************
+
+CREATE TRIGGER SignalType_UpdateTracker AFTER UPDATE ON SignalType FOR EACH ROW
+BEGIN
+    CASE WHEN OLD.Acronym <> NEW.Acronym
+    THEN
+        INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE SignalTypeID = NEW.ID;
+    END;
 END;
 /
 

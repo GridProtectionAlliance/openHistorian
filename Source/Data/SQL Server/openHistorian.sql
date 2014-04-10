@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 1 AS VersionNumber
+SELECT 2 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -199,6 +199,22 @@ CREATE TABLE [dbo].[Company](
     [UpdatedOn] [datetime] NOT NULL CONSTRAINT [DF_Company_UpdatedOn]  DEFAULT (getutcdate()),
     [UpdatedBy] [varchar](200) NOT NULL CONSTRAINT [DF_Company_UpdatedBy]  DEFAULT (suser_name()),
  CONSTRAINT [PK_Company] PRIMARY KEY CLUSTERED 
+(
+    [ID] ASC
+)WITH (IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TrackedChange](
+    [ID] [bigint] IDENTITY(1,1) NOT NULL,
+    [TableName] [varchar](200) NOT NULL,
+    [PrimaryKeyColumn] [varchar](200) NOT NULL,
+    [PrimaryKeyValue] [varchar](max) NULL,
+ CONSTRAINT [PK_TrackedChange] PRIMARY KEY CLUSTERED 
 (
     [ID] ASC
 )WITH (IGNORE_DUP_KEY = OFF) ON [PRIMARY]
@@ -357,6 +373,20 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Node_Name] ON [dbo].[Node]
     [Name] ASC
 )WITH (IGNORE_DUP_KEY = OFF) ON [PRIMARY]
 GO
+
+CREATE TRIGGER [dbo].[Node_AllMeasurementsGroup]
+   ON  [dbo].[Node]
+   AFTER INSERT
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+
+    INSERT INTO MeasurementGroup(NodeID, Name, Description, FilterExpression)
+    SELECT ID, 'AllMeasurements', 'All measurements defined in ActiveMeasurements', 'FILTER ActiveMeasurements WHERE SignalID IS NOT NULL'
+    FROM inserted
+END
 
 SET ANSI_NULLS ON
 GO
@@ -2246,6 +2276,20 @@ MeasurementGroupMeasurement.SignalID AS SignalID, Measurement.PointID AS PointID
 FROM ((MeasurementGroupMeasurement JOIN MeasurementGroup ON (MeasurementGroupMeasurement.MeasurementGroupID = MeasurementGroup.ID)) JOIN Measurement ON (MeasurementGroupMeasurement.SignalID = Measurement.SignalID));
 GO
 
+CREATE VIEW [dbo].[TrackedTable] AS
+SELECT 'Measurement' AS Name
+UNION
+SELECT 'ActiveMeasurement' AS Name
+UNION
+SELECT 'Device' AS Name
+UNION
+SELECT 'OutputStream' AS Name
+UNION
+SELECT 'OutputStreamDevice' AS Name
+UNION
+SELECT 'OutputStreamMeasurement' AS Name
+GO
+
 ALTER TABLE [dbo].[OtherDevice]  WITH CHECK ADD  CONSTRAINT [FK_OtherDevice_Company] FOREIGN KEY([CompanyID])
 REFERENCES [dbo].[Company] ([ID])
 GO
@@ -2387,6 +2431,286 @@ ALTER TABLE [dbo].[CustomOutputAdapter]  WITH CHECK ADD  CONSTRAINT [FK_CustomOu
 REFERENCES [dbo].[Node] ([ID])
 ON UPDATE CASCADE
 ON DELETE CASCADE
+GO
+
+-- ***********************
+-- Company Change Tracking
+-- ***********************
+
+CREATE TRIGGER [dbo].[Company_UpdateTracker] 
+   ON  [dbo].[Company]
+   AFTER UPDATE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    SELECT inserted.Acronym INTO #acronym
+    FROM inserted INNER JOIN deleted ON inserted.ID = deleted.ID
+    WHERE inserted.Acronym <> deleted.Acronym
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement INNER JOIN #acronym a ON ActiveMeasurement.Company = a.Acronym
+    
+    DROP TABLE #acronym
+END
+GO
+
+-- **********************
+-- Device Change Tracking
+-- **********************
+
+CREATE TRIGGER [dbo].[Device_UpdateTracker] 
+   ON  [dbo].[Device]
+   AFTER INSERT, UPDATE, DELETE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    -- Track changes made to the Device table
+    SELECT ID INTO #deviceUpdate FROM inserted
+    UNION
+    SELECT ID FROM deleted
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'Device', 'ID', ID FROM #deviceUpdate
+    
+    DROP TABLE #deviceUpdate
+    
+    -- Track changes made to the ActiveMeasurement view
+    SELECT inserted.ID INTO #activeMeasurementUpdate
+    FROM inserted INNER JOIN deleted ON inserted.ID = deleted.ID
+    WHERE inserted.NodeID <> deleted.NodeID
+       OR inserted.Acronym <> deleted.Acronym
+       OR inserted.IsConcentrator <> deleted.IsConcentrator
+       OR inserted.ParentID <> deleted.ParentID
+       OR inserted.FramesPerSecond <> deleted.FramesPerSecond
+       OR inserted.Longitude <> deleted.Longitude
+       OR inserted.Latitude <> deleted.Latitude
+       OR inserted.CompanyID <> deleted.CompanyID
+       OR inserted.ProtocolID <> deleted.ProtocolID
+       OR inserted.Enabled <> deleted.Enabled
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement INNER JOIN #activeMeasurementUpdate am ON Measurement.DeviceID = am.ID
+    
+    DROP TABLE #activeMeasurementUpdate
+END
+GO
+
+-- *************************
+-- Historian Change Tracking
+-- *************************
+
+CREATE TRIGGER [dbo].[Historian_UpdateTracker] 
+   ON  [dbo].[Historian]
+   AFTER UPDATE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    SELECT inserted.ID INTO #historianID
+    FROM inserted INNER JOIN deleted ON inserted.ID = deleted.ID
+    WHERE inserted.NodeID <> deleted.NodeID
+       OR inserted.Acronym <> deleted.Acronym
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement INNER JOIN #historianID h ON Measurement.HistorianID = h.ID
+    
+    DROP TABLE #historianID
+END
+GO
+
+-- ***************************
+-- Measurement Change Tracking
+-- ***************************
+
+CREATE TRIGGER [dbo].[Measurement_UpdateTracker] 
+   ON  [dbo].[Measurement]
+   AFTER INSERT, UPDATE, DELETE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    SELECT PointID, SignalID INTO #measurementID FROM inserted
+    UNION
+    SELECT PointID, SignalID FROM deleted WHERE PointID NOT IN (SELECT PointID FROM inserted)
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'Measurement', 'PointID', PointID FROM #measurementID
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM #measurementID
+    
+    DROP TABLE #measurementID
+END
+GO
+
+-- ****************************
+-- OutputStream Change Tracking
+-- ****************************
+
+CREATE TRIGGER [dbo].[OutputStream_UpdateTracker] 
+   ON  [dbo].[OutputStream]
+   AFTER INSERT, UPDATE, DELETE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    SELECT ID INTO #outputStreamID FROM inserted
+    UNION
+    SELECT ID FROM deleted
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'OutputStream', 'ID', ID FROM #outputStreamID
+    
+    DROP TABLE #outputStreamID
+END
+GO
+
+-- **********************************
+-- OutputStreamDevice Change Tracking
+-- **********************************
+
+CREATE TRIGGER [dbo].[OutputStreamDevice_UpdateTracker] 
+   ON  [dbo].[OutputStreamDevice]
+   AFTER INSERT, UPDATE, DELETE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    SELECT ID INTO #outputStreamDeviceID FROM inserted
+    UNION
+    SELECT ID FROM deleted
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'OutputStreamDevice', 'ID', ID FROM #outputStreamDeviceID
+    
+    DROP TABLE #outputStreamDeviceID
+END
+GO
+
+-- ***************************************
+-- OutputStreamMeasurement Change Tracking
+-- ***************************************
+
+CREATE TRIGGER [dbo].[OutputStreamMeasurement_UpdateTracker] 
+   ON  [dbo].[OutputStreamMeasurement]
+   AFTER INSERT, UPDATE, DELETE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    SELECT ID INTO #outputStreamMeasurementID FROM inserted
+    UNION
+    SELECT ID FROM deleted
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'OutputStreamMeasurement', 'ID', ID FROM #outputStreamMeasurementID
+    
+    DROP TABLE #outputStreamMeasurementID
+END
+GO
+
+-- **********************
+-- Phasor Change Tracking
+-- **********************
+
+CREATE TRIGGER [dbo].[Phasor_UpdateTracker] 
+   ON  [dbo].[Phasor]
+   AFTER UPDATE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    SELECT inserted.ID INTO #phasorID
+    FROM inserted INNER JOIN deleted ON inserted.ID = deleted.ID
+    WHERE inserted.Type <> deleted.Type
+       OR inserted.Phase <> deleted.Phase
+       
+    SELECT inserted.DeviceID AS NewDeviceID, inserted.SourceIndex AS NewSourceIndex,
+           deleted.DeviceID AS OldDeviceID, deleted.SourceIndex AS OldSourceIndex
+    INTO #phasorKey
+    FROM inserted INNER JOIN deleted ON inserted.ID = deleted.ID
+    WHERE inserted.DeviceID <> deleted.DeviceID
+       OR inserted.SourceIndex <> deleted.SourceIndex
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement INNER JOIN #phasorID p ON ActiveMeasurement.PhasorID = p.ID
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID
+    FROM Measurement INNER JOIN #phasorKey p
+        ON (Measurement.DeviceID = p.NewDeviceID AND Measurement.PhasorSourceIndex = p.NewSourceIndex)
+        OR (Measurement.DeviceID = p.OldDeviceID AND Measurement.PhasorSourceIndex = p.OldSourceIndex)
+    
+    DROP TABLE #phasorID
+    DROP TABLE #phasorKey
+END
+GO
+
+-- ************************
+-- Protocol Change Tracking
+-- ************************
+
+CREATE TRIGGER [dbo].[Protocol_UpdateTracker] 
+   ON  [dbo].[Protocol]
+   AFTER UPDATE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    SELECT inserted.Acronym INTO #acronym
+    FROM inserted INNER JOIN deleted ON inserted.ID = deleted.ID
+    WHERE inserted.Acronym <> deleted.Acronym
+       OR inserted.Type <> deleted.Type
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement INNER JOIN #acronym a ON ActiveMeasurement.Protocol = a.Acronym
+    
+    DROP TABLE #acronym
+END
+GO
+
+-- **************************
+-- SignalType Change Tracking
+-- **************************
+
+CREATE TRIGGER [dbo].[SignalType_UpdateTracker] 
+   ON  [dbo].[SignalType]
+   AFTER UPDATE
+AS 
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+    
+    SELECT inserted.ID INTO #signalTypeID
+    FROM inserted INNER JOIN deleted ON inserted.ID = deleted.ID
+    WHERE inserted.Acronym <> deleted.Acronym
+    
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement INNER JOIN #signalTypeID s ON ActiveMeasurement.SignalTypeID = s.ID
+    
+    DROP TABLE #signalTypeID
+END
 GO
 
 --SET ANSI_NULLS ON

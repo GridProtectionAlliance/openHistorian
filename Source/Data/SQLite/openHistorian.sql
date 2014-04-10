@@ -31,7 +31,7 @@
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 1 AS VersionNumber;
+SELECT 2 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -73,6 +73,13 @@ CREATE TABLE Company(
     CreatedBy VARCHAR(200) NOT NULL DEFAULT '',
     UpdatedOn DATETIME NOT NULL DEFAULT '',
     UpdatedBy VARCHAR(200) NOT NULL DEFAULT ''
+);
+
+CREATE TABLE TrackedChange(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    TableName VARCHAR(200) NOT NULL,
+    PrimaryKeyColumn VARCHAR(200) NOT NULL,
+    PrimaryKeyValue TEXT NULL
 );
 
 CREATE TABLE ConfigurationEntity(
@@ -1167,6 +1174,19 @@ SELECT MeasurementGroupMeasurement.MeasurementGroupID AS MeasurementGroupID, Mea
 MeasurementGroupMeasurement.SignalID AS SignalID, Measurement.PointID AS PointID, Measurement.PointTag AS PointTag, Measurement.SignalReference AS SignalReference
 FROM ((MeasurementGroupMeasurement JOIN MeasurementGroup ON (MeasurementGroupMeasurement.MeasurementGroupID = MeasurementGroup.ID)) JOIN Measurement ON (MeasurementGroupMeasurement.SignalID = Measurement.SignalID));
 
+CREATE VIEW TrackedTable AS
+SELECT 'Measurement' AS Name
+UNION
+SELECT 'ActiveMeasurement' AS Name
+UNION
+SELECT 'Device' AS Name
+UNION
+SELECT 'OutputStream' AS Name
+UNION
+SELECT 'OutputStreamDevice' AS Name
+UNION
+SELECT 'OutputStreamMeasurement' AS Name;
+
 CREATE VIEW NEW_GUID AS
 SELECT lower(
     hex(randomblob(4)) || '-' ||
@@ -1175,7 +1195,7 @@ SELECT lower(
     substr('AB89', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' ||
     hex(randomblob(6))
 );
-       
+
 
 CREATE TRIGGER CustomActionAdapter_RuntimeSync_Insert AFTER INSERT ON CustomActionAdapter
 FOR EACH ROW BEGIN INSERT INTO Runtime (SourceID, SourceTable) VALUES(NEW.ID, 'CustomActionAdapter'); END;
@@ -1224,182 +1244,321 @@ FOR EACH ROW BEGIN UPDATE AccessLog SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f'
 
 CREATE TRIGGER ApplicationRole_InsertDefault AFTER INSERT ON ApplicationRole 
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE ApplicationRole SET ID = (SELECT * FROM NEW_GUID) WHERE ROWID = NEW.ROWID AND ID = '';
     UPDATE ApplicationRole SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE ApplicationRole SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER SecurityGroup_InsertDefault AFTER INSERT ON SecurityGroup 
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE SecurityGroup SET ID = (SELECT * FROM NEW_GUID) WHERE ROWID = NEW.ROWID AND ID = '';
     UPDATE SecurityGroup SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE SecurityGroup SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER UserAccount_InsertDefault AFTER INSERT ON UserAccount 
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE UserAccount SET ID = (SELECT * FROM NEW_GUID) WHERE ROWID = NEW.ROWID AND ID = '';
     UPDATE UserAccount SET ChangePasswordOn = strftime('%Y-%m-%d %H:%M:%f', 'now', '+90 days') WHERE ROWID = NEW.ROWID AND ChangePasswordOn IS NULL;
     UPDATE UserAccount SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE UserAccount SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER CalculatedMeasurement_InsertDefault AFTER INSERT ON CalculatedMeasurement
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE CalculatedMeasurement SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE CalculatedMeasurement SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER Company_InsertDefault AFTER INSERT ON Company
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE Company SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Company SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER CustomActionAdapter_InsertDefault AFTER INSERT ON CustomActionAdapter
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE CustomActionAdapter SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE CustomActionAdapter SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER CustomInputAdapter_InsertDefault AFTER INSERT ON CustomInputAdapter
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE CustomInputAdapter SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE CustomInputAdapter SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER CustomOutputAdapter_InsertDefault AFTER INSERT ON CustomOutputAdapter
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE CustomOutputAdapter SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE CustomOutputAdapter SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER Device_InsertDefault AFTER INSERT ON Device
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE Device SET UniqueID = (SELECT * FROM NEW_GUID) WHERE ROWID = NEW.ROWID AND UniqueID IS NULL;
     UPDATE Device SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Device SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER Historian_InsertDefault AFTER INSERT ON Historian
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE Historian SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Historian SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
   
 CREATE TRIGGER Subscriber_InsertDefault AFTER INSERT ON Subscriber
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE Subscriber SET ID = (SELECT * FROM NEW_GUID) WHERE ROWID = NEW.ROWID AND ID = '';
     UPDATE Subscriber SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Subscriber SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER Measurement_InsertDefault AFTER INSERT ON Measurement
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE Measurement SET SignalID = (SELECT * FROM NEW_GUID) WHERE ROWID = NEW.ROWID AND SignalID IS NULL;
     UPDATE Measurement SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Measurement SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER Node_InsertDefault AFTER INSERT ON Node
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE Node SET ID = (SELECT * FROM NEW_GUID) WHERE ROWID = NEW.ROWID AND ID IS NULL;
     UPDATE Node SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Node SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+    INSERT INTO MeasurementGroup(NodeID, Name, Description, FilterExpression) VALUES((SELECT ID FROM Node WHERE ROWID = NEW.ROWID), 'AllMeasurements', 'All measurements defined in ActiveMeasurements', 'FILTER ActiveMeasurements WHERE SignalID IS NOT NULL');
+END;
 
 CREATE TRIGGER OtherDevice_InsertDefault AFTER INSERT ON OtherDevice
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE OtherDevice SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE OtherDevice SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER OutputStream_InsertDefault AFTER INSERT ON OutputStream
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE OutputStream SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE OutputStream SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER OutputStreamDevice_InsertDefault AFTER INSERT ON OutputStreamDevice
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE OutputStreamDevice SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE OutputStreamDevice SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER OutputStreamDeviceAnalog_InsertDefault AFTER INSERT ON OutputStreamDeviceAnalog
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE OutputStreamDeviceAnalog SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE OutputStreamDeviceAnalog SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER OutputStreamDeviceDigital_InsertDefault AFTER INSERT ON OutputStreamDeviceDigital
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE OutputStreamDeviceDigital SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE OutputStreamDeviceDigital SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER OutputStreamDevicePhasor_InsertDefault AFTER INSERT ON OutputStreamDevicePhasor
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE OutputStreamDevicePhasor SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE OutputStreamDevicePhasor SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER OutputStreamMeasurement_InsertDefault AFTER INSERT ON OutputStreamMeasurement
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE OutputStreamMeasurement SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE OutputStreamMeasurement SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER Alarm_InsertDefault AFTER INSERT ON Alarm
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE OutputStreamMeasurement SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE OutputStreamMeasurement SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER Phasor_InsertDefault AFTER INSERT ON Phasor
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE Phasor SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Phasor SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER Vendor_InsertDefault AFTER INSERT ON Vendor
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE Vendor SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Vendor SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER VendorDevice_InsertDefault AFTER INSERT ON VendorDevice
 FOR EACH ROW
-  BEGIN
+BEGIN
     UPDATE VendorDevice SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE VendorDevice SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
-  END;
+END;
 
 CREATE TRIGGER ErrorLog_InsertDefault AFTER INSERT ON ErrorLog FOR EACH ROW
 BEGIN UPDATE ErrorLog SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = ''; END;
 
 CREATE TRIGGER AuditLog_InsertDefault AFTER INSERT ON AuditLog FOR EACH ROW
 BEGIN UPDATE AuditLog SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = ''; END;
+
+-- ***********************
+-- Company Change Tracking
+-- ***********************
+
+CREATE TRIGGER Company_UpdateTracker AFTER UPDATE ON Company FOR EACH ROW
+WHEN OLD.Acronym <> NEW.Acronym
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement WHERE Company = NEW.Acronym; END;
+
+-- **********************
+-- Device Change Tracking
+-- **********************
+
+CREATE TRIGGER Device_InsertTracker AFTER INSERT ON Device FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Device', 'ID', NEW.ID); END;
+
+CREATE TRIGGER Device_UpdateTracker1 AFTER UPDATE ON Device FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Device', 'ID', NEW.ID); END;
+
+CREATE TRIGGER Device_UpdateTracker2 AFTER UPDATE ON Device FOR EACH ROW
+WHEN OLD.NodeID <> NEW.NodeID
+  OR OLD.Acronym <> NEW.Acronym
+  OR OLD.IsConcentrator <> NEW.IsConcentrator
+  OR OLD.ParentID <> NEW.ParentID
+  OR OLD.FramesPerSecond <> NEW.FramesPerSecond
+  OR OLD.Longitude <> NEW.Longitude
+  OR OLD.Latitude <> NEW.Latitude
+  OR OLD.CompanyID <> NEW.CompanyID
+  OR OLD.ProtocolID <> NEW.ProtocolID
+  OR OLD.Enabled <> NEW.Enabled
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE DeviceID = NEW.ID; END;
+
+CREATE TRIGGER Device_DeleteTracker AFTER DELETE ON Device FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Device', 'ID', OLD.ID); END;
+
+-- *************************
+-- Historian Change Tracking
+-- *************************
+
+CREATE TRIGGER Historian_UpdateTracker AFTER UPDATE ON Historian FOR EACH ROW
+WHEN OLD.NodeID <> NEW.NodeID
+  OR OLD.Acronym <> NEW.Acronym
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE HistorianID = NEW.ID; END;
+
+-- ***************************
+-- Measurement Change Tracking
+-- ***************************
+
+CREATE TRIGGER Measurement_InsertTracker AFTER INSERT ON Measurement FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Measurement', 'PointID', NEW.PointID);
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE PointID = NEW.PointID AND SignalID IS NOT NULL;
+END;
+
+CREATE TRIGGER Measurement_UpdateTracker AFTER UPDATE ON Measurement FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Measurement', 'PointID', NEW.PointID);
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('ActiveMeasurement', 'SignalID', NEW.SignalID);
+END;
+
+CREATE TRIGGER Measurement_DeleteTracker AFTER DELETE ON Measurement FOR EACH ROW
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Measurement', 'PointID', OLD.PointID);
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('ActiveMeasurement', 'SignalID', OLD.SignalID);
+END;
+
+-- ****************************
+-- OutputStream Change Tracking
+-- ****************************
+
+CREATE TRIGGER OutputStream_InsertTracker AFTER INSERT ON OutputStream FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStream', 'ID', NEW.ID); END;
+
+CREATE TRIGGER OutputStream_UpdateTracker AFTER UPDATE ON OutputStream FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStream', 'ID', NEW.ID); END;
+
+CREATE TRIGGER OutputStream_DeleteTracker AFTER DELETE ON OutputStream FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStream', 'ID', OLD.ID); END;
+
+-- **********************************
+-- OutputStreamDevice Change Tracking
+-- **********************************
+
+CREATE TRIGGER OutputStreamDevice_InsertTracker AFTER INSERT ON OutputStreamDevice FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamDevice', 'ID', NEW.ID); END;
+
+CREATE TRIGGER OutputStreamDevice_UpdateTracker AFTER UPDATE ON OutputStreamDevice FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamDevice', 'ID', NEW.ID); END;
+
+CREATE TRIGGER OutputStreamDevice_DeleteTracker AFTER DELETE ON OutputStreamDevice FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamDevice', 'ID', OLD.ID); END;
+
+-- ***************************************
+-- OutputStreamMeasurement Change Tracking
+-- ***************************************
+
+CREATE TRIGGER OutputStreamMeasurement_InsertTracker AFTER INSERT ON OutputStreamMeasurement FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamMeasurement', 'ID', NEW.ID); END;
+
+CREATE TRIGGER OutputStreamMeasurement_UpdateTracker AFTER UPDATE ON OutputStreamMeasurement FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamMeasurement', 'ID', NEW.ID); END;
+
+CREATE TRIGGER OutputStreamMeasurement_DeleteTracker AFTER DELETE ON OutputStreamMeasurement FOR EACH ROW
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('OutputStreamMeasurement', 'ID', OLD.ID); END;
+
+-- **********************
+-- Phasor Change Tracking
+-- **********************
+
+CREATE TRIGGER Phasor_UpdateTracker1 AFTER UPDATE ON Phasor FOR EACH ROW
+WHEN OLD.Type <> NEW.Type
+  OR OLD.Phase <> NEW.Phase
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement WHERE PhasorID = NEW.ID; END;
+
+CREATE TRIGGER Phasor_UpdateTracker2 AFTER UPDATE ON Phasor FOR EACH ROW
+WHEN OLD.DeviceID <> NEW.DeviceID
+  OR OLD.SourceIndex <> NEW.SourceIndex
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE DeviceID = OLD.DeviceID AND PhasorSourceIndex = OLD.SourceIndex;
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE DeviceID = NEW.DeviceID AND PhasorSourceIndex = NEW.SourceIndex;
+END;
+
+-- ************************
+-- Protocol Change Tracking
+-- ************************
+
+CREATE TRIGGER Protocol_UpdateTracker AFTER UPDATE ON Protocol FOR EACH ROW
+WHEN OLD.Acronym <> NEW.Acronym
+  OR OLD.Type <> NEW.Type
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement WHERE Protocol = NEW.Acronym; END;
+
+-- **************************
+-- SignalType Change Tracking
+-- **************************
+
+CREATE TRIGGER SignalType_UpdateTracker AFTER UPDATE ON SignalType FOR EACH ROW
+WHEN OLD.Acronym <> NEW.Acronym
+BEGIN INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE SignalTypeID = NEW.ID; END;
