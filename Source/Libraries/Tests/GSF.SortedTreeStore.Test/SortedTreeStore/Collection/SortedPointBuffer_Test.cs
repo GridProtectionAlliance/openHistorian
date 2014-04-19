@@ -36,13 +36,13 @@ namespace GSF.SortedTreeStore.Collection
             buffer.Sort();
             sw.Stop();
 
-            Console.WriteLine(sw.ElapsedMilliseconds);
-            Console.WriteLine(MaxCount / sw.Elapsed.TotalSeconds / 1000000);
+            System.Console.WriteLine(sw.ElapsedMilliseconds);
+            System.Console.WriteLine(MaxCount / sw.Elapsed.TotalSeconds / 1000000);
 
             for (int x = 0; x < MaxCount; x++)
             {
                 buffer.ReadSorted(x, key, value);
-                Console.WriteLine(key.Timestamp.ToString() + "\t" + key.PointID.ToString());
+                System.Console.WriteLine(key.Timestamp.ToString() + "\t" + key.PointID.ToString());
             }
 
 
@@ -73,8 +73,8 @@ namespace GSF.SortedTreeStore.Collection
             buffer.Sort();
             sw.Stop();
 
-            Console.WriteLine(sw.ElapsedMilliseconds);
-            Console.WriteLine(MaxCount / sw.Elapsed.TotalSeconds / 1000000);
+            System.Console.WriteLine(sw.ElapsedMilliseconds);
+            System.Console.WriteLine(MaxCount / sw.Elapsed.TotalSeconds / 1000000);
 
         }
 
@@ -104,8 +104,8 @@ namespace GSF.SortedTreeStore.Collection
                 buffer.Sort();
                 sw.Stop();
 
-                Console.WriteLine(sw.ElapsedMilliseconds);
-                Console.WriteLine(MaxCount / sw.Elapsed.TotalSeconds / 1000000);
+                System.Console.WriteLine(sw.ElapsedMilliseconds);
+                System.Console.WriteLine(MaxCount / sw.Elapsed.TotalSeconds / 1000000);
 
             }
         }
@@ -134,8 +134,8 @@ namespace GSF.SortedTreeStore.Collection
                 buffer.Sort();
                 sw.Stop();
 
-                Console.WriteLine(sw.ElapsedMilliseconds);
-                Console.WriteLine(MaxCount / sw.Elapsed.TotalSeconds / 1000000);
+                System.Console.WriteLine(sw.ElapsedMilliseconds);
+                System.Console.WriteLine(MaxCount / sw.Elapsed.TotalSeconds / 1000000);
 
             }
         }
@@ -167,7 +167,7 @@ namespace GSF.SortedTreeStore.Collection
                 sw.Start();
                 buffer.Sort();
                 sw.Stop();
-                Console.WriteLine(Count.ToString() + "\t" + (Count / sw.Elapsed.TotalSeconds / 1000000).ToString());
+                System.Console.WriteLine(Count.ToString() + "\t" + (Count / sw.Elapsed.TotalSeconds / 1000000).ToString());
                 Count *= 2;
 
             }

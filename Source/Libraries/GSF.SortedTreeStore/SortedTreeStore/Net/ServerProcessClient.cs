@@ -27,7 +27,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using GSF.Net;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Client;
+using GSF.SortedTreeStore.Server;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Net
@@ -188,7 +189,7 @@ namespace GSF.SortedTreeStore.Net
 
         //Called through reflection. Its the only way to call a generic function only knowing the Types
         [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appera unused.
-        bool ConnectToDatabase<TKey, TValue>(SortedTreeEngineBase<TKey, TValue> database)
+        bool ConnectToDatabase<TKey, TValue>(SortedTreeClientBase<TKey, TValue> database)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
 using openHistorian.Data;
@@ -52,7 +52,6 @@ namespace openHistorian.PerformanceTests
                             ;
                     }
                     sw.Stop();
-                    database.Disconnect();
                 }
             }
             Console.WriteLine(pointCount);
@@ -151,7 +150,6 @@ namespace openHistorian.PerformanceTests
                 //        ;
                 //}
                 //sw.Stop();
-                database.Disconnect();
                 //}
             }
             Console.WriteLine(pointCount);
@@ -225,7 +223,6 @@ namespace openHistorian.PerformanceTests
                     pointCount++;
 
                 sw.Stop();
-                database.Disconnect();
                 //}
             }
             Console.WriteLine(pointCount);
@@ -272,7 +269,6 @@ namespace openHistorian.PerformanceTests
                     pointCount++;
 
                 sw.Stop();
-                database.Disconnect();
                 //}
             }
             Console.WriteLine(pointCount);

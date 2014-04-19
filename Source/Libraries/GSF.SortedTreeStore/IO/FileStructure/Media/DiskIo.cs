@@ -208,14 +208,16 @@ namespace GSF.IO.FileStructure.Media
 
         public static DiskIo CreateFile(string fileName, MemoryPool pool, int fileStructureBlockSize, Guid uniqueFileId = default(Guid), params Guid[] flags)
         {
-            FileStream fileStream = new FileStream(fileName, FileMode.CreateNew);
+            //Exclusive opening to prevent duplicate opening.
+            FileStream fileStream = new FileStream(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
             DiskMedium disk = DiskMedium.CreateFile(fileStream, pool, fileStructureBlockSize, uniqueFileId, flags);
             return new DiskIo(disk, false);
         }
 
         public static DiskIo OpenFile(string fileName, MemoryPool pool, bool isReadOnly)
         {
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite);
+            //Exclusive opening to prevent duplicate opening.
+            FileStream fileStream = new FileStream(fileName, FileMode.Open, isReadOnly ? FileAccess.Read : FileAccess.ReadWrite, FileShare.None);
             int fileStructureBlockSize = FileHeaderBlock.SearchForBlockSize(fileStream);
             DiskMedium disk = DiskMedium.OpenFile(fileStream, pool, fileStructureBlockSize);
             return new DiskIo(disk, isReadOnly);

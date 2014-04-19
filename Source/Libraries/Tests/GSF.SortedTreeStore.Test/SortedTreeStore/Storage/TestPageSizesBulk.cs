@@ -30,33 +30,33 @@ namespace GSF.SortedTreeStore.Storage
             lst.Add(Test(4096 << 3));
             lst.Add(Test(4096 << 4));
 
-            Console.Write("Count\t");
-            lst.ForEach((x) => Console.Write(x.Count.ToString() + '\t'));
-            Console.WriteLine();
-            Console.Write("Size\t");
-            lst.ForEach((x) => Console.Write(x.PageSize.ToString() + '\t'));
-            Console.WriteLine();
-            Console.Write("Rate Write\t");
-            lst.ForEach((x) => Console.Write(x.RateWrite.ToString("0.000") + '\t'));
-            Console.WriteLine();
-            Console.Write("Rate Read\t");
-            lst.ForEach((x) => Console.Write(x.RateRead.ToString("0.000") + '\t'));
-            Console.WriteLine();
-            Console.Write("Read\t");
-            lst.ForEach((x) => Console.Write(x.ReadCount.ToString() + '\t'));
-            Console.WriteLine();
-            Console.Write("Write\t");
-            lst.ForEach((x) => Console.Write(x.WriteCount.ToString() + '\t'));
-            Console.WriteLine();
-            Console.Write("Checksum\t");
-            lst.ForEach((x) => Console.Write(x.ChecksumCount.ToString() + '\t'));
-            Console.WriteLine();
-            Console.Write("Lookups\t");
-            lst.ForEach((x) => Console.Write(x.Lookups.ToString() + '\t'));
-            Console.WriteLine();
-            Console.Write("Cached\t");
-            lst.ForEach((x) => Console.Write(x.CachedLookups.ToString() + '\t'));
-            Console.WriteLine();
+            System.Console.Write("Count\t");
+            lst.ForEach((x) => System.Console.Write(x.Count.ToString() + '\t'));
+            System.Console.WriteLine();
+            System.Console.Write("Size\t");
+            lst.ForEach((x) => System.Console.Write(x.PageSize.ToString() + '\t'));
+            System.Console.WriteLine();
+            System.Console.Write("Rate Write\t");
+            lst.ForEach((x) => System.Console.Write(x.RateWrite.ToString("0.000") + '\t'));
+            System.Console.WriteLine();
+            System.Console.Write("Rate Read\t");
+            lst.ForEach((x) => System.Console.Write(x.RateRead.ToString("0.000") + '\t'));
+            System.Console.WriteLine();
+            System.Console.Write("Read\t");
+            lst.ForEach((x) => System.Console.Write(x.ReadCount.ToString() + '\t'));
+            System.Console.WriteLine();
+            System.Console.Write("Write\t");
+            lst.ForEach((x) => System.Console.Write(x.WriteCount.ToString() + '\t'));
+            System.Console.WriteLine();
+            System.Console.Write("Checksum\t");
+            lst.ForEach((x) => System.Console.Write(x.ChecksumCount.ToString() + '\t'));
+            System.Console.WriteLine();
+            System.Console.Write("Lookups\t");
+            lst.ForEach((x) => System.Console.Write(x.Lookups.ToString() + '\t'));
+            System.Console.WriteLine();
+            System.Console.Write("Cached\t");
+            lst.ForEach((x) => System.Console.Write(x.CachedLookups.ToString() + '\t'));
+            System.Console.WriteLine();
 
 
             //string fileName = @"c:\temp\testFile.d2";
@@ -133,10 +133,10 @@ namespace GSF.SortedTreeStore.Storage
                 sw.Stop();
 
                 cnt = af.Count();
-                Console.WriteLine(cnt);
+                System.Console.WriteLine(cnt);
             }
 
-            Console.WriteLine((float)(20 / sw.Elapsed.TotalSeconds));
+            System.Console.WriteLine((float)(20 / sw.Elapsed.TotalSeconds));
         }
 
         //TestResults Test(int pageSize)
@@ -214,7 +214,7 @@ namespace GSF.SortedTreeStore.Storage
                 edit.Commit();
             }
             sw.Stop();
-            Console.WriteLine("Size: " + pageSize + " Rate: " + (1 / sw.Elapsed.TotalSeconds).ToString());
+            System.Console.WriteLine("Size: " + pageSize + " Rate: " + (1 / sw.Elapsed.TotalSeconds).ToString());
         }
     }
 }

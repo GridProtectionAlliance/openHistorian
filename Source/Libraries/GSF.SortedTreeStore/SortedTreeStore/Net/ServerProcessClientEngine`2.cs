@@ -24,9 +24,10 @@
 
 using System;
 using GSF.Net;
+using GSF.SortedTreeStore.Client;
 using GSF.SortedTreeStore.Encoding;
-using GSF.SortedTreeStore.Engine;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server;
+using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
@@ -41,10 +42,10 @@ namespace GSF.SortedTreeStore.Net
         public delegate void SocketErrorEventHandler(Exception ex);
 
         private NetworkBinaryStream m_stream;
-        private SortedTreeEngineBase<TKey, TValue> m_sortedTreeEngine;
+        private SortedTreeClientBase<TKey, TValue> m_sortedTreeEngine;
         StreamEncodingBase<TKey, TValue> m_encodingMethod;
 
-        public ServerProcessClientEngine(NetworkBinaryStream netStream, SortedTreeEngineBase<TKey, TValue> engine)
+        public ServerProcessClientEngine(NetworkBinaryStream netStream, SortedTreeClientBase<TKey, TValue> engine)
         {
             m_stream = netStream;
             m_sortedTreeEngine = engine;

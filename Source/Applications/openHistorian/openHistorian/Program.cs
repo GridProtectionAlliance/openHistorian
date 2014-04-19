@@ -22,15 +22,13 @@
 //******************************************************************************************************
 
 #if !DEBUG
-#define RunAsService
+//#define RunAsService
 #endif
 
-#if RunAsService
-    using System.ServiceProcess;
-#else
+using System;
+using System.Linq;
+using System.ServiceProcess;
 using System.Windows.Forms;
-
-#endif
 
 namespace openHistorian
 {
@@ -41,17 +39,42 @@ namespace openHistorian
         /// </summary>
         private static void Main()
         {
+            string[] args = Environment.GetCommandLineArgs();
+
+            bool runAsService;
+#if RunAsService
+            runAsService = true;
+#else
+            runAsService = false;
+#endif
+            bool argRunAsService = args.Any(s => s.Equals("/RunAsService", StringComparison.OrdinalIgnoreCase));
+            bool argRunAsApplication = args.Any(s => s.Equals("/RunAsApplication", StringComparison.OrdinalIgnoreCase));
+
+            if (argRunAsApplication && argRunAsService)
+            {
+                MessageBox.Show("Too many arguments specified: Cannot run as an applcation and a service");
+                return;
+            }
+            if (argRunAsService)
+                runAsService = true;
+            if (argRunAsApplication)
+                runAsService = false;
+
+
             ServiceHost host = new ServiceHost();
 
-#if RunAsService
-    // Run as Windows Service.
-            ServiceBase.Run(new ServiceBase[] { host });
-#else
-            // Run as Windows Application.
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DebugHost(host));
-#endif
+            if (runAsService)
+            {
+                // Run as Windows Service.
+                ServiceBase.Run(new ServiceBase[] { host });
+            }
+            else
+            {
+                // Run as Windows Application.
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new DebugHost(host));
+            }
         }
     }
 }

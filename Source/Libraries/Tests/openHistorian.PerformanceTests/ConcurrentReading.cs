@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
 using openHistorian.Data;

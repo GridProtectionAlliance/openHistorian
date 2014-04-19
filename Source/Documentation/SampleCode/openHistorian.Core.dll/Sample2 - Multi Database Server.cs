@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Engine;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server;
+using GSF.SortedTreeStore.Server.Reader;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
@@ -49,7 +49,6 @@ namespace SampleCode.openHistorian.Server.dll
                     database.Write(key, value);
                 }
                 database.HardCommit();
-                database.Disconnect();
 
                 database = server["Synchrophasor"];
                 for (ulong x = 0; x < 10000; x++)
@@ -58,7 +57,6 @@ namespace SampleCode.openHistorian.Server.dll
                     database.Write(key, value);
                 }
                 database.HardCommit();
-                database.Disconnect();
             }
         }
 
@@ -86,12 +84,10 @@ namespace SampleCode.openHistorian.Server.dll
                 SortedTreeEngineBase<HistorianKey, HistorianValue> database = server["Scada"];
                 TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, 100);
                 stream.Cancel();
-                database.Disconnect();
 
                 database = server["Synchrophasor"];
                 stream = database.Read(0, 100);
                 stream.Cancel();
-                database.Disconnect();
             }
         }
     }

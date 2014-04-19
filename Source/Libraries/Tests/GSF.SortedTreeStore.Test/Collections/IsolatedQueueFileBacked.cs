@@ -90,7 +90,7 @@ namespace GSF.Collections.Test
                 collection.TryDequeue(out T);
             }
             sw.Stop();
-            Console.WriteLine(sw.Elapsed.TotalSeconds);
+            System.Console.WriteLine(sw.Elapsed.TotalSeconds);
             MemoryPoolTest.TestMemoryLeak();
         }
 
@@ -112,8 +112,8 @@ namespace GSF.Collections.Test
                 cnt++;
             sw.Stop();
             collection.Dispose();
-            Console.WriteLine(sw.Elapsed.TotalSeconds);
-            Console.WriteLine(cnt);
+            System.Console.WriteLine(sw.Elapsed.TotalSeconds);
+            System.Console.WriteLine(cnt);
             MemoryPoolTest.TestMemoryLeak();
         }
     }

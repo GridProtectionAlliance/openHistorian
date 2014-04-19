@@ -32,7 +32,7 @@ namespace GSF.Collections.Test
                 m_collection.Enqueue(x);
             }
             sw.Stop();
-            Console.WriteLine(sw.Elapsed.TotalSeconds);
+            System.Console.WriteLine(sw.Elapsed.TotalSeconds);
             m_wait.WaitOne();
             MemoryPoolTest.TestMemoryLeak();
         }
@@ -59,8 +59,8 @@ namespace GSF.Collections.Test
                 Thread.Sleep(1);
             }
             sw.Stop();
-            Console.WriteLine(sw.Elapsed.TotalSeconds);
-            Console.WriteLine(countRepeats);
+            System.Console.WriteLine(sw.Elapsed.TotalSeconds);
+            System.Console.WriteLine(countRepeats);
             m_wait.Set();
             Assert.AreEqual(count, cnt);
         }

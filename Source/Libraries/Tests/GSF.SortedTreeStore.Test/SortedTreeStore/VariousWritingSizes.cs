@@ -41,7 +41,7 @@ namespace GSF.SortedTreeStore
                     {
                         count++;
                     }
-                    Console.WriteLine(count.ToString());
+                    System.Console.WriteLine(count.ToString());
                 }
             }
         }

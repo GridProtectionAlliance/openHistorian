@@ -24,7 +24,7 @@ namespace GSF.Threading
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    System.Console.WriteLine(ex);
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace GSF.Threading
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    System.Console.WriteLine(ex);
                 }
             }
         }

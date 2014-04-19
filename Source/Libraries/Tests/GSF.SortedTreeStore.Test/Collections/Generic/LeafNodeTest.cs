@@ -125,7 +125,7 @@ namespace GSF.SortedTreeStore.Tree
                 TValue value = new TValue();
                 SortedTreeNodeBase<TKey, TValue> node = null;
 
-                Console.WriteLine(StepTimer.Time(count, (sw) =>
+                System.Console.WriteLine(StepTimer.Time(count, (sw) =>
                 {
                     nextKeyIndex = 2;
                     node = nodeInitializer.Create<TKey,TValue>(0);
@@ -146,7 +146,7 @@ namespace GSF.SortedTreeStore.Tree
                 }));
 
 
-                Console.WriteLine(StepTimer.Time(count, () =>
+                System.Console.WriteLine(StepTimer.Time(count, () =>
                 {
                     for (int x = 0; x < Max; x++)
                     {
@@ -159,7 +159,7 @@ namespace GSF.SortedTreeStore.Tree
                 }));
 
 
-                Console.WriteLine(StepTimer.Time(count, () =>
+                System.Console.WriteLine(StepTimer.Time(count, () =>
                 {
                     SortedTreeScannerBase<TKey, TValue> scanner = node.CreateTreeScanner();
                     scanner.SeekToStart();

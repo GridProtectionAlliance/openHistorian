@@ -25,7 +25,8 @@ using System;
 using GSF;
 using GSF.Collections;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Client;
+using GSF.SortedTreeStore.Server;
 using GSF.Threading;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
@@ -67,15 +68,15 @@ namespace openHistorian.Queues
 
         private readonly object m_syncWrite;
 
-        private SortedTreeEngineBase<HistorianKey, HistorianValue> m_database;
+        private SortedTreeClientBase<HistorianKey, HistorianValue> m_database;
 
         private readonly IsolatedQueue<PointData> m_blocks;
 
         private readonly ScheduledTask m_worker;
 
-        private readonly Func<SortedTreeEngineBase<HistorianKey, HistorianValue>> m_getDatabase;
+        private readonly Func<SortedTreeClientBase<HistorianKey, HistorianValue>> m_getDatabase;
 
-        public HistorianInputQueue(Func<SortedTreeEngineBase<HistorianKey, HistorianValue>> getDatabase)
+        public HistorianInputQueue(Func<SortedTreeClientBase<HistorianKey, HistorianValue>> getDatabase)
         {
             m_syncWrite = new object();
             m_blocks = new IsolatedQueue<PointData>();

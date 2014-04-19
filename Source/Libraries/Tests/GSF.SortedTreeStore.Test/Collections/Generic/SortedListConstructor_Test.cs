@@ -60,8 +60,8 @@ namespace GSF.Collections.Generic
                 //    //var sl = SortedListConstructor.CreateUnsafe(keys, values);
 
                 //};
-                Console.WriteLine("Old Method " + max + " " + sw.TimeEvent(add1) * 1000000);
-                Console.WriteLine("New Method " + max + " " + sw.TimeEvent(add2) * 1000000);
+                System.Console.WriteLine("Old Method " + max + " " + sw.TimeEvent(add1) * 1000000);
+                System.Console.WriteLine("New Method " + max + " " + sw.TimeEvent(add2) * 1000000);
                 //Console.WriteLine("Unsafe Method " + max + " " + sw.TimeEvent(add3) * 1000000);
                 MemoryPoolTest.TestMemoryLeak();
             }

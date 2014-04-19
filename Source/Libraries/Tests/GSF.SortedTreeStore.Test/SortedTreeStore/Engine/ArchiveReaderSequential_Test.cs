@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
-using GSF.SortedTreeStore.Engine.Reader;
 using GSF.SortedTreeStore.Filters;
+using GSF.SortedTreeStore.Server.Reader;
 using NUnit.Framework;
 using openHistorian;
 using GSF.SortedTreeStore.Storage;
@@ -15,7 +16,7 @@ using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Data.Query;
 using GSF.SortedTreeStore.Net.Compression;
 
-namespace GSF.SortedTreeStore.Engine
+namespace GSF.SortedTreeStore.Server
 {
     [TestFixture]
     public class ArchiveReaderSequential_Test
@@ -23,6 +24,7 @@ namespace GSF.SortedTreeStore.Engine
         [Test]
         public void TestOneFile()
         {
+            Logger.Default.ReportToConsole(VerboseLevel.All);
             MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
 
@@ -41,24 +43,26 @@ namespace GSF.SortedTreeStore.Engine
                 masterScan.SeekToStart();
                 var masterScanSequential = masterScan.TestSequential();
 
-                var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
-                var scanner = sequencer.TestSequential();
-
-                int count = 0;
-                while (scanner.Read())
+                using (var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
                 {
-                    count++;
-                    if (!masterScanSequential.Read())
-                        throw new Exception();
+                    var scanner = sequencer.TestSequential();
 
-                    if (!scanner.CurrentKey.IsEqualTo(masterScan.CurrentKey))
-                        throw new Exception();
+                    int count = 0;
+                    while (scanner.Read())
+                    {
+                        count++;
+                        if (!masterScanSequential.Read())
+                            throw new Exception();
 
-                    if (!scanner.CurrentValue.IsEqualTo(masterScan.CurrentValue))
+                        if (!scanner.CurrentKey.IsEqualTo(masterScan.CurrentKey))
+                            throw new Exception();
+
+                        if (!scanner.CurrentValue.IsEqualTo(masterScan.CurrentValue))
+                            throw new Exception();
+                    }
+                    if (masterScan.Read())
                         throw new Exception();
                 }
-                if (masterScan.Read())
-                    throw new Exception();
 
             }
             list.Dispose();
@@ -91,22 +95,24 @@ namespace GSF.SortedTreeStore.Engine
                 masterScan.SeekToStart();
                 var masterScanSequential = masterScan.TestSequential();
 
-                var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
-                var scanner = sequencer.TestSequential();
-
-                while (scanner.Read())
+                using (var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
                 {
-                    if (!masterScanSequential.Read())
-                        throw new Exception();
+                    var scanner = sequencer.TestSequential();
 
-                    if (!scanner.CurrentKey.IsEqualTo(masterScan.CurrentKey))
-                        throw new Exception();
+                    while (scanner.Read())
+                    {
+                        if (!masterScanSequential.Read())
+                            throw new Exception();
 
-                    if (!scanner.CurrentValue.IsEqualTo(masterScan.CurrentValue))
+                        if (!scanner.CurrentKey.IsEqualTo(masterScan.CurrentKey))
+                            throw new Exception();
+
+                        if (!scanner.CurrentValue.IsEqualTo(masterScan.CurrentValue))
+                            throw new Exception();
+                    }
+                    if (masterScan.Read())
                         throw new Exception();
                 }
-                if (masterScan.Read())
-                    throw new Exception();
             }
             master.Dispose();
             list.Dispose();
@@ -137,22 +143,23 @@ namespace GSF.SortedTreeStore.Engine
                 masterScan.SeekToStart();
                 var masterScanSequential = masterScan.TestSequential();
 
-                var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list);
-                var scanner = sequencer.TestSequential();
-
-                while (scanner.Read())
+                using (var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
                 {
-                    if (!masterScanSequential.Read())
-                        throw new Exception();
+                    var scanner = sequencer.TestSequential();
+                    while (scanner.Read())
+                    {
+                        if (!masterScanSequential.Read())
+                            throw new Exception();
 
-                    if (!scanner.CurrentKey.IsEqualTo(masterScan.CurrentKey))
-                        throw new Exception();
+                        if (!scanner.CurrentKey.IsEqualTo(masterScan.CurrentKey))
+                            throw new Exception();
 
-                    if (!scanner.CurrentValue.IsEqualTo(masterScan.CurrentValue))
+                        if (!scanner.CurrentValue.IsEqualTo(masterScan.CurrentValue))
+                            throw new Exception();
+                    }
+                    if (masterScan.Read())
                         throw new Exception();
                 }
-                if (masterScan.Read())
-                    throw new Exception();
             }
             list.Dispose();
             master.Dispose();
@@ -251,7 +258,7 @@ namespace GSF.SortedTreeStore.Engine
                         {
                         }
                     });
-                Console.WriteLine(Max / sec / 1000000);
+                System.Console.WriteLine(Max / sec / 1000000);
 
             }
             master.Dispose();
@@ -283,7 +290,7 @@ namespace GSF.SortedTreeStore.Engine
                     {
                     }
                 });
-            Console.WriteLine(Max / sec / 1000000);
+            System.Console.WriteLine(Max / sec / 1000000);
             table1.Dispose();
             MemoryPoolTest.TestMemoryLeak();
         }
@@ -316,7 +323,7 @@ namespace GSF.SortedTreeStore.Engine
                 {
                 }
             });
-            Console.WriteLine(Max / sec / 1000000);
+            System.Console.WriteLine(Max / sec / 1000000);
             list.Dispose();
             MemoryPoolTest.TestMemoryLeak();
         }
@@ -352,7 +359,7 @@ namespace GSF.SortedTreeStore.Engine
                 {
                 }
             });
-            Console.WriteLine(Max / sec / 1000000);
+            System.Console.WriteLine(Max / sec / 1000000);
             list.Dispose();
             MemoryPoolTest.TestMemoryLeak();
         }
@@ -378,7 +385,7 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(2 * FileCount), new TimeSpan(TimeSpan.TicksPerSecond * 2), new TimeSpan(TimeSpan.TicksPerMillisecond));
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list,null,filter);
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
 
             DebugStopwatch sw = new DebugStopwatch();
             int xi = 0;
@@ -390,7 +397,7 @@ namespace GSF.SortedTreeStore.Engine
                     xi++;
                 }
             });
-            Console.WriteLine(Max / sec / 1000000);
+            System.Console.WriteLine(Max / sec / 1000000);
             //TreeKeyMethodsBase<HistorianKey>.WriteToConsole();
             //TreeValueMethodsBase<HistorianValue>.WriteToConsole();
 
@@ -427,7 +434,7 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start, start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 1), new TimeSpan(TimeSpan.TicksPerMillisecond));
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list,null,filter);
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
             var frames = sequencer.GetFrames();
             WriteToConsole(frames);
             list.Dispose();
@@ -452,7 +459,7 @@ namespace GSF.SortedTreeStore.Engine
             }
 
             var filter = TimestampFilter.CreateFromIntervalData<HistorianKey>(start.AddMinutes(-100), start.AddMinutes(10), new TimeSpan(TimeSpan.TicksPerSecond * 60), new TimeSpan(TimeSpan.TicksPerSecond));
-            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list,null,filter);
+            var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list, null, filter);
             var frames = sequencer.GetFrames();
             WriteToConsole(frames);
             list.Dispose();
@@ -518,7 +525,7 @@ namespace GSF.SortedTreeStore.Engine
                     sb.Append('\t');
                 }
 
-                Console.WriteLine(sb.ToString());
+                System.Console.WriteLine(sb.ToString());
                 sb.Clear();
             }
         }

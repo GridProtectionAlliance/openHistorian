@@ -1,5 +1,4 @@
 ﻿using System;
-using GSF;
 using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
@@ -22,7 +21,7 @@ namespace GSF.IO.FileStructure.Media
             session.GetBlock(blockArguments);
 
 
-            Console.WriteLine("Get Block\t" + StepTimer.Time(10, () =>
+            System.Console.WriteLine("Get Block\t" + StepTimer.Time(10, () =>
             {
                 blockArguments.Position = 100000;
                 session.GetBlock(blockArguments);

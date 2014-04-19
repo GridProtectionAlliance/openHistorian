@@ -24,8 +24,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using GSF.SortedTreeStore.Engine;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server;
+using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
 

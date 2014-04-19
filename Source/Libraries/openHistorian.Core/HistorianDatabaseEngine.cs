@@ -31,12 +31,12 @@ using GSF.Historian;
 using GSF.Historian.Files;
 using GSF.Parsing;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.TimeSeries;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Server;
 using DataType = GSF.Historian.Files.DataType;
 
 namespace openHistorian
@@ -52,16 +52,9 @@ namespace openHistorian
     {
         #region [ Constructors ]
 
-        /// <summary>
-        /// Creates a new <see cref="HistorianDatabaseEngine"/> instance.
-        /// </summary>
-        /// <param name="databaseName">the name of the database.</param>
-        /// <param name="writer">Writer options.</param>
-        /// <param name="paths">Write paths.</param>
-        public HistorianDatabaseEngine(string databaseName, WriterMode writer, params string[] paths)
-            : base(databaseName, writer, CreateHistorianCompressionTs.TypeGuid, paths[0])
+        public HistorianDatabaseEngine(string databaseName, WriterMode writer, string[] paths)
+            : base(databaseName, writer, CreateHistorianCompressionTs.TypeGuid, paths[0], paths)
         {
-            LoadFilesFromPaths(paths);
         }
 
         #endregion

@@ -195,5 +195,16 @@ namespace GSF.SortedTreeStore.Tree
         {
             return CompareTo(right) >= 0;
         }
+
+        /// <summary>
+        /// Creates a clone of this instance.
+        /// </summary>
+        /// <returns></returns>
+        public virtual T Clone()
+        {
+            T rv = new T();
+            CopyTo(rv);
+            return rv;
+        }
     }
 }

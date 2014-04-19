@@ -30,7 +30,7 @@ using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Net;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Server;
 
 namespace openHistorian
 {
@@ -193,9 +193,13 @@ namespace openHistorian
             HistorianDatabaseEngine databaseEngine;
 
             if (databaseInstance.InMemoryArchive)
+            {
                 databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
+            }
             else
+            {
                 databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
+            }
 
             m_databases.Add(databaseEngine);
 
@@ -263,9 +267,13 @@ namespace openHistorian
             foreach (HistorianDatabaseInstance databaseInstance in databaseInstances)
             {
                 if (databaseInstance.InMemoryArchive)
+                {
                     databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
+                }
                 else
+                {
                     databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
+                }
 
                 m_databases.Add(databaseEngine);
 

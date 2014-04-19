@@ -62,7 +62,7 @@ namespace GSF.IO.Unmanaged.Test
             }
             else
             {
-                Console.WriteLine(sb.ToString());
+                System.Console.WriteLine(sb.ToString());
             }
         }
 

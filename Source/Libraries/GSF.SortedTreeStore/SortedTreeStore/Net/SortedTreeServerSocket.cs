@@ -27,13 +27,14 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using GSF.Net;
+using GSF.SortedTreeStore.Server;
 
 namespace GSF.SortedTreeStore.Net
 {
     // TODO: Need the ability to dynamically add and remove database instances from the socket historian - or maybe better - just "replace" the collection it's using...
     // TODO: Initial glance looks like replacement of collection might be simple...??
     /// <summary>
-    /// Hosts a <see cref="SortedTreeCollectionBase"/> on a network socket.
+    /// Hosts a <see cref="SortedTreeCollection"/> on a network socket.
     /// </summary>
     public class SortedTreeServerSocket
         : IDisposable

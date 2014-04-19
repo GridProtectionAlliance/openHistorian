@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
@@ -41,10 +41,10 @@ namespace GSF.SortedTreeStore
         /// <summary>
         /// Reads data from the SortedTreeEngine with the provided read options and server side filters.
         /// </summary>
-        /// <param name="readerOptions"></param>
-        /// <param name="keySeekFilter"></param>
-        /// <param name="keyMatchFilter"></param>
-        /// <returns></returns>
+        /// <param name="readerOptions">read options supplied to the reader. Can be null.</param>
+        /// <param name="keySeekFilter">a seek based filter to follow. Can be null.</param>
+        /// <param name="keyMatchFilter">a match based filer to follow. Can be null.</param>
+        /// <returns>A stream that will read the specified data.</returns>
         TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter);
 
     }

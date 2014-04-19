@@ -26,7 +26,8 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using GSF.Net;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Client;
+using GSF.SortedTreeStore.Server;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Net
@@ -39,7 +40,7 @@ namespace GSF.SortedTreeStore.Net
     {
         private TcpClient m_client;
         private NetworkBinaryStream m_stream;
-        private SortedTreeEngineBase m_sortedTreeEngine;
+        private SortedTreeClientBase m_sortedTreeEngine;
         string m_historianDatabaseString;
 
         private readonly string m_defaultDatabase;

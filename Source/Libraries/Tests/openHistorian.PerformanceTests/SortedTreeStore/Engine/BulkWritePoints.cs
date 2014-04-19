@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GSF;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Server;
 using GSF.SortedTreeStore.Net;
 using GSF.SortedTreeStore.Net.Compression;
 using GSF.SortedTreeStore.Tree.TreeNodes;
@@ -29,8 +29,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         public void VerifyDB()
         {
             using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
+            using (var scan = engine.Read(null, null, null))
             {
-                var scan = engine.Read(null, null, null);
                 var key = new HistorianKey();
                 var value = new HistorianValue();
                 for (int x = 0; x < 100000000; x++)
@@ -82,7 +82,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                 {
                     db.SetEncodingMode(CreateHistorianCompressedStream.TypeGuid);
 
-                    engine.UnhandledException += engine_Exception;
+                    engine.ProcessException += engine_Exception;
                     Thread.Sleep(100);
                     var key = new HistorianKey();
                     var value = new HistorianValue();
@@ -123,7 +123,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             PointCount = 0;
             using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
             {
-                engine.UnhandledException += engine_Exception;
+                engine.ProcessException += engine_Exception;
                 Thread.Sleep(100);
                 var key = new HistorianKey();
                 var value = new HistorianValue();
@@ -161,7 +161,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             PointCount = 0;
             using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
             {
-                engine.UnhandledException += engine_Exception;
+                engine.ProcessException += engine_Exception;
                 Thread.Sleep(100);
                 var key = new HistorianKey();
                 var value = new HistorianValue();

@@ -26,7 +26,7 @@ using System.IO;
 using GSF;
 using GSF.Collections;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Server;
 using GSF.Threading;
 using openHistorian.Collections;
 

@@ -8,7 +8,7 @@ using NUnit.Framework;
 using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
 using openHistorian.Data.Query;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server.Reader;
 namespace openHistorian
 {
     [TestFixture]
@@ -65,10 +65,6 @@ namespace openHistorian
                 while (stream.Read())
                     Console.WriteLine(stream.CurrentKey.Timestamp.ToString() + '\t' + stream.CurrentKey.TimestampAsDate.ToString() + '\t' +
                         stream.CurrentValue.Value1.ToString());
-
-
-
-                database.Disconnect();
             }
         }
 

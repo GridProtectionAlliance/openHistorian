@@ -28,7 +28,7 @@ using GSF.SortedTreeStore.Net;
 using openHistorian;
 using openHistorian.Collections;
 using openHistorian.Data.Query;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Server;
 using openVisN.Calculations;
 using openVisN.Library;
 

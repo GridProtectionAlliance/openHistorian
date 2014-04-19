@@ -51,6 +51,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GSF.Core">
+      <HintPath>..\..\..\Dependencies\GSF\GSF.Core.dll</HintPath>
+    </Reference>
     <Reference Include="GSF.Historian, Version=2.0.68.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\GSF\GSF.Historian.dll</HintPath>
@@ -66,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\Generic\FixedSizeLeafUint_Test.cs" />
+    <Compile Include="Collections\WeakListTest.cs" />
     <Compile Include="SortedTreeStore\Collection\SortedPointBuffer_Test.cs" />
     <Compile Include="SortedTreeStore\Storage\TestPageSizes.cs" />
     <Compile Include="SortedTreeStore\Storage\TestPageSizesBulk.cs" />

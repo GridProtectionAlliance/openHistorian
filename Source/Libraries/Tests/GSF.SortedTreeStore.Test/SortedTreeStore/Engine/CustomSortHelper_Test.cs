@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using GSF.IO.Unmanaged;
 using NUnit.Framework;
 
-namespace GSF.SortedTreeStore.Engine
+namespace GSF.SortedTreeStore.Server
 {
     [TestFixture]
     public class CustomSortHelper_Test

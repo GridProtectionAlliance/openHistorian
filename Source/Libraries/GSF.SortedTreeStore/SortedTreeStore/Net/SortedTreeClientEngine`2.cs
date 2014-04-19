@@ -24,16 +24,17 @@
 
 using System;
 using GSF.Net;
+using GSF.SortedTreeStore.Client;
 using GSF.SortedTreeStore.Encoding;
-using GSF.SortedTreeStore.Engine;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Net
 {
+
     public class SortedTreeClientEngine<TKey, TValue>
-        : SortedTreeEngineBase<TKey, TValue>
+        : SortedTreeClientBase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
@@ -139,14 +140,14 @@ namespace GSF.SortedTreeStore.Net
         }
 
 
-        public override void Write(TreeStream<TKey, TValue> points)
+        public override void Write(TreeStream<TKey, TValue> stream)
         {
             if (m_reader != null)
                 throw new Exception("Sockets do not support writing while a reader is open. Dispose of reader.");
 
             m_stream.Write((byte)ServerCommand.Write);
             m_encodingMode.ResetEncoder();
-            while (points.Read(m_tmpKey, m_tmpValue))
+            while (stream.Read(m_tmpKey, m_tmpValue))
             {
                 m_encodingMode.Encode(m_stream, m_tmpKey, m_tmpValue);
             }

@@ -37,9 +37,9 @@ namespace GSF.IO.FileStructure
                 }
                 size = 1000000;
             }
-            Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.000"));
-            Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.000"));
-            Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.000"));
+            System.Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.000"));
+            System.Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.000"));
+            System.Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.000"));
             MemoryPoolTest.TestMemoryLeak();
         }
 
@@ -70,9 +70,9 @@ namespace GSF.IO.FileStructure
                 size = bs.Position / 4096.0;
             }
 
-            Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
-            Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
-            Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.0"));
+            System.Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
+            System.Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
+            System.Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.0"));
             MemoryPoolTest.TestMemoryLeak();
         }
 
@@ -112,9 +112,9 @@ namespace GSF.IO.FileStructure
                 }
             }
 
-            Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
-            Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
-            Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.0"));
+            System.Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
+            System.Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
+            System.Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.0"));
             MemoryPoolTest.TestMemoryLeak();
         }
 
@@ -150,9 +150,9 @@ namespace GSF.IO.FileStructure
                 }
             }
 
-            Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
-            Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
-            Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.0"));
+            System.Console.WriteLine("Read: " + (DiskIoSession.ReadCount / size).ToString("0.0"));
+            System.Console.WriteLine("Write: " + (DiskIoSession.WriteCount / size).ToString("0.0"));
+            System.Console.WriteLine("Checksums: " + (Stats.ChecksumCount / size).ToString("0.0"));
             MemoryPoolTest.TestMemoryLeak();
         }
     }

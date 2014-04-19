@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server.Reader;
 using NPlot;
 using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using openHistorian.Data.Query;
 using openHistorian.Data.Types;
-using GSF.SortedTreeStore.Engine;
+using GSF.SortedTreeStore.Server;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
 namespace simpleVisN
@@ -56,7 +56,7 @@ namespace simpleVisN
                 dlgOpen.Filter = "openHistorian 2.0 file|*.d2";
                 if (dlgOpen.ShowDialog() == DialogResult.OK)
                 {
-                    m_archiveFile = new HistorianDatabaseEngine("", WriterMode.None, dlgOpen.FileName);
+                    m_archiveFile = new HistorianDatabaseEngine("", WriterMode.None, dlgOpen.FileNames);
                 }
             }
             BuildListOfAllPoints();

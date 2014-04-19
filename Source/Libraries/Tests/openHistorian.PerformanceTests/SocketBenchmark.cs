@@ -2,8 +2,9 @@
 using System.IO;
 using GSF.IO;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Engine;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Client;
+using GSF.SortedTreeStore.Server;
+using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
 using openHistorian;
@@ -124,7 +125,7 @@ namespace SampleCode.openHistorian.Server.dll
                         count = 0;
                         using (HistorianClient client = new HistorianClient(clientOptions))
                         {
-                            SortedTreeEngineBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();//.GetDatabase();
+                            SortedTreeClientBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();//.GetDatabase();
                             //IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
                             //TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue, new ulong[] { 2 });
                             TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, ulong.MaxValue);

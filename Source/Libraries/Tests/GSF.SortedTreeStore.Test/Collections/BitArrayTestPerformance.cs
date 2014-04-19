@@ -71,12 +71,12 @@ namespace GSF.Collections.Test
             }
             sw6.Stop();
 
-            Console.WriteLine("Set Bits: " + (count / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
-            Console.WriteLine("Set Bits Again: " + (count / sw2.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
-            Console.WriteLine("Clear Bits: " + (count / sw3.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
-            Console.WriteLine("Clear Bits Again: " + (count / sw4.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
-            Console.WriteLine("Get Bits: " + (count / sw5.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
-            Console.WriteLine("Find Cleared Bit (All bits cleared): " + (count / sw6.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
+            System.Console.WriteLine("Set Bits: " + (count / sw1.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
+            System.Console.WriteLine("Set Bits Again: " + (count / sw2.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
+            System.Console.WriteLine("Clear Bits: " + (count / sw3.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
+            System.Console.WriteLine("Clear Bits Again: " + (count / sw4.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
+            System.Console.WriteLine("Get Bits: " + (count / sw5.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
+            System.Console.WriteLine("Find Cleared Bit (All bits cleared): " + (count / sw6.Elapsed.TotalSeconds / 1000000).ToString("0.0 MPP"));
             MemoryPoolTest.TestMemoryLeak();
         }
     }

@@ -7,7 +7,7 @@ using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Engine.Reader;
+using GSF.SortedTreeStore.Server.Reader;
 
 namespace SampleCode.openHistorian.Server.dll
 {

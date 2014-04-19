@@ -75,7 +75,7 @@ namespace GSF.IO.FileStructure.Test
 
             IndexMapper map = new IndexMapper((int)BlockSize);
 
-            Console.WriteLine(text +
+            System.Console.WriteLine(text +
                               StepTimer.Time(10, () =>
                               {
                                   map.MapPosition(page);
