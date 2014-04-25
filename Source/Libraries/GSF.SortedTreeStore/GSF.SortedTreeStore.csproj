@@ -101,7 +101,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\GuidDictionary.cs" />
+    <Compile Include="Collections\GuidIndex.cs" />
     <Compile Include="Collections\WeakList`1.cs" />
     <Compile Include="Diagnostics\ConsoleLogger.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
