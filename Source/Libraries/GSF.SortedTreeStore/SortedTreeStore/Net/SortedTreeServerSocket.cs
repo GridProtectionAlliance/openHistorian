@@ -34,20 +34,20 @@ namespace GSF.SortedTreeStore.Net
     // TODO: Need the ability to dynamically add and remove database instances from the socket historian - or maybe better - just "replace" the collection it's using...
     // TODO: Initial glance looks like replacement of collection might be simple...??
     /// <summary>
-    /// Hosts a <see cref="SortedTreeCollection"/> on a network socket.
+    /// Hosts a <see cref="ServerRoot"/> on a network socket.
     /// </summary>
     public class SortedTreeServerSocket
         : IDisposable
     {
         private volatile bool m_isRunning = true;
         private TcpListener m_listener;
-        private SortedTreeCollection m_historian;
+        private ServerRoot m_historian;
         private readonly int m_port;
         private bool m_disposed;
         private readonly List<ServerProcessClient> m_clients = new List<ServerProcessClient>();
 
         // TODO: Replace this with a connection string instead of a port - allows easier specification of interface, etc.
-        public SortedTreeServerSocket(int port, SortedTreeCollection historian)
+        public SortedTreeServerSocket(int port, ServerRoot historian)
         {
             if (historian == null)
                 throw new ArgumentNullException("historian");

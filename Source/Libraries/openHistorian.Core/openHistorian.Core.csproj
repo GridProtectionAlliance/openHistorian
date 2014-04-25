@@ -78,7 +78,7 @@
     <Compile Include="Data\Types\TypeBase.cs" />
     <Compile Include="Data\Types\TypeDouble.cs" />
     <Compile Include="Data\Types\TypeSingle.cs" />
-    <Compile Include="HistorianDatabaseEngine.cs" />
+    <Compile Include="HistorianDatabaseServer.cs" />
     <Compile Include="HistorianDatabaseInstance.cs" />
     <Compile Include="HistorianServer.cs" />
     <Compile Include="OldHistorianReader.cs" />

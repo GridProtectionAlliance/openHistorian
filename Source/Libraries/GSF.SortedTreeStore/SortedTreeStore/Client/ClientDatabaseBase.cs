@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeClientBase`2.cs - Gbtc
+//  SortedTreeClientBase.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,41 +22,45 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Server.Reader;
-using GSF.SortedTreeStore.Filters;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Client
 {
     /// <summary>
     /// Represents a single historian database.
     /// </summary>
-    public abstract class SortedTreeClientBase<TKey, TValue>
-        : SortedTreeClientBase, IDatabaseReader<TKey, TValue> 
-        where TKey : SortedTreeTypeBase<TKey>, new()
-        where TValue : SortedTreeTypeBase<TValue>, new()
+    public abstract class ClientDatabaseBase : IDisposable
     {
-        /// <summary>
-        /// Reads data from the SortedTreeEngine with the provided read options and server side filters.
-        /// </summary>
-        /// <param name="readerOptions">read options supplied to the reader. Can be null.</param>
-        /// <param name="keySeekFilter">a seek based filter to follow. Can be null.</param>
-        /// <param name="keyMatchFilter">a match based filer to follow. Can be null.</param>
-        /// <returns>A stream that will read the specified data.</returns>
-        public abstract TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter);
 
         /// <summary>
-        /// Writes the tree stream to the database. 
+        /// Gets if has been disposed.
         /// </summary>
-        /// <param name="stream">all of the key/value pairs to add to the database.</param>
-        public abstract void Write(TreeStream<TKey, TValue> stream);
+        public abstract bool IsDisposed { get; }
 
         /// <summary>
-        /// Writes an individual key/value to the sorted tree store.
+        /// Gets basic information about the current Database.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public abstract void Write(TKey key, TValue value);
-      
+        public abstract DatabaseInfo Info { get; }
+
+        /// <summary>
+        /// Forces a soft commit on the database. A soft commit 
+        /// only commits data to memory. This allows other clients to read the data.
+        /// While soft committed, this data could be lost during an unexpected shutdown.
+        /// Soft commits usually occur within microseconds. 
+        /// </summary>
+        public abstract void SoftCommit();
+
+        /// <summary>
+        /// Forces a commit to the disk subsystem. Once this returns, the data will not
+        /// be lost due to an application crash or unexpected shutdown.
+        /// Hard commits can take 100ms or longer depending on how much data has to be committed. 
+        /// This requires two consecutive hardware cache flushes.
+        /// </summary>
+        public abstract void HardCommit();
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
+        public abstract void Dispose();
     }
 }

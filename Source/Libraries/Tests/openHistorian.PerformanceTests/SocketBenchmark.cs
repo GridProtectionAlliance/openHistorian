@@ -22,28 +22,30 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void CreateScadaDatabase()
         {
-            Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
+            throw new NotImplementedException();
 
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.IsNetworkHosted = false;
-            db.InMemoryArchive = false;
-            db.Paths = new[] { @"c:\temp\Scada\" };
+            //Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
-            HistorianKey key = new HistorianKey();
-            HistorianValue value = new HistorianValue();
+            //HistorianDatabaseInstance db = new HistorianDatabaseInstance();
+            //db.IsNetworkHosted = false;
+            //db.InMemoryArchive = false;
+            //db.Paths = new[] { @"c:\temp\Scada\" };
 
-            using (HistorianServer server = new HistorianServer(db))
-            {
-                SortedTreeEngineBase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();
+            //HistorianKey key = new HistorianKey();
+            //HistorianValue value = new HistorianValue();
 
-                for (ulong x = 0; x < 10000000; x++)
-                {
-                    key.Timestamp = x;
-                    database.Write(key, value);
-                }
+            //using (HistorianServer server = new HistorianServer(db))
+            //{
+            //    ServerDatabaseBase database = server.GetDefaultDatabase();
 
-                database.HardCommit();
-            }
+            //    for (ulong x = 0; x < 10000000; x++)
+            //    {
+            //        key.Timestamp = x;
+            //        database.Write(key, value);
+            //    }
+
+            //    database.HardCommit();
+            //}
 
             //Console.WriteLine("KeyMethodsBase calls");
             //for (int x = 0; x < 23; x++)
@@ -124,8 +126,8 @@ namespace SampleCode.openHistorian.Server.dll
                     {
                         count = 0;
                         using (HistorianClient client = new HistorianClient(clientOptions))
+                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
                         {
-                            SortedTreeClientBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();//.GetDatabase();
                             //IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
                             //TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue, new ulong[] { 2 });
                             TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, ulong.MaxValue);
@@ -133,7 +135,6 @@ namespace SampleCode.openHistorian.Server.dll
                             {
                                 count++;
                             }
-                            database.Disconnect();
                         }
                     });
 

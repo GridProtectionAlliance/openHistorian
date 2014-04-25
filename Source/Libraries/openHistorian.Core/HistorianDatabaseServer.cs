@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  HistorianDatabaseEngine.cs - Gbtc
+//  HistorianDatabaseServer.cs - Gbtc
 //
-//  Copyright © 2010, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -25,12 +25,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using GSF;
 using GSF.Data;
 using GSF.Historian;
 using GSF.Historian.Files;
 using GSF.Parsing;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Client;
 using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.TimeSeries;
@@ -42,19 +44,23 @@ using DataType = GSF.Historian.Files.DataType;
 namespace openHistorian
 {
     /// <summary>
-    /// Represents a historian specific implementation of <see cref="SortedTreeEngine{TKey,TValue}"/> for general use.
+    /// Represents a historian specific implementation of <see cref="ServerDatabase{TKey,TValue}"/> for general use.
     /// </summary>
     /// <remarks>
     /// This class implements the 1.0 historian <see cref="IArchive"/> to automatically bring in historian providers (e.g., web services).
     /// </remarks>
-    public class HistorianDatabaseEngine
-        : SortedTreeEngine<HistorianKey, HistorianValue>, IArchive
+    public class HistorianDatabaseServer
+        : ServerDatabase<HistorianKey, HistorianValue>, IArchive
     {
+        HistorianServer m_server;
+        ClientDatabaseBase<HistorianKey, HistorianValue> m_client;
+
         #region [ Constructors ]
 
-        public HistorianDatabaseEngine(string databaseName, WriterMode writer, string[] paths)
+        public HistorianDatabaseServer(HistorianServer server, string databaseName, WriterMode writer, string[] paths)
             : base(databaseName, writer, CreateHistorianCompressionTs.TypeGuid, paths[0], paths)
         {
+            m_server = server;
         }
 
         #endregion
@@ -74,16 +80,19 @@ namespace openHistorian
 
         IEnumerable<IDataPoint> IArchive.ReadData(IEnumerable<int> historianIDs, string startTime, string endTime)
         {
-            ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
-            ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
-            return ReadDataStream(this.Read(startTimestamp, endTimestamp, historianIDs.Select(pointID => (ulong)pointID)));
+            throw new NotImplementedException();
+            //ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
+            //ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
+
+            //return ReadDataStream(this.Read(startTimestamp, endTimestamp, historianIDs.Select(pointID => (ulong)pointID)));
         }
 
         IEnumerable<IDataPoint> IArchive.ReadData(int historianID, string startTime, string endTime)
         {
-            ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
-            ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
-            return ReadDataStream(this.Read(startTimestamp, endTimestamp));
+            throw new NotImplementedException();
+            //ulong startTimestamp = (ulong)TimeTag.Parse(startTime).ToDateTime().Ticks;
+            //ulong endTimestamp = (ulong)TimeTag.Parse(endTime).ToDateTime().Ticks;
+            //return ReadDataStream(this.Read(startTimestamp, endTimestamp));
         }
 
         private IEnumerable<IDataPoint> ReadDataStream(TreeStream<HistorianKey, HistorianValue> stream)
@@ -350,7 +359,9 @@ namespace openHistorian
             Ticks stopTime = DateTime.UtcNow.Ticks;
             Ticks startTime = stopTime - Ticks.PerSecond * 2;
 
-            dataPoints = ReadDataStream(this.Read((ulong)(long)startTime, (ulong)(long)stopTime, new[] { (ulong)historianID }));
+            //ToDo: Fix this
+            throw new NotImplementedException();
+            //dataPoints = ReadDataStream(this.Read((ulong)(long)startTime, (ulong)(long)stopTime, new[] { (ulong)historianID }));
 
             StateRecordDataPoint dataPoint = new StateRecordDataPoint(dataPoints.Last());
 

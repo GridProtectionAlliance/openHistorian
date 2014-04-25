@@ -19,47 +19,49 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void CreateAllDatabases()
         {
-            Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
-            Array.ForEach(Directory.GetFiles(@"c:\temp\Synchrophasor\", "*.d2", SearchOption.AllDirectories), File.Delete);
+            throw new NotImplementedException();
 
-            List<HistorianDatabaseInstance> serverDatabases = new List<HistorianDatabaseInstance>();
+            //Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
+            //Array.ForEach(Directory.GetFiles(@"c:\temp\Synchrophasor\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.DatabaseName = "Scada";
-            db.InMemoryArchive = false;
-            db.Paths = new[] { @"c:\temp\Scada\" };
+            //List<HistorianDatabaseInstance> serverDatabases = new List<HistorianDatabaseInstance>();
 
-            serverDatabases.Add(db);
+            //HistorianDatabaseInstance db = new HistorianDatabaseInstance();
+            //db.DatabaseName = "Scada";
+            //db.InMemoryArchive = false;
+            //db.Paths = new[] { @"c:\temp\Scada\" };
 
-            db = new HistorianDatabaseInstance();
-            db.DatabaseName = "Synchrophasor";
-            db.InMemoryArchive = false;
-            db.Paths = new[] { @"c:\temp\Synchrophasor\" };
+            //serverDatabases.Add(db);
 
-            serverDatabases.Add(db);
+            //db = new HistorianDatabaseInstance();
+            //db.DatabaseName = "Synchrophasor";
+            //db.InMemoryArchive = false;
+            //db.Paths = new[] { @"c:\temp\Synchrophasor\" };
 
-            HistorianKey key = new HistorianKey();
-            HistorianValue value = new HistorianValue();
+            //serverDatabases.Add(db);
 
-            using (HistorianServer server = new HistorianServer(serverDatabases))
-            {
-                SortedTreeEngineBase<HistorianKey, HistorianValue> database = server["Scada"];
+            //HistorianKey key = new HistorianKey();
+            //HistorianValue value = new HistorianValue();
 
-                for (ulong x = 0; x < 10000; x++)
-                {
-                    key.Timestamp = x;
-                    database.Write(key, value);
-                }
-                database.HardCommit();
+            //using (HistorianServer server = new HistorianServer(serverDatabases))
+            //{
+            //    ServerDatabaseBase database = server["Scada"];
 
-                database = server["Synchrophasor"];
-                for (ulong x = 0; x < 10000; x++)
-                {
-                    key.Timestamp = x;
-                    database.Write(key, value);
-                }
-                database.HardCommit();
-            }
+            //    for (ulong x = 0; x < 10000; x++)
+            //    {
+            //        key.Timestamp = x;
+            //        database.Write(key, value);
+            //    }
+            //    database.HardCommit();
+
+            //    database = server["Synchrophasor"];
+            //    for (ulong x = 0; x < 10000; x++)
+            //    {
+            //        key.Timestamp = x;
+            //        database.Write(key, value);
+            //    }
+            //    database.HardCommit();
+            //}
         }
 
         [Test]
@@ -92,7 +94,7 @@ namespace SampleCode.openHistorian.Server.dll
 
                 using (HistorianClient client = new HistorianClient(clientOptions))
                 {
-                    SortedTreeClientBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey,HistorianValue>("Scada");
+                    ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey,HistorianValue>("Scada");
                     TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, 100);
                     stream.Cancel();
 

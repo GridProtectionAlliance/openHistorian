@@ -382,45 +382,45 @@ namespace DataExtractionUtility
                     var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
                     var pointFilter = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(points);
 
-                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
-
-                    string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Export.csv");
-
-                    using (var fillAdapter = database.GetPointStream(timeFilter, pointFilter).GetFillAdapter())
-                    using (var csvStream = new StreamWriter(fileName))
+                    using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
                     {
-                        var ultraStream = new UltraStreamWriter(csvStream);
-                        //csvStream.AutoFlush = false;
-                        csvStream.Write("Timestamp,");
-                        foreach (var signal in m_selectedMeasurements)
-                        {
-                            csvStream.Write(signal.Description);
-                            csvStream.Write(',');
-                        }
-                        csvStream.WriteLine();
+                        string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Export.csv");
 
-                        m_readIndex++;
-                        while (fillAdapter.Fill(FillData))
+                        using (var fillAdapter = database.GetPointStream(timeFilter, pointFilter).GetFillAdapter())
+                        using (var csvStream = new StreamWriter(fileName))
                         {
-                            csvStream.Write(fillAdapter.FrameTime.ToString("MM/dd/yyyy hh:mm:ss.fffffff"));
-                            csvStream.Write(',');
-
-                            foreach (var signal in m_measurementsInOrder)
+                            var ultraStream = new UltraStreamWriter(csvStream);
+                            //csvStream.AutoFlush = false;
+                            csvStream.Write("Timestamp,");
+                            foreach (var signal in m_selectedMeasurements)
                             {
-                                if (signal.ReadNumber == m_readIndex)
-                                {
-                                    ultraStream.Write(signal.Value);
-                                }
-                                ultraStream.Write(',');
+                                csvStream.Write(signal.Description);
+                                csvStream.Write(',');
                             }
-                            ultraStream.Flush();
                             csvStream.WriteLine();
-                            m_readIndex++;
-                        }
 
-                        csvStream.Flush();
+                            m_readIndex++;
+                            while (fillAdapter.Fill(FillData))
+                            {
+                                csvStream.Write(fillAdapter.FrameTime.ToString("MM/dd/yyyy hh:mm:ss.fffffff"));
+                                csvStream.Write(',');
+
+                                foreach (var signal in m_measurementsInOrder)
+                                {
+                                    if (signal.ReadNumber == m_readIndex)
+                                    {
+                                        ultraStream.Write(signal.Value);
+                                    }
+                                    ultraStream.Write(',');
+                                }
+                                ultraStream.Flush();
+                                csvStream.WriteLine();
+                                m_readIndex++;
+                            }
+
+                            csvStream.Flush();
+                        }
                     }
-                    database.Disconnect();
                 }
 
                 Ticks runtime = DateTime.UtcNow.Ticks - processingStartTime;

@@ -123,8 +123,8 @@ namespace openHistorian.PerformanceTests
                     clientOptions.ServerNameOrIp = "127.0.0.1";
 
                     using (var client = new HistorianClient(clientOptions))
+                    using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
                     {
-                        var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
                         HistorianKey key = new HistorianKey();
                         HistorianValue value = new HistorianValue();
 
@@ -133,7 +133,6 @@ namespace openHistorian.PerformanceTests
                         while (scan.Read(key, value))
                             ;
                         sw.Stop();
-                        database.Disconnect();
                     }
 
                     //Console.WriteLine("Thread: " + threadId.ToString() + " " + "Run Number: " + myId.ToString() + " " + (pointCount / sw.Elapsed.TotalSeconds / 1000000).ToString());
@@ -173,8 +172,8 @@ namespace openHistorian.PerformanceTests
                     clientOptions.ServerNameOrIp = "127.0.0.1";
 
                     using (var client = new HistorianClient(clientOptions))
+                    using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
                     {
-                        var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
                         HistorianKey key = new HistorianKey();
                         HistorianValue value = new HistorianValue();
 
@@ -183,7 +182,6 @@ namespace openHistorian.PerformanceTests
                         while (scan.Read(key, value) && pointCount < PointsToRead)
                             pointCount++;
                         sw.Stop();
-                        database.Disconnect();
                     }
 
                     //Console.WriteLine("Thread: " + threadId.ToString() + " " + "Run Number: " + myId.ToString() + " " + (pointCount / sw.Elapsed.TotalSeconds / 1000000).ToString());

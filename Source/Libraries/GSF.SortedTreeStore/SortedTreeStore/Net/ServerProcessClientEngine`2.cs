@@ -42,10 +42,10 @@ namespace GSF.SortedTreeStore.Net
         public delegate void SocketErrorEventHandler(Exception ex);
 
         private NetworkBinaryStream m_stream;
-        private SortedTreeClientBase<TKey, TValue> m_sortedTreeEngine;
+        private ClientDatabaseBase<TKey, TValue> m_sortedTreeEngine;
         StreamEncodingBase<TKey, TValue> m_encodingMethod;
 
-        public ServerProcessClientEngine(NetworkBinaryStream netStream, SortedTreeClientBase<TKey, TValue> engine)
+        public ServerProcessClientEngine(NetworkBinaryStream netStream, ClientDatabaseBase<TKey, TValue> engine)
         {
             m_stream = netStream;
             m_sortedTreeEngine = engine;
@@ -82,7 +82,7 @@ namespace GSF.SortedTreeStore.Net
                             return false;
                         break;
                     case ServerCommand.DisconnectDatabase:
-                        m_sortedTreeEngine.Disconnect();
+                        m_sortedTreeEngine.Dispose();
                         m_sortedTreeEngine = null;
                         m_stream.Write((byte)ServerResponse.DatabaseDisconnected);
                         m_stream.Flush();

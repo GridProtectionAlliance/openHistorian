@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  SortedTreeEngine`2.cs - Gbtc
+//  ServerDatabase`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -38,8 +38,8 @@ namespace GSF.SortedTreeStore.Server
     /// <summary>
     /// Creates an engine for reading/writing data from a SortedTreeStore.
     /// </summary>
-    public class SortedTreeEngine<TKey, TValue>
-        : SortedTreeEngineBase<TKey, TValue>
+    public class ServerDatabase<TKey, TValue>
+         : ServerDatabaseBase
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
@@ -47,6 +47,7 @@ namespace GSF.SortedTreeStore.Server
 
         // Fields
         //private readonly List<ArchiveListRemovalStatus<TKey, TValue>> m_pendingDispose;
+        DatabaseInfo m_info;
         private TKey m_tmpKey;
         private TValue m_tmpValue;
         private WriteProcessor<TKey, TValue> m_archiveWriter;
@@ -75,7 +76,7 @@ namespace GSF.SortedTreeStore.Server
         /// <param name="encodingMethod">the method for encoding the archive files</param>
         /// <param name="writePath">the location where to write all of the archive files.</param>
         /// <param name="importPaths">all of the import paths of archive files. These can either be a path, or an individual file name.</param>
-        public SortedTreeEngine(string databaseName, WriterMode writer, EncodingDefinition encodingMethod, string writePath, IEnumerable<string> importPaths = null)
+        public ServerDatabase(string databaseName, WriterMode writer, EncodingDefinition encodingMethod, string writePath, IEnumerable<string> importPaths = null)
         {
             if (databaseName == null)
                 throw new ArgumentNullException("databaseName");
@@ -174,7 +175,7 @@ namespace GSF.SortedTreeStore.Server
             m_archiveList.GetFullStatus(status);
         }
 
-        public override void Write(TKey key, TValue value)
+        public void Write(TKey key, TValue value)
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -185,7 +186,7 @@ namespace GSF.SortedTreeStore.Server
             m_archiveWriter.Write(key, value);
         }
 
-        public override void Write(TreeStream<TKey, TValue> stream)
+        public void Write(TreeStream<TKey, TValue> stream)
         {
             TKey key = new TKey();
             TValue value = new TValue();
@@ -194,11 +195,24 @@ namespace GSF.SortedTreeStore.Server
                 Write(key, value);
         }
 
+        public TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter)
+        {
+            if (m_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
+            Stats.QueriesExecuted++;
+            return new SequentialReaderStream<TKey, TValue>(m_archiveList, readerOptions, keySeekFilter, keyMatchFilter);
+        }
+
         public override DatabaseInfo Info
         {
             get
             {
-                return new DatabaseInfo(m_databaseName, m_tmpKey, m_tmpValue);
+                if (m_info == null)
+                {
+                    m_info = new DatabaseInfo(m_databaseName, m_tmpKey, m_tmpValue);
+                }
+                return m_info;
             }
         }
 
@@ -212,14 +226,7 @@ namespace GSF.SortedTreeStore.Server
             //m_archiveWriter.HardCommit();
         }
 
-        public override TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter)
-        {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
-            Stats.QueriesExecuted++;
-            return new SequentialReaderStream<TKey, TValue>(m_archiveList, readerOptions, keySeekFilter, keyMatchFilter);
-        }
+       
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -240,6 +247,15 @@ namespace GSF.SortedTreeStore.Server
                 //    status.Archive.Dispose();
                 //}
             }
+        }
+
+        /// <summary>
+        /// Creates a <see cref="LocalClientDatabase{TKey,TValue}"/>
+        /// </summary>
+        /// <returns></returns>
+        public override ClientDatabaseBase CreateLocalClientDatabase()
+        {
+            return new LocalClientDatabase<TKey, TValue>(this);
         }
 
         #endregion

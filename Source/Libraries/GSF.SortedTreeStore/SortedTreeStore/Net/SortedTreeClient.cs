@@ -27,7 +27,6 @@ using System.Net;
 using System.Net.Sockets;
 using GSF.Net;
 using GSF.SortedTreeStore.Client;
-using GSF.SortedTreeStore.Server;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Net
@@ -40,7 +39,7 @@ namespace GSF.SortedTreeStore.Net
     {
         private TcpClient m_client;
         private NetworkBinaryStream m_stream;
-        private SortedTreeClientBase m_sortedTreeEngine;
+        private ClientDatabaseBase m_sortedTreeEngine;
         string m_historianDatabaseString;
 
         private readonly string m_defaultDatabase;
@@ -57,16 +56,7 @@ namespace GSF.SortedTreeStore.Net
             m_defaultDatabase = options.DefaultDatabase;
         }
 
-        /// <summary>
-        /// Gets the default database as defined in the constructor's options.
-        /// </summary>
-        /// <returns></returns>
-        public SortedTreeClientEngine<TKey, TValue> GetDefaultDatabase<TKey, TValue>()
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
-        {
-            return GetDatabase<TKey, TValue>(m_defaultDatabase);
-        }
+    
 
         //protected RemoteHistorian(IPEndPoint server)
         //{
@@ -102,11 +92,22 @@ namespace GSF.SortedTreeStore.Net
         }
 
         /// <summary>
-        /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Gets the default database as defined in the constructor's options.
+        /// </summary>
+        /// <returns></returns>
+        public SortedTreeClientEngine<TKey, TValue> GetDefaultDatabase<TKey, TValue>()
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
+        {
+            return GetDatabase<TKey, TValue>(m_defaultDatabase);
+        }
+
+        /// <summary>
+        /// Accesses <see cref="SortedTreeClientEngine{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <param name="encodingMethod"></param>
-        /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        /// <returns><see cref="SortedTreeClientEngine{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
         public SortedTreeClientEngine<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName, EncodingDefinition encodingMethod = null)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()

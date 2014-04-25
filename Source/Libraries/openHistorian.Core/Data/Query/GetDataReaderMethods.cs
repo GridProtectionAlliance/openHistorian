@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using GSF.SortedTreeStore.Client;
 using GSF.SortedTreeStore.Server;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
@@ -129,7 +130,7 @@ namespace openHistorian.Data.Query
         SortedList<DateTime, FrameData> m_results;
         int m_currentFrame;
 
-        public HistorianDataPointReader(SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime start, DateTime stop, TableDefinition tableDefinition)
+        public HistorianDataPointReader(ClientDatabaseBase<HistorianKey, HistorianValue> database, DateTime start, DateTime stop, TableDefinition tableDefinition)
         {
             HashSet<ulong> allPoints = new HashSet<ulong>();
             m_tableDefinition = tableDefinition;
@@ -536,13 +537,13 @@ namespace openHistorian.Data.Query
     {
 
 
-        public static IDataReader GetTable(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, DateTime start, DateTime stop, TableDefinition tableDefinition)
+        public static IDataReader GetTable(this ClientDatabaseBase<HistorianKey, HistorianValue> database, DateTime start, DateTime stop, TableDefinition tableDefinition)
         {
 
             return null;
         }
 
-        public static DataTable GetDataReaderTable(this SortedTreeEngineBase<HistorianKey, HistorianValue> database, ulong start, ulong stop, IList<ISignalWithName> columns)
+        public static DataTable GetDataReaderTable(this ClientDatabaseBase<HistorianKey, HistorianValue> database, ulong start, ulong stop, IList<ISignalWithName> columns)
         {
             if (columns.Any((x) => !x.HistorianId.HasValue))
             {

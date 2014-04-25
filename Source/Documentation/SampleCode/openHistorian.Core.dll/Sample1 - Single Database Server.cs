@@ -40,20 +40,21 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void TestReadData()
         {
-            var db = new HistorianDatabaseInstance();
-            db.InMemoryArchive = false;
-            db.ConnectionString = "port=1234";
-            db.Paths = new[] { @"c:\temp\Scada\" };
+            throw new NotImplementedException();
+            //var db = new HistorianDatabaseInstance();
+            //db.InMemoryArchive = false;
+            //db.ConnectionString = "port=1234";
+            //db.Paths = new[] { @"c:\temp\Scada\" };
 
-            using (var server = new HistorianServer(db))
-            {
-                var database = server.GetDefaultDatabase();
-                var stream = database.Read(10, 800 - 1);
-                while (stream.Read())
-                {
-                    Console.WriteLine(stream.CurrentKey.Timestamp);
-                }
-            }
+            //using (var server = new HistorianServer(db))
+            //{
+            //    var database = server.GetDefaultDatabase();
+            //    var stream = database.Read(10, 800 - 1);
+            //    while (stream.Read())
+            //    {
+            //        Console.WriteLine(stream.CurrentKey.Timestamp);
+            //    }
+            //}
         }
     }
 }

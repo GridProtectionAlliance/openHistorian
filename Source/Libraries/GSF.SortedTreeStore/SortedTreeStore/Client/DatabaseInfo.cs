@@ -26,8 +26,17 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Client
 {
+    /// <summary>
+    /// Contains a basic set of data for a <see cref="ClientDatabaseBase{TKey,TValue}"/>.
+    /// </summary>
     public class DatabaseInfo
     {
+        /// <summary>
+        /// Creates a <see cref="DatabaseInfo"/>
+        /// </summary>
+        /// <param name="databaseName">the name of the database</param>
+        /// <param name="key">the key type</param>
+        /// <param name="value">the value type</param>
         public DatabaseInfo(string databaseName, SortedTreeTypeBase key, SortedTreeTypeBase value)
         {
             DatabaseName = databaseName;
@@ -37,14 +46,30 @@ namespace GSF.SortedTreeStore.Client
             ValueType = value.GetType();
         }
 
+        /// <summary>
+        /// Gets the name of the database
+        /// </summary>
         public string DatabaseName { get; private set; }
 
+        /// <summary>
+        /// Gets the ID for the database key.
+        /// </summary>
         public Guid KeyTypeID { get; private set; }
 
+
+        /// <summary>
+        /// Gets the ID for the database value.
+        /// </summary>
         public Guid ValueTypeID { get; private set; }
 
+        /// <summary>
+        /// Gets the type for the database key.
+        /// </summary>
         public Type KeyType { get; private set; }
 
+        /// <summary>
+        /// Gets the type for the database value.
+        /// </summary>
         public Type ValueType { get; private set; }
     }
 }

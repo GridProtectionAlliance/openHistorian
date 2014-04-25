@@ -68,15 +68,15 @@ namespace openHistorian.Queues
 
         private readonly object m_syncWrite;
 
-        private SortedTreeClientBase<HistorianKey, HistorianValue> m_database;
+        private ClientDatabaseBase<HistorianKey, HistorianValue> m_database;
 
         private readonly IsolatedQueue<PointData> m_blocks;
 
         private readonly ScheduledTask m_worker;
 
-        private readonly Func<SortedTreeClientBase<HistorianKey, HistorianValue>> m_getDatabase;
+        private readonly Func<ClientDatabaseBase<HistorianKey, HistorianValue>> m_getDatabase;
 
-        public HistorianInputQueue(Func<SortedTreeClientBase<HistorianKey, HistorianValue>> getDatabase)
+        public HistorianInputQueue(Func<ClientDatabaseBase<HistorianKey, HistorianValue>> getDatabase)
         {
             m_syncWrite = new object();
             m_blocks = new IsolatedQueue<PointData>();

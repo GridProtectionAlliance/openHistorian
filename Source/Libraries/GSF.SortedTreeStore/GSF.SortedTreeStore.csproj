@@ -101,6 +101,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\GuidDictionary.cs" />
     <Compile Include="Collections\WeakList`1.cs" />
     <Compile Include="Diagnostics\ConsoleLogger.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
@@ -116,9 +117,12 @@
     <Compile Include="Net\NetworkBinaryStream.cs" />
     <Compile Include="Number.cs" />
     <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
+    <Compile Include="SortedTreeStore\Client\ClientRootBase.cs" />
+    <Compile Include="SortedTreeStore\Client\LocalClientDatabase%272.cs" />
     <Compile Include="SortedTreeStore\Client\DatabaseInfo.cs" />
-    <Compile Include="SortedTreeStore\Client\SortedTreeClientBase.cs" />
-    <Compile Include="SortedTreeStore\Client\SortedTreeClientBase%272.cs" />
+    <Compile Include="SortedTreeStore\Client\LocalClientRoot.cs" />
+    <Compile Include="SortedTreeStore\Client\ClientDatabaseBase.cs" />
+    <Compile Include="SortedTreeStore\Client\ClientDatabaseBase%272.cs" />
     <Compile Include="SortedTreeStore\Collection\Copy of SortedPointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\Collection\SortedPointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\Collection\CreatePointCollectionBase.cs" />
@@ -137,10 +141,11 @@
     <Compile Include="SortedTreeStore\Encoding\FixedSize\FixedSizeSingleEncoding`1.cs" />
     <Compile Include="SortedTreeStore\Encoding\SingleValueEncodingBase`1.cs" />
     <Compile Include="SortedTreeStore\Encoding\EncodingLibrary.cs" />
-    <Compile Include="SortedTreeStore\Server\SortedTreeEngineBase.cs" />
+    <Compile Include="SortedTreeStore\Server\ISortedTreeServer.cs" />
     <Compile Include="SortedTreeStore\Server\Reader\BufferedArchiveStream%272.cs" />
     <Compile Include="SortedTreeStore\Server\Reader\UnionReader`2.cs" />
     <Compile Include="SortedTreeStore\Server\Reader\SequentialReaderStream%272.cs" />
+    <Compile Include="SortedTreeStore\Server\ServerDatabaseBase.cs" />
     <Compile Include="SortedTreeStore\Server\Writer\CombineFiles`2.cs" />
     <Compile Include="SortedTreeStore\Server\Writer\IncrementalStagingCollection%272.cs" />
     <Compile Include="SortedTreeStore\Server\Writer\IncrementalStagingFile%272.cs" />
@@ -239,7 +244,7 @@
     <Compile Include="SortedTreeStore\Net\SortedTreeServerSocket.cs" />
     <Compile Include="Encoding7Bit.cs" />
     <Compile Include="SortedTreeStore\Server\Reader\SortedTreeEngineReaderOptions.cs" />
-    <Compile Include="SortedTreeStore\Server\SortedTreeEngine%272.cs" />
+    <Compile Include="SortedTreeStore\Server\ServerDatabase%272.cs" />
     <Compile Include="SortedTreeStore\Server\ArchiveTableSummary%272.cs" />
     <Compile Include="SortedTreeStore\Server\ArchiveInitializer%272.cs" />
     <Compile Include="SortedTreeStore\Server\ArchiveList%272.cs" />
@@ -279,8 +284,7 @@
     <Compile Include="IO\FileStructure\TransactionalFileStructure.cs" />
     <Compile Include="IO\FileStructure\ReadSnapshot.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="SortedTreeStore\Server\SortedTreeEngineBase%272.cs" />
-    <Compile Include="SortedTreeStore\Server\SortedTreeCollection.cs" />
+    <Compile Include="SortedTreeStore\Server\ServerRoot.cs" />
     <Compile Include="SortedTreeStore\Server\Reader\SortedTreeEngineReaderBaseExtensionMethods%272.cs" />
     <Compile Include="SortedTreeStore\Net\ServerCommand.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionBase.cs" />

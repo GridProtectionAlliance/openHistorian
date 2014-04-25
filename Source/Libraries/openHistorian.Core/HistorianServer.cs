@@ -26,10 +26,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Client;
 using GSF.SortedTreeStore.Net;
-using GSF.SortedTreeStore.Tree.TreeNodes;
-using openHistorian.Collections;
 using GSF.SortedTreeStore.Server;
 
 namespace openHistorian
@@ -38,13 +36,13 @@ namespace openHistorian
     /// Represents a historian server instance that can be used to read and write time-series data.
     /// </summary>
     public class HistorianServer
-        : IDisposable
+        : ISortedTreeServer, IDisposable
     {
         #region [ Members ]
 
         // Fields
         private Dictionary<int, SortedTreeServerSocket> m_sockets;
-        private SortedTreeCollection m_databases;
+        private ServerRoot m_databases;
         private bool m_disposed;
 
         #endregion
@@ -57,7 +55,7 @@ namespace openHistorian
         public HistorianServer()
         {
             // Maintain a member level list of all established archive database engines
-            m_databases = new SortedTreeCollection();
+            m_databases = new ServerRoot();
 
             // Maintain a member level list of socket connections so that they can be disposed later
             m_sockets = new Dictionary<int, SortedTreeServerSocket>();
@@ -90,26 +88,37 @@ namespace openHistorian
             Dispose(false);
         }
 
+
+
         #endregion
 
         #region [ Properties ]
 
         /// <summary>
-        /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="ServerDatabaseBase"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public HistorianDatabaseEngine this[string databaseName]
+        /// <returns><see cref="ServerDatabaseBase"/> for given <paramref name="databaseName"/>.</returns>
+        public HistorianDatabaseServer this[string databaseName]
         {
             get
             {
-                return m_databases.GetDatabase(databaseName) as HistorianDatabaseEngine;
+                return m_databases.GetDatabase(databaseName) as HistorianDatabaseServer;
             }
         }
 
         #endregion
 
         #region [ Methods ]
+
+        /// <summary>
+        /// Creates a client connection to the server.
+        /// </summary>
+        /// <returns></returns>
+        public ClientRootBase CreateClient()
+        {
+            return m_databases.CreateClient();
+        }
 
         public void GetFullStatus(StringBuilder status)
         {
@@ -179,9 +188,9 @@ namespace openHistorian
         /// Gets default database instance, if it exists.
         /// </summary>
         /// <returns>Default database instance.</returns>
-        public HistorianDatabaseEngine GetDefaultDatabase()
+        public HistorianDatabaseServer GetDefaultDatabase()
         {
-            return m_databases.GetDatabase("default") as HistorianDatabaseEngine;
+            return m_databases.GetDatabase("default") as HistorianDatabaseServer;
         }
 
         /// <summary>
@@ -190,26 +199,26 @@ namespace openHistorian
         /// <param name="databaseInstance"><see cref="HistorianDatabaseInstance"/> to add.</param>
         public void AddDatabaseInstance(HistorianDatabaseInstance databaseInstance)
         {
-            HistorianDatabaseEngine databaseEngine;
+            HistorianDatabaseServer databaseServer;
 
             if (databaseInstance.InMemoryArchive)
             {
-                databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
+                databaseServer = new HistorianDatabaseServer(this, databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
             }
             else
             {
-                databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
+                databaseServer = new HistorianDatabaseServer(this, databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
             }
 
-            m_databases.Add(databaseEngine);
+            m_databases.Add(databaseServer);
 
             if (databaseInstance.IsNetworkHosted)
             {
                 // TODO: The "add" method can only add a new socket layer - not append new database to existing socket historian (note that this will work for time-series
                 // TODO: adapters, but not for general use case when sharing port for multiple databases is desired), to fix this SocketHistorian needs to be modified to
                 // TODO: allow dynamic addition of databases to its collection (or at least collection replacement)
-                SortedTreeCollection databaseCollection = new SortedTreeCollection();
-                databaseCollection.Add(databaseEngine);
+                ServerRoot databaseCollection = new ServerRoot();
+                databaseCollection.Add(databaseServer);
 
                 lock (m_sockets)
                 {
@@ -259,23 +268,23 @@ namespace openHistorian
         protected void Initialize(IEnumerable<HistorianDatabaseInstance> databaseInstances)
         {
             // Create socket specific historian database collections
-            Dictionary<int, SortedTreeCollection> socketDatabases = new Dictionary<int, SortedTreeCollection>();
-            SortedTreeCollection databaseCollection;
-            HistorianDatabaseEngine databaseEngine;
+            Dictionary<int, ServerRoot> socketDatabases = new Dictionary<int, ServerRoot>();
+            ServerRoot databaseCollection;
+            HistorianDatabaseServer databaseServer;
 
             // Initialize each archive database engine
             foreach (HistorianDatabaseInstance databaseInstance in databaseInstances)
             {
                 if (databaseInstance.InMemoryArchive)
                 {
-                    databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
+                    databaseServer = new HistorianDatabaseServer(this, databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
                 }
                 else
                 {
-                    databaseEngine = new HistorianDatabaseEngine(databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
+                    databaseServer = new HistorianDatabaseServer(this, databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
                 }
 
-                m_databases.Add(databaseEngine);
+                m_databases.Add(databaseServer);
 
                 if (databaseInstance.IsNetworkHosted)
                 {
@@ -284,19 +293,19 @@ namespace openHistorian
 
                     if (!socketDatabases.TryGetValue(port, out databaseCollection))
                     {
-                        databaseCollection = new SortedTreeCollection();
+                        databaseCollection = new ServerRoot();
                         socketDatabases.Add(port, databaseCollection);
                     }
 
                     // Add database associated with specific socket
-                    socketDatabases[port].Add(databaseEngine);
+                    socketDatabases[port].Add(databaseServer);
                 }
             }
 
             // Create a new instance of the socket historian per-port with associated database collections
             lock (m_sockets)
             {
-                foreach (KeyValuePair<int, SortedTreeCollection> connection in socketDatabases)
+                foreach (KeyValuePair<int, ServerRoot> connection in socketDatabases)
                 {
                     m_sockets.Add(connection.Key, new SortedTreeServerSocket(connection.Key, connection.Value));
                 }
@@ -306,6 +315,8 @@ namespace openHistorian
         #endregion
 
     }
+
+
 
     #region [ Old Code ]
 

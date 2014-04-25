@@ -39,9 +39,8 @@ namespace openHistorianServiceHost
             clientOptions.ServerNameOrIp = "127.0.0.1";
 
             using (HistorianClient client = new HistorianClient(clientOptions))
+            using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
             {
-                SortedTreeClientBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
-
                 using (SortedTreeTable<HistorianKey, HistorianValue> file = SortedTreeFile.OpenFile(@"H:\OGE 2009.d2", isReadOnly: true).OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
                 {
                     using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> read = file.BeginRead())
@@ -59,7 +58,6 @@ namespace openHistorianServiceHost
                         }
                     }
                 }
-                database.Disconnect();
             }
         }
 

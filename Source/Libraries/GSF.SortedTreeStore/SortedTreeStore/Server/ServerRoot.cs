@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  SortedTreeCollection.cs - Gbtc
+//  ServerRoot.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -24,43 +24,41 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.Collections;
 using GSF.SortedTreeStore.Client;
-using GSF.SortedTreeStore.Server;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Server
 {
     /// <summary>
-    /// Contains a named set of <see cref="SortedTreeEngineBase"/>
+    /// Contains a named set of <see cref="ServerDatabase{TKey,TValue}"/>
     /// </summary>
-    public class SortedTreeCollection : IDisposable
+    public class ServerRoot
+        : ISortedTreeServer, IDisposable
     {
         private bool m_disposed;
 
         private readonly object m_syncRoot = new object();
 
-        private readonly SortedList<string, SortedTreeEngineBase> m_databases;
+        private readonly SortedList<string, ServerDatabaseBase> m_databases;
+
+        private WeakList<ClientRootBase> m_clients;
 
         /// <summary>
-        /// Creates a new instance of <see cref="SortedTreeCollection"/>
+        /// Creates a new instance of <see cref="ServerRoot"/>
         /// </summary>
-        public SortedTreeCollection()
+        public ServerRoot()
         {
-            m_databases = new SortedList<string, SortedTreeEngineBase>();
+            m_clients = new WeakList<ClientRootBase>();
+            m_databases = new SortedList<string, ServerDatabaseBase>();
         }
-
-        //public HistorianDatabaseCollection(string configFileName)
-        //    : this()
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         /// <summary>
         /// Gets the database that matches <see cref="databaseName"/>
         /// </summary>
         /// <param name="databaseName">the case insensitive name of the databse</param>
         /// <returns></returns>
-        public SortedTreeEngineBase GetDatabase(string databaseName)
+        public ServerDatabaseBase GetDatabase(string databaseName)
         {
             lock (m_syncRoot)
             {
@@ -69,30 +67,22 @@ namespace GSF.SortedTreeStore.Server
         }
 
         /// <summary>
-        /// Accesses <see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="ServerDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
-        /// <returns><see cref="SortedTreeEngineBase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public SortedTreeEngineBase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName) 
+        /// <returns><see cref="ServerDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        public ServerDatabase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            return (SortedTreeEngineBase<TKey, TValue>)(object)GetDatabase(databaseName);
+            return (ServerDatabase<TKey, TValue>)(object)GetDatabase(databaseName);
         }
-
-        //public IHistorianDatabase<TKey, TValue> ConnectToDatabase(string databaseName)
-        //{
-        //    lock (m_syncRoot)
-        //    {
-        //        return m_databases[databaseName.ToUpper()];
-        //    }
-        //}
 
         /// <summary>
         /// Adds the specified database to the collection
         /// </summary>
         /// <param name="database">The database to add</param>
-        public void Add(SortedTreeEngineBase database)
+        public void Add(ServerDatabaseBase database)
         {
             lock (m_syncRoot)
             {
@@ -119,7 +109,6 @@ namespace GSF.SortedTreeStore.Server
         /// <returns></returns>
         public List<DatabaseInfo> GetDatabaseInfo()
         {
-
             lock (m_syncRoot)
             {
                 var lst = new List<DatabaseInfo>();
@@ -176,10 +165,35 @@ namespace GSF.SortedTreeStore.Server
             if (!m_disposed)
             {
                 m_disposed = true;
-                foreach (SortedTreeEngineBase db in m_databases.Values)
+                foreach (ServerDatabaseBase db in m_databases.Values)
                 {
                     db.Dispose();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Creates a client connection to the server.
+        /// </summary>
+        /// <returns></returns>
+        public ClientRootBase CreateClient()
+        {
+            lock (m_syncRoot)
+            {
+                var client = new LocalClientRoot(this, ReleaseClient);
+                m_clients.Add(client);
+                return client;
+            }
+        }
+
+        /// <summary>
+        /// Releases a client
+        /// </summary>
+        void ReleaseClient(LocalClientRoot client)
+        {
+            lock (m_syncRoot)
+            {
+                m_clients.Remove(client);
             }
         }
     }

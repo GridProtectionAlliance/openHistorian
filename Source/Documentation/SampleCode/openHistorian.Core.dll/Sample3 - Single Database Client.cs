@@ -33,9 +33,8 @@ namespace SampleCode.openHistorian.Server.dll
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
                 using (var client = new HistorianClient(clientOptions))
+                using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
                 {
-                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
-
                     for (ulong x = 0; x < 1000; x++)
                     {
                         key.Timestamp = x;
@@ -44,7 +43,6 @@ namespace SampleCode.openHistorian.Server.dll
 
                     database.HardCommit();
                     System.Threading.Thread.Sleep(1200);
-                    database.Disconnect();
                 }
 
 
@@ -66,13 +64,11 @@ namespace SampleCode.openHistorian.Server.dll
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
                 using (var client = new HistorianClient(clientOptions))
+                using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
                 {
-                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
                     var stream = database.Read(0, 1000);
                     while (stream.Read())
                         Console.WriteLine(stream.CurrentKey.Timestamp);
-
-                    database.Disconnect();
                 }
             }
         }

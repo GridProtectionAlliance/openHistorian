@@ -89,6 +89,7 @@
     <Compile Include="NPlot\PlotSpeed.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadonlyGuidDictionary_test.cs" />
     <Compile Include="ReadPoints.cs" />
     <Compile Include="SocketBenchmark.cs" />
     <Compile Include="SortedTreeStore\Engine\BulkWritePoints.cs" />

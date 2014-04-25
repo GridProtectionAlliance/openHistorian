@@ -34,7 +34,7 @@ namespace GSF.SortedTreeStore.Net
 {
 
     public class SortedTreeClientEngine<TKey, TValue>
-        : SortedTreeClientBase<TKey, TValue>
+        : ClientDatabaseBase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
@@ -172,6 +172,14 @@ namespace GSF.SortedTreeStore.Net
             return new BulkWriting(this);
         }
 
+        public override bool IsDisposed
+        {
+            get
+            {
+                return m_disposed;
+            }
+        }
+
         public override DatabaseInfo Info
         {
             get
@@ -188,11 +196,6 @@ namespace GSF.SortedTreeStore.Net
         public override void HardCommit()
         {
             //throw new NotImplementedException();
-        }
-
-        public override void Disconnect()
-        {
-            Dispose();
         }
 
         /// <summary>

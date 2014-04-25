@@ -44,6 +44,17 @@ namespace GSF.SortedTreeStore
         }
 
         /// <summary>
+        /// Gets if stream has been disposed.
+        /// </summary>
+        public bool IsDisposed
+        {
+            get
+            {
+                return m_disposed;
+            }
+        }
+
+        /// <summary>
         /// Gets if the <see cref="CurrentKey"/> and <see cref="CurrentValue"/> fields are valid.
         /// </summary>]
         [Obsolete("Not used anymore")]

@@ -56,7 +56,7 @@ namespace openHistorian.Adapters
         public const string DefaultDataChannel = "port=38402";
 
         // Fields
-        private HistorianDatabaseEngine m_archive;
+        private HistorianDatabaseServer m_archive;
         private HistorianDatabaseInstance m_archiveInfo;
         private string m_instanceName;
         private string[] m_archivePaths;

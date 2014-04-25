@@ -27,7 +27,7 @@ using GSF;
 namespace openHistorian
 {
     /// <summary>
-    /// Represents a database instance of a historian to be hosted by a <see cref="HistorianServer{TKey,TValue}"/>.
+    /// Represents a database instance of a historian to be hosted by a <see cref="HistorianServer"/>.
     /// </summary>
     public class HistorianDatabaseInstance
     {

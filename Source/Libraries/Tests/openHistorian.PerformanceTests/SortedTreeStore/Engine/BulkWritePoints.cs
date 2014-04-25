@@ -28,7 +28,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
         [Test]
         public void VerifyDB()
         {
-            using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
+            using (var engine = new ServerDatabase<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
             using (var scan = engine.Read(null, null, null))
             {
                 var key = new HistorianKey();
@@ -67,8 +67,8 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                 File.Delete(file);
 
             PointCount = 0;
-            var collection = new SortedTreeCollection();
-            using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
+            var collection = new ServerRoot();
+            using (var engine = new ServerDatabase<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
             using (var socket = new SortedTreeServerSocket(13141, collection))
             {
                 collection.Add(engine);
@@ -121,7 +121,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                 File.Delete(file);
 
             PointCount = 0;
-            using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
+            using (var engine = new ServerDatabase<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
             {
                 engine.ProcessException += engine_Exception;
                 Thread.Sleep(100);
@@ -159,7 +159,7 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
                 File.Delete(file);
 
             PointCount = 0;
-            using (var engine = new SortedTreeEngine<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
+            using (var engine = new ServerDatabase<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
             {
                 engine.ProcessException += engine_Exception;
                 Thread.Sleep(100);

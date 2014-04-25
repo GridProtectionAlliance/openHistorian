@@ -43,8 +43,8 @@ namespace SampleCode.openHistorian.Server.dll
                 clientOptions.ServerNameOrIp = "127.0.0.1"; //IP address of server.
 
                 using (HistorianClient client = new HistorianClient(clientOptions))
+                using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
                 {
-                    var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>();
                     using (var csvStream = new StreamWriter("C:\\temp\\file.csv"))
                     {
                         csvStream.Write("Timestamp,PointID,Value,Quality");
@@ -55,7 +55,6 @@ namespace SampleCode.openHistorian.Server.dll
                         }
                         csvStream.Flush();
                     }
-                    database.Disconnect();
                 }
             }
         }

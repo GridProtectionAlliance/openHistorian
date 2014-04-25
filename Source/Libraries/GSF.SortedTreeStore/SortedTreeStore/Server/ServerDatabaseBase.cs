@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeClientBase.cs - Gbtc
+//  ServerDatabaseBase.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -22,13 +22,14 @@
 //******************************************************************************************************
 
 using System;
+using GSF.SortedTreeStore.Client;
 
-namespace GSF.SortedTreeStore.Client
+namespace GSF.SortedTreeStore.Server
 {
     /// <summary>
-    /// Represents a single historian database.
+    /// Represents the server side of a single database.
     /// </summary>
-    public abstract class SortedTreeClientBase : IDisposable
+    public abstract class ServerDatabaseBase : IDisposable
     {
         /// <summary>
         /// Gets basic information about the current Database.
@@ -52,14 +53,15 @@ namespace GSF.SortedTreeStore.Client
         public abstract void HardCommit();
 
         /// <summary>
-        /// Disconnects from the current database. 
-        /// </summary>
-        public abstract void Disconnect();
-
-        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <filterpriority>2</filterpriority>
         public abstract void Dispose();
+
+        /// <summary>
+        /// Creates a <see cref="LocalClientDatabase{TKey,TValue}"/>
+        /// </summary>
+        /// <returns></returns>
+        public abstract ClientDatabaseBase CreateLocalClientDatabase();
     }
 }

@@ -20,8 +20,9 @@ namespace openHistorian.Adapters
             HistorianValue value = new HistorianValue();
 
             using (HistorianServer server = new HistorianServer(serverSettings))
+            using (var client = server.CreateClient())
             {
-                using (HistorianInputQueue queue = new HistorianInputQueue(() => server.GetDefaultDatabase()))
+                using (HistorianInputQueue queue = new HistorianInputQueue(() => client.GetDatabase<HistorianKey,HistorianValue>(serverSettings.DatabaseName)))
                 {
                     for (uint x = 0; x < 100000; x++)
                     {
@@ -32,7 +33,6 @@ namespace openHistorian.Adapters
                 }
                 Thread.Sleep(100);
             }
-
             //Thread.Sleep(100);
         }
     }

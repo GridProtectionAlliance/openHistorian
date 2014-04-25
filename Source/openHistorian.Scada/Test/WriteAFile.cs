@@ -108,7 +108,7 @@ namespace openHistorian.Scada.Test
         {
             Random r = new Random(3);
             var KV2CEncoding = new EncodingDefinition(CreateFixedSizeSingleEncoding.TypeGuid, CreateFixedSizeSingleEncoding.TypeGuid);
-            using (var KV2C = new SortedTreeEngine<AmiKey, AmiKey>("KV2CPQ", WriterMode.OnDisk, KV2CEncoding, "C:\\Temp\\AMI"))
+            using (var KV2C = new ServerDatabase<AmiKey, AmiKey>("KV2CPQ", WriterMode.OnDisk, KV2CEncoding, "C:\\Temp\\AMI"))
             {
                 int count = 10000000;
                 Stopwatch sw = new Stopwatch();

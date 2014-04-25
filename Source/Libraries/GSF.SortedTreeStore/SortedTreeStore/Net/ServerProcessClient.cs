@@ -44,9 +44,9 @@ namespace GSF.SortedTreeStore.Net
         public delegate void SocketErrorEventHandler(Exception ex);
 
         private NetworkBinaryStream m_stream;
-        private readonly SortedTreeCollection m_historian;
+        private readonly ServerRoot m_historian;
 
-        public ServerProcessClient(NetworkBinaryStream netStream, SortedTreeCollection historian)
+        public ServerProcessClient(NetworkBinaryStream netStream, ServerRoot historian)
         {
             m_stream = netStream;
             m_historian = historian;
@@ -189,7 +189,7 @@ namespace GSF.SortedTreeStore.Net
 
         //Called through reflection. Its the only way to call a generic function only knowing the Types
         [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appera unused.
-        bool ConnectToDatabase<TKey, TValue>(SortedTreeClientBase<TKey, TValue> database)
+        bool ConnectToDatabase<TKey, TValue>(ClientDatabaseBase<TKey, TValue> database)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {

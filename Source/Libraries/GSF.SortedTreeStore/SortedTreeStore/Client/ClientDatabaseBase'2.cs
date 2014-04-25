@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  SortedTreeEngineBase`2.cs - Gbtc
+//  ClientDatabaseBase`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -21,17 +21,17 @@
 //
 //******************************************************************************************************
 
-using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
-namespace GSF.SortedTreeStore.Server
+namespace GSF.SortedTreeStore.Client
 {
     /// <summary>
     /// Represents a single historian database.
     /// </summary>
-    public abstract class SortedTreeEngineBase<TKey, TValue> 
-        : SortedTreeEngineBase, IDatabaseReader<TKey,TValue> 
+    public abstract class ClientDatabaseBase<TKey, TValue>
+        : ClientDatabaseBase, IDatabaseReader<TKey, TValue> 
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
