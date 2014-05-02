@@ -212,6 +212,11 @@
             </summary>
             <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         </member>
+        <member name="M:HistorianAdapters.LocalOutputAdapter.OnConnected">
+            <summary>
+            Called when data output source connection is established.
+            </summary>
+        </member>
         <member name="M:HistorianAdapters.LocalOutputAdapter.AttemptConnection">
             <summary>
             Attempts to connect to this <see cref="T:HistorianAdapters.LocalOutputAdapter"/>.
