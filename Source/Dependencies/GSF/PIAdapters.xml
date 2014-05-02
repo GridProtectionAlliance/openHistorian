@@ -46,9 +46,9 @@
             Resets the PI tag to MeasurementKey mapping for loading data into PI by finding PI points that match either the GSFSchema pointtag or alternatetag
             </summary>
         </member>
-        <member name="M:PIAdapters.PIOutputAdapter.RefreshMetadata">
+        <member name="M:PIAdapters.PIOutputAdapter.ExecuteMetadataRefresh">
             <summary>
-            Refreshes metadata using all available and enabled providers.
+            Sends updated metadata to PI.
             </summary>
         </member>
         <member name="M:PIAdapters.PIOutputAdapter.GetShortStatus(System.Int32)">

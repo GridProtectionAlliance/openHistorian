@@ -62,7 +62,7 @@
         </member>
         <member name="T:DataQualityMonitoring.FlatlineTest">
             <summary>
-            Tests measurements to determine whether they have flatlined.
+            Tests measurements to determine whether they have flat-lined.
             </summary>
         </member>
         <member name="M:DataQualityMonitoring.FlatlineTest.#ctor">
@@ -95,9 +95,9 @@
         </member>
         <member name="M:DataQualityMonitoring.FlatlineTest.GetFlatlinedMeasurements">
             <summary>
-            Returns a collection of measurements that are flatlined.
+            Returns a collection of measurements that are flat-lined.
             </summary>
-            <returns>A collection of flatlined measurements.</returns>
+            <returns>A collection of flat-lined measurements.</returns>
         </member>
         <member name="M:DataQualityMonitoring.FlatlineTest.Dispose(System.Boolean)">
             <summary>
@@ -107,7 +107,7 @@
         </member>
         <member name="P:DataQualityMonitoring.FlatlineTest.MinFlatline">
             <summary>
-            Gets or sets the length of time, in seconds, that a measurement's value must remain stale to be considered flatlined.
+            Gets or sets the length of time, in seconds, that a measurement's value must remain stale to be considered flat-lined.
             </summary>
         </member>
         <member name="P:DataQualityMonitoring.FlatlineTest.WarnInterval">

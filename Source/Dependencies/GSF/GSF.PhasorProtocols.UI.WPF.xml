@@ -604,11 +604,10 @@
             OutputStreamCurrentDeviceUserControl
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamCurrentDeviceUserControl.#ctor(System.Int32,System.String)">
+        <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamCurrentDeviceUserControl.#ctor(System.Int32)">
             <summary>
             Creates an instance of <see cref="T:GSF.PhasorProtocols.UI.UserControls.OutputStreamCurrentDeviceUserControl"/>.
             <param name="outputStreamID">ID of the output stream to filter data.</param>
-            <param name="outputStreamAcronym">Acronym of the output stream for display purpose.</param>
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.UserControls.OutputStreamCurrentDeviceUserControl.InitializeComponent">
@@ -1052,13 +1051,13 @@
             <summary>
             Handles <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.EditCommand"/>.
             </summary>
-            <param name="parameter">Parameter to use for the command provided by commandparameter from UI.</param>
+            <param name="parameter">Parameter to use for the command provided by command parameter from UI.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.MakeCopy(System.Object)">
             <summary>
             Handles <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.CopyCommand"/>.
             </summary>
-            <param name="parameter">Parameter to use for the command provided by commandparameter from UI.</param>
+            <param name="parameter">Parameter to use for the command provided by command parameter from UI.</param>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.GoToMeasurements">
             <summary>
@@ -1077,7 +1076,7 @@
         </member>
         <member name="M:GSF.PhasorProtocols.UI.ViewModels.Devices.Search(System.Object)">
             <summary>
-            Hanldes <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.SearchCommand"/>.
+            Handles <see cref="P:GSF.PhasorProtocols.UI.ViewModels.Devices.SearchCommand"/>.
             </summary>
             <param name="parameter">string value to search for in measurement collection.</param>
         </member>
@@ -1859,6 +1858,16 @@
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.MirroringSourceLookupList">
             <summary>
             Gets or sets list of devices to use for mirroring.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.ConfigFrameSizeText">
+            <summary>
+            Gets or sets the text to be displayed as the configuration frame size.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.OutputStreams.ConfigFrameSizeColor">
+            <summary>
+            Gets or sets the color of the text to be displayed as the configuration frame size.
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.UI.ViewModels.PhasorMeasurements">

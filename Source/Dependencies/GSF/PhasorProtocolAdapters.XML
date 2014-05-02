@@ -153,22 +153,6 @@
             this method will be call automatically.
             </remarks>
         </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.GetSignalReference(GSF.PhasorProtocols.SignalKind)">
-            <summary>
-            Get signal reference for specified <see cref="T:GSF.PhasorProtocols.SignalKind"/>.
-            </summary>
-            <param name="type"><see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
-            <returns>Signal reference of given <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</returns>
-        </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.GetSignalReference(GSF.PhasorProtocols.SignalKind,System.Int32,System.Int32)">
-            <summary>
-            Get signal reference for specified <see cref="T:GSF.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.
-            </summary>
-            <param name="type"><see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
-            <param name="index">Index <see cref="T:GSF.PhasorProtocols.SignalKind"/> to request signal reference for.</param>
-            <param name="count">Number of signals defined for this <see cref="T:GSF.PhasorProtocols.SignalKind"/>.</param>
-            <returns>Signal reference of given <see cref="T:GSF.PhasorProtocols.SignalKind"/> and <paramref name="index"/>.</returns>
-        </member>
         <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.GetHashCode">
             <summary>
             Returns the hash code for this instance.
@@ -726,7 +710,7 @@
         </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetOutputStreamStatistic_ReceivedMeasurements(System.Object,System.String)">
             <summary>
-            Calculates number of received measurements reported by the output strean during last reporting interval.
+            Calculates number of received measurements reported by the output stream during last reporting interval.
             </summary>
             <param name="source">Source OutputStream.</param>
             <param name="arguments">Any needed arguments for statistic calculation.</param>
@@ -753,7 +737,7 @@
         </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetOutputStreamStatistic_MeasurementsSortedByArrival(System.Object,System.String)">
             <summary>
-            Calculates number of measurments sorted by arrival reported by the output stream during last reporting interval.
+            Calculates number of measurements sorted by arrival reported by the output stream during last reporting interval.
             </summary>
             <param name="source">Source OutputStream.</param>
             <param name="arguments">Any needed arguments for statistic calculation.</param>
@@ -769,11 +753,11 @@
         </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetOutputStreamStatistic_DownsampledMeasurements(System.Object,System.String)">
             <summary>
-            Calculates number of downsampled measurements reported by the output stream during last reporting interval.
+            Calculates number of down-sampled measurements reported by the output stream during last reporting interval.
             </summary>
             <param name="source">Source OutputStream.</param>
             <param name="arguments">Any needed arguments for statistic calculation.</param>
-            <returns>Downsampled Measurements Statistic.</returns>
+            <returns>Down-sampled Measurements Statistic.</returns>
         </member>
         <member name="M:PhasorProtocolAdapters.CommonPhasorServices.GetOutputStreamStatistic_MissedSortsByTimeout(System.Object,System.String)">
             <summary>
@@ -1112,7 +1096,7 @@
             Attempts to disconnect from data input source.
             </summary>
         </member>
-        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MapMeasurementAttributes(System.Collections.Generic.ICollection{GSF.TimeSeries.IMeasurement},System.String,GSF.TimeSeries.IMeasurement)">
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.MapMeasurementAttributes(System.Collections.Generic.List{GSF.TimeSeries.IMeasurement},System.String,GSF.TimeSeries.IMeasurement)">
             <summary>
             Map parsed measurement value to defined measurement attributes (i.e., assign meta-data to parsed measured value).
             </summary>

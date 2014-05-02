@@ -188,7 +188,7 @@
             Initializes a new instance of the <see cref="T:HistorianAdapters.LocalOutputAdapter"/> class.
             </summary>
         </member>
-        <member name="M:HistorianAdapters.LocalOutputAdapter.RefreshMetadata">
+        <member name="M:HistorianAdapters.LocalOutputAdapter.ExecuteMetadataRefresh">
             <summary>
             Refreshes metadata using all available and enabled providers.
             </summary>

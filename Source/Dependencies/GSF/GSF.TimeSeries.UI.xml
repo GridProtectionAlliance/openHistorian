@@ -10,6 +10,11 @@
             from an invoke based console connection command then maintains state with a data subscription to all alarms.
             </summary>
         </member>
+        <member name="F:GSF.TimeSeries.UI.AlarmMonitor.DefaultRefreshInterval">
+            <summary>
+            Default refresh interval for alarm monitor.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.UI.AlarmMonitor.#ctor(System.Boolean)">
             <summary>
             Creates a new instance of the <see cref="T:GSF.TimeSeries.UI.AlarmMonitor"/> class.
@@ -505,6 +510,13 @@
             <param name="connection"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
             <param name="nodeID">ID of the node to filter data.</param>
             <returns>KeyValuePair containing min and max point id.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.CommonFunctions.GetHeaderText(System.String)">
+            <summary>
+            Attempts to retrieve current header text from user control group box host.
+            </summary>
+            <param name="defaultText">Default text to display.</param>
+            <returns>Current header text from user control group box host, if possible; otherwise, <paramref name="defaultText"/>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.UI.CommonFunctions.LogEvent(System.String,System.Int32,System.Diagnostics.EventLogEntryType)">
             <summary>
@@ -1942,7 +1954,7 @@
             Loads information about <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> assigned to MeasurementGroup as <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="measurementGroupId">ID of the MeasurementGroup to filter data.</param>
+            <param name="measurementGroupID">ID of the MeasurementGroup to filter data.</param>
             <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetMeasurementsBySubscriber(GSF.Data.AdoDataConnection,System.Guid)">
@@ -1950,7 +1962,7 @@
             Loads information about <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/> assigned to Subscriber as <see cref="T:System.Collections.ObjectModel.ObservableCollection`1"/> style list.
             </summary>
             <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
-            <param name="subscriberId">ID of the Subscriber to filter data.</param>
+            <param name="subscriberID">ID of the Subscriber to filter data.</param>
             <returns>Collection of <see cref="T:GSF.TimeSeries.UI.DataModels.Measurement"/>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.UI.DataModels.Measurement.GetLookupList(GSF.Data.AdoDataConnection,System.Boolean,System.Boolean)">
@@ -2947,12 +2959,12 @@
         </member>
         <member name="T:GSF.TimeSeries.UI.IsolatedStorageManager">
             <summary>
-            Static class to read/write data from/to IsolatedStorage.
+            Static class to access data settings in isolated storage.
             </summary>
         </member>
         <member name="M:GSF.TimeSeries.UI.IsolatedStorageManager.WriteCollectionToIsolatedStorage(System.String,System.Collections.Generic.IEnumerable{System.Object})">
             <summary>
-            Writes collection values by converting collection to semi-colon seperated string to IsolatedStorage.
+            Writes collection values by converting collection to semi-colon separated string to IsolatedStorage.
             </summary>
             <param name="key">Name of the isolated storage.</param>
             <param name="valueList"><see cref="T:System.Collections.Generic.IEnumerable`1"/> collection to be stored in isolated storage.</param>
@@ -2970,6 +2982,13 @@
             </summary>
             <param name="key">Name of the isolated storage to read from.</param>
             <returns>Object from the isolated storage.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.IsolatedStorageManager.SettingExists(System.String)">
+            <summary>
+            Determines if isolated storage setting exists.
+            </summary>
+            <param name="setting">Setting name.</param>
+            <returns><c>true</c> if isolated storage <paramref name="setting"/> exists; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.UI.IsolatedStorageManager.InitializeStorageForInputStatusMonitor(System.Boolean)">
             <summary>
@@ -2992,6 +3011,12 @@
         <member name="M:GSF.TimeSeries.UI.IsolatedStorageManager.InitializeStorageForRealTimeMeasurements(System.Boolean)">
             <summary>
             Initializes or resets existing settings for real-time measurements screen in <see cref="T:System.IO.IsolatedStorage.IsolatedStorageFile"/> to default values.
+            </summary>
+            <param name="overWriteExisting">Boolean flag indicating if existing values should be reset to default value.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.IsolatedStorageManager.InitializeStorageForAlarmStatus(System.Boolean)">
+            <summary>
+            Initializes or resets existing settings for alarm status screen in <see cref="T:System.IO.IsolatedStorage.IsolatedStorageFile"/> to default values.
             </summary>
             <param name="overWriteExisting">Boolean flag indicating if existing values should be reset to default value.</param>
         </member>

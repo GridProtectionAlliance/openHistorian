@@ -4238,12 +4238,12 @@
         </member>
         <member name="F:GSF.Communication.TransportStatistics.LastSend">
             <summary>
-            <see cref="T:System.DateTime"/> of the last send operation.
+            <see cref="T:System.DateTime"/> of the last send operation. (UTC Time)
             </summary>
         </member>
         <member name="F:GSF.Communication.TransportStatistics.LastReceive">
             <summary>
-            <see cref="T:System.DateTime"/> of the last receive operation.
+            <see cref="T:System.DateTime"/> of the last receive operation. (UTC Time)
             </summary>
         </member>
         <member name="F:GSF.Communication.TransportStatistics.LastBytesSent">

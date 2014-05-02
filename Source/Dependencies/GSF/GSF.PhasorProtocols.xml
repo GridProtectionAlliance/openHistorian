@@ -1825,7 +1825,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.Multiplier">
             <summary>
-            Defines a mulplicative offset to apply to the measurement value. This defaults to 1.0.
+            Defines a multiplicative offset to apply to the measurement value. This defaults to 1.0.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.StateFlags">
@@ -1835,7 +1835,7 @@
         </member>
         <member name="P:GSF.PhasorProtocols.ChannelValueMeasurement`1.MeasurementValueFilter">
             <summary>
-            Gets or sets function used to apply a downsampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
+            Gets or sets function used to apply a down-sampling filter over a sequence of <see cref="T:GSF.TimeSeries.IMeasurement"/> values.
             </summary>
         </member>
         <member name="T:GSF.PhasorProtocols.CommandCell">
@@ -2065,11 +2065,6 @@
         <member name="F:GSF.PhasorProtocols.Common.SyncByte">
             <summary>
             Typical data stream synchronization byte.
-            </summary>
-        </member>
-        <member name="F:GSF.PhasorProtocols.Common.UndefinedKey">
-            <summary>
-            Undefined measurement key.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.Common.CopyImage(System.Byte[],System.Byte[],System.Int32@,System.Int32)">
@@ -2993,6 +2988,12 @@
             multiple PMU's coming from a PDC.
             </remarks>
         </member>
+        <member name="M:GSF.PhasorProtocols.IDataCell.GetStatusFlagsMeasurement">
+            <summary>
+            Gets the status flags of the <see cref="T:GSF.PhasorProtocols.IDataCell"/> as a measurement value.
+            </summary>
+            <returns>Status flags of the <see cref="T:GSF.PhasorProtocols.IDataCell"/> as a measurement value.</returns>
+        </member>
         <member name="P:GSF.PhasorProtocols.IDataCell.Parent">
             <summary>
             Gets reference to parent <see cref="T:GSF.PhasorProtocols.IDataFrame"/> of this <see cref="T:GSF.PhasorProtocols.IDataCell"/>.
@@ -3106,26 +3107,6 @@
             </summary>
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
             <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
-        </member>
-        <member name="M:GSF.PhasorProtocols.DataCellBase.ToString">
-            <summary>
-            Gets the string respresentation of this <see cref="T:GSF.PhasorProtocols.DataCellBase"/>.
-            </summary>
-            <returns>String respresentation of this <see cref="T:GSF.PhasorProtocols.DataCellBase"/>.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.DataCellBase.Equals(System.Object)">
-            <summary>
-            Determines whether the specified object is equal to the <see cref="T:GSF.PhasorProtocols.DataCellBase"/>.
-            </summary>
-            <param name="obj">The <see cref="T:System.Object"/> to compare with the <see cref="T:GSF.PhasorProtocols.DataCellBase"/>.</param>
-            <returns>true if the specified object is equal to the <see cref="T:GSF.PhasorProtocols.DataCellBase"/>; otherwise, false.</returns>
-        </member>
-        <member name="M:GSF.PhasorProtocols.DataCellBase.GetHashCode">
-            <summary>
-            Serves as a hash function for the <see cref="T:GSF.PhasorProtocols.DataCellBase"/>.
-            </summary>
-            <returns>A hash code for the <see cref="T:GSF.PhasorProtocols.DataCellBase"/>.</returns>
-            <remarks>Hash code based on value of measurement key associated with the <see cref="T:GSF.PhasorProtocols.DataCellBase"/>.</remarks>
         </member>
         <member name="P:GSF.PhasorProtocols.DataCellBase.Parent">
             <summary>
@@ -3350,6 +3331,12 @@
             a collection of <see cref="T:GSF.PhasorProtocols.IDataCell"/> objects.
             </summary>
         </member>
+        <member name="M:GSF.PhasorProtocols.IDataFrame.GetQualityFlagsMeasurement">
+            <summary>
+            Gets the quality flags of the <see cref="T:GSF.PhasorProtocols.IDataFrame"/> as a measurement value.
+            </summary>
+            <returns>Quality flags of the <see cref="T:GSF.PhasorProtocols.IDataFrame"/> as a measurement value.</returns>
+        </member>
         <member name="P:GSF.PhasorProtocols.IDataFrame.ConfigurationFrame">
             <summary>
             Gets or sets <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> associated with this <see cref="T:GSF.PhasorProtocols.IDataFrame"/>.
@@ -3362,7 +3349,12 @@
         </member>
         <member name="P:GSF.PhasorProtocols.IDataFrame.State">
             <summary>
-            Gets or sets the parsing state for the this <see cref="T:GSF.PhasorProtocols.IDataFrame"/>.
+            Gets or sets the parsing state for this <see cref="T:GSF.PhasorProtocols.IDataFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IDataFrame.QualityFlags">
+            <summary>
+            Gets or sets protocol specific quality flags for this <see cref="T:GSF.PhasorProtocols.IDataFrame"/>.
             </summary>
         </member>
         <member name="M:GSF.PhasorProtocols.DataFrameBase.#ctor(GSF.PhasorProtocols.DataCellCollection,GSF.Ticks,GSF.PhasorProtocols.IConfigurationFrame)">
@@ -3417,6 +3409,11 @@
         <member name="P:GSF.PhasorProtocols.DataFrameBase.State">
             <summary>
             Gets or sets the parsing state for the this <see cref="T:GSF.PhasorProtocols.DataFrameBase"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.DataFrameBase.QualityFlags">
+            <summary>
+            Gets or sets protocol specific quality flags for this <see cref="T:GSF.PhasorProtocols.DataFrameBase"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.DataFrameBase.IDCode">
@@ -6347,17 +6344,17 @@
         </member>
         <member name="T:GSF.PhasorProtocols.SignalKind">
             <summary>
-            Fundamental signal types enumeration.
+            Fundamental signal type enumeration that represents a kind of signal, not an explicit type.
             </summary>
             <remarks>
             <para>
-            This signal type represents the basic type of a signal used to suffix a formatted signal reference. When
-            used in context along with an optional index the fundamental signal type will identify a signal's location
-            within a frame of data (see <see cref="T:GSF.PhasorProtocols.SignalReference"/>).
+            This enumeration represents the basic type of a signal used to suffix a formatted signal
+            reference. When used in context along with an optional index the fundamental signal type
+            will identify a signal's location within a frame of data (see <see cref="T:GSF.PhasorProtocols.SignalReference"/>).
             </para>
             <para>
-            Contrast this to the <see cref="T:GSF.PhasorProtocols.SignalType"/> enumeration which further defines an
-            explicit type for a signal (e.g., a voltage or current type for an angle).
+            Contrast this to the <see cref="T:GSF.PhasorProtocols.SignalType"/> enumeration which further defines an explicit
+            type for a signal (e.g., a voltage or current type for an angle).
             </para>
             </remarks>
         </member>
@@ -6411,6 +6408,11 @@
             Alarm value.
             </summary>
         </member>
+        <member name="F:GSF.PhasorProtocols.SignalKind.Quality">
+            <summary>
+            Quality flags.
+            </summary>
+        </member>
         <member name="F:GSF.PhasorProtocols.SignalKind.Unknown">
             <summary>
             Undetermined signal type.
@@ -6418,11 +6420,11 @@
         </member>
         <member name="T:GSF.PhasorProtocols.SignalType">
             <summary>
-            Signal type enumeration.
+            Fundamental signal type enumeration that represents an explicit type of signal.
             </summary>
             <remarks>
             <para>
-            The signal type represents the explicit type of a signal that a value represents.
+            This enumeration represents the explicit type of a signal that a value represents.
             </para>
             <para>
             Contrast this to the <see cref="T:GSF.PhasorProtocols.SignalKind"/> enumeration which only defines an
@@ -6488,6 +6490,11 @@
         <member name="F:GSF.PhasorProtocols.SignalType.ALRM">
             <summary>
             Alarm value.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.SignalType.QUAL">
+            <summary>
+            Quality flags.
             </summary>
         </member>
         <member name="F:GSF.PhasorProtocols.SignalType.NONE">
@@ -6823,22 +6830,6 @@
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with populated with data.</param>
             <param name="context">The source <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this deserialization.</param>
         </member>
-        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.Finalize">
-            <summary>
-            Releases the unmanaged resources before the <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/> object is reclaimed by <see cref="T:System.GC"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.Dispose">
-            <summary>
-            Releases all the resources used by the <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/> object.
-            </summary>
-        </member>
-        <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.Dispose(System.Boolean)">
-            <summary>
-            Releases the unmanaged resources used by the <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/> object and optionally releases the managed resources.
-            </summary>
-            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        </member>
         <member name="M:GSF.PhasorProtocols.Anonymous.ConfigurationCell.GetSignalReference(GSF.PhasorProtocols.SignalKind)">
             <summary>
             Get signal reference for specified <see cref="T:GSF.PhasorProtocols.SignalKind"/>.
@@ -6861,11 +6852,6 @@
             </summary>
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
             <param name="context">The destination <see cref="T:System.Runtime.Serialization.StreamingContext"/> for this serialization.</param>
-        </member>
-        <member name="E:GSF.PhasorProtocols.Anonymous.ConfigurationCell.Disposed">
-            <summary>
-            Event is raised when <see cref="T:GSF.PhasorProtocols.Anonymous.ConfigurationCell"/> is disposed.
-            </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.Anonymous.ConfigurationCell.AnalogDataFormat">
             <summary>
@@ -8828,6 +8814,21 @@
         <member name="P:GSF.PhasorProtocols.IEC61850_90_5.DataFrame.CommonHeader">
             <summary>
             Gets or sets current <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.CommonFrameHeader"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEC61850_90_5.DataFrame.QualityFlags">
+            <summary>
+            Gets or sets protocol specific quality flags for this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.DataFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEC61850_90_5.DataFrame.TimeQualityFlags">
+            <summary>
+            Gets or sets the <see cref="P:GSF.PhasorProtocols.IEC61850_90_5.DataFrame.TimeQualityFlags"/> associated with this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.DataFrame"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEC61850_90_5.DataFrame.TimeQualityIndicatorCode">
+            <summary>
+            Gets or sets the <see cref="P:GSF.PhasorProtocols.IEC61850_90_5.DataFrame.TimeQualityIndicatorCode"/> associated with this <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.DataFrame"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IEC61850_90_5.DataFrame.HeaderLength">
@@ -14959,6 +14960,11 @@
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.DataFrame.CommonHeader">
             <summary>
             Gets or sets current <see cref="T:GSF.PhasorProtocols.IEEEC37_118.CommonFrameHeader"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.IEEEC37_118.DataFrame.QualityFlags">
+            <summary>
+            Gets or sets protocol specific quality flags for this <see cref="T:GSF.PhasorProtocols.IEEEC37_118.DataFrame"/>.
             </summary>
         </member>
         <member name="P:GSF.PhasorProtocols.IEEEC37_118.DataFrame.Version">

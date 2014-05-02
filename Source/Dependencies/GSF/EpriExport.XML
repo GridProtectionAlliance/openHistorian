@@ -9,9 +9,14 @@
             Represents an action adapter that exports measurements on an interval to a file that can be picked up by EPRI applications.
             </summary>
         </member>
+        <member name="M:EpriExport.FileExporter.#ctor">
+            <summary>
+            Creates a new instance of the EPRI <see cref="T:EpriExport.FileExporter"/>.
+            </summary>
+        </member>
         <member name="M:EpriExport.FileExporter.Initialize">
             <summary>
-            Intializes <see cref="T:EpriExport.FileExporter"/>.
+            Initializes <see cref="T:EpriExport.FileExporter"/>.
             </summary>
         </member>
         <member name="M:EpriExport.FileExporter.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">

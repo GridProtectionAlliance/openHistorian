@@ -438,6 +438,31 @@
             Gets or sets the <see cref="T:System.DateTime"/> when the <see cref="P:GSF.ServiceProcess.ClientRequestInfo.Request"/> was received from the <see cref="P:GSF.ServiceProcess.ClientRequestInfo.Sender"/>.
             </summary>
         </member>
+        <member name="T:GSF.ServiceProcess.IServiceMonitor">
+            <summary>
+            Interface for an adapter that monitors the health of a service.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.IServiceMonitor.HandleServiceHeartbeat">
+            <summary>
+            Handles notifications from the service that occur
+            on an interval to indicate that the service is
+            still running.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.IServiceMonitor.HandleServiceError(System.Exception)">
+            <summary>
+            Handles messages received by the service
+            whenever the service encounters an error.
+            </summary>
+            <param name="ex">The exception received from the service.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.IServiceMonitor.HandleClientMessage(System.String[])">
+            <summary>
+            Handles messages sent by a client.
+            </summary>
+            <param name="args">Arguments provided by the client.</param>
+        </member>
         <member name="T:GSF.ServiceProcess.NamespaceDoc">
             <summary>
             Contains classes used to simplify and standardize development and operation of Windows services that are remotely manageable.
@@ -1142,6 +1167,62 @@
             <summary>
             Sets the service start timeout in milliseconds.
             </summary>
+        </member>
+        <member name="T:GSF.ServiceProcess.ErrorHandlerException">
+            <summary>
+            A special exception thrown by error handlers.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ErrorHandlerException.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.ServiceProcess.ErrorHandlerException"/> class.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ErrorHandlerException.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.ServiceProcess.ErrorHandlerException"/> class.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ErrorHandlerException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new instance of the <see cref="T:GSF.ServiceProcess.ErrorHandlerException"/> class.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        </member>
+        <member name="T:GSF.ServiceProcess.ServiceMonitors">
+            <summary>
+            Adapter loader that loads implementations of <see cref="T:GSF.ServiceProcess.IServiceMonitor"/>
+            and delegates messages to the enabled monitors.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceMonitors.HandleServiceHeartbeat">
+            <summary>
+            Handles notifications from the service that occur
+            on an interval to indicate that the service is
+            still running.
+            </summary>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceMonitors.HandleServiceError(System.Exception)">
+            <summary>
+            Handles messages received by the service
+            whenever the service encounters an error.
+            </summary>
+            <param name="ex">The exception received from the service.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceMonitors.HandleClientMessage(System.String[])">
+            <summary>
+            Handles messages sent by a client.
+            </summary>
+            <param name="args">Arguments provided by the client.</param>
+        </member>
+        <member name="M:GSF.ServiceProcess.ServiceMonitors.ExecuteAdapterOperation(GSF.ServiceProcess.IServiceMonitor,System.Object)">
+            <summary>
+            Executes an operation on the <paramref name="adapter"/> with the given <paramref name="data"/>.
+            </summary>
+            <param name="adapter">Adapter on which an operation is to be executed.</param>
+            <param name="data">The operation to be executed.</param>
         </member>
         <member name="T:GSF.ServiceProcess.ServiceProcessState">
             <summary>

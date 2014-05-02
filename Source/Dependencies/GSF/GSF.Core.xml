@@ -3610,6 +3610,12 @@
             safe to use this class with multiple consumer threads.
             </remarks>
             <typeparam name="T">The types of items to be queued.</typeparam>
+            <remarks>
+            It is not safe to use this class with multiple consumer threads.
+            The list returned by <see cref="M:GSF.Collections.DoubleBufferedQueueManager`1.Dequeue"/> is not thread-safe and
+            is reused on each Dequeue operation, so no other thread should
+            access the list while another thread is calling Dequeue.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.DoubleBufferedQueueManager`1.#ctor">
             <summary>
@@ -4500,6 +4506,12 @@
             item processing in single-producer, single-consumer scenarios.
             </summary>
             <typeparam name="T">Type of items being queued.</typeparam>
+            <remarks>
+            It is not safe to use this class with multiple consumer threads.
+            The <see cref="M:GSF.Collections.DoubleBufferedQueue`1.Dequeue"/> method must be called by one thread at
+            a time, and the consumer must not access a list returned by Dequeue
+            after its next call to Dequeue.
+            </remarks>
         </member>
         <member name="M:GSF.Collections.DoubleBufferedQueue`1.#ctor">
             <summary>
@@ -4521,6 +4533,12 @@
             or no items if none have been enqueued since last dequeue.
             </returns>
         </member>
+        <member name="M:GSF.Collections.DoubleBufferedQueue`1.Clear">
+            <summary>
+            Empties the producer's buffer so that the
+            items can no longer be consumed by the consumer.
+            </summary>
+        </member>
         <member name="M:GSF.Collections.DoubleBufferedQueue`1.TryEnqueue(System.Collections.Generic.IEnumerable{`0})">
             <summary>
             Attempts to enqueue a collection of items into the double-buffered queue.
@@ -4539,6 +4557,14 @@
             <returns>
             The number of items left in the queue after
             dequeuing as many items as possible.
+            </returns>
+        </member>
+        <member name="M:GSF.Collections.DoubleBufferedQueue`1.TryClear">
+            <summary>
+            Attempts to enqueue a collection of items into the double-buffered queue.
+            </summary>
+            <returns>
+            True if the items were successfully enqueued; false otherwise.
             </returns>
         </member>
         <member name="E:GSF.Collections.DoubleBufferedQueue`1.ProcessException">
@@ -13396,6 +13422,26 @@
             <summary>
             Manual comparison tolerance.
             </summary>
+        </member>
+        <member name="T:GSF.GaussianDistribution">
+            <summary>
+            Implements a BoxMuller method for generating statistically normal random numbers.
+            </summary>
+        </member>
+        <member name="M:GSF.GaussianDistribution.#ctor(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates a <see cref="T:GSF.GaussianDistribution"/>
+            </summary>
+            <param name="mean">the mean of the distrubtion</param>
+            <param name="standardDeviation">the standard deviation</param>
+            <param name="min">a clipping boundary</param>
+            <param name="max">a clipping boundary</param>
+        </member>
+        <member name="M:GSF.GaussianDistribution.Next">
+            <summary>
+            Gets the next random value.
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:GSF.IdentifiableItem`2">
             <summary>
@@ -25325,6 +25371,120 @@
             </summary>
             <exception cref="T:System.InvalidOperationException">Cannot exit read lock when there are no readers.</exception>
         </member>
+        <member name="T:GSF.Threading.ThreadingMode">
+            <summary>
+            Specifies the threading mode to use for the <see cref="T:GSF.Threading.ScheduledTask"/>
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadingMode.DedicatedForeground">
+            <summary>
+            A dedicated thread that is a foreground thread.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadingMode.DedicatedBackground">
+            <summary>
+            A dedicated thread that is a background thread.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadingMode.ThreadPool">
+            <summary>
+            A background thread from the thread pool.
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.ScheduledTaskRunningReason">
+            <summary>
+            Metadata about why this worker was called.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ScheduledTaskRunningReason.Running">
+            <summary>
+            A normal run was scheduled.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ScheduledTaskRunningReason.Disposing">
+            <summary>
+            Dispose was called and execution will terminate after this function call.
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.ScheduledTask">
+            <summary>
+            Represents a way to schedule a task to be executed on a separate thread immediately or after a given time delay.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ScheduledTask.#ctor(GSF.Threading.ThreadingMode,System.Threading.ThreadPriority)">
+            <summary>
+            Creates a <see cref="T:GSF.Threading.ScheduledTask"/>.
+            </summary>
+            <param name="threadMode">The manner in which the scheduled task executes.</param>
+            <param name="priority">The thread priority to assign if a dedicated thread is used. This is ignored if using the thread-pool.</param>
+        </member>
+        <member name="M:GSF.Threading.ScheduledTask.Finalize">
+            <summary>
+            Cleans up the <see cref="T:GSF.Threading.ThreadContainerBase"/> thread since that class likely will never be garbage collected.
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ScheduledTask.Start">
+            <summary>
+            Starts the task immediately, or if one was scheduled, starts the scheduled task immediately
+            </summary>
+            <remarks>
+            <para>
+            If this is called after a <see cref="M:GSF.Threading.ScheduledTask.Start(System.Int32)"/> the timer will be canceled
+            and the process will still start immediately. 
+            </para>
+            <para>
+            This method is safe to call from any thread, including the worker thread.
+            If disposed, this method will no nothing.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.ScheduledTask.Start(System.Int32)">
+            <summary>
+            Starts a timer to run the task after a provided interval. 
+            </summary>
+            <param name="delay">the delay in milliseconds before the task should run</param>
+            <remarks>
+            <para>
+            If a timer is currently pending, this function will do nothing. Do not use this
+            function to reset or restart an existing timer.
+            </para>
+            <para>
+            If called while working, a subsequent timer will be scheduled, but delay will not
+            start until after the worker has completed.
+            </para>
+            <para>
+            This method is safe to call from any thread, including the worker thread.
+            If disposed, this method will no nothing.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.ScheduledTask.Dispose">
+            <summary>
+            Starts the disposing process of exiting the worker thread. 
+            </summary>
+            <remarks>
+            <para>Callback will be invoked one more time. Duplicate calls are ignored.</para>
+            <para>
+            Unless called from the worker thread, this method will block until the dispose
+            has successfully completed.
+            </para>
+            </remarks>
+        </member>
+        <member name="E:GSF.Threading.ScheduledTask.Running">
+            <summary>
+            Occurs every time the task should run.
+            </summary>
+        </member>
+        <member name="E:GSF.Threading.ScheduledTask.Disposing">
+            <summary>
+            Occurs right before this task is disposed.
+            </summary>
+        </member>
+        <member name="E:GSF.Threading.ScheduledTask.UnhandledException">
+            <summary>
+            Occurs when <see cref="E:GSF.Threading.ScheduledTask.Running"/> or <see cref="E:GSF.Threading.ScheduledTask.Disposing"/> event throws an exception.
+            </summary>
+        </member>
         <member name="T:GSF.Threading.ShortSynchronizedOperation">
             <summary>
             Represents a short-running synchronized operation
@@ -25359,6 +25519,143 @@
             <summary>
             Executes the action in an asynchronous loop on
             the thread pool, as long as the operation is pending.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerBase.m_runAgainAfterDelay">
+            <summary>
+            A value less than 0 means false. 
+            </summary>
+        </member>
+        <member name="M:GSF.Threading.ThreadContainerBase.StartDisposal">
+            <summary>
+            Same as Start() except notifies on the callback during a race condition that this is the one that was first to schedule the task.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerBase.CallbackArgs.StartDisposalCallSuccessful">
+            <summary>
+            Gets if StartDisposal() method is the only item that triggered this run.
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.ThreadContainerBase.State">
+            <summary>
+            State variables for the internal state machine.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerBase.State.NotRunning">
+            <summary>
+            Indicates that the task is not running.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerBase.State.ScheduledToRunAfterDelay">
+            <summary>
+            Indicates that the task is scheduled to execute after a user specified delay
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerBase.State.ScheduledToRun">
+            <summary>
+            Indicates the task has been queue for immediate execution, but has not started running yet.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerBase.State.Running">
+            <summary>
+            Once in a running state, only the worker thread can change its state.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerBase.State.AfterRunning">
+            <summary>
+            Once reaching this state, the effect of RunAgain being set will no longer be valid.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerBase.State.Disposed">
+            <summary>
+            A disposed state
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerThreadpool.m_registeredHandle">
+            <summary>
+            Handle that is created when telling the threadpool to do a delayed start.
+            </summary>
+        </member>
+        <member name="F:GSF.Threading.ThreadContainerThreadpool.m_waitObject">
+            <summary>
+            The reset event that allows the timer to be short circuited.
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.WeakAction">
+            <summary>
+            Provides a weak referenced action delegate.
+            </summary>
+            <remarks>
+            <para>
+            Unlike many implementations of a weak action, this class does not
+            use reflection so calls will be faster. However, a strong reference
+            *must* be maintained for the <see cref="T:System.Action"/> callback passed
+            to this class. This reference is returned through an out parameter
+            in the constructor.
+            </para>
+            <para>
+            Careful consideration must be made when deciding where to store
+            the strong reference as this strong reference will need to also
+            lose reference. A good place would be as a member variable of the
+            object of the target method.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.WeakAction.#ctor(System.Action,System.Object@)">
+            <summary>
+            Creates a high speed weak action.
+            </summary>
+            <param name="callback">The callback.</param>
+            <param name="localStrongReference">A strong reference that must be maintained in the class that is the target of the action.</param>
+        </member>
+        <member name="M:GSF.Threading.WeakAction.TryInvoke">
+            <summary>
+            Attempts to invoke the delegate to a weak reference object.
+            </summary>
+            <returns><c>true</c> if successful; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Threading.WeakAction.Clear">
+            <summary>
+            Clears <see cref="T:System.Action"/> callback target.
+            </summary>
+        </member>
+        <member name="T:GSF.Threading.WeakAction`1">
+            <summary>
+            Provides a weak referenced action delegate.
+            </summary>
+            <remarks>
+            <para>
+            Unlike many implementations of a weak action, this class does not
+            use reflection so calls will be faster. However, a strong reference
+            *must* be maintained for the <see cref="T:System.Action"/> callback passed
+            to this class. This reference is returned through an out parameter
+            in the constructor.
+            </para>
+            <para>
+            Careful consideration must be made when deciding where to store
+            the strong reference as this strong reference will need to also
+            lose reference. A good place would be as a member variable of the
+            object of the target method.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:GSF.Threading.WeakAction`1.#ctor(System.Action{`0},System.Object@)">
+            <summary>
+            Creates a high speed weak action 
+            </summary>
+            <param name="callback">The callback.</param>
+            <param name="localStrongReference">A strong reference that must be maintained in the class that is the target of the action.</param>
+        </member>
+        <member name="M:GSF.Threading.WeakAction`1.TryInvoke(`0)">
+            <summary>
+            Attempts to invoke the delegate to a weak reference object.
+            </summary>
+            <returns><c>true</c> if successful; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.Threading.WeakAction`1.Clear">
+            <summary>
+            Clears <see cref="T:System.Action"/> callback target.
             </summary>
         </member>
         <member name="T:GSF.BaselineTimeInterval">

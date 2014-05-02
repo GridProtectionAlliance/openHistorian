@@ -766,6 +766,11 @@
             Tag that identifies the date and time of creation.
             </summary>
         </member>
+        <member name="F:GSF.PQDIF.Logical.ContainerRecord.NotesTag">
+            <summary>
+            Tag that identifies the notes stored in the PQDIF file.
+            </summary>
+        </member>
         <member name="F:GSF.PQDIF.Logical.ContainerRecord.CompressionStyleTag">
             <summary>
             Tag that identifies the compression style of the PQDIF file.
@@ -813,6 +818,11 @@
         <member name="P:GSF.PQDIF.Logical.ContainerRecord.Creation">
             <summary>
             Gets the date and time of file creation.
+            </summary>
+        </member>
+        <member name="P:GSF.PQDIF.Logical.ContainerRecord.Notes">
+            <summary>
+            Gets the notes stored in the file.
             </summary>
         </member>
         <member name="P:GSF.PQDIF.Logical.ContainerRecord.CompressionStyle">

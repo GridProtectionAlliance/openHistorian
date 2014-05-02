@@ -2449,7 +2449,7 @@
             <param name="newMeasurement">New measurement value to update.</param>
             <remarks>Value is only stored if it is newer than the cached value.</remarks>
         </member>
-        <member name="M:GSF.TimeSeries.ImmediateMeasurements.Measurement(System.Guid)">
+        <member name="M:GSF.TimeSeries.ImmediateMeasurements.Measurement(GSF.TimeSeries.MeasurementKey)">
             <summary>Retrieves the specified immediate temporal measurement, creating it if needed.</summary>
             <param name="id"><see cref="T:System.Guid"/> based signal ID of measurement.</param>
             <returns>A <see cref="T:GSF.TimeSeries.TemporalMeasurement"/> object.</returns>
@@ -2469,7 +2469,7 @@
             <remarks>Expects <see cref="T:System.String"/> based tag field to be aliased as "Tag" and <see cref="T:System.Guid"/> based measurement ID field to be aliased as "ID".</remarks>
             <param name="taggedMeasurements">A <see cref="T:System.Data.DataTable"/> to use for defining the tagged measurements.</param>
         </member>
-        <member name="M:GSF.TimeSeries.ImmediateMeasurements.AddTaggedMeasurement(System.String,System.Guid)">
+        <member name="M:GSF.TimeSeries.ImmediateMeasurements.AddTaggedMeasurement(System.String,GSF.TimeSeries.MeasurementKey)">
             <summary>Associates a new measurement ID with a tag, creating the new tag if needed.</summary>
             <remarks>Allows you to define "grouped" points so you can aggregate certain measurements.</remarks>
             <param name="tag">A <see cref="T:System.String"/> to represent the key.</param>
@@ -2509,7 +2509,7 @@
             </summary>
             <param name="leadTime">New lead time.</param>
         </member>
-        <member name="P:GSF.TimeSeries.ImmediateMeasurements.Item(System.Guid)">
+        <member name="P:GSF.TimeSeries.ImmediateMeasurements.Item(GSF.TimeSeries.MeasurementKey)">
             <summary>We retrieve adjusted measurement values within time tolerance of concentrator real-time.</summary>
             <param name="id">A <see cref="T:System.Guid"/> representing the measurement ID.</param>
             <returns>A <see cref="T:System.Double"/> representing the adjusted measurement value.</returns>
@@ -2822,21 +2822,6 @@
             Represents a primary key for a measurement.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.#ctor(System.Guid,System.UInt32,System.String)">
-            <summary>
-            Constructs a new <see cref="T:GSF.TimeSeries.MeasurementKey"/> given the specified parameters.
-            </summary>
-            <param name="signalID"><see cref="T:System.Guid"/> ID of associated signal, if defined.</param>
-            <param name="id">Numeric ID of the measurement that this <see cref="T:GSF.TimeSeries.MeasurementKey"/> represents.</param>
-            <param name="source">Source of the measurement that this <see cref="T:GSF.TimeSeries.MeasurementKey"/> represents (e.g., name of archive).</param>
-            <exception cref="T:System.ArgumentNullException">source cannot be null.</exception>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.UpdateSignalID(System.Guid)">
-            <summary>
-            Update the signal ID of this <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
-            </summary>
-            <param name="signalID">New <see cref="T:System.Guid"/> based signal ID to update this <see cref="T:GSF.TimeSeries.MeasurementKey"/> with.</param>
-        </member>
         <member name="M:GSF.TimeSeries.MeasurementKey.ToString">
             <summary>
             Returns a <see cref="T:System.String"/> that represents the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
@@ -2938,35 +2923,136 @@
             Represents an undefined measurement key.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.Parse(System.String,System.Guid)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.CreateOrUpdate(System.Guid,System.String)">
             <summary>
-            Converts the string representation of a <see cref="T:GSF.TimeSeries.MeasurementKey"/> into its value equivalent.
+            Constructs a new <see cref="T:GSF.TimeSeries.MeasurementKey"/> given the specified parameters.
             </summary>
-            <param name="value">A string representing the <see cref="T:GSF.TimeSeries.MeasurementKey"/> to convert.</param>
-            <param name="signalID"><see cref="T:System.Guid"/> based signal ID associated with this <see cref="T:GSF.TimeSeries.MeasurementKey"/>, if defined.</param>
-            <returns>A <see cref="T:GSF.TimeSeries.MeasurementKey"/> value equivalent the representation contained in <paramref name="value"/>.</returns>
+            <param name="signalID"><see cref="T:System.Guid"/> ID of associated signal, if defined.</param>
+            <param name="value">A string representation of the <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="signalID"/> cannot be empty</exception>
             <exception cref="T:System.FormatException">The value is not in the correct format for a <see cref="T:GSF.TimeSeries.MeasurementKey"/> value.</exception>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.LookupBySignalID(System.Guid)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.CreateOrUpdate(System.Guid,System.String,System.UInt32)">
+            <summary>
+            Constructs a new <see cref="T:GSF.TimeSeries.MeasurementKey"/> given the specified parameters.
+            </summary>
+            <param name="signalID"><see cref="T:System.Guid"/> ID of associated signal, if defined.</param>
+            <param name="source">Source of the measurement that this <see cref="T:GSF.TimeSeries.MeasurementKey"/> represents (e.g., name of archive).</param>
+            <param name="id">Numeric ID of the measurement that this <see cref="T:GSF.TimeSeries.MeasurementKey"/> represents.</param>
+            <exception cref="T:System.ArgumentException"><paramref name="signalID"/> cannot be empty.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> cannot be null.</exception>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.TryCreateOrUpdate(System.Guid,System.String,GSF.TimeSeries.MeasurementKey@)">
+            <summary>
+            Constructs a new <see cref="T:GSF.TimeSeries.MeasurementKey"/> given the specified parameters.
+            </summary>
+            <param name="signalID"><see cref="T:System.Guid"/> ID of associated signal, if defined.</param>
+            <param name="value">A string representation of the <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</param>
+            <param name="key">The measurement key that was created or updated or <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.</param>
+            <returns>True if the measurement key was successfully created or updated, false otherwise.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="signalID"/> cannot be empty.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> cannot be null.</exception>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.TryCreateOrUpdate(System.Guid,System.String,System.UInt32,GSF.TimeSeries.MeasurementKey@)">
+            <summary>
+            Constructs a new <see cref="T:GSF.TimeSeries.MeasurementKey"/> given the specified parameters.
+            </summary>
+            <param name="signalID"><see cref="T:System.Guid"/> ID of associated signal, if defined.</param>
+            <param name="source">Source of the measurement that this <see cref="T:GSF.TimeSeries.MeasurementKey"/> represents (e.g., name of archive).</param>
+            <param name="id">Numeric ID of the measurement that this <see cref="T:GSF.TimeSeries.MeasurementKey"/> represents.</param>
+            <param name="key">The measurement key that was created or updated or <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.</param>
+            <returns>True if the measurement key was successfully created or updated, false otherwise.</returns>
+            <exception cref="T:System.ArgumentException"><paramref name="signalID"/> cannot be empty.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> cannot be null.</exception>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpBySignalID(System.Guid)">
             <summary>
             Looks up the measurement key associated with the given signal ID.
             </summary>
             <param name="signalID">The signal ID of the measurement key.</param>
             <returns>The measurement key associated with the given signal ID.</returns>
             <remarks>
-            If no measurement key is found with the given signal ID, a measurement key is
-            returned with generic default values for <see cref="P:GSF.TimeSeries.MeasurementKey.Source"/> and <see cref="P:GSF.TimeSeries.MeasurementKey.ID"/>,
-            but this key is not cached. In order to cache a measurement key, a Source and ID
-            must be provided, either via the <see cref="M:GSF.TimeSeries.MeasurementKey.#ctor(System.Guid,System.UInt32,System.String)"/>
-            constructor or the <see cref="M:GSF.TimeSeries.MeasurementKey.Parse(System.String,System.Guid)"/> method.
+            If no measurement key is found with the given signal ID,
+            this method returns <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.TryParse(System.String,System.Guid,GSF.TimeSeries.MeasurementKey@)">
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpBySource(System.String,System.UInt32)">
+            <summary>
+            Looks up the measurement key associated with the given source and ID.
+            </summary>
+            <param name="source">The source of the signal.</param>
+            <param name="id">The source-specific unique integer identifier.</param>
+            <returns>The measurement key associated with the given source and ID.</returns>
+            <remarks>
+            If no measurement key is found with the given source and ID,
+            this method returns <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.Guid,System.String)">
+            <summary>
+            Performs a lookup by signal ID and, failing that, attempts to create
+            the key using the given signal ID and the parsed source, and ID.
+            </summary>
+            <param name="signalID">The signal ID of the key to be looked up.</param>
+            <param name="value">A string representation of the <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</param>
+            <returns>
+            If the lookup succeeds, an existing measurement key with a matching signalID.
+            If creation succeeds, a new measurement key with matching signal ID, source, and ID.
+            Otherwise, <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
+            </returns>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.Guid,System.String,System.UInt32)">
+            <summary>
+            Performs a lookup by signal ID and, failing that, attempts to
+            create the key using the given signal ID, source, and ID.
+            </summary>
+            <param name="signalID">The signal ID of the key to be looked up.</param>
+            <param name="source">The source to use for the key if the lookup fails.</param>
+            <param name="id">The ID to use for the key if the lookup fails.</param>
+            <returns>
+            If the lookup succeeds, an existing measurement key with a matching signalID.
+            If creation succeeds, a new measurement key with matching signal ID, source, and ID.
+            Otherwise, <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
+            </returns>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.String)">
+            <summary>
+            Performs a lookup by source and, failing that, attempts to create
+            the key using a newly generated signal ID and the parsed source and ID.
+            </summary>
+            <param name="value">A string representation of the <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</param>
+            <returns>
+            If the lookup succeeds, an existing measurement key with a matching signalID.
+            If creation succeeds, a new measurement key with matching signal ID, source, and ID.
+            Otherwise, <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
+            </returns>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.LookUpOrCreate(System.String,System.UInt32)">
+            <summary>
+            Performs a lookup by source and, failing that, attempts to create
+            the key using a newly generated signal ID and the given source and ID.
+            </summary>
+            <param name="source">The source to use for the key if the lookup fails.</param>
+            <param name="id">The ID to use for the key if the lookup fails.</param>
+            <returns>
+            If the lookup succeeds, an existing measurement key with a matching signalID.
+            If creation succeeds, a new measurement key with matching signal ID, source, and ID.
+            Otherwise, <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
+            </returns>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.Parse(System.String)">
+            <summary>
+            Converts the string representation of a <see cref="T:GSF.TimeSeries.MeasurementKey"/> into its value equivalent.
+            </summary>
+            <param name="value">A string representing the <see cref="T:GSF.TimeSeries.MeasurementKey"/> to convert.</param>
+            <returns>A <see cref="T:GSF.TimeSeries.MeasurementKey"/> value equivalent the representation contained in <paramref name="value"/>.</returns>
+            <exception cref="T:System.FormatException">The value is not in the correct format for a <see cref="T:GSF.TimeSeries.MeasurementKey"/> value.</exception>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.TryParse(System.String,GSF.TimeSeries.MeasurementKey@)">
             <summary>
             Attempts to convert the string representation of a <see cref="T:GSF.TimeSeries.MeasurementKey"/> into its value equivalent.
             </summary>
             <param name="value">A string representing the <see cref="T:GSF.TimeSeries.MeasurementKey"/> to convert.</param>
-            <param name="signalID"><see cref="T:System.Guid"/> based signal ID associated with this <see cref="T:GSF.TimeSeries.MeasurementKey"/>, if defined.</param>
             <param name="key">Output <see cref="T:GSF.TimeSeries.MeasurementKey"/> in which to stored parsed value.</param>
             <returns>A <c>true</c> if <see cref="T:GSF.TimeSeries.MeasurementKey"/>representation contained in <paramref name="value"/> could be parsed; otherwise <c>false</c>.</returns>
         </member>
@@ -2989,7 +3075,12 @@
             <summary>
             Creates the undefined measurement key. Used to initialize <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.
             </summary>
-            <returns>The undefined measurement key.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.MeasurementKey.TrySplit(System.String,System.String@,System.UInt32@)">
+            <summary>
+            Attempts to split the given string representation
+            of a measurement key into a source and ID pair.
+            </summary>
         </member>
         <member name="P:GSF.TimeSeries.MeasurementKey.SignalID">
             <summary>
@@ -5654,6 +5745,11 @@
             Initiates request for metadata refresh for <see cref="T:GSF.TimeSeries.Adapters.OutputAdapterBase"/>, if implemented.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Adapters.OutputAdapterBase.ExecuteMetadataRefresh">
+            <summary>
+            Executes the metadata refresh in a synchronous fashion.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Adapters.OutputAdapterBase.Start">
             <summary>
             Starts this <see cref="T:GSF.TimeSeries.Adapters.OutputAdapterBase"/> and initiates connection cycle to data output stream.
@@ -5792,6 +5888,11 @@
             </para>
             </remarks>
         </member>
+        <member name="P:GSF.TimeSeries.Adapters.OutputAdapterBase.DataSource">
+            <summary>
+            Gets or sets <see cref="T:System.Data.DataSet"/> based data source available to this <see cref="T:GSF.TimeSeries.Adapters.OutputAdapterBase"/>.
+            </summary>
+        </member>
         <member name="P:GSF.TimeSeries.Adapters.OutputAdapterBase.RequeueOnException">
             <summary>
             Gets or sets whether or not to automatically place measurements back into the processing
@@ -5858,6 +5959,11 @@
         <member name="P:GSF.TimeSeries.Adapters.OutputAdapterBase.ConnectionAttemptInterval">
             <summary>
             Gets or sets the connection attempt interval, in milliseconds, for the data output adapter.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Adapters.OutputAdapterBase.MetadataRefreshOperation">
+            <summary>
+            Gets the operation that calls <see cref="M:GSF.TimeSeries.Adapters.OutputAdapterBase.ExecuteMetadataRefresh"/>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.OutputAdapterBase.InternalProcessQueue">
@@ -6310,7 +6416,7 @@
             of measurements expected in the <see cref="T:GSF.TimeSeries.IDevice"/> wrapped by this helper.
             </summary>
             <remarks>
-            Call this periodically, preferrably on a slow timer (e.g., once per second),
+            Call this periodically, preferably on a slow timer (e.g., once per second),
             in order to update the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/> and
             <see cref="P:GSF.TimeSeries.IDevice.MeasurementsExpected"/> statistics.
             </remarks>
@@ -6322,7 +6428,7 @@
             </summary>
             <param name="nowTicks">The current time, in ticks.</param>
             <remarks>
-            Call this periodically, preferrably on a slow timer (e.g., once per second),
+            Call this periodically, preferably on a slow timer (e.g., once per second),
             in order to update the <see cref="P:GSF.TimeSeries.IDevice.MeasurementsReceived"/> and
             <see cref="P:GSF.TimeSeries.IDevice.MeasurementsExpected"/> statistics. This method is preferred
             when tracking statistics for multiple <see cref="T:GSF.TimeSeries.IDevice"/>s to reduce the number
@@ -6483,28 +6589,6 @@
             The engine automatically unregisters them by attaching to the
             <see cref="E:GSF.ISupportLifecycle.Disposed"/> event.
             </remarks>
-        </member>
-        <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.GetStatSignalTypeID(GSF.Data.AdoDataConnection)">
-            <summary>
-            Gets the signal type ID used for statistic measurements.
-            </summary>
-            <param name="database">The database to be queried.</param>
-            <returns>The signal type ID used for statistic measurements.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.GetStatHistorianID(GSF.Data.AdoDataConnection)">
-            <summary>
-            Gets the ID of the statistics historian.
-            </summary>
-            <param name="database">The database to be queried.</param>
-            <returns>The ID of the statistics historian.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.GetDeviceID(GSF.Data.AdoDataConnection,GSF.TimeSeries.Adapters.IAdapter)">
-            <summary>
-            Gets the device ID of the given adapter, or <see cref="F:System.DBNull.Value"/> if the adapter is not a device.
-            </summary>
-            <param name="database">The database to be queried.</param>
-            <param name="adapter">The adapter whose device ID is queried.</param>
-            <returns>The device ID of the given adapter, or <see cref="F:System.DBNull.Value"/> if the adapter is not a device.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Statistics.StatisticsEngine.RegexMatch(System.String,System.String)">
             <summary>
