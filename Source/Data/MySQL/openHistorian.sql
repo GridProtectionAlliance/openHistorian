@@ -1360,6 +1360,18 @@ FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn 
 CREATE TRIGGER Subscriber_InsertDefault BEFORE INSERT ON Subscriber
 FOR EACH ROW SET NEW.ID = IF(NEW.ID <> '', NEW.ID, UUID()), NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
+CREATE TRIGGER SubscriberMeasurement_InsertDefault BEFORE INSERT ON SubscriberMeasurement
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
+
+CREATE TRIGGER SubscriberMeasurementGroup_InsertDefault BEFORE INSERT ON SubscriberMeasurementGroup
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
+
+CREATE TRIGGER MeasurementGroup_InsertDefault BEFORE INSERT ON MeasurementGroup
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
+
+CREATE TRIGGER MeasurementGroupMeasurement_InsertDefault BEFORE INSERT ON MeasurementGroupMeasurement
+FOR EACH ROW SET NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
+
 CREATE TRIGGER Measurement_InsertDefault BEFORE INSERT ON Measurement
 FOR EACH ROW SET NEW.SignalID = IF(NEW.SignalID <> '', NEW.SignalID, UUID()), NEW.CreatedBy = COALESCE(NEW.CreatedBy, USER()), NEW.CreatedOn = COALESCE(NEW.CreatedOn, UTC_TIMESTAMP()), NEW.UpdatedBy = COALESCE(NEW.UpdatedBy, USER()), NEW.UpdatedOn = COALESCE(NEW.UpdatedOn, UTC_TIMESTAMP());
 
@@ -1485,6 +1497,12 @@ CREATE TRIGGER Measurement_UpdateTracker AFTER UPDATE ON Measurement FOR EACH RO
 BEGIN
     INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Measurement', 'PointID', NEW.PointID);
     INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('ActiveMeasurement', 'SignalID', NEW.SignalID);
+    
+    CASE WHEN OLD.SignalID <> NEW.SignalID
+    THEN
+        INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('ActiveMeasurement', 'SignalID', OLD.SignalID);
+	ELSE BEGIN END;
+    END CASE;
 END$$
 DELIMITER ;
 

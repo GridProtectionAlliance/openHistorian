@@ -2539,17 +2539,23 @@ BEGIN
     -- interfering with SELECT statements.
     SET NOCOUNT ON;
     
-    SELECT PointID, SignalID INTO #measurementID FROM inserted
+    SELECT PointID INTO #pointID FROM inserted
     UNION
-    SELECT PointID, SignalID FROM deleted WHERE PointID NOT IN (SELECT PointID FROM inserted)
+    SELECT PointID FROM deleted
     
     INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
-    SELECT 'Measurement', 'PointID', PointID FROM #measurementID
+    SELECT 'Measurement', 'PointID', PointID FROM #pointID
+    
+    DROP TABLE #pointID
+    
+    SELECT SignalID INTO #signalID FROM inserted
+    UNION
+    SELECT SignalID FROM deleted
     
     INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
-    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM #measurementID
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM #signalID
     
-    DROP TABLE #measurementID
+    DROP TABLE #signalID
 END
 GO
 

@@ -27,6 +27,8 @@
 --       Added new field Type to ErrorLog table. Removed ExceptionLog table.
 --  ----------------------------------------------------------------------------------------------------
 
+PRAGMA foreign_keys = ON;
+
 -- *******************************************************************************************
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
@@ -1316,13 +1318,41 @@ BEGIN
     UPDATE Historian SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Historian SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
 END;
-  
+
 CREATE TRIGGER Subscriber_InsertDefault AFTER INSERT ON Subscriber
 FOR EACH ROW
 BEGIN
     UPDATE Subscriber SET ID = (SELECT * FROM NEW_GUID) WHERE ROWID = NEW.ROWID AND ID = '';
     UPDATE Subscriber SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
     UPDATE Subscriber SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
+END;
+
+CREATE TRIGGER SubscriberMeasurement_InsertDefault AFTER INSERT ON SubscriberMeasurement
+FOR EACH ROW
+BEGIN
+    UPDATE SubscriberMeasurement SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
+    UPDATE SubscriberMeasurement SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
+END;
+
+CREATE TRIGGER SubscriberMeasurementGroup_InsertDefault AFTER INSERT ON SubscriberMeasurementGroup
+FOR EACH ROW
+BEGIN
+    UPDATE SubscriberMeasurementGroup SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
+    UPDATE SubscriberMeasurementGroup SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
+END;
+
+CREATE TRIGGER MeasurementGroup_InsertDefault AFTER INSERT ON MeasurementGroup
+FOR EACH ROW
+BEGIN
+    UPDATE MeasurementGroup SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
+    UPDATE MeasurementGroup SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
+END;
+
+CREATE TRIGGER MeasurementGroupMeasurement_InsertDefault AFTER INSERT ON MeasurementGroupMeasurement
+FOR EACH ROW
+BEGIN
+    UPDATE MeasurementGroupMeasurement SET CreatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND CreatedOn = '';
+    UPDATE MeasurementGroupMeasurement SET UpdatedOn = strftime('%Y-%m-%d %H:%M:%f') WHERE ROWID = NEW.ROWID AND UpdatedOn = '';
 END;
 
 CREATE TRIGGER Measurement_InsertDefault AFTER INSERT ON Measurement
@@ -1478,10 +1508,16 @@ BEGIN
     INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement WHERE PointID = NEW.PointID AND SignalID IS NOT NULL;
 END;
 
-CREATE TRIGGER Measurement_UpdateTracker AFTER UPDATE ON Measurement FOR EACH ROW
+CREATE TRIGGER Measurement_UpdateTracker1 AFTER UPDATE ON Measurement FOR EACH ROW
 BEGIN
     INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('Measurement', 'PointID', NEW.PointID);
     INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('ActiveMeasurement', 'SignalID', NEW.SignalID);
+END;
+
+CREATE TRIGGER Measurement_UpdateTracker2 AFTER UPDATE ON Measurement FOR EACH ROW
+WHEN NEW.SignalID <> OLD.SignalID
+BEGIN
+    INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('ActiveMeasurement', 'SignalID', OLD.SignalID);
 END;
 
 CREATE TRIGGER Measurement_DeleteTracker AFTER DELETE ON Measurement FOR EACH ROW

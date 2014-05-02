@@ -292,6 +292,9 @@ GO
 INSERT INTO SignalType(Name, Acronym, Suffix, Abbreviation, Source, EngineeringUnits) VALUES('Alarm', 'ALRM', 'AL', 'AL', 'Any', '')
 GO
 
+INSERT INTO SignalType(Name, Acronym, Suffix, Abbreviation, Source, EngineeringUnits) VALUES('Quality Flags', 'QUAL', 'QF', 'Q', 'Frame', '')
+GO
+
 INSERT INTO Statistic(Source, SignalIndex, Name, Description, AssemblyName, TypeName, MethodName, Arguments, Enabled, DataType, DisplayFormat, IsConnectedState, LoadOrder) VALUES('System', 1, 'CPU Usage', 'Percentage of CPU currently used by this process.', 'GSF.TimeSeries.dll', 'GSF.TimeSeries.Statistics.PerformanceStatistics', 'GetSystemStatistic_CPUUsage', '', 1, 'System.Double', '{0:N3}', 0, 1)
 GO
 

@@ -15,7 +15,7 @@ There are four different databases types supported: MySQL, Oracle, SQL Server, a
 
  1) Open GridSolutionsFramework.sln
  2) In the 'Data' folder in the GSF.TimeSeries project and select the subfolder for the
-    database type you wish to edit - GSFSchema.sql contains the primary schema
+      database type you wish to edit - GSFSchema.sql contains the primary schema
  3) Edit the schema as needed - repeat for other databases
 
 To initialize the SQLite databases:
@@ -23,7 +23,8 @@ To initialize the SQLite databases:
  4) Close the solution to avoid any conflicts
  5) Navigate to the ...\Data\SQLite folder
  6) Run db-update.bat
- 7) The update script will ask if you want to check in the database updates, select Yes
+ 7) The update script will ask if you want to check in the database updates, select
+      no unless all your schema changes have already been checked-in (not likely)
 
 To update the SerializedSchema.bin used by the Data Migration Utility:
 
@@ -36,11 +37,11 @@ To update the SerializedSchema.bin used by the Data Migration Utility:
       Provider=SQLOLEDB; Data Source=localhost\SQLEXPRESS; Initial Catalog=GSFSchema;
       Integrated Security=SSPI
 14) Click the from connection string "Test" link, if this succeeds a "Serialize"
-    button will be visible on the application
+      button will be visible on the application
 15) Click the "Serialize" button to create a new "SerializedSchema.bin", the updated
-    file will be located in the DataMigrationUtility.exe path
+      file will be located in the DataMigrationUtility.exe path
 16) Check out and replace the "...\GSF.TimeSeries\Data\SerializedSchema.bin" file
-    with the new updated file
+      with the new updated file
 17) Check in the replaced "...\GSF.TimeSeries\Data\SerializedSchema.bin" file
 
 Your database changes are now complete!
