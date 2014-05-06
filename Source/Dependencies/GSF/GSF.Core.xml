@@ -12492,6 +12492,406 @@
             Returns the default instance of the <see cref="T:GSF.NativeEndianOrder"/> class.
             </summary>
         </member>
+        <member name="T:GSF.BigEndian">
+            <summary>
+            Defines a set of big-endian byte order interoperability functions.
+            </summary>
+            <remarks>
+            This class is setup to support aggressive in-lining of little endian conversions. Bounds
+            will not be checked as part of this function call, if bounds are violated, the exception
+            will be thrown at the <see cref="T:System.Array"/> level.
+            </remarks>
+        </member>
+        <member name="M:GSF.BigEndian.ToBoolean(System.Byte[],System.Int32)">
+            <summary>
+            Returns a <see cref="T:System.Boolean"/> value converted from one byte at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes.</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>true if the byte at startIndex in value is nonzero; otherwise, false.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.ToChar(System.Byte[],System.Int32)">
+            <summary>
+            Returns a Unicode character converted from two bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A character formed by two bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.ToDouble(System.Byte[],System.Int32)">
+            <summary>
+            Returns a double-precision floating point number converted from eight bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A double-precision floating point number formed by eight bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.ToInt16(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 16-bit signed integer converted from two bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 16-bit signed integer formed by two bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.ToInt32(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 32-bit signed integer converted from four bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 32-bit signed integer formed by four bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.ToInt64(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 64-bit signed integer converted from eight bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 64-bit signed integer formed by eight bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.ToSingle(System.Byte[],System.Int32)">
+            <summary>
+            Returns a single-precision floating point number converted from four bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A single-precision floating point number formed by four bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.ToUInt16(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 16-bit unsigned integer converted from two bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 16-bit unsigned integer formed by two bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.ToUInt32(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 32-bit unsigned integer converted from four bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 32-bit unsigned integer formed by four bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.ToUInt64(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 64-bit unsigned integer converted from eight bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 64-bit unsigned integer formed by eight bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.Boolean,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified <see cref="T:System.Boolean"/> value as an array of 1 byte in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The <see cref="T:System.Boolean"/> value to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.Char,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified Unicode character value as an array of 2 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The Unicode character value to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.Double,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified double-precision floating point value as an array of 8 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.Int16,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 16-bit signed integer value as an array of 2 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.Int32,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 32-bit signed integer value as an array of 4 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.Int64,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 64-bit signed integer value as an array of 8 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.Single,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified single-precision floating point value as an array of 4 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.UInt16,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 16-bit unsigned integer value as an array of 2 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.UInt32,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 32-bit unsigned integer value as an array of 4 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.BigEndian.CopyBytes(System.UInt64,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 64-bit unsigned integer value as an array of 8 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="T:GSF.LittleEndian">
+            <summary>
+            Defines a set of little-endian byte order interoperability functions.
+            </summary>
+            <remarks>
+            This class is setup to support aggressive in-lining of little endian conversions. Bounds
+            will not be checked as part of this function call, if bounds are violated, the exception
+            will be thrown at the <see cref="T:System.Array"/> level.
+            </remarks>
+        </member>
+        <member name="M:GSF.LittleEndian.ToBoolean(System.Byte[],System.Int32)">
+            <summary>
+            Returns a <see cref="T:System.Boolean"/> value converted from one byte at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes.</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>true if the byte at startIndex in value is nonzero; otherwise, false.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.ToChar(System.Byte[],System.Int32)">
+            <summary>
+            Returns a Unicode character converted from two bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A character formed by two bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.ToDouble(System.Byte[],System.Int32)">
+            <summary>
+            Returns a double-precision floating point number converted from eight bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A double-precision floating point number formed by eight bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.ToInt16(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 16-bit signed integer converted from two bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 16-bit signed integer formed by two bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.ToInt32(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 32-bit signed integer converted from four bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 32-bit signed integer formed by four bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.ToInt64(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 64-bit signed integer converted from eight bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 64-bit signed integer formed by eight bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.ToSingle(System.Byte[],System.Int32)">
+            <summary>
+            Returns a single-precision floating point number converted from four bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A single-precision floating point number formed by four bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.ToUInt16(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 16-bit unsigned integer converted from two bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 16-bit unsigned integer formed by two bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.ToUInt32(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 32-bit unsigned integer converted from four bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 32-bit unsigned integer formed by four bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.ToUInt64(System.Byte[],System.Int32)">
+            <summary>
+            Returns a 64-bit unsigned integer converted from eight bytes, accounting for target endian-order, at a specified position in a byte array.
+            </summary>
+            <param name="value">An array of bytes (i.e., buffer containing binary image of value).</param>
+            <param name="startIndex">The starting position within value.</param>
+            <returns>A 64-bit unsigned integer formed by eight bytes beginning at startIndex.</returns>
+            <exception cref="T:System.ArgumentNullException">value is null.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex is less than zero or greater than the length of value minus 1.</exception>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.Boolean,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified <see cref="T:System.Boolean"/> value as an array of 1 byte in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The <see cref="T:System.Boolean"/> value to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.Char,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified Unicode character value as an array of 2 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The Unicode character value to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.Double,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified double-precision floating point value as an array of 8 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.Int16,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 16-bit signed integer value as an array of 2 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.Int32,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 32-bit signed integer value as an array of 4 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.Int64,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 64-bit signed integer value as an array of 8 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.Single,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified single-precision floating point value as an array of 4 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.UInt16,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 16-bit unsigned integer value as an array of 2 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.UInt32,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 32-bit unsigned integer value as an array of 4 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
+        <member name="M:GSF.LittleEndian.CopyBytes(System.UInt64,System.Byte[],System.Int32)">
+            <summary>
+            Copies the specified 64-bit unsigned integer value as an array of 8 bytes in the target endian-order to the destination array.
+            </summary>
+            <param name="value">The number to convert and copy.</param>
+            <param name="destinationArray">The destination buffer.</param>
+            <param name="destinationIndex">The byte offset into <paramref name="destinationArray"/>.</param>
+            <returns>Length of bytes copied into array based on size of <paramref name="value"/>.</returns>
+        </member>
         <member name="T:GSF.EnumExtensions">
             <summary>
             Defines extension methods related to enumerations.
