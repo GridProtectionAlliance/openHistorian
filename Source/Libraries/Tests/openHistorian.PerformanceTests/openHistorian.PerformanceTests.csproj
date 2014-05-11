@@ -83,7 +83,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BenchmarkSockets.cs" />
+    <Compile Include="CheckSHA1Guid.cs" />
     <Compile Include="ConcurrentReading.cs" />
+    <Compile Include="Index`1_test.cs" />
+    <Compile Include="IntDictionary_test.cs" />
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="MeasureCompression.cs" />
     <Compile Include="NPlot\PlotSpeed.cs" />

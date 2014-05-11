@@ -79,7 +79,9 @@ namespace openVisN
                     //table.Columns.Add("DeviceName", typeof(string));
 
                     Guid.TryParse(measurement["SignalID"].ToString(), out signalID);
-                    MeasurementKey.TryParse(measurement["ID"].ToString(), signalID, out measurementKey);
+                    throw new NotImplementedException();
+                    //ToDo: Fix this line
+                    //MeasurementKey.TryParse(measurement["ID"].ToString(), signalID, out measurementKey);
 
                     historianInstance = measurementKey.Source;
                     pointID = measurementKey.ID;

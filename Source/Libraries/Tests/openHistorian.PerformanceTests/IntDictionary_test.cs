@@ -11,20 +11,22 @@ using NUnit.Framework;
 namespace openHistorian.PerformanceTests
 {
     [TestFixture]
-    class ReadonlyGuidDictionary_test
+    class IntDictionary_test
     {
         [Test]
         public void DoesItWorkLookup()
         {
-            Guid[] ids = new Guid[1000];
-            Dictionary<Guid, int> source = new Dictionary<Guid, int>();
+            Random r = new Random();
+            int[] ids = new int[1000];
+            Dictionary<int, int> source = new Dictionary<int, int>();
             for (int x = 0; x < ids.Length; x++)
             {
-                Guid value = Guid.NewGuid();
+                int value = r.Next();
                 source.Add(value, x);
                 ids[x] = value;
             }
-            GuidIndex compare = new GuidIndex(source.Keys);
+
+            IntIndex compare = new IntIndex(source.Keys);
 
             for (int x = 0; x < ids.Length; x++)
             {
@@ -56,15 +58,17 @@ namespace openHistorian.PerformanceTests
         [Test]
         public void DoesItWorkDictionary()
         {
-            Guid[] ids = new Guid[1000];
-            Dictionary<Guid, int> source = new Dictionary<Guid, int>();
+            Random r = new Random();
+            int[] ids = new int[1000];
+            Dictionary<int, int> source = new Dictionary<int, int>();
             for (int x = 0; x < ids.Length; x++)
             {
-                Guid value = Guid.NewGuid();
+                int value = r.Next();
                 source.Add(value, x);
                 ids[x] = value;
             }
-            GuidDictionary<int> compare = new GuidDictionary<int>(source);
+
+            IntDictionary<int> compare = new IntDictionary<int>(source);
 
             for (int x = 0; x < ids.Length; x++)
             {
@@ -96,17 +100,27 @@ namespace openHistorian.PerformanceTests
         [Test]
         public void CompareContainsKey()
         {
-            Guid[] ids = new Guid[5000000];
-            Dictionary<Guid, int> source = new Dictionary<Guid, int>(5000000);
+            int scale = 100000;
+
+            Random r = new Random(0);
+            int[] ids = new int[5000000/scale];
+            Dictionary<int, int> source = new Dictionary<int, int>();
             for (int x = 0; x < ids.Length; x++)
             {
-                Guid value = Guid.NewGuid();
-                source.Add(value, x);
-                ids[x] = value;
+                int value = r.Next();
+                if (source.ContainsKey(value))
+                {
+                    x--;
+                }
+                else
+                {
+                    source.Add(value, x);
+                    ids[x] = value;
+                }
             }
-            GuidIndex compare = new GuidIndex(source.Keys);
-            GuidDictionary<int> compare2 = new GuidDictionary<int>(source);
 
+            IntIndex compare = new IntIndex(source.Keys);
+            IntDictionary<int> compare2 = new IntDictionary<int>(source);
 
             Stopwatch sw = new Stopwatch();
 
@@ -115,7 +129,7 @@ namespace openHistorian.PerformanceTests
             sw.Reset();
             sw.Start();
 
-            for (int loop = 0; loop < 1; loop++)
+            for (int loop = 0; loop < 1*scale; loop++)
                 for (int x = 0; x < ids.Length; x++)
                 {
                     source.ContainsKey(ids[x]);
@@ -127,7 +141,7 @@ namespace openHistorian.PerformanceTests
             sw.Reset();
             sw.Start();
 
-            for (int loop = 0; loop < 1; loop++)
+            for (int loop = 0; loop < 1 * scale; loop++)
                 for (int x = 0; x < ids.Length; x++)
                 {
                     compare.ContainsKey(ids[x]);
@@ -138,14 +152,13 @@ namespace openHistorian.PerformanceTests
             sw.Reset();
             sw.Start();
 
-            for (int loop = 0; loop < 1; loop++)
+            for (int loop = 0; loop < 1 * scale; loop++)
                 for (int x = 0; x < ids.Length; x++)
                 {
                     compare2.ContainsKey(ids[x]);
                 }
 
             sw.Stop();
-
 
             //----------run
 
@@ -153,7 +166,7 @@ namespace openHistorian.PerformanceTests
             sw.Reset();
             sw.Start();
 
-            for (int loop = 0; loop < 2; loop++)
+            for (int loop = 0; loop < 2 * scale; loop++)
                 for (int x = 0; x < ids.Length; x++)
                 {
                     source.ContainsKey(ids[x]);
@@ -161,12 +174,12 @@ namespace openHistorian.PerformanceTests
 
             sw.Stop();
 
-            Console.WriteLine(2 * ids.Length / sw.Elapsed.TotalSeconds / 1000000);
+            Console.WriteLine(2 * scale * ids.Length / sw.Elapsed.TotalSeconds / 1000000);
 
             sw.Reset();
             sw.Start();
 
-            for (int loop = 0; loop < 5; loop++)
+            for (int loop = 0; loop < 5 * scale; loop++)
                 for (int x = 0; x < ids.Length; x++)
                 {
                     compare.ContainsKey(ids[x]);
@@ -174,12 +187,12 @@ namespace openHistorian.PerformanceTests
 
             sw.Stop();
 
-            Console.WriteLine(5 * ids.Length / sw.Elapsed.TotalSeconds / 1000000);
+            Console.WriteLine(5 * scale * ids.Length / sw.Elapsed.TotalSeconds / 1000000);
 
             sw.Reset();
             sw.Start();
 
-            for (int loop = 0; loop < 5; loop++)
+            for (int loop = 0; loop < 5 * scale; loop++)
                 for (int x = 0; x < ids.Length; x++)
                 {
                     compare2.ContainsKey(ids[x]);
@@ -187,14 +200,14 @@ namespace openHistorian.PerformanceTests
 
             sw.Stop();
 
-            Console.WriteLine(5 * ids.Length / sw.Elapsed.TotalSeconds / 1000000);
+            Console.WriteLine(5 * scale * ids.Length / sw.Elapsed.TotalSeconds / 1000000);
 
         }
 
         [Test]
         public void CompareTryGetKey()
         {
-            int scale = 100;
+            int scale = 100000;
 
             int value2;
             Guid[] ids = new Guid[5000000 / scale];

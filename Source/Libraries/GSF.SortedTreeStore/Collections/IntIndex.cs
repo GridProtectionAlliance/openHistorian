@@ -28,28 +28,28 @@ using System.Runtime.CompilerServices;
 
 namespace GSF.Collections
 {
-    public unsafe class GuidDictionary<T>
+    public unsafe class IntDictionary<T>
     {
-        GuidIndex m_index;
+        IntIndex m_index;
         T[] m_items;
 
-        public GuidDictionary(IDictionary<Guid, T> source)
+        public IntDictionary(IDictionary<int, T> source)
         {
             int count = source.Count;
             m_items = new T[count];
             source.Values.CopyTo(m_items, 0);
-            m_index = new GuidIndex(source.Keys);
+            m_index = new IntIndex(source.Keys);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public bool ContainsKey(Guid key)
+        public bool ContainsKey(int key)
         {
-            return m_index.FindIndex((long*)&key) >= 0;
+            return m_index.FindIndex(key) >= 0;
         }
 
-        public bool TryGetValue(Guid key, out T value)
+        public bool TryGetValue(int key, out T value)
         {
-            int index = m_index.FindIndex((long*)&key);
+            int index = m_index.FindIndex(key);
             if (index < 0)
             {
                 value = default(T);
@@ -59,11 +59,11 @@ namespace GSF.Collections
             return true;
         }
 
-        public T this[Guid key]
+        public T this[int key]
         {
             get
             {
-                int index = m_index.FindIndex(*(long*)&key, *(long*)((byte*)&key + 8));
+                int index = m_index.FindIndex(key);
                 if (index < 0)
                     throw new KeyNotFoundException("Missing");
                 return m_items[index];
@@ -75,27 +75,24 @@ namespace GSF.Collections
         }
     }
 
-    unsafe public class GuidIndex
+    unsafe public class IntIndex
     {
         int m_bucketMask;
         int m_count;
-        long[] m_entries;
+        int[] m_entries;
         int[] m_hashLookup;
 
-        public GuidIndex(ICollection<Guid> source)
+        public IntIndex(ICollection<int> source)
         {
             //Fill all entries
             m_count = source.Count;
-            m_entries = new long[m_count * 2];
+            m_entries = new int[m_count];
 
             int index = 0;
-            fixed (long* ptr = m_entries)
+            foreach (var key in source)
             {
-                foreach (var key in source)
-                {
-                    *(Guid*)(ptr + 2 * index) = key;
-                    index++;
-                }
+                m_entries[index] = key;
+                index++;
             }
 
             int bucketCount = (int)BitMath.RoundUpToNearestPowerOfTwo((uint)m_count * 4);
@@ -116,7 +113,7 @@ namespace GSF.Collections
             //Rebuild it.
             for (int x = 0; x < m_count; x++)
             {
-                int hash = (int)(m_entries[2 * x] ^ m_entries[2 * x + 1]) & m_bucketMask;
+                int hash = m_entries[x] & m_bucketMask;
                 while (m_hashLookup[hash] >= 0)
                 {
                     hash = (hash + 1) & m_bucketMask;
@@ -125,74 +122,49 @@ namespace GSF.Collections
             }
         }
 
-        //public int FindIndex(long* key)
-        //{
-        //    //fixed (long* ptr = m_entries)
-        //    //{
-        //        int hash = (int)(key[0] ^ key[1]) & m_bucketMask;
-        //        int index = m_hashLookup[hash] * 2;
-        //        while (index >= 0)
-        //        {
-        //            if (m_entries[index] == key[0] && m_entries[index + 1] == key[1])
-        //            {
-        //                return index>>1;
-        //            }
-        //            hash = (hash + 1) & m_bucketMask;
-        //            index = m_hashLookup[hash] * 2;
-        //        }
-        //        return -1;
-        //    //}
-        //}
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int FindIndex(long* key)
+        public int FindIndex(int key)
         {
-            return FindIndex(key[0], key[1]);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int FindIndex(long key1, long key2)
-        {
-            int index = m_hashLookup[(int)(key1 ^ key2) & m_bucketMask] * 2;
-            if (index >= 0 && m_entries[index] == key1 && m_entries[index + 1] == key2)
+            int index = m_hashLookup[key & m_bucketMask];
+            if (index >= 0 && m_entries[index] == key)
             {
-                return index >> 1;
+                return index;
             }
-            return FindSlower(key1, key2);
+            return FindSlower(key);
         }
 
-        int FindSlower(long key1, long key2)
+        int FindSlower(int key)
         {
-            int hash = (int)(key1 ^ key2) & m_bucketMask;
-            int index = m_hashLookup[hash] * 2;
+            int hash = key & m_bucketMask;
+            int index = m_hashLookup[hash];
             while (index >= 0)
             {
-                if (m_entries[index] == key1 && m_entries[index + 1] == key2)
+                if (m_entries[index] == key)
                 {
-                    return index >> 1;
+                    return index;
                 }
                 hash = (hash + 1) & m_bucketMask;
-                index = m_hashLookup[hash] * 2;
+                index = m_hashLookup[hash];
             }
             return -1;
         }
 
-        public bool ContainsKey(Guid key)
+        public bool ContainsKey(int key)
         {
-            return FindIndex((long*)&key) >= 0;
+            return FindIndex(key) >= 0;
         }
 
-        public bool TryGetValue(Guid key, out int value)
+        public bool TryGetValue(int key, out int value)
         {
-            value = FindIndex((long*)&key);
+            value = FindIndex(key);
             return value >= 0;
         }
 
-        public int this[Guid key]
+        public int this[int key]
         {
             get
             {
-                int index = FindIndex(*(long*)&key, *(long*)((byte*)&key + 8));
+                int index = FindIndex(key);
                 if (index < 0)
                     throw new KeyNotFoundException("Missing");
                 return index;
