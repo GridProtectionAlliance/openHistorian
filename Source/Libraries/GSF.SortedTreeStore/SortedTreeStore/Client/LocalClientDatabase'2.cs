@@ -30,6 +30,12 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Client
 {
+    /// <summary>
+    /// A client database that is one part of a <see cref="LocalClientRoot"/> that wraps a 
+    /// <see cref="ServerDatabase{TKey,TValue}"/>.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     internal class LocalClientDatabase<TKey, TValue>
         : ClientDatabaseBase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()

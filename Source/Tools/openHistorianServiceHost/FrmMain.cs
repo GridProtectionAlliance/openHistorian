@@ -33,7 +33,7 @@ namespace openHistorianServiceHost
 
         private void StartStream(object args)
         {
-            SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+            RemoteClientOptions clientOptions = new RemoteClientOptions();
             clientOptions.IsReadOnly = true;
             clientOptions.NetworkPort = 54996;
             clientOptions.ServerNameOrIp = "127.0.0.1";

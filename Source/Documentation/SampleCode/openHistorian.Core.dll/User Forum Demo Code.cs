@@ -29,7 +29,7 @@ namespace HistorianDemos
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -70,7 +70,7 @@ namespace HistorianDemos
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -111,7 +111,7 @@ namespace HistorianDemos
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -152,7 +152,7 @@ namespace HistorianDemos
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = portNumber;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 

@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  LocalClient.cs - Gbtc
+//  ClientRootBase.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,14 +24,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GSF.SortedTreeStore.Server;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Client
 {
+    /// <summary>
+    /// A client connection 
+    /// </summary>
     public abstract class ClientRootBase : IDisposable
     {
         /// <summary>

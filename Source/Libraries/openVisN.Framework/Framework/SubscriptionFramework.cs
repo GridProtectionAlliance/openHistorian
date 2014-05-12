@@ -85,7 +85,7 @@ namespace openVisN.Framework
 
         public void Start(string ip, int port, string database)
         {
-            SortedTreeClientOptions options = new SortedTreeClientOptions();
+            RemoteClientOptions options = new RemoteClientOptions();
             options.IsReadOnly = true;
             options.ServerNameOrIp = ip;
             options.NetworkPort = port;

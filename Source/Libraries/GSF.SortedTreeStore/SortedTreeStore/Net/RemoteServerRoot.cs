@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerProcessClient.cs - Gbtc
+//  RemoteServerRoot.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -36,7 +36,7 @@ namespace GSF.SortedTreeStore.Net
     /// <summary>
     /// This is the server code that processes an individual client.
     /// </summary>
-    internal class ServerProcessClient
+    internal class RemoteServerRoot
         : IDisposable
     {
         public event SocketErrorEventHandler SocketError;
@@ -44,12 +44,13 @@ namespace GSF.SortedTreeStore.Net
         public delegate void SocketErrorEventHandler(Exception ex);
 
         private NetworkBinaryStream m_stream;
-        private readonly ServerRoot m_historian;
+        private readonly ServerRoot m_server;
+        private ClientRootBase m_root;
 
-        public ServerProcessClient(NetworkBinaryStream netStream, ServerRoot historian)
+        public RemoteServerRoot(NetworkBinaryStream netStream, ServerRoot server)
         {
             m_stream = netStream;
-            m_historian = historian;
+            m_server = server;
         }
 
         public void GetFullStatus(StringBuilder status)
@@ -70,7 +71,6 @@ namespace GSF.SortedTreeStore.Net
         /// <remarks></remarks>
         public void RunClient()
         {
-            //m_netStream.Timeout = 5000;
             try
             {
                 long code = m_stream.ReadInt64();
@@ -120,13 +120,15 @@ namespace GSF.SortedTreeStore.Net
         /// <remarks></remarks>
         private void ProcessRootLevelCommands()
         {
+            m_root = m_server.CreateClient();
+
             while (true)
             {
                 ServerCommand command = (ServerCommand)m_stream.ReadUInt8();
                 switch (command)
                 {
                     case ServerCommand.GetAllDatabases:
-                        var info = m_historian.GetDatabaseInfo();
+                        var info = m_root.GetDatabaseInfo();
                         m_stream.Write((byte)ServerResponse.ListOfDatabases);
                         m_stream.Write(info.Count);
                         foreach (var i in info)
@@ -143,14 +145,14 @@ namespace GSF.SortedTreeStore.Net
                         string databaseName = m_stream.ReadString();
                         Guid keyTypeId = m_stream.ReadGuid();
                         Guid valueTypeId = m_stream.ReadGuid();
-                        if (!m_historian.Contains(databaseName))
+                        if (!m_root.Contains(databaseName))
                         {
                             m_stream.Write((byte)ServerResponse.DatabaseDoesNotExist);
                             m_stream.Write("Database Does Not Exist");
                             m_stream.Flush();
                             return;
                         }
-                        var database = m_historian.GetDatabase(databaseName);
+                        var database = m_root.GetDatabase(databaseName);
                         var dbinfo = database.Info;
                         if (dbinfo.KeyTypeID != keyTypeId)
                         {
@@ -188,19 +190,23 @@ namespace GSF.SortedTreeStore.Net
         }
 
         //Called through reflection. Its the only way to call a generic function only knowing the Types
-        [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appera unused.
+        [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appear unused.
         bool ConnectToDatabase<TKey, TValue>(ClientDatabaseBase<TKey, TValue> database)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
             m_stream.Write((byte)ServerResponse.SuccessfullyConnectedToDatabase);
             m_stream.Flush();
-            var engine = new ServerProcessClientEngine<TKey, TValue>(m_stream, database);
+            var engine = new RemoteServerDatabase<TKey, TValue>(m_stream, database);
             return engine.RunDatabaseLevel();
         }
 
         public void Dispose()
         {
+            if (m_root != null)
+                m_root.Dispose();
+            m_root = null;
+
             if (m_stream.Connected)
                 m_stream.Disconnect();
         }

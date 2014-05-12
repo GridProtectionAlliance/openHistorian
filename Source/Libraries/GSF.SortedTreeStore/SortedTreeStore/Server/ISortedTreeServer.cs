@@ -23,10 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GSF.SortedTreeStore.Client;
 
 namespace GSF.SortedTreeStore.Server
@@ -34,7 +30,7 @@ namespace GSF.SortedTreeStore.Server
     /// <summary>
     /// An interface that describes a SortedTreeServer.
     /// </summary>
-    public interface ISortedTreeServer
+    public interface ISortedTreeServer : IDisposable
     {
         /// <summary>
         /// Creates a client connection to the server.

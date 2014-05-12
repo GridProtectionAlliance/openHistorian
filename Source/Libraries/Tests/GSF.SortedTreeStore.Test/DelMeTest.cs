@@ -18,7 +18,7 @@ namespace openHistorian
         [Test]
         public void SlowReading()
         {
-            SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+            RemoteClientOptions clientOptions = new RemoteClientOptions();
             clientOptions.NetworkPort = 38402;
             clientOptions.ServerNameOrIp = "127.0.0.1";
             clientOptions.DefaultDatabase = "PPA";

@@ -33,7 +33,7 @@ namespace openHistorian.Data.Query
 {
     public class HistorianQuery
     {
-        private readonly SortedTreeClient m_historian;
+        private readonly RemoteClientRoot m_historian;
         private int m_samplesPerSecond = 30;
 
         public HistorianQuery(string server, int port)
@@ -42,7 +42,7 @@ namespace openHistorian.Data.Query
             //m_historian = new RemoteHistorian<HistorianKey, HistorianValue>(new IPEndPoint(ip, port));
         }
 
-        public HistorianQuery(SortedTreeClient historian)
+        public HistorianQuery(RemoteClientRoot historian)
         {
             m_historian = historian;
         }

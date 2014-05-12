@@ -69,15 +69,15 @@ namespace openHistorian.PerformanceTests.SortedTreeStore.Engine
             PointCount = 0;
             var collection = new ServerRoot();
             using (var engine = new ServerDatabase<HistorianKey, HistorianValue>("DB", WriterMode.OnDisk, CreateHistorianCompressionTs.TypeGuid, "c:\\temp\\benchmark\\"))
-            using (var socket = new SortedTreeServerSocket(13141, collection))
+            using (var socket = new ServerSocketListener(13141, collection))
             {
                 collection.Add(engine);
 
-                var options = new SortedTreeClientOptions();
+                var options = new RemoteClientOptions();
                 options.ServerNameOrIp = "127.0.0.1";
                 options.NetworkPort = 13141;
 
-                using (var client = new SortedTreeClient(options))
+                using (var client = new RemoteClientRoot(options))
                 using (var db = client.GetDatabase<HistorianKey, HistorianValue>("DB"))
                 {
                     db.SetEncodingMode(CreateHistorianCompressedStream.TypeGuid);

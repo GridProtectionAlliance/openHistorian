@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerProcessClientEngine`2.cs - Gbtc
+//  RemoteServerDatabase`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,14 +26,13 @@ using System;
 using GSF.Net;
 using GSF.SortedTreeStore.Client;
 using GSF.SortedTreeStore.Encoding;
-using GSF.SortedTreeStore.Server;
 using GSF.SortedTreeStore.Server.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Net
 {
-    internal class ServerProcessClientEngine<TKey, TValue>
+    internal class RemoteServerDatabase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
@@ -45,7 +44,7 @@ namespace GSF.SortedTreeStore.Net
         private ClientDatabaseBase<TKey, TValue> m_sortedTreeEngine;
         StreamEncodingBase<TKey, TValue> m_encodingMethod;
 
-        public ServerProcessClientEngine(NetworkBinaryStream netStream, ClientDatabaseBase<TKey, TValue> engine)
+        public RemoteServerDatabase(NetworkBinaryStream netStream, ClientDatabaseBase<TKey, TValue> engine)
         {
             m_stream = netStream;
             m_sortedTreeEngine = engine;

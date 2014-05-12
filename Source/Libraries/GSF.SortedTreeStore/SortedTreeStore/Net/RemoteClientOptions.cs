@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  SortedTreeClientOptions.cs - Gbtc
+//  RemoteClientOptions.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,7 +24,7 @@
 
 namespace GSF.SortedTreeStore.Net
 {
-    public class SortedTreeClientOptions
+    public class RemoteClientOptions
     {
         public bool IsReadOnly = true;
         public int NetworkPort = 38402;

@@ -351,7 +351,7 @@ namespace DataExtractionUtility
 
             TimeSpan interval = Resolutions.GetInterval((string)cmbResolution.SelectedItem);
 
-            SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+            RemoteClientOptions clientOptions = new RemoteClientOptions();
             clientOptions.DefaultDatabase = TxtHistorianInstance.Text;
             clientOptions.NetworkPort = int.Parse(TxtHistorianPort.Text);
             clientOptions.ServerNameOrIp = TxtServerIP.Text;

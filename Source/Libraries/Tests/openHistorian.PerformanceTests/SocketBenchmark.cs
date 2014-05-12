@@ -115,7 +115,7 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.IsReadOnly = true;
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";

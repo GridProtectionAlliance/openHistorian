@@ -118,7 +118,7 @@ namespace openHistorian.PerformanceTests
                 {
 
                     Stopwatch sw = new Stopwatch();
-                    SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                    RemoteClientOptions clientOptions = new RemoteClientOptions();
                     clientOptions.NetworkPort = 12345;
                     clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -167,7 +167,7 @@ namespace openHistorian.PerformanceTests
                     int myId = Interlocked.Increment(ref ReaderNumber);
                     Stopwatch sw = new Stopwatch();
                     int pointCount = 0;
-                    SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                    RemoteClientOptions clientOptions = new RemoteClientOptions();
                     clientOptions.NetworkPort = 12345;
                     clientOptions.ServerNameOrIp = "127.0.0.1";
 

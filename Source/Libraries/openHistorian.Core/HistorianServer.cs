@@ -36,12 +36,12 @@ namespace openHistorian
     /// Represents a historian server instance that can be used to read and write time-series data.
     /// </summary>
     public class HistorianServer
-        : ISortedTreeServer, IDisposable
+        : ISortedTreeServer
     {
         #region [ Members ]
 
         // Fields
-        private Dictionary<int, SortedTreeServerSocket> m_sockets;
+        private Dictionary<int, ServerSocketListener> m_sockets;
         private ServerRoot m_databases;
         private bool m_disposed;
 
@@ -58,7 +58,7 @@ namespace openHistorian
             m_databases = new ServerRoot();
 
             // Maintain a member level list of socket connections so that they can be disposed later
-            m_sockets = new Dictionary<int, SortedTreeServerSocket>();
+            m_sockets = new Dictionary<int, ServerSocketListener>();
         }
 
         /// <summary>
@@ -87,8 +87,6 @@ namespace openHistorian
         {
             Dispose(false);
         }
-
-
 
         #endregion
 
@@ -120,6 +118,7 @@ namespace openHistorian
             return m_databases.CreateClient();
         }
 
+
         public void GetFullStatus(StringBuilder status)
         {
             status.AppendFormat("Historian Instances:");
@@ -137,7 +136,6 @@ namespace openHistorian
                 historian.GetFullStatus(status);
             }
         }
-
 
         /// <summary>
         /// Releases all the resources used by the <see cref="HistorianServer"/> object.
@@ -167,7 +165,7 @@ namespace openHistorian
 
                         if ((object)m_sockets != null)
                         {
-                            foreach (SortedTreeServerSocket socketHistorian in m_sockets.Values)
+                            foreach (ServerSocketListener socketHistorian in m_sockets.Values)
                             {
                                 if ((object)socketHistorian != null)
                                     socketHistorian.Dispose();
@@ -222,7 +220,7 @@ namespace openHistorian
 
                 lock (m_sockets)
                 {
-                    m_sockets.Add(databaseInstance.PortNumber, new SortedTreeServerSocket(databaseInstance.PortNumber, databaseCollection));
+                    m_sockets.Add(databaseInstance.PortNumber, new ServerSocketListener(databaseInstance.PortNumber, databaseCollection));
                 }
             }
         }
@@ -233,7 +231,7 @@ namespace openHistorian
         /// <param name="databaseInstance"><see cref="HistorianDatabaseInstance"/> to remove.</param>
         public void RemoveDatabaseInstance(HistorianDatabaseInstance databaseInstance)
         {
-            SortedTreeServerSocket sortedTreeServerSocket;
+            ServerSocketListener serverSocketListener;
 
             lock (m_databases.SyncRoot)
             {
@@ -249,11 +247,11 @@ namespace openHistorian
             // TODO: (or at least collection replacement)
             lock (m_sockets)
             {
-                if (m_sockets.TryGetValue(databaseInstance.PortNumber, out sortedTreeServerSocket))
+                if (m_sockets.TryGetValue(databaseInstance.PortNumber, out serverSocketListener))
                 {
-                    if ((object)sortedTreeServerSocket != null)
+                    if ((object)serverSocketListener != null)
                     {
-                        sortedTreeServerSocket.Dispose();
+                        serverSocketListener.Dispose();
                     }
 
                     m_sockets.Remove(databaseInstance.PortNumber);
@@ -307,7 +305,7 @@ namespace openHistorian
             {
                 foreach (KeyValuePair<int, ServerRoot> connection in socketDatabases)
                 {
-                    m_sockets.Add(connection.Key, new SortedTreeServerSocket(connection.Key, connection.Value));
+                    m_sockets.Add(connection.Key, new ServerSocketListener(connection.Key, connection.Value));
                 }
             }
         }

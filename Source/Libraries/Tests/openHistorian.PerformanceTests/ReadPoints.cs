@@ -74,7 +74,7 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -174,7 +174,7 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
 
@@ -295,7 +295,7 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(db))
             {
-                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = 12345;
                 clientOptions.ServerNameOrIp = "127.0.0.1";
                 Stopwatch sw = new Stopwatch();

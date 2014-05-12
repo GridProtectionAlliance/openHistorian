@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerSocket.cs - Gbtc
+//  ServerSocketListener.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -36,7 +36,7 @@ namespace GSF.SortedTreeStore.Net
     /// <summary>
     /// Hosts a <see cref="ServerRoot"/> on a network socket.
     /// </summary>
-    public class SortedTreeServerSocket
+    public class ServerSocketListener
         : IDisposable
     {
         private volatile bool m_isRunning = true;
@@ -44,10 +44,10 @@ namespace GSF.SortedTreeStore.Net
         private ServerRoot m_historian;
         private readonly int m_port;
         private bool m_disposed;
-        private readonly List<ServerProcessClient> m_clients = new List<ServerProcessClient>();
+        private readonly List<RemoteServerRoot> m_clients = new List<RemoteServerRoot>();
 
         // TODO: Replace this with a connection string instead of a port - allows easier specification of interface, etc.
-        public SortedTreeServerSocket(int port, ServerRoot historian)
+        public ServerSocketListener(int port, ServerRoot historian)
         {
             if (historian == null)
                 throw new ArgumentNullException("historian");
@@ -103,9 +103,10 @@ namespace GSF.SortedTreeStore.Net
             Socket socket = m_listener.AcceptSocket();
             NetworkBinaryStream netStream = new NetworkBinaryStream(socket);
 
+            //ToDo: Should probably not process a client on the threadpool since I do blocking.
             ThreadPool.QueueUserWorkItem(ProcessDataRequests);
 
-            ServerProcessClient clientProcessing = new ServerProcessClient(netStream, m_historian);
+            RemoteServerRoot clientProcessing = new RemoteServerRoot(netStream, m_historian);
             lock (m_clients)
             {
                 if (m_isRunning)
@@ -139,7 +140,7 @@ namespace GSF.SortedTreeStore.Net
                 m_isRunning = false;
                 lock (m_clients)
                 {
-                    foreach (ServerProcessClient client in m_clients)
+                    foreach (RemoteServerRoot client in m_clients)
                         client.Dispose();
                     m_clients.Clear();
                 }

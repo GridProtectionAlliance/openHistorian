@@ -37,7 +37,7 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(serverDatabases))
             {
-                SortedTreeClientOptions clientOptions = new SortedTreeClientOptions();
+                RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.DefaultDatabase = "PPA";
                 clientOptions.NetworkPort = 38409;
                 clientOptions.ServerNameOrIp = "127.0.0.1"; //IP address of server.

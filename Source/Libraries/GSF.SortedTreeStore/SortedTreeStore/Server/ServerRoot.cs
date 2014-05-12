@@ -22,7 +22,6 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
 using GSF.Collections;
 using GSF.SortedTreeStore.Client;
@@ -31,10 +30,10 @@ using GSF.SortedTreeStore.Tree;
 namespace GSF.SortedTreeStore.Server
 {
     /// <summary>
-    /// Contains a named set of <see cref="ServerDatabase{TKey,TValue}"/>
+    /// Contains a named set of <see cref="ServerDatabaseBase"/>
     /// </summary>
     public class ServerRoot
-        : ISortedTreeServer, IDisposable
+        : ISortedTreeServer
     {
         private bool m_disposed;
 
@@ -51,6 +50,17 @@ namespace GSF.SortedTreeStore.Server
         {
             m_clients = new WeakList<ClientRootBase>();
             m_databases = new SortedList<string, ServerDatabaseBase>();
+        }
+
+        /// <summary>
+        /// A synchronization object.
+        /// </summary>
+        public object SyncRoot
+        {
+            get
+            {
+                return m_syncRoot;
+            }
         }
 
         /// <summary>
@@ -121,22 +131,14 @@ namespace GSF.SortedTreeStore.Server
             }
         }
 
-        /// <summary>
-        /// A synchronization object.
-        /// </summary>
-        public object SyncRoot
-        {
-            get
-            {
-                return m_syncRoot;
-            }
-        }
+        
 
         /// <summary>
         /// Detaches the provided database from the server. 
         /// </summary>
-        /// <param name="databaseName"></param>
-        /// <param name="waitTimeSeconds"></param>
+        /// <param name="databaseName">the name of the database</param>
+        /// <param name="waitTimeSeconds">the time to wait for all clients to complete their queires 
+        /// before terminating the query</param>
         public void Remove(string databaseName, float waitTimeSeconds = 0)
         {
             // TODO: Should this dispose of the database? Or is it assumed instance is not owned by collection...
@@ -150,9 +152,12 @@ namespace GSF.SortedTreeStore.Server
         /// <summary>
         /// Shuts down the entire server.
         /// </summary>
-        /// <param name="waitTimeSeconds"></param>
+        /// <param name="waitTimeSeconds">the time to wait for all clients to complete their queires 
+        /// before terminating the query</param>
         public void Shutdown(float waitTimeSeconds)
         {
+            // TODO: Should this dispose of the database? Or is it assumed instance is not owned by collection...
+            // TODO: waitSeconds is not used - is this for waiting to flush? need to remove otherwise
             Dispose();
         }
 

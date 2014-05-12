@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  SortedTreeClientEngine`2.cs - Gbtc
+//  RemoteClientDatabase`2.cs - Gbtc
 //
 //  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -32,8 +32,12 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Net
 {
-
-    public class SortedTreeClientEngine<TKey, TValue>
+    /// <summary>
+    /// A socket based client that extends connecting to a database.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    public class RemoteClientDatabase<TKey, TValue>
         : ClientDatabaseBase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
@@ -47,7 +51,7 @@ namespace GSF.SortedTreeStore.Net
         private readonly Action m_onDispose;
         StreamEncodingBase<TKey, TValue> m_encodingMode;
 
-        public SortedTreeClientEngine(NetworkBinaryStream stream, Action onDispose)
+        public RemoteClientDatabase(NetworkBinaryStream stream, Action onDispose)
         {
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
@@ -55,6 +59,10 @@ namespace GSF.SortedTreeStore.Net
             m_stream = stream;
         }
 
+        /// <summary>
+        /// Defines the encoding method to use for the server.
+        /// </summary>
+        /// <param name="encoding"></param>
         public void SetEncodingMode(EncodingDefinition encoding)
         {
             m_encodingMode = StreamEncoding.CreateStreamEncoding<TKey, TValue>(encoding);
@@ -76,6 +84,7 @@ namespace GSF.SortedTreeStore.Net
                     throw new Exception("Unknown server response: " + command.ToString());
             }
         }
+
 
         public override TreeStream<TKey, TValue> Read(SortedTreeEngineReaderOptions readerOptions, SeekFilterBase<TKey> keySeekFilter, MatchFilterBase<TKey, TValue> keyMatchFilter)
         {
@@ -234,11 +243,11 @@ namespace GSF.SortedTreeStore.Net
             : IDisposable
         {
             bool m_disposed;
-            SortedTreeClientEngine<TKey, TValue> m_client;
+            RemoteClientDatabase<TKey, TValue> m_client;
             NetworkBinaryStream m_stream;
             StreamEncodingBase<TKey, TValue> m_encodingMode;
 
-            internal BulkWriting(SortedTreeClientEngine<TKey, TValue> client)
+            internal BulkWriting(RemoteClientDatabase<TKey, TValue> client)
             {
                 if (client.m_writer != null)
                     throw new Exception("Duplicate call to StartBulkWriting");

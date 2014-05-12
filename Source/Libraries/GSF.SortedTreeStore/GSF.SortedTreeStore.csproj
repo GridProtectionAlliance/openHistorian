@@ -172,8 +172,8 @@
     <Compile Include="SortedTreeStore\Filters\TimestampFilter_FixedRange.cs" />
     <Compile Include="SortedTreeStore\Filters\TimestampFilter_IntervalRanges.cs" />
     <Compile Include="SortedTreeStore\IDatabaseReader.cs" />
-    <Compile Include="SortedTreeStore\Net\SortedTreeClientOptions.cs" />
-    <Compile Include="SortedTreeStore\Net\ServerProcessClientEngine`2.cs" />
+    <Compile Include="SortedTreeStore\Net\RemoteClientOptions.cs" />
+    <Compile Include="SortedTreeStore\Net\RemoteServerDatabase`2.cs" />
     <Compile Include="SortedTreeStore\Storage\FileFlags.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableReadSnapshot`2.cs" />
@@ -238,12 +238,12 @@
     <Compile Include="SortedTreeStore\Types\TimestampPointIDBase%271.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeKeyMethodsUInt32.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeUInt32.cs" />
-    <Compile Include="SortedTreeStore\Net\SortedTreeClient.cs" />
-    <Compile Include="SortedTreeStore\Net\SortedTreeClientEngine`2.cs" />
+    <Compile Include="SortedTreeStore\Net\RemoteClientRoot.cs" />
+    <Compile Include="SortedTreeStore\Net\RemoteClientDatabase`2.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncoding.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncodingBase`2.cs" />
-    <Compile Include="SortedTreeStore\Net\ServerProcessClient.cs" />
-    <Compile Include="SortedTreeStore\Net\SortedTreeServerSocket.cs" />
+    <Compile Include="SortedTreeStore\Net\RemoteServerRoot.cs" />
+    <Compile Include="SortedTreeStore\Net\ServerSocketListener.cs" />
     <Compile Include="Encoding7Bit.cs" />
     <Compile Include="SortedTreeStore\Server\Reader\SortedTreeEngineReaderOptions.cs" />
     <Compile Include="SortedTreeStore\Server\ServerDatabase%272.cs" />
@@ -303,15 +303,8 @@
     <Compile Include="SortedTreeStore\UnionTreeStreamReader`2.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
-    <Compile Include="Threading\AdvTask.cs" />
-    <Compile Include="Threading\AdvWorkerThread.cs" />
     <Compile Include="Threading\HalfLock.cs" />
-    <Compile Include="Threading\ReaderWriterLockSlim.cs" />
-    <Compile Include="Threading\MonitorHelper.cs" />
     <Compile Include="Threading\WeakActionFast.cs" />
-    <Compile Include="Threading\CustomThreadBase.cs" />
-    <Compile Include="Threading\DedicatedThread.cs" />
-    <Compile Include="Threading\StateMachine.cs" />
     <Compile Include="Threading\SynchronousEvent.cs" />
     <Compile Include="Threading\ThreadSafeList.cs" />
     <Compile Include="Threading\ThreadSafeList_Enumerator.cs" />
@@ -326,7 +319,6 @@
     <Compile Include="IO\Unmanaged\MemoryPool_AllocationList.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool_CollectionEngine.cs" />
     <Compile Include="IO\Unmanaged\MemoryPool_Settings.cs" />
-    <Compile Include="Threading\WorkerThread.cs" />
     <Compile Include="WinApi.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
