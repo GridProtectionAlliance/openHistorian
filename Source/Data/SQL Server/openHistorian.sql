@@ -1702,7 +1702,7 @@ CREATE VIEW [dbo].[NodeInfo]
 AS
 SELECT     dbo.Node.ID AS NodeID, dbo.Node.Name, dbo.Company.Name AS CompanyName, dbo.Node.Longitude, dbo.Node.Latitude, dbo.Node.Description, 
                       dbo.Node.ImagePath, dbo.Node.Settings, dbo.Node.MenuType, dbo.Node.MenuData, dbo.Node.Master, dbo.Node.Enabled
-FROM         dbo.Node LEFT OUTER JOIN dbo.Company ON dbo.Node.CompanyID = dbo.Company.ID
+FROM         dbo.Node WITH (NOLOCK) LEFT OUTER JOIN dbo.Company WITH (NOLOCK) ON dbo.Node.CompanyID = dbo.Company.ID
 GO
 
 SET ANSI_NULLS ON
@@ -1715,9 +1715,9 @@ CREATE VIEW [dbo].[SecurityGroupUserAccountDetail]
 AS
 SELECT     dbo.SecurityGroupUserAccount.SecurityGroupID, dbo.SecurityGroupUserAccount.UserAccountID, UserAccount.Name AS UserName, UserAccount.FirstName, UserAccount.LastName, UserAccount.Email, 
                       dbo.SecurityGroup.Name AS SecurityGroupName, dbo.SecurityGroup.Description AS SecurityGroupDescription
-FROM         dbo.SecurityGroupUserAccount INNER JOIN
-                      dbo.SecurityGroup ON dbo.SecurityGroupUserAccount.SecurityGroupID = dbo.SecurityGroup.ID INNER JOIN
-                      UserAccount ON dbo.SecurityGroupUserAccount.UserAccountID = UserAccount.ID
+FROM         dbo.SecurityGroupUserAccount WITH (NOLOCK) INNER JOIN
+                      dbo.SecurityGroup WITH (NOLOCK) ON dbo.SecurityGroupUserAccount.SecurityGroupID = dbo.SecurityGroup.ID INNER JOIN
+                      UserAccount WITH (NOLOCK) ON dbo.SecurityGroupUserAccount.UserAccountID = UserAccount.ID
 GO
 
 SET ANSI_NULLS ON
@@ -1729,7 +1729,7 @@ GO
 CREATE VIEW [dbo].[AppRoleSecurityGroupDetail] 
 AS
 SELECT ApplicationRoleSecurityGroup.ApplicationRoleID, ApplicationRoleSecurityGroup.SecurityGroupID, ApplicationRole.Name AS ApplicationRoleName, ApplicationRole.Description AS ApplicationRoleDescription, SecurityGroup.Name AS SecurityGroupName, SecurityGroup.Description AS SecurityGroupDescription
-FROM ApplicationRoleSecurityGroup, ApplicationRole, SecurityGroup
+FROM ApplicationRoleSecurityGroup WITH (NOLOCK), ApplicationRole WITH (NOLOCK), SecurityGroup WITH (NOLOCK)
 WHERE ApplicationRoleSecurityGroup.ApplicationRoleID = ApplicationRole.ID AND ApplicationRoleSecurityGroup.SecurityGroupID = SecurityGroup.ID
 GO
 
@@ -1743,9 +1743,9 @@ CREATE VIEW [dbo].[AppRoleUserAccountDetail]
 AS
 SELECT     dbo.ApplicationRoleUserAccount.ApplicationRoleID, dbo.ApplicationRoleUserAccount.UserAccountID, UserAccount.Name AS UserName, UserAccount.FirstName, UserAccount.LastName, UserAccount.Email, 
                       dbo.ApplicationRole.Name AS ApplicationRoleName, dbo.ApplicationRole.Description AS ApplicationRoleDescription
-FROM         dbo.ApplicationRoleUserAccount INNER JOIN
-                      dbo.ApplicationRole ON dbo.ApplicationRoleUserAccount.ApplicationRoleID = dbo.ApplicationRole.ID INNER JOIN
-                      UserAccount ON dbo.ApplicationRoleUserAccount.UserAccountID = UserAccount.ID
+FROM         dbo.ApplicationRoleUserAccount WITH (NOLOCK) INNER JOIN
+                      dbo.ApplicationRole WITH (NOLOCK) ON dbo.ApplicationRoleUserAccount.ApplicationRoleID = dbo.ApplicationRole.ID INNER JOIN
+                      UserAccount WITH (NOLOCK) ON dbo.ApplicationRoleUserAccount.UserAccountID = UserAccount.ID
 GO
 
 -- End of Application Security related tables and views definitions.
@@ -1759,9 +1759,9 @@ CREATE VIEW [dbo].[RuntimeOutputStreamMeasurement]
 AS
 SELECT     TOP (100) PERCENT dbo.OutputStreamMeasurement.NodeID, dbo.Runtime.ID AS AdapterID, dbo.Historian.Acronym AS Historian, 
                       dbo.OutputStreamMeasurement.PointID, dbo.OutputStreamMeasurement.SignalReference
-FROM         dbo.OutputStreamMeasurement LEFT OUTER JOIN
-                      dbo.Historian ON dbo.OutputStreamMeasurement.HistorianID = dbo.Historian.ID LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.OutputStreamMeasurement.AdapterID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'OutputStream'
+FROM         dbo.OutputStreamMeasurement WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Historian WITH (NOLOCK) ON dbo.OutputStreamMeasurement.HistorianID = dbo.Historian.ID LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.OutputStreamMeasurement.AdapterID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'OutputStream'
 ORDER BY dbo.OutputStreamMeasurement.HistorianID, dbo.OutputStreamMeasurement.PointID
 
 GO
@@ -1777,8 +1777,8 @@ SELECT     TOP (100) PERCENT dbo.Historian.NodeID, dbo.Runtime.ID, dbo.Historian
                       AS TypeName, CASE WHEN Historian.ConnectionString IS NULL THEN N'' ELSE Historian.ConnectionString + N'; ' END + 
                       N'instanceName=' + dbo.Historian.Acronym + N'; sourceids=' + dbo.Historian.Acronym + N'; measurementReportingInterval=' +
                       CONVERT(NVARCHAR(10), dbo.Historian.MeasurementReportingInterval) AS ConnectionString
-FROM         dbo.Historian LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.Historian.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'Historian'
+FROM         dbo.Historian WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.Historian.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'Historian'
 WHERE     (dbo.Historian.Enabled <> 0)
 ORDER BY dbo.Historian.LoadOrder
 
@@ -1801,9 +1801,9 @@ SELECT     TOP (100) PERCENT dbo.Device.NodeID, dbo.Runtime.ID, dbo.Device.Acron
                       dbo.Device.AllowUseOfCachedConfiguration) + N'; autoStartDataParsingSequence=' + CONVERT(NVARCHAR(10), dbo.Device.AutoStartDataParsingSequence)
                       + N'; skipDisableRealTimeData=' + CONVERT(NVARCHAR(10), dbo.Device.SkipDisableRealTimeData) + N'; measurementReportingInterval='
                       + CONVERT(NVARCHAR(10), dbo.Device.MeasurementReportingInterval) + N'; connectOnDemand=' + CONVERT(NVARCHAR(10), dbo.Device.ConnectOnDemand) AS ConnectionString
-FROM         dbo.Device LEFT OUTER JOIN
-                      dbo.Protocol ON dbo.Device.ProtocolID = dbo.Protocol.ID LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.Device.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'Device'
+FROM         dbo.Device WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Protocol WITH (NOLOCK) ON dbo.Device.ProtocolID = dbo.Protocol.ID LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.Device.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'Device'
 WHERE     (dbo.Device.Enabled <> 0 AND Device.ParentID IS NULL)
 ORDER BY dbo.Device.LoadOrder
 
@@ -1816,8 +1816,8 @@ CREATE VIEW [dbo].[RuntimeCustomOutputAdapter]
 AS
 SELECT     TOP (100) PERCENT dbo.CustomOutputAdapter.NodeID, dbo.Runtime.ID, dbo.CustomOutputAdapter.AdapterName, 
                       LTRIM(RTRIM(dbo.CustomOutputAdapter.AssemblyName)) AS AssemblyName, LTRIM(RTRIM(dbo.CustomOutputAdapter.TypeName)) AS TypeName, dbo.CustomOutputAdapter.ConnectionString
-FROM         dbo.CustomOutputAdapter LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.CustomOutputAdapter.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'CustomOutputAdapter'
+FROM         dbo.CustomOutputAdapter WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.CustomOutputAdapter.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'CustomOutputAdapter'
 WHERE     (dbo.CustomOutputAdapter.Enabled <> 0)
 ORDER BY dbo.CustomOutputAdapter.LoadOrder
 
@@ -1829,9 +1829,9 @@ GO
 CREATE VIEW [dbo].[RuntimeInputStreamDevice]
 AS
 SELECT     TOP (100) PERCENT dbo.Device.NodeID, Runtime_P.ID AS ParentID, dbo.Runtime.ID, dbo.Device.Acronym, dbo.Device.Name, dbo.Device.AccessID
-FROM         dbo.Device LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.Device.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'Device' LEFT OUTER JOIN
-                      dbo.Runtime AS Runtime_P ON dbo.Device.ParentID = Runtime_P.SourceID AND Runtime_P.SourceTable = N'Device'
+FROM         dbo.Device WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.Device.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'Device' LEFT OUTER JOIN
+                      dbo.Runtime AS Runtime_P WITH (NOLOCK) ON dbo.Device.ParentID = Runtime_P.SourceID AND Runtime_P.SourceTable = N'Device'
 WHERE     (dbo.Device.IsConcentrator = 0) AND (dbo.Device.Enabled <> 0) AND (dbo.Device.ParentID IS NOT NULL)
 ORDER BY dbo.Device.LoadOrder
 
@@ -1844,8 +1844,8 @@ CREATE VIEW [dbo].[RuntimeCustomInputAdapter]
 AS
 SELECT     TOP (100) PERCENT dbo.CustomInputAdapter.NodeID, dbo.Runtime.ID, dbo.CustomInputAdapter.AdapterName, 
                       LTRIM(RTRIM(dbo.CustomInputAdapter.AssemblyName)) AS AssemblyName, LTRIM(RTRIM(dbo.CustomInputAdapter.TypeName)) AS TypeName, dbo.CustomInputAdapter.ConnectionString
-FROM         dbo.CustomInputAdapter LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.CustomInputAdapter.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'CustomInputAdapter'
+FROM         dbo.CustomInputAdapter WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.CustomInputAdapter.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'CustomInputAdapter'
 WHERE     (dbo.CustomInputAdapter.Enabled <> 0)
 ORDER BY dbo.CustomInputAdapter.LoadOrder
 
@@ -1859,8 +1859,8 @@ AS
 SELECT     TOP (100) PERCENT dbo.OutputStreamDevice.NodeID, dbo.Runtime.ID AS ParentID, dbo.OutputStreamDevice.ID, dbo.OutputStreamDevice.IDCode, dbo.OutputStreamDevice.Acronym, 
                       dbo.OutputStreamDevice.BpaAcronym, dbo.OutputStreamDevice.Name, NULLIF(dbo.OutputStreamDevice.PhasorDataFormat, '') AS PhasorDataFormat, NULLIF(dbo.OutputStreamDevice.FrequencyDataFormat, '') AS FrequencyDataFormat,
                       NULLIF(dbo.OutputStreamDevice.AnalogDataFormat, '') AS AnalogDataFormat, NULLIF(dbo.OutputStreamDevice.CoordinateFormat, '') AS CoordinateFormat, dbo.OutputStreamDevice.LoadOrder
-FROM         dbo.OutputStreamDevice LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.OutputStreamDevice.AdapterID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'OutputStream'
+FROM         dbo.OutputStreamDevice WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.OutputStreamDevice.AdapterID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'OutputStream'
 WHERE     (dbo.OutputStreamDevice.Enabled <> 0)
 ORDER BY dbo.OutputStreamDevice.LoadOrder
 
@@ -1897,8 +1897,8 @@ SELECT     TOP (100) PERCENT dbo.OutputStream.NodeID, dbo.Runtime.ID, dbo.Output
                       + N'; voltageScalingValue=' + CONVERT(NVARCHAR(10), dbo.OutputStream.VoltageScalingValue)
                       + N'; analogScalingValue=' + CONVERT(NVARCHAR(10), dbo.OutputStream.AnalogScalingValue)
                       + N'; digitalMaskValue=' + CONVERT(NVARCHAR(10), dbo.OutputStream.DigitalMaskValue) AS ConnectionString
-FROM         dbo.OutputStream LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.OutputStream.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'OutputStream'
+FROM         dbo.OutputStream WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.OutputStream.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'OutputStream'
 WHERE     (dbo.OutputStream.Enabled <> 0)
 ORDER BY dbo.OutputStream.LoadOrder
 
@@ -1911,8 +1911,8 @@ CREATE VIEW [dbo].[RuntimeCustomActionAdapter]
 AS
 SELECT     TOP (100) PERCENT dbo.CustomActionAdapter.NodeID, dbo.Runtime.ID, dbo.CustomActionAdapter.AdapterName, 
                       LTRIM(RTRIM(dbo.CustomActionAdapter.AssemblyName)) AS AssemblyName, LTRIM(RTRIM(dbo.CustomActionAdapter.TypeName)) AS TypeName, dbo.CustomActionAdapter.ConnectionString
-FROM         dbo.CustomActionAdapter LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.CustomActionAdapter.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'CustomActionAdapter'
+FROM         dbo.CustomActionAdapter WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.CustomActionAdapter.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'CustomActionAdapter'
 WHERE     (dbo.CustomActionAdapter.Enabled <> 0)
 ORDER BY dbo.CustomActionAdapter.LoadOrder
 
@@ -1934,15 +1934,14 @@ SELECT     dbo.Device.CompanyID, dbo.Company.Acronym AS CompanyAcronym, dbo.Comp
                       COALESCE (dbo.SignalType.EngineeringUnits, N'') AS EngineeringUnits, dbo.SignalType.Source, dbo.SignalType.Acronym AS SignalAcronym, 
                       dbo.SignalType.Name AS SignalName, dbo.SignalType.Suffix AS SignalTypeSuffix, dbo.Device.Longitude, dbo.Device.Latitude,
                       COALESCE(Historian.Acronym, Device.Acronym, '__') + ':' + CONVERT(NVARCHAR(10), Measurement.PointID) AS ID
-FROM         dbo.Company RIGHT OUTER JOIN
-                      dbo.Device ON dbo.Company.ID = dbo.Device.CompanyID RIGHT OUTER JOIN
-                      dbo.Measurement LEFT OUTER JOIN
-                      dbo.SignalType ON dbo.Measurement.SignalTypeID = dbo.SignalType.ID ON dbo.Device.ID = dbo.Measurement.DeviceID LEFT OUTER JOIN
-                      dbo.Phasor ON dbo.Measurement.DeviceID = dbo.Phasor.DeviceID AND 
-                      dbo.Measurement.PhasorSourceIndex = dbo.Phasor.SourceIndex LEFT OUTER JOIN
-                      dbo.VendorDevice ON dbo.Device.VendorDeviceID = dbo.VendorDevice.ID LEFT OUTER JOIN
-                      dbo.Protocol ON dbo.Device.ProtocolID = dbo.Protocol.ID LEFT OUTER JOIN
-                      dbo.Historian ON dbo.Measurement.HistorianID = dbo.Historian.ID
+FROM         dbo.Company WITH (NOLOCK) RIGHT OUTER JOIN
+                      dbo.Device WITH (NOLOCK) ON dbo.Company.ID = dbo.Device.CompanyID RIGHT OUTER JOIN
+                      dbo.Measurement WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.SignalType WITH (NOLOCK) ON dbo.Measurement.SignalTypeID = dbo.SignalType.ID ON dbo.Device.ID = dbo.Measurement.DeviceID LEFT OUTER JOIN
+                      dbo.Phasor WITH (NOLOCK) ON dbo.Measurement.DeviceID = dbo.Phasor.DeviceID AND dbo.Measurement.PhasorSourceIndex = dbo.Phasor.SourceIndex LEFT OUTER JOIN
+                      dbo.VendorDevice WITH (NOLOCK) ON dbo.Device.VendorDeviceID = dbo.VendorDevice.ID LEFT OUTER JOIN
+                      dbo.Protocol WITH (NOLOCK) ON dbo.Device.ProtocolID = dbo.Protocol.ID LEFT OUTER JOIN
+                      dbo.Historian WITH (NOLOCK) ON dbo.Measurement.HistorianID = dbo.Historian.ID
 
 
 GO
@@ -1967,8 +1966,8 @@ SELECT     TOP (100) PERCENT dbo.CalculatedMeasurement.NodeID, dbo.Runtime.ID, d
                       dbo.CalculatedMeasurement.PerformTimeReasonabilityCheck) + N'; downsamplingMethod=' +
                       dbo.CalculatedMeasurement.DownsamplingMethod + N'; useLocalClockAsRealTime=' + CONVERT(NVARCHAR(10), 
                       dbo.CalculatedMeasurement.UseLocalClockAsRealTime) AS ConnectionString
-FROM         dbo.CalculatedMeasurement LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.CalculatedMeasurement.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'CalculatedMeasurement'
+FROM         dbo.CalculatedMeasurement WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.CalculatedMeasurement.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'CalculatedMeasurement'
 WHERE     (dbo.CalculatedMeasurement.Enabled <> 0)
 ORDER BY dbo.CalculatedMeasurement.LoadOrder
 
@@ -1985,17 +1984,16 @@ SELECT    dbo.Node.ID AS NodeID, COALESCE(dbo.Device.NodeID, dbo.Historian.NodeI
                       COALESCE(dbo.Device.FramesPerSecond, 30) AS FramesPerSecond, dbo.Protocol.Acronym AS Protocol, dbo.Protocol.Type AS ProtocolType, dbo.SignalType.Acronym AS SignalType, dbo.Phasor.ID AS PhasorID, dbo.Phasor.Type AS PhasorType, 
                       dbo.Phasor.Phase, dbo.Measurement.Adder, dbo.Measurement.Multiplier, dbo.Company.Acronym AS Company, dbo.Device.Longitude, 
                       dbo.Device.Latitude, dbo.Measurement.Description
-FROM         dbo.Company RIGHT OUTER JOIN
-                      dbo.Device ON dbo.Company.ID = dbo.Device.CompanyID RIGHT OUTER JOIN
-                      dbo.Measurement LEFT OUTER JOIN
-                      dbo.SignalType ON dbo.Measurement.SignalTypeID = dbo.SignalType.ID ON dbo.Device.ID = dbo.Measurement.DeviceID LEFT OUTER JOIN
-                      dbo.Phasor ON dbo.Measurement.DeviceID = dbo.Phasor.DeviceID AND 
-                      dbo.Measurement.PhasorSourceIndex = dbo.Phasor.SourceIndex LEFT OUTER JOIN
-                      dbo.Protocol ON dbo.Device.ProtocolID = dbo.Protocol.ID LEFT OUTER JOIN
-                      dbo.Historian ON dbo.Measurement.HistorianID = dbo.Historian.ID LEFT OUTER JOIN
-                      dbo.Runtime ON dbo.Device.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'Device' LEFT OUTER JOIN
-                      dbo.Runtime AS RuntimeP ON RuntimeP.SourceID = dbo.Device.ParentID AND RuntimeP.SourceTable = N'Device'
-                      CROSS JOIN dbo.Node
+FROM         dbo.Company WITH (NOLOCK) RIGHT OUTER JOIN
+                      dbo.Device WITH (NOLOCK) ON dbo.Company.ID = dbo.Device.CompanyID RIGHT OUTER JOIN
+                      dbo.Measurement WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.SignalType WITH (NOLOCK) ON dbo.Measurement.SignalTypeID = dbo.SignalType.ID ON dbo.Device.ID = dbo.Measurement.DeviceID LEFT OUTER JOIN
+                      dbo.Phasor WITH (NOLOCK) ON dbo.Measurement.DeviceID = dbo.Phasor.DeviceID AND dbo.Measurement.PhasorSourceIndex = dbo.Phasor.SourceIndex LEFT OUTER JOIN
+                      dbo.Protocol WITH (NOLOCK) ON dbo.Device.ProtocolID = dbo.Protocol.ID LEFT OUTER JOIN
+                      dbo.Historian WITH (NOLOCK) ON dbo.Measurement.HistorianID = dbo.Historian.ID LEFT OUTER JOIN
+                      dbo.Runtime WITH (NOLOCK) ON dbo.Device.ID = dbo.Runtime.SourceID AND dbo.Runtime.SourceTable = N'Device' LEFT OUTER JOIN
+                      dbo.Runtime AS RuntimeP WITH (NOLOCK) ON RuntimeP.SourceID = dbo.Device.ParentID AND RuntimeP.SourceTable = N'Device' CROSS JOIN
+                      dbo.Node WITH (NOLOCK)
 WHERE     (dbo.Device.Enabled <> 0 OR dbo.Device.Enabled IS NULL) AND (dbo.Measurement.Enabled <> 0)
 UNION ALL
 SELECT		NodeID, SourceNodeID, Source + ':' + CONVERT(NVARCHAR(10), PointID) AS ID, SignalID,
@@ -2003,7 +2001,7 @@ SELECT		NodeID, SourceNodeID, Source + ':' + CONVERT(NVARCHAR(10), PointID) AS I
                     NULL AS DeviceID, FramesPerSecond, ProtocolAcronym AS Protocol, ProtocolType, SignalTypeAcronym AS SignalType, PhasorID, PhasorType,
                     Phase, Adder, Multiplier, CompanyAcronym AS Company, Longitude,
                     Latitude, Description
-FROM		dbo.ImportedMeasurement
+FROM		dbo.ImportedMeasurement WITH (NOLOCK)
 WHERE		dbo.ImportedMeasurement.Enabled <> 0
 
 GO
@@ -2016,7 +2014,7 @@ AS
 SELECT		dbo.Node.ID AS NodeID, dbo.Statistic.ID AS ID, dbo.Statistic.Source, dbo.Statistic.SignalIndex, dbo.Statistic.Name, dbo.Statistic.Description,
                     dbo.Statistic.AssemblyName, dbo.Statistic.TypeName, dbo.Statistic.MethodName, dbo.Statistic.Arguments, dbo.Statistic.IsConnectedState, dbo.Statistic.DataType, 
                       dbo.Statistic.DisplayFormat, dbo.Statistic.Enabled
-FROM dbo.Statistic, dbo.Node
+FROM dbo.Statistic WITH (NOLOCK), dbo.Node WITH (NOLOCK)
 
 GO
 SET ANSI_NULLS ON
@@ -2026,10 +2024,10 @@ GO
 CREATE VIEW [dbo].[IaonOutputAdapter]
 AS
 SELECT     NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
-FROM         dbo.RuntimeHistorian
+FROM         dbo.RuntimeHistorian WITH (NOLOCK)
 UNION
 SELECT     NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
-FROM         dbo.RuntimeCustomOutputAdapter
+FROM         dbo.RuntimeCustomOutputAdapter WITH (NOLOCK)
 
 GO
 SET ANSI_NULLS ON
@@ -2039,10 +2037,10 @@ GO
 CREATE VIEW [dbo].[IaonInputAdapter]
 AS
 SELECT     NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
-FROM         dbo.RuntimeDevice
+FROM         dbo.RuntimeDevice WITH (NOLOCK)
 UNION
 SELECT     NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
-FROM         dbo.RuntimeCustomInputAdapter
+FROM         dbo.RuntimeCustomInputAdapter WITH (NOLOCK)
 
 GO
 SET ANSI_NULLS ON
@@ -2052,16 +2050,16 @@ GO
 CREATE VIEW [dbo].[IaonActionAdapter]
 AS
 SELECT     Node.ID AS NodeID, 0 AS ID, N'PHASOR!SERVICES' AS AdapterName, N'PhasorProtocolAdapters.dll' AS AssemblyName, N'PhasorProtocolAdapters.CommonPhasorServices' AS TypeName, N'' AS ConnectionString
-FROM         dbo.Node
+FROM         dbo.Node WITH (NOLOCK)
 UNION
 SELECT     NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
-FROM         dbo.RuntimeOutputStream
+FROM         dbo.RuntimeOutputStream WITH (NOLOCK)
 UNION
 SELECT     NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
-FROM         dbo.RuntimeCalculatedMeasurement
+FROM         dbo.RuntimeCalculatedMeasurement WITH (NOLOCK)
 UNION
 SELECT     NodeID, ID, AdapterName, AssemblyName, TypeName, ConnectionString
-FROM         dbo.RuntimeCustomActionAdapter
+FROM         dbo.RuntimeCustomActionAdapter WITH (NOLOCK)
 
 GO
 CREATE VIEW [dbo].[HistorianMetadata]
@@ -2110,7 +2108,7 @@ SELECT
     AlarmEmails             = MeasurementDetail.ContactList,
     AlarmPagers             = '',
     AlarmPhones             = ''
-FROM [dbo].[MeasurementDetail]
+FROM [dbo].[MeasurementDetail] WITH (NOLOCK)
 
 GO
 CREATE VIEW [dbo].[CalculatedMeasurementDetail] AS
@@ -2118,7 +2116,7 @@ SELECT CM.NodeID, CM.ID, CM.Acronym, ISNULL(CM.Name, '') AS Name, CM.AssemblyNam
         ISNULL(CM.ConfigSection, '') AS ConfigSection, ISNULL(CM.InputMeasurements, '') AS InputMeasurements, ISNULL(CM.OutputMeasurements, '') AS OutputMeasurements,
         CM.MinimumMeasurementsToUse, CM.FramesPerSecond, CM.LagTime, CM.LeadTime, CM.UseLocalClockAsRealTime, CM.AllowSortsByArrival, CM.LoadOrder, CM.Enabled,
         N.Name AS NodeName, CM.IgnoreBadTimeStamps, CM.TimeResolution, CM.AllowPreemptivePublishing, ISNULL(CM.DownsamplingMethod, '') AS DownsamplingMethod, CM.PerformTimeReasonabilityCheck
-FROM CalculatedMeasurement CM, Node N
+FROM CalculatedMeasurement CM WITH (NOLOCK), Node N WITH (NOLOCK)
 WHERE CM.NodeID = N.ID
 
 GO
@@ -2126,8 +2124,8 @@ CREATE VIEW [dbo].[VendorDeviceDetail]
 AS
 SELECT     VD.ID, VD.VendorID, VD.Name, ISNULL(VD.Description, '') AS Description, ISNULL(VD.URL, '') AS URL, V.Name AS VendorName, 
                       V.Acronym AS VendorAcronym
-FROM         dbo.VendorDevice AS VD INNER JOIN
-                      dbo.Vendor AS V ON VD.VendorID = V.ID
+FROM         dbo.VendorDevice AS VD WITH (NOLOCK) INNER JOIN
+                      dbo.Vendor AS V WITH (NOLOCK) ON VD.VendorID = V.ID
 GO
 CREATE VIEW [dbo].[DeviceDetail]
 AS
@@ -2139,85 +2137,85 @@ SELECT     D.NodeID, D.ID, D.ParentID, D.UniqueID, D.Acronym, ISNULL(D.Name, '')
                       AS ProtocolName, P.Type AS ProtocolType, P.Category, ISNULL(I.Name, '') AS InterconnectionName, N.Name AS NodeName, ISNULL(PD.Acronym, '') AS ParentAcronym, D.CreatedOn, D.AllowedParsingExceptions, 
                       D.ParsingExceptionWindow, D.DelayedConnectionInterval, D.AllowUseOfCachedConfiguration, D.AutoStartDataParsingSequence, D.SkipDisableRealTimeData, 
                       D.MeasurementReportingInterval
-FROM         dbo.Device AS D LEFT OUTER JOIN
-                      dbo.Company AS C ON C.ID = D.CompanyID LEFT OUTER JOIN
-                      dbo.Historian AS H ON H.ID = D.HistorianID LEFT OUTER JOIN
-                      dbo.VendorDeviceDetail AS VD ON VD.ID = D.VendorDeviceID LEFT OUTER JOIN
-                      dbo.Protocol AS P ON P.ID = D.ProtocolID LEFT OUTER JOIN
-                      dbo.Interconnection AS I ON I.ID = D.InterconnectionID LEFT OUTER JOIN
-                      dbo.Node AS N ON N.ID = D.NodeID LEFT OUTER JOIN
-                      dbo.Device AS PD ON PD.ID = D.ParentID
+FROM         dbo.Device AS D WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Company AS C WITH (NOLOCK) ON C.ID = D.CompanyID LEFT OUTER JOIN
+                      dbo.Historian AS H WITH (NOLOCK) ON H.ID = D.HistorianID LEFT OUTER JOIN
+                      dbo.VendorDeviceDetail AS VD WITH (NOLOCK) ON VD.ID = D.VendorDeviceID LEFT OUTER JOIN
+                      dbo.Protocol AS P WITH (NOLOCK) ON P.ID = D.ProtocolID LEFT OUTER JOIN
+                      dbo.Interconnection AS I WITH (NOLOCK) ON I.ID = D.InterconnectionID LEFT OUTER JOIN
+                      dbo.Node AS N WITH (NOLOCK) ON N.ID = D.NodeID LEFT OUTER JOIN
+                      dbo.Device AS PD WITH (NOLOCK) ON PD.ID = D.ParentID
 GO
 CREATE VIEW [dbo].[HistorianDetail] AS
 SELECT     H.NodeID, H.ID, H.Acronym, ISNULL(H.Name, '') AS Name, ISNULL(H.AssemblyName, '') AS AssemblyName, ISNULL(H.TypeName, '') AS TypeName, 
                       ISNULL(H.ConnectionString, '') AS ConnectionString, H.IsLocal, ISNULL(H.Description, '') AS Description, H.LoadOrder, H.Enabled, 
                       N.Name AS NodeName, H.MeasurementReportingInterval
-FROM         dbo.Historian AS H INNER JOIN
-                      dbo.Node AS N ON H.NodeID = N.ID
+FROM         dbo.Historian AS H WITH (NOLOCK) INNER JOIN
+                      dbo.Node AS N WITH (NOLOCK) ON H.NodeID = N.ID
 GO
 CREATE VIEW [dbo].[NodeDetail] AS
 SELECT N.ID, N.Name, ISNULL(N.CompanyID, 0) AS CompanyID, ISNULL(N.Longitude, 0) AS Longitude, ISNULL(N.Latitude, 0) AS Latitude, 
         ISNULL(N.Description, '') AS Description, ISNULL(N.ImagePath, '') AS ImagePath, ISNULL(N.Settings, '') AS Settings, N.MenuType, N.MenuData,
         N.Master, N.LoadOrder, N.Enabled, ISNULL(C.Name, '') AS CompanyName
-FROM Node N LEFT JOIN Company C 
+FROM Node N WITH (NOLOCK) LEFT JOIN Company C WITH (NOLOCK)
 ON N.CompanyID = C.ID
 GO
 CREATE VIEW [dbo].[VendorDetail] AS
 Select ID, ISNULL(Acronym, '') AS Acronym, Name, ISNULL(PhoneNumber, '') AS PhoneNumber, ISNULL(ContactEmail, '') AS ContactEmail, ISNULL(URL, '') AS URL 
-FROM Vendor
+FROM Vendor WITH (NOLOCK)
 GO
 CREATE VIEW [dbo].[CustomActionAdapterDetail] AS
 SELECT     CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, ISNULL(CA.ConnectionString, '') AS ConnectionString, CA.LoadOrder, 
                       CA.Enabled, N.Name AS NodeName
-FROM         dbo.CustomActionAdapter AS CA INNER JOIN
-                      dbo.Node AS N ON CA.NodeID = N.ID
+FROM         dbo.CustomActionAdapter AS CA WITH (NOLOCK) INNER JOIN
+                      dbo.Node AS N WITH (NOLOCK) ON CA.NodeID = N.ID
 GO
 CREATE VIEW [dbo].[CustomInputAdapterDetail] AS
 SELECT     CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, ISNULL(CA.ConnectionString, '') AS ConnectionString, CA.LoadOrder, 
                       CA.Enabled, N.Name AS NodeName
-FROM         dbo.CustomInputAdapter AS CA INNER JOIN
-                      dbo.Node AS N ON CA.NodeID = N.ID
+FROM         dbo.CustomInputAdapter AS CA WITH (NOLOCK) INNER JOIN
+                      dbo.Node AS N WITH (NOLOCK) ON CA.NodeID = N.ID
 GO
 CREATE VIEW [dbo].[CustomOutputAdapterDetail] AS
 SELECT     CA.NodeID, CA.ID, CA.AdapterName, CA.AssemblyName, CA.TypeName, ISNULL(CA.ConnectionString, '') AS ConnectionString, CA.LoadOrder, 
                       CA.Enabled, N.Name AS NodeName
-FROM         dbo.CustomOutputAdapter AS CA INNER JOIN
-                      dbo.Node AS N ON CA.NodeID = N.ID
+FROM         dbo.CustomOutputAdapter AS CA WITH (NOLOCK) INNER JOIN
+                      dbo.Node AS N WITH (NOLOCK) ON CA.NodeID = N.ID
 GO
 CREATE VIEW [dbo].[IaonTreeView] AS
 SELECT     'Action Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, ISNULL(ConnectionString, '') AS ConnectionString
-FROM         dbo.IaonActionAdapter
+FROM         dbo.IaonActionAdapter WITH (NOLOCK)
 UNION ALL
 SELECT     'Input Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, ISNULL(ConnectionString, '') AS ConnectionString
-FROM         dbo.IaonInputAdapter
+FROM         dbo.IaonInputAdapter WITH (NOLOCK)
 UNION ALL
 SELECT     'Output Adapters' AS AdapterType, NodeID, ID, AdapterName, AssemblyName, TypeName, ISNULL(ConnectionString, '') AS ConnectionString
-FROM         dbo.IaonOutputAdapter
+FROM         dbo.IaonOutputAdapter WITH (NOLOCK)
 GO
 CREATE VIEW [dbo].[OtherDeviceDetail] AS
 SELECT     OD.ID, OD.Acronym, ISNULL(OD.Name, '') AS Name, OD.IsConcentrator, OD.CompanyID, OD.VendorDeviceID, OD.Longitude, OD.Latitude, 
                       OD.InterconnectionID, OD.Planned, OD.Desired, OD.InProgress, ISNULL(C.Name, '') AS CompanyName, ISNULL(C.Acronym, '') AS CompanyAcronym, 
                       ISNULL(C.MapAcronym, '') AS CompanyMapAcronym, ISNULL(VD.Name, '') AS VendorDeviceName, ISNULL(I.Name, '') AS InterconnectionName
-FROM         dbo.OtherDevice AS OD LEFT OUTER JOIN
-                      dbo.Company AS C ON OD.CompanyID = C.ID LEFT OUTER JOIN
-                      dbo.VendorDevice AS VD ON OD.VendorDeviceID = VD.ID LEFT OUTER JOIN
-                      dbo.Interconnection AS I ON OD.InterconnectionID = I.ID
+FROM         dbo.OtherDevice AS OD WITH (NOLOCK) LEFT OUTER JOIN
+                      dbo.Company AS C WITH (NOLOCK) ON OD.CompanyID = C.ID LEFT OUTER JOIN
+                      dbo.VendorDevice AS VD WITH (NOLOCK) ON OD.VendorDeviceID = VD.ID LEFT OUTER JOIN
+                      dbo.Interconnection AS I WITH (NOLOCK) ON OD.InterconnectionID = I.ID
 GO
 CREATE VIEW [dbo].[MapData] AS
 SELECT     'Device' AS DeviceType, NodeID, ID, Acronym, ISNULL(Name, '') AS Name, CompanyMapAcronym, CompanyName, VendorDeviceName, Longitude, 
                       Latitude, CONVERT(BIT, '1') AS Reporting, CONVERT(BIT, '0') AS Inprogress, CONVERT(BIT, '0') AS Planned, CONVERT(BIT, '0') AS Desired
-FROM         dbo.DeviceDetail AS D
+FROM         dbo.DeviceDetail AS D WITH (NOLOCK)
 UNION ALL
 SELECT     'OtherDevice' AS DeviceType, NULL AS NodeID, ID, Acronym, ISNULL(Name, '') AS Name, CompanyMapAcronym, CompanyName, VendorDeviceName, 
                       Longitude, Latitude, CONVERT(BIT, '0') AS Reporting, CONVERT(BIT, '1') AS Inprogress, CONVERT(BIT, '1') AS Planned, CONVERT(BIT, '1') 
                       AS Desired
-FROM         dbo.OtherDeviceDetail AS OD
+FROM         dbo.OtherDeviceDetail AS OD WITH (NOLOCK)
 GO
 CREATE VIEW [dbo].[VendorDeviceDistribution] AS
 SELECT     dbo.Device.NodeID, dbo.Vendor.Name AS VendorName, COUNT(*) AS DeviceCount
-FROM       dbo.Device LEFT OUTER JOIN
-           dbo.VendorDevice ON dbo.Device.VendorDeviceID = dbo.VendorDevice.ID INNER JOIN
-           dbo.Vendor ON dbo.VendorDevice.VendorID = dbo.Vendor.ID
+FROM       dbo.Device WITH (NOLOCK) LEFT OUTER JOIN
+           dbo.VendorDevice WITH (NOLOCK) ON dbo.Device.VendorDeviceID = dbo.VendorDevice.ID INNER JOIN
+           dbo.Vendor WITH (NOLOCK) ON dbo.VendorDevice.VendorID = dbo.Vendor.ID
 GROUP BY dbo.Device.NodeID, dbo.Vendor.Name
 GO
 CREATE VIEW [dbo].[OutputStreamDetail] AS
@@ -2227,53 +2225,53 @@ SELECT     OS.NodeID, OS.ID, OS.Acronym, ISNULL(OS.Name, '') AS Name, OS.Type, I
                       OS.AllowSortsByArrival, OS.LoadOrder, OS.Enabled, N.Name AS NodeName, OS.DigitalMaskValue, OS.AnalogScalingValue, 
                       OS.VoltageScalingValue, OS.CurrentScalingValue, OS.CoordinateFormat, OS.DataFormat, OS.DownsamplingMethod, 
                       OS.AllowPreemptivePublishing, OS.TimeResolution, OS.IgnoreBadTimeStamps, OS.PerformTimeReasonabilityCheck
-FROM         dbo.OutputStream AS OS INNER JOIN
-                      dbo.Node AS N ON OS.NodeID = N.ID
+FROM         dbo.OutputStream AS OS WITH (NOLOCK) INNER JOIN
+                      dbo.Node AS N WITH (NOLOCK) ON OS.NodeID = N.ID
 GO
 CREATE VIEW [dbo].[OutputStreamMeasurementDetail] AS
 SELECT     OSM.NodeID, OSM.AdapterID, OSM.ID, OSM.HistorianID, OSM.PointID, OSM.SignalReference, M.PointTag AS SourcePointTag, ISNULL(H.Acronym, '') 
                       AS HistorianAcronym
-FROM         dbo.OutputStreamMeasurement AS OSM INNER JOIN
-                      dbo.Measurement AS M ON M.PointID = OSM.PointID LEFT OUTER JOIN
-                      dbo.Historian AS H ON H.ID = OSM.HistorianID
+FROM         dbo.OutputStreamMeasurement AS OSM WITH (NOLOCK) INNER JOIN
+                      dbo.Measurement AS M WITH (NOLOCK) ON M.PointID = OSM.PointID LEFT OUTER JOIN
+                      dbo.Historian AS H WITH (NOLOCK) ON H.ID = OSM.HistorianID
 GO
 CREATE VIEW [dbo].[OutputStreamDeviceDetail] AS
 SELECT     NodeID, AdapterID, ID, Acronym, ISNULL(BpaAcronym, '') AS BpaAcronym, Name, LoadOrder, Enabled, ISNULL(PhasorDataFormat, '') AS PhasorDataFormat, 
             ISNULL(FrequencyDataFormat, '') AS FrequencyDataFormat, ISNULL(AnalogDataFormat, '') AS AnalogDataFormat, ISNULL(CoordinateFormat, '') AS CoordinateFormat, IDCode,
             CASE WHEN EXISTS
                           (SELECT     Acronym
-                            FROM          Device
+                            FROM          Device WITH (NOLOCK)
                             WHERE      Acronym = OSD.Acronym) THEN CONVERT(bit, 0) ELSE CONVERT(bit, 1) END AS Virtual
-FROM         dbo.OutputStreamDevice AS OSD
+FROM         dbo.OutputStreamDevice AS OSD WITH (NOLOCK)
 GO
 CREATE VIEW [dbo].[PhasorDetail] AS
 SELECT P.*, ISNULL(DP.Label, '') AS DestinationPhasorLabel, D.Acronym AS DeviceAcronym
-FROM Phasor P LEFT OUTER JOIN Phasor DP ON P.DestinationPhasorID = DP.ID
-      LEFT OUTER JOIN Device D ON P.DeviceID = D.ID
+FROM Phasor P WITH (NOLOCK) LEFT OUTER JOIN Phasor DP WITH (NOLOCK) ON P.DestinationPhasorID = DP.ID
+      LEFT OUTER JOIN Device D WITH (NOLOCK) ON P.DeviceID = D.ID
 GO
 
 CREATE VIEW [dbo].[StatisticMeasurement] AS
 SELECT *
-FROM MeasurementDetail 
+FROM MeasurementDetail WITH (NOLOCK) 
 WHERE SignalAcronym = 'STAT'
 GO
 
 CREATE VIEW [dbo].[SubscriberMeasurementDetail] AS 
 SELECT SubscriberMeasurement.NodeID AS NodeID, SubscriberMeasurement.SubscriberID AS SubscriberID, Subscriber.Acronym AS SubscriberAcronym, COALESCE(Subscriber.Name, '') AS SubscriberName, 
 SubscriberMeasurement.SignalID AS SignalID, SubscriberMeasurement.Allowed AS Allowed, Measurement.PointID AS PointID, Measurement.PointTag AS PointTag, Measurement.SignalReference AS SignalReference
-FROM ((SubscriberMeasurement JOIN Subscriber ON (SubscriberMeasurement.SubscriberID = Subscriber.ID)) JOIN Measurement ON (SubscriberMeasurement.SignalID = Measurement.SignalID));
+FROM ((SubscriberMeasurement WITH (NOLOCK) JOIN Subscriber WITH (NOLOCK) ON (SubscriberMeasurement.SubscriberID = Subscriber.ID)) JOIN Measurement WITH (NOLOCK) ON (SubscriberMeasurement.SignalID = Measurement.SignalID));
 GO
 
 CREATE VIEW [dbo].[SubscriberMeasGroupDetail] AS 
 SELECT SubscriberMeasurementGroup.NodeID AS NodeID, SubscriberMeasurementGroup.SubscriberID AS SubscriberID, Subscriber.Acronym AS SubscriberAcronym, COALESCE(Subscriber.Name, '') AS SubscriberName, 
 SubscriberMeasurementGroup.MeasurementGroupID AS MeasurementGroupID, SubscriberMeasurementGroup.Allowed AS Allowed, MeasurementGroup.Name AS MeasurementGroupName
-FROM ((SubscriberMeasurementGroup JOIN Subscriber ON (SubscriberMeasurementGroup.SubscriberID = Subscriber.ID)) JOIN MeasurementGroup ON (SubscriberMeasurementGroup.MeasurementGroupID = MeasurementGroup.ID));
+FROM ((SubscriberMeasurementGroup WITH (NOLOCK) JOIN Subscriber WITH (NOLOCK) ON (SubscriberMeasurementGroup.SubscriberID = Subscriber.ID)) JOIN MeasurementGroup WITH (NOLOCK) ON (SubscriberMeasurementGroup.MeasurementGroupID = MeasurementGroup.ID));
 GO
 
 CREATE VIEW [dbo].[MeasurementGroupMeasDetail] AS 
 SELECT MeasurementGroupMeasurement.MeasurementGroupID AS MeasurementGroupID, MeasurementGroup.Name AS MeasurementGroupName,
 MeasurementGroupMeasurement.SignalID AS SignalID, Measurement.PointID AS PointID, Measurement.PointTag AS PointTag, Measurement.SignalReference AS SignalReference
-FROM ((MeasurementGroupMeasurement JOIN MeasurementGroup ON (MeasurementGroupMeasurement.MeasurementGroupID = MeasurementGroup.ID)) JOIN Measurement ON (MeasurementGroupMeasurement.SignalID = Measurement.SignalID));
+FROM ((MeasurementGroupMeasurement WITH (NOLOCK) JOIN MeasurementGroup WITH (NOLOCK) ON (MeasurementGroupMeasurement.MeasurementGroupID = MeasurementGroup.ID)) JOIN Measurement WITH (NOLOCK) ON (MeasurementGroupMeasurement.SignalID = Measurement.SignalID));
 GO
 
 CREATE VIEW [dbo].[TrackedTable] AS
