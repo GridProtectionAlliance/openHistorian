@@ -746,7 +746,7 @@
             <param name="targetType">The type of the binding target property.</param>
             <param name="parameter">The converter parameter to use.</param>
             <param name="culture">The culture to use in the converter.</param>
-            <returns>One of the visibility enummeration</returns>
+            <returns>One of the visibility enumeration</returns>
         </member>
         <member name="M:GSF.TimeSeries.UI.Converters.RoleBasedVisibilityConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
             <summary>

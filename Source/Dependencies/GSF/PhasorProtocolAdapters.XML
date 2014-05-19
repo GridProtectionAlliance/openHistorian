@@ -70,12 +70,6 @@
             Resets the counters for the lifetime statistics without interrupting the adapter's operations.
             </summary>
         </member>
-        <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.QueueMeasurementForProcessing(GSF.TimeSeries.IMeasurement)">
-            <summary>
-            Queues a single measurement for processing.
-            </summary>
-            <param name="measurement">Measurement to queue for processing.</param>
-        </member>
         <member name="M:PhasorProtocolAdapters.PhasorDataConcentratorBase.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
             <summary>
             Queues a collection of measurements for processing.

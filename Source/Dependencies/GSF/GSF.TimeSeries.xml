@@ -44,11 +44,6 @@
             Represents a new Input, Action, Output interface session.
             </summary>
         </member>
-        <member name="F:GSF.TimeSeries.Adapters.IaonSession.DefaultUseMeasurementRouting">
-            <summary>
-            Default value for <see cref="P:GSF.TimeSeries.Adapters.IaonSession.UseMeasurementRouting"/> property.
-            </summary>
-        </member>
         <member name="M:GSF.TimeSeries.Adapters.IaonSession.#ctor">
             <summary>
             Creates a new <see cref="T:GSF.TimeSeries.Adapters.IaonSession"/>.
@@ -341,11 +336,6 @@
         <member name="P:GSF.TimeSeries.Adapters.IaonSession.OutputAdapters">
             <summary>
             Gets the output adapter collection for this <see cref="T:GSF.TimeSeries.Adapters.IaonSession"/>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.IaonSession.UseMeasurementRouting">
-            <summary>
-            Gets or sets flag that determines if measurement routing should be used.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IaonSession.RoutingTables">
@@ -2834,90 +2824,6 @@
             </summary>
             <returns>A hash code for the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.Equals(GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Determines whether the specified <see cref="T:GSF.TimeSeries.MeasurementKey"/> is equal to the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
-            </summary>
-            <param name="other">The <see cref="T:GSF.TimeSeries.MeasurementKey"/> to compare with the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</param>
-            <returns>
-            true if the specified <see cref="T:GSF.TimeSeries.MeasurementKey"/> is equal to the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>;
-            otherwise, false.
-            </returns>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.Equals(System.Object)">
-            <summary>
-            Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
-            </summary>
-            <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</param>
-            <returns>
-            true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>;
-            otherwise, false.
-            </returns>
-            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not a <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</exception>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.CompareTo(GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Compares the <see cref="T:GSF.TimeSeries.MeasurementKey"/> with another <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
-            </summary>
-            <param name="other">The <see cref="T:GSF.TimeSeries.MeasurementKey"/> to compare with the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</param>
-            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.CompareTo(System.Object)">
-            <summary>
-            Compares the <see cref="T:GSF.TimeSeries.MeasurementKey"/> with the specified <see cref="T:System.Object"/>.
-            </summary>
-            <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</param>
-            <returns>A 32-bit signed integer that indicates the relative order of the objects being compared.</returns>
-            <exception cref="T:System.ArgumentException"><paramref name="obj"/> is not a <see cref="T:GSF.TimeSeries.MeasurementKey"/>.</exception>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.op_Equality(GSF.TimeSeries.MeasurementKey,GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Compares two <see cref="T:GSF.TimeSeries.MeasurementKey"/> values for equality.
-            </summary>
-            <param name="key1">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> left hand operand.</param>
-            <param name="key2">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.op_Inequality(GSF.TimeSeries.MeasurementKey,GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Compares two <see cref="T:GSF.TimeSeries.MeasurementKey"/> values for inequality.
-            </summary>
-            <param name="key1">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> left hand operand.</param>
-            <param name="key2">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.op_GreaterThan(GSF.TimeSeries.MeasurementKey,GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Returns true if left <see cref="T:GSF.TimeSeries.MeasurementKey"/> value is greater than right <see cref="T:GSF.TimeSeries.MeasurementKey"/> value.
-            </summary>
-            <param name="key1">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> left hand operand.</param>
-            <param name="key2">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.op_GreaterThanOrEqual(GSF.TimeSeries.MeasurementKey,GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Returns true if left <see cref="T:GSF.TimeSeries.MeasurementKey"/> value is greater than or equal to right <see cref="T:GSF.TimeSeries.MeasurementKey"/> value.
-            </summary>
-            <param name="key1">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> left hand operand.</param>
-            <param name="key2">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.op_LessThan(GSF.TimeSeries.MeasurementKey,GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Returns true if left <see cref="T:GSF.TimeSeries.MeasurementKey"/> value is less than right <see cref="T:GSF.TimeSeries.MeasurementKey"/> value.
-            </summary>
-            <param name="key1">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> left hand operand.</param>
-            <param name="key2">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKey.op_LessThanOrEqual(GSF.TimeSeries.MeasurementKey,GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Returns true if left <see cref="T:GSF.TimeSeries.MeasurementKey"/> value is less than or equal to right <see cref="T:GSF.TimeSeries.MeasurementKey"/> value.
-            </summary>
-            <param name="key1">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> left hand operand.</param>
-            <param name="key2">A <see cref="T:GSF.TimeSeries.MeasurementKey"/> right hand operand.</param>
-            <returns>A boolean representing the result.</returns>
-        </member>
         <member name="F:GSF.TimeSeries.MeasurementKey.Undefined">
             <summary>
             Represents an undefined measurement key.
@@ -2951,7 +2857,7 @@
             <param name="key">The measurement key that was created or updated or <see cref="F:GSF.TimeSeries.MeasurementKey.Undefined"/>.</param>
             <returns>True if the measurement key was successfully created or updated, false otherwise.</returns>
             <exception cref="T:System.ArgumentException"><paramref name="signalID"/> cannot be empty.</exception>
-            <exception cref="T:System.ArgumentNullException"><paramref name="source"/> cannot be null.</exception>
+            <exception cref="T:System.ArgumentNullException">Measurement key Source cannot be null.</exception>
         </member>
         <member name="M:GSF.TimeSeries.MeasurementKey.TryCreateOrUpdate(System.Guid,System.String,System.UInt32,GSF.TimeSeries.MeasurementKey@)">
             <summary>
@@ -3100,31 +3006,6 @@
             This value is typically used to track the archive name in which the measurement, that this <see cref="T:GSF.TimeSeries.MeasurementKey"/> represents, is stored.
             </remarks>
         </member>
-        <member name="T:GSF.TimeSeries.MeasurementKeyComparer">
-            <summary>
-            Represents an instance of the <see cref="T:System.Collections.Generic.IEqualityComparer`1"/> for a <see cref="T:GSF.TimeSeries.MeasurementKey"/>.
-            </summary>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKeyComparer.Equals(GSF.TimeSeries.MeasurementKey,GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Determines whether the specified objects are equal.
-            </summary>
-            <param name="x">The first <see cref="T:GSF.TimeSeries.MeasurementKey"/> to compare.</param>
-            <param name="y">The second <see cref="T:GSF.TimeSeries.MeasurementKey"/> to compare.</param>
-            <returns>true if the specified objects are equal; otherwise, false.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.MeasurementKeyComparer.GetHashCode(GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Returns a hash code for the specified object.
-            </summary>
-            <param name="obj">The <see cref="T:GSF.TimeSeries.MeasurementKey"/> for which a hash code is to be returned.</param>
-            <returns>A hash code for the specified object.</returns>
-        </member>
-        <member name="P:GSF.TimeSeries.MeasurementKeyComparer.Default">
-            <summary>
-            Returns the default instance of the <see cref="T:GSF.TimeSeries.MeasurementKeyComparer"/> class.
-            </summary>
-        </member>
         <member name="T:GSF.TimeSeries.NamespaceDoc">
             <summary>
             Contains classes used to abstractly define time-series measured values and provide mechanisms for managing measurements.
@@ -3218,14 +3099,6 @@
             </para>
             </remarks>
         </member>
-        <member name="E:GSF.TimeSeries.Adapters.IAdapter.Notify">
-            <summary>
-            Notifies dependent adapters that this adapter has finished processing a measurement.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the processed measurement.
-            </remarks>
-        </member>
         <member name="E:GSF.TimeSeries.Adapters.IAdapter.StatusMessage">
             <summary>
             Provides status messages to consumer.
@@ -3309,11 +3182,6 @@
         <member name="P:GSF.TimeSeries.Adapters.IAdapter.AutoStart">
             <summary>
             Gets or sets flag indicating if adapter should automatically start or connect on demand.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.IAdapter.ProcessMeasurementFilter">
-            <summary>
-            Gets or sets flag that determines if measurements being queued for processing should be tested to see if they are in the <see cref="P:GSF.TimeSeries.Adapters.IAdapter.InputMeasurementKeys"/>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.IAdapter.InputMeasurementKeys">
@@ -3491,15 +3359,6 @@
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.QueueMeasurementForProcessing(GSF.TimeSeries.IMeasurement)">
-            <summary>
-            Queues a single measurement for processing. Measurements is automatically filtered to the defined <see cref="P:GSF.TimeSeries.Adapters.IAdapter.InputMeasurementKeys"/>.
-            </summary>
-            <param name="measurement">Measurement to queue for processing.</param>
-            <remarks>
-            Measurement is filtered against the defined <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>.
-            </remarks>
-        </member>
         <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.QueueMeasurementsForProcessing(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
             <summary>
             Queues a collection of measurements for processing. Measurements are automatically filtered to the defined <see cref="P:GSF.TimeSeries.Adapters.IAdapter.InputMeasurementKeys"/>.
@@ -3508,13 +3367,6 @@
             <remarks>
             Measurements are filtered against the defined <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>.
             </remarks>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.IsInputMeasurement(GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Determines if specified measurement key is defined in <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>.
-            </summary>
-            <param name="item">Primary key of measurement to find.</param>
-            <returns>true if specified measurement key is defined in <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>.</returns>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.SetTemporalConstraint(System.String,System.String,System.String)">
             <summary>
@@ -3596,18 +3448,6 @@
             Raises the <see cref="E:GSF.TimeSeries.Adapters.ActionAdapterBase.NewMeasurements"/> event.
             </summary>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.OnNotify(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Adapters.ActionAdapterBase.Notify"/> event with a collection of measurements that have been processed.
-            </summary>
-            <param name="measurements">The processed measurements.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.OnNotify(GSF.TimeSeries.IMeasurement)">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Adapters.ActionAdapterBase.Notify"/> event with a measurement that has been processed.
-            </summary>
-            <param name="measurement">The processed measurement.</param>
-        </member>
         <member name="M:GSF.TimeSeries.Adapters.ActionAdapterBase.OnStatusMessage(System.String)">
             <summary>
             Raises the <see cref="E:GSF.TimeSeries.Adapters.ActionAdapterBase.StatusMessage"/> event.
@@ -3638,14 +3478,6 @@
             <summary>
             Raises <see cref="E:GSF.TimeSeries.Adapters.ActionAdapterBase.ConfigurationChanged"/> event.
             </summary>
-        </member>
-        <member name="E:GSF.TimeSeries.Adapters.ActionAdapterBase.Notify">
-            <summary>
-            Notifies dependent adapters that this adapter has finished processing a measurement.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the processed measurement.
-            </remarks>
         </member>
         <member name="E:GSF.TimeSeries.Adapters.ActionAdapterBase.StatusMessage">
             <summary>
@@ -3777,11 +3609,6 @@
             adapter will behave concerning routing demands when the adapter is setup to connect on demand. In the case of respecting auto-start output demands,
             as an example, this would be <c>true</c> for an action adapter that calculated measurement, but <c>false</c> for an action adapter used to archive inputs.
             </remarks>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.ProcessMeasurementFilter">
-            <summary>
-            Gets or sets flag that determines if measurements being queued for processing should be tested to see if they are in the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>.
-            </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.ActionAdapterBase.FramesPerSecond">
             <summary>
@@ -4129,18 +3956,6 @@
             </para>
             </remarks>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.OnNotify(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.Notify"/> event with a collection of measurements that have been processed.
-            </summary>
-            <param name="measurements">The processed measurements.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.OnNotify(GSF.TimeSeries.IMeasurement)">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.Notify"/> event with a measurement that has been processed.
-            </summary>
-            <param name="measurement">The processed measurement.</param>
-        </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.OnProcessException(System.Exception)">
             <summary>
             Raises <see cref="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ProcessException"/> event.
@@ -4219,14 +4034,6 @@
             <param name="item"><see cref="T:GSF.TimeSeries.Adapters.IAdapter"/> to dispose.</param>
             <remarks>
             Derived classes should override if more events are defined.
-            </remarks>
-        </member>
-        <member name="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.Notify">
-            <summary>
-            Notifies dependent adapters that this adapter has finished processing a measurement.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the processed measurement.
             </remarks>
         </member>
         <member name="E:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.StatusMessage">
@@ -4319,11 +4126,6 @@
         <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.AutoStart">
             <summary>
             Gets or sets flag indicating if adapter collection should automatically start items when <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.AutoInitialize"/> is <c>false</c>.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.ProcessMeasurementFilter">
-            <summary>
-            Gets or sets flag that determines if measurements being queued for processing should be tested to see if they are in the <see cref="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.InputMeasurementKeys"/>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.AdapterCollectionBase`1.InputMeasurementKeys">
@@ -4600,13 +4402,6 @@
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of this <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
         </member>
-        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.IsInputMeasurement(GSF.TimeSeries.MeasurementKey)">
-            <summary>
-            Determines if specified measurement key is defined in <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.InputMeasurementKeys"/>.
-            </summary>
-            <param name="item">Primary key of measurement to find.</param>
-            <returns>true if specified measurement key is defined in <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.InputMeasurementKeys"/>.</returns>
-        </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.SetTemporalConstraint(System.String,System.String,System.String)">
             <summary>
             Defines a temporal processing constraint for the adapter.
@@ -4663,18 +4458,6 @@
             Serves as a hash function for the current <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.
             </summary>
             <returns>A hash code for the current <see cref="T:GSF.TimeSeries.Adapters.AdapterBase"/>.</returns>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnNotify(System.Collections.Generic.IEnumerable{GSF.TimeSeries.IMeasurement})">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.Notify"/> event with a collection of measurements that have been processed.
-            </summary>
-            <param name="measurements">The processed measurements.</param>
-        </member>
-        <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnNotify(GSF.TimeSeries.IMeasurement)">
-            <summary>
-            Raises the <see cref="E:GSF.TimeSeries.Adapters.AdapterBase.Notify"/> event with a measurement that has been processed.
-            </summary>
-            <param name="measurement">The processed measurement.</param>
         </member>
         <member name="M:GSF.TimeSeries.Adapters.AdapterBase.OnStatusMessage(System.String)">
             <summary>
@@ -4844,14 +4627,6 @@
             injection would not be an issue (e.g., in places where a user can already access the database and would have nothing to gain via an injection attack).
             </remarks>
         </member>
-        <member name="E:GSF.TimeSeries.Adapters.AdapterBase.Notify">
-            <summary>
-            Notifies dependent adapters that this adapter has finished processing a measurement.
-            </summary>
-            <remarks>
-            <see cref="F:GSF.EventArgs`1.Argument"/> is the processed measurement.
-            </remarks>
-        </member>
         <member name="E:GSF.TimeSeries.Adapters.AdapterBase.StatusMessage">
             <summary>
             Provides status messages to consumer.
@@ -4972,11 +4747,6 @@
         <member name="P:GSF.TimeSeries.Adapters.AdapterBase.AutoStart">
             <summary>
             Gets or sets flag indicating if adapter should automatically start or otherwise connect on demand.
-            </summary>
-        </member>
-        <member name="P:GSF.TimeSeries.Adapters.AdapterBase.ProcessMeasurementFilter">
-            <summary>
-            Gets or sets flag that determines if measurements being queued for processing should be tested to see if they are in the <see cref="P:GSF.TimeSeries.Adapters.AdapterBase.InputMeasurementKeys"/>.
             </summary>
         </member>
         <member name="P:GSF.TimeSeries.Adapters.AdapterBase.InputMeasurementKeys">
@@ -7507,6 +7277,11 @@
             Enumerates connected clients.
             </summary>
         </member>
+        <member name="M:GSF.TimeSeries.Transport.DataPublisher.EnumerateTemporalClients">
+            <summary>
+            Enumerates connected clients with active temporal sessions.
+            </summary>
+        </member>
         <member name="M:GSF.TimeSeries.Transport.DataPublisher.RotateCipherKeys(System.Int32)">
             <summary>
             Rotates cipher keys for specified client connection.
@@ -7516,6 +7291,12 @@
         <member name="M:GSF.TimeSeries.Transport.DataPublisher.GetSubscriberInfo(System.Int32)">
             <summary>
             Gets subscriber information for specified client connection.
+            </summary>
+            <param name="clientIndex">Enumerated index for client connection.</param>
+        </member>
+        <member name="M:GSF.TimeSeries.Transport.DataPublisher.GetTemporalStatus(System.Int32)">
+            <summary>
+            Gets temporal status for a specified client connection.
             </summary>
             <param name="clientIndex">Enumerated index for client connection.</param>
         </member>
@@ -9506,6 +9287,11 @@
             Gets or sets host name used to identify connection source of client subscription.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.IClientSubscription.TemporalSessionStatus">
+            <summary>
+            Gets the status of the active temporal session, if any.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.IClientSubscriptionExtensions">
             <summary>
             Defines static extension functions for <see cref="T:GSF.TimeSeries.Transport.IClientSubscription"/> implementations.
@@ -10096,6 +9882,11 @@
             Gets a formatted message describing the status of this <see cref="T:GSF.TimeSeries.Transport.SynchronizedClientSubscription"/>.
             </summary>
         </member>
+        <member name="P:GSF.TimeSeries.Transport.SynchronizedClientSubscription.TemporalSessionStatus">
+            <summary>
+            Gets the status of the active temporal session, if any.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.Transport.TemporalClientSubscriptionProxy">
             <summary>
             Represents an action adapter that exists within a temporal <see cref="T:GSF.TimeSeries.Adapters.IaonSession"/> to proxy data back to its parent <see cref="T:GSF.TimeSeries.Transport.IClientSubscription"/> instance.
@@ -10275,6 +10066,11 @@
         <member name="P:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.Status">
             <summary>
             Gets a formatted message describing the status of this <see cref="T:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription"/>.
+            </summary>
+        </member>
+        <member name="P:GSF.TimeSeries.Transport.UnsynchronizedClientSubscription.TemporalSessionStatus">
+            <summary>
+            Gets the status of the active temporal session, if any.
             </summary>
         </member>
     </members>

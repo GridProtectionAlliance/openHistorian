@@ -6226,7 +6226,7 @@
             <returns>The number of bytes used for initialization in the <paramref name="buffer"/> (i.e., the number of bytes parsed).</returns>
             <remarks>
             Implementers should validate <paramref name="startIndex"/> and <paramref name="length"/> against <paramref name="buffer"/> length.
-            The <see cref="M:GSF.BufferExtensions.ValidateParameters(System.Byte[],System.Int32,System.Int32)"/> method can be used to perform this validation.
+            The <see cref="M:GSF.ArrayExtensions.ValidateParameters``1(``0[],System.Int32,System.Int32)"/> method can be used to perform this validation.
             </remarks>
         </member>
         <member name="M:GSF.Historian.Packets.PacketBase.GenerateBinaryImage(System.Byte[],System.Int32)">
@@ -6238,7 +6238,7 @@
             <returns>The number of bytes written to the <paramref name="buffer"/>.</returns>
             <remarks>
             Implementers should validate <paramref name="startIndex"/> and <see cref="P:GSF.Historian.Packets.PacketBase.BinaryLength"/> against <paramref name="buffer"/> length.
-            The <see cref="M:GSF.BufferExtensions.ValidateParameters(System.Byte[],System.Int32,System.Int32)"/> method can be used to perform this validation.
+            The <see cref="M:GSF.ArrayExtensions.ValidateParameters``1(``0[],System.Int32,System.Int32)"/> method can be used to perform this validation.
             </remarks>
         </member>
         <member name="M:GSF.Historian.Packets.PacketBase.ExtractTimeSeriesData">
