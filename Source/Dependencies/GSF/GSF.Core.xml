@@ -27308,19 +27308,22 @@
             <remarks>
             Note that this ToElapsedTimeString overload will not display fractional seconds. To allow
             display of fractional seconds, or completely remove second resolution from the textual
-            representation, use the <see cref="M:GSF.Ticks.ToElapsedTimeString(System.Int32)"/> overload instead.
+            representation, use the <see cref="M:GSF.Ticks.ToElapsedTimeString(System.Int32,System.Double)"/> overload instead.
             </remarks>
             <returns>
             The string representation of the value of this instance, consisting of the number of
             years, days, hours, minutes and seconds represented by this value.
             </returns>
         </member>
-        <member name="M:GSF.Ticks.ToElapsedTimeString(System.Int32)">
+        <member name="M:GSF.Ticks.ToElapsedTimeString(System.Int32,System.Double)">
             <summary>
             Converts the <see cref="T:GSF.Ticks"/> value into a textual representation of years, days, hours,
             minutes and seconds with the specified number of fractional digits.
             </summary>
             <param name="secondPrecision">Number of fractional digits to display for seconds.</param>
+            <param name="minimumSubSecondResolution">
+            Minimum sub-second resolution to display. Defaults to <see cref="F:GSF.Units.SI.Milli"/>.
+            </param>
             <remarks>
             Set <paramref name="secondPrecision"/> to -1 to suppress seconds display, this will
             force minimum resolution of time display to minutes.
@@ -27329,8 +27332,12 @@
             The string representation of the value of this instance, consisting of the number of
             years, days, hours, minutes and seconds represented by this value.
             </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="minimumSubSecondResolution"/> is not less than or equal to <see cref="F:GSF.Units.SI.Milli"/> or
+            <paramref name="minimumSubSecondResolution"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.
+            </exception>
         </member>
-        <member name="M:GSF.Ticks.ToElapsedTimeString(System.Int32,System.String[])">
+        <member name="M:GSF.Ticks.ToElapsedTimeString(System.Int32,System.String[],System.Double)">
             <summary>
             Converts the <see cref="T:GSF.Ticks"/> value into a textual representation of years, days, hours,
             minutes and seconds with the specified number of fractional digits given string array of
@@ -27338,6 +27345,9 @@
             </summary>
             <param name="secondPrecision">Number of fractional digits to display for seconds.</param>
             <param name="timeNames">Time names array to use during textual conversion.</param>
+            <param name="minimumSubSecondResolution">
+            Minimum sub-second resolution to display. Defaults to <see cref="F:GSF.Units.SI.Milli"/>.
+            </param>
             <remarks>
             <para>
             Set <paramref name="secondPrecision"/> to -1 to suppress seconds display, this will
@@ -27345,14 +27355,17 @@
             </para>
             <para>
             <paramref name="timeNames"/> array needs one string entry for each of the following names:<br/>
-            " year", " years", " day", " days", " hour", " hours", " minute", " minutes", " second",
-            " seconds", "less than a minute", "0 seconds" and "less than a second".
+            " year", " years", " day", " days", " hour", " hours", " minute", " minutes", " second", " seconds", "less than ".
             </para>
             </remarks>
             <returns>
             The string representation of the value of this instance, consisting of the number of
             years, days, hours, minutes and seconds represented by this value.
             </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="minimumSubSecondResolution"/> is not less than or equal to <see cref="F:GSF.Units.SI.Milli"/> or
+            <paramref name="minimumSubSecondResolution"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.
+            </exception>
         </member>
         <member name="M:GSF.Ticks.CompareTo(System.Object)">
             <summary>
@@ -32270,33 +32283,39 @@
             SI prefix y, 10^-24
             </summary>
         </member>
-        <member name="M:GSF.Units.SI.ToScaledString(System.Double,System.String,System.String[])">
+        <member name="M:GSF.Units.SI.ToScaledString(System.Double,System.String,System.String[],System.Double,System.Double)">
             <summary>
             Turns the given number of units into a textual representation with an appropriate unit scaling.
             </summary>
             <param name="totalUnits">Total units to represent textually.</param>
             <param name="unitName">Name of unit display (e.g., you could use "m/h" for meters per hour).</param>
             <param name="symbolNames">Optional SI factor symbol or name array to use during textual conversion, defaults to <see cref="P:GSF.Units.SI.Symbols"/>.</param>
+            <param name="minimumFactor">Optional minimum SI factor. Defaults to <see cref="F:GSF.Units.SI.Yocto"/>.</param>
+            <param name="maximumFactor">Optional maximum SI factor. Defaults to <see cref="F:GSF.Units.SI.Yotta"/>.</param>
             <remarks>
             The <paramref name="symbolNames"/> array needs one string entry for each defined SI item ordered from
             least (<see cref="F:GSF.Units.SI.Yocto"/>) to greatest (<see cref="F:GSF.Units.SI.Yotta"/>), see <see cref="P:GSF.Units.SI.Names"/> or <see cref="P:GSF.Units.SI.Symbols"/>
             arrays for examples.
             </remarks>
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.</exception>
         </member>
-        <member name="M:GSF.Units.SI.ToScaledString(System.Double,System.String,System.String)">
+        <member name="M:GSF.Units.SI.ToScaledString(System.Double,System.String,System.String,System.Double,System.Double)">
             <summary>
             Turns the given number of units into a textual representation with an appropriate unit scaling.
             </summary>
             <param name="totalUnits">Total units to represent textually.</param>
             <param name="format">A numeric string format for scaled <paramref name="totalUnits"/>.</param>
             <param name="unitName">Name of unit display (e.g., you could use "m/h" for meters per hour).</param>
+            <param name="minimumFactor">Optional minimum SI factor. Defaults to <see cref="F:GSF.Units.SI.Yocto"/>.</param>
+            <param name="maximumFactor">Optional maximum SI factor. Defaults to <see cref="F:GSF.Units.SI.Yotta"/>.</param>
             <remarks>
             <see cref="P:GSF.Units.SI.Symbols"/> array is used for displaying SI symbol prefix for <paramref name="unitName"/>.
             </remarks>
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.</exception>
         </member>
-        <member name="M:GSF.Units.SI.ToScaledString(System.Double,System.Int32,System.String,System.String[])">
+        <member name="M:GSF.Units.SI.ToScaledString(System.Double,System.Int32,System.String,System.String[],System.Double,System.Double)">
             <summary>
             Turns the given number of units into a textual representation with an appropriate unit scaling.
             </summary>
@@ -32304,15 +32323,18 @@
             <param name="decimalPlaces">Number of decimal places to display.</param>
             <param name="unitName">Name of unit display (e.g., you could use "m/h" for meters per hour).</param>
             <param name="symbolNames">Optional SI factor symbol or name array to use during textual conversion, defaults to <see cref="P:GSF.Units.SI.Symbols"/>.</param>
+            <param name="minimumFactor">Optional minimum SI factor. Defaults to <see cref="F:GSF.Units.SI.Yocto"/>.</param>
+            <param name="maximumFactor">Optional maximum SI factor. Defaults to <see cref="F:GSF.Units.SI.Yotta"/>.</param>
             <remarks>
             The <paramref name="symbolNames"/> array needs one string entry for each defined SI item ordered from
             least (<see cref="F:GSF.Units.SI.Yocto"/>) to greatest (<see cref="F:GSF.Units.SI.Yotta"/>), see <see cref="P:GSF.Units.SI.Names"/> or <see cref="P:GSF.Units.SI.Symbols"/>
             arrays for examples.
             </remarks>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="decimalPlaces"/> cannot be negative.</exception>
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="decimalPlaces"/> cannot be negative.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.</exception>
         </member>
-        <member name="M:GSF.Units.SI.ToScaledString(System.Double,System.String,System.String,System.String[],System.Int32)">
+        <member name="M:GSF.Units.SI.ToScaledString(System.Double,System.String,System.String,System.String[],System.Int32,System.Double,System.Double)">
             <summary>
             Turns the given number of units into a textual representation with an appropriate unit scaling
             given string array of factor names or symbols.
@@ -32322,12 +32344,15 @@
             <param name="unitName">Name of unit display (e.g., you could use "m/h" for meters per hour).</param>
             <param name="symbolNames">SI factor symbol or name array to use during textual conversion.</param>
             <param name="decimalPlaces">Optional number of decimal places to display.</param>
+            <param name="minimumFactor">Optional minimum SI factor. Defaults to <see cref="F:GSF.Units.SI.Yocto"/>.</param>
+            <param name="maximumFactor">Optional maximum SI factor. Defaults to <see cref="F:GSF.Units.SI.Yotta"/>.</param>
             <remarks>
             The <paramref name="symbolNames"/> array needs one string entry for each defined SI item ordered from
             least (<see cref="F:GSF.Units.SI.Yocto"/>) to greatest (<see cref="F:GSF.Units.SI.Yotta"/>), see <see cref="P:GSF.Units.SI.Names"/> or <see cref="P:GSF.Units.SI.Symbols"/>
             arrays for examples.
             </remarks>
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.</exception>
         </member>
         <member name="P:GSF.Units.SI.Names">
             <summary>
@@ -32448,7 +32473,7 @@
             This is the IEC standard name.
             </remarks>
         </member>
-        <member name="M:GSF.Units.SI2.ToScaledString(System.Int64,System.String,System.String[])">
+        <member name="M:GSF.Units.SI2.ToScaledString(System.Int64,System.String,System.String[],System.Int64,System.Int64)">
             <summary>
             Turns the given number of units (e.g., bytes) into a textual representation with an appropriate unit scaling
             and common named representation (e.g., KB, MB, GB, TB, etc.).
@@ -32456,14 +32481,17 @@
             <param name="totalUnits">Total units to represent textually.</param>
             <param name="unitName">Name of unit display (e.g., you could use "B" for bytes).</param>
             <param name="symbolNames">Optional SI factor symbol or name array to use during textual conversion, defaults to <see cref="P:GSF.Units.SI2.Symbols"/>.</param>
+            <param name="minimumFactor">Optional minimum SI factor. Defaults to <see cref="F:GSF.Units.SI2.Kilo"/>.</param>
+            <param name="maximumFactor">Optional maximum SI factor. Defaults to <see cref="F:GSF.Units.SI2.Exa"/>.</param>
             <remarks>
             The <paramref name="symbolNames"/> array needs one string entry for each defined SI item ordered from
             least (<see cref="F:GSF.Units.SI2.Kilo"/>) to greatest (<see cref="F:GSF.Units.SI2.Exa"/>), see <see cref="P:GSF.Units.SI2.Names"/> or <see cref="P:GSF.Units.SI2.Symbols"/>
             arrays for examples.
             </remarks>
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI2.Factors"/> array.</exception>
         </member>
-        <member name="M:GSF.Units.SI2.ToScaledString(System.Int64,System.String,System.String)">
+        <member name="M:GSF.Units.SI2.ToScaledString(System.Int64,System.String,System.String,System.Int64,System.Int64)">
             <summary>
             Turns the given number of units (e.g., bytes) into a textual representation with an appropriate unit scaling
             and common named representation (e.g., KB, MB, GB, TB, etc.).
@@ -32471,12 +32499,15 @@
             <param name="totalUnits">Total units to represent textually.</param>
             <param name="format">A numeric string format for scaled <paramref name="totalUnits"/>.</param>
             <param name="unitName">Name of unit display (e.g., you could use "B" for bytes).</param>
+            <param name="minimumFactor">Optional minimum SI factor. Defaults to <see cref="F:GSF.Units.SI2.Kilo"/>.</param>
+            <param name="maximumFactor">Optional maximum SI factor. Defaults to <see cref="F:GSF.Units.SI2.Exa"/>.</param>
             <remarks>
             <see cref="P:GSF.Units.SI2.Symbols"/> array is used for displaying SI symbol prefix for <paramref name="unitName"/>.
             </remarks>
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI2.Factors"/> array.</exception>
         </member>
-        <member name="M:GSF.Units.SI2.ToScaledString(System.Int64,System.Int32,System.String,System.String[])">
+        <member name="M:GSF.Units.SI2.ToScaledString(System.Int64,System.Int32,System.String,System.String[],System.Int64,System.Int64)">
             <summary>
             Turns the given number of units (e.g., bytes) into a textual representation with an appropriate unit scaling
             and common named representation (e.g., KB, MB, GB, TB, etc.).
@@ -32485,15 +32516,18 @@
             <param name="decimalPlaces">Number of decimal places to display.</param>
             <param name="unitName">Name of unit display (e.g., you could use "B" for bytes).</param>
             <param name="symbolNames">Optional SI factor symbol or name array to use during textual conversion, defaults to <see cref="P:GSF.Units.SI2.Symbols"/>.</param>
+            <param name="minimumFactor">Optional minimum SI factor. Defaults to <see cref="F:GSF.Units.SI2.Kilo"/>.</param>
+            <param name="maximumFactor">Optional maximum SI factor. Defaults to <see cref="F:GSF.Units.SI2.Exa"/>.</param>
             <remarks>
             The <paramref name="symbolNames"/> array needs one string entry for each defined SI item ordered from
             least (<see cref="F:GSF.Units.SI2.Kilo"/>) to greatest (<see cref="F:GSF.Units.SI2.Exa"/>), see <see cref="P:GSF.Units.SI2.Names"/> or <see cref="P:GSF.Units.SI2.Symbols"/>
             arrays for examples.
             </remarks>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="decimalPlaces"/> cannot be negative.</exception>
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="decimalPlaces"/> cannot be negative.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI2.Factors"/> array.</exception>
         </member>
-        <member name="M:GSF.Units.SI2.ToScaledString(System.Int64,System.String,System.String,System.String[],System.Int32)">
+        <member name="M:GSF.Units.SI2.ToScaledString(System.Int64,System.String,System.String,System.String[],System.Int32,System.Int64,System.Int64)">
             <summary>
             Turns the given number of units (e.g., bytes) into a textual representation with an appropriate unit scaling
             given string array of factor names or symbols.
@@ -32503,12 +32537,15 @@
             <param name="unitName">Name of unit display (e.g., you could use "B" for bytes).</param>
             <param name="symbolNames">SI factor symbol or name array to use during textual conversion.</param>
             <param name="decimalPlaces">Optional number of decimal places to display.</param>
+            <param name="minimumFactor">Optional minimum SI factor. Defaults to <see cref="F:GSF.Units.SI2.Kilo"/>.</param>
+            <param name="maximumFactor">Optional maximum SI factor. Defaults to <see cref="F:GSF.Units.SI2.Exa"/>.</param>
             <remarks>
             The <paramref name="symbolNames"/> array needs one string entry for each defined SI item ordered from
             least (<see cref="F:GSF.Units.SI2.Kilo"/>) to greatest (<see cref="F:GSF.Units.SI2.Exa"/>), see <see cref="P:GSF.Units.SI2.Names"/> or <see cref="P:GSF.Units.SI2.Symbols"/>
             arrays for examples.
             </remarks>
             <returns>A <see cref="T:System.String"/> representation of the number of units.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minimumFactor"/> or <paramref name="maximumFactor"/> is not defined in <see cref="P:GSF.Units.SI2.Factors"/> array.</exception>
         </member>
         <member name="P:GSF.Units.SI2.Names">
             <summary>
@@ -33576,26 +33613,33 @@
             <remarks>
             Note that this ToString overload will not display fractional seconds. To allow display of
             fractional seconds, or completely remove second resolution from the textual representation,
-            use the <see cref="M:GSF.Units.Time.ToString(System.Int32)"/> overload instead.
+            use the <see cref="M:GSF.Units.Time.ToString(System.Int32,System.Double)"/> overload instead.
             </remarks>
             <returns>
             The string representation of the value of this instance, consisting of the number of
             years, days, hours, minutes and seconds represented by this value.
             </returns>
         </member>
-        <member name="M:GSF.Units.Time.ToString(System.Int32)">
+        <member name="M:GSF.Units.Time.ToString(System.Int32,System.Double)">
             <summary>
             Converts the <see cref="T:GSF.Units.Time"/> value into a textual representation of years, days, hours,
             minutes and seconds with the specified number of fractional digits.
             </summary>
             <param name="secondPrecision">Number of fractional digits to display for seconds.</param>
+            <param name="minimumSubSecondResolution">
+            Minimum sub-second resolution to display. Defaults to <see cref="F:GSF.Units.SI.Milli"/>.
+            </param>
             <remarks>Set second precision to -1 to suppress seconds display.</remarks>
             <returns>
             The string representation of the value of this instance, consisting of the number of
             years, days, hours, minutes and seconds represented by this value.
             </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="minimumSubSecondResolution"/> is not less than or equal to <see cref="F:GSF.Units.SI.Milli"/> or
+            <paramref name="minimumSubSecondResolution"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.
+            </exception>
         </member>
-        <member name="M:GSF.Units.Time.ToString(System.Int32,System.String[])">
+        <member name="M:GSF.Units.Time.ToString(System.Int32,System.String[],System.Double)">
             <summary>
             Converts the <see cref="T:GSF.Units.Time"/> value into a textual representation of years, days, hours,
             minutes and seconds with the specified number of fractional digits given string array of
@@ -33603,18 +33647,24 @@
             </summary>
             <param name="secondPrecision">Number of fractional digits to display for seconds.</param>
             <param name="timeNames">Time names array to use during textual conversion.</param>
+            <param name="minimumSubSecondResolution">
+            Minimum sub-second resolution to display. Defaults to <see cref="F:GSF.Units.SI.Milli"/>.
+            </param>
             <remarks>
             <para>Set second precision to -1 to suppress seconds display.</para>
             <para>
             <paramref name="timeNames"/> array needs one string entry for each of the following names:<br/>
-            " year", " years", " day", " days", " hour", " hours", " minute", " minutes", " second",
-            " seconds", "less than a minute", "0 seconds" and "less than a second".
+            " year", " years", " day", " days", " hour", " hours", " minute", " minutes", " second", " seconds", "less than ".
             </para>
             </remarks>
             <returns>
             The string representation of the value of this instance, consisting of the number of
             years, days, hours, minutes and seconds represented by this value.
             </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="minimumSubSecondResolution"/> is not less than or equal to <see cref="F:GSF.Units.SI.Milli"/> or
+            <paramref name="minimumSubSecondResolution"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.
+            </exception>
         </member>
         <member name="M:GSF.Units.Time.CompareTo(System.Object)">
             <summary>
@@ -33716,7 +33766,7 @@
             </summary>
             <remarks>
             Note that this ToString overload matches <see cref="M:System.Double.ToString(System.String)"/>, use
-            <see cref="M:GSF.Units.Time.ToString(System.Int32)"/> to convert <see cref="T:GSF.Units.Time"/> value into a textual
+            <see cref="M:GSF.Units.Time.ToString(System.Int32,System.Double)"/> to convert <see cref="T:GSF.Units.Time"/> value into a textual
             representation of years, days, hours, minutes and seconds.
             </remarks>
             <param name="format">A format string.</param>
@@ -33731,7 +33781,7 @@
             </summary>
             <remarks>
             Note that this ToString overload matches <see cref="M:System.Double.ToString(System.IFormatProvider)"/>, use
-            <see cref="M:GSF.Units.Time.ToString(System.Int32)"/> to convert <see cref="T:GSF.Units.Time"/> value into a textual
+            <see cref="M:GSF.Units.Time.ToString(System.Int32,System.Double)"/> to convert <see cref="T:GSF.Units.Time"/> value into a textual
             representation of years, days, hours, minutes and seconds.
             </remarks>
             <param name="provider">
@@ -33748,7 +33798,7 @@
             </summary>
             <remarks>
             Note that this ToString overload matches <see cref="M:System.Double.ToString(System.String,System.IFormatProvider)"/>, use
-            <see cref="M:GSF.Units.Time.ToString(System.Int32)"/> to convert <see cref="T:GSF.Units.Time"/> value into a textual representation
+            <see cref="M:GSF.Units.Time.ToString(System.Int32,System.Double)"/> to convert <see cref="T:GSF.Units.Time"/> value into a textual representation
             of years, days, hours, minutes and seconds.
             </remarks>
             <param name="format">A format specification.</param>
