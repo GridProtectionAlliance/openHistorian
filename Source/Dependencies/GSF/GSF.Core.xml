@@ -27717,11 +27717,6 @@
             Represents the smallest possible value of a <see cref="T:GSF.Ticks"/>. This field is constant.
             </summary>
         </member>
-        <member name="F:GSF.Ticks.TimeNames">
-            <summary>
-            Standard time names used by <see cref="M:GSF.Ticks.ToElapsedTimeString"/> method.
-            </summary>
-        </member>
         <member name="M:GSF.Ticks.ToSeconds(GSF.Ticks)">
             <summary>
             Converts <paramref name="value"/>, in 100-nanosecond tick intervals, to seconds.
@@ -33526,24 +33521,35 @@
             </example>
             <para>
             Note that the <see cref="M:GSF.Units.Time.ToString"/> method will convert the <see cref="T:GSF.Units.Time"/> value, in seconds,
-            into a textual representation of years, days, hours, minutes and seconds.
+            into a textual representation of years, days, hours, minutes and seconds using the static function
+            <see cref="M:GSF.Units.Time.ToElapsedTimeString(System.Double,System.Int32,System.String[],System.Double)"/>.
             </para>
             </remarks>
         </member>
         <member name="F:GSF.Units.Time.SecondsPerTick">
-            <summary>Fractional number of seconds in one tick.</summary>
+            <summary>
+            Fractional number of seconds in one tick.
+            </summary>
         </member>
         <member name="F:GSF.Units.Time.SecondsPerMinute">
-            <summary>Number of seconds in one minute.</summary>
+            <summary>
+            Number of seconds in one minute.
+            </summary>
         </member>
         <member name="F:GSF.Units.Time.SecondsPerHour">
-            <summary>Number of seconds in one hour.</summary>
+            <summary>
+            Number of seconds in one hour.
+            </summary>
         </member>
         <member name="F:GSF.Units.Time.SecondsPerDay">
-            <summary>Number of seconds in one day.</summary>
+            <summary>
+            Number of seconds in one day.
+            </summary>
         </member>
         <member name="F:GSF.Units.Time.SecondsPerWeek">
-            <summary>Number of seconds in one week.</summary>
+            <summary>
+            Number of seconds in one week.
+            </summary>
         </member>
         <member name="M:GSF.Units.Time.#ctor(System.Double)">
             <summary>
@@ -34059,6 +34065,11 @@
         <member name="F:GSF.Units.Time.MinValue">
             <summary>Represents the smallest possible value of a <see cref="T:GSF.Units.Time"/>. This field is constant.</summary>
         </member>
+        <member name="F:GSF.Units.Time.TimeNames">
+            <summary>
+            Standard time names used by <see cref="M:GSF.Units.Time.ToElapsedTimeString(System.Double,System.Int32,System.String[],System.Double)"/> method.
+            </summary>
+        </member>
         <member name="M:GSF.Units.Time.FromAtomicUnitsOfTime(System.Double)">
             <summary>
             Creates a new <see cref="T:GSF.Units.Time"/> value from the specified <paramref name="value"/> in atomic units of time.
@@ -34132,6 +34143,37 @@
             </returns>
             <exception cref="T:System.ArgumentOutOfRangeException">
             Year is less than 1 or greater than 9999.
+            </exception>
+        </member>
+        <member name="M:GSF.Units.Time.ToElapsedTimeString(System.Double,System.Int32,System.String[],System.Double)">
+            <summary>
+            Converts total <paramref name="seconds"/> into a textual representation of years, days, hours,
+            minutes and seconds with the specified number of fractional digits given string array of
+            time names.
+            </summary>
+            <param name="seconds">Seconds to convert to elapsed time.</param>
+            <param name="secondPrecision">Number of fractional digits to display for seconds.</param>
+            <param name="timeNames">Time names array to use during textual conversion.</param>
+            <param name="minimumSubSecondResolution">
+            Minimum sub-second resolution to display. Defaults to <see cref="F:GSF.Units.SI.Milli"/>.
+            </param>
+            <remarks>
+            <para>
+            Set <paramref name="secondPrecision"/> to -1 to suppress seconds display, this will
+            force minimum resolution of time display to minutes.
+            </para>
+            <para>
+            <paramref name="timeNames"/> array needs one string entry for each of the following names:<br/>
+            " year", " years", " day", " days", " hour", " hours", " minute", " minutes", " second", " seconds", "less than ".
+            </para>
+            </remarks>
+            <returns>
+            The string representation of the value of this instance, consisting of the number of
+            years, days, hours, minutes and seconds represented by this value.
+            </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="minimumSubSecondResolution"/> is not less than or equal to <see cref="F:GSF.Units.SI.Milli"/> or
+            <paramref name="minimumSubSecondResolution"/> is not defined in <see cref="P:GSF.Units.SI.Factors"/> array.
             </exception>
         </member>
         <member name="T:GSF.Units.Voltage">

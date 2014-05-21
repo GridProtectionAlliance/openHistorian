@@ -7994,10 +7994,11 @@
             Total fixed length of <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.CommonFrameHeader"/> for IEC 61850-90-5 data frames.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.IEC61850_90_5.CommonFrameHeader.#ctor(GSF.PhasorProtocols.IEC61850_90_5.FrameType,System.UInt16,GSF.Ticks,System.String,System.Int32,System.UInt32)">
+        <member name="M:GSF.PhasorProtocols.IEC61850_90_5.CommonFrameHeader.#ctor(GSF.PhasorProtocols.IEC61850_90_5.ConfigurationFrame,GSF.PhasorProtocols.IEC61850_90_5.FrameType,System.UInt16,GSF.Ticks,System.String,System.Int32,System.UInt32)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEC61850_90_5.CommonFrameHeader"/> from specified parameters.
             </summary>
+            <param name="configurationFrame">IEC 61850-90-5 <see cref="P:GSF.PhasorProtocols.IEC61850_90_5.CommonFrameHeader.ConfigurationFrame"/> if available.</param>
             <param name="typeID">The IEC 61850-90-5 specific frame type of this frame.</param>
             <param name="idCode">The ID code of this frame.</param>
             <param name="timestamp">The timestamp of this frame.</param>
@@ -14407,10 +14408,11 @@
             Total fixed length of <see cref="T:GSF.PhasorProtocols.IEEEC37_118.CommonFrameHeader"/>.
             </summary>
         </member>
-        <member name="M:GSF.PhasorProtocols.IEEEC37_118.CommonFrameHeader.#ctor(GSF.PhasorProtocols.IEEEC37_118.FrameType,System.UInt16,GSF.Ticks)">
+        <member name="M:GSF.PhasorProtocols.IEEEC37_118.CommonFrameHeader.#ctor(GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1,GSF.PhasorProtocols.IEEEC37_118.FrameType,System.UInt16,GSF.Ticks)">
             <summary>
             Creates a new <see cref="T:GSF.PhasorProtocols.IEEEC37_118.CommonFrameHeader"/> from specified parameters.
             </summary>
+            <param name="configurationFrame">IEEE C37.118 <see cref="T:GSF.PhasorProtocols.IEEEC37_118.ConfigurationFrame1"/> if available.</param>
             <param name="typeID">The IEEE C37.118 specific frame type of this frame.</param>
             <param name="idCode">The ID code of this frame.</param>
             <param name="timestamp">The timestamp of this frame.</param>

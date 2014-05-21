@@ -994,6 +994,616 @@
             <param name="equipmentID">The ID of the equipment to be converted to a string.</param>
             <returns>A string containing the name of the equipment with the given ID.</returns>
         </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.None">
+            <summary>
+            No quantity characteristic.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.Instantaneous">
+            <summary>
+            Instantaneous f(t).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.Spectra">
+            <summary>
+            Spectra F(F).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.Peak">
+            <summary>
+            Peak value.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.RMS">
+            <summary>
+            RMS value.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.HRMS">
+            <summary>
+            Harmonic RMS.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.Frequency">
+            <summary>
+            Frequency.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.TotalTHD">
+            <summary>
+            Total harmonic distortion (%).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.EvenTHD">
+            <summary>
+            Even harmonic distortion (%).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.OddTHD">
+            <summary>
+            Odd harmonic distortion (%).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.CrestFactor">
+            <summary>
+            Crest factor.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FormFactor">
+            <summary>
+            Form factor.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.ArithSum">
+            <summary>
+            Arithmetic sum.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.S0S1">
+            <summary>
+            Zero sequence component unbalance (%).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.S2S1">
+            <summary>
+            Negative sequence component unbalance (%).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SPos">
+            <summary>
+            Positive sequence component.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SNeg">
+            <summary>
+            Negative sequence component.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SZero">
+            <summary>
+            Zero sequence component.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.AvgImbal">
+            <summary>
+            Imbalance by max deviation from average.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.TotalTHDRMS">
+            <summary>
+            Total THD normalized to RMS.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.OddTHDRMS">
+            <summary>
+            Odd THD normalized to RMS.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.EvenTHDRMS">
+            <summary>
+            Even THD normalized to RMS.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.TID">
+            <summary>
+            Total interharmonic distortion.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.TIDRMS">
+            <summary>
+            Total interharmonic distortion normalized to RMS.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.IHRMS">
+            <summary>
+            Interharmonic RMS.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SpectraHGroup">
+            <summary>
+            Spectra by harmonic group index.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SpectraIGroup">
+            <summary>
+            Spectra by interharmonic group index.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.TIF">
+            <summary>
+            TIF.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrMagAvg">
+            <summary>
+            Flicker average RMS value.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrMaxDVV">
+            <summary>
+            dV/V base.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrFreqMax">
+            <summary>
+            Frequence of maximum flicker harmonic.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrMagMax">
+            <summary>
+            Magnitude of maximum flicker harmonic.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrWgtAvg">
+            <summary>
+            Spectrum weighted average.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrSpectrum">
+            <summary>
+            Flicker spectrum VRMS(F).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrPST">
+            <summary>
+            Short term flicker.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrPLT">
+            <summary>
+            Long term flicker.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.TIFRMS">
+            <summary>
+            TIF normalized to RMS.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PLTSlide">
+            <summary>
+            Sliding PLT.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PiLPF">
+            <summary>
+            Pi LPF.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PiMax">
+            <summary>
+            Pi max.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PiRoot">
+            <summary>
+            Pi root.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PiRootLPF">
+            <summary>
+            Pi root LPF.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.IT">
+            <summary>
+            IT.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.RMSDemand">
+            <summary>
+            RMS value of current for a demand interval.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.ANSITDF">
+            <summary>
+            Transformer derating factor.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.KFactor">
+            <summary>
+            Transformer K factor.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.TDD">
+            <summary>
+            Total demand distortion.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.RMSPeakDemand">
+            <summary>
+            Peak demand current.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.P">
+            <summary>
+            Real power (watts).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.Q">
+            <summary>
+            Reactive power (VAR).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.S">
+            <summary>
+            Apparent power (VA).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PF">
+            <summary>
+            True power factor - (Vrms * Irms) / P.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.DF">
+            <summary>
+            Displacement factor - Cosine of the phase angle between fundamental frequency voltage and current phasors.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PDemand">
+            <summary>
+            Value of active power for a demand interval.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QDemand">
+            <summary>
+            Value of reactive power for a demand interval.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SDemand">
+            <summary>
+            Value of apparent power for a demand interval.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.DFDemand">
+            <summary>
+            Value of displacement power factor for a demand interval.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PFDemand">
+            <summary>
+            Value of true power factor for a demand interval.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PPredDemand">
+            <summary>
+            Predicted value of active power for current demand interval.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QPredDemand">
+            <summary>
+            Predicted value of reactive power for current demand interval.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SPredDemand">
+            <summary>
+            Predicted value of apparent power for current demand interval.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PCoQDemand">
+            <summary>
+            Value of active power coincident with reactive power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PCoSDemand">
+            <summary>
+            Value of active power coincident with apparent power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QCoPDemand">
+            <summary>
+            Value of reactive power coincident with active power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QCoSDemand">
+            <summary>
+            Value of reactive power coincident with apparent power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.DFCoSDemand">
+            <summary>
+            Value of displacement power factor coincident with apparent power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PFCoSDemand">
+            <summary>
+            Value of true power factor coincident with apparent power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PFCoPDemand">
+            <summary>
+            Value of true power factor coincident with active power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PFCoQDemand">
+            <summary>
+            Value of true power factor coincident with reactive power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.AngleFund">
+            <summary>
+            Value of the power angle at fundamental frequency. 
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QFund">
+            <summary>
+            Value of the reactive power at fundamental frequency.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PFVector">
+            <summary>
+            True power factor - IEEE vector calculations.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.DFVector">
+            <summary>
+            Displacement factor - IEEE vector calculations.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SVector">
+            <summary>
+            Value of apparent power - IEEE vector calculations.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SVectorFund">
+            <summary>
+            Value of fundamental frequency apparent power - IEEE vector calculations.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SFund">
+            <summary>
+            Value of fundamental frequency apparent power.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SCoPDemand">
+            <summary>
+            Apparent power coincident with active power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SCoQDemand">
+            <summary>
+            Apparent power coincident with reactive power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PFArith">
+            <summary>
+            True power factor - IEEE arithmetic calculations.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.DFArith">
+            <summary>
+            Displacement factor - IEEE arithmetic calculations.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SArith">
+            <summary>
+            Value of apparent power - IEEE arithmetic calculations.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SArithFund">
+            <summary>
+            Value of fundamental frequency apparent power - IEEE arithmetic calculations.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SPeakDemand">
+            <summary>
+            Peak apparent power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QPeakDemand">
+            <summary>
+            Peak reactive power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PPeakDemand">
+            <summary>
+            Peak active power demand.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PHarmonic">
+            <summary>
+            Net harmonic active power.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PHarmonicUnsigned">
+            <summary>
+            Arithmetic sum harmonic active power.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PFund">
+            <summary>
+            Value of fundamental frequency real power.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIntg">
+            <summary>
+            Value of active power integrated over time (Energy - watt-hours).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIntgPos">
+            <summary>
+            Value of active power integrated over time (Energy - watt-hours) in the positive direction (toward load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIntgPosFund">
+            <summary>
+            Value of active fundamental frequency power integrated over time
+            (Energy - watt-hours) in the positive direction (toward load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIntgNeg">
+            <summary>
+            Value of active power integrated over time (Energy - watt-hours) in the negative direction (away from load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIntgNegFund">
+            <summary>
+            Value of active fundamental frequency power integrated over time
+            (Energy - watt-hours) in the negative direction (away from load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIntg">
+            <summary>
+            Value of reactive power integrated over time (var-hours).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIntgPos">
+            <summary>
+            Value of reactive power integrated over time (Energy - watt-hours) in the positive direction (toward load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIntgPosFund">
+            <summary>
+            Value of fundamental frequency reactive power integrated over time
+            (Energy - watt-hours) in the positive direction (toward load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIntgNegFund">
+            <summary>
+            Value of fundamental frequency reactive power integrated over time
+            (Energy - watt-hours) in the negative direction (away from load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIntgNeg">
+            <summary>
+            Value of reactive power integrated over time (Energy - watt-hours) in the negative direction (away from load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SIntg">
+            <summary>
+            Value of apparent power integrated over time (VA-hours).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SIntgFund">
+            <summary>
+            Value of fundamental frequency apparent power integrated over time (VA-hours).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIVLIntg">
+            <summary>
+            Value of active power integrated over time (Energy - watt-hours).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIVLIntgPos">
+            <summary>
+            Value of active power integrated over time (Energy - watt-hours) in the positive direction (toward load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIVLIntgPosFund">
+            <summary>
+            Value of active fundamental frequency power integrated over time
+            (Energy - watt-hours) in the positive direction (toward load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIVLIntgNeg">
+            <summary>
+            Value of active power integrated over time (Energy - watt-hours) in the negative direction (away from load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PIVLIntgNegFund">
+            <summary>
+            Value of active fundamental frequency power integrated over time
+            (Energy - watt-hours) in the negative direction (away from load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIVLIntg">
+            <summary>
+            Value of reactive power integrated over time (var-hours).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIVLIntgPos">
+            <summary>
+            Value of reactive power integrated over time (Energy - watt-hours) in the positive direction (toward load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIVLIntgPosFund">
+            <summary>
+            Value of fundamental frequency reactive power integrated over time
+            (Energy - watt-hours) in the positive direction (toward load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIVLIntgNegFund">
+            <summary>
+            Value of fundamental frequency reactive power integrated over time
+            (Energy - watt-hours) in the negative direction (away from load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QIVLIntgNeg">
+            <summary>
+            Value of reactive power integrated over time (Energy - watt-hours) in the negative direction (away from load).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SIVLIntg">
+            <summary>
+            Value of apparent power integrated over time (VA-hours).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.SIVLIntgFund">
+            <summary>
+            Value of fundamental frequency apparent power integrated over time (VA-hours).
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.DAxisField">
+            <summary>
+            D axis components.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.QAxis">
+            <summary>
+            Q axis components.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.Rotational">
+            <summary>
+            Rotational position.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.DAxis">
+            <summary>
+            D axis components.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.Linear">
+            <summary>
+            Linear position.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.TransferFunc">
+            <summary>
+            Transfer function.
+            </summary>
+        </member>
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.Status">
+            <summary>
+            Status data.
+            </summary>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.QuantityCharacteristic.ToString(System.Guid)">
+            <summary>
+            Returns the name of the given quantity characteristic.
+            </summary>
+            <param name="quantityCharacteristic">The GUID tag which identifies the quantity characteristic.</param>
+            <returns>The name of the given quantity characteristic.</returns>
+        </member>
         <member name="T:GSF.PQDIF.Logical.SeriesValueType">
             <summary>
             Defines tags used to identify different series value types.
