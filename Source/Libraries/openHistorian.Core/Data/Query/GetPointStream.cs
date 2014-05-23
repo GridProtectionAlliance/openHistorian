@@ -26,17 +26,19 @@ using System.Collections.Generic;
 using System.Linq;
 using GSF.Collections;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Server;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Filters;
 using openHistorian.Collections;
-using GSF.SortedTreeStore.Tree;
 
 namespace openHistorian.Data.Query
 {
 
+    /// <summary>
+    /// A helper way to read data from a stream.
+    /// </summary>
+    [Obsolete("This will soon be removed")]
     public class PointStream
-            : TreeStream<HistorianKey, HistorianValue>, IDisposable
+            : TreeStream<HistorianKey, HistorianValue>
     {
         IDatabaseReader<HistorianKey, HistorianValue> m_reader;
         TreeStream<HistorianKey, HistorianValue> m_stream;
@@ -45,12 +47,6 @@ namespace openHistorian.Data.Query
         {
             m_stream = stream;
             m_reader = reader;
-        }
-
-        public void Dispose()
-        {
-            m_stream.Cancel();
-            m_reader.Dispose();
         }
 
         public HistorianKey CurrentKey = new HistorianKey();
@@ -62,7 +58,7 @@ namespace openHistorian.Data.Query
             return Read(CurrentKey, CurrentValue);
         }
 
-        public override bool Read(HistorianKey key, HistorianValue value)
+        protected override bool ReadNext(HistorianKey key, HistorianValue value)
         {
             if (m_stream.Read(CurrentKey, CurrentValue))
             {
@@ -73,6 +69,15 @@ namespace openHistorian.Data.Query
             {
                 IsValid = false;
                 return false;
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                m_reader.Dispose();
+                m_reader = null;
             }
         }
     }

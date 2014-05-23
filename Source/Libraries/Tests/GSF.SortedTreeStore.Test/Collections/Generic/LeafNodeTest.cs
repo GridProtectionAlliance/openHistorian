@@ -83,14 +83,14 @@ namespace GSF.SortedTreeStore.Tree
                     for (int y = 0; y <= x; y++)
                     {
                         randomizer.GetInSequence(y, key, value);
-                        if (!scanner.Read())
+                        if (!scanner.Read(key2, value2))
                             throw new Exception();
-                        if (!key.IsEqualTo(scanner.CurrentKey))
+                        if (!key.IsEqualTo(key2))
                             throw new Exception();
-                        if (!value.IsEqualTo(scanner.CurrentValue))
+                        if (!value.IsEqualTo(value2))
                             throw new Exception();
                     }
-                    if (scanner.Read())
+                    if (scanner.Read(key2, value2))
                         throw new Exception();
                 }
 
@@ -128,7 +128,7 @@ namespace GSF.SortedTreeStore.Tree
                 System.Console.WriteLine(StepTimer.Time(count, (sw) =>
                 {
                     nextKeyIndex = 2;
-                    node = nodeInitializer.Create<TKey,TValue>(0);
+                    node = nodeInitializer.Create<TKey, TValue>(0);
                     SparseIndex<TKey> sparse = new SparseIndex<TKey>();
                     sparse.Initialize(bs, pageSize, getNextKey, 0, 1);
                     node.Initialize(bs, pageSize, getNextKey, sparse);
@@ -159,11 +159,12 @@ namespace GSF.SortedTreeStore.Tree
                 }));
 
 
+
                 System.Console.WriteLine(StepTimer.Time(count, () =>
                 {
                     SortedTreeScannerBase<TKey, TValue> scanner = node.CreateTreeScanner();
                     scanner.SeekToStart();
-                    while (scanner.Read())
+                    while (scanner.Read(key, value))
                         ;
                 }));
 

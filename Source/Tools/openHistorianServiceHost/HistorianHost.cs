@@ -14,13 +14,7 @@ namespace openHistorianServiceHost
         {
             Directory.GetFiles(@"G:\HistorianData\", "*.d2").ToList().ForEach(File.Delete);
 
-            HistorianDatabaseInstance serverOptions = new HistorianDatabaseInstance();
-            serverOptions.IsNetworkHosted = true;
-            serverOptions.ConnectionString = "port=54996";
-            serverOptions.InMemoryArchive = false;
-            serverOptions.Paths = new[] { @"G:\HistorianData\" };
-
-            m_server = new HistorianServer(serverOptions);
+            m_server = new HistorianServer(@"G:\HistorianData\");
         }
 
         private bool m_disposed;

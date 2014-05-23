@@ -24,9 +24,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Text;
 using GSF;
 using GSF.SortedTreeStore;
+using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Net;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
@@ -55,7 +57,7 @@ namespace openHistorian.Adapters
         private string m_server;
         private int m_port;
         private bool m_outputIsForArchive;
-        private RemoteClientRoot m_client;
+        private RemoteClient m_client;
         private HistorianInputQueue m_inputQueue;
         private long m_measurementsPublished;
         private bool m_disposed;
@@ -272,67 +274,20 @@ namespace openHistorian.Adapters
         /// <exception cref="OperationCanceledException">Acknowledgement is not received from historian for published data.</exception>
         protected override void ProcessMeasurements(IMeasurement[] measurements)
         {
-            m_inputQueue.Enqueue(new StreamPoints(measurements));
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            foreach (var measurement in measurements)
+            {
+                key.Timestamp = (ulong)(long)measurement.Timestamp;
+                key.PointID = measurement.Key.ID;
+                key.EntryNumber = 0;
+
+                value.Value1 = BitMath.ConvertToUInt64((float)measurement.AdjustedValue);
+                value.Value2 = 0;
+                value.Value3 = (ulong)measurement.StateFlags;
+                m_inputQueue.Enqueue(key,value);
+            }
             m_measurementsPublished += measurements.Length;
-        }
-
-        private class StreamPoints
-            : TreeStream<HistorianKey, HistorianValue>
-        {
-            private int m_index;
-            private readonly IMeasurement[] m_measurements;
-
-            public StreamPoints(IMeasurement[] measurements)
-            {
-                m_index = 0;
-                m_measurements = measurements;
-            }
-
-            public bool Read(out ulong timestamp, out ulong pointId, out ulong quality, out ulong value)
-            {
-                if (m_index < m_measurements.Length)
-                {
-                    IMeasurement measurement = m_measurements[m_index];
-                    timestamp = (ulong)(long)measurement.Timestamp;
-                    pointId = measurement.Key.ID;
-                    quality = (ulong)measurement.StateFlags;
-                    value = BitMath.ConvertToUInt64((float)measurement.AdjustedValue);
-                    m_index++;
-                    return true;
-                }
-
-                timestamp = 0;
-                pointId = 0;
-                quality = 0;
-                value = 0;
-                return false;
-            }
-
-            public override bool Read(HistorianKey key, HistorianValue value)
-            {
-                if (m_index < m_measurements.Length)
-                {
-                    IMeasurement measurement = m_measurements[m_index];
-                    key.Timestamp = (ulong)(long)measurement.Timestamp;
-                    key.PointID = measurement.Key.ID;
-                    key.EntryNumber = 0;
-                    
-                    value.Value1 = BitMath.ConvertToUInt64((float)measurement.AdjustedValue);
-                    value.Value2 = 0;
-                    value.Value3 = (ulong)measurement.StateFlags;
-
-                    m_index++;
-                    return true;
-                }
-                key.Clear();
-                value.Clear();
-                return false;
-            }
-
-            public override void Cancel()
-            {
-                m_index = m_measurements.Length;
-            }
         }
 
         #endregion

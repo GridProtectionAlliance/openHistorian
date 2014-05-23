@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using DataExtractionUtility.Properties;
 using GSF;
 using GSF.IO;
+using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Net;
 using GSF.TimeSeries;

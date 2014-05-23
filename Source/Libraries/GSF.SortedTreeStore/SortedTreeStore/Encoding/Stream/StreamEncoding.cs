@@ -25,35 +25,34 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
-    //public delegate SortedTreeKeyMethodsBase CreateKeyMethod();
-
-    //public delegate SortedTreeValueMethodsBase CreateValueMethod();
-
-    public static class StreamEncoding
+    public class StreamEncoding
     {
-
-        private static readonly DualEncodingDictionary<CreateStreamEncodingBase> DoubleEncoding;
+        private readonly DualEncodingDictionary<CreateStreamEncodingBase> m_doubleEncoding;
 
         //static Dictionary<Type, SortedTreeValueMethodsBase> s_valueMethods;
 
-        static StreamEncoding()
+        internal StreamEncoding()
         {
-            DoubleEncoding = new DualEncodingDictionary<CreateStreamEncodingBase>();
+            m_doubleEncoding = new DualEncodingDictionary<CreateStreamEncodingBase>();
+        }
 
-        }
-        
-        public static void Register(CreateStreamEncodingBase encoding)
+        /// <summary>
+        /// Registers the provided type in the encoding library.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void Register<T>()
+            where T : SortedTreeTypeBase, new()
         {
-            DoubleEncoding.Register(encoding);
+            m_doubleEncoding.Register<T>();
         }
-        
-        internal static StreamEncodingBase<TKey, TValue> CreateStreamEncoding<TKey, TValue>(EncodingDefinition encodingMethod)
+
+        internal StreamEncodingBase<TKey, TValue> CreateStreamEncoding<TKey, TValue>(EncodingDefinition encodingMethod)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
             CreateStreamEncodingBase encoding;
 
-            if (DoubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
+            if (m_doubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
                 return encoding.Create<TKey, TValue>();
             
             return new GenericStreamEncoding<TKey, TValue>(encodingMethod);

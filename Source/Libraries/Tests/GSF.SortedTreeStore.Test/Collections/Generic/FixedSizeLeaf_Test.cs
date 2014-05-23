@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.SortedTreeStore.Types;
 using NUnit.Framework;
-using openHistorian.Collections;
 
 namespace GSF.SortedTreeStore.Tree
 {

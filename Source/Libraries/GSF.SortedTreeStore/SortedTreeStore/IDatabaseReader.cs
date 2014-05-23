@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 using System;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
 

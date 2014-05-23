@@ -29,14 +29,14 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Filters
 {
-    public static class FilterLibrary
+    public class FilterLibrary
     {
-        private static readonly object SyncRoot;
-        private static readonly Dictionary<Guid, CreateFilterBase> Filters;
-        private static readonly Dictionary<Guid, CreateSeekFilterBase> SeekFilters;
-        private static readonly HashSet<Type> RegisteredTypes;
+        private readonly object SyncRoot;
+        private readonly Dictionary<Guid, CreateFilterBase> Filters;
+        private readonly Dictionary<Guid, CreateSeekFilterBase> SeekFilters;
+        private readonly HashSet<Type> RegisteredTypes;
 
-        static FilterLibrary()
+        internal FilterLibrary()
         {
             SyncRoot = new object();
             Filters = new Dictionary<Guid, CreateFilterBase>();
@@ -47,8 +47,8 @@ namespace GSF.SortedTreeStore.Filters
             Register(new TimestampFilter());
         }
 
-        public static void Register<T>()
-            where T : SortedTreeTypeBase<T>, new()
+        public void Register<T>()
+            where T : SortedTreeTypeBase, new()
         {
 
             T type = new T();
@@ -77,7 +77,7 @@ namespace GSF.SortedTreeStore.Filters
         /// Registers this type
         /// </summary>
         /// <param name="encoding"></param>
-        public static void Register(CreateFilterBase encoding)
+        public void Register(CreateFilterBase encoding)
         {
             lock (SyncRoot)
             {
@@ -89,7 +89,7 @@ namespace GSF.SortedTreeStore.Filters
         /// Registers this type
         /// </summary>
         /// <param name="encoding"></param>
-        public static void Register(CreateSeekFilterBase encoding)
+        public void Register(CreateSeekFilterBase encoding)
         {
             lock (SyncRoot)
             {
@@ -98,7 +98,7 @@ namespace GSF.SortedTreeStore.Filters
         }
 
 
-        public static MatchFilterBase<TKey, TValue> GetMatchFilter<TKey, TValue>(Guid filter, BinaryStreamBase stream)
+        public MatchFilterBase<TKey, TValue> GetMatchFilter<TKey, TValue>(Guid filter, BinaryStreamBase stream)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
@@ -126,7 +126,7 @@ namespace GSF.SortedTreeStore.Filters
             throw new Exception("Filter not found");
         }
 
-        public static SeekFilterBase<TKey> GetSeekFilter<TKey>(Guid filter, BinaryStreamBase stream)
+        public SeekFilterBase<TKey> GetSeekFilter<TKey>(Guid filter, BinaryStreamBase stream)
             where TKey : SortedTreeTypeBase<TKey>, new()
         {
             Type keyType = typeof(TKey);

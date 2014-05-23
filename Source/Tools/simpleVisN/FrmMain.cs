@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services.Reader;
 using NPlot;
 using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using openHistorian.Data.Query;
 using openHistorian.Data.Types;
-using GSF.SortedTreeStore.Server;
+using GSF.SortedTreeStore.Services;
 using PlotSurface2D = NPlot.Windows.PlotSurface2D;
 
 namespace simpleVisN

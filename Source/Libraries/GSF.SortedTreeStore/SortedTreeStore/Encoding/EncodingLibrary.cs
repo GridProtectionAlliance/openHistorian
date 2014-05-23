@@ -30,19 +30,30 @@ namespace GSF.SortedTreeStore.Encoding
     /// Contains all of the fundamental encoding methods. Types implementing <see cref="SortedTreeTypeBase{T}"/>
     /// will automatically register when passed to one of the child methods. 
     /// </summary>
-    public static class EncodingLibrary
+    public class EncodingLibrary
     {
-        private static readonly SingleEncodingDictionary<CreateSingleValueEncodingBase> SingleEncoding;
-        private static readonly DualEncodingDictionary<CreateDoubleValueEncodingBase> DoubleEncoding;
+        private readonly SingleEncodingDictionary<CreateSingleValueEncodingBase> m_singleEncoding;
+        private readonly DualEncodingDictionary<CreateDoubleValueEncodingBase> m_doubleEncoding;
 
-        static EncodingLibrary()
+        internal EncodingLibrary()
         {
-            SingleEncoding = new SingleEncodingDictionary<CreateSingleValueEncodingBase>();
-            DoubleEncoding = new DualEncodingDictionary<CreateDoubleValueEncodingBase>();
+            m_singleEncoding = new SingleEncodingDictionary<CreateSingleValueEncodingBase>();
+            m_doubleEncoding = new DualEncodingDictionary<CreateDoubleValueEncodingBase>();
 
-            SingleEncoding.Register(new CreateFixedSizeSingleEncoding());
-            DoubleEncoding.Register(new CreateFixedSizeCombinedEncoding());
-            DoubleEncoding.Register(new CreateFixedSizeDualSingleEncoding());
+            m_singleEncoding.Register(new CreateFixedSizeSingleEncoding());
+            m_doubleEncoding.Register(new CreateFixedSizeCombinedEncoding());
+            m_doubleEncoding.Register(new CreateFixedSizeDualSingleEncoding());
+        }
+
+        /// <summary>
+        /// Registers the provided type in the encoding library.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void Register<T>()
+            where T : SortedTreeTypeBase, new()
+        {
+            m_singleEncoding.Register<T>();
+            m_doubleEncoding.Register<T>();
         }
 
         /// <summary>
@@ -51,14 +62,14 @@ namespace GSF.SortedTreeStore.Encoding
         /// <typeparam name="T"></typeparam>
         /// <param name="encodingMethod"></param>
         /// <returns></returns>
-        public static SingleValueEncodingBase<T> GetEncodingMethod<T>(Guid encodingMethod)
+        public SingleValueEncodingBase<T> GetEncodingMethod<T>(Guid encodingMethod)
             where T : SortedTreeTypeBase<T>, new()
         {
             CreateSingleValueEncodingBase encoding;
 
-            if (SingleEncoding.TryGetEncodingMethod<T>(encodingMethod, out encoding))
+            if (m_singleEncoding.TryGetEncodingMethod<T>(encodingMethod, out encoding))
                 return encoding.Create<T>();
-            
+
             throw new Exception("Type is not registered");
         }
 
@@ -69,13 +80,13 @@ namespace GSF.SortedTreeStore.Encoding
         /// <typeparam name="TValue"></typeparam>
         /// <param name="encodingMethod"></param>
         /// <returns></returns>
-        public static DoubleValueEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(EncodingDefinition encodingMethod)
+        public DoubleValueEncodingBase<TKey, TValue> GetEncodingMethod<TKey, TValue>(EncodingDefinition encodingMethod)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
             CreateDoubleValueEncodingBase encoding;
 
-            if (DoubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
+            if (m_doubleEncoding.TryGetEncodingMethod<TKey, TValue>(encodingMethod, out encoding))
                 return encoding.Create<TKey, TValue>();
 
             if (encodingMethod.IsKeyValueEncoded)

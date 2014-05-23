@@ -27,7 +27,7 @@ namespace GSF.SortedTreeStore.Filters
                 pointId.Save(bs);
                 bs.Position = 0;
 
-                var filter = FilterLibrary.GetMatchFilter<HistorianKey, HistorianValue>(bs.ReadGuid(), bs);
+                var filter = Library.Filters.GetMatchFilter<HistorianKey, HistorianValue>(bs.ReadGuid(), bs);
 
                 if (!filter.GetType().FullName.Contains("BitArrayFilter"))
                     throw new Exception("Wrong type");
@@ -50,7 +50,7 @@ namespace GSF.SortedTreeStore.Filters
                 pointId.Save(bs);
                 bs.Position = 0;
 
-                var filter = FilterLibrary.GetMatchFilter<HistorianKey, HistorianValue>(bs.ReadGuid(), bs);
+                var filter = Library.Filters.GetMatchFilter<HistorianKey, HistorianValue>(bs.ReadGuid(), bs);
 
                 if (!filter.GetType().FullName.Contains("UIntHashSet"))
                     throw new Exception("Wrong type");
@@ -73,7 +73,7 @@ namespace GSF.SortedTreeStore.Filters
                 pointId.Save(bs);
                 bs.Position = 0;
 
-                var filter = FilterLibrary.GetMatchFilter<HistorianKey, HistorianValue>(bs.ReadGuid(), bs);
+                var filter = Library.Filters.GetMatchFilter<HistorianKey, HistorianValue>(bs.ReadGuid(), bs);
 
                 if (!filter.GetType().FullName.Contains("ULongHashSet"))
                     throw new Exception("Wrong type");

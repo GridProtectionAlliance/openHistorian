@@ -54,7 +54,7 @@ namespace winformsVisN
 
 
 
-            OptimizeCompressionMethodTest.Run3();
+            //OptimizeCompressionMethodTest.Run3();
             return;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

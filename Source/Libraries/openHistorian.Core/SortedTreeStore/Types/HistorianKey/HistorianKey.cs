@@ -188,13 +188,8 @@ namespace openHistorian.Collections
             list.Add(new CreateTsCombinedEncoding());
             list.Add(new CreateHistorianFixedSizeCombinedEncoding());
             list.Add(new CreateHistorianFixedSizeDualSingleEncoding());
-            //list.Add(new CreateHistorianCompressionTs());
+            list.Add(new CreateHistorianCompressedStream());
             return list;
-
-            //CreateHistorianCompressionDelta.Register();
-            //CreateHistorianCompressionTs.Register();
-            CreateHistorianCompressedStream.Register();
-            //CreateHistorianPointCollection.Register();
         }
 
         public override string ToString()

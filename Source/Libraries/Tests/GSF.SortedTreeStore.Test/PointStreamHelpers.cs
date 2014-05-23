@@ -18,7 +18,7 @@ namespace openHistorian
             m_count = count;
         }
 
-        public override bool Read(HistorianKey key, HistorianValue value)
+        protected override bool ReadNext(HistorianKey key, HistorianValue value)
         {
             if (m_count <= 0)
             {
@@ -63,7 +63,7 @@ namespace openHistorian
             m_value2 = value2;
         }
 
-        public override bool Read(HistorianKey key, HistorianValue value)
+        protected override bool ReadNext(HistorianKey key, HistorianValue value)
         {
             if (m_count <= 0)
             {
@@ -136,8 +136,10 @@ namespace openHistorian
             where TKey : class, new()
             where TValue : class, new()
         {
+            TKey key = new TKey();
+            TValue value = new TValue();
             long x = 0;
-            while (stream.Read())
+            while (stream.Read(key, value))
                 x++;
             return x;
         }

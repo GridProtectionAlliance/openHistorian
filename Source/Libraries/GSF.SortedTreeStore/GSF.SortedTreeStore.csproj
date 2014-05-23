@@ -104,6 +104,7 @@
     <Compile Include="Collections\Index`1.cs" />
     <Compile Include="Collections\IntIndex.cs" />
     <Compile Include="Collections\GuidIndex.cs" />
+    <Compile Include="Collections\IsolatedNode`1.cs" />
     <Compile Include="Collections\WeakList`1.cs" />
     <Compile Include="Diagnostics\ConsoleLogger.cs" />
     <Compile Include="Diagnostics\Logger.cs" />
@@ -119,16 +120,14 @@
     <Compile Include="Net\NetworkBinaryStream.cs" />
     <Compile Include="Number.cs" />
     <Compile Include="SortedTreeStore\BufferedTreeStream%272.cs" />
-    <Compile Include="SortedTreeStore\Client\ClientRootBase.cs" />
-    <Compile Include="SortedTreeStore\Client\LocalClientDatabase%272.cs" />
-    <Compile Include="SortedTreeStore\Client\DatabaseInfo.cs" />
-    <Compile Include="SortedTreeStore\Client\LocalClientRoot.cs" />
-    <Compile Include="SortedTreeStore\Client\ClientDatabaseBase.cs" />
-    <Compile Include="SortedTreeStore\Client\ClientDatabaseBase%272.cs" />
-    <Compile Include="SortedTreeStore\Collection\Copy of SortedPointBuffer%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Client.cs" />
+    <Compile Include="SortedTreeStore\Services\ServerClientDatabaseWrapper%272.cs" />
+    <Compile Include="SortedTreeStore\Services\ServerDatabase%272_ClientDatabase.cs" />
+    <Compile Include="SortedTreeStore\Services\DatabaseInfo.cs" />
+    <Compile Include="SortedTreeStore\Services\Server_Client.cs" />
+    <Compile Include="SortedTreeStore\Services\ClientDatabaseBase.cs" />
+    <Compile Include="SortedTreeStore\Services\ClientDatabaseBase%272.cs" />
     <Compile Include="SortedTreeStore\Collection\SortedPointBuffer%272.cs" />
-    <Compile Include="SortedTreeStore\Collection\CreatePointCollectionBase.cs" />
-    <Compile Include="SortedTreeStore\Collection\PointBuffer%272.cs" />
     <Compile Include="SortedTreeStore\CreateSingleValueBase.cs" />
     <Compile Include="SortedTreeStore\CreateDoubleValueBase.cs" />
     <Compile Include="SortedTreeStore\Encoding\FixedSize\CreateFixedSizeCombinedEncoding.cs" />
@@ -143,18 +142,20 @@
     <Compile Include="SortedTreeStore\Encoding\FixedSize\FixedSizeSingleEncoding`1.cs" />
     <Compile Include="SortedTreeStore\Encoding\SingleValueEncodingBase`1.cs" />
     <Compile Include="SortedTreeStore\Encoding\EncodingLibrary.cs" />
-    <Compile Include="SortedTreeStore\Server\ISortedTreeServer.cs" />
-    <Compile Include="SortedTreeStore\Server\Reader\BufferedArchiveStream%272.cs" />
-    <Compile Include="SortedTreeStore\Server\Reader\UnionReader`2.cs" />
-    <Compile Include="SortedTreeStore\Server\Reader\SequentialReaderStream%272.cs" />
-    <Compile Include="SortedTreeStore\Server\ServerDatabaseBase.cs" />
-    <Compile Include="SortedTreeStore\Server\Writer\CombineFiles`2.cs" />
-    <Compile Include="SortedTreeStore\Server\Writer\IncrementalStagingCollection%272.cs" />
-    <Compile Include="SortedTreeStore\Server\Writer\IncrementalStagingFile%272.cs" />
-    <Compile Include="SortedTreeStore\Server\Writer\FirstStageWriter%272.cs" />
-    <Compile Include="SortedTreeStore\Server\Writer\ManualCombineFiles.cs" />
-    <Compile Include="SortedTreeStore\Server\Writer\RolloverLog`2.cs" />
-    <Compile Include="SortedTreeStore\Server\Writer\TransactionTracker`2.cs" />
+    <Compile Include="SortedTreeStore\Services\ISortedTreeServer.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\SocketListenerConfig.cs" />
+    <Compile Include="SortedTreeStore\Services\Reader\BufferedArchiveStream%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Reader\UnionReader`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Reader\SequentialReaderStream%272.cs" />
+    <Compile Include="SortedTreeStore\Services\ServerDatabaseBase.cs" />
+    <Compile Include="SortedTreeStore\Services\ServerConfig.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\CombineFiles`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\IncrementalStagingCollection%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\IncrementalStagingFile%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\FirstStageWriter%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\ManualCombineFiles.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\RolloverLog`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\TransactionTracker`2.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateSeekFilterBase.cs" />
     <Compile Include="SortedTreeStore\Filters\CreateFilterBase.cs" />
     <Compile Include="SortedTreeStore\Filters\FilterLibrary.cs" />
@@ -172,8 +173,8 @@
     <Compile Include="SortedTreeStore\Filters\TimestampFilter_FixedRange.cs" />
     <Compile Include="SortedTreeStore\Filters\TimestampFilter_IntervalRanges.cs" />
     <Compile Include="SortedTreeStore\IDatabaseReader.cs" />
-    <Compile Include="SortedTreeStore\Net\RemoteClientOptions.cs" />
-    <Compile Include="SortedTreeStore\Net\RemoteServerDatabase`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\RemoteClientOptions.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\ServerSocketDatabase`2.cs" />
     <Compile Include="SortedTreeStore\Storage\FileFlags.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTable`2.cs" />
     <Compile Include="SortedTreeStore\Storage\SortedTreeTableReadSnapshot`2.cs" />
@@ -183,8 +184,6 @@
     <Compile Include="BitMath.cs" />
     <Compile Include="Collections\BitArray.cs" />
     <Compile Include="Collections\ContinuousQueue`1.cs" />
-    <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer%272.cs" />
-    <Compile Include="SortedTreeStore\Collection\PointCollectionInitializer.cs" />
     <Compile Include="SortedTreeStore\Encoding\CreateSingleValueEncodingBase.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeTypeBase.cs" />
     <Compile Include="SortedTreeStore\Tree\InsertStreamHelper`2.cs" />
@@ -218,8 +217,6 @@
     <Compile Include="SortedTreeStore\Tree\SortedTreeNodeBase_Update%272.cs" />
     <Compile Include="SortedTreeStore\Tree\SortedTreeScannerBase%272.cs" />
     <Compile Include="Collections\ILargeArray`1.cs" />
-    <Compile Include="Collections\IsolatedNode`1.cs" />
-    <Compile Include="Collections\IsolatedQueue`1.cs" />
     <Compile Include="Collections\IsolatedQueueFileBacked`1.cs" />
     <Compile Include="Collections\IsolatedQueueFileBacked`1_FileIO.cs" />
     <Compile Include="Collections\ISupportsReadonly`1.cs" />
@@ -234,28 +231,29 @@
     <Compile Include="SortedTreeStore\Types\IHasTimestampField.cs" />
     <Compile Include="SortedTreeStore\Types\Int32\SortedTreeKeyMethodsInt32.cs" />
     <Compile Include="SortedTreeStore\Types\Int32\SortedTreeInt32.cs" />
+    <Compile Include="SortedTreeStore\Library.cs" />
     <Compile Include="SortedTreeStore\Types\TimestampBase%271.cs" />
     <Compile Include="SortedTreeStore\Types\TimestampPointIDBase%271.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeKeyMethodsUInt32.cs" />
     <Compile Include="SortedTreeStore\Types\UInt32\SortedTreeUInt32.cs" />
-    <Compile Include="SortedTreeStore\Net\RemoteClientRoot.cs" />
-    <Compile Include="SortedTreeStore\Net\RemoteClientDatabase`2.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\RemoteClient.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\RemoteClientDatabase`2.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncoding.cs" />
     <Compile Include="SortedTreeStore\Encoding\Stream\StreamEncodingBase`2.cs" />
-    <Compile Include="SortedTreeStore\Net\RemoteServerRoot.cs" />
-    <Compile Include="SortedTreeStore\Net\ServerSocketListener.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\ServerSocketHost.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\SocketListener.cs" />
     <Compile Include="Encoding7Bit.cs" />
-    <Compile Include="SortedTreeStore\Server\Reader\SortedTreeEngineReaderOptions.cs" />
-    <Compile Include="SortedTreeStore\Server\ServerDatabase%272.cs" />
-    <Compile Include="SortedTreeStore\Server\ArchiveTableSummary%272.cs" />
-    <Compile Include="SortedTreeStore\Server\ArchiveInitializer%272.cs" />
-    <Compile Include="SortedTreeStore\Server\ArchiveList%272.cs" />
-    <Compile Include="SortedTreeStore\Server\ArchiveList%272_Editor.cs" />
-    <Compile Include="SortedTreeStore\Server\ArchiveListRemovalStatus%272.cs" />
-    <Compile Include="SortedTreeStore\Server\ArchiveListSnapshot%272.cs" />
-    <Compile Include="SortedTreeStore\Server\Writer\PrebufferWriter%272.cs" />
-    <Compile Include="SortedTreeStore\Server\Writer\WriteProcessor%272.cs" />
-    <Compile Include="SortedTreeStore\Server\DatabaseConfig.cs" />
+    <Compile Include="SortedTreeStore\Services\Reader\SortedTreeEngineReaderOptions.cs" />
+    <Compile Include="SortedTreeStore\Services\ServerDatabase%272.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveTableSummary%272.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveInitializer%272.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveList%272.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveList%272_Editor.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveListRemovalStatus%272.cs" />
+    <Compile Include="SortedTreeStore\Services\ArchiveListSnapshot%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\PrebufferWriter%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Writer\WriteProcessor%272.cs" />
+    <Compile Include="SortedTreeStore\Services\ServerDatabaseConfig.cs" />
     <Compile Include="SortedTreeStore\CustomSortHelper%271.cs" />
     <Compile Include="IO\FileStructure\BlockType.cs" />
     <Compile Include="IO\FileStructure\FileHeaderBlock.cs" />
@@ -286,9 +284,9 @@
     <Compile Include="IO\FileStructure\TransactionalFileStructure.cs" />
     <Compile Include="IO\FileStructure\ReadSnapshot.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="SortedTreeStore\Server\ServerRoot.cs" />
-    <Compile Include="SortedTreeStore\Server\Reader\SortedTreeEngineReaderBaseExtensionMethods%272.cs" />
-    <Compile Include="SortedTreeStore\Net\ServerCommand.cs" />
+    <Compile Include="SortedTreeStore\Services\Server.cs" />
+    <Compile Include="SortedTreeStore\Services\Reader\SortedTreeEngineReaderBaseExtensionMethods%272.cs" />
+    <Compile Include="SortedTreeStore\Services\Net\ServerCommand.cs" />
     <Compile Include="IO\Unmanaged\BinaryStreamIoSessionBase.cs" />
     <Compile Include="IO\Unmanaged\BlockArguments.cs" />
     <Compile Include="IO\Unmanaged\ISupportsBinaryStream.cs" />
@@ -303,7 +301,9 @@
     <Compile Include="SortedTreeStore\UnionTreeStreamReader`2.cs" />
     <Compile Include="StepTimer.cs" />
     <Compile Include="Text\NaturalComparer.cs" />
+    <Compile Include="Threading\CancellationToken.cs" />
     <Compile Include="Threading\HalfLock.cs" />
+    <Compile Include="Threading\WorkerThreadSynchronization.cs" />
     <Compile Include="Threading\WeakActionFast.cs" />
     <Compile Include="Threading\SynchronousEvent.cs" />
     <Compile Include="Threading\ThreadSafeList.cs" />
@@ -363,7 +363,10 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SortedTreeStore\Client\" />
+    <Folder Include="SortedTreeStore\Net\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST "$(TargetDir)..\..\Applications\openHistorian" COPY "$(TargetPath)" "$(TargetDir)..\..\Applications\openHistorian"

@@ -7,7 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services.Net;
+using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
 using openHistorian.Data;
@@ -32,13 +33,8 @@ namespace openHistorian.PerformanceTests
             long points;
 
             StopReading = false;
-
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.InMemoryArchive = true;
-            db.ConnectionString = "port=12345";
-            db.Paths = new[] { @"C:\Program Files\openHistorian\Archive\" };
-
-            using (HistorianServer server = new HistorianServer(db))
+            
+            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
             {
                 Thread.Sleep(1000);
 
@@ -69,13 +65,8 @@ namespace openHistorian.PerformanceTests
             long points;
 
             StopReading = false;
-
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.InMemoryArchive = true;
-            db.ConnectionString = "port=12345";
-            db.Paths = new[] { @"C:\Program Files\openHistorian\Archive\" };
-
-            using (HistorianServer server = new HistorianServer(db))
+            
+            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
             {
                 Thread.Sleep(1000);
 

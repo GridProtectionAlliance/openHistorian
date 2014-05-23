@@ -24,8 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using GSF.SortedTreeStore.Server;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services.Net;
+using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
 
@@ -33,7 +34,7 @@ namespace openHistorian.Data.Query
 {
     public class HistorianQuery
     {
-        private readonly RemoteClientRoot m_historian;
+        private readonly RemoteClient m_historian;
         private int m_samplesPerSecond = 30;
 
         public HistorianQuery(string server, int port)
@@ -42,7 +43,7 @@ namespace openHistorian.Data.Query
             //m_historian = new RemoteHistorian<HistorianKey, HistorianValue>(new IPEndPoint(ip, port));
         }
 
-        public HistorianQuery(RemoteClientRoot historian)
+        public HistorianQuery(RemoteClient historian)
         {
             m_historian = historian;
         }

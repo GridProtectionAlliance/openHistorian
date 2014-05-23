@@ -55,8 +55,8 @@ namespace GSF.SortedTreeStore.Encoding
         /// Registers the provided type.
         /// </summary>
         /// <typeparam name="TTreeType"></typeparam>
-        void Register<TTreeType>()
-            where TTreeType : SortedTreeTypeBase<TTreeType>, new()
+        public void Register<TTreeType>()
+            where TTreeType : SortedTreeTypeBase, new()
         {
             TTreeType type = new TTreeType();
             lock (m_syncRoot)

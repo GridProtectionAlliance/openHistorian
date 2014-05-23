@@ -271,6 +271,18 @@ namespace GSF.Collections
         }
 
         /// <summary>
+        /// Clears all of the times in the list.
+        /// </summary>
+        public void Clear()
+        {
+            lock (m_syncRoot)
+            {
+                m_data.Size = 0;
+                Array.Clear(m_data.Items, 0, m_data.Items.Length);
+            }
+        }
+
+        /// <summary>
         /// Adds the <see cref="item"/> to the list
         /// </summary>
         /// <param name="item"></param>
@@ -337,5 +349,6 @@ namespace GSF.Collections
         }
 
 
+        
     }
 }

@@ -24,68 +24,47 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using GSF.SortedTreeStore.Client;
-using GSF.SortedTreeStore.Net;
-using GSF.SortedTreeStore.Server;
+using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Tree.TreeNodes;
+using openHistorian.Collections;
 
 namespace openHistorian
 {
     /// <summary>
     /// Represents a historian server instance that can be used to read and write time-series data.
     /// </summary>
-    public class HistorianServer
-        : ISortedTreeServer
+    public class HistorianServer : IDisposable
     {
         #region [ Members ]
 
         // Fields
-        private Dictionary<int, ServerSocketListener> m_sockets;
-        private ServerRoot m_databases;
+        private Server m_host;
         private bool m_disposed;
 
         #endregion
 
         #region [ Constructors ]
 
+        public HistorianServer()
+        {
+            m_host = new Server();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public HistorianServer(string path)
+            : this(ServerConfig.Create<HistorianKey, HistorianValue>(path, 0, null, CreateHistorianCompressionTs.TypeGuid))
+        {
+        }
+
         /// <summary>
         /// Creates a new <see cref="HistorianServer"/> instance.
         /// </summary>
-        public HistorianServer()
+        public HistorianServer(ServerConfig config)
         {
             // Maintain a member level list of all established archive database engines
-            m_databases = new ServerRoot();
-
-            // Maintain a member level list of socket connections so that they can be disposed later
-            m_sockets = new Dictionary<int, ServerSocketListener>();
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="HistorianServer"/> instance for given <paramref name="databaseInstance"/>.
-        /// </summary>
-        /// <param name="databaseInstance"><see cref="HistorianDatabaseInstance"/> to initialize.</param>
-        public HistorianServer(HistorianDatabaseInstance databaseInstance)
-            : this(new[] { databaseInstance })
-        {
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="HistorianServer"/> instance for given <paramref name="databaseInstances"/>.
-        /// </summary>
-        /// <param name="databaseInstances">Collection of <see cref="HistorianDatabaseInstance"/>s to initialize.</param>
-        public HistorianServer(IEnumerable<HistorianDatabaseInstance> databaseInstances)
-            : this()
-        {
-            Initialize(databaseInstances);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources before the <see cref="HistorianServer"/> object is reclaimed by <see cref="GC"/>.
-        /// </summary>
-        ~HistorianServer()
-        {
-            Dispose(false);
+            m_host = new Server(config);
         }
 
         #endregion
@@ -93,255 +72,45 @@ namespace openHistorian
         #region [ Properties ]
 
         /// <summary>
+        /// Gets the underlying host ending for the historian.
+        /// </summary>
+        public Server Host
+        {
+            get
+            {
+                return m_host;
+            }
+        }
+
+        /// <summary>
         /// Accesses <see cref="ServerDatabaseBase"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <returns><see cref="ServerDatabaseBase"/> for given <paramref name="databaseName"/>.</returns>
-        public HistorianDatabaseServer this[string databaseName]
+        public HistorianIArchive this[string databaseName]
         {
             get
             {
-                return m_databases.GetDatabase(databaseName) as HistorianDatabaseServer;
+                return new HistorianIArchive(this, databaseName);
             }
         }
+
+
+
+
 
         #endregion
 
         #region [ Methods ]
 
-        /// <summary>
-        /// Creates a client connection to the server.
-        /// </summary>
-        /// <returns></returns>
-        public ClientRootBase CreateClient()
-        {
-            return m_databases.CreateClient();
-        }
-
-
-        public void GetFullStatus(StringBuilder status)
-        {
-            status.AppendFormat("Historian Instances:");
-            foreach (var dbInfo in m_databases.GetDatabaseInfo())
-            {
-                status.AppendFormat("DB Name:{0}\r\n", dbInfo.DatabaseName);
-                this[dbInfo.DatabaseName].GetFullStatus(status);
-            }
-
-            status.AppendFormat("Socket Connections");
-            foreach (var socket in m_sockets)
-            {
-                status.AppendFormat("Port:{0}\r\n", socket.Key);
-                var historian = socket.Value;
-                historian.GetFullStatus(status);
-            }
-        }
-
-        /// <summary>
-        /// Releases all the resources used by the <see cref="HistorianServer"/> object.
-        /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by the <see cref="HistorianServer"/> object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!m_disposed)
-            {
-                try
-                {
-                    if (disposing)
-                    {
-                        if ((object)m_databases != null)
-                            m_databases.Dispose();
-
-                        m_databases = null;
-
-                        if ((object)m_sockets != null)
-                        {
-                            foreach (ServerSocketListener socketHistorian in m_sockets.Values)
-                            {
-                                if ((object)socketHistorian != null)
-                                    socketHistorian.Dispose();
-                            }
-                        }
-
-                        m_sockets = null;
-                    }
-                }
-                finally
-                {
-                    m_disposed = true; // Prevent duplicate dispose.
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets default database instance, if it exists.
-        /// </summary>
-        /// <returns>Default database instance.</returns>
-        public HistorianDatabaseServer GetDefaultDatabase()
-        {
-            return m_databases.GetDatabase("default") as HistorianDatabaseServer;
-        }
-
-        /// <summary>
-        /// Adds a new database instance to the <see cref="HistorianServer"/>.
-        /// </summary>
-        /// <param name="databaseInstance"><see cref="HistorianDatabaseInstance"/> to add.</param>
-        public void AddDatabaseInstance(HistorianDatabaseInstance databaseInstance)
-        {
-            HistorianDatabaseServer databaseServer;
-
-            if (databaseInstance.InMemoryArchive)
-            {
-                databaseServer = new HistorianDatabaseServer(this, databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
-            }
-            else
-            {
-                databaseServer = new HistorianDatabaseServer(this, databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
-            }
-
-            m_databases.Add(databaseServer);
-
-            if (databaseInstance.IsNetworkHosted)
-            {
-                // TODO: The "add" method can only add a new socket layer - not append new database to existing socket historian (note that this will work for time-series
-                // TODO: adapters, but not for general use case when sharing port for multiple databases is desired), to fix this SocketHistorian needs to be modified to
-                // TODO: allow dynamic addition of databases to its collection (or at least collection replacement)
-                ServerRoot databaseCollection = new ServerRoot();
-                databaseCollection.Add(databaseServer);
-
-                lock (m_sockets)
-                {
-                    m_sockets.Add(databaseInstance.PortNumber, new ServerSocketListener(databaseInstance.PortNumber, databaseCollection));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Removes an existing database instance from the <see cref="HistorianServer"/>.
-        /// </summary>
-        /// <param name="databaseInstance"><see cref="HistorianDatabaseInstance"/> to remove.</param>
-        public void RemoveDatabaseInstance(HistorianDatabaseInstance databaseInstance)
-        {
-            ServerSocketListener serverSocketListener;
-
-            lock (m_databases.SyncRoot)
-            {
-                if (m_databases.Contains(databaseInstance.DatabaseName))
-                {
-                    m_databases.GetDatabase(databaseInstance.DatabaseName).Dispose();
-                    m_databases.Remove(databaseInstance.DatabaseName);
-                }
-            }
-
-            // TODO: This method currently removes the socket layer for all databases available on this port (note that this will work for time-series adapters,
-            // TODO: but will break general use case), to fix this SocketHistorian needs to be modified to allow dynamic removal of databases from its collection
-            // TODO: (or at least collection replacement)
-            lock (m_sockets)
-            {
-                if (m_sockets.TryGetValue(databaseInstance.PortNumber, out serverSocketListener))
-                {
-                    if ((object)serverSocketListener != null)
-                    {
-                        serverSocketListener.Dispose();
-                    }
-
-                    m_sockets.Remove(databaseInstance.PortNumber);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Initializes collection of <see cref="HistorianDatabaseInstance"/>s.
-        /// </summary>
-        /// <param name="databaseInstances">Collection of <see cref="HistorianDatabaseInstance"/>s to initialize.</param>
-        protected void Initialize(IEnumerable<HistorianDatabaseInstance> databaseInstances)
-        {
-            // Create socket specific historian database collections
-            Dictionary<int, ServerRoot> socketDatabases = new Dictionary<int, ServerRoot>();
-            ServerRoot databaseCollection;
-            HistorianDatabaseServer databaseServer;
-
-            // Initialize each archive database engine
-            foreach (HistorianDatabaseInstance databaseInstance in databaseInstances)
-            {
-                if (databaseInstance.InMemoryArchive)
-                {
-                    databaseServer = new HistorianDatabaseServer(this, databaseInstance.DatabaseName, WriterMode.InMemory, databaseInstance.Paths);
-                }
-                else
-                {
-                    databaseServer = new HistorianDatabaseServer(this, databaseInstance.DatabaseName, WriterMode.OnDisk, databaseInstance.Paths);
-                }
-
-                m_databases.Add(databaseServer);
-
-                if (databaseInstance.IsNetworkHosted)
-                {
-                    // Maintain a per socket collection of archive database engines
-                    int port = databaseInstance.PortNumber;
-
-                    if (!socketDatabases.TryGetValue(port, out databaseCollection))
-                    {
-                        databaseCollection = new ServerRoot();
-                        socketDatabases.Add(port, databaseCollection);
-                    }
-
-                    // Add database associated with specific socket
-                    socketDatabases[port].Add(databaseServer);
-                }
-            }
-
-            // Create a new instance of the socket historian per-port with associated database collections
-            lock (m_sockets)
-            {
-                foreach (KeyValuePair<int, ServerRoot> connection in socketDatabases)
-                {
-                    m_sockets.Add(connection.Key, new ServerSocketListener(connection.Key, connection.Value));
-                }
-            }
+            m_host.Dispose();
         }
 
         #endregion
 
+
     }
 
-
-
-    #region [ Old Code ]
-
-    //public IHistorianDatabaseCollection<HistorianKey, HistorianValue> GetDatabaseCollection()
-    //{
-    //    return m_databases;
-    //}
-
-    // Removed this class - was not necessary - users can create simple collections of HistorianServerOptions
-    //public class HistorianServerDatabaseCollectionOptions
-    //{
-    //    public bool IsNetworkHosted = false;
-
-    //    public string ConnectionString = "port=38402";
-
-    //    public List<HistorianServerOptions> Databases = new List<HistorianServerOptions>();
-    //}
-
-    // Removed this class - was redundant with HistorianServerOptions
-    //public class HistorianDatabaseConnection
-    //{
-    //    public List<string> Paths = new List<string>();
-
-    //    public bool InMemoryArchive = true;
-
-    //    public string DatabaseName;
-    //}
-
-    #endregion
 }

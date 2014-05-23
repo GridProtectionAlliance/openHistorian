@@ -16,13 +16,15 @@ namespace openHistorian.PerformanceTests
         [Test]
         public void Test()
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
             using (var file = SortedTreeFile.OpenFile(@"C:\Unison\GPA\Codeplex\openHistorian\Main\Build\Output\Release\Applications\openHistorian\Archive\635293583194231435-Stage2-0ef36dcc-4264-498f-b194-01b2043a9231.d2", true))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             using (var reader = table.BeginRead())
             using (var scan = reader.GetTreeScanner())
             {
                 scan.SeekToStart();
-                while (scan.Read())
+                while (scan.Read(key,value))
                     ;
             }
         }
@@ -30,6 +32,8 @@ namespace openHistorian.PerformanceTests
         [Test]
         public void GetBits()
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Higher Bits, Bucket Number, Count, FloatValue");
             using (var file = SortedTreeFile.OpenFile(@"C:\Archive\635184227258021940-Stage2-8b835d6a-8299-45bb-9624-d4a470e4abe1.d2", true))
@@ -39,7 +43,7 @@ namespace openHistorian.PerformanceTests
             {
                 int count = 0;
                 scan.SeekToStart();
-                while (scan.Read())
+                while (scan.Read(key,value))
                     count++;
 
                 for (int x = 1; x < 24; x++)
@@ -55,11 +59,13 @@ namespace openHistorian.PerformanceTests
 
         public int[] MeasureBits(TreeStream<HistorianKey, HistorianValue> stream, int higherBits)
         {
+            HistorianKey hkey = new HistorianKey();
+            HistorianValue hvalue = new HistorianValue();
             int[] bucket = new int[1 << higherBits];
             int shiftBits = 32 - higherBits;
-            while (stream.Read())
+            while (stream.Read(hkey,hvalue))
             {
-                uint value = (uint)stream.CurrentValue.Value1 >> shiftBits;
+                uint value = (uint)hvalue.Value1 >> shiftBits;
                 bucket[value]++;
             }
             return bucket;
@@ -89,14 +95,17 @@ namespace openHistorian.PerformanceTests
             using (var reader = table.BeginRead())
             using (var scan = reader.GetTreeScanner())
             {
-                int count = 0;
-                scan.SeekToStart();
-                while (scan.Read())
-                    count++;
 
                 HistorianKey key1 = new HistorianKey();
                 HistorianKey key2 = new HistorianKey();
                 HistorianValue value = new HistorianValue();
+
+                int count = 0;
+                scan.SeekToStart();
+                while (scan.Read(key1,value))
+                    count++;
+
+              
 
                 int[] bucket = new int[130];
                 scan.SeekToStart();

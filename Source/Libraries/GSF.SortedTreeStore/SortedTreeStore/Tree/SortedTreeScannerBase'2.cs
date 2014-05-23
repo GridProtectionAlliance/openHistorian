@@ -234,7 +234,7 @@ namespace GSF.SortedTreeStore.Tree
                 {
                     key.Clear();
                     value.Clear();
-                    EOS = true;
+                    Dispose();
                     return false;
                 }
                 LoadNode(RightSiblingNodeIndex);
@@ -297,7 +297,7 @@ namespace GSF.SortedTreeStore.Tree
                 {
                     key.Clear();
                     value.Clear();
-                    EOS = true;
+                    Dispose();
                     return false;
                 }
                 LoadNode(RightSiblingNodeIndex);
@@ -357,7 +357,7 @@ namespace GSF.SortedTreeStore.Tree
                 {
                     key.Clear();
                     value.Clear();
-                    EOS = true;
+                    Dispose();
                     return false;
                 }
                 LoadNode(RightSiblingNodeIndex);
@@ -384,7 +384,7 @@ namespace GSF.SortedTreeStore.Tree
         /// If before the beginning of the stream, advances to the first value
         /// </summary>
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
-        public override bool Read(TKey key, TValue value)
+        protected override bool ReadNext(TKey key, TValue value)
         {
             if (StreamPointer.Version == PointerVersion)
             {
@@ -412,7 +412,7 @@ namespace GSF.SortedTreeStore.Tree
                 {
                     key.Clear();
                     value.Clear();
-                    EOS = true;
+                    Dispose();
                     return false;
                 }
                 LoadNode(RightSiblingNodeIndex);

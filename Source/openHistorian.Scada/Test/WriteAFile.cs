@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore;
 using GSF.SortedTreeStore.Encoding;
-using GSF.SortedTreeStore.Server;
-using GSF.SortedTreeStore.Server.Writer;
+using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Writer;
 using GSF.SortedTreeStore.Storage;
 using GSF.SortedTreeStore.Tree;
 using NUnit.Framework;
@@ -30,11 +30,12 @@ namespace openHistorian.Scada.Test
             using (var af = SortedTreeFile.CreateInMemory())
             using (var table = af.OpenOrCreateTable<AmiKey, AmiKey>(SortedTree.FixedSizeNode))
             {
+                var key = new AmiKey();
+                var value = new AmiKey();
                 using (var edit = table.BeginEdit())
                 {
                     sw.Start();
-                    var key = new AmiKey();
-                    var value = new AmiKey();
+
 
                     for (int x = 0; x < count; x++)
                     {
@@ -53,7 +54,7 @@ namespace openHistorian.Scada.Test
                 using (var scan = read.GetTreeScanner())
                 {
                     scan.SeekToStart();
-                    while (scan.Read())
+                    while (scan.Read(key, value))
                         count--;
                 }
                 Console.WriteLine(count);
@@ -108,26 +109,30 @@ namespace openHistorian.Scada.Test
         {
             Random r = new Random(3);
             var KV2CEncoding = new EncodingDefinition(CreateFixedSizeSingleEncoding.TypeGuid, CreateFixedSizeSingleEncoding.TypeGuid);
-            using (var KV2C = new ServerDatabase<AmiKey, AmiKey>("KV2CPQ", WriterMode.OnDisk, KV2CEncoding, "C:\\Temp\\AMI"))
+            using (var server = new Server(ServerConfig.Create<AmiKey, AmiKey>("C:\\Temp\\AMI", -1, "KV2CPQ", KV2CEncoding)))
             {
-                int count = 10000000;
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                var key = new AmiKey();
-                var value = new AmiKey();
-
-                for (int x = count; x >=0 ; x--)
+                using (var client = server.CreateClientHost())
+                using (var db = client.GetDatabase<AmiKey, AmiKey>("KV2CPQ"))
                 {
-                    key.Timestamp = (ulong)r.Next();
-                    key.TableId = r.Next();
-                    KV2C.Write(key, value);
+                    int count = 10000000;
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+                    var key = new AmiKey();
+                    var value = new AmiKey();
+
+                    for (int x = count; x >= 0; x--)
+                    {
+                        key.Timestamp = (ulong)r.Next();
+                        key.TableId = r.Next();
+                        db.Write(key, value);
+                    }
+
+                    sw.Stop();
+
+                    Console.WriteLine(count / sw.Elapsed.TotalSeconds / 1000000);
+
+                    Console.WriteLine(count);
                 }
-
-                sw.Stop();
-
-                Console.WriteLine(count / sw.Elapsed.TotalSeconds / 1000000);
-
-                Console.WriteLine(count);
             }
         }
 

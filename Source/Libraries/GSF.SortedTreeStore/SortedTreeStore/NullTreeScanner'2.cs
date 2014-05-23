@@ -50,7 +50,12 @@ namespace GSF.SortedTreeStore
             Instance = new NullTreeScanner<TKey, TValue>();
         }
 
-        public override bool Read(TKey key, TValue value)
+        public NullTreeScanner()
+        {
+            Dispose();
+        }
+
+        protected override bool ReadNext(TKey key, TValue value)
         {
             return false;
         }

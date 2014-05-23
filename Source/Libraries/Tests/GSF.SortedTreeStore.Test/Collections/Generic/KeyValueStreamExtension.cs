@@ -16,7 +16,7 @@ namespace GSF.SortedTreeStore.Tree
     }
 
     /// <summary>
-    /// This class will throw exceptions if the bahavior of a KeyValueStream is not correct.
+    /// This class will throw exceptions if the bahavior of a KeyValueStream is not sequential.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
@@ -27,6 +27,15 @@ namespace GSF.SortedTreeStore.Tree
     {
 
         bool m_isEndOfStream;
+        private bool IsValid;
+        private TKey CurrentKey;
+        private TValue CurrentValue;
+
+        private bool m_baseStreamIsValid;
+        private TKey m_baseStreamCurrentKey;
+        private TValue m_baseStreamCurrentValue;
+
+
         TreeStream<TKey, TValue> m_baseStream;
 
         public TreeStreamSequential(TreeStream<TKey, TValue> baseStream)
@@ -34,6 +43,11 @@ namespace GSF.SortedTreeStore.Tree
             m_isEndOfStream = false;
             m_baseStream = baseStream;
             IsValid = false;
+            CurrentKey = new TKey();
+            CurrentValue = new TValue();
+            m_baseStreamCurrentKey = new TKey();
+            m_baseStreamCurrentValue = new TValue();
+            m_baseStreamIsValid = false;
         }
 
         /// <summary>
@@ -41,35 +55,37 @@ namespace GSF.SortedTreeStore.Tree
         /// If before the beginning of the stream, advances to the first value
         /// </summary>
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
-        public override bool Read(TKey key, TValue value)
+        protected override bool ReadNext(TKey key, TValue value)
         {
             if (m_isEndOfStream)
             {
                 if (m_baseStream.Read(key, value))
                     throw new Exception("Data exists past the end of the stream");
-                if (m_baseStream.IsValid)
+                if (m_baseStream.EOS)
                     throw new Exception("Should not be valid");
                 return false;
             }
 
-            if (m_baseStream.Read())
+            m_baseStreamIsValid = m_baseStream.Read(m_baseStreamCurrentKey, m_baseStreamCurrentValue);
+            if (m_baseStreamIsValid)
             {
-                if (!m_baseStream.IsValid)
+                if (!m_baseStreamIsValid)
                     throw new Exception("Should be valid");
                 if (IsValid)
-                    if (CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))// CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))
+                    if (CurrentKey.IsGreaterThanOrEqualTo(m_baseStreamCurrentKey))// CurrentKey.IsGreaterThanOrEqualTo(m_baseStream.CurrentKey))
                         throw new Exception("Stream is not sequential");
 
                 IsValid = true;
-                m_baseStream.CurrentKey.CopyTo(CurrentKey); //m_baseStream.CurrentKey.CopyTo(CurrentKey);
-                m_baseStream.CurrentValue.CopyTo(CurrentValue); // m_baseStream.CurrentValue.CopyTo(CurrentValue);
+                m_baseStreamCurrentKey.CopyTo(CurrentKey); //m_baseStream.CurrentKey.CopyTo(CurrentKey);
+                m_baseStreamCurrentValue.CopyTo(CurrentValue); // m_baseStream.CurrentValue.CopyTo(CurrentValue);
                 return true;
             }
             else
             {
-                if (m_baseStream.Read())
+                m_baseStreamIsValid = m_baseStream.Read(m_baseStreamCurrentKey, m_baseStreamCurrentValue);
+                if (m_baseStreamIsValid)
                     throw new Exception("Data exists past the end of the stream");
-                if (m_baseStream.IsValid)
+                if (m_baseStreamIsValid)
                     throw new Exception("Should not be valid");
 
                 m_isEndOfStream = true;

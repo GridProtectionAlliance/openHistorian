@@ -26,8 +26,7 @@ using System.IO;
 using GSF;
 using GSF.Collections;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Client;
-using GSF.SortedTreeStore.Server;
+using GSF.SortedTreeStore.Services;
 using GSF.Threading;
 using openHistorian.Collections;
 
@@ -196,7 +195,6 @@ namespace openHistorian.Queues
             : TreeStream<HistorianKey, HistorianValue>
         {
             private readonly IsolatedQueueFileBacked<PointData> m_measurements;
-            private bool m_canceled = false;
             private readonly int m_maxPoints;
             private int m_count;
 
@@ -208,8 +206,13 @@ namespace openHistorian.Queues
 
             public void Reset()
             {
-                m_canceled = false;
                 m_count = 0;
+                SetEos(false);
+            }
+
+            protected override void EndOfStreamReached()
+            {
+                SetEos(true);
             }
 
             public bool QuitOnPointCount
@@ -221,10 +224,10 @@ namespace openHistorian.Queues
             }
 
 
-            public override bool Read(HistorianKey key, HistorianValue value)
+            protected override bool ReadNext(HistorianKey key, HistorianValue value)
             {
                 PointData data;
-                if (!m_canceled && m_count < m_maxPoints && m_measurements.TryDequeue(out data))
+                if (m_count < m_maxPoints && m_measurements.TryDequeue(out data))
                 {
                     key.Timestamp = data.Key1;
                     key.PointID = data.Key2;
@@ -233,18 +236,13 @@ namespace openHistorian.Queues
                     m_count++;
                     return true;
                 }
-                m_canceled = true;
                 key.Timestamp = 0;
                 key.PointID = 0;
                 value.Value3 = 0;
                 value.Value1 = 0;
                 return false;
             }
-
-            public void Cancel()
-            {
-                m_canceled = true;
-            }
+            
         }
 
         public void Dispose()

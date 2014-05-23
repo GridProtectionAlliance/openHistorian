@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services.Reader;
 
 namespace SampleCode.openHistorian.Server.dll
 {
@@ -17,16 +18,11 @@ namespace SampleCode.openHistorian.Server.dll
         {
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.IsNetworkHosted = false;
-            db.InMemoryArchive = false;
-            db.ConnectionString = "port=12345";
-            db.Paths = new[] { @"c:\temp\Scada\" };
-
+           
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            using (var server = new HistorianServer(db))
+            using (var server = new HistorianServer(@"c:\temp\Scada\"))
             {
                 RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = 12345;
@@ -52,12 +48,10 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void TestReadData()
         {
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.InMemoryArchive = true;
-            db.ConnectionString = "port=12345";
-            db.Paths = new[] { @"c:\temp\Scada\" };
+            var key = new HistorianKey();
+            var value = new HistorianValue();
 
-            using (HistorianServer server = new HistorianServer(db))
+            using (HistorianServer server = new HistorianServer(@"c:\temp\Scada\"))
             {
                 RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = 12345;
@@ -67,8 +61,8 @@ namespace SampleCode.openHistorian.Server.dll
                 using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
                 {
                     var stream = database.Read(0, 1000);
-                    while (stream.Read())
-                        Console.WriteLine(stream.CurrentKey.Timestamp);
+                    while (stream.Read(key,value))
+                        Console.WriteLine(key.Timestamp);
                 }
             }
         }

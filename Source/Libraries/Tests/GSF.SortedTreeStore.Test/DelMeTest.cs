@@ -3,37 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
 using GSF.SortedTreeStore.Storage;
 using openHistorian.Collections;
 using openHistorian.Data.Query;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services.Reader;
 namespace openHistorian
 {
     [TestFixture]
     public class DelMeTest
     {
 
-        [Test]
-        public void SlowReading()
-        {
-            RemoteClientOptions clientOptions = new RemoteClientOptions();
-            clientOptions.NetworkPort = 38402;
-            clientOptions.ServerNameOrIp = "127.0.0.1";
-            clientOptions.DefaultDatabase = "PPA";
+        //[Test]
+        //public void SlowReading()
+        //{
+        //    RemoteClientOptions clientOptions = new RemoteClientOptions();
+        //    clientOptions.NetworkPort = 38402;
+        //    clientOptions.ServerNameOrIp = "127.0.0.1";
+        //    clientOptions.DefaultDatabase = "PPA";
 
-            using (var server = new HistorianClient(clientOptions))
-            {
-                using (var database = server.GetDefaultDatabase<HistorianKey, HistorianValue>())
-                {
-                    var stream = database.Read();
-                    while (stream.Read())
-                        ;
-                    //System.Threading.Thread.Sleep(1);
-                }
-            }
-        }
+        //    using (var server = new HistorianClient(clientOptions))
+        //    {
+        //        using (var database = server.GetDefaultDatabase<HistorianKey, HistorianValue>())
+        //        {
+        //            var stream = database.Read();
+        //            while (stream.Read())
+        //                ;
+        //            //System.Threading.Thread.Sleep(1);
+        //        }
+        //    }
+        //}
 
         [Test]
         public void Test()
@@ -70,6 +71,9 @@ namespace openHistorian
             DateTime start = DateTime.Parse("4/17/2013 10:38 AM");
             DateTime stop = DateTime.Parse("4/17/2013 10:38 AM");
 
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
             using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             using (var snapshot = table.BeginRead())
@@ -79,10 +83,8 @@ namespace openHistorian
                 seekKey.TimestampAsDate = start;
                 seekKey.PointID = 3142023;
                 scanner.SeekToKey(seekKey);
-                while (scanner.Read() && scanner.CurrentKey.TimestampAsDate <= stop)
+                while (scanner.Read(key,value) && key.TimestampAsDate <= stop)
                 {
-                    var key = scanner.CurrentKey;
-                    var value = scanner.CurrentValue;
                     Console.WriteLine("{0}, {1}, {2}",
                         key.TimestampAsDate.ToString(), key.PointID, value.AsString);
                 }

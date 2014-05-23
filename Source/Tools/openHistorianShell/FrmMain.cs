@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
+using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Net;
+using GSF.SortedTreeStore.Tree.TreeNodes;
 using openHistorian;
+using openHistorian.Collections;
 
 namespace openHistorianShell
 {
@@ -16,12 +20,11 @@ namespace openHistorianShell
         private void BtnStart_Click(object sender, EventArgs e)
         {
             GSF.Globals.MemoryPool.SetMaximumBufferSize(long.Parse(TxtMaxMB.Text) * 1024 * 1024);
-            HistorianDatabaseInstance db1 = new HistorianDatabaseInstance();
-            db1.Paths = TxtArchivePath.Lines;
-            db1.IsNetworkHosted = true;
-            db1.ConnectionString = "port=" + TxtLocalPort.Text;
-            db1.DatabaseName = "PPA";
-            m_server = new HistorianServer(db1);
+
+            var config = ServerConfig.Create<HistorianKey, HistorianValue>(TxtArchivePath.Text, int.Parse(TxtLocalPort.Text), "PPA",
+                CreateHistorianCompressionTs.TypeGuid);
+
+            m_server = new HistorianServer(config);
             BtnStart.Enabled = false;
         }
 
@@ -38,7 +41,7 @@ namespace openHistorianShell
             }
             catch (Exception)
             {
-                
+
             }
         }
     }

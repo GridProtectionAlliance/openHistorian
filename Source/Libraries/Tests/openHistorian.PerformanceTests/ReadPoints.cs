@@ -6,7 +6,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services.Net;
+using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Net;
 using openHistorian.Collections;
 using openHistorian.Data;
@@ -22,7 +23,7 @@ namespace openHistorian.PerformanceTests
         [Test]
         public void ReadFrames()
         {
-           throw new NotImplementedException();
+            throw new NotImplementedException();
 
             //Stopwatch sw = new Stopwatch();
             //int pointCount = 0;
@@ -67,12 +68,8 @@ namespace openHistorian.PerformanceTests
         {
             Stopwatch sw = new Stopwatch();
             int pointCount = 0;
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.InMemoryArchive = true;
-            db.ConnectionString = "port=12345";
-            db.Paths = new[] { @"C:\Program Files\openHistorian\Archive\" };
 
-            using (HistorianServer server = new HistorianServer(db))
+            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
             {
                 RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = 12345;
@@ -167,12 +164,11 @@ namespace openHistorian.PerformanceTests
         {
             Stopwatch sw = new Stopwatch();
             int pointCount = 0;
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.InMemoryArchive = true;
-            db.ConnectionString = "port=12345";
-            db.Paths = new[] { @"C:\Program Files\openHistorian\Archive\" };
 
-            using (HistorianServer server = new HistorianServer(db))
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
+            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
             {
                 RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = 12345;
@@ -183,12 +179,12 @@ namespace openHistorian.PerformanceTests
                 {
 
                     var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
-                    while (stream.Read())
+                    while (stream.Read(key, value))
                         ;
 
                     sw.Start();
                     stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
-                    while (stream.Read())
+                    while (stream.Read(key, value))
                         pointCount++;
 
                     sw.Stop();
@@ -288,12 +284,9 @@ namespace openHistorian.PerformanceTests
         public static void TestReadPoints2()
         {
             int pointCount = 0;
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.InMemoryArchive = true;
-            db.ConnectionString = "port=12345";
-            db.Paths = new[] { @"C:\Program Files\openHistorian\Archive\" };
-
-            using (HistorianServer server = new HistorianServer(db))
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+            using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
             {
                 RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.NetworkPort = 12345;
@@ -305,7 +298,7 @@ namespace openHistorian.PerformanceTests
                 {
 
                     var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });
-                    while (stream.Read())
+                    while (stream.Read(key, value))
                         pointCount++;
 
                 }

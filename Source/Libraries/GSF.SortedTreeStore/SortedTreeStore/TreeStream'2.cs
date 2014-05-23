@@ -35,61 +35,63 @@ namespace GSF.SortedTreeStore
         where TKey : class, new()
         where TValue : class, new()
     {
+
+        private bool m_eos;
         private bool m_disposed;
 
-        protected TreeStream()
-        {
-            CurrentKey = new TKey();
-            CurrentValue = new TValue();
-        }
+        //protected TreeStream()
+        //{
+        //    CurrentKey = new TKey();
+        //    CurrentValue = new TValue();
+        //}
 
         /// <summary>
-        /// Gets if stream has been disposed.
+        /// Boolean indicating that the end of the stream has been read or class has been disposed.
         /// </summary>
-        public bool IsDisposed
+        public bool EOS
         {
             get
             {
-                return m_disposed;
+                return m_eos;
             }
         }
 
-        /// <summary>
-        /// Gets if the <see cref="CurrentKey"/> and <see cref="CurrentValue"/> fields are valid.
-        /// </summary>]
-        [Obsolete("Not used anymore")]
-        public bool IsValid
-        {
-            get;
-            protected set;
-        }
+        ///// <summary>
+        ///// Gets if the <see cref="CurrentKey"/> and <see cref="CurrentValue"/> fields are valid.
+        ///// </summary>]
+        //[Obsolete("Not used anymore")]
+        //public bool IsValid
+        //{
+        //    get;
+        //    protected set;
+        //}
 
-        [Obsolete("Not used anymore")]
-        public TKey CurrentKey
-        {
-            get;
-            private set;
-        }
+        //[Obsolete("Not used anymore")]
+        //public TKey CurrentKey
+        //{
+        //    get;
+        //    private set;
+        //}
 
-        [Obsolete("Not used anymore")]
-        public TValue CurrentValue
-        {
-            get;
-            private set;
-        }
+        //[Obsolete("Not used anymore")]
+        //public TValue CurrentValue
+        //{
+        //    get;
+        //    private set;
+        //}
 
-        [Obsolete("Not used anymore")]
-        public bool Read()
-        {
-            if (Read(CurrentKey, CurrentValue))
-            {
-                IsValid = true;
-                return true;
-            }
-            IsValid = false;
-            EOS = true;
-            return false;
-        }
+        //[Obsolete("Not used anymore")]
+        //public bool Read()
+        //{
+        //    if (Read(CurrentKey, CurrentValue))
+        //    {
+        //        IsValid = true;
+        //        return true;
+        //    }
+        //    IsValid = false;
+        //    EOS = true;
+        //    return false;
+        //}
 
         /// <summary>
         /// Gets if the stream is always in sequential order. Do not return true unless it is Guaranteed that 
@@ -116,25 +118,47 @@ namespace GSF.SortedTreeStore
         }
 
         /// <summary>
-        /// Boolean indicating that the end of the stream has been reached.
+        /// Advances the stream to the next value. 
+        /// If before the beginning of the stream, advances to the first value
         /// </summary>
-        public bool EOS { get; protected set; }
+        /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
+        public bool Read(TKey key, TValue value)
+        {
+            if (m_eos || !ReadNext(key, value))
+            {
+                EndOfStreamReached();
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Occurs when the end of the stream has been reached. The default behavior is to call <see cref="Dispose"/>
+        /// </summary>
+        protected virtual void EndOfStreamReached()
+        {
+            Dispose();
+        }
+
+        /// <summary>
+        /// Allow rolling back the EOS
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">Thrown if <see cref="value"/> is <see cref="Boolean.False"/> and this class
+        /// has already been disposed</exception>
+        protected void SetEos(bool value)
+        {
+            if (m_disposed && !value)
+                throw new ObjectDisposedException(GetType().FullName);
+            m_eos = value;
+        }
+
 
         /// <summary>
         /// Advances the stream to the next value. 
         /// If before the beginning of the stream, advances to the first value
         /// </summary>
         /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
-        public abstract bool Read(TKey key, TValue value);
-
-        /// <summary>
-        /// Cancels the reading of the stream. This does not need to be called if <see cref="Read"/> returns
-        /// the end of the stream.
-        /// </summary>
-        public virtual void Cancel()
-        {
-            EOS = true;
-        }
+        protected abstract bool ReadNext(TKey key, TValue value);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -144,8 +168,15 @@ namespace GSF.SortedTreeStore
         {
             if (!m_disposed)
             {
-                Dispose(true);
-                m_disposed = true;
+                try
+                {
+                    Dispose(true);
+                }
+                finally
+                {
+                    m_eos = true;
+                    m_disposed = true;
+                }
             }
             GC.SuppressFinalize(this);
         }
@@ -156,7 +187,7 @@ namespace GSF.SortedTreeStore
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            m_disposed = true;
+            m_eos = true;
         }
     }
 }

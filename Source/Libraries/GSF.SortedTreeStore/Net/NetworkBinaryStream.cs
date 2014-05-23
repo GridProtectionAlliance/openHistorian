@@ -27,6 +27,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using GSF.IO;
+using GSF.Threading;
 
 namespace GSF.Net
 {
@@ -34,20 +35,25 @@ namespace GSF.Net
         : BinaryStreamBase
     {
         const int BufferSize = 1420;
-        int m_receivePosition;
-        int m_receiveLength;
-        int m_sendLength;
-        byte[] m_receiveBuffer;
-        byte[] m_sendBuffer;
+        private int m_receivePosition;
+        private int m_receiveLength;
+        private int m_sendLength;
+        private byte[] m_receiveBuffer;
+        private byte[] m_sendBuffer;
 
         private Socket m_socket;
-        Stream m_stream;
+        private Stream m_stream;
+        private WorkerThreadSynchronization m_workerThreadSynchronization;
 
-        public NetworkBinaryStream(Socket socket, int timeout = -1)
+        public NetworkBinaryStream(Socket socket, int timeout = -1, WorkerThreadSynchronization workerThreadSynchronization = null)
         {
             if (!BitConverter.IsLittleEndian)
                 throw new Exception("BigEndian processors are not supported");
 
+            if (workerThreadSynchronization == null)
+                workerThreadSynchronization = new WorkerThreadSynchronization();
+
+            m_workerThreadSynchronization = workerThreadSynchronization;
             m_receiveBuffer = new byte[BufferSize];
             m_sendBuffer = new byte[BufferSize];
             m_sendLength = 0;
@@ -60,19 +66,17 @@ namespace GSF.Net
             m_stream = new NetworkStream(socket);
         }
 
-
-        public void UnsafeGetInternalSendBuffer(out byte[] sendBuffer, out int position, out int bufferSize )
+        /// <summary>
+        /// Gets the <see cref="WorkerThreadSynchronization"/>. 
+        /// This context will be entered when communcating to the socket layer.
+        /// </summary>
+        public WorkerThreadSynchronization WorkerThreadSynchronization
         {
-            sendBuffer = m_sendBuffer;
-            position = m_sendLength;
-            bufferSize = BufferSize;
+            get
+            {
+                return m_workerThreadSynchronization;
+            }
         }
-
-        public void UnsafeAdvanceSendPosition(int length)
-        {
-            m_sendLength += length;
-        }
-            
 
         public Socket Socket
         {
@@ -107,7 +111,8 @@ namespace GSF.Net
         {
             get
             {
-                //ToDo: Don't call m_socket.Available since it's a windows API Call.
+                m_workerThreadSynchronization.PulseSafeToCallback();
+                //ToDo: Don't call m_socket.Available since it's a windows API Call and terribly slow.
                 return ReceiveBufferAvailable + m_socket.Available;
             }
         }
@@ -158,7 +163,15 @@ namespace GSF.Net
 
         public override void Flush()
         {
-            m_stream.Write(m_sendBuffer, 0, m_sendLength);
+            m_workerThreadSynchronization.BeginSafeToCallbackRegion();
+            try
+            {
+                m_stream.Write(m_sendBuffer, 0, m_sendLength);
+            }
+            finally
+            {
+                m_workerThreadSynchronization.EndSafeToCallbackRegion();
+            }
             m_sendLength = 0;
         }
 
@@ -205,7 +218,17 @@ namespace GSF.Net
                 //Loop since ReceiveFromSocket can return parial results.
                 while (count > 0)
                 {
-                    receiveBufferLength = m_stream.Read(buffer, offset, count);
+                    m_workerThreadSynchronization.BeginSafeToCallbackRegion();
+                    try
+                    {
+                        receiveBufferLength = m_stream.Read(buffer, offset, count);
+                    }
+                    finally
+                    {
+                        m_workerThreadSynchronization.EndSafeToCallbackRegion();
+                    }
+
+
                     if (receiveBufferLength == 0)
                         throw new EndOfStreamException();
                     offset += receiveBufferLength;
@@ -222,7 +245,15 @@ namespace GSF.Net
                 m_receiveLength = 0;
                 while (m_receiveLength < count)
                 {
-                    receiveBufferLength = m_stream.Read(m_receiveBuffer, m_receiveLength, prebufferLength);
+                    m_workerThreadSynchronization.BeginSafeToCallbackRegion();
+                    try
+                    {
+                        receiveBufferLength = m_stream.Read(m_receiveBuffer, m_receiveLength, prebufferLength);
+                    }
+                    finally
+                    {
+                        m_workerThreadSynchronization.EndSafeToCallbackRegion();
+                    }
                     if (receiveBufferLength == 0)
                         throw new EndOfStreamException();
                     m_receiveLength += receiveBufferLength;
@@ -518,7 +549,15 @@ namespace GSF.Net
 
             if (count > 100)
             {
-                m_stream.Write(buffer, offset, count);
+                m_workerThreadSynchronization.BeginSafeToCallbackRegion();
+                try
+                {
+                    m_stream.Write(buffer, offset, count);
+                }
+                finally
+                {
+                    m_workerThreadSynchronization.EndSafeToCallbackRegion();
+                }
             }
             else
             {
@@ -567,6 +606,7 @@ namespace GSF.Net
                 {
                 }
             }
+            m_workerThreadSynchronization.BeginSafeToCallbackRegion();
         }
     }
 }

@@ -24,11 +24,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Net;
 using openHistorian;
 using openHistorian.Collections;
 using openHistorian.Data.Query;
-using GSF.SortedTreeStore.Server;
+using GSF.SortedTreeStore.Services;
 using openVisN.Calculations;
 using openVisN.Library;
 

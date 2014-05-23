@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 using GSF.SortedTreeStore.Filters;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Reader;
 using NUnit.Framework;
 using openHistorian;
 using GSF.SortedTreeStore.Storage;
@@ -24,6 +25,10 @@ namespace GSF.SortedTreeStore.Server
         [Test]
         public void TestOneFile()
         {
+            HistorianKey key1 = new HistorianKey();
+            HistorianKey key2 = new HistorianKey();
+            HistorianValue value1 = new HistorianValue();
+            HistorianValue value2 = new HistorianValue();
             Logger.Default.ReportToConsole(VerboseLevel.All);
             MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
@@ -48,19 +53,19 @@ namespace GSF.SortedTreeStore.Server
                     var scanner = sequencer.TestSequential();
 
                     int count = 0;
-                    while (scanner.Read())
+                    while (scanner.Read(key1, value1))
                     {
                         count++;
-                        if (!masterScanSequential.Read())
+                        if (!masterScanSequential.Read(key2, value2))
                             throw new Exception();
 
-                        if (!scanner.CurrentKey.IsEqualTo(masterScan.CurrentKey))
+                        if (!key1.IsEqualTo(key2))
                             throw new Exception();
 
-                        if (!scanner.CurrentValue.IsEqualTo(masterScan.CurrentValue))
+                        if (!value1.IsEqualTo(value2))
                             throw new Exception();
                     }
-                    if (masterScan.Read())
+                    if (masterScan.Read(key2, value2))
                         throw new Exception();
                 }
 
@@ -75,6 +80,11 @@ namespace GSF.SortedTreeStore.Server
         {
             MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+
+            HistorianKey key1 = new HistorianKey();
+            HistorianKey key2 = new HistorianKey();
+            HistorianValue value1 = new HistorianValue();
+            HistorianValue value2 = new HistorianValue();
 
             var master = CreateTable();
             var table1 = CreateTable();
@@ -99,18 +109,18 @@ namespace GSF.SortedTreeStore.Server
                 {
                     var scanner = sequencer.TestSequential();
 
-                    while (scanner.Read())
+                    while (scanner.Read(key1, value1))
                     {
-                        if (!masterScanSequential.Read())
+                        if (!masterScanSequential.Read(key2, value2))
                             throw new Exception();
 
-                        if (!scanner.CurrentKey.IsEqualTo(masterScan.CurrentKey))
+                        if (!key1.IsEqualTo(key2))
                             throw new Exception();
 
-                        if (!scanner.CurrentValue.IsEqualTo(masterScan.CurrentValue))
+                        if (!value1.IsEqualTo(value2))
                             throw new Exception();
                     }
-                    if (masterScan.Read())
+                    if (masterScan.Read(key2, value2))
                         throw new Exception();
                 }
             }
@@ -124,7 +134,10 @@ namespace GSF.SortedTreeStore.Server
         {
             MemoryPoolTest.TestMemoryLeak();
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
-
+            HistorianKey key1 = new HistorianKey();
+            HistorianKey key2 = new HistorianKey();
+            HistorianValue value1 = new HistorianValue();
+            HistorianValue value2 = new HistorianValue();
             var master = CreateTable();
             var table1 = CreateTable();
             var table2 = CreateTable();
@@ -146,18 +159,18 @@ namespace GSF.SortedTreeStore.Server
                 using (var sequencer = new SequentialReaderStream<HistorianKey, HistorianValue>(list))
                 {
                     var scanner = sequencer.TestSequential();
-                    while (scanner.Read())
+                    while (scanner.Read(key1, value1))
                     {
-                        if (!masterScanSequential.Read())
+                        if (!masterScanSequential.Read(key2, value2))
                             throw new Exception();
 
-                        if (!scanner.CurrentKey.IsEqualTo(masterScan.CurrentKey))
+                        if (!key1.IsEqualTo(key2))
                             throw new Exception();
 
-                        if (!scanner.CurrentValue.IsEqualTo(masterScan.CurrentValue))
+                        if (!value1.IsEqualTo(value2))
                             throw new Exception();
                     }
-                    if (masterScan.Read())
+                    if (masterScan.Read(key2, value2))
                         throw new Exception();
                 }
             }
@@ -243,6 +256,9 @@ namespace GSF.SortedTreeStore.Server
             MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
 
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
             var master = CreateTable();
             AddData(master, 100, 100, Max);
 
@@ -254,7 +270,7 @@ namespace GSF.SortedTreeStore.Server
                     {
                         var scanner = masterRead.GetTreeScanner();
                         scanner.SeekToStart();
-                        while (scanner.Read())
+                        while (scanner.Read(key, value))
                         {
                         }
                     });
@@ -271,7 +287,8 @@ namespace GSF.SortedTreeStore.Server
             MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
-
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
             var table1 = CreateTable();
             AddData(table1, 100, 100, Max);
             using (var editor = list.AcquireEditLock())
@@ -286,7 +303,7 @@ namespace GSF.SortedTreeStore.Server
             double sec = sw.TimeEvent(() =>
                 {
                     var scanner = sequencer;
-                    while (scanner.Read())
+                    while (scanner.Read(key,value))
                     {
                     }
                 });
@@ -301,7 +318,8 @@ namespace GSF.SortedTreeStore.Server
             MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
-
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
             var table1 = CreateTable();
             var table2 = CreateTable();
             AddData(table1, 100, 100, Max / 2);
@@ -319,7 +337,7 @@ namespace GSF.SortedTreeStore.Server
             double sec = sw.TimeEvent(() =>
             {
                 var scanner = sequencer;
-                while (scanner.Read())
+                while (scanner.Read(key,value))
                 {
                 }
             });
@@ -334,7 +352,8 @@ namespace GSF.SortedTreeStore.Server
             MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
-
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
             var table1 = CreateTable();
             var table2 = CreateTable();
             var table3 = CreateTable();
@@ -355,7 +374,7 @@ namespace GSF.SortedTreeStore.Server
             double sec = sw.TimeEvent(() =>
             {
                 var scanner = sequencer;
-                while (scanner.Read())
+                while (scanner.Read(key,value))
                 {
                 }
             });
@@ -373,7 +392,8 @@ namespace GSF.SortedTreeStore.Server
             const int FileCount = 1000;
             ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
             DateTime start = DateTime.Now.Date;
-
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
             for (int x = 0; x < FileCount; x++)
             {
                 var table1 = CreateTable();
@@ -392,7 +412,7 @@ namespace GSF.SortedTreeStore.Server
             double sec = sw.TimeEvent(() =>
             {
                 var scanner = sequencer;
-                while (scanner.Read())
+                while (scanner.Read(key,value))
                 {
                     xi++;
                 }

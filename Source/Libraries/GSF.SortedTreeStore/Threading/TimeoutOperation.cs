@@ -26,8 +26,11 @@ using System.Threading;
 
 namespace GSF.Threading
 {
+
     public class TimeoutOperation
     {
+        //ToDo: Figure out how to allow for a weak referenced callback.
+
         private readonly object m_syncRoot = new object();
         private RegisteredWaitHandle m_registeredHandle;
         private ManualResetEvent m_resetEvent;

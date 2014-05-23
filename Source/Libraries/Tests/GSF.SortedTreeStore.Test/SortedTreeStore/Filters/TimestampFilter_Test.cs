@@ -27,7 +27,7 @@ namespace GSF.SortedTreeStore.Filters
                 pointId.Save(bs);
                 bs.Position = 0;
 
-                var filter = FilterLibrary.GetSeekFilter<HistorianKey>(bs.ReadGuid(), bs);
+                var filter = Library.Filters.GetSeekFilter<HistorianKey>(bs.ReadGuid(), bs);
 
                 if (!filter.GetType().FullName.Contains("FixedRange"))
                     throw new Exception("Wrong type");
@@ -49,7 +49,7 @@ namespace GSF.SortedTreeStore.Filters
                 pointId.Save(bs);
                 bs.Position = 0;
 
-                var filter = FilterLibrary.GetSeekFilter<HistorianKey>(bs.ReadGuid(), bs);
+                var filter = Library.Filters.GetSeekFilter<HistorianKey>(bs.ReadGuid(), bs);
 
                 if (!filter.GetType().FullName.Contains("IntervalRanges"))
                     throw new Exception("Wrong type");

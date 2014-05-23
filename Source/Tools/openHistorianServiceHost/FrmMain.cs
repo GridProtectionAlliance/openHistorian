@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
-using GSF.SortedTreeStore.Client;
-using GSF.SortedTreeStore.Server;
+using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Net;
+using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Net;
 using openHistorian;
 using GSF.SortedTreeStore.Storage;
@@ -33,6 +34,9 @@ namespace openHistorianServiceHost
 
         private void StartStream(object args)
         {
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
             RemoteClientOptions clientOptions = new RemoteClientOptions();
             clientOptions.IsReadOnly = true;
             clientOptions.NetworkPort = 54996;
@@ -47,12 +51,11 @@ namespace openHistorianServiceHost
                     {
                         SortedTreeScannerBase<HistorianKey, HistorianValue> scan = read.GetTreeScanner();
                         scan.SeekToStart();
-                        ulong key1, key2, value1, value2;
                         long count = 0;
-                        while (scan.Read())
+                        while (scan.Read(key, value))
                         {
                             count++;
-                            database.Write(scan.CurrentKey, scan.CurrentValue);
+                            database.Write(key, value);
                             if ((count % 10) == 1)
                                 Thread.Sleep(1);
                         }

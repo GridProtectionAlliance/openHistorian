@@ -49,7 +49,7 @@ namespace GSF.SortedTreeStore.Tree.TreeNodes.FixedSizeNode
         public FixedSizeNode(byte level)
             : base(level, version: 1)
         {
-            m_encoding = EncodingLibrary.GetEncodingMethod<TKey, TValue>(SortedTree.FixedSizeNode);
+            m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(SortedTree.FixedSizeNode);
         }
 
         /// <summary>

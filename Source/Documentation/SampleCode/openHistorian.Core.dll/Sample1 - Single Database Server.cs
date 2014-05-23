@@ -4,7 +4,7 @@ using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services.Reader;
 
 namespace SampleCode.openHistorian.Server.dll
 {
@@ -19,14 +19,10 @@ namespace SampleCode.openHistorian.Server.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            var db = new HistorianDatabaseInstance();
-            db.IsNetworkHosted = false;
-            db.InMemoryArchive = false;
-            db.Paths = new[] { @"c:\temp\Scada\" };
-
-            using (var server = new HistorianServer(db))
+            using (var server = new HistorianServer(@"c:\temp\Scada\"))
+            using (var client = server.Host.CreateClientHost())
             {
-                var database = server.GetDefaultDatabase();
+                var database = client.GetDatabase<HistorianKey, HistorianValue>();
                 for (ulong x = 0; x < 1000; x++)
                 {
                     key.Timestamp = x;

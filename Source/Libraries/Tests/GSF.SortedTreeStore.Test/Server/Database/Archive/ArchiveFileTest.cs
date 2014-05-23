@@ -61,7 +61,7 @@ namespace openHistorian.Test
                             key.PointID = x;
                             value.Value1 = x;
                             value.Value3 = x;
-                            fileEditor.AddPoint(key,value);
+                            fileEditor.AddPoint(key, value);
                             x++;
                         }
                         fileEditor.Commit();
@@ -93,9 +93,9 @@ namespace openHistorian.Test
                 SortedTreeTableSnapshotInfo<HistorianKey, HistorianValue> snap1;
                 using (SortedTreeTable<HistorianKey, HistorianValue>.Editor fileEditor = target.BeginEdit())
                 {
-                    fileEditor.AddPoint(key,value);
+                    fileEditor.AddPoint(key, value);
                     key.Timestamp++;
-                    fileEditor.AddPoint(key,value);
+                    fileEditor.AddPoint(key, value);
                     snap1 = target.AcquireReadSnapshot();
                     fileEditor.Commit();
                 }
@@ -105,17 +105,17 @@ namespace openHistorian.Test
                 {
                     SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
                     scanner.SeekToStart();
-                    Assert.AreEqual(false, scanner.Read());
+                    Assert.AreEqual(false, scanner.Read(key, value));
                 }
                 using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> instance = snap2.CreateReadSnapshot())
                 {
                     SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
                     scanner.SeekToStart();
-                    Assert.AreEqual(true, scanner.Read());
-                    Assert.AreEqual(1uL, scanner.CurrentKey.Timestamp);
-                    Assert.AreEqual(2uL, scanner.CurrentKey.PointID);
-                    Assert.AreEqual(3uL, scanner.CurrentValue.Value1);
-                    Assert.AreEqual(4uL, scanner.CurrentValue.Value2);
+                    Assert.AreEqual(true, scanner.Read(key, value));
+                    Assert.AreEqual(1uL, key.Timestamp);
+                    Assert.AreEqual(2uL, key.PointID);
+                    Assert.AreEqual(3uL, value.Value1);
+                    Assert.AreEqual(4uL, value.Value2);
                 }
                 Assert.AreEqual(1uL, target.FirstKey.Timestamp);
                 Assert.AreEqual(2uL, target.LastKey.Timestamp);
@@ -154,13 +154,13 @@ namespace openHistorian.Test
                 {
                     SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
                     scanner.SeekToStart();
-                    Assert.AreEqual(false, scanner.Read());
+                    Assert.AreEqual(false, scanner.Read(key, value));
                 }
                 using (SortedTreeTableReadSnapshot<HistorianKey, HistorianValue> instance = snap2.CreateReadSnapshot())
                 {
                     SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = instance.GetTreeScanner();
                     scanner.SeekToStart();
-                    Assert.AreEqual(false, scanner.Read());
+                    Assert.AreEqual(false, scanner.Read(key, value));
                 }
             }
         }

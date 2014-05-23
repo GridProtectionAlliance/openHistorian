@@ -27,13 +27,16 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using GSF;
 using GSF.Configuration;
 using GSF.Data;
+using GSF.Historian;
 using GSF.Historian.DataServices;
 using GSF.Historian.Replication;
 using GSF.IO;
+using GSF.SortedTreeStore.Services;
 using GSF.TimeSeries;
 using GSF.TimeSeries.Adapters;
 using openHistorian.Collections;
@@ -56,8 +59,8 @@ namespace openHistorian.Adapters
         public const string DefaultDataChannel = "port=38402";
 
         // Fields
-        private HistorianDatabaseServer m_archive;
-        private HistorianDatabaseInstance m_archiveInfo;
+        private HistorianIArchive m_archive;
+        private ServerDatabaseConfig m_archiveInfo;
         private string m_instanceName;
         private string[] m_archivePaths;
         private string m_dataChannel;
@@ -233,7 +236,7 @@ namespace openHistorian.Adapters
                 status.Append(m_dataServices.Status);
                 status.AppendLine();
                 status.Append(m_replicationProviders.Status);
-                Common.HistorianServer.GetFullStatus(status);
+                Common.HistorianServer.Host.GetFullStatus(status);
                 return status.ToString();
             }
         }
@@ -269,11 +272,12 @@ namespace openHistorian.Adapters
             ArchivePaths = setting;
 
             // Establish archive information for this historian instance
-            m_archiveInfo = new HistorianDatabaseInstance();
+
+            m_archiveInfo = new ServerDatabaseConfig();
             m_archiveInfo.DatabaseName = InstanceName;
-            m_archiveInfo.Paths = m_archivePaths;
-            m_archiveInfo.ConnectionString = m_dataChannel;
-            m_archiveInfo.InMemoryArchive = m_inMemoryArchive;
+            m_archiveInfo.MainPath = m_archivePaths.First();
+            m_archiveInfo.ImportPaths.AddRange(m_archivePaths.Skip(1));
+            m_archiveInfo.WriterMode = m_inMemoryArchive ? WriterMode.InMemory : WriterMode.OnDisk;
 
             // TODO: Determine where these parameters (or similar) are definable and expose through historian instance or elsewhere so that they can be configured by adapter parameters
             //m_archive.FileSize = 100;
@@ -312,7 +316,7 @@ namespace openHistorian.Adapters
         /// <returns>Text of the status message.</returns>
         public override string GetShortStatus(int maxLength)
         {
-            return string.Format("Archived {0} measurements {1}.", m_archivedMeasurements, m_archiveInfo.InMemoryArchive ? "in memory" : "to disk").CenterText(maxLength);
+            return string.Format("Archived {0} measurements {1}.", m_archivedMeasurements, m_archiveInfo.WriterMode == WriterMode.InMemory ? "in memory" : "to disk").CenterText(maxLength);
         }
 
         /// <summary>
@@ -362,7 +366,7 @@ namespace openHistorian.Adapters
         protected override void AttemptConnection()
         {
             // Open archive files
-            Common.HistorianServer.AddDatabaseInstance(m_archiveInfo);
+            Common.HistorianServer.Host.LoadConfig(m_archiveInfo);
             m_archive = Common.HistorianServer[InstanceName];
 
             m_adapterLoadedCount = 0;
@@ -380,7 +384,7 @@ namespace openHistorian.Adapters
         protected override void AttemptDisconnection()
         {
             m_archive = null;
-            Common.HistorianServer.RemoveDatabaseInstance(m_archiveInfo);
+            Common.HistorianServer.Host.Unload(m_archiveInfo.DatabaseName);
 
             OnDisconnected();
             m_archivedMeasurements = 0;

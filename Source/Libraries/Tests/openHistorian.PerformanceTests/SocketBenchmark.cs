@@ -2,9 +2,10 @@
 using System.IO;
 using GSF.IO;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Client;
-using GSF.SortedTreeStore.Server;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Net;
+using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Net;
 using NUnit.Framework;
 using openHistorian;
@@ -108,12 +109,10 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void TestReadData()
         {
-            HistorianDatabaseInstance db = new HistorianDatabaseInstance();
-            db.InMemoryArchive = true;
-            db.ConnectionString = "port=12345";
-            db.Paths = new[] { @"c:\temp\Scada\" };
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
 
-            using (HistorianServer server = new HistorianServer(db))
+            using (HistorianServer server = new HistorianServer(@"c:\temp\Scada\"))
             {
                 RemoteClientOptions clientOptions = new RemoteClientOptions();
                 clientOptions.IsReadOnly = true;
@@ -131,7 +130,7 @@ namespace SampleCode.openHistorian.Server.dll
                             //IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
                             //TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue, new ulong[] { 2 });
                             TreeStream<HistorianKey, HistorianValue> stream = database.Read(0, ulong.MaxValue);
-                            while (stream.Read())
+                            while (stream.Read(key,value))
                             {
                                 count++;
                             }
@@ -162,6 +161,8 @@ namespace SampleCode.openHistorian.Server.dll
         {
 
             DebugStopwatch sw = new DebugStopwatch();
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
 
             string path = Directory.GetFiles(@"c:\temp\Scada\", "*.d2")[0];
             double time;
@@ -178,7 +179,7 @@ namespace SampleCode.openHistorian.Server.dll
                         {
                             var t = scan.GetTreeScanner();
                             t.SeekToStart();
-                            while (t.Read())
+                            while (t.Read(key,value))
                             {
                                 count++;
                             }

@@ -33,7 +33,7 @@ namespace GSF.SortedTreeStore.Collection
             }
 
             sw.Start();
-            buffer.Sort();
+            buffer.IsReadingMode = true;
             sw.Stop();
 
             System.Console.WriteLine(sw.ElapsedMilliseconds);
@@ -70,7 +70,7 @@ namespace GSF.SortedTreeStore.Collection
             }
 
             sw.Start();
-            buffer.Sort();
+            buffer.IsReadingMode = true;
             sw.Stop();
 
             System.Console.WriteLine(sw.ElapsedMilliseconds);
@@ -91,7 +91,7 @@ namespace GSF.SortedTreeStore.Collection
             for (int i = 0; i < 10; i++)
             {
                 Random r = new Random(1);
-                buffer.Clear();
+                buffer.IsReadingMode = false;
                 for (int x = 0; x < MaxCount; x++)
                 {
                     key.Timestamp = (ulong)r.Next();
@@ -101,7 +101,7 @@ namespace GSF.SortedTreeStore.Collection
                 }
                 sw.Reset();
                 sw.Start();
-                buffer.Sort();
+                buffer.IsReadingMode = true;
                 sw.Stop();
 
                 System.Console.WriteLine(sw.ElapsedMilliseconds);
@@ -122,7 +122,7 @@ namespace GSF.SortedTreeStore.Collection
 
             for (int i = 0; i < 10; i++)
             {
-                buffer.Clear();
+                buffer.IsReadingMode = false;
                 for (int x = 0; x < MaxCount; x++)
                 {
                     key.PointID = (ulong)x;
@@ -131,7 +131,7 @@ namespace GSF.SortedTreeStore.Collection
                 }
                 sw.Reset();
                 sw.Start();
-                buffer.Sort();
+                buffer.IsReadingMode = true;
                 sw.Stop();
 
                 System.Console.WriteLine(sw.ElapsedMilliseconds);
@@ -155,7 +155,7 @@ namespace GSF.SortedTreeStore.Collection
             for (int i = 0; i < 15; i++)
             {
                 Random r = new Random(1);
-                buffer.Clear();
+                buffer.IsReadingMode = false;
                 for (int x = 0; x < Count; x++)
                 {
                     key.Timestamp = (ulong)r.Next();
@@ -165,7 +165,7 @@ namespace GSF.SortedTreeStore.Collection
                 }
                 sw.Reset();
                 sw.Start();
-                buffer.Sort();
+                buffer.IsReadingMode = true;
                 sw.Stop();
                 System.Console.WriteLine(Count.ToString() + "\t" + (Count / sw.Elapsed.TotalSeconds / 1000000).ToString());
                 Count *= 2;

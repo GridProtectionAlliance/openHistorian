@@ -74,11 +74,7 @@
     <Compile Include="SortedTreeStore\Storage\TestPageSizes.cs" />
     <Compile Include="SortedTreeStore\Storage\TestPageSizesBulk.cs" />
     <Compile Include="BitMath.cs" />
-    <Compile Include="Collections\256\SortedTree256MethodsTest.cs" />
-    <Compile Include="Collections\64\BinarySearchTest.cs" />
-    <Compile Include="Collections\64\SortedTree64Remove_Test.cs" />
-    <Compile Include="Collections\64\SortedTree64Test.cs" />
-    <Compile Include="Collections\64\SortedTree64Test_New.cs" />
+    <Compile Include="Collections\BinarySearchTest.cs" />
     <Compile Include="Collections\BitArrayTest.cs" />
     <Compile Include="Collections\BitArrayTestPerformance.cs" />
     <Compile Include="Collections\ContinuousQueueTest.cs" />
@@ -219,7 +215,9 @@
       <Name>openHistorian.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Collections\64\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

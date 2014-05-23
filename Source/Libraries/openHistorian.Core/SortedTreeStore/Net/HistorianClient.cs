@@ -26,6 +26,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using GSF.Net;
+using GSF.SortedTreeStore.Services.Net;
 using openHistorian;
 using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
@@ -37,7 +38,7 @@ namespace GSF.SortedTreeStore.Net
     /// Connects to a socket based remoted historian database collection.
     /// </summary>
     public class HistorianClient :
-        RemoteClientRoot
+        RemoteClient
     {
         public HistorianClient(RemoteClientOptions options)
             : base(options)

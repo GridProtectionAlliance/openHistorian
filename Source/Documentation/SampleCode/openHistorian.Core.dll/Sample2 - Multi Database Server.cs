@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using GSF.SortedTreeStore;
-using GSF.SortedTreeStore.Server;
-using GSF.SortedTreeStore.Server.Reader;
+using GSF.SortedTreeStore.Services;
+using GSF.SortedTreeStore.Services.Reader;
 using NUnit.Framework;
 using openHistorian;
 using openHistorian.Collections;

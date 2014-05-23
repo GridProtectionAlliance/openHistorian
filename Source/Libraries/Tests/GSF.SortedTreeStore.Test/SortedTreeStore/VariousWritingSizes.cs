@@ -17,13 +17,14 @@ namespace GSF.SortedTreeStore
         [Test]
         public void TestSmall()
         {
+            var key = new HistorianKey();
+            var value = new HistorianValue();
             using (var af = SortedTreeFile.CreateInMemory())
             using (var file = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
                 using (var edit = file.BeginEdit())
                 {
-                    var key = new HistorianKey();
-                    var value = new HistorianValue();
+                  
                     for (int x = 0; x < 10000000; x++)
                     {
                         key.Timestamp = (ulong)x;
@@ -37,7 +38,7 @@ namespace GSF.SortedTreeStore
                 {
                     int count = 0;
                     scan.SeekToStart();
-                    while (scan.Read())
+                    while (scan.Read(key,value))
                     {
                         count++;
                     }

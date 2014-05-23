@@ -109,6 +109,8 @@ namespace openHistorian.UnitTests.Server.Database.Archive
             using (SortedTreeFile af = SortedTreeFile.OpenFile("c:\\temp\\ArchiveTestFileBig.d2", isReadOnly: true))
             using (SortedTreeTable<HistorianKey, HistorianValue> af2 = af.OpenOrCreateTable<HistorianKey, HistorianValue>(SortedTree.FixedSizeNode))
             {
+                HistorianKey key = new HistorianKey();
+                HistorianValue value = new HistorianValue();
                 Random r = new Random(3);
 
                 SortedTreeScannerBase<HistorianKey, HistorianValue> scanner = af2.AcquireReadSnapshot().CreateReadSnapshot().GetTreeScanner();
@@ -117,11 +119,11 @@ namespace openHistorian.UnitTests.Server.Database.Archive
                 {
                     for (ulong v2 = 1; v2 < 86000; v2++)
                     {
-                        Assert.IsTrue(scanner.Read());
-                        Assert.AreEqual(scanner.CurrentKey.Timestamp, v1 * 2342523);
-                        Assert.AreEqual(scanner.CurrentKey.PointID, v2);
-                        Assert.AreEqual(scanner.CurrentValue.Value3, 0ul);
-                        Assert.AreEqual(scanner.CurrentValue.Value1, (ulong)r.Next());
+                        Assert.IsTrue(scanner.Read(key, value));
+                        Assert.AreEqual(key.Timestamp, v1 * 2342523);
+                        Assert.AreEqual(key.PointID, v2);
+                        Assert.AreEqual(value.Value3, 0ul);
+                        Assert.AreEqual(value.Value1, (ulong)r.Next());
                     }
                 }
             }

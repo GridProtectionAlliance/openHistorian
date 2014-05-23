@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SortedPointBuffer`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -22,136 +22,251 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Collection
 {
+    /// <summary>
+    /// A temporary point buffer that is designed to write unsorted data to it, 
+    /// the read the data back out sorted. 
+    /// </summary>
+    /// <typeparam name="TKey">The key type to use</typeparam>
+    /// <typeparam name="TValue">The value type to use</typeparam>
     public class SortedPointBuffer<TKey, TValue>
         : TreeStream<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        TKey m_tmpKey;
-        TValue m_tmpValue;
+        /// <summary>
+        /// exposes methods for sorting the keys.
+        /// </summary>
+        private TKey m_keyMethods;
+        /// <summary>
+        /// Contains indexes of sorted data.
+        /// </summary>
+        private int[] m_sortingBlocks1;
+        /// <summary>
+        /// Contains indexex of sorted data.
+        /// </summary>
+        /// <remarks>
+        /// Two blocks are needed to do a merge sort since 
+        /// this class uses indexes instead of actually moving
+        /// the raw values.
+        /// </remarks>
+        private int[] m_sortingBlocks2;
 
-        int[] SortingBlocks1;
-        int[] SortingBlocks2;
+        /// <summary>
+        /// A block of data for storing the keys.
+        /// </summary>
+        private byte[] m_keyData;
+        /// <summary>
+        /// A block of data for storing the values.
+        /// </summary>
+        private byte[] m_valueData;
 
-        public byte[] KeyData;
-        public byte[] ValueData;
+        /// <summary>
+        /// The maximum number of items that can be stored in this buffer.
+        /// </summary>
+        private int m_capacity;
 
-        public int Capacity;
+        /// <summary>
+        /// The index of the next point to dequeue.
+        /// </summary>
+        private int m_dequeueIndex;
+        /// <summary>
+        /// The index of the next point to write.
+        /// </summary>
+        private int m_enqueueIndex;
 
-        public int DequeueIndex;
-        public int EnqueueIndex;
+        /// <summary>
+        /// The number of bytes required to store a key
+        /// </summary>
+        private int m_keySize;
+        /// <summary>
+        /// The number of bytes required to store a value
+        /// </summary>
+        private int m_valueSize;
 
-        public int KeySize;
-        public int ValueSize;
+        /// <summary>
+        /// Gets if the stream is currently reading. 
+        /// The stream was not designed to be read from and written to at the same time. So the mode must be changed.
+        /// </summary>
+        private bool m_isReadingMode;
 
-        public int PointSize { get; private set; }
+        /// <summary>
+        /// Creates a <see cref="SortedPointBuffer{TKey,TValue}"/> that can hold only exactly the specified <see cref="capacity"/>.
+        /// </summary>
+        /// <param name="capacity">The maximum number of items that can be stored in this class</param>
+        public SortedPointBuffer(int capacity)
+        {
+            m_capacity = capacity;
+            m_keyMethods = new TKey();
 
+            m_keySize = m_keyMethods.Size;
+            m_valueSize = new TValue().Size;
+
+            m_keyData = new byte[capacity * m_keySize];
+            m_valueData = new byte[capacity * m_valueSize];
+
+            m_sortingBlocks1 = new int[capacity];
+            m_sortingBlocks2 = new int[capacity];
+
+            m_isReadingMode = false;
+        }
+
+        /// <summary>
+        /// Gets the current number of items in the <see cref="SortedPointBuffer{TKey,TValue}"/>
+        /// </summary>
         public int Count
         {
             get
             {
-                return (EnqueueIndex - DequeueIndex);
+                return (m_enqueueIndex - m_dequeueIndex);
             }
         }
 
-        DoubleValueEncodingBase<TKey, TValue> m_encoding;
-
-        public SortedPointBuffer(int capacity)
-        {
-            Capacity = capacity;
-            m_tmpKey = new TKey();
-            m_tmpValue = new TValue();
-
-            KeySize = m_tmpKey.Size;
-            ValueSize = m_tmpValue.Size;
-
-            m_encoding = EncodingLibrary.GetEncodingMethod<TKey, TValue>(SortedTree.FixedSizeNode);
-
-            PointSize = m_encoding.MaxCompressionSize;
-
-            KeyData = new byte[capacity * KeySize];
-            ValueData = new byte[capacity * ValueSize];
-
-            SortingBlocks1 = new int[capacity];
-            SortingBlocks2 = new int[capacity];
-        }
-
-        public bool ContainsPoints
-        {
-            get
-            {
-                return DequeueIndex != EnqueueIndex;
-            }
-        }
-
+        /// <summary>
+        /// Gets if this class does not contain any items
+        /// </summary>
         public bool IsEmpty
         {
             get
             {
-                return DequeueIndex == EnqueueIndex;
+                return m_dequeueIndex == m_enqueueIndex;
             }
         }
 
+        /// <summary>
+        /// Gets if no more items can be added to this list.
+        /// </summary>
         public bool IsFull
         {
             get
             {
-                return Capacity == EnqueueIndex;
+                return m_capacity == m_enqueueIndex;
             }
         }
 
-        public void Clear()
+        /// <summary>
+        /// Gets/Sets the current mode of the point buffer.
+        /// </summary>
+        /// <remarks>
+        /// This class is not designed to be read from and written to at the same time.
+        /// This is because sorting must occur right before reading from this stream.
+        /// </remarks>
+        public bool IsReadingMode
         {
-            DequeueIndex = 0;
-            EnqueueIndex = 0;
-            EOS = false;
+            get
+            {
+                return m_isReadingMode;
+            }
+            set
+            {
+                if (m_isReadingMode != value)
+                {
+                    m_isReadingMode = value;
+                    if (m_isReadingMode)
+                    {
+                        Sort();
+                    }
+                    else
+                    {
+                        Clear();
+                    }
+                }
+
+            }
         }
 
+        /// <summary>
+        /// Clears all of the items in this list.
+        /// </summary>
+        private void Clear()
+        {
+            m_dequeueIndex = 0;
+            m_enqueueIndex = 0;
+            SetEos(false);
+        }
+
+        /// <summary>
+        /// Attempts to enqueue the provided item to the list.
+        /// </summary>
+        /// <param name="key">the key to add</param>
+        /// <param name="value">the value to add</param>
+        /// <returns>true if the item was successfully enqueued. False if the queue is full.</returns>
         unsafe public bool TryEnqueue(TKey key, TValue value)
         {
+            if (m_isReadingMode)
+                throw new InvalidOperationException("Cannot enqueue to a list that is in ReadMode");
             if (IsFull)
                 return false;
-            fixed (byte* lpk = KeyData, lpv = ValueData)
+            fixed (byte* lpk = m_keyData, lpv = m_valueData)
             {
-                key.Write(lpk + EnqueueIndex * KeySize);
-                value.Write(lpv + EnqueueIndex * ValueSize);
-                EnqueueIndex++;
+                key.Write(lpk + m_enqueueIndex * m_keySize);
+                value.Write(lpv + m_enqueueIndex * m_valueSize);
+                m_enqueueIndex++;
             }
             return true;
         }
 
-        public unsafe override bool Read(TKey key, TValue value)
+        /// <summary>
+        /// Advances the stream to the next value. 
+        /// If before the beginning of the stream, advances to the first value
+        /// </summary>
+        /// <returns>True if the advance was successful. False if the end of the stream was reached.</returns>
+        unsafe protected override bool ReadNext(TKey key, TValue value)
         {
+            if (!m_isReadingMode)
+                throw new InvalidOperationException("Cannot read from a list that is not in ReadMode");
             if (IsEmpty)
                 return false;
-            ReadSorted(DequeueIndex,key,value);
-            DequeueIndex++;
-            if (IsEmpty)
-                Clear();
+
+            //Since this class is fixed in size. Bounds checks are not necessary as they will always be valid.
+            fixed (byte* lpk = m_keyData, lpv = m_valueData)
+            {
+                key.Read(lpk + m_sortingBlocks1[m_dequeueIndex] * m_keySize);
+                value.Read(lpv + m_sortingBlocks1[m_dequeueIndex] * m_valueSize);
+            }
+
+            m_dequeueIndex++;
             return true;
         }
 
-        public unsafe void ReadSorted(int index, TKey key, TValue value)
+        /// <summary>
+        /// Overrides the default behavior that disposes the stream when the end of the stream has been encountered.
+        /// </summary>
+        protected override void EndOfStreamReached()
         {
-            fixed (byte* lpk = KeyData, lpv = ValueData)
+            SetEos(true);
+        }
+
+        /// <summary>
+        /// Reads the specified item from the sorted list.
+        /// </summary>
+        /// <param name="index">the index of the item to read. Note: Bounds checking is not done.</param>
+        /// <param name="key">the key to write to</param>
+        /// <param name="value">the value to write to</param>
+        internal unsafe void ReadSorted(int index, TKey key, TValue value)
+        {
+            if (!m_isReadingMode)
+                throw new InvalidOperationException("Cannot read from a list that is not in ReadMode");
+            //Since this class is fixed in size. Bounds checks are not necessary as they will always be valid.
+            fixed (byte* lpk = m_keyData, lpv = m_valueData)
             {
-                key.Read(lpk + SortingBlocks1[index] * KeySize);
-                value.Read(lpv + SortingBlocks1[index] * ValueSize);
+                key.Read(lpk + m_sortingBlocks1[index] * m_keySize);
+                value.Read(lpv + m_sortingBlocks1[index] * m_valueSize);
             }
         }
 
-        public unsafe void Sort()
+        /// <summary>
+        /// Does a sort of the data. using a merge sort like algorithm.
+        /// </summary>
+        private unsafe void Sort()
         {
-            fixed (byte* lp = KeyData)
+            fixed (byte* lp = m_keyData)
             {
                 //InitialSort
-                int keySize = KeySize;
+                int keySize = m_keySize;
                 int count = Count;
 
                 for (int x = 0; x < count; x += 2)
@@ -159,23 +274,23 @@ namespace GSF.SortedTreeStore.Collection
                     //Can't sort the last entry if not
                     if (x + 1 == count)
                     {
-                        SortingBlocks1[x] = x;
+                        m_sortingBlocks1[x] = x;
                     }
-                    else if (m_tmpKey.IsLessThanOrEqualTo(lp + keySize * x, lp + keySize * (x + 1)))
+                    else if (m_keyMethods.IsLessThanOrEqualTo(lp + keySize * x, lp + keySize * (x + 1)))
                     {
-                        SortingBlocks1[x] = x;
-                        SortingBlocks1[x + 1] = (x + 1);
+                        m_sortingBlocks1[x] = x;
+                        m_sortingBlocks1[x + 1] = (x + 1);
                     }
                     else
                     {
-                        SortingBlocks1[x] = (x + 1);
-                        SortingBlocks1[x + 1] = x;
+                        m_sortingBlocks1[x] = (x + 1);
+                        m_sortingBlocks1[x + 1] = x;
                     }
                 }
 
                 bool shouldSwap = false;
 
-                fixed (int* block1 = SortingBlocks1, block2 = SortingBlocks2)
+                fixed (int* block1 = m_sortingBlocks1, block2 = m_sortingBlocks2)
                 {
                     int stride = 2;
                     while (true)
@@ -198,9 +313,9 @@ namespace GSF.SortedTreeStore.Collection
 
                 if (shouldSwap)
                 {
-                    var b1 = SortingBlocks1;
-                    SortingBlocks1 = SortingBlocks2;
-                    SortingBlocks2 = b1;
+                    var b1 = m_sortingBlocks1;
+                    m_sortingBlocks1 = m_sortingBlocks2;
+                    m_sortingBlocks2 = b1;
                 }
             }
         }
@@ -230,7 +345,7 @@ namespace GSF.SortedTreeStore.Collection
                 {
                     //Check to see if already in order, then I can shortcut
 
-                    if (m_tmpKey.IsLessThanOrEqualTo(ptr + srcIndex[i1End - 1] * keySize, ptr + srcIndex[i2] * keySize))
+                    if (m_keyMethods.IsLessThanOrEqualTo(ptr + srcIndex[i1End - 1] * keySize, ptr + srcIndex[i2] * keySize))
                     {
                         for (int i = d; i < dEnd; i++)
                         {
@@ -254,7 +369,7 @@ namespace GSF.SortedTreeStore.Collection
                         d++;
                         i1++;
                     }
-                    else if (m_tmpKey.IsLessThanOrEqualTo(ptr + srcIndex[i1] * keySize, ptr + srcIndex[i2] * keySize))
+                    else if (m_keyMethods.IsLessThanOrEqualTo(ptr + srcIndex[i1] * keySize, ptr + srcIndex[i2] * keySize))
                     {
                         dstIndex[d] = srcIndex[i1];
                         d++;

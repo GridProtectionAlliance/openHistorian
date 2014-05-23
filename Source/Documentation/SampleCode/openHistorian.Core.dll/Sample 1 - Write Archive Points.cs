@@ -36,16 +36,17 @@ namespace SampleCode.openHistorian.Archive.dll
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
+            HistorianKey key = new HistorianKey();
+            HistorianValue value = new HistorianValue();
+
             using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             using (var snapshot = table.BeginRead())
             {
                 var scanner = snapshot.GetTreeScanner();
                 scanner.SeekToStart();
-                while (scanner.Read())
+                while (scanner.Read(key,value))
                 {
-                    var key = scanner.CurrentKey;
-                    var value = scanner.CurrentValue;
                     Console.WriteLine("{0}, {1}, {2}",
                         key.TimestampAsDate.ToString(), key.PointID, value.AsString);
                 }
@@ -106,6 +107,11 @@ namespace SampleCode.openHistorian.Archive.dll
         {
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
+            HistorianKey key1 = new HistorianKey();
+            HistorianKey key2 = new HistorianKey();
+            HistorianValue value1 = new HistorianValue();
+            HistorianValue value2 = new HistorianValue();
+
             using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: true))
             using (var table = file.OpenTable<HistorianKey, HistorianValue>())
             {
@@ -121,14 +127,14 @@ namespace SampleCode.openHistorian.Archive.dll
                     scanner1.SeekToStart();
                     scanner2.SeekToStart();
 
-                    while (scanner1.Read() & scanner2.Read())
+                    while (scanner1.Read(key1,value1) & scanner2.Read(key2,value2))
                     {
-                        Assert.AreEqual(scanner1.CurrentKey.Timestamp, scanner2.CurrentKey.Timestamp);
-                        Assert.AreEqual(scanner1.CurrentKey.PointID, scanner2.CurrentKey.PointID);
-                        Assert.AreEqual(scanner1.CurrentKey.EntryNumber, scanner2.CurrentKey.EntryNumber);
-                        Assert.AreEqual(scanner1.CurrentValue.Value1, scanner2.CurrentValue.Value1);
-                        Assert.AreEqual(scanner1.CurrentValue.Value2, scanner2.CurrentValue.Value2);
-                        Assert.AreEqual(scanner1.CurrentValue.Value3, scanner2.CurrentValue.Value3);
+                        Assert.AreEqual(key1.Timestamp, key2.Timestamp);
+                        Assert.AreEqual(key1.PointID, key2.PointID);
+                        Assert.AreEqual(key1.EntryNumber, key2.EntryNumber);
+                        Assert.AreEqual(value1.Value1, value2.Value1);
+                        Assert.AreEqual(value1.Value2, value2.Value2);
+                        Assert.AreEqual(value1.Value3, value2.Value3);
                     }
                 }
             }
@@ -139,6 +145,8 @@ namespace SampleCode.openHistorian.Archive.dll
         [Test]
         public void ReadFromAFileWhileWritingToIt()
         {
+            var key = new HistorianKey();
+            var value = new HistorianValue();
             string fileName = @"C:\Temp\ArchiveFile.d2";
 
             using (var file = SortedTreeFile.OpenFile(fileName, isReadOnly: false))
@@ -149,11 +157,11 @@ namespace SampleCode.openHistorian.Archive.dll
                 {
                     var scanner = reader.GetTreeScanner();
                     scanner.SeekToStart();
-                    while (scanner.Read())
+                    while (scanner.Read(key,value))
                     {
-                        scanner.CurrentKey.Timestamp++;
-                        scanner.CurrentValue.Value1++;
-                        writer.AddPoint(scanner.CurrentKey, scanner.CurrentValue);
+                        key.Timestamp++;
+                        value.Value1++;
+                        writer.AddPoint(key, value);
                     }
 
                     writer.Commit();

@@ -11,18 +11,13 @@ namespace openHistorian.Adapters
         [Test]
         public void TestRemoteAdapter()
         {
-            HistorianDatabaseInstance serverSettings = new HistorianDatabaseInstance();
-            serverSettings.IsNetworkHosted = false;
-            serverSettings.Paths = new[] { @"c:\temp\historian\" };
-            serverSettings.InMemoryArchive = false;
-
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
 
-            using (HistorianServer server = new HistorianServer(serverSettings))
-            using (var client = server.CreateClient())
+            using (HistorianServer server = new HistorianServer(@"c:\temp\historian\"))
+            using (var client = server.Host.CreateClientHost())
             {
-                using (HistorianInputQueue queue = new HistorianInputQueue(() => client.GetDatabase<HistorianKey,HistorianValue>(serverSettings.DatabaseName)))
+                using (HistorianInputQueue queue = new HistorianInputQueue(() => client.GetDatabase<HistorianKey, HistorianValue>()))
                 {
                     for (uint x = 0; x < 100000; x++)
                     {
