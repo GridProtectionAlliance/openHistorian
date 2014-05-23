@@ -29,6 +29,10 @@
     <Compile Include="openHistorianSetup.wxs" />
   </ItemGroup>
   <ItemGroup>
+    <WixExtension Include="WixNetFxExtension">
+      <HintPath>..\..\..\Dependencies\WiX\WixNetFxExtension.dll</HintPath>
+      <Name>WixNetFxExtension</Name>
+    </WixExtension>
     <WixExtension Include="WixUtilExtension">
       <HintPath>..\..\..\Dependencies\WiX\WixUtilExtension.dll</HintPath>
       <Name>WixUtilExtension</Name>

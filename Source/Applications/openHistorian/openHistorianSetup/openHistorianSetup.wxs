@@ -3,8 +3,13 @@
   <Product Id="{A38EFA18-A0C5-4902-9D06-EC57FA89F623}" Name="openHistorian" Language="1033" Version="!(bind.FileVersion.openHistorian.exe)" Manufacturer="Grid Protection Alliance" UpgradeCode="{B34DA7F9-23D9-4573-9348-1414B653341E}">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
-    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <PropertyRef Id="NETFRAMEWORK45"/>
+    <Condition Message='This setup requires Microsoft .NET Framework 4.5 or greater - this will need to be installed before installation can continue.'>
+      <![CDATA[Installed OR NETFRAMEWORK45]]>
+    </Condition>
 
     <Feature Id="AllProducts" Title="All Products" Level="1" Display="expand" ConfigurableDirectory="INSTALLFOLDER">
       <!-- openHistorian -->
