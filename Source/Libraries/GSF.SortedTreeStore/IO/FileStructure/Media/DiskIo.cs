@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.IO;
+using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
@@ -54,6 +55,13 @@ namespace GSF.IO.FileStructure.Media
             m_blockSize = stream.BlockSize;
             m_stream = stream;
         }
+
+#if DEBUG
+        ~DiskIo()
+        {
+            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+#endif
 
         #endregion
 
@@ -192,6 +200,7 @@ namespace GSF.IO.FileStructure.Media
                 }
                 finally
                 {
+                    GC.SuppressFinalize(this);
                     m_stream = null;
                     m_disposed = true;
                 }

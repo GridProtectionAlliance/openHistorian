@@ -11,7 +11,7 @@ using GSF.SortedTreeStore.Tree;
 using GSF.SortedTreeStore.Tree.TreeNodes;
 using GSF.IO.FileStructure.Media;
 
-namespace GSF.SortedTreeStore.Storage
+namespace GSF.SortedTreeStore.Storage.Test
 {
     [TestFixture]
     public class TestPageSizesBulk

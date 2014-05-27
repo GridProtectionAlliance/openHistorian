@@ -12,7 +12,7 @@ using openHistorian.Collections;
 using GSF.SortedTreeStore.Tree;
 using GSF.IO.FileStructure.Media;
 
-namespace GSF.SortedTreeStore.Storage
+namespace GSF.SortedTreeStore.Storage.Test
 {
     [TestFixture]
     public class TestPageSizes

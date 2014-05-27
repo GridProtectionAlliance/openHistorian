@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GSF;
+using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
@@ -37,7 +38,8 @@ namespace GSF.IO.FileStructure.Media
     /// This class is used by <see cref="BufferedFile"/> to decide which pages should be replaced.
     /// This class is not thread safe.
     /// </remarks>
-    internal class PageReplacementAlgorithm : IDisposable
+    internal class PageReplacementAlgorithm 
+        : IDisposable
     {
         #region [ Members ]
 
@@ -81,6 +83,13 @@ namespace GSF.IO.FileStructure.Media
         }
 
         #endregion
+
+#if DEBUG
+        ~PageReplacementAlgorithm()
+        {
+            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+#endif
 
         #region [ Methods ]
 
@@ -250,6 +259,7 @@ namespace GSF.IO.FileStructure.Media
                 }
                 finally
                 {
+                    GC.SuppressFinalize(this);
                     m_disposed = true; // Prevent duplicate dispose.
                 }
             }

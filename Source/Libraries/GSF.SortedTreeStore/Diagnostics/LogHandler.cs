@@ -22,7 +22,6 @@
 //
 //******************************************************************************************************
 
-
 using System;
 
 namespace GSF.Diagnostics
@@ -86,7 +85,7 @@ namespace GSF.Diagnostics
                 ReportError = (value & VerboseLevel.Error) != 0;
                 ReportFatal = (value & VerboseLevel.Fatal) != 0;
                 m_verbose = value;
-                Logger.RefreshVerbose();
+                Logger.RefreshVerboseFilter();
             }
         }
 
@@ -96,15 +95,7 @@ namespace GSF.Diagnostics
         /// <param name="log"></param>
         internal void ProcessMessage(LogMessage log)
         {
-            if (log.Level == VerboseLevel.Debug && !ReportDebug)
-                return;
-            if (log.Level == VerboseLevel.Information && !ReportInfo)
-                return;
-            if (log.Level == VerboseLevel.Warning && !ReportWarning)
-                return;
-            if (log.Level == VerboseLevel.Error && !ReportError)
-                return;
-            if (log.Level == VerboseLevel.Fatal && !ReportFatal)
+            if ((log.Level & m_verbose) == 0)
                 return;
 
             try

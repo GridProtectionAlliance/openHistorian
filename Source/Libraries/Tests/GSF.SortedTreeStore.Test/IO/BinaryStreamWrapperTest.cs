@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using GSF.IO.Unmanaged;
+using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 
 namespace GSF.IO.Test

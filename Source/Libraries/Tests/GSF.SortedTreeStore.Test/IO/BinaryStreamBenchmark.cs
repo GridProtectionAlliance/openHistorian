@@ -2,9 +2,11 @@
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
+using GSF.IO.Unmanaged;
+using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 
-namespace GSF.IO.Unmanaged.Test
+namespace GSF.IO.Test
 {
     [TestFixture]
     public class BinaryStreamBenchmark
@@ -22,7 +24,7 @@ namespace GSF.IO.Unmanaged.Test
 
         public static void Run(BinaryStream bs, bool clipboard = true)
         {
-            const int count = 1000;
+            const int count = 100;
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(RunInserts(count, bs));
             sb.AppendLine(RunSeeks(count, bs));

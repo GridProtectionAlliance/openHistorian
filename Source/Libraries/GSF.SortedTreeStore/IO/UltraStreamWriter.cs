@@ -39,13 +39,22 @@ namespace GSF.IO
         char[] m_buffer;
         int m_position;
         StreamWriter m_stream;
-        string nl = Environment.NewLine;
+        string m_nl = Environment.NewLine;
+
+        /// <summary>
+        /// Creates a <see cref="UltraStreamWriter"/> around <see cref="Stream"/>
+        /// </summary>
+        /// <param name="stream">The stream to wrap</param>
         public UltraStreamWriter(StreamWriter stream)
         {
             m_buffer = new char[Size];
             m_stream = stream;
         }
 
+        /// <summary>
+        /// Writes the provided character to the stream
+        /// </summary>
+        /// <param name="value">the character to write.</param>
         public void Write(char value)
         {
             if (m_position < FlushSize)
@@ -54,6 +63,10 @@ namespace GSF.IO
             m_position++;
         }
         
+        /// <summary>
+        /// Writes the provided float to the stream
+        /// </summary>
+        /// <param name="value">the value to write.</param>
         public void Write(float value)
         {
             if (m_position < FlushSize)
@@ -61,23 +74,29 @@ namespace GSF.IO
             m_position += value.WriteToChars(m_buffer, m_position);
         }
 
+        /// <summary>
+        /// Writes a NewLine to the stream
+        /// </summary>
         public void WriteLine()
         {
             if (m_position < FlushSize)
                 Flush();
-            if (nl.Length == 2)
+            if (m_nl.Length == 2)
             {
-                m_buffer[m_position] = nl[0];
-                m_buffer[m_position + 1] = nl[1];
+                m_buffer[m_position] = m_nl[0];
+                m_buffer[m_position + 1] = m_nl[1];
                 m_position += 2;
             }
             else
             {
-                m_buffer[m_position] = nl[0];
+                m_buffer[m_position] = m_nl[0];
                 m_position += 1;
             }
         }
 
+        /// <summary>
+        /// Flushes to the underlying stream
+        /// </summary>
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void Flush()
         {

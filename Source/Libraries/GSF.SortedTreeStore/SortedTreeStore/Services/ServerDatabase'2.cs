@@ -26,9 +26,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
-using GSF.Collections;
 using GSF.Diagnostics;
-using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Services.Writer;
@@ -56,7 +54,6 @@ namespace GSF.SortedTreeStore.Services
         private ArchiveList<TKey, TValue> m_archiveList;
         private volatile bool m_disposed;
         private string m_databaseName;
-        private LogReporter m_log;
 
         /// <summary>
         /// Event is raised when there is an exception encountered while processing.
@@ -80,7 +77,9 @@ namespace GSF.SortedTreeStore.Services
         /// Creates an engine for reading/writing data from a SortedTreeStore.
         /// </summary>
         /// <param name="databaseConfig">the config to use for the database.</param>
-        public ServerDatabase(ServerDatabaseConfig databaseConfig)
+        /// <param name="parent">The parent of this log.</param>
+        public ServerDatabase(ServerDatabaseConfig databaseConfig, LogSource parent)
+            : base(parent)
         {
             if (databaseConfig.DatabaseName == null)
                 throw new ArgumentNullException("databaseName");
@@ -102,8 +101,7 @@ namespace GSF.SortedTreeStore.Services
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
             m_databaseName = databaseConfig.DatabaseName;
-            m_archiveList = new ArchiveList<TKey, TValue>();
-            m_log = Logger.Default.Register(this, "GSF.SortedTreeStore.Engine.SortedTreeEngine<TKey, TValue>", "GSF.SortedTreeStore.Engine.SortedTreeEngine<TKey, TValue>", () => m_databaseName);
+            m_archiveList = new ArchiveList<TKey, TValue>(Log.LogSource);
 
             if (databaseConfig.WriterMode == WriterMode.InMemory)
             {
@@ -151,13 +149,13 @@ namespace GSF.SortedTreeStore.Services
                     }
                     else
                     {
-                        m_log.LogMessage(VerboseLevel.Warning, -1, "File or path does not exist", path);
+                        Log.LogMessage(VerboseLevel.Warning, "File or path does not exist", path);
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    m_log.LogMessage(VerboseLevel.Error, -1, "Unknown error occured while attaching paths", "Path: " + path, null, ex);
+                    Log.LogMessage(VerboseLevel.Error, "Unknown error occured while attaching paths", "Path: " + path, null, ex);
                 }
 
             }
@@ -195,25 +193,36 @@ namespace GSF.SortedTreeStore.Services
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Releases the unmanaged resources used by the <see cref="ServerDatabase{TKey,TValue}"/> object and optionally releases the managed resources.
         /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public override void Dispose()
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
-                m_disposed = true;
-                if (m_archiveWriter != null)
-                    m_archiveWriter.Dispose();
+                try
+                {
+                    // This will be done regardless of whether the object is finalized or disposed.
 
-                m_archiveList.Dispose();
+                    if (disposing)
+                    {
+                        m_disposed = true;
+                        if (m_archiveWriter != null)
+                            m_archiveWriter.Dispose();
 
-                //foreach (ArchiveListRemovalStatus<TKey, TValue> status in m_pendingDispose)
-                //{
-                //    status.Archive.Dispose();
-                //}
+                        m_archiveList.Dispose();
+
+                        // This will be done only when the object is disposed by calling Dispose().
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;          // Prevent duplicate dispose.
+                    base.Dispose(disposing);    // Call base class Dispose().
+                }
             }
         }
+
 
         /// <summary>
         /// Forces a soft commit on the database. A soft commit 
@@ -279,5 +288,6 @@ namespace GSF.SortedTreeStore.Services
         }
 
         #endregion
+
     }
 }

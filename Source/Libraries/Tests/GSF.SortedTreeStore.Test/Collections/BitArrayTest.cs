@@ -1,5 +1,31 @@
-﻿using System;
+﻿//******************************************************************************************************
+//  BitArrayTest.cs - Gbtc
+//
+//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the Eclipse Public License -v 1.0 (the "License"); you may
+//  not use this file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://www.opensource.org/licenses/eclipse-1.0.php
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  3/20/2012 - Steven E. Chisholm
+//       Generated original version of source code. 
+//       
+//
+//******************************************************************************************************
+
+using System;
+using System.Linq;
 using GSF.IO.Unmanaged;
+using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 
 namespace GSF.Collections.Test
@@ -7,7 +33,6 @@ namespace GSF.Collections.Test
     [TestFixture()]
     public class BitArrayTest
     {
-        //ToDo: Add another test procedure to properly test for FindNextBit function.
         [Test()]
         public void BitArray()
         {
@@ -143,6 +168,118 @@ namespace GSF.Collections.Test
                 bit[x] = true;
             }
             MemoryPoolTest.TestMemoryLeak();
+        }
+      
+        [Test]
+        public void FindBits()
+        {
+            BitArray arraySet = new BitArray(true, 15);
+            BitArray arrayClear = new BitArray(false, 15);
+
+            if (arraySet.FindClearedBit() != -1)
+                throw new Exception();
+            if (arrayClear.FindSetBit() != -1)
+                throw new Exception();
+
+            int count = 0;
+
+            foreach (var set in arraySet.GetAllSetBits())
+            {
+                if (set != count)
+                    throw new Exception();
+                count++;
+            }
+
+            count = 0;
+            foreach (var set in arrayClear.GetAllClearedBits())
+            {
+                if (set != count)
+                    throw new Exception();
+                count++;
+            }
+
+
+            if (arrayClear.GetAllSetBits().Count() != 0)
+                throw new Exception();
+
+
+            if (arraySet.GetAllClearedBits().Count() != 0)
+                throw new Exception();
+
+            arraySet.EnsureCapacity(300);
+            if (!arraySet.AreAllBitsSet(62, 200))
+                throw new Exception();
+
+            if (arraySet.ClearCount != 0)
+                throw new Exception();
+
+        }
+
+        [Test]
+        public void GetSetBits()
+        {
+            BitArray array = new BitArray(false, 15);
+         
+            for (int x = 0; x < 15; x++)
+            {
+                if (array[x])
+                    throw new Exception();
+            }
+
+            for (int x = 0; x < 15; x++)
+            {
+                if (array.GetBitUnsafe(x))
+                    throw new Exception();
+            }
+
+            array[1] = true;
+            if(array.TrySetBit(1))
+                throw new Exception();
+
+            if (!array.TrySetBit(2))
+                throw new Exception();
+
+            if (array.TrySetBit(2))
+                throw new Exception();
+
+            if (!array.TryClearBit(2))
+                throw new Exception();
+
+            if (array.TryClearBit(2))
+                throw new Exception();
+
+            //Here, bit 1 is set. 
+
+            if (!array.AreAllBitsSet(1,1))
+                throw new Exception();
+
+            if (array.AreAllBitsSet(1,3))
+                throw new Exception();
+
+            if (!array.AreAllBitsCleared(2,8))
+                throw new Exception();
+
+            if (array.AreAllBitsCleared(0, 8))
+                throw new Exception();
+
+
+            array.SetBits(1,8);
+            if (!array.AreAllBitsSet(1,8))
+                throw new Exception();
+
+            array.ClearBits(1, 8);
+            if (!array.AreAllBitsCleared(1, 8))
+                throw new Exception();
+
+
+            array.EnsureCapacity(62);
+
+            if (!array.AreAllBitsCleared(1, 8))
+                throw new Exception();
+
+            array.EnsureCapacity(1000);
+            if (!array.AreAllBitsCleared(62, 500))
+                throw new Exception();
         }
     }
 }

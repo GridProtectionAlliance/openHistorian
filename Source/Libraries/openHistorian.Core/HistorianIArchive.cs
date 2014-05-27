@@ -49,7 +49,7 @@ namespace openHistorian
     public class HistorianIArchive : IArchive
     {
         private HistorianServer m_server;
-        private Server.Client m_client;
+        private Client m_client;
         private ClientDatabaseBase<HistorianKey, HistorianValue> m_clientDatabase;
 
         #region [ Constructors ]
@@ -57,7 +57,7 @@ namespace openHistorian
         public HistorianIArchive(HistorianServer server, string databaseName)
         {
             m_server = server;
-            m_client = m_server.Host.CreateClientHost();
+            m_client = Client.Connect(m_server.Host);
             m_clientDatabase = m_client.GetDatabase<HistorianKey, HistorianValue>(databaseName);
         }
 

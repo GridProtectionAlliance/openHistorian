@@ -23,13 +23,12 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Diagnostics;
 using GSF.Net;
-using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
-using GSF.Threading;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
@@ -41,11 +40,8 @@ namespace GSF.SortedTreeStore.Services.Net
     internal class ServerSocketDatabase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
+        
     {
-        public event SocketErrorEventHandler SocketError;
-
-        public delegate void SocketErrorEventHandler(Exception ex);
-
         private NetworkBinaryStream m_stream;
         private ServerDatabase<TKey, TValue>.ClientDatabase m_sortedTreeEngine;
         StreamEncodingBase<TKey, TValue> m_encodingMethod;

@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SortedListConstructor.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -25,12 +25,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace GSF.Collections
 {
     /// <summary>
-    /// Quickly will create a sortedList from the provided list of keys and values
+    /// Quickly will create a <see cref="SortedList"/> from the provided list of keys and values
     /// </summary>
     public static class SortedListConstructor
     {
@@ -47,6 +46,9 @@ namespace GSF.Collections
         {
             return new DictionaryWrapper<TKey, TValue>(keys, values).ToSortedList();
         }
+
+        //--------------------------------------------------------------------
+        // Helper class to create a SortedList from a set of key/value pair. 
 
         private class DictionaryWrapper<TKey, TValue>
             : IDictionary<TKey, TValue>

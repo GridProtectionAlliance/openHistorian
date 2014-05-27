@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GSF.IO.Unmanaged;
+using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 using openHistorian;
 
-namespace GSF.Collections.Generic
+namespace GSF.Collections.Test
 {
     [TestFixture]
-    class SortedListConstructor_Test
+    class SortedListConstructorTest
     {
         [Test]
         public void Test1()

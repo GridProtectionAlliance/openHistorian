@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerHost_ClientHost.cs - Gbtc
+//  Server_Client.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GSF.SortedTreeStore.Services;
 
 namespace GSF.SortedTreeStore.Services
 {
@@ -35,7 +34,7 @@ namespace GSF.SortedTreeStore.Services
         /// A client wrapper around a <see cref="Server"/>. 
         /// </summary>
         public class Client
-            : SortedTreeStore.Services.Client
+            : Services.Client
         {
             private bool m_disposed;
             private object m_syncRoot;
@@ -79,12 +78,17 @@ namespace GSF.SortedTreeStore.Services
                 return database;
             }
 
+            public override ClientDatabaseBase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName)
+            {
+                return (ClientDatabaseBase<TKey, TValue>)GetDatabase(databaseName);
+            }
+
             /// <summary>
             /// Determines if <see cref="databaseName"/> is contained in the database.
             /// </summary>
             /// <param name="databaseName">Name of database instance to access.</param>
             /// <returns></returns>
-            public bool Contains(string databaseName)
+            public override bool Contains(string databaseName)
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);
@@ -95,7 +99,7 @@ namespace GSF.SortedTreeStore.Services
             /// Gets basic information for every database connected to the server.
             /// </summary>
             /// <returns></returns>
-            public List<DatabaseInfo> GetDatabaseInfo()
+            public override List<DatabaseInfo> GetDatabaseInfo()
             {
                 if (m_disposed)
                     throw new ObjectDisposedException(GetType().FullName);

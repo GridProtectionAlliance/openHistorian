@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
+using GSF.IO.Unmanaged.Test;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Services;
 using GSF.SortedTreeStore.Services.Reader;
@@ -31,7 +32,7 @@ namespace GSF.SortedTreeStore.Server
             HistorianValue value2 = new HistorianValue();
             Logger.Default.ReportToConsole(VerboseLevel.All);
             MemoryPoolTest.TestMemoryLeak();
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
 
             var master = CreateTable();
             var table1 = CreateTable();
@@ -79,7 +80,7 @@ namespace GSF.SortedTreeStore.Server
         public void TestTwoFiles()
         {
             MemoryPoolTest.TestMemoryLeak();
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
 
             HistorianKey key1 = new HistorianKey();
             HistorianKey key2 = new HistorianKey();
@@ -133,7 +134,7 @@ namespace GSF.SortedTreeStore.Server
         public void TestTwoIdenticalFiles()
         {
             MemoryPoolTest.TestMemoryLeak();
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             HistorianKey key1 = new HistorianKey();
             HistorianKey key2 = new HistorianKey();
             HistorianValue value1 = new HistorianValue();
@@ -286,7 +287,7 @@ namespace GSF.SortedTreeStore.Server
         {
             MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
             var table1 = CreateTable();
@@ -317,7 +318,7 @@ namespace GSF.SortedTreeStore.Server
         {
             MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
             var table1 = CreateTable();
@@ -351,7 +352,7 @@ namespace GSF.SortedTreeStore.Server
         {
             MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
             var table1 = CreateTable();
@@ -390,7 +391,7 @@ namespace GSF.SortedTreeStore.Server
             MemoryPoolTest.TestMemoryLeak();
             const int Max = 1000000;
             const int FileCount = 1000;
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             DateTime start = DateTime.Now.Date;
             HistorianKey key = new HistorianKey();
             HistorianValue value = new HistorianValue();
@@ -440,7 +441,7 @@ namespace GSF.SortedTreeStore.Server
         public void ConsoleTest1()
         {
             MemoryPoolTest.TestMemoryLeak();
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             DateTime start = DateTime.Now.Date;
 
             for (int x = 0; x < 3; x++)
@@ -465,7 +466,7 @@ namespace GSF.SortedTreeStore.Server
         public void ConsoleTest2()
         {
             MemoryPoolTest.TestMemoryLeak();
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             DateTime start = DateTime.Now.Date;
 
             for (int x = 0; x < 3; x++)
@@ -490,7 +491,7 @@ namespace GSF.SortedTreeStore.Server
         public void ConsoleTest3()
         {
             MemoryPoolTest.TestMemoryLeak();
-            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>();
+            ArchiveList<HistorianKey, HistorianValue> list = new ArchiveList<HistorianKey, HistorianValue>(null);
             DateTime start = DateTime.Now.Date;
 
             for (int x = 0; x < 3; x++)

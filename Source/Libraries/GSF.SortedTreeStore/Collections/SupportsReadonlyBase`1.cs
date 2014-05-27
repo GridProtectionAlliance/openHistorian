@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SupportsReadonlyBase.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace GSF.Collections
 {
@@ -42,7 +43,7 @@ namespace GSF.Collections
         /// Gets/Sets if this class is immutable and thus read only. Once
         /// setting to readonly, the class becomes immutable.
         /// </summary>
-        public virtual bool IsReadOnly
+        public bool IsReadOnly
         {
             get
             {
@@ -60,10 +61,19 @@ namespace GSF.Collections
             }
         }
 
+        /// <summary>
+        /// Test if the class has been marked as readonly. Throws an exception if editing cannot occur.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void TestForEditable()
         {
-            if (IsReadOnly)
-                throw new ReadOnlyException("Object has been set as read only");
+            if (m_isReadOnly)
+                ThrowReadOnly();
+        }
+
+        void ThrowReadOnly()
+        {
+            throw new ReadOnlyException("Object has been set as read only");
         }
 
         /// <summary>
@@ -89,11 +99,19 @@ namespace GSF.Collections
             return initializer;
         }
 
+        /// <summary>
+        /// Makes a readonly clone of this object. Returns the same object if it is already marked as readonly.
+        /// </summary>
+        /// <returns></returns>
         object ISupportsReadonly.CloneReadonly()
         {
             return CloneReadonly();
         }
 
+        /// <summary>
+        /// Makes a clone of this object and allows it to be edited.
+        /// </summary>
+        /// <returns></returns>
         object ISupportsReadonly.CloneEditable()
         {
             return CloneEditable();

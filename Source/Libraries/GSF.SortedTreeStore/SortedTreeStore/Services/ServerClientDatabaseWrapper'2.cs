@@ -39,12 +39,12 @@ namespace GSF.SortedTreeStore.Services
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        private Server.Client m_client;
+        private Client m_client;
         private ClientDatabaseBase<TKey, TValue> m_database;
 
         public ServerClientDatabaseWrapper(Server host, string database)
         {
-            m_client = host.CreateClientHost();
+            m_client = Client.Connect(host);
             m_database = m_client.GetDatabase<TKey, TValue>(database);
         }
 

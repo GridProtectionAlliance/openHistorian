@@ -135,7 +135,7 @@ namespace GSF.IO.Unmanaged
                 Memory memory;
                 if (m_memoryBlocks.TryGetValue(x, out memory))
                 {
-                    if (m_isPageAvailable.AreBitsCleared(x * m_pagesPerMemoryBlock, m_pagesPerMemoryBlock))
+                    if (m_isPageAvailable.AreAllBitsCleared(x * m_pagesPerMemoryBlock, m_pagesPerMemoryBlock))
                     {
                         memory.Dispose();
                         m_memoryBlocks.SetNull(x);

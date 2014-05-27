@@ -7,10 +7,10 @@ using GSF.IO.Unmanaged;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Filters
+namespace GSF.SortedTreeStore.Filters.Test
 {
     [TestFixture]
-    public class PointIDFilter_Test
+    public class PointIDFilterTest
     {
         [Test]
         public void TestBitArray()

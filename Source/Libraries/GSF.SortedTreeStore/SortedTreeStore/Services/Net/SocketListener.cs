@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using GSF.Diagnostics;
 using GSF.Net;
 
 namespace GSF.SortedTreeStore.Services.Net
@@ -36,17 +37,24 @@ namespace GSF.SortedTreeStore.Services.Net
     /// Hosts a <see cref="Server"/> on a network socket.
     /// </summary>
     public class SocketListener
-        : IDisposable
+        : LogReporterBase
     {
         private volatile bool m_isRunning = true;
         private TcpListener m_listener;
         private Server m_server;
         private bool m_disposed;
-        private readonly List<ServerSocketHost> m_clients = new List<ServerSocketHost>();
+        private readonly List<ServerSocket> m_clients = new List<ServerSocket>();
+
         private readonly SocketListenerConfig m_config;
 
-        // TODO: Replace this with a connection string instead of a port - allows easier specification of interface, etc.
-        public SocketListener(SocketListenerConfig config, Server server)
+        /// <summary>
+        /// Creates a <see cref="SocketListener"/>
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="server"></param>
+        /// <param name="parent"></param>
+        public SocketListener(SocketListenerConfig config, Server server, LogSource parent)
+            : base(parent)
         {
             if ((object)server == null)
                 throw new ArgumentNullException("server");
@@ -54,7 +62,7 @@ namespace GSF.SortedTreeStore.Services.Net
                 throw new ArgumentNullException("config");
 
             m_server = server;
-            m_config = config; 
+            m_config = config;
 
             // TODO: Shouldn't we use GSF.Communications async library here for scalability? If not, why not? 
             // TODO: I think async communication classes could pass NetworkBinaryStream to a handler like ProcessClient...
@@ -67,7 +75,12 @@ namespace GSF.SortedTreeStore.Services.Net
             //var socket = m_listener.AcceptSocketAsync();
             //socket.ContinueWith(ProcessDataRequests);
             //socket.Start();
-            ThreadPool.QueueUserWorkItem(ProcessDataRequests);
+
+            Log.LogMessage(VerboseLevel.Information, "Constructor Called", "Listening on " + m_config.LocalEndPoint.ToString());
+
+            Thread th = new Thread(ProcessDataRequests);
+            th.IsBackground = true;
+            th.Start();
         }
 
         /// <summary>
@@ -92,60 +105,83 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <param name="state"></param>
         private void ProcessDataRequests(object state)
         {
-            while (m_isRunning && !m_listener.Pending())
+            try
             {
-                Thread.Sleep(10);
-            }
-            if (!m_isRunning)
-            {
-                m_listener.Stop();
-                return;
-            }
-
-            Socket socket = m_listener.AcceptSocket();
-            NetworkBinaryStream netStream = new NetworkBinaryStream(socket);
-
-
-            //ToDo: Should probably not process a client on the threadpool since I do blocking.
-            ThreadPool.QueueUserWorkItem(ProcessDataRequests);
-
-            ServerSocketHost serverProcessing = new ServerSocketHost(netStream, m_server);
-            lock (m_clients)
-            {
-                if (m_isRunning)
-                    m_clients.Add(serverProcessing);
-                else
+                while (m_isRunning && !m_listener.Pending())
                 {
-                    netStream.Disconnect();
+                    Thread.Sleep(10);
+                }
+                if (!m_isRunning)
+                {
+                    m_listener.Stop();
+                    Log.LogMessage(VerboseLevel.Information, "Socket Listener Stopped");
                     return;
                 }
+
+                Socket socket = m_listener.AcceptSocket();
+                Log.LogMessage(VerboseLevel.Information, "Client Connection", "Client connection attempted from: " + socket.RemoteEndPoint.ToString());
+                NetworkBinaryStream netStream = new NetworkBinaryStream(socket);
+
+                Thread th = new Thread(ProcessDataRequests);
+                th.IsBackground = true;
+                th.Start();
+
+                ServerSocket serverProcessing = new ServerSocket(netStream, m_server, Log.LogSource);
+                lock (m_clients)
+                {
+                    if (m_isRunning)
+                        m_clients.Add(serverProcessing);
+                    else
+                    {
+                        netStream.Disconnect();
+                        return;
+                    }
+                }
+                serverProcessing.ProcessClient();
+                lock (m_clients)
+                {
+                    m_clients.Remove(serverProcessing);
+                }
+
             }
-            serverProcessing.ProcessClient();
-            lock (m_clients)
+            catch (Exception ex)
             {
-                m_clients.Remove(serverProcessing);
+                Log.LogMessage(VerboseLevel.Fatal, "Client Processing Failed", "An unhandled Exception occured while processing clients", null, ex);
             }
+
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Releases the unmanaged resources used by the <see cref="SocketListener"/> object and optionally releases the managed resources.
         /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
         {
-            if (m_disposed)
+            if (!m_disposed)
             {
-                m_disposed = true;
-                if (m_listener != null)
-                    m_listener.Stop();
-                m_server = null;
-                m_listener = null;
-                m_isRunning = false;
-                lock (m_clients)
+                try
                 {
-                    foreach (ServerSocketHost client in m_clients)
-                        client.Dispose();
-                    m_clients.Clear();
+                    // This will be done regardless of whether the object is finalized or disposed.
+
+                    if (disposing)
+                    {
+                        m_isRunning = false;
+                        if (m_listener != null)
+                            m_listener.Stop();
+                        m_server = null;
+                        lock (m_clients)
+                        {
+                            foreach (ServerSocket client in m_clients)
+                                client.Dispose();
+                            m_clients.Clear();
+                        }
+                        // This will be done only when the object is disposed by calling Dispose().
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;          // Prevent duplicate dispose.
+                    base.Dispose(disposing);    // Call base class Dispose().
                 }
             }
         }

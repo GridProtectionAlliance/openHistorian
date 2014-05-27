@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  LargeArray.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -23,7 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace GSF.Collections
 {
@@ -33,44 +33,50 @@ namespace GSF.Collections
     /// will cause the garbage collection cycles to become very slow.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LargeArray<T> 
-        : ILargeArray<T>
+    public class LargeArray<T>
     {
-        private bool m_disposed;
         private readonly int m_size;
         private readonly int m_bitShift;
         private readonly int m_mask;
-        private List<T[]> m_array;
+        private T[][] m_array;
+        private int m_capacity;
 
+        /// <summary>
+        /// Creates a <see cref="LargeArray{T}"/> with a jagged array depth of 1024 elements.
+        /// </summary>
         public LargeArray()
             : this(1024)
         {
         }
 
+        /// <summary>
+        /// Creates a <see cref="LargeArray{T}"/> with the specified jagged array depth.
+        /// </summary>
+        /// <param name="jaggedArrayDepth">the number of elements per jagged array. Rounds up to the nearest power of 2.</param>
         public LargeArray(int jaggedArrayDepth)
         {
             m_size = (int)BitMath.RoundUpToNearestPowerOfTwo((uint)jaggedArrayDepth);
             m_mask = m_size - 1;
             m_bitShift = BitMath.CountBitsSet((uint)m_mask);
-            m_array = new List<T[]>();
+            m_array = new T[0][];
+            m_capacity = 0;
         }
 
+        /// <summary>
+        /// Gets/Sets the value in the specified index of the array.
+        /// </summary>
+        /// <param name="index">The index to address</param>
+        /// <returns></returns>
         public T this[int index]
         {
             get
             {
-                if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-                if (index >= Capacity || index < 0)
-                    throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array");
+                Validate(index);
                 return m_array[index >> m_bitShift][index & m_mask];
             }
             set
             {
-                if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-                if (index >= Capacity || index < 0)
-                    throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array");
+                Validate(index);
                 m_array[index >> m_bitShift][index & m_mask] = value;
             }
         }
@@ -82,10 +88,7 @@ namespace GSF.Collections
         {
             get
             {
-                if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-
-                return m_size * m_array.Count;
+                return m_capacity;
             }
         }
 
@@ -96,27 +99,42 @@ namespace GSF.Collections
         /// <returns>The current length of the list.</returns>
         public int SetCapacity(int length)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
+            int arrayCount = 0;
+            if ((length & m_mask) != 0)
+                arrayCount = (length >> m_bitShift) + 1;
+            else
+                arrayCount = length >> m_bitShift;
 
-            while (length > Capacity)
+            if (arrayCount > m_array.Length)
             {
-                m_array.Add(new T[m_size]);
+                var newArray = new T[arrayCount][];
+                m_array.CopyTo(newArray, 0);
+
+                for (int x = m_array.Length; x < arrayCount; x++)
+                {
+                    newArray[x] = new T[m_size];
+                }
+                m_array = newArray;
+                m_capacity = m_array.Length * m_size;
             }
-            return Capacity;
+            return m_capacity;
         }
 
-        /// <summary>
-        /// Disposes resources. Note this does not call dispose on the elements of the array.
-        /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public void Dispose()
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Validate(int index)
         {
-            if (!m_disposed)
-            {
-                m_array = null;
-                m_disposed = true;
-            }
+            if (index < 0 || index >= m_capacity)
+                ThrowException(index);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowException(int index)
+        {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("index", "Must be greater than or equal to zero.");
+            if (index >= m_capacity)
+                throw new ArgumentOutOfRangeException("index", "Exceedes the length of the array.");
         }
     }
 }

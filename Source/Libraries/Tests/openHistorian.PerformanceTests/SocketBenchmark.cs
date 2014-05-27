@@ -114,18 +114,18 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(@"c:\temp\Scada\"))
             {
-                RemoteClientOptions clientOptions = new RemoteClientOptions();
-                clientOptions.IsReadOnly = true;
-                clientOptions.NetworkPort = 12345;
-                clientOptions.ServerNameOrIp = "127.0.0.1";
+                NetworkClientConfig clientConfig = new NetworkClientConfig();
+                clientConfig.IsReadOnly = true;
+                clientConfig.NetworkPort = 12345;
+                clientConfig.ServerNameOrIp = "127.0.0.1";
                 double count = 0;
 
                 DebugStopwatch sw = new DebugStopwatch();
                 double time = sw.TimeEvent(() =>
                     {
                         count = 0;
-                        using (HistorianClient client = new HistorianClient(clientOptions))
-                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
+                        using (HistorianClient client = new HistorianClient(clientConfig))
+                        using (ClientDatabaseBase<HistorianKey, HistorianValue> database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                         {
                             //IHistorianDatabase<HistorianKey, HistorianValue> database = server.GetDefaultDatabase();//.GetDatabase();
                             //TreeStream<HistorianKey, HistorianValue> stream = reader.Read(0, ulong.MaxValue, new ulong[] { 2 });

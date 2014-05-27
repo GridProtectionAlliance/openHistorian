@@ -35,11 +35,11 @@ namespace GSF.SortedTreeStore.Services
         /// <summary>
         /// Contains the configuration for the socket layer.
         /// </summary>
-        public List<SocketListenerConfig> SocketConfig = new List<SocketListenerConfig>();
+        public readonly List<SocketListenerConfig> SocketConfig = new List<SocketListenerConfig>();
         /// <summary>
         /// Contains the configuration for the databases.
         /// </summary>
-        public List<ServerDatabaseConfig> Databases = new List<ServerDatabaseConfig>();
+        public readonly List<ServerDatabaseConfig> Databases = new List<ServerDatabaseConfig>();
 
         public ServerConfig()
         {

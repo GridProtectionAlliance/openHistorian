@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  ShadowCopyAllocator.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -54,8 +54,6 @@ namespace GSF.IO.FileStructure
 
         private readonly SubFileDiskIoSessionPool m_ioSessions;
 
-        private int m_blockSize;
-
         #endregion
 
         #region [ Constructors ]
@@ -71,7 +69,6 @@ namespace GSF.IO.FileStructure
                 throw new ArgumentNullException("ioSessions");
             if (ioSessions.IsReadOnly)
                 throw new ArgumentException("DataReader is read only", "ioSessions");
-            m_blockSize = ioSessions.Header.BlockSize;
             m_lastReadOnlyBlock = ioSessions.LastReadonlyBlock;
             m_fileHeaderBlock = ioSessions.Header;
             m_subFileMetaData = ioSessions.File;
@@ -166,7 +163,7 @@ namespace GSF.IO.FileStructure
         /// </summary>
         /// <param name="sourceBlockAddress">The block to be copied</param>
         /// <param name="indexValue">the index value that goes in the footer of the file.</param>
-        /// <param name="indexIndirectNumber">the indirect number {1,2,3} that goes in the footer of the block.</param>
+        /// <param name="blockType">Gets the expected block type</param>
         /// <param name="remoteAddressOffset">the offset of the remote address that needs to be updated.</param>
         /// <param name="remoteBlockAddress">the value of the remote address.</param>
         /// <returns>Returns true if the block had to be shadowed, false if it did not change</returns>
@@ -213,7 +210,7 @@ namespace GSF.IO.FileStructure
         /// <param name="sourceBlockAddress">the address of the source.</param>
         /// <param name="destinationBlockAddress">the address of the destination. This can be the same as the source.</param>
         /// <param name="indexValue">the index value that goes in the footer of the file.</param>
-        /// <param name="indexIndirectNumber">the indirect number {1,2,3} that goes in the footer of the block.</param>
+        /// <param name="blockType">Gets the expected block type</param>
         /// <param name="remoteAddressOffset">the offset of the remote address that needs to be updated.</param>
         /// <param name="remoteBlockAddress">the value of the remote address.</param>
         private void ReadThenWriteIndexIndirectBlock(uint sourceBlockAddress, uint destinationBlockAddress, uint indexValue, BlockType blockType, int remoteAddressOffset, uint remoteBlockAddress)

@@ -271,7 +271,7 @@ namespace GSF.Collections
         }
 
         /// <summary>
-        /// Clears all of the times in the list.
+        /// Clears all of the times in the list. Method is thread safe.
         /// </summary>
         public void Clear()
         {
@@ -283,7 +283,7 @@ namespace GSF.Collections
         }
 
         /// <summary>
-        /// Adds the <see cref="item"/> to the list
+        /// Adds the <see cref="item"/> to the list. Method is thread safe.
         /// </summary>
         /// <param name="item"></param>
         public void Add(T item)
@@ -300,7 +300,7 @@ namespace GSF.Collections
         }
 
         /// <summary>
-        /// Removes all occurances of the <see cref="item"/> from the list.
+        /// Removes all occurances of the <see cref="item"/> from the list. Method is thread safe.
         /// </summary>
         /// <param name="item"></param>
         public void Remove(T item)

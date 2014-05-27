@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using GSF.Collections;
+using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
@@ -34,7 +35,8 @@ namespace GSF.IO.FileStructure.Media
     /// This class is not thread safe.
     /// </summary>
     /// <remarks>Maintains the following relationship: PositionIndex, ArrayIndex, PageMetaData</remarks>
-    internal unsafe class PageList : IDisposable
+    internal unsafe class PageList 
+        : IDisposable
     {
         #region [ Members ]
 
@@ -90,6 +92,13 @@ namespace GSF.IO.FileStructure.Media
             m_pageLookupByPositionIndex = new SortedList<int, int>();
         }
 
+#if DEBUG
+        ~PageList()
+        {
+            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+#endif
+
         #endregion
 
         #region [ Properties ]
@@ -110,12 +119,12 @@ namespace GSF.IO.FileStructure.Media
                     if (!m_pool.IsDisposed)
                     {
                         m_pool.ReleasePages(m_listOfPages.GetEnumerator(x => x.BufferPoolIndex));
-                        m_listOfPages.Dispose();
                         m_listOfPages = null;
                     }
                 }
                 finally
                 {
+                    GC.SuppressFinalize(this);
                     m_disposed = true; // Prevent duplicate dispose.
                 }
             }

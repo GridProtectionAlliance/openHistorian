@@ -152,12 +152,12 @@ namespace GSF.SortedTreeStore.Services
             /// <summary>
             /// Removes the supplied file from the <see cref="ArchiveList{TKey,TValue}"/> and queues it for deletion.
             /// </summary>
-            /// <param name="sortedTree">file to remove and delete.</param>
+            /// <param name="archiveId">file to remove and delete.</param>
             /// <returns>true if deleted, false otherwise</returns>
-            public bool TryRemoveAndDelete(Guid sortedTree)
+            public bool TryRemoveAndDelete(Guid archiveId)
             {
                 ArchiveListRemovalStatus<TKey, TValue> status;
-                if (TryRemove(sortedTree, out status))
+                if (TryRemove(archiveId, out status))
                 {
                     if (!status.IsBeingUsed)
                     {

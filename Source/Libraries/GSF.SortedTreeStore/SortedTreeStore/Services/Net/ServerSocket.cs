@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ServerSocketHost.cs - Gbtc
+//  ServerSocket.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,6 +26,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using GSF.Diagnostics;
 using GSF.Net;
 using GSF.SortedTreeStore.Tree;
 
@@ -34,18 +35,17 @@ namespace GSF.SortedTreeStore.Services.Net
     /// <summary>
     /// This is a single server socket that handles an individual client connection.
     /// </summary>
-    internal class ServerSocketHost
-        : IDisposable
+    internal class ServerSocket
+        : LogReporterBase
     {
-        public event SocketErrorEventHandler SocketError;
-
-        public delegate void SocketErrorEventHandler(Exception ex);
+        private bool m_disposed;
 
         private readonly Server m_server;
         private NetworkBinaryStream m_stream;
-        private Server.Client m_host;
+        private Client m_host;
 
-        public ServerSocketHost(NetworkBinaryStream netStream, Server server)
+        public ServerSocket(NetworkBinaryStream netStream, Server server, LogSource parent)
+            : base(parent)
         {
             m_stream = netStream;
             m_server = server;
@@ -93,10 +93,7 @@ namespace GSF.SortedTreeStore.Services.Net
                 catch (Exception)
                 {
                 }
-                if (SocketError != null)
-                {
-                    SocketError(ex);
-                }
+                Log.LogMessage(VerboseLevel.Warning, "Socket Exception", "Exception occured, Client will be disconnected.", null, ex);
             }
             finally
             {
@@ -107,6 +104,7 @@ namespace GSF.SortedTreeStore.Services.Net
                 catch (Exception ex)
                 {
                 }
+                Log.LogMessage(VerboseLevel.Information, "Client Disconnected", "Client has been disconnected");
                 m_stream = null;
             }
         }
@@ -118,7 +116,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <remarks></remarks>
         private void ProcessRootLevelCommands()
         {
-            m_host = m_server.CreateClientHost();
+            m_host = Client.Connect(m_server);
 
             while (true)
             {
@@ -199,14 +197,36 @@ namespace GSF.SortedTreeStore.Services.Net
             return engine.RunDatabaseLevel();
         }
 
-        public void Dispose()
-        {
-            if (m_host != null)
-                m_host.Dispose();
-            m_host = null;
 
-            if (m_stream.Connected)
-                m_stream.Disconnect();
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="ServerSocket"/> object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (!m_disposed)
+            {
+                try
+                {
+                    // This will be done regardless of whether the object is finalized or disposed.
+
+                    if (disposing)
+                    {
+                        // This will be done only when the object is disposed by calling Dispose().
+                        if (m_host != null)
+                            m_host.Dispose();
+                        m_host = null;
+
+                        if (m_stream.Connected)
+                            m_stream.Disconnect();
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;          // Prevent duplicate dispose.
+                    base.Dispose(disposing);    // Call base class Dispose().
+                }
+            }
         }
     }
 }

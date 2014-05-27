@@ -23,6 +23,7 @@
 
 using System;
 using System.Data;
+using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
@@ -78,6 +79,13 @@ namespace GSF.IO.FileStructure.Media
             IsValid = false;
             IsDisposed = false;
         }
+
+#if DEBUG
+        ~DiskIoSession()
+        {
+            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+#endif
 
         #endregion
 
@@ -295,6 +303,7 @@ namespace GSF.IO.FileStructure.Media
                 }
                 finally
                 {
+                    GC.SuppressFinalize(this);
                     IsValid = false;
                     IsDisposed = true; // Prevent duplicate dispose.
                 }

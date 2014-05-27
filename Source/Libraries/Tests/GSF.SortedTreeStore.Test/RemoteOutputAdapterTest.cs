@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using GSF.SortedTreeStore.Services;
 using NUnit.Framework;
 using openHistorian.Collections;
 using openHistorian.Queues;
@@ -15,9 +16,9 @@ namespace openHistorian.Adapters
             HistorianValue value = new HistorianValue();
 
             using (HistorianServer server = new HistorianServer(@"c:\temp\historian\"))
-            using (var client = server.Host.CreateClientHost())
+            using (var client = Client.Connect(server.Host))
             {
-                using (HistorianInputQueue queue = new HistorianInputQueue(() => client.GetDatabase<HistorianKey, HistorianValue>()))
+                using (HistorianInputQueue queue = new HistorianInputQueue(() => client.GetDatabase<HistorianKey, HistorianValue>(string.Empty)))
                 {
                     for (uint x = 0; x < 100000; x++)
                     {

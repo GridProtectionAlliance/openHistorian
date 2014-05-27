@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Collection
+namespace GSF.SortedTreeStore.Collection.Test
 {
     [TestFixture]
-    public class SortedPointBuffer_Test
+    public class SortedPointBufferTest
     {
         [Test]
         public void Test()

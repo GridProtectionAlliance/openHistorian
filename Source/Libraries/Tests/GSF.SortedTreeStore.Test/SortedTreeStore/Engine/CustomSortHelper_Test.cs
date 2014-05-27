@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GSF.IO.Unmanaged;
+using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 
 namespace GSF.SortedTreeStore.Server

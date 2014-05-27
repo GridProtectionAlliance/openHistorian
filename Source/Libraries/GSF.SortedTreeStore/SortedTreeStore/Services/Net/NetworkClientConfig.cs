@@ -1,7 +1,7 @@
-﻿//******************************************************************************************************
-//  ILargeArray.cs - Gbtc
+//******************************************************************************************************
+//  NetworkClientConfig.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright � 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,30 +16,38 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  9/1/2012 - Steven E. Chisholm
+//  12/8/2012 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-using System;
-
-namespace GSF.Collections
+namespace GSF.SortedTreeStore.Services.Net
 {
-    public interface ILargeArray<T> 
-        : IDisposable
+    /// <summary>
+    /// The options that are passed to a <see cref="NetworkClient"/>.
+    /// </summary>
+    public class NetworkClientConfig
     {
-        T this[int index]
-        {
-            get;
-            set;
-        }
+        /// <summary>
+        /// The port number to connect to.
+        /// </summary>
+        public int NetworkPort = 38402;
 
-        int Capacity
-        {
-            get;
-        }
+        /// <summary>
+        /// The name of the server to connect to, or the IP address to use.
+        /// </summary>
+        public string ServerNameOrIp = "localhost";
 
-        int SetCapacity(int length);
+        /// <summary>
+        /// The password for connecting to the server.
+        /// </summary>
+        public string Password = "Admin";
+
+        /// <summary>
+        /// Limits the connection to query only actions.
+        /// </summary>
+        public bool IsReadOnly = false;
+
     }
 }

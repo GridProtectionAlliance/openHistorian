@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  IndexMapperTest.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -24,8 +24,8 @@
 
 using System;
 using System.Diagnostics;
-using GSF;
 using GSF.IO.Unmanaged;
+using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 
 namespace GSF.IO.FileStructure.Test

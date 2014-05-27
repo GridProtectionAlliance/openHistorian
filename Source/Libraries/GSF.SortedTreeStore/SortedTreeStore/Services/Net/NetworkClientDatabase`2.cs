@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  RemoteClientDatabase`2.cs - Gbtc
+//  NetworkClientDatabase`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -25,7 +25,6 @@
 using System;
 using GSF.Net;
 using GSF.SortedTreeStore.Encoding;
-using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Services.Reader;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
@@ -37,7 +36,7 @@ namespace GSF.SortedTreeStore.Services.Net
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class RemoteClientDatabase<TKey, TValue>
+    public class NetworkClientDatabase<TKey, TValue>
         : ClientDatabaseBase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
@@ -51,7 +50,7 @@ namespace GSF.SortedTreeStore.Services.Net
         private readonly Action m_onDispose;
         StreamEncodingBase<TKey, TValue> m_encodingMode;
 
-        public RemoteClientDatabase(NetworkBinaryStream stream, Action onDispose)
+        public NetworkClientDatabase(NetworkBinaryStream stream, Action onDispose)
         {
             m_tmpKey = new TKey();
             m_tmpValue = new TValue();
@@ -243,11 +242,11 @@ namespace GSF.SortedTreeStore.Services.Net
             : IDisposable
         {
             bool m_disposed;
-            RemoteClientDatabase<TKey, TValue> m_client;
+            NetworkClientDatabase<TKey, TValue> m_client;
             NetworkBinaryStream m_stream;
             StreamEncodingBase<TKey, TValue> m_encodingMode;
 
-            internal BulkWriting(RemoteClientDatabase<TKey, TValue> client)
+            internal BulkWriting(NetworkClientDatabase<TKey, TValue> client)
             {
                 if (client.m_writer != null)
                     throw new Exception("Duplicate call to StartBulkWriting");

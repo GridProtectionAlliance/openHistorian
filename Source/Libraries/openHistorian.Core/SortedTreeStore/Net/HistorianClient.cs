@@ -38,12 +38,14 @@ namespace GSF.SortedTreeStore.Net
     /// Connects to a socket based remoted historian database collection.
     /// </summary>
     public class HistorianClient :
-        RemoteClient
+        NetworkClient
     {
-        public HistorianClient(RemoteClientOptions options)
-            : base(options)
+        public HistorianClient(NetworkClientConfig config)
+            : base(config)
         {
           
         }
+
+        public string DefaultDatabase;
     }
 }

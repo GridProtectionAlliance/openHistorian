@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SubFileDiskIoSessionPool.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -23,15 +23,28 @@
 //******************************************************************************************************
 
 using System;
+using GSF.Diagnostics;
 using GSF.IO.FileStructure.Media;
 
 namespace GSF.IO.FileStructure
 {
-    internal class SubFileDiskIoSessionPool : IDisposable
+    /// <summary>
+    /// Contains a set of <see cref="DiskIoSession"/>s that speed up the I/O operations associated with
+    /// reading and writing to an archive disk.
+    /// </summary>
+    internal class SubFileDiskIoSessionPool
+        : IDisposable
     {
+        
         public DiskIoSession SourceData;
+        /// <summary>
+        /// Null if in readonly mode
+        /// </summary>
         public DiskIoSession DestinationData;
         public DiskIoSession SourceIndex;
+        /// <summary>
+        /// Null if in readonly mode
+        /// </summary>
         public DiskIoSession DestinationIndex;
 
         public SubFileMetaData File
@@ -46,7 +59,23 @@ namespace GSF.IO.FileStructure
             private set;
         }
 
+        /// <summary>
+        /// Contains the last block that is considered as read only. This is the same as the end of the committed space
+        /// in the transactional file system.
+        /// </summary>
         public uint LastReadonlyBlock
+        {
+            get;
+            private set;
+        }
+
+        public bool IsReadOnly
+        {
+            get;
+            private set;
+        }
+
+        public bool IsDisposed
         {
             get;
             private set;
@@ -67,18 +96,16 @@ namespace GSF.IO.FileStructure
             }
         }
 
-        public bool IsReadOnly
+#if DEBUG
+        ~SubFileDiskIoSessionPool()
         {
-            get;
-            private set;
+            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
         }
+#endif
 
-        public bool IsDisposed
-        {
-            get;
-            private set;
-        }
-
+        /// <summary>
+        /// Swaps the source and destination index I/O Sessions.
+        /// </summary>
         public void SwapIndex()
         {
             if (IsReadOnly)
@@ -88,6 +115,9 @@ namespace GSF.IO.FileStructure
             DestinationIndex = swap;
         }
 
+        /// <summary>
+        /// Swaps the source and destination Data I/O Sessions
+        /// </summary>
         public void SwapData()
         {
             if (IsReadOnly)
@@ -97,6 +127,9 @@ namespace GSF.IO.FileStructure
             DestinationData = swap;
         }
 
+        /// <summary>
+        /// Releases all of the data associated with the I/O Sessions.
+        /// </summary>
         public void Clear()
         {
             if (SourceData != null)
@@ -109,8 +142,13 @@ namespace GSF.IO.FileStructure
                 DestinationIndex.Clear();
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             IsDisposed = true;
             if (SourceData != null)
             {

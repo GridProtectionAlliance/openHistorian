@@ -22,6 +22,7 @@
 //
 //******************************************************************************************************
 
+using GSF.IO.FileStructure.Media;
 using NUnit.Framework;
 
 namespace GSF.IO.FileStructure.Test
@@ -29,20 +30,23 @@ namespace GSF.IO.FileStructure.Test
     [TestFixture()]
     public class IndexParserTest
     {
+        //Note: Most of this code is tested in other test procedures.
         [Test()]
         public void Test()
         {
-            //int blockSize = 4096;
-            //Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
-            //IndexMapper map = new IndexMapper(blockSize);
-            //DiskIo stream = DiskIo.CreateMemoryFile(Globals.BufferPool, blockSize);
-            //SubFileMetaData node = new SubFileMetaData(1, Guid.NewGuid(),false);
-            //SubFileDiskIoSessionPool pool = new SubFileDiskIoSessionPool(stream, true);
-            //IndexParser parse = new IndexParser(blockSize, 1, pool, node);
-            //parse.SetPosition(14312);
-            //pool.Dispose();
-            //Assert.IsTrue(true);
-            //Assert.AreEqual(Globals.BufferPool.AllocatedBytes, 0L);
+            int blockSize = 4096;
+            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
+            
+            DiskIo stream = DiskIo.CreateMemoryFile(Globals.MemoryPool, blockSize);
+            SubFileName name = SubFileName.CreateRandom();
+            SubFileMetaData node = new SubFileMetaData(1, name, false);
+            SubFileDiskIoSessionPool pool = new SubFileDiskIoSessionPool(stream, stream.LastCommittedHeader, node, true);
+            IndexParser parse = new IndexParser(pool);
+
+            parse.SetPositionAndLookup(14312);
+            pool.Dispose();
+            Assert.IsTrue(true);
+            Assert.AreEqual(Globals.MemoryPool.AllocatedBytes, 0L);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace openHistorian.Data.Query
 {
     public class HistorianQuery
     {
-        private readonly RemoteClient m_historian;
+        private readonly NetworkClient m_historian;
         private int m_samplesPerSecond = 30;
 
         public HistorianQuery(string server, int port)
@@ -43,14 +43,14 @@ namespace openHistorian.Data.Query
             //m_historian = new RemoteHistorian<HistorianKey, HistorianValue>(new IPEndPoint(ip, port));
         }
 
-        public HistorianQuery(RemoteClient historian)
+        public HistorianQuery(NetworkClient historian)
         {
             m_historian = historian;
         }
 
         public IDictionary<Guid, SignalDataBase> GetQueryResult(DateTime startTime, DateTime endTime, int zoomLevel, IEnumerable<ISignalCalculation> signals)
         {
-            using (var db = m_historian.GetDefaultDatabase<HistorianKey, HistorianValue>())
+            using (var db = m_historian.GetDatabase<HistorianKey, HistorianValue>(string.Empty))
             {
                 //var db = m_historian.ConnectToDatabase("Full Resolution Synchrophasor");
                 PeriodicScanner scanner = new PeriodicScanner(m_samplesPerSecond);

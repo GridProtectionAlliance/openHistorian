@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  ReadonlyList.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -28,7 +28,7 @@ using System.Collections.Generic;
 namespace GSF.Collections
 {
     /// <summary>
-    /// A list that can be modified until <see cref="IsReadOnly"/> is set to true. Once this occurs,
+    /// A list that can be modified until <see cref="SupportsReadonlyBase{T}.IsReadOnly"/> is set to true. Once this occurs,
     /// the list itself can no longer be modified.  Remember, this does not cause objects contained in this class to be Immutable 
     /// unless they implement <see cref="T:GSF.Collections.ISupportsReadonly`1"/>.
     /// </summary>

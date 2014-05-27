@@ -71,14 +71,14 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
             {
-                RemoteClientOptions clientOptions = new RemoteClientOptions();
-                clientOptions.NetworkPort = 12345;
-                clientOptions.ServerNameOrIp = "127.0.0.1";
+                NetworkClientConfig clientConfig = new NetworkClientConfig();
+                clientConfig.NetworkPort = 12345;
+                clientConfig.ServerNameOrIp = "127.0.0.1";
 
                 DateTime start = DateTime.FromBinary(Convert.ToDateTime("2/1/2014").Date.Ticks + Convert.ToDateTime("6:00:00PM").TimeOfDay.Ticks).ToUniversalTime();
 
-                using (var client = new HistorianClient(clientOptions))
-                using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
+                using (var client = new HistorianClient(clientConfig))
+                using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                 {
                     HistorianKey key = new HistorianKey();
                     HistorianValue value = new HistorianValue();
@@ -170,12 +170,12 @@ namespace openHistorian.PerformanceTests
 
             using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
             {
-                RemoteClientOptions clientOptions = new RemoteClientOptions();
-                clientOptions.NetworkPort = 12345;
-                clientOptions.ServerNameOrIp = "127.0.0.1";
+                NetworkClientConfig clientConfig = new NetworkClientConfig();
+                clientConfig.NetworkPort = 12345;
+                clientConfig.ServerNameOrIp = "127.0.0.1";
 
-                using (var client = new HistorianClient(clientOptions))
-                using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
+                using (var client = new HistorianClient(clientConfig))
+                using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                 {
 
                     var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 1 });
@@ -288,13 +288,13 @@ namespace openHistorian.PerformanceTests
             HistorianValue value = new HistorianValue();
             using (HistorianServer server = new HistorianServer(@"C:\Program Files\openHistorian\Archive\"))
             {
-                RemoteClientOptions clientOptions = new RemoteClientOptions();
-                clientOptions.NetworkPort = 12345;
-                clientOptions.ServerNameOrIp = "127.0.0.1";
+                NetworkClientConfig clientConfig = new NetworkClientConfig();
+                clientConfig.NetworkPort = 12345;
+                clientConfig.ServerNameOrIp = "127.0.0.1";
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                using (var client = new HistorianClient(clientOptions))
-                using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
+                using (var client = new HistorianClient(clientConfig))
+                using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                 {
 
                     var stream = database.Read(0, (ulong)DateTime.MaxValue.Ticks, new ulong[] { 65, 953, 5562 });

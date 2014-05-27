@@ -60,7 +60,6 @@ namespace GSF.Threading.Test
                 work.Running += work_CleanupWork;
                 work.Start();
             }
-            Debugger.Break();
             double x = 1;
             while (x > 3)
             {

@@ -39,12 +39,44 @@ namespace GSF.Diagnostics
     [Flags]
     public enum VerboseLevel : int
     {
+        /// <summary>
+        /// No messages should be reported. 
+        /// </summary>
+        /// <remarks>
+        /// Use this only to unsubscribe from all system messages.
+        /// Specifying this while creating a message will cause it not to be routed.
+        /// </remarks>
         None = 0,
+        /// <summary>
+        /// Indicates a message that may assist in debugging code and generally
+        /// serves no additional purpose.
+        /// </summary>
         Debug = 1,
+        /// <summary>
+        /// Indicates that the message is informational. It has more useful information
+        /// than a debug message, but for the most part is indicating basic status.
+        /// </summary>
         Information = 2,
+        /// <summary>
+        /// Indicates that something happened that might adversely effect the system's operation.
+        /// This level can also be used for expected errors.
+        /// </summary>
         Warning = 4,
+        /// <summary>
+        /// Indicates that something happended that might adversely effect the system's operation.
+        /// This level should be reserved for errors that are not expected to occur. 
+        /// </summary>
         Error = 8,
+        /// <summary>
+        /// Indicates a error that will more than likely compromise the state of the system. An example case
+        /// would be one of those "this should never happen" errors that were likely not handled properly and thus
+        /// leak system resources.
+        /// </summary>
         Fatal = 16,
+        /// <summary>
+        /// A flag that specifies that all levels will be listened to.  This is an invalid flag to 
+        /// assign to a message.
+        /// </summary>
         All = -1
     }
 
@@ -52,39 +84,60 @@ namespace GSF.Diagnostics
     /// <summary>
     /// Manages the collection and reporting of logging information in a system.
     /// </summary>
-    public class Logger
+    public class Logger : ILogSourceDetails
     {
+        /// <summary>
+        /// Gets the default system logger.
+        /// </summary>
         public readonly static Logger Default = new Logger();
+
+        /// <summary>
+        /// Allows general logging if source data cannot be provided.
+        /// </summary>
+        /// <remarks>
+        /// This is ideal for cases where a log message is desired,
+        /// but the cost of registering a log message is too expensive.
+        /// 
+        /// An example use case is when exception code is generated at a very low level,
+        /// but these details would like to be bubbled to the message log.
+        /// </remarks>
+        public readonly LogReporter UniversalReporter;
 
         object m_syncRoot;
         WeakList<LogReporter> m_logReportList;
         WeakList<LogHandler> m_logHandlerList;
         VerboseLevel m_consoleLevel;
+
+
+        /// <summary>
+        /// Creates a <see cref="Logger"/>
+        /// </summary>
         public Logger()
         {
             m_consoleLevel = VerboseLevel.None;
             m_syncRoot = new object();
             m_logReportList = new WeakList<LogReporter>();
             m_logHandlerList = new WeakList<LogHandler>();
+            UniversalReporter = Register(this);
         }
 
         /// <summary>
         /// Registers components that can raise log messages.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="name"></param>
-        /// <param name="classification"></param>
-        /// <param name="getDetails"></param>
+        /// <param name="source"></param>
         /// <param name="parent"></param>
         /// <returns></returns>
-        public LogReporter Register(object sender, string name, string classification, Func<string> getDetails = null, LogSource parent = null)
+        public LogReporter Register(object source, LogSource parent = null)
         {
-            LogReporter reporter = new LogReporter(this, sender, name, classification, getDetails, parent);
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            LogReporter reporter = new LogReporter(this, source, parent);
             lock (m_syncRoot)
             {
                 m_logReportList.Add(reporter);
             }
-            RefreshVerbose();
+            RefreshVerboseFilter();
             return reporter;
         }
 
@@ -95,14 +148,14 @@ namespace GSF.Diagnostics
         public void ReportToConsole(VerboseLevel level)
         {
             m_consoleLevel = level;
-            RefreshVerbose();
+            RefreshVerboseFilter();
         }
 
         /// <summary>
         /// Registers a callback that will handle system events.
         /// </summary>
         /// <returns></returns>
-        public LogHandler Handle()
+        public LogHandler CreateHandler()
         {
             var handler = new LogHandler(this);
             lock (m_syncRoot)
@@ -112,7 +165,10 @@ namespace GSF.Diagnostics
             return handler;
         }
 
-        internal void RefreshVerbose()
+        /// <summary>
+        /// Refreshes the verbose level filter. 
+        /// </summary>
+        internal void RefreshVerboseFilter()
         {
             VerboseLevel level = m_consoleLevel;
 
@@ -157,5 +213,9 @@ namespace GSF.Diagnostics
             }
         }
 
+        string ILogSourceDetails.GetSourceDetails()
+        {
+            return "Universal Source";
+        }
     }
 }

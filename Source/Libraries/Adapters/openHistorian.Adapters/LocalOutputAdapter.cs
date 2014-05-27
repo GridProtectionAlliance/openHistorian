@@ -384,7 +384,7 @@ namespace openHistorian.Adapters
         protected override void AttemptDisconnection()
         {
             m_archive = null;
-            Common.HistorianServer.Host.Unload(m_archiveInfo.DatabaseName);
+            Common.HistorianServer.Host.UnloadDatabase(m_archiveInfo.DatabaseName);
 
             OnDisconnected();
             m_archivedMeasurements = 0;

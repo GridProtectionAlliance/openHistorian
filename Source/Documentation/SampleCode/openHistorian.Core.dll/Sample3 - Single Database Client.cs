@@ -24,12 +24,12 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (var server = new HistorianServer(@"c:\temp\Scada\"))
             {
-                RemoteClientOptions clientOptions = new RemoteClientOptions();
-                clientOptions.NetworkPort = 12345;
-                clientOptions.ServerNameOrIp = "127.0.0.1";
+                NetworkClientConfig clientConfig = new NetworkClientConfig();
+                clientConfig.NetworkPort = 12345;
+                clientConfig.ServerNameOrIp = "127.0.0.1";
 
-                using (var client = new HistorianClient(clientOptions))
-                using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
+                using (var client = new HistorianClient(clientConfig))
+                using (var database = client.GetDatabase<HistorianKey, HistorianValue>(string.Empty))
                 {
                     for (ulong x = 0; x < 1000; x++)
                     {
@@ -53,12 +53,12 @@ namespace SampleCode.openHistorian.Server.dll
 
             using (HistorianServer server = new HistorianServer(@"c:\temp\Scada\"))
             {
-                RemoteClientOptions clientOptions = new RemoteClientOptions();
-                clientOptions.NetworkPort = 12345;
-                clientOptions.ServerNameOrIp = "127.0.0.1";
+                NetworkClientConfig clientConfig = new NetworkClientConfig();
+                clientConfig.NetworkPort = 12345;
+                clientConfig.ServerNameOrIp = "127.0.0.1";
 
-                using (var client = new HistorianClient(clientOptions))
-                using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
+                using (var client = new HistorianClient(clientConfig))
+                using (var database = client.GetDatabase<HistorianKey, HistorianValue>(string.Empty))
                 {
                     var stream = database.Read(0, 1000);
                     while (stream.Read(key,value))

@@ -111,7 +111,7 @@ namespace openHistorian.Scada.Test
             var KV2CEncoding = new EncodingDefinition(CreateFixedSizeSingleEncoding.TypeGuid, CreateFixedSizeSingleEncoding.TypeGuid);
             using (var server = new Server(ServerConfig.Create<AmiKey, AmiKey>("C:\\Temp\\AMI", -1, "KV2CPQ", KV2CEncoding)))
             {
-                using (var client = server.CreateClientHost())
+                using (var client = Client.Connect(server))
                 using (var db = client.GetDatabase<AmiKey, AmiKey>("KV2CPQ"))
                 {
                     int count = 10000000;

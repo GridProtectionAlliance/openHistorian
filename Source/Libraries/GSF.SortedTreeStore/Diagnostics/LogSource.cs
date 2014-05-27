@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections;
 using System.Text;
 
 namespace GSF.Diagnostics
@@ -33,48 +34,47 @@ namespace GSF.Diagnostics
     public class LogSource
     {
         /// <summary>
-        /// Represents a source that had no parents
+        /// A custom log message
         /// </summary>
-        public readonly static LogSource Root = new LogSource("Null", "Logger", "Source is null");
+        private class CustomSourceDetails : ILogSourceDetails
+        {
+            private string m_detailMessage;
+            public CustomSourceDetails(string detailMessage)
+            {
+                m_detailMessage = detailMessage;
+            }
+            public string GetSourceDetails()
+            {
+                return m_detailMessage;
+            }
+        }
 
         /// <summary>
-        /// Represents a source whose parent was Garbage Collected
+        /// A link to the log's parent so a stack trace can be computed. 
+        /// <see cref="ParentNull"/> if the parent supplied was null.
         /// </summary>
-        public readonly static LogSource Orphan = new LogSource("Orphan", "Logger", "Source was garbage collected");
+        public readonly LogSource Parent;
+        /// <summary>
+        /// The name of the source type.
+        /// </summary>
+        public readonly string TypeName;
+
+        private readonly WeakReference m_source;
 
         /// <summary>
-        /// A callback to get additional details
+        /// Gets the <see cref="Logger"/> that this source belongs to.
         /// </summary>
-        Func<string> m_getDetails;
-
-        WeakReference m_parent;
+        internal readonly Logger Logger;
 
         /// <summary>
-        /// The object reference
+        /// The object reference. <see cref="SourceCollected"/> if the source
+        /// has been collected.
         /// </summary>
-        public object Reference { get; private set; }
-
-        /// <summary>
-        /// The friendly name of the sender.
-        /// </summary>
-        public string Name { get; private set; }
-
-        /// <summary>
-        /// The classification of the sender.
-        /// </summary>
-        public string Classification { get; private set; }
-
-        /// <summary>
-        /// A link to the log's parent so a stack trace can be computed.
-        /// </summary>
-        public LogSource Parent
+        public object Source
         {
             get
             {
-                LogSource parent = m_parent.Target as LogSource;
-                if (parent == null)
-                    return Orphan;
-                return parent;
+                return m_source.Target ?? SourceCollected;
             }
         }
 
@@ -84,14 +84,12 @@ namespace GSF.Diagnostics
         /// <returns></returns>
         public string GetDetails()
         {
-            if (m_getDetails == null)
+            ILogSourceDetails details = Source as ILogSourceDetails;
+            if ((object)details == null)
                 return string.Empty;
             try
             {
-                var details = m_getDetails();
-                if (details == null)
-                    return string.Empty;
-                return details;
+                return details.GetSourceDetails();
             }
             catch (Exception)
             {
@@ -99,65 +97,97 @@ namespace GSF.Diagnostics
             }
         }
 
-        private LogSource(string name, string classification, string details)
-        {
-            if (name == null)
-                throw new ArgumentNullException("name");
-            if (classification == null)
-                throw new ArgumentNullException("classification");
-
-            Reference = this;
-            Name = name;
-            Classification = classification;
-
-            m_parent = new WeakReference(this);
-            m_getDetails = () => details;
-        }
-
         /// <summary>
         /// Creates a <see cref="LogSource"/>
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="name"></param>
-        /// <param name="classification"></param>
+        /// <param name="source"></param>
         /// <param name="parent"></param>
-        /// <param name="getDetails"></param>
-        public LogSource(object sender, string name, string classification, Func<string> getDetails, LogSource parent)
+        /// <param name="logger"></param>
+        public LogSource(object source, LogSource parent, Logger logger)
         {
-            if (sender == null)
-                throw new ArgumentNullException("sender");
-            if (name == null)
-                throw new ArgumentNullException("name");
-            if (classification == null)
-                throw new ArgumentNullException("classification");
-            if (parent == null)
-                parent = Root;
+            if ((object)logger == null)
+                logger = Logger.Default;
 
-            m_parent = new WeakReference(parent);
-            Reference = sender;
-            Name = name;
-            Classification = classification;
-            m_getDetails = getDetails;
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (parent == null)
+                parent = ParentNull;
+
+            // In the special case where the sender is ParentNullDetails, 
+            // then create a circular reference so Parent is never null.
+            if ((object)source == ParentNullDetails)
+                parent = this;
+
+            Logger = logger;
+            Parent = parent;
+            m_source = new WeakReference(source);
+            TypeName = source.GetType().FullName;
+
         }
 
         /// <summary>
         /// Gets a string representation of this source
         /// </summary>
+        /// <param name="sb"></param>
         /// <param name="stackTrace"></param>
         /// <returns></returns>
-        public string GetString(bool stackTrace)
+        public void AppendString(StringBuilder sb, bool stackTrace)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(Classification + Name);
-            string details = GetDetails();
-            if (details != string.Empty)
-                sb.AppendLine(details);
-            if (stackTrace && this != Root && this != Orphan)
+            sb.Append("   at: ");
+            sb.AppendLine(TypeName);
+            if (stackTrace)
             {
-                sb.AppendLine("Parent");
-                sb.AppendLine(Parent.GetString(true));
+                string details = GetDetails();
+                if (details != string.Empty)
+                {
+                    sb.Append("      // ");
+                    sb.AppendLine(details);
+                }
+                if (Parent != ParentNull)
+                {
+                    Parent.AppendString(sb, true);
+                }
             }
-            return sb.ToString();
+           
+        }
+
+        #region [ Static ]
+
+        /// <summary>
+        /// Strong references to these source details, as LogSource only maintains weak references.
+        /// </summary>
+        private readonly static CustomSourceDetails ParentNullDetails = new CustomSourceDetails("Parent is null");
+        private readonly static CustomSourceDetails SourceCollectedDetails = new CustomSourceDetails("Source was garbage collected");
+
+        /// <summary>
+        /// Represents a source that had no parents
+        /// </summary>
+        public readonly static LogSource ParentNull = new LogSource(ParentNullDetails, null, null);
+
+        /// <summary>
+        /// Represents a source who was Garbage Collected
+        /// </summary>
+        public readonly static LogSource SourceCollected = new LogSource(SourceCollectedDetails, null, null);
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Extention methods for <see cref="LogSource"/>
+    /// </summary>
+    public static class LogSourceExtensions
+    {
+        /// <summary>
+        /// Registers the provided source using this <see cref="LogSource"/> as the parent.
+        /// </summary>
+        /// <param name="parent">The parent. If Null, uses <see cref="Logger.Default"/> to register a new item</param>
+        /// <param name="source">The source object</param>
+        /// <returns>A <see cref="LogReporter"/>that the source can use to raise logs events.</returns>
+        public static LogReporter Register(this LogSource parent, object source)
+        {
+            if ((object)parent != null)
+                return parent.Logger.Register(source, parent);
+            return Logger.Default.Register(source, null);
         }
     }
 }

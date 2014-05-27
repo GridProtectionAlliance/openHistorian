@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  IndexMapper.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF;
 
 namespace GSF.IO.FileStructure
 {
@@ -44,12 +43,15 @@ namespace GSF.IO.FileStructure
         #region [ Constructors ]
 
         /// <summary>
-        /// Creates a index mapper that is based on a given cluster size,
+        /// Creates a <see cref="IndexMapper"/> that is based on a given <see cref="blockSize"/>.
         /// </summary>
+        /// <param name="blockSize">the number of bytes per block. Cannot be less than 64, greater than 1048576</param>
         public IndexMapper(int blockSize)
         {
             if (blockSize < 64)
-                throw new Exception("block size must be greater than 64 bytes");
+                throw new ArgumentOutOfRangeException("blockSize", "Cannot be less than 64");
+            if (blockSize > 1024 * 1024)
+                throw new ArgumentOutOfRangeException("blockSize", "Cannot be greater than 1048576");
             if (!BitMath.IsPowerOfTwo(blockSize))
                 throw new Exception("block size must be a power of 2");
 
@@ -113,7 +115,7 @@ namespace GSF.IO.FileStructure
         /// at the forth indirect block. 
         /// </summary>
         /// <remarks>Returns a -1 of invalid.  -1 was chosen since it will likely generate an error if not handled properly.</remarks>
-        public int FourthIndirectOffset
+        protected int FourthIndirectOffset
         {
             get;
             private set;
@@ -123,13 +125,13 @@ namespace GSF.IO.FileStructure
         /// Gets the index of the first cluster that can be accessed by this indirect block.  This value is useful because 
         /// the footer of the indirect page will have this address.
         /// </summary>
-        public const uint FirstIndirectBaseIndex = 0;
+        protected const uint FirstIndirectBaseIndex = 0;
 
         /// <summary>
         /// Gets the index of the second cluster that can be accessed by this indirect block.  This value is useful because 
         /// the footer of the indirect page will have this address.
         /// </summary>
-        public uint SecondIndirectBaseIndex
+        protected uint SecondIndirectBaseIndex
         {
             get;
             private set;
@@ -139,7 +141,7 @@ namespace GSF.IO.FileStructure
         /// Gets the index of the third cluster that can be accessed by this indirect block.  This value is useful because 
         /// the footer of the indirect page will have this address.
         /// </summary>
-        public uint ThirdIndirectBaseIndex
+        protected uint ThirdIndirectBaseIndex
         {
             get;
             private set;
@@ -149,13 +151,7 @@ namespace GSF.IO.FileStructure
         /// Gets the index of the third cluster that can be accessed by this indirect block.  This value is useful because 
         /// the footer of the indirect page will have this address.
         /// </summary>
-        public uint FourthIndirectBaseIndex
-        {
-            get;
-            private set;
-        }
-
-        public int IndexIndirect
+        protected uint FourthIndirectBaseIndex
         {
             get;
             private set;
@@ -181,11 +177,15 @@ namespace GSF.IO.FileStructure
                 throw new ArgumentOutOfRangeException("positionIndex", "position is not indexable with the current page size.");
 
             //uint addressesPerBlock = m_addressesPerBlock;
-            uint addressPerBlock3u = m_addressPerBlock3;
-            uint addressPerBlock2u = m_addressPerBlock2;
-            uint addressPerBlocku = m_addressPerBlock;
+            uint addressPerBlock3U = m_addressPerBlock3;
+            uint addressPerBlock2U = m_addressPerBlock2;
+            uint addressPerBlockU = m_addressPerBlock;
 
             BaseVirtualAddressIndexValue = positionIndex;
+
+            uint firstIndirect;
+            uint secondIndirect;
+            uint thirdIndirect;
 
             // Comments work through the provided examples utilizing 3187
             // FirstIndirect = 3
@@ -193,43 +193,35 @@ namespace GSF.IO.FileStructure
             // ThirdIndirect = 8
             // FourthIndirect = 7
 
-            if (positionIndex >= addressPerBlock3u)
+            if (positionIndex >= addressPerBlock3U)
             {
-                uint firstIndirect;
-                uint secondIndirect;
-                uint thirdIndirect;
-
                 //Note, if the position is greater than addressesPerBlock^3 then addressesPerBlock^3 is a 32 bit number.
-                firstIndirect = positionIndex / addressPerBlock3u; // 3187/1000, returns 3
-                positionIndex -= firstIndirect * addressPerBlock3u;
+                firstIndirect = positionIndex / addressPerBlock3U; // 3187/1000, returns 3
+                positionIndex -= firstIndirect * addressPerBlock3U;
 
-                secondIndirect = positionIndex / addressPerBlock2u; // 187/100, returns 1
-                positionIndex -= secondIndirect * addressPerBlock2u;
+                secondIndirect = positionIndex / addressPerBlock2U; // 187/100, returns 1
+                positionIndex -= secondIndirect * addressPerBlock2U;
 
-                thirdIndirect = positionIndex / addressPerBlocku; // 87/10, returns 8
-                positionIndex -= thirdIndirect * addressPerBlocku;
+                thirdIndirect = positionIndex / addressPerBlockU; // 87/10, returns 8
+                positionIndex -= thirdIndirect * addressPerBlockU;
 
                 FirstIndirectOffset = (int)firstIndirect;
                 SecondIndirectOffset = (int)secondIndirect;
                 ThirdIndirectOffset = (int)thirdIndirect;
                 FourthIndirectOffset = (int)positionIndex;
 
-                SecondIndirectBaseIndex = firstIndirect * addressPerBlock3u; //Contains 3000
-                ThirdIndirectBaseIndex = SecondIndirectBaseIndex + secondIndirect * addressPerBlock2u; //Contains 3000 + 100
-                FourthIndirectBaseIndex = ThirdIndirectBaseIndex + thirdIndirect * addressPerBlocku; //Contains 3000 + 100 + 80
-                IndexIndirect = 4;
+                SecondIndirectBaseIndex = firstIndirect * addressPerBlock3U; //Contains 3000
+                ThirdIndirectBaseIndex = SecondIndirectBaseIndex + secondIndirect * addressPerBlock2U; //Contains 3000 + 100
+                FourthIndirectBaseIndex = ThirdIndirectBaseIndex + thirdIndirect * addressPerBlockU; //Contains 3000 + 100 + 80
             }
-                //Value is now 187
-            else if (positionIndex >= addressPerBlock2u)
+            //Value is now 187
+            else if (positionIndex >= addressPerBlock2U)
             {
-                uint secondIndirect;
-                uint thirdIndirect;
+                secondIndirect = positionIndex / addressPerBlock2U; // 187/100, returns 1
+                positionIndex -= secondIndirect * addressPerBlock2U;
 
-                secondIndirect = positionIndex / addressPerBlock2u; // 187/100, returns 1
-                positionIndex -= secondIndirect * addressPerBlock2u;
-
-                thirdIndirect = positionIndex / addressPerBlocku; // 87/10, returns 8
-                positionIndex -= thirdIndirect * addressPerBlocku;
+                thirdIndirect = positionIndex / addressPerBlockU; // 87/10, returns 8
+                positionIndex -= thirdIndirect * addressPerBlockU;
 
                 FirstIndirectOffset = 0;
                 SecondIndirectOffset = (int)secondIndirect;
@@ -237,17 +229,14 @@ namespace GSF.IO.FileStructure
                 FourthIndirectOffset = (int)positionIndex;
 
                 SecondIndirectBaseIndex = 0; //Contains 3000
-                ThirdIndirectBaseIndex = secondIndirect * addressPerBlock2u; //Contains 3000 + 100
-                FourthIndirectBaseIndex = ThirdIndirectBaseIndex + thirdIndirect * addressPerBlocku; //Contains 3000 + 100 + 80
-                IndexIndirect = 3;
+                ThirdIndirectBaseIndex = secondIndirect * addressPerBlock2U; //Contains 3000 + 100
+                FourthIndirectBaseIndex = ThirdIndirectBaseIndex + thirdIndirect * addressPerBlockU; //Contains 3000 + 100 + 80
             }
-                //Value is now 87
-            else if (positionIndex >= addressPerBlocku)
+            //Value is now 87
+            else if (positionIndex >= addressPerBlockU)
             {
-                uint thirdIndirect;
-
-                thirdIndirect = positionIndex / addressPerBlocku; // 87/10, returns 8
-                positionIndex -= thirdIndirect * addressPerBlocku;
+                thirdIndirect = positionIndex / addressPerBlockU; // 87/10, returns 8
+                positionIndex -= thirdIndirect * addressPerBlockU;
 
                 FirstIndirectOffset = 0;
                 SecondIndirectOffset = 0;
@@ -256,10 +245,9 @@ namespace GSF.IO.FileStructure
 
                 SecondIndirectBaseIndex = 0;
                 ThirdIndirectBaseIndex = 0;
-                FourthIndirectBaseIndex = thirdIndirect * addressPerBlocku;
-                IndexIndirect = 2;
+                FourthIndirectBaseIndex = thirdIndirect * addressPerBlockU;
             }
-                //Value is now 7
+            //Value is now 7
             else if (positionIndex > 0)
             {
                 FirstIndirectOffset = 0;
@@ -270,7 +258,6 @@ namespace GSF.IO.FileStructure
                 SecondIndirectBaseIndex = 0;
                 ThirdIndirectBaseIndex = 0;
                 FourthIndirectBaseIndex = 0;
-                IndexIndirect = 1;
             }
             else
             {
@@ -282,7 +269,6 @@ namespace GSF.IO.FileStructure
                 SecondIndirectBaseIndex = 0;
                 ThirdIndirectBaseIndex = 0;
                 FourthIndirectBaseIndex = 0;
-                IndexIndirect = 0;
             }
         }
 

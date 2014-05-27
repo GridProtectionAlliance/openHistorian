@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using GSF.Collections;
+using GSF.Diagnostics;
 using GSF.IO.FileStructure.Media;
 
 namespace GSF.IO.FileStructure
@@ -93,6 +94,13 @@ namespace GSF.IO.FileStructure
             m_delHasBeenCommitted = delHasBeenCommitted;
             m_delHasBeenRolledBack = delHasBeenRolledBack;
         }
+
+#if DEBUG
+        ~TransactionalEdit()
+        {
+            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+#endif
 
         #endregion
 
@@ -243,6 +251,7 @@ namespace GSF.IO.FileStructure
             if (!m_disposed)
             {
                 RollbackAndDispose();
+                GC.SuppressFinalize(this);
             }
         }
 

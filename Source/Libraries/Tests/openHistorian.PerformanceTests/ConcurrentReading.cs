@@ -109,12 +109,12 @@ namespace openHistorian.PerformanceTests
                 {
 
                     Stopwatch sw = new Stopwatch();
-                    RemoteClientOptions clientOptions = new RemoteClientOptions();
-                    clientOptions.NetworkPort = 12345;
-                    clientOptions.ServerNameOrIp = "127.0.0.1";
+                    NetworkClientConfig clientConfig = new NetworkClientConfig();
+                    clientConfig.NetworkPort = 12345;
+                    clientConfig.ServerNameOrIp = "127.0.0.1";
 
-                    using (var client = new HistorianClient(clientOptions))
-                    using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
+                    using (var client = new HistorianClient(clientConfig))
+                    using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                     {
                         HistorianKey key = new HistorianKey();
                         HistorianValue value = new HistorianValue();
@@ -158,12 +158,12 @@ namespace openHistorian.PerformanceTests
                     int myId = Interlocked.Increment(ref ReaderNumber);
                     Stopwatch sw = new Stopwatch();
                     int pointCount = 0;
-                    RemoteClientOptions clientOptions = new RemoteClientOptions();
-                    clientOptions.NetworkPort = 12345;
-                    clientOptions.ServerNameOrIp = "127.0.0.1";
+                    NetworkClientConfig clientConfig = new NetworkClientConfig();
+                    clientConfig.NetworkPort = 12345;
+                    clientConfig.ServerNameOrIp = "127.0.0.1";
 
-                    using (var client = new HistorianClient(clientOptions))
-                    using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
+                    using (var client = new HistorianClient(clientConfig))
+                    using (var database = client.GetDatabase<HistorianKey, HistorianValue>(String.Empty))
                     {
                         HistorianKey key = new HistorianKey();
                         HistorianValue value = new HistorianValue();

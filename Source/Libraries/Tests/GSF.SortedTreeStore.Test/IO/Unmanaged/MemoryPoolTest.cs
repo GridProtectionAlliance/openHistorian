@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace GSF.IO.Unmanaged
+namespace GSF.IO.Unmanaged.Test
 {
     public static class MemoryPoolTest
     {

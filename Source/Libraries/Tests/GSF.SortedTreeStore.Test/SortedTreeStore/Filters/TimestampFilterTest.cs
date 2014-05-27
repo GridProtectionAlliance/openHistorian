@@ -7,10 +7,10 @@ using GSF.IO.Unmanaged;
 using NUnit.Framework;
 using openHistorian.Collections;
 
-namespace GSF.SortedTreeStore.Filters
+namespace GSF.SortedTreeStore.Filters.Test
 {
     [TestFixture]
-    public class TimestampFilter_Test
+    public class TimestampFilterTest
     {
         [Test]
         public void TestFixedRange()

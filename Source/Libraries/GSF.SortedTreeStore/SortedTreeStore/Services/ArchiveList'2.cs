@@ -38,11 +38,10 @@ namespace GSF.SortedTreeStore.Services
     /// associated reading and writing that goes along with it.
     /// </summary>
     public partial class ArchiveList<TKey, TValue>
-        : IDisposable
+        : LogReporterBase
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
-        LogReporter m_logger;
 
         private bool m_disposed;
 
@@ -77,10 +76,11 @@ namespace GSF.SortedTreeStore.Services
         /// <summary>
         /// Creates an ArchiveList
         /// </summary>
-        public ArchiveList()
+        /// <param name="parent">The parent of this class</param>
+        public ArchiveList(LogSource parent)
+            : base(parent)
         {
             m_syncRoot = new object();
-            m_logger = Logger.Default.Register(this, "ArchiveList", "GSF.SortedTreeStore.Engine.ArchiveList");
             m_filesToDelete = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_filesToDispose = new List<ArchiveListRemovalStatus<TKey, TValue>>();
             m_processRemovals = new ScheduledTask(ThreadingMode.DedicatedBackground);
@@ -115,12 +115,12 @@ namespace GSF.SortedTreeStore.Services
                     {
                         loadedFiles.Add(table);
                     }
-                    if (m_logger.ReportInfo)
-                        m_logger.LogMessage(VerboseLevel.Information, -1, "Loading Files", "Successfully opened: " + file);
+                    if (Log.ReportInfo)
+                        Log.LogMessage(VerboseLevel.Information, "Loading Files", "Successfully opened: " + file);
                 }
                 catch (Exception ex)
                 {
-                    m_logger.LogMessage(VerboseLevel.Warning, -1, "Loading Files", "Skipping Failed File: " + file, null, ex);
+                    Log.LogMessage(VerboseLevel.Warning, "Loading Files", "Skipping Failed File: " + file, null, ex);
                 }
             }
 
@@ -134,7 +134,7 @@ namespace GSF.SortedTreeStore.Services
                     }
                     catch (Exception ex)
                     {
-                        m_logger.LogMessage(VerboseLevel.Warning, -1, "Attaching File", "File already attached: " + file.ArchiveId, null, ex);
+                        Log.LogMessage(VerboseLevel.Warning, "Attaching File", "File already attached: " + file.ArchiveId, null, ex);
                         file.BaseFile.Dispose();
                     }
                 }
@@ -163,8 +163,8 @@ namespace GSF.SortedTreeStore.Services
                 m_allSnapshots.Add(resources);
             }
 
-            if (m_logger.ReportDebug)
-                m_logger.LogMessage(VerboseLevel.Debug, -1, "Created a client resource");
+            if (Log.ReportDebug)
+                Log.LogMessage(VerboseLevel.Debug, "Created a client resource");
 
             return resources;
 
@@ -180,8 +180,8 @@ namespace GSF.SortedTreeStore.Services
             {
                 m_allSnapshots.Remove(archiveLists);
             }
-            if (m_logger.ReportDebug)
-                m_logger.LogMessage(VerboseLevel.Debug, -1, "Removed a client resource");
+            if (Log.ReportDebug)
+                Log.LogMessage(VerboseLevel.Debug, "Removed a client resource");
         }
 
         /// <summary>
@@ -195,8 +195,8 @@ namespace GSF.SortedTreeStore.Services
                 transaction.Tables = new ArchiveTableSummary<TKey, TValue>[m_fileSummaries.Count];
                 m_fileSummaries.Values.CopyTo(transaction.Tables, 0);
             }
-            if (m_logger.ReportDebug)
-                m_logger.LogMessage(VerboseLevel.Debug, -1, "Refreshed a client snapshot");
+            if (Log.ReportDebug)
+                Log.LogMessage(VerboseLevel.Debug, "Refreshed a client snapshot");
         }
 
         #endregion
@@ -242,8 +242,8 @@ namespace GSF.SortedTreeStore.Services
         /// <returns></returns>
         public Editor AcquireEditLock()
         {
-            if (m_logger.ReportDebug)
-                m_logger.LogMessage(VerboseLevel.Debug, -1, "Acquiring a edit lock");
+            if (Log.ReportDebug)
+                Log.LogMessage(VerboseLevel.Debug, "Acquiring a edit lock");
             return new Editor(this);
         }
 
@@ -284,8 +284,8 @@ namespace GSF.SortedTreeStore.Services
         {
             if (!m_disposed)
             {
-                if (m_logger.ReportDebug)
-                    m_logger.LogMessage(VerboseLevel.Debug, -1, "Disposing");
+                if (Log.ReportDebug)
+                    Log.LogMessage(VerboseLevel.Debug, "Disposing");
                 ReleaseClientResources();
                 m_processRemovals.Dispose();
                 lock (m_syncRoot)
@@ -356,7 +356,7 @@ namespace GSF.SortedTreeStore.Services
 
         void ProcessRemovals_UnhandledException(object sender, EventArgs<Exception> e)
         {
-            m_logger.LogMessage(VerboseLevel.Error, -1, "Unknown error encountered while removing archive files.", null, null, e.Argument);
+            Log.LogMessage(VerboseLevel.Error, "Unknown error encountered while removing archive files.", null, null, e.Argument);
         }
     }
 }

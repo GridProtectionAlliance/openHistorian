@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using GSF.IO.Unmanaged;
+using GSF.IO.Unmanaged.Test;
 using NUnit.Framework;
 
 namespace GSF.IO.Test
@@ -13,7 +14,7 @@ namespace GSF.IO.Test
         public void Test()
         {
             MemoryPoolTest.TestMemoryLeak();
-            const int count = 1000;
+            const int count = 100;
             MemoryPoolStream ms = new MemoryPoolStream();
             //ms.Write(new byte[100000], 0, 100000);
             //ms.Write(new byte[100000], 0, 100000);

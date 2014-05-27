@@ -352,16 +352,15 @@ namespace DataExtractionUtility
 
             TimeSpan interval = Resolutions.GetInterval((string)cmbResolution.SelectedItem);
 
-            RemoteClientOptions clientOptions = new RemoteClientOptions();
-            clientOptions.DefaultDatabase = TxtHistorianInstance.Text;
-            clientOptions.NetworkPort = int.Parse(TxtHistorianPort.Text);
-            clientOptions.ServerNameOrIp = TxtServerIP.Text;
+            NetworkClientConfig clientConfig = new NetworkClientConfig();
+            clientConfig.NetworkPort = int.Parse(TxtHistorianPort.Text);
+            clientConfig.ServerNameOrIp = TxtServerIP.Text;
 
             Thread workerThread = new Thread(start =>
             {
                 long processingStartTime = DateTime.UtcNow.Ticks;
 
-                using (HistorianClient client = new HistorianClient(clientOptions))
+                using (HistorianClient client = new HistorianClient(clientConfig))
                 {
                     m_readIndex = 0;
                     m_fillMeasurements.Clear();
@@ -383,7 +382,7 @@ namespace DataExtractionUtility
                     var points = m_selectedMeasurements.Select((x) => (ulong)x.PointID).ToArray();
                     var pointFilter = PointIDFilter.CreateFromList<HistorianKey, HistorianValue>(points);
 
-                    using (var database = client.GetDefaultDatabase<HistorianKey, HistorianValue>())
+                    using (var database = client.GetDatabase<HistorianKey, HistorianValue>(TxtHistorianInstance.Text))
                     {
                         string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Export.csv");
 

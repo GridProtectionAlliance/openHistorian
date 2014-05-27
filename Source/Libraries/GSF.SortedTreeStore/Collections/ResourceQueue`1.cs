@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  BufferedFileStream.cs - Gbtc
+//  ResourceQueue.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -23,7 +23,7 @@
 //******************************************************************************************************
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace GSF.Collections
 {
@@ -34,8 +34,7 @@ namespace GSF.Collections
     public class ResourceQueue<T>
         where T : class
     {
-        private readonly object m_syncRoot;
-        private readonly Queue<T> m_queue;
+        private readonly ConcurrentQueue<T> m_queue;
         private readonly Func<T> m_instanceObject;
         private readonly int m_maximumCount;
 
@@ -55,9 +54,8 @@ namespace GSF.Collections
             if (maximumCount < initialCount)
                 throw new ArgumentOutOfRangeException("maximumCount", "Must be greater than or equal to initialCount");
 
-            m_syncRoot = new object();
             m_instanceObject = instance;
-            m_queue = new Queue<T>(m_maximumCount);
+            m_queue = new ConcurrentQueue<T>();
             m_maximumCount = maximumCount;
             for (int x = 0; x < initialCount; x++)
             {
@@ -71,26 +69,27 @@ namespace GSF.Collections
         /// <returns></returns>
         public T Dequeue()
         {
-            lock (m_syncRoot)
+            T item;
+            if (m_queue.TryDequeue(out item))
             {
-                if (m_queue.Count > 0)
-                    return m_queue.Dequeue();
+                return item;
             }
+
             return m_instanceObject();
         }
 
         /// <summary>
         /// Addes an item back to the queue.
         /// </summary>
-        /// <param name="resource"></param>
+        /// <param name="resource">The resource to queue.</param>
         public void Enqueue(T resource)
         {
-            lock (m_syncRoot)
+            //If a race condition exists, too many items will be added to the queue. 
+            //Since it matters little that too many items are queued, that's not
+            //worth the extra complexity of synchronizing.
+            if (m_queue.Count < m_maximumCount)
             {
-                if (m_queue.Count < m_maximumCount)
-                {
-                    m_queue.Enqueue(resource);
-                }
+                m_queue.Enqueue(resource);
             }
         }
     }

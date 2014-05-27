@@ -1,7 +1,7 @@
-//******************************************************************************************************
-//  RemoteClientOptions.cs - Gbtc
+﻿//******************************************************************************************************
+//  ILogSourceDetails.cs - Gbtc
 //
-//  Copyright � 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,19 +16,23 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/8/2012 - Steven E. Chisholm
+//  05/24/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
 //
 //******************************************************************************************************
 
-namespace GSF.SortedTreeStore.Services.Net
+namespace GSF.Diagnostics
 {
-    public class RemoteClientOptions
+    /// <summary>
+    /// An optional interface that a log source can implement to supply additional information about the log event.
+    /// </summary>
+    public interface ILogSourceDetails
     {
-        public bool IsReadOnly = true;
-        public int NetworkPort = 38402;
-        public string ServerNameOrIp = "localhost";
-        public string DefaultDatabase = "default";
+        /// <summary>
+        /// Gets details associated with this source so they can be logged with the log message.
+        /// </summary>
+        /// <returns>The string representation of the details.</returns>
+        string GetSourceDetails();
     }
 }

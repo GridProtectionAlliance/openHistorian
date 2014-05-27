@@ -25,7 +25,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using GSF.SortedTreeStore.Services;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services
@@ -33,25 +33,35 @@ namespace GSF.SortedTreeStore.Services
     /// <summary>
     /// Represents the server side of a single database.
     /// </summary>
-    public abstract class ServerDatabaseBase : IDisposable
+    public abstract class ServerDatabaseBase : LogReporterBase
     {
+
+        /// <summary>
+        /// Creates a <see cref="ServerDatabaseBase"/>
+        /// </summary>
+        /// <param name="parent">the parent source.</param>
+        protected ServerDatabaseBase(LogSource parent)
+            : base(parent)
+        {
+        }
+
+        protected override string GetSourceDetails()
+        {
+            var info = Info;
+            return string.Format("Database: {0} Key: {1} Value: {2}", info.DatabaseName, info.KeyType.FullName, info.ValueType.FullName);
+        }
+
         /// <summary>
         /// Gets basic information about the current Database.
         /// </summary>
         public abstract DatabaseInfo Info { get; }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public abstract void Dispose();
-
-        /// <summary>
         /// Creates a <see cref="ServerDatabase{TKey,TValue}.ClientDatabase"/>
         /// </summary>
         /// <returns></returns>
         public abstract ClientDatabaseBase CreateClientDatabase(Server.Client client, Action<ClientDatabaseBase> onDispose);
-        
+
         /// <summary>
         /// Gets the full status text for the server.
         /// </summary>
@@ -62,25 +72,26 @@ namespace GSF.SortedTreeStore.Services
         /// Creates a new server database from the provided config.
         /// </summary>
         /// <param name="databaseConfig"></param>
+        /// <param name="parent">the parent LogSource</param>
         /// <returns></returns>
-        public static ServerDatabaseBase CreateDatabase(ServerDatabaseConfig databaseConfig)
+        public static ServerDatabaseBase CreateDatabase(ServerDatabaseConfig databaseConfig, LogSource parent)
         {
             var keyType = Library.GetSortedTreeType(databaseConfig.KeyType);
             var valueType = Library.GetSortedTreeType(databaseConfig.ValueType);
-           
+
             var type = typeof(ServerDatabaseBase);
             var method = type.GetMethod("CreateDatabase", BindingFlags.NonPublic | BindingFlags.Static);
             var reflectionMethod = method.MakeGenericMethod(keyType, valueType);
-            return (ServerDatabaseBase)reflectionMethod.Invoke(null, new object[] { databaseConfig });
+            return (ServerDatabaseBase)reflectionMethod.Invoke(null, new object[] { databaseConfig, parent });
         }
 
         //Called through reflection. Its the only way to call a generic function only knowing the Types
         [MethodImpl(MethodImplOptions.NoOptimization)] //Prevents removing this method as it may appear unused.
-        static ServerDatabaseBase CreateDatabase<TKey, TValue>(ServerDatabaseConfig databaseConfig)
+        static ServerDatabaseBase CreateDatabase<TKey, TValue>(ServerDatabaseConfig databaseConfig, LogSource parent)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            return new ServerDatabase<TKey, TValue>(databaseConfig);
+            return new ServerDatabase<TKey, TValue>(databaseConfig, parent);
         }
 
 

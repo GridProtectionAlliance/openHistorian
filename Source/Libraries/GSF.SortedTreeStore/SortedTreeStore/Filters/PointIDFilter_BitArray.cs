@@ -43,8 +43,6 @@ namespace GSF.SortedTreeStore.Filters
             public ulong MaxValue = ulong.MaxValue;
             public ulong MinValue = ulong.MinValue;
 
-            public long[] ArrayBits;
-
             /// <summary>
             /// Creates a new filter backed by a <see cref="BitArray"/>.
             /// </summary>
@@ -64,7 +62,6 @@ namespace GSF.SortedTreeStore.Filters
                     m_points.SetBit((int)stream.ReadUInt32());
                     pointCount--;
                 }
-                ArrayBits = m_points.GetInternalData();
 
                 foreach (int point in m_points.GetAllSetBits())
                 {
@@ -86,7 +83,6 @@ namespace GSF.SortedTreeStore.Filters
                 {
                     m_points.SetBit((int)pt);
                 }
-                ArrayBits = m_points.GetInternalData();
 
                 foreach (int point in m_points.GetAllSetBits())
                 {
@@ -118,8 +114,7 @@ namespace GSF.SortedTreeStore.Filters
             public override bool Contains(TKey key, TValue value)
             {
                 int point = (int)key.PointID;
-                return (key.PointID <= MaxValue &&
-                    ((ArrayBits[point >> BitArray.BitsPerElementShift] & (1L << (point & BitArray.BitsPerElementMask))) != 0));
+                return (key.PointID <= MaxValue && m_points.GetBitUnsafe(point));
             }
         }
     }

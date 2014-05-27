@@ -26,6 +26,9 @@ using System;
 
 namespace GSF.Collections
 {
+    /// <summary>
+    /// Represents an object that can be configured as read only and thus made immutable.  
+    /// </summary>
     public interface ISupportsReadonly
     {
         /// <summary>
@@ -52,7 +55,7 @@ namespace GSF.Collections
 
     /// <summary>
     /// Represents an object that can be configured as read only and thus made immutable.  
-    /// The origional contents of this class will not be editable once <see cref="IsReadOnly"/> is set to true.
+    /// The origional contents of this class will not be editable once <see cref="ISupportsReadonly.IsReadOnly"/> is set to true.
     /// In order to modify the contest of this object, a clone of the object must be created with <see cref="CloneEditable"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>

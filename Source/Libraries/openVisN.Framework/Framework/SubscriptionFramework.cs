@@ -86,12 +86,12 @@ namespace openVisN.Framework
 
         public void Start(string ip, int port, string database)
         {
-            RemoteClientOptions options = new RemoteClientOptions();
-            options.IsReadOnly = true;
-            options.ServerNameOrIp = ip;
-            options.NetworkPort = port;
-            options.DefaultDatabase = database;
-            HistorianClient client = new HistorianClient(options);
+            NetworkClientConfig config = new NetworkClientConfig();
+            config.IsReadOnly = true;
+            config.ServerNameOrIp = ip;
+            config.NetworkPort = port;
+            HistorianClient client = new HistorianClient(config);
+            client.DefaultDatabase = database;
             HistorianQuery query = new HistorianQuery(client);
             m_updateFramework.Start(query);
             m_updateFramework.Mode = ExecutionMode.Manual;

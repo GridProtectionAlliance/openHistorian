@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  ArchiveListRemovalStatus.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -63,7 +63,7 @@ namespace GSF.SortedTreeStore.Services
         }
 
         /// <summary>
-        /// The <see cref="HistorianArchiveFile"/> that was removed from the <see cref="ArchiveList{TKey,TValue}"/>.
+        /// The <see cref="SortedTreeTable{TKey,TValue}"/> that was removed from the <see cref="ArchiveList{TKey,TValue}"/>.
         /// </summary>
         public SortedTreeTable<TKey, TValue> SortedTree
         {

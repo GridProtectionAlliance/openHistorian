@@ -22,13 +22,8 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
@@ -64,7 +59,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// A list of all databases that clients will be permitted to attach to.
         /// If this list is empty, all databases can be accessed.
         /// </summary>
-        public List<string> AllowedDatabases = new List<string>();
+        public readonly List<string> AllowedDatabases = new List<string>();
         /// <summary>
         /// A password that will allow admin like access.
         /// </summary>

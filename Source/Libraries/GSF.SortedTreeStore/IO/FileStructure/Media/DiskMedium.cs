@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using GSF.Diagnostics;
 using GSF.IO.Unmanaged;
 
 namespace GSF.IO.FileStructure.Media
@@ -32,7 +33,8 @@ namespace GSF.IO.FileStructure.Media
     /// Provides read/write access to all of the different types of disk types
     /// to use to store the file structure.
     /// </summary>
-    internal class DiskMedium : IDisposable
+    internal class DiskMedium 
+        : IDisposable
     {
         #region [ Members ]
 
@@ -70,6 +72,13 @@ namespace GSF.IO.FileStructure.Media
         }
 
         #endregion
+
+#if DEBUG
+        ~DiskMedium()
+        {
+            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+#endif
 
         #region [ Properties ]
 
@@ -151,6 +160,7 @@ namespace GSF.IO.FileStructure.Media
         {
             if (!m_disposed)
             {
+                GC.SuppressFinalize(this);
                 m_disposed = true;
                 m_disk.Dispose();
                 m_disk = null;

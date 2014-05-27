@@ -21,13 +21,13 @@
 //
 //******************************************************************************************************
 
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using GSF.Collections;
-using GSF.SortedTreeStore.Services;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore.Services.Net;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services
 {
@@ -41,7 +41,7 @@ namespace GSF.SortedTreeStore.Services
     /// sockets, user authentication, and core settings for the SortedTreeStore.
     /// </remarks>
     public partial class Server
-        : ISortedTreeServer
+        : LogReporterBase
     {
         private bool m_disposed;
         private readonly object m_syncRoot = new object();
@@ -53,10 +53,13 @@ namespace GSF.SortedTreeStore.Services
         /// Creates an empty server instance
         /// </summary>
         public Server()
+            : base(null)
         {
             m_sockets = new Dictionary<IPEndPoint, SocketListener>();
             m_clients = new WeakList<Client>();
             m_databases = new Dictionary<string, ServerDatabaseBase>();
+
+            Log.LogMessage(VerboseLevel.Information, "Server Constructor Called");
         }
 
         /// <summary>
@@ -65,24 +68,56 @@ namespace GSF.SortedTreeStore.Services
         public Server(ServerConfig config)
             : this()
         {
+            if (config == null)
+                throw new ArgumentNullException("config");
             config.Databases.ForEach(LoadConfig);
             config.SocketConfig.ForEach(LoadConfig);
         }
 
+        /// <summary>
+        /// Loads the supplied config on the server.
+        /// </summary>
+        /// <param name="databaseConfig"></param>
         public void LoadConfig(ServerDatabaseConfig databaseConfig)
         {
-            Add(ServerDatabaseBase.CreateDatabase(databaseConfig));
+            if ((object)databaseConfig == null)
+                throw new ArgumentNullException("databaseConfig");
+            Add(ServerDatabaseBase.CreateDatabase(databaseConfig, Log.LogSource));
         }
 
-        public void Unload(string database)
+        /// <summary>
+        /// Loads the supplied config on the server.
+        /// </summary>
+        /// <param name="socketConfig"></param>
+        public void LoadConfig(SocketListenerConfig socketConfig)
+        {
+            if ((object)socketConfig == null)
+                throw new ArgumentNullException("socketConfig");
+
+            SocketListener listener = new SocketListener(socketConfig, this, Log.LogSource);
+            m_sockets.Add(socketConfig.LocalEndPoint, listener);
+        }
+
+
+        /// <summary>
+        /// Unloads the database name.
+        /// </summary>
+        /// <param name="database"></param>
+        public void UnloadDatabase(string database)
         {
             Remove(database, 0);
         }
 
-        public void LoadConfig(SocketListenerConfig socketConfig)
+        /// <summary>
+        /// Unloads the specified socket interface.
+        /// </summary>
+        /// <param name="socketEndpoint"></param>
+        public void UnloadSocket(IPEndPoint socketEndpoint)
         {
-            SocketListener listener = new SocketListener(socketConfig, this);
-            m_sockets.Add(socketConfig.LocalEndPoint, listener);
+            lock (m_syncRoot)
+            {
+                m_sockets.Remove(socketEndpoint);
+            }
         }
 
         /// <summary>
@@ -106,7 +141,18 @@ namespace GSF.SortedTreeStore.Services
         {
             lock (m_syncRoot)
             {
-                m_databases.Add(database.Info.DatabaseName.ToUpper(), database);
+                string databaseName = database.Info.DatabaseName.ToUpper();
+                if (m_databases.ContainsKey(databaseName))
+                {
+                    Log.LogMessage(VerboseLevel.Error, "Database Already Exists", "Adding a database that already exists in the server: " + databaseName);
+                    database.Dispose();
+                }
+                else
+                {
+                    Log.LogMessage(VerboseLevel.Information, "Added Database", "Adding a database to the server: " + databaseName);
+                    m_databases.Add(database.Info.DatabaseName.ToUpper(), database);
+                }
+
             }
         }
 
@@ -169,42 +215,33 @@ namespace GSF.SortedTreeStore.Services
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Releases the unmanaged resources used by the <see cref="Server"/> object and optionally releases the managed resources.
         /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
         {
             if (!m_disposed)
             {
-                m_disposed = true;
-                foreach (ServerDatabaseBase db in m_databases.Values)
+                try
                 {
-                    db.Dispose();
+                    // This will be done regardless of whether the object is finalized or disposed.
+
+                    if (disposing)
+                    {
+                        foreach (ServerDatabaseBase db in m_databases.Values)
+                        {
+                            db.Dispose();
+                        }
+
+                        // This will be done only when the object is disposed by calling Dispose().
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;          // Prevent duplicate dispose.
+                    base.Dispose(disposing);    // Call base class Dispose().
                 }
             }
-        }
-
-        /// <summary>
-        /// Creates a client connection to the root of the server.
-        /// </summary>
-        /// <returns></returns>
-        public Client CreateClientHost()
-        {
-            return new Client(this);
-        }
-
-        /// <summary>
-        /// Creates a client connection to a specific database. 
-        /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="databaseName"></param>
-        /// <returns></returns>
-        public ClientDatabaseBase<TKey, TValue> CreateClientDatabase<TKey, TValue>(string databaseName)
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
-        {
-            return new ServerClientDatabaseWrapper<TKey, TValue>(this, databaseName);
         }
 
         /// <summary>
@@ -230,6 +267,10 @@ namespace GSF.SortedTreeStore.Services
             }
         }
 
+        /// <summary>
+        /// Gets the status of the server.
+        /// </summary>
+        /// <param name="status"></param>
         public void GetFullStatus(StringBuilder status)
         {
             status.AppendFormat("Historian Instances:");

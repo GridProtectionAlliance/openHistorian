@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using GSF.Diagnostics;
 using GSF.IO.FileStructure.Media;
 
 namespace GSF.IO.FileStructure
@@ -68,6 +69,13 @@ namespace GSF.IO.FileStructure
             m_diskIo = diskIo;
             m_currentReadTransaction = new ReadSnapshot(diskIo);
         }
+
+#if DEBUG
+        ~TransactionalFileStructure()
+        {
+            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
+        }
+#endif
 
         /// <summary>
         /// Creates a new archive file that is completely in memory
@@ -181,6 +189,7 @@ namespace GSF.IO.FileStructure
                 }
                 finally
                 {
+                    GC.SuppressFinalize(this);
                     m_disposed = true; // Prevent duplicate dispose.
                 }
             }

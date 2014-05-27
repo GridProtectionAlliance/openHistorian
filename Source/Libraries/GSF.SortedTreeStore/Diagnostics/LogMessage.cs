@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.ComponentModel;
 using System.Text;
 
 namespace GSF.Diagnostics
@@ -33,60 +34,93 @@ namespace GSF.Diagnostics
     public class LogMessage
     {
         /// <summary>
+        /// The time that the message was created.
+        /// </summary>
+        public readonly DateTime UtcTime;
+        /// <summary>
         /// The verbose level associated with the message
         /// </summary>
-        public VerboseLevel Level;
+        public readonly VerboseLevel Level;
         /// <summary>
         /// The source of the log message
         /// </summary>
-        public LogSource Source;
+        public readonly LogSource Source;
         /// <summary>
-        /// The event ID assigned by the source
+        /// A short name about what this message is detailing. Typically this will be a few words.
         /// </summary>
-        public int EventID;
+        public readonly string EventName;
         /// <summary>
-        /// The event code assigned by the source
+        /// A longer message than <see cref="EventName"/> giving more specifics about the actual message. 
+        /// Typically, this will be up to 1 line of text. Can be String.Empty.
         /// </summary>
-        public string EventCode;
+        public readonly string Message;
         /// <summary>
-        /// The message of the log
+        /// A long text field with the details of the message. Can be String.Empty.
         /// </summary>
-        public string Message;
-        /// <summary>
-        /// Extra values with the log. 
-        /// </summary>
-        public string[] Values;
+        public readonly string Details;
         /// <summary>
         /// An exception object if one is provided.
         /// </summary>
-        public Exception Exception;
+        public readonly Exception Exception;
 
         /// <summary>
-        /// 
+        /// Creates a log message
         /// </summary>
+        /// <param name="level"></param>
+        /// <param name="source"></param>
+        /// <param name="eventName"></param>
+        /// <param name="message"></param>
         /// <param name="details"></param>
+        /// <param name="exception"></param>
+        internal LogMessage(VerboseLevel level, LogSource source, string eventName, string message, string details, Exception exception)
+        {
+            if (level == VerboseLevel.None || level == VerboseLevel.All)
+                throw new InvalidEnumArgumentException("level", (int)level, typeof(VerboseLevel));
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (eventName == null)
+                throw new ArgumentNullException("eventName");
+            if (message == null)
+                throw new ArgumentNullException("message");
+            if (details == null)
+                throw new ArgumentNullException("details");
+
+            UtcTime = DateTime.UtcNow;
+            Level = level;
+            Source = source;
+            EventName = eventName;
+            Message = message;
+            Details = details;
+            Exception = exception;
+        }
+
+
+        /// <summary>
+        /// Gets the details of the message.
+        /// </summary>
+        /// <param name="details">True to get more details, such as the call stack.</param>
         /// <returns></returns>
         public string GetMessage(bool details)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("Time: ");
-            sb.Append(DateTime.Now.ToString());
+            sb.Append(UtcTime.ToLocalTime().ToString());
             switch (Level)
             {
                 case VerboseLevel.Debug:
                     sb.Append(" Level: Debug ");
                     break;
                 case VerboseLevel.Information:
-                    sb.Append(" Level: Debug ");
+                    sb.Append(" Level: Information ");
                     break;
                 case VerboseLevel.Warning:
-                    sb.Append(" Level: Debug ");
+                    sb.Append(" Level: Warning ");
                     break;
                 case VerboseLevel.Error:
-                    sb.Append(" Level: Debug ");
+                    sb.Append(" Level: Error ");
                     break;
                 case VerboseLevel.Fatal:
-                    sb.Append(" Level: Debug ");
+                    sb.Append(" Level: Fatal ");
                     break;
                 default:
                     sb.Append(" Level: Unknown ");
@@ -94,20 +128,29 @@ namespace GSF.Diagnostics
             }
 
             sb.AppendLine();
-            sb.Append("Source: ");
-            sb.AppendLine(Source.GetString(details));
-            sb.Append("Event ID: ");
-            sb.AppendLine(EventID.ToString());
-            sb.AppendLine("Event Code:");
-            sb.AppendLine(EventCode);
-            sb.AppendLine("Message:");
-            sb.AppendLine(Message);
+            sb.Append("Event Name: ");
+            sb.AppendLine(EventName);
 
+            if (!string.IsNullOrWhiteSpace(Message))
+            {
+                sb.Append("Message: ");
+                sb.AppendLine(Message);
+            }
+            if (!string.IsNullOrWhiteSpace(Details))
+            {
+                sb.Append("Details: ");
+                sb.AppendLine(Details);
+            }
             if (Exception != null)
             {
                 sb.AppendLine("Exception: ");
                 sb.AppendLine(Exception.ToString());
             }
+
+            sb.AppendLine("Message Source: ");
+            Source.AppendString(sb, details);
+
+
             return sb.ToString();
         }
     }

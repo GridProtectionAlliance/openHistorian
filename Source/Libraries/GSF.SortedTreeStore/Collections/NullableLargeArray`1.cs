@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  NullableLargeArray.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace GSF.Collections
@@ -32,21 +33,18 @@ namespace GSF.Collections
     /// It would be similiar to a List&lt;Nullable&lt;T&gt;&gt;() except provide high speed lookup for
     /// NextIndexOfNull like functions.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class NullableLargeArray<T> : IDisposable
+    /// <typeparam name="T">The type.</typeparam>
+    public class NullableLargeArray<T> : IEnumerable<T>
     {
-        private bool m_disposed;
-        private ILargeArray<T> m_list;
+        private LargeArray<T> m_list;
         private readonly BitArray m_isUsed;
 
+        /// <summary>
+        /// Creates a <see cref="NullableLargeArray{T}"/>
+        /// </summary>
         public NullableLargeArray()
-            : this(new LargeArray<T>())
         {
-        }
-
-        public NullableLargeArray(ILargeArray<T> baseList)
-        {
-            m_list = baseList;
+            m_list = new LargeArray<T>();
             m_isUsed = new BitArray(false, m_list.Capacity);
         }
 
@@ -57,10 +55,7 @@ namespace GSF.Collections
         /// <returns></returns>
         public bool HasValue(int index)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (index >= Capacity || index < 0)
-                throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array");
+            //Bounds checking is done in BitArray
             return m_isUsed[index];
         }
 
@@ -91,8 +86,6 @@ namespace GSF.Collections
         {
             get
             {
-                if (m_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
                 return m_list.Capacity;
             }
         }
@@ -115,15 +108,24 @@ namespace GSF.Collections
         {
             get
             {
-                return Capacity - CountUsed;
+                return m_isUsed.ClearCount;
             }
         }
 
+        /// <summary>
+        /// Gets the provided item from the array. 
+        /// </summary>
+        /// <param name="index">the index of the item</param>
+        /// <returns>The item.</returns>
         public T this[int index]
         {
             get
             {
                 return GetValue(index);
+            }
+            set
+            {
+                SetValue(index, value);
             }
         }
 
@@ -134,8 +136,6 @@ namespace GSF.Collections
         /// <returns>The current length of the list.</returns>
         public int SetCapacity(int length)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
             if (length > Capacity)
             {
                 m_list.SetCapacity(length);
@@ -162,10 +162,6 @@ namespace GSF.Collections
         /// <param name="index"></param>
         public void SetNull(int index)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (index >= Capacity || index < 0)
-                throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array");
             m_isUsed.ClearBit(index);
             m_list[index] = default(T);
         }
@@ -177,11 +173,6 @@ namespace GSF.Collections
         /// <param name="value"></param>
         public void SetValue(int index, T value)
         {
-            if (m_disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-            if (index >= Capacity || index < 0)
-                throw new ArgumentOutOfRangeException("index", "index is outside the bounds of the array");
-
             m_isUsed.SetBit(index);
             m_list[index] = value;
         }
@@ -225,12 +216,9 @@ namespace GSF.Collections
         /// <filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator()
         {
-            for (int x = 0; x < m_isUsed.Count; x++)
+            foreach (int index in m_isUsed.GetAllSetBits())
             {
-                if (HasValue(x))
-                {
-                    yield return m_list[x];
-                }
+                yield return m_list[index];
             }
         }
 
@@ -240,16 +228,16 @@ namespace GSF.Collections
         /// This prevents the nesting required if needing to return an IEnumberable of a sub type.
         /// </summary>
         /// <typeparam name="TP"></typeparam>
-        /// <param name="func">A function that will convert <see cref="T"/> to <see cref="TP"/>.</param>
+        /// <param name="select">A function that will convert <see cref="T"/> to <see cref="TP"/>.</param>
         /// <returns></returns>
-        public IEnumerable<TP> GetEnumerator<TP>(Func<T, TP> func)
+        public IEnumerable<TP> GetEnumerator<TP>(Func<T, TP> @select)
         {
-            for (int x = 0; x < m_isUsed.Count; x++)
+            if (@select == null)
+                throw new ArgumentNullException("select");
+            
+            foreach (int index in m_isUsed.GetAllSetBits())
             {
-                if (HasValue(x))
-                {
-                    yield return func(m_list[x]);
-                }
+                yield return @select(m_list[index]);
             }
         }
 
@@ -258,18 +246,9 @@ namespace GSF.Collections
             return m_isUsed.FindClearedBit();
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            if (!m_disposed)
-            {
-                m_disposed = true;
-                m_list.Dispose();
-                m_list = null;
-            }
+            return GetEnumerator();
         }
     }
 }

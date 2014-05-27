@@ -32,13 +32,37 @@ namespace GSF.SortedTreeStore.Services.Net
     /// </summary>
     public enum ServerCommand : byte
     {
+        /// <summary>
+        /// 
+        /// </summary>
         ConnectToDatabase = 0,
+        /// <summary>
+        /// 
+        /// </summary>
         DisconnectDatabase = 1,
+        /// <summary>
+        /// 
+        /// </summary>
         Disconnect = 2,
+        /// <summary>
+        /// 
+        /// </summary>
         Read = 3,
+        /// <summary>
+        /// 
+        /// </summary>
         CancelRead = 4,
+        /// <summary>
+        /// 
+        /// </summary>
         Write = 5,
+        /// <summary>
+        /// 
+        /// </summary>
         SetEncodingMethod = 6,
+        /// <summary>
+        /// 
+        /// </summary>
         GetAllDatabases = 7
     }
 
@@ -47,27 +71,90 @@ namespace GSF.SortedTreeStore.Services.Net
     /// </summary>
     public enum ServerResponse : byte
     {
-        UnhandledException=0,
-        UnknownProtocolIdentifier=1,
-        ConnectedToRoot=2,
-        ListOfDatabases=3,
-        DatabaseDoesNotExist=4,
-        DatabaseKeyUnknown=5,
-        DatabaseValueUnknown=6,
-        SuccessfullyConnectedToDatabase=7,
-        GoodBye=8,
-        UnknownCommand=9,
-        UnknownEncodingMethod=10,
-        EncodingMethodAccepted=11,
-        DatabaseDisconnected=12,
-        UnknownDatabaseCommand=13,
-        UnknownOrCorruptSeekFilter=14,
-        UnknownOrCorruptMatchFilter=15,
-        UnknownOrCorruptReaderOptions=16,
-        SerializingPoints=17,
-        ErrorWhileReading=18,
-        CanceledRead=19,
-        ReadComplete=20
+        /// <summary>
+        /// 
+        /// </summary>
+        UnhandledException = 0,
+        /// <summary>
+        /// 
+        /// </summary>
+        UnknownProtocolIdentifier = 1,
+        /// <summary>
+        /// 
+        /// </summary>
+        ConnectedToRoot = 2,
+        /// <summary>
+        /// 
+        /// </summary>
+        ListOfDatabases = 3,
+        /// <summary>
+        /// 
+        /// </summary>
+        DatabaseDoesNotExist = 4,
+        /// <summary>
+        /// 
+        /// </summary>
+        DatabaseKeyUnknown = 5,
+        /// <summary>
+        /// 
+        /// </summary>
+        DatabaseValueUnknown = 6,
+        /// <summary>
+        /// 
+        /// </summary>
+        SuccessfullyConnectedToDatabase = 7,
+        /// <summary>
+        /// 
+        /// </summary>
+        GoodBye = 8,
+        /// <summary>
+        /// 
+        /// </summary>
+        UnknownCommand = 9,
+        /// <summary>
+        /// 
+        /// </summary>
+        UnknownEncodingMethod = 10,
+        /// <summary>
+        /// 
+        /// </summary>
+        EncodingMethodAccepted = 11,
+        /// <summary>
+        /// 
+        /// </summary>
+        DatabaseDisconnected = 12,
+        /// <summary>
+        /// 
+        /// </summary>
+        UnknownDatabaseCommand = 13,
+        /// <summary>
+        /// 
+        /// </summary>
+        UnknownOrCorruptSeekFilter = 14,
+        /// <summary>
+        /// 
+        /// </summary>
+        UnknownOrCorruptMatchFilter = 15,
+        /// <summary>
+        /// 
+        /// </summary>
+        UnknownOrCorruptReaderOptions = 16,
+        /// <summary>
+        /// 
+        /// </summary>
+        SerializingPoints = 17,
+        /// <summary>
+        /// 
+        /// </summary>
+        ErrorWhileReading = 18,
+        /// <summary>
+        /// 
+        /// </summary>
+        CanceledRead = 19,
+        /// <summary>
+        /// 
+        /// </summary>
+        ReadComplete = 20
     }
 
     #endregion

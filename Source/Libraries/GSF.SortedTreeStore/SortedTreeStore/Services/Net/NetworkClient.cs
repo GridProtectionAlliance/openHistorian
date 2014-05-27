@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
-//  RemoteClientRoot.cs - Gbtc
+//  NetworkClient.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -23,19 +23,18 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using GSF.Net;
-using GSF.SortedTreeStore.Services;
-using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services.Net
 {
     /// <summary>
-    /// Connects to a socket based remoted historian database collection.
+    /// A client that communicates over a network socket.
     /// </summary>
-    public class RemoteClient
+    public class NetworkClient
         : Client
     {
         private TcpClient m_client;
@@ -43,18 +42,15 @@ namespace GSF.SortedTreeStore.Services.Net
         private ClientDatabaseBase m_sortedTreeEngine;
         string m_historianDatabaseString;
 
-        private readonly string m_defaultDatabase;
-
-        public RemoteClient(RemoteClientOptions options)
+        public NetworkClient(NetworkClientConfig config)
         {
             IPAddress ip;
-            if (!IPAddress.TryParse(options.ServerNameOrIp, out ip))
+            if (!IPAddress.TryParse(config.ServerNameOrIp, out ip))
             {
-                ip = Dns.GetHostAddresses(options.ServerNameOrIp)[0];
+                ip = Dns.GetHostAddresses(config.ServerNameOrIp)[0];
             }
 
-            Start(new IPEndPoint(ip, options.NetworkPort));
-            m_defaultDatabase = options.DefaultDatabase;
+            Start(new IPEndPoint(ip, config.NetworkPort));
         }
 
         /// <summary>
@@ -85,29 +81,33 @@ namespace GSF.SortedTreeStore.Services.Net
             }
         }
 
-        /// <summary>
-        /// Gets the default database as defined in the constructor's options.
-        /// </summary>
-        /// <returns></returns>
-        public RemoteClientDatabase<TKey, TValue> GetDefaultDatabase<TKey, TValue>()
-            where TKey : SortedTreeTypeBase<TKey>, new()
-            where TValue : SortedTreeTypeBase<TValue>, new()
-        {
-            return GetDatabase<TKey, TValue>(m_defaultDatabase);
-        }
-
         public override ClientDatabaseBase GetDatabase(string databaseName)
         {
             throw new NotImplementedException();
         }
 
+        public override ClientDatabaseBase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName)
+        {
+            return GetDatabase<TKey, TValue>(databaseName, null);
+        }
+
+        public override List<DatabaseInfo> GetDatabaseInfo()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Contains(string databaseName)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// Accesses <see cref="RemoteClientDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
+        /// Accesses <see cref="NetworkClientDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.
         /// </summary>
         /// <param name="databaseName">Name of database instance to access.</param>
         /// <param name="encodingMethod"></param>
-        /// <returns><see cref="RemoteClientDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
-        public RemoteClientDatabase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName, EncodingDefinition encodingMethod = null)
+        /// <returns><see cref="NetworkClientDatabase{TKey,TValue}"/> for given <paramref name="databaseName"/>.</returns>
+        NetworkClientDatabase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName, EncodingDefinition encodingMethod = null)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
@@ -143,7 +143,7 @@ namespace GSF.SortedTreeStore.Services.Net
                     throw new Exception("Unknown server response: " + command.ToString());
             }
 
-            var db = new RemoteClientDatabase<TKey, TValue>(m_stream, () => m_sortedTreeEngine = null);
+            var db = new NetworkClientDatabase<TKey, TValue>(m_stream, () => m_sortedTreeEngine = null);
             m_sortedTreeEngine = db;
             m_historianDatabaseString = databaseName;
 
