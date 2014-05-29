@@ -994,6 +994,11 @@
             <param name="equipmentID">The ID of the equipment to be converted to a string.</param>
             <returns>A string containing the name of the equipment with the given ID.</returns>
         </member>
+        <member name="T:GSF.PQDIF.Logical.QuantityCharacteristic">
+            <summary>
+            Specifies additional detail about the meaning of the series data.
+            </summary>
+        </member>
         <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.None">
             <summary>
             No quantity characteristic.
@@ -1179,27 +1184,27 @@
             TIF normalized to RMS.
             </summary>
         </member>
-        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PLTSlide">
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrPLTSlide">
             <summary>
             Sliding PLT.
             </summary>
         </member>
-        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PiLPF">
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrPiLPF">
             <summary>
             Pi LPF.
             </summary>
         </member>
-        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PiMax">
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrPiMax">
             <summary>
             Pi max.
             </summary>
         </member>
-        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PiRoot">
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrPiRoot">
             <summary>
             Pi root.
             </summary>
         </member>
-        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.PiRootLPF">
+        <member name="F:GSF.PQDIF.Logical.QuantityCharacteristic.FlkrPiRootLPF">
             <summary>
             Pi root LPF.
             </summary>
@@ -1597,9 +1602,16 @@
             Status data.
             </summary>
         </member>
-        <member name="M:GSF.PQDIF.Logical.QuantityCharacteristic.ToString(System.Guid)">
+        <member name="M:GSF.PQDIF.Logical.QuantityCharacteristic.ToName(System.Guid)">
             <summary>
             Returns the name of the given quantity characteristic.
+            </summary>
+            <param name="quantityCharacteristic">The GUID tag which identifies the quantity characteristic.</param>
+            <returns>The name of the given quantity characteristic.</returns>
+        </member>
+        <member name="M:GSF.PQDIF.Logical.QuantityCharacteristic.ToString(System.Guid)">
+            <summary>
+            Returns a string representation of the given quantity characteristic.
             </summary>
             <param name="quantityCharacteristic">The GUID tag which identifies the quantity characteristic.</param>
             <returns>The name of the given quantity characteristic.</returns>
