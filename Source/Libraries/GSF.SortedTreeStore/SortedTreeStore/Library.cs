@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Filters;
 using GSF.SortedTreeStore.Tree;
@@ -47,14 +48,21 @@ namespace GSF.SortedTreeStore
 
         static Library()
         {
-            Streaming = new StreamEncoding();
-            Encodings = new EncodingLibrary();
-            Filters = new FilterLibrary();
-            SyncRoot = new object();
-            TypeLookup = new Dictionary<Guid, Type>();
-            RegisteredType = new Dictionary<Type, Guid>();
+            try
+            {
+                Streaming = new StreamEncoding();
+                Encodings = new EncodingLibrary();
+                Filters = new FilterLibrary();
+                SyncRoot = new object();
+                TypeLookup = new Dictionary<Guid, Type>();
+                RegisteredType = new Dictionary<Type, Guid>();
 
-            ReloadNewAssemblies();
+                ReloadNewAssemblies();
+            }
+            catch (Exception ex)
+            {
+                Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
+            }
         }
 
         /// <summary>
@@ -80,24 +88,27 @@ namespace GSF.SortedTreeStore
                             {
                                 try
                                 {
-                                    if (sortedTreeType.IsAssignableFrom(assemblyType))
+                                    if (!assemblyType.IsAbstract && sortedTreeType.IsAssignableFrom(assemblyType))
                                     {
                                         Register(assemblyType);
                                     }
                                 }
-                                catch (Exception)
+                                catch (Exception ex)
                                 {
+                                    Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
                                 }
                             }
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
+                            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
                         }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
             }
         }
 
@@ -122,10 +133,19 @@ namespace GSF.SortedTreeStore
         /// <param name="type">the type to register</param>
         public static void Register(Type type)
         {
-            var library = typeof(Library);
-            var method = library.GetMethod("Register", BindingFlags.Public | BindingFlags.Static);
-            var reflectionMethod = method.MakeGenericMethod(type);
+            Type library = typeof(Library);
+            MethodInfo method = library.GetMethod("InternalRegister", BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo reflectionMethod = method.MakeGenericMethod(type);
             reflectionMethod.Invoke(null, null);
+        }
+
+
+        //Called by Register(Type type) via reflection.
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        private static void InternalRegister<T>()
+            where T : SortedTreeTypeBase, new()
+        {
+            Register<T>();
         }
 
         /// <summary>

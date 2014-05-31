@@ -1,12 +1,11 @@
 ﻿//using GSF;
+//using GSF.IO.FileStructure.Media;
 //using NUnit.Framework;
 //using GSF.IO.Unmanaged;
 //using System;
 //using System.IO;
-//using GSF.UnmanagedMemory;
-//using openHistorian.FileStructure.IO;
 
-//namespace openHistorian.FileStructure.IO
+//namespace GSF.IO.FileStructure.Media.Test
 //{
 
 //    /// <summary>

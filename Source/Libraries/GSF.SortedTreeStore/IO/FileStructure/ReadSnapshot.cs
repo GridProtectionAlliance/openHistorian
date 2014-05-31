@@ -22,7 +22,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.Collections;
 using GSF.IO.FileStructure.Media;
 
 namespace GSF.IO.FileStructure

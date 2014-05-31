@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  Memory.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -25,6 +25,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using GSF.Diagnostics;
 
 namespace GSF.IO.Unmanaged
 {
@@ -99,6 +100,7 @@ namespace GSF.IO.Unmanaged
         ~Memory()
         {
             Dispose(false);
+            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Information, "Finalizer Called", GetType().FullName);
         }
 
         #endregion
@@ -230,27 +232,6 @@ namespace GSF.IO.Unmanaged
         public static unsafe void Clear(IntPtr pointer, int length)
         {
             Clear((byte*)pointer, length);
-        }
-
-        public static unsafe bool IsEmpty(IntPtr pointer, int length)
-        {
-            return IsEmpty((byte*)pointer, length);
-        }
-
-        public static unsafe bool IsEmpty(byte* pointer, int length)
-        {
-            int i;
-            for (i = 0; i < length - 8; i += 8)
-            {
-                if (*(long*)(pointer + i) != 0)
-                    return false;
-            }
-            for (; i < length; i++)
-            {
-                if (pointer[i] != 0)
-                    return false;
-            }
-            return true;
         }
 
         #endregion

@@ -1,11 +1,10 @@
 ﻿//using System;
 //using System.Collections.Generic;
 //using GSF;
+//using GSF.IO.Unmanaged;
 //using NUnit.Framework;
-//using GSF.UnmanagedMemory;
-//using openHistorian.FileStructure.IO;
 
-//namespace GSF.IO.Unmanaged.Test
+//namespace GSF.IO.FileStructure.Media.Test
 //{
 
 //    /// <summary>
@@ -23,31 +22,31 @@
 //        public void LeastRecentlyUsedPageReplacementConstructorTest()
 //        {
 
-//            Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
+//            Assert.AreEqual(0, Globals.MemoryPool.AllocatedBytes);
 
-//            using (CustomPageReplacement target = new CustomPageReplacement(Globals.BufferPool))
+//            using (PageReplacementAlgorithm target = new PageReplacementAlgorithm(Globals.MemoryPool))
 //            {
-//                Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
+//                Assert.AreEqual(0, Globals.MemoryPool.AllocatedBytes);
 //                using (var io = target.GetPageLock())
 //                {
-//                    Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
+//                    Assert.AreEqual(0, Globals.MemoryPool.AllocatedBytes);
 //                    io.TryAddNewPage(0);
-//                    Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
+//                    Assert.AreNotEqual(0, Globals.MemoryPool.AllocatedBytes);
 //                }
 //                target.Dispose();
 //            }
-//            Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
+//            Assert.AreEqual(0, Globals.MemoryPool.AllocatedBytes);
 
-//            using (var target2 = new CustomPageReplacement(Globals.BufferPool))
+//            using (var target2 = new PageReplacementAlgorithm(Globals.MemoryPool))
 //            using (var io2 = target2.GetPageLock())
 //            {
 //                io2.TryAddNewPage(0);
-//                Assert.AreNotEqual(0, Globals.BufferPool.AllocatedBytes);
+//                Assert.AreNotEqual(0, Globals.MemoryPool.AllocatedBytes);
 //            }
 //            GC.Collect();
 //            GC.WaitForPendingFinalizers();
 
-//            Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
+//            Assert.AreEqual(0, Globals.MemoryPool.AllocatedBytes);
 //        }
 
 //        /// <summary>
@@ -56,10 +55,10 @@
 //        [Test()]
 //        public void CreateNewIoSessionTest()
 //        {
-//            Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
-//            using (CustomPageReplacement target = new CustomPageReplacement(Globals.BufferPool))
+//            Assert.AreEqual(0, Globals.MemoryPool.AllocatedBytes);
+//            using (PageReplacementAlgorithm target = new PageReplacementAlgorithm(Globals.MemoryPool))
 //            {
-//                Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
+//                Assert.AreEqual(0, Globals.MemoryPool.AllocatedBytes);
 //                var io1 = target.GetPageLock();
 
 //                io1.TryAddNewPage(0);
@@ -100,13 +99,13 @@
 
 //                target.Dispose();
 //            }
-//            Assert.AreEqual(0, Globals.BufferPool.AllocatedBytes);
+//            Assert.AreEqual(0, Globals.MemoryPool.AllocatedBytes);
 //        }
 //        static CollectionEventArgs GetEventArgs()
 //        {
 //            return new CollectionEventArgs((x) =>
 //                {
-//                    Globals.BufferPool.ReleasePage(x);
+//                    Globals.MemoryPool.ReleasePage(x);
 //                    return true;
 //                }
 //                                           , BufferPoolCollectionMode.Normal, 0);
@@ -116,11 +115,11 @@
 //    }
 //    static class Extension2
 //    {
-//        public static bool TryAddNewPage(this CustomPageReplacement page, int pageNumber)
+//        public static bool TryAddNewPage(this PageReplacementAlgorithm page, int pageNumber)
 //        {
 //            int index;
 //            IntPtr ptr;
-//            Globals.BufferPool.AllocatePage(out index, out ptr);
+//            Globals.MemoryPool.AllocatePage(out index, out ptr);
 //            return page.TryAddNewPage(pageNumber, ptr, index);
 //        }
 //    }

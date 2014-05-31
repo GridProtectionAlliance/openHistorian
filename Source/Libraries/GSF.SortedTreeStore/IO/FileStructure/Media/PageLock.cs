@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  PageLock.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -23,6 +23,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace GSF.IO.FileStructure.Media
 {
@@ -31,9 +32,17 @@ namespace GSF.IO.FileStructure.Media
     /// </summary>
     internal class PageLock
     {
+        /// <summary>
+        /// A value that indicates no page is referenced.
+        /// </summary>
         private const int ConstIsCleared = -2;
+        /// <summary>
+        /// A value that indicates that this lock is no longered used.
+        /// </summary>
         private const int ConstIsDisposed = -3;
-
+        /// <summary>
+        /// The current block value that is being used.
+        /// </summary>
         private int m_currentBlock;
 
         /// <summary>
@@ -50,6 +59,7 @@ namespace GSF.IO.FileStructure.Media
         /// </summary>
         public int CurrentBlock
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 return Math.Max(m_currentBlock, -1);

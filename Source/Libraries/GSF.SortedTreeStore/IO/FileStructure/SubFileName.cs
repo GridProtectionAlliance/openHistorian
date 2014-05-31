@@ -99,6 +99,20 @@ namespace GSF.IO.FileStructure
             return Create(data);
         }
 
+
+        public static unsafe SubFileName Create(string fileName, Guid keyType, Guid valueType)
+        {
+            byte[] data = new byte[16 * 2 + fileName.Length * 2];
+            fixed (byte* lp = data)
+            {
+                *(Guid*)(lp) = keyType;
+                *(Guid*)(lp + 16) = valueType;
+            }
+            Encoding.Unicode.GetBytes(fileName, 0, fileName.Length, data, 32);
+
+            return Create(data);
+        }
+
         public static SubFileName Create(long rawValue1, long rawValue2, int rawValue3)
         {
             return new SubFileName(rawValue1, rawValue2, rawValue3);

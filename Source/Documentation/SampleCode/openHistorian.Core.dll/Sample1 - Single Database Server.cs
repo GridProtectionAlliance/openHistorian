@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using GSF.Diagnostics;
 using GSF.SortedTreeStore.Services;
 using NUnit.Framework;
 using openHistorian;
@@ -15,6 +16,8 @@ namespace SampleCode.openHistorian.Server.dll
         [Test]
         public void CreateScadaDatabase()
         {
+            Logger.Default.ReportToConsole(VerboseLevel.All);
+
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
             var key = new HistorianKey();

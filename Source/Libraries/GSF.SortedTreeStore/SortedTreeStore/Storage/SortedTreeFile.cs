@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SortedTreeFile.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -198,6 +198,23 @@ namespace GSF.SortedTreeStore.Storage
         }
 
         /// <summary>
+        /// Opens the default table for this TKey and TValue. 
+        /// </summary>
+        /// <typeparam name="TKey">The key</typeparam>
+        /// <typeparam name="TValue">The value</typeparam>
+        /// <param name="tableName">the name of an internal table</param>
+        /// <remarks>
+        /// Every Key and Value have their uniquely mapped file, therefore a different file is opened if TKey and TValue are different.
+        /// </remarks>
+        /// <returns>null if table does not exist</returns>
+        public SortedTreeTable<TKey, TValue> OpenTable<TKey, TValue>(string tableName)
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
+        {
+            return OpenTable<TKey, TValue>(GetFileName<TKey, TValue>(tableName));
+        }
+
+        /// <summary>
         /// Opens the table for the provided file name.
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
@@ -224,6 +241,26 @@ namespace GSF.SortedTreeStore.Storage
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <param name="storageMethod">The method of compression to utilize in this table.</param>
+        /// <param name="tableName">the name of an internal table</param>
+        /// <returns></returns>
+        public SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod, string tableName)
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
+        {
+            if ((object)storageMethod == null)
+                throw new ArgumentNullException("storageMethod");
+
+            SubFileName fileName = GetFileName<TKey, TValue>(tableName);
+            return OpenOrCreateTable<TKey, TValue>(storageMethod, fileName);
+        }
+
+        /// <summary>
+        /// Opens the default table for this TKey and TValue. If it does not exists, 
+        /// it will be created with the provided compression method.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="storageMethod">The method of compression to utilize in this table.</param>
         /// <returns></returns>
         public SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod)
             where TKey : SortedTreeTypeBase<TKey>, new()
@@ -233,12 +270,17 @@ namespace GSF.SortedTreeStore.Storage
                 throw new ArgumentNullException("storageMethod");
 
             SubFileName fileName = GetFileName<TKey, TValue>();
+            return OpenOrCreateTable<TKey, TValue>(storageMethod, fileName);
+        }
+
+        private SortedTreeTable<TKey, TValue> OpenOrCreateTable<TKey, TValue>(EncodingDefinition storageMethod, SubFileName fileName)
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
+        {
             if (!m_openedFiles.ContainsKey(fileName))
             {
                 if (!m_fileStructure.Snapshot.Header.ContainsSubFile(fileName))
-                {
                     CreateArchiveFile<TKey, TValue>(fileName, storageMethod);
-                }
                 m_openedFiles.Add(fileName, new SortedTreeTable<TKey, TValue>(m_fileStructure, fileName, this));
             }
             return (SortedTreeTable<TKey, TValue>)m_openedFiles[fileName];
@@ -257,6 +299,15 @@ namespace GSF.SortedTreeStore.Storage
             Guid keyType = new TKey().GenericTypeGuid;
             Guid valueType = new TValue().GenericTypeGuid;
             return SubFileName.Create(PrimaryArchiveType, keyType, valueType);
+        }
+
+        private SubFileName GetFileName<TKey, TValue>(string fileName)
+            where TKey : SortedTreeTypeBase<TKey>, new()
+            where TValue : SortedTreeTypeBase<TValue>, new()
+        {
+            Guid keyType = new TKey().GenericTypeGuid;
+            Guid valueType = new TValue().GenericTypeGuid;
+            return SubFileName.Create(fileName, keyType, valueType);
         }
 
         private void CreateArchiveFile<TKey, TValue>(SubFileName fileName, EncodingDefinition storageMethod)

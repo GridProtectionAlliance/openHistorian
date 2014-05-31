@@ -39,7 +39,7 @@ namespace openHistorian
         [Test]
         public void Test()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             //HistorianDatabaseInstance db = new HistorianDatabaseInstance();
             //db.InMemoryArchive = true;
             //db.ConnectionString = "port=12345";

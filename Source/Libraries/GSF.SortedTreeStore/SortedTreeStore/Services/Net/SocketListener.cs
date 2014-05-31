@@ -69,7 +69,7 @@ namespace GSF.SortedTreeStore.Services.Net
             // TODO: Communications library may need a simple modification... Check with S. Wills for thoughts here...
             m_isRunning = true;
             m_listener = new TcpListener(m_config.LocalEndPoint);
-            m_listener.Server.DualMode = true;
+            //m_listener.Server.DualMode = true;
             m_listener.Start();
 
             //var socket = m_listener.AcceptSocketAsync();
