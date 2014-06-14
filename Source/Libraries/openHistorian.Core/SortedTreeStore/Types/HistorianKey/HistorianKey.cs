@@ -182,16 +182,6 @@ namespace openHistorian.Collections
             }
         }
 
-        public override IEnumerable GetEncodingMethods()
-        {
-            var list = new ArrayList();
-            list.Add(new CreateTsCombinedEncoding());
-            list.Add(new CreateHistorianFixedSizeCombinedEncoding());
-            list.Add(new CreateHistorianFixedSizeDualSingleEncoding());
-            list.Add(new CreateHistorianCompressedStream());
-            return list;
-        }
-
         public override string ToString()
         {
             return TimestampAsDate.ToString("MM/dd/yyyy HH:mm:ss.fffffff") + " " + PointID.ToString();

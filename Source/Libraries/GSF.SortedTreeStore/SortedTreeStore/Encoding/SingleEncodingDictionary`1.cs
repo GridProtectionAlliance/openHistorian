@@ -36,7 +36,6 @@ namespace GSF.SortedTreeStore.Encoding
         where T : CreateSingleValueBase
     {
         private readonly object m_syncRoot;
-        private readonly HashSet<Type> m_registeredTypes;
         private readonly Dictionary<Guid, T> m_combinedEncoding;
         private readonly Dictionary<Tuple<Guid, Type>, T> m_keyTypedCombinedEncoding;
 
@@ -46,35 +45,8 @@ namespace GSF.SortedTreeStore.Encoding
         public SingleEncodingDictionary()
         {
             m_syncRoot = new object();
-            m_registeredTypes = new HashSet<Type>();
             m_combinedEncoding = new Dictionary<Guid, T>();
             m_keyTypedCombinedEncoding = new Dictionary<Tuple<Guid, Type>, T>();
-        }
-
-        /// <summary>
-        /// Registers the provided type.
-        /// </summary>
-        /// <typeparam name="TTreeType"></typeparam>
-        public void Register<TTreeType>()
-            where TTreeType : SortedTreeTypeBase, new()
-        {
-            TTreeType type = new TTreeType();
-            lock (m_syncRoot)
-            {
-                if (m_registeredTypes.Add(type.GetType()))
-                {
-                    IEnumerable encodingMethods = type.GetEncodingMethods();
-                    if (encodingMethods == null)
-                        return;
-
-                    foreach (var method in encodingMethods)
-                    {
-                        var single = method as T;
-                        if (single != null)
-                            Register(single);
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -107,14 +79,8 @@ namespace GSF.SortedTreeStore.Encoding
             where TTree : SortedTreeTypeBase<TTree>, new()
         {
             Type keyType = typeof(TTree);
-
             lock (m_syncRoot)
             {
-                if (!m_registeredTypes.Contains(keyType))
-                {
-                    Register<TTree>();
-                }
-
                 if (m_keyTypedCombinedEncoding.TryGetValue(Tuple.Create(encodingMethod, keyType), out encoding)
                     || m_combinedEncoding.TryGetValue(encodingMethod, out encoding))
                 {

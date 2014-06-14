@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using GSF.SortedTreeStore.Services.Net;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services
@@ -32,7 +33,8 @@ namespace GSF.SortedTreeStore.Services
     /// <summary>
     /// Represents a client connection to a <see cref="Server"/>.
     /// </summary>
-    public abstract class Client : IDisposable
+    public abstract class Client
+        : IDisposable
     {
         private bool m_disposed;
 
@@ -51,7 +53,7 @@ namespace GSF.SortedTreeStore.Services
         public abstract ClientDatabaseBase<TKey, TValue> GetDatabase<TKey, TValue>(string databaseName)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new();
-       
+
         /// <summary>
         /// Gets basic information for every database connected to the server.
         /// </summary>
@@ -110,9 +112,21 @@ namespace GSF.SortedTreeStore.Services
             return new Server.Client(host);
         }
 
+        /// <summary>
+        /// Connects to a server over a network socket.
+        /// </summary>
+        /// <param name="serverOrIp">The name of the server to connect to, or the IP address to use.</param>
+        /// <param name="port">The port number to connect to.</param>
+        /// <param name="password">The password for connecting to the server.</param>
+        /// <returns>A <see cref="Client"/></returns>
         public static Client Connect(string serverOrIp, int port, string password)
         {
-            throw new NotImplementedException();
+            NetworkClientConfig config = new NetworkClientConfig();
+            config.ServerNameOrIp = serverOrIp;
+            config.NetworkPort = port;
+            config.Password = password;
+            config.IsReadOnly = false;
+            return new NetworkClient(config);
         }
 
         #endregion

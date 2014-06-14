@@ -30,6 +30,9 @@ namespace GSF.Threading
 {
     public partial class ThreadSafeList<T>
     {
+        /// <summary>
+        /// The Enumerator for a <see cref="ThreadSafeList{T}"/>
+        /// </summary>
         private class Enumerator : IEnumerator<T>
         {
             private T m_nextItem;
@@ -43,20 +46,45 @@ namespace GSF.Threading
                 m_nextItemExists = false;
             }
 
-            public void Dispose()
+            /// <summary>
+            /// Gets the element in the collection at the current position of the enumerator.
+            /// </summary>
+            /// <returns>
+            /// The element in the collection at the current position of the enumerator.
+            /// </returns>
+            public T Current
             {
-                if (!m_disposed)
+                get
                 {
-                    if (m_nextItemExists)
-                        m_iterator.UnsafeUnregisterItem();
-
-                    m_disposed = true;
-                    m_nextItemExists = false;
-                    m_nextItem = default(T);
-                    m_iterator = null;
+                    if (!m_nextItemExists)
+                        throw new InvalidOperationException("Past the end of the array, or never called MoveNext()");
+                    return m_nextItem;
                 }
             }
 
+            /// <summary>
+            /// Gets the current element in the collection.
+            /// </summary>
+            /// <returns>
+            /// The current element in the collection.
+            /// </returns>
+            /// <filterpriority>2</filterpriority>
+            object IEnumerator.Current
+            {
+                get
+                {
+                    return Current;
+                }
+            }
+
+
+            /// <summary>
+            /// Advances the enumerator to the next element of the collection.
+            /// </summary>
+            /// <returns>
+            /// true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.
+            /// </returns>
+            /// <exception cref="T:System.InvalidOperationException">The collection was modified after the enumerator was created. </exception><filterpriority>2</filterpriority>
             public bool MoveNext()
             {
                 if (m_disposed)
@@ -68,6 +96,10 @@ namespace GSF.Threading
                 return m_nextItemExists;
             }
 
+            /// <summary>
+            /// Sets the enumerator to its initial position, which is before the first element in the collection.
+            /// </summary>
+            /// <exception cref="T:System.InvalidOperationException">The collection was modified after the enumerator was created. </exception><filterpriority>2</filterpriority>
             public void Reset()
             {
                 if (m_disposed)
@@ -80,21 +112,21 @@ namespace GSF.Threading
                 m_iterator.Reset();
             }
 
-            public T Current
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
+            /// <filterpriority>2</filterpriority>
+            public void Dispose()
             {
-                get
+                if (!m_disposed)
                 {
-                    if (!m_nextItemExists)
-                        throw new InvalidOperationException("Past the end of the array, or never called MoveNext()");
-                    return m_nextItem;
-                }
-            }
+                    if (m_nextItemExists)
+                        m_iterator.UnsafeUnregisterItem();
 
-            object IEnumerator.Current
-            {
-                get
-                {
-                    return Current;
+                    m_disposed = true;
+                    m_nextItemExists = false;
+                    m_nextItem = default(T);
+                    m_iterator = null;
                 }
             }
         }

@@ -105,11 +105,11 @@ namespace GSF.SortedTreeStore.Services
 
             if (databaseConfig.WriterMode == WriterMode.InMemory)
             {
-                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateInMemory(m_archiveList, databaseConfig.EncodingMethod);
+                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateInMemory(m_archiveList, databaseConfig.ArchiveEncodingMethod);
             }
             else if (databaseConfig.WriterMode == WriterMode.OnDisk)
             {
-                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateOnDisk(m_archiveList, databaseConfig.EncodingMethod, databaseConfig.MainPath);
+                m_archiveWriter = WriteProcessor<TKey, TValue>.CreateOnDisk(m_archiveList, databaseConfig.ArchiveEncodingMethod, databaseConfig.MainPath);
             }
 
             AttachFilesOrPaths(new String[] { databaseConfig.MainPath });

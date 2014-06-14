@@ -22,7 +22,6 @@
 //
 //******************************************************************************************************
 
-using System;
 using System.Collections.Generic;
 using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Services.Net;
@@ -30,6 +29,9 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services
 {
+    /// <summary>
+    /// Specifies the configuration data of the <see cref="Server"/>.
+    /// </summary>
     public class ServerConfig
     {
         /// <summary>
@@ -41,19 +43,26 @@ namespace GSF.SortedTreeStore.Services
         /// </summary>
         public readonly List<ServerDatabaseConfig> Databases = new List<ServerDatabaseConfig>();
 
-        public ServerConfig()
-        {
-
-        }
-
-        public static ServerConfig Create<TKey, TValue>(string path, int port = -1, string databaseName = null, EncodingDefinition encoding = null)
+        /// <summary>
+        /// Creates a <see cref="ServerConfig"/> with some basic parameters set.
+        /// </summary>
+        /// <typeparam name="TKey">The key for the default database</typeparam>
+        /// <typeparam name="TValue">the value for the default database</typeparam>
+        /// <param name="path">the main import path of the server</param>
+        /// <param name="port">the port number to use. -1 means do not network host. 0 means use the default port number.</param>
+        /// <param name="databaseName">the name of the default database. if left null, <see cref="string.Empty"/> is substituted</param>
+        /// <param name="archiveEncoding">the encoding to write the archive file with. Null will default to a fixed size encoding.</param>
+        /// <param name="streamEncoding">the prefered encoding to use for a network stream. Null will default to a fixed size encoding. </param>
+        /// <returns></returns>
+        public static ServerConfig Create<TKey, TValue>(string path, int port = -1, string databaseName = null, EncodingDefinition archiveEncoding = null, EncodingDefinition streamEncoding = null)
             where TKey : SortedTreeTypeBase, new()
             where TValue : SortedTreeTypeBase, new()
         {
             if ((object)databaseName == null)
                 databaseName = string.Empty;
-            if ((object)encoding == null)
-                encoding = CreateFixedSizeCombinedEncoding.TypeGuid;
+            if ((object)archiveEncoding == null)
+                archiveEncoding = CreateFixedSizeCombinedEncoding.TypeGuid;
+
 
             ServerConfig config = new ServerConfig();
             if (port == 0)
@@ -70,12 +79,16 @@ namespace GSF.SortedTreeStore.Services
 
             ServerDatabaseConfig dbConfig = new ServerDatabaseConfig();
             dbConfig.DatabaseName = databaseName;
-            dbConfig.EncodingMethod = encoding;
+            dbConfig.ArchiveEncodingMethod = archiveEncoding;
+
+            if ((object)streamEncoding != null)
+                dbConfig.StreamingEncodingMethods.Add(streamEncoding);
+            dbConfig.StreamingEncodingMethods.Add(CreateFixedSizeCombinedEncoding.TypeGuid);
             dbConfig.MainPath = path;
             dbConfig.WriterMode = WriterMode.OnDisk;
             dbConfig.KeyType = new TKey().GenericTypeGuid;
             dbConfig.ValueType = new TValue().GenericTypeGuid;
-
+          
             config.Databases.Add(dbConfig);
             return config;
         }

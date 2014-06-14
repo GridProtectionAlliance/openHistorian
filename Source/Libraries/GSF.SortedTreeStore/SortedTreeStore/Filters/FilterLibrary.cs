@@ -29,48 +29,20 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Filters
 {
+    /// <summary>
+    /// Contains all of the filters for the <see cref="SortedTreeStore"/>. 
+    /// </summary>
     public class FilterLibrary
     {
-        private readonly object SyncRoot;
-        private readonly Dictionary<Guid, CreateFilterBase> Filters;
-        private readonly Dictionary<Guid, CreateSeekFilterBase> SeekFilters;
-        private readonly HashSet<Type> RegisteredTypes;
+        private readonly object m_syncRoot;
+        private readonly Dictionary<Guid, CreateFilterBase> m_filters;
+        private readonly Dictionary<Guid, CreateSeekFilterBase> m_seekFilters;
 
         internal FilterLibrary()
         {
-            SyncRoot = new object();
-            Filters = new Dictionary<Guid, CreateFilterBase>();
-            SeekFilters = new Dictionary<Guid, CreateSeekFilterBase>();
-            RegisteredTypes = new HashSet<Type>();
-
-            Register(new PointIDFilter());
-            Register(new TimestampFilter());
-        }
-
-        public void Register<T>()
-            where T : SortedTreeTypeBase, new()
-        {
-
-            T type = new T();
-            lock (SyncRoot)
-            {
-                if (RegisteredTypes.Add(type.GetType()))
-                {
-                    IEnumerable encodingMethods = type.GetEncodingMethods();
-                    if (encodingMethods == null)
-                        return;
-
-                    foreach (var method in encodingMethods)
-                    {
-                        var match = method as CreateFilterBase;
-                        var seek = method as CreateSeekFilterBase;
-                        if (match != null)
-                            Register(match);
-                        else if (seek != null)
-                            Register(seek);
-                    }
-                }
-            }
+            m_syncRoot = new object();
+            m_filters = new Dictionary<Guid, CreateFilterBase>();
+            m_seekFilters = new Dictionary<Guid, CreateSeekFilterBase>();
         }
 
         /// <summary>
@@ -79,9 +51,9 @@ namespace GSF.SortedTreeStore.Filters
         /// <param name="encoding"></param>
         public void Register(CreateFilterBase encoding)
         {
-            lock (SyncRoot)
+            lock (m_syncRoot)
             {
-                Filters.Add(encoding.FilterType, encoding);
+                m_filters.Add(encoding.FilterType, encoding);
             }
         }
 
@@ -91,34 +63,21 @@ namespace GSF.SortedTreeStore.Filters
         /// <param name="encoding"></param>
         public void Register(CreateSeekFilterBase encoding)
         {
-            lock (SyncRoot)
+            lock (m_syncRoot)
             {
-                SeekFilters.Add(encoding.FilterType, encoding);
+                m_seekFilters.Add(encoding.FilterType, encoding);
             }
         }
-
 
         public MatchFilterBase<TKey, TValue> GetMatchFilter<TKey, TValue>(Guid filter, BinaryStreamBase stream)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()
         {
-            Type keyType = typeof(TKey);
-            Type valueType = typeof(TValue);
-
             CreateFilterBase encoding;
 
-            lock (SyncRoot)
+            lock (m_syncRoot)
             {
-                if (!RegisteredTypes.Contains(keyType))
-                {
-                    Register<TKey>();
-                }
-                if (!RegisteredTypes.Contains(valueType))
-                {
-                    Register<TValue>();
-                }
-
-                if (Filters.TryGetValue(filter, out encoding))
+                if (m_filters.TryGetValue(filter, out encoding))
                 {
                     return encoding.Create<TKey, TValue>(stream);
                 }
@@ -133,14 +92,9 @@ namespace GSF.SortedTreeStore.Filters
 
             CreateSeekFilterBase encoding;
 
-            lock (SyncRoot)
+            lock (m_syncRoot)
             {
-                if (!RegisteredTypes.Contains(keyType))
-                {
-                    Register<TKey>();
-                }
-
-                if (SeekFilters.TryGetValue(filter, out encoding))
+                if (m_seekFilters.TryGetValue(filter, out encoding))
                 {
                     return encoding.Create<TKey>(stream);
                 }

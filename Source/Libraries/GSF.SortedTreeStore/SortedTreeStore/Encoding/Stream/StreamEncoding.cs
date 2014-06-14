@@ -25,6 +25,9 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
+    /// <summary>
+    /// A set of stream based encoding method. 
+    /// </summary>
     public class StreamEncoding
     {
         private readonly DualEncodingDictionary<CreateStreamEncodingBase> m_doubleEncoding;
@@ -39,13 +42,19 @@ namespace GSF.SortedTreeStore.Encoding
         /// <summary>
         /// Registers the provided type in the encoding library.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void Register<T>()
-            where T : SortedTreeTypeBase, new()
+        /// <param name="encoding">the encoding to register</param>
+        internal void Register(CreateStreamEncodingBase encoding)
         {
-            m_doubleEncoding.Register<T>();
+            m_doubleEncoding.Register(encoding);
         }
 
+        /// <summary>
+        /// Creates a stream encoding from the provided <see cref="encodingMethod"/>.
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="encodingMethod">the encoding method</param>
+        /// <returns></returns>
         internal StreamEncodingBase<TKey, TValue> CreateStreamEncoding<TKey, TValue>(EncodingDefinition encodingMethod)
             where TKey : SortedTreeTypeBase<TKey>, new()
             where TValue : SortedTreeTypeBase<TValue>, new()

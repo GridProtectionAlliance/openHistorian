@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  ThreadSafeList.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -54,6 +54,9 @@ namespace GSF.Threading
         private readonly object m_syncRoot;
         private long m_version;
 
+        /// <summary>
+        /// Creates a new <see cref="ThreadSafeList{T}"/>
+        /// </summary>
         public ThreadSafeList()
         {
             m_syncRoot = new object();
@@ -62,6 +65,10 @@ namespace GSF.Threading
             m_version = 0;
         }
 
+        /// <summary>
+        /// Adds the supplied item to the list
+        /// </summary>
+        /// <param name="item">The item to add</param>
         public void Add(T item)
         {
             lock (m_syncRoot)
@@ -77,7 +84,7 @@ namespace GSF.Threading
         /// This method will block until the item has successfully been removed 
         /// and will no longer show up in the Iterator.
         /// DO NOT call this function from within a ForEach loop as it will block indefinately
-        /// since the for each loop 
+        /// since the for each loop reads all items.
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
@@ -137,6 +144,10 @@ namespace GSF.Threading
             return true;
         }
 
+        /// <summary>
+        /// Removes the specified item if the lamda expression is true.
+        /// </summary>
+        /// <param name="condition"></param>
         public void RemoveIf(Func<T, bool> condition)
         {
             lock (m_syncRoot)
@@ -152,6 +163,10 @@ namespace GSF.Threading
             }
         }
 
+        /// <summary>
+        /// Calls a foreach iterator on the supplied action.
+        /// </summary>
+        /// <param name="action"></param>
         public void ForEach(Action<T> action)
         {
             foreach (T item in this)
@@ -161,11 +176,25 @@ namespace GSF.Threading
         }
 
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// </returns>
+        /// <filterpriority>1</filterpriority>
         public IEnumerator<T> GetEnumerator()
         {
             return new Enumerator(new Iterator(this));
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

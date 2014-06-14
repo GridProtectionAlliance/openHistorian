@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  StreamEncodingBase`2.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -27,24 +27,68 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
+    /// <summary>
+    /// Encoding that is stream based. This encoding is similiar to <see cref="DoubleValueEncodingBase{TKey,TValue}"/>
+    /// except it contains end of stream data.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public abstract class StreamEncodingBase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
         where TValue : SortedTreeTypeBase<TValue>, new()
     {
+
+        /// <summary>
+        /// Gets if Encoding using byte arrays is supported.
+        /// </summary>
         public abstract bool SupportsPointerSerialization { get; }
 
+        /// <summary>
+        /// Gets the maximum number of bytes needed to encode a single point.
+        /// </summary>
         public abstract int MaxCompressedSize { get; }
 
+        /// <summary>
+        /// Gets the definition of the encoding used.
+        /// </summary>
         public abstract EncodingDefinition EncodingMethod { get; }
 
+        /// <summary>
+        /// Writes the end of the stream symbol to the <see cref="stream"/>.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
         public abstract void WriteEndOfStream(BinaryStreamBase stream);
 
+        /// <summary>
+        /// Encodes the current key/value to the stream.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="currentKey">the key to write</param>
+        /// <param name="currentValue">the value to write</param>
         public abstract void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue);
 
+        /// <summary>
+        /// Encodes the current key/value to the stream.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="currentKey">the key to write</param>
+        /// <param name="currentValue">the value to write</param>
+        /// <returns>the number of bytes advanced in the stream</returns>
         public unsafe abstract int Encode(byte* stream, TKey currentKey, TValue currentValue);
 
-        public abstract unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value);
+        /// <summary>
+        /// Attempts to read the next point from the stream. 
+        /// </summary>
+        /// <param name="stream">The stream to read from</param>
+        /// <param name="key">the key to store the value to</param>
+        /// <param name="value">the value to store to</param>
+        /// <returns>True if successful. False if end of the stream has been reached.</returns>
+        public abstract bool TryDecode(BinaryStreamBase stream, TKey key, TValue value);
 
+        /// <summary>
+        /// Resets the encoder. Some encoders maintain streaming state data that should
+        /// be reset when reading from a new stream.
+        /// </summary>
         public abstract void ResetEncoder();
 
     }

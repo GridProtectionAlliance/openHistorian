@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  CreateFixedSizeCombinedEncoding`1.cs - Gbtc
+//  CreateFixedSizeCombinedEncoding.cs - Gbtc
 //
 //  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //

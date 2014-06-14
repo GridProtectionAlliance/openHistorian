@@ -24,13 +24,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using GSF.IO.FileStructure.Media;
 using GSF.SortedTreeStore.Encoding;
-using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services
 {
+    /// <summary>
+    /// Specifies the write mode that the <see cref="Server"/> will support.
+    /// </summary>
     public enum WriterMode
     {
         /// <summary>
@@ -76,7 +76,12 @@ namespace GSF.SortedTreeStore.Services
         /// <summary>
         /// Gets the default encoding methods for storing files.
         /// </summary>
-        public EncodingDefinition EncodingMethod { get; set; }
+        public EncodingDefinition ArchiveEncodingMethod { get; set; }
+
+        /// <summary>
+        /// Gets the supported encoding methods for streaming data. This list is in a prioritized order.
+        /// </summary>
+        public List<EncodingDefinition> StreamingEncodingMethods { get; private set; }
 
         /// <summary>
         /// Gets the type of the key componenet
@@ -97,56 +102,10 @@ namespace GSF.SortedTreeStore.Services
             DatabaseName = string.Empty;
             MainPath = string.Empty;
             ImportPaths = new List<string>();
-            EncodingMethod = CreateFixedSizeCombinedEncoding.TypeGuid;
+            ArchiveEncodingMethod = CreateFixedSizeCombinedEncoding.TypeGuid;
+            StreamingEncodingMethods = new List<EncodingDefinition>();
             KeyType = Guid.Empty;
             ValueType = Guid.Empty;
         }
-
-        public static ServerDatabaseConfig Create<TKey, TValue>(string databaseName, WriterMode writeMode, EncodingDefinition typeGuid, string path)
-        {
-            var server = new ServerDatabaseConfig();
-            server.DatabaseName = databaseName;
-            server.WriterMode = writeMode;
-            server.EncodingMethod = typeGuid;
-            server.MainPath = path;
-            return server;
-        }
     }
-
-    //public class PathList
-    //{
-    //    private readonly List<string> m_paths = new List<string>();
-    //    private readonly List<string> m_savePaths = new List<string>();
-
-    //    public IEnumerable<string> GetPaths()
-    //    {
-    //        return m_paths;
-    //    }
-
-    //    public IEnumerable<string> GetSavePaths()
-    //    {
-    //        return m_savePaths;
-    //    }
-
-    //    public void AddPath(string path, bool allowWritingToPath)
-    //    {
-    //        if (allowWritingToPath)
-    //        {
-    //            if (System.IO.File.Exists(path))
-    //                throw new Exception("Only directories can be written to, not files.");
-    //            if (!Directory.Exists(path))
-    //                throw new ArgumentException("Could not locate the specified directory", "path");
-    //        }
-    //        else
-    //        {
-    //            if (!(System.IO.File.Exists(path) || Directory.Exists(path)))
-    //                throw new ArgumentException("Could not locate the specified path", "path");
-    //        }
-
-    //        m_paths.Add(path);
-    //        if (allowWritingToPath)
-    //            m_savePaths.Add(path);
-    //    }
-
-    //}
 }

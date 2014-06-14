@@ -18,11 +18,11 @@ namespace SampleCode.openHistorian.Server.dll
         {
             Array.ForEach(Directory.GetFiles(@"c:\temp\Scada\", "*.d2", SearchOption.AllDirectories), File.Delete);
 
-           
+
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            using (var server = new HistorianServer(@"c:\temp\Scada\"))
+            using (var server = new HistorianServer(@"c:\temp\Scada\", 12345))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.NetworkPort = 12345;
@@ -51,7 +51,7 @@ namespace SampleCode.openHistorian.Server.dll
             var key = new HistorianKey();
             var value = new HistorianValue();
 
-            using (HistorianServer server = new HistorianServer(@"c:\temp\Scada\"))
+            using (HistorianServer server = new HistorianServer(@"c:\temp\Scada\", 12345))
             {
                 NetworkClientConfig clientConfig = new NetworkClientConfig();
                 clientConfig.NetworkPort = 12345;
@@ -61,7 +61,7 @@ namespace SampleCode.openHistorian.Server.dll
                 using (var database = client.GetDatabase<HistorianKey, HistorianValue>(string.Empty))
                 {
                     var stream = database.Read(0, 1000);
-                    while (stream.Read(key,value))
+                    while (stream.Read(key, value))
                         Console.WriteLine(key.Timestamp);
                 }
             }

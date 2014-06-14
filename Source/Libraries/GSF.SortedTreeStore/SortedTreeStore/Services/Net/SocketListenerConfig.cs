@@ -40,11 +40,17 @@ namespace GSF.SortedTreeStore.Services.Net
         /// Defines the default network IP address for the <see cref="SocketListener"/>.
         /// </summary>
         public const string DefaultIPAddress = "127.0.0.1";
-
+        /// <summary>
+        /// Defines the default admin password for the socket
+        /// </summary>
         public const string DefaultAdminPassword = "Admin";
-
+        /// <summary>
+        /// Defines the default read password
+        /// </summary>
         public const string DefaultReadPassword = "Read";
-
+        /// <summary>
+        /// Defines the default write password
+        /// </summary>
         public const string DefaultWritePassword = "Write";
 
         /// <summary>

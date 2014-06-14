@@ -44,16 +44,15 @@ namespace GSF.SortedTreeStore
     /// </remarks>
     public class EncodingDefinition : IComparable<EncodingDefinition>, IComparable, IEquatable<EncodingDefinition>
     {
-
         /// <summary>
         /// Gets if the compression method compresses the key and value as a unit.
         /// </summary>
         public bool IsKeyValueEncoded { get; private set; }
 
-        Guid m_keyEncodingMethod;
-        Guid m_valueEncodingMethod;
-        Guid m_keyValueEncodingMethod;
-        int m_hashCode;
+        private Guid m_keyEncodingMethod;
+        private Guid m_valueEncodingMethod;
+        private Guid m_keyValueEncodingMethod;
+        private readonly int m_hashCode;
 
         /// <summary>
         /// Gets the compression method if <see cref="IsKeyValueEncoded"/> is false.
@@ -118,7 +117,7 @@ namespace GSF.SortedTreeStore
                 m_keyValueEncodingMethod = Guid.Empty;
                 IsKeyValueEncoded = false;
             }
-            GenerateHashCode();
+            m_hashCode = ComputeHashCode();
         }
 
         /// <summary>
@@ -131,7 +130,7 @@ namespace GSF.SortedTreeStore
             m_valueEncodingMethod = Guid.Empty;
             m_keyValueEncodingMethod = keyValueEncoding;
             IsKeyValueEncoded = true;
-            GenerateHashCode();
+            m_hashCode = ComputeHashCode();
         }
 
         /// <summary>
@@ -145,7 +144,7 @@ namespace GSF.SortedTreeStore
             m_valueEncodingMethod = valueEncoding;
             m_keyValueEncodingMethod = Guid.Empty;
             IsKeyValueEncoded = false;
-            GenerateHashCode();
+            m_hashCode = ComputeHashCode();
         }
 
         /// <summary>
@@ -243,12 +242,12 @@ namespace GSF.SortedTreeStore
             return m_hashCode;
         }
 
-        void GenerateHashCode()
+        int ComputeHashCode()
         {
-            m_hashCode = IsKeyValueEncoded.GetHashCode() ^
-                         m_keyEncodingMethod.GetHashCode() ^
-                         m_valueEncodingMethod.GetHashCode() ^
-                         m_keyValueEncodingMethod.GetHashCode();
+            return IsKeyValueEncoded.GetHashCode() ^
+                          m_keyEncodingMethod.GetHashCode() ^
+                          m_valueEncodingMethod.GetHashCode() ^
+                          m_keyValueEncodingMethod.GetHashCode();
         }
 
         /// <summary>
@@ -260,7 +259,6 @@ namespace GSF.SortedTreeStore
         public static bool operator !=(EncodingDefinition a, EncodingDefinition b)
         {
             return !(a == b);
-
         }
 
         /// <summary>
@@ -271,7 +269,13 @@ namespace GSF.SortedTreeStore
         /// <returns></returns>
         public static bool operator ==(EncodingDefinition a, EncodingDefinition b)
         {
+            if (ReferenceEquals(a, b))
+                return true;
+            if ((object)a == null)
+                return false;
             return a.Equals(b);
         }
     }
+
+
 }

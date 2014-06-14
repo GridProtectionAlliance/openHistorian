@@ -28,6 +28,11 @@ using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Encoding
 {
+    /// <summary>
+    /// Allows any generic encoding definition to be wrapped to support stream encoding.
+    /// </summary>
+    /// <typeparam name="TKey">the type of the key</typeparam>
+    /// <typeparam name="TValue">the type of the value</typeparam>
     public class GenericStreamEncoding<TKey, TValue>
         : StreamEncodingBase<TKey, TValue>
         where TKey : SortedTreeTypeBase<TKey>, new()
@@ -37,6 +42,10 @@ namespace GSF.SortedTreeStore.Encoding
         TKey m_prevKey;
         TValue m_prevValue;
 
+        /// <summary>
+        /// Creates a new <see cref="GenericStreamEncoding{TKey,TValue}"/> based on the supplied <see cref="encodingMethod"/>
+        /// </summary>
+        /// <param name="encodingMethod">the encoding method to use for the streaming</param>
         public GenericStreamEncoding(EncodingDefinition encodingMethod)
         {
             m_encoding = Library.Encodings.GetEncodingMethod<TKey, TValue>(encodingMethod);
@@ -44,6 +53,9 @@ namespace GSF.SortedTreeStore.Encoding
             m_prevValue = new TValue();
         }
 
+        /// <summary>
+        /// Gets if Encoding using byte arrays is supported.
+        /// </summary>
         public override bool SupportsPointerSerialization
         {
             get
@@ -52,6 +64,9 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// Gets the maximum number of bytes needed to encode a single point.
+        /// </summary>
         public override int MaxCompressedSize
         {
             get
@@ -60,6 +75,9 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// Gets the definition of the encoding used.
+        /// </summary>
         public override EncodingDefinition EncodingMethod
         {
             get
@@ -68,6 +86,10 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// Writes the end of the stream symbol to the <see cref="stream"/>.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
         public override void WriteEndOfStream(BinaryStreamBase stream)
         {
             if (m_encoding.ContainsEndOfStreamSymbol)
@@ -76,6 +98,12 @@ namespace GSF.SortedTreeStore.Encoding
                 stream.Write((byte)0);
         }
 
+        /// <summary>
+        /// Encodes the current key/value to the stream.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="currentKey">the key to write</param>
+        /// <param name="currentValue">the value to write</param>
         public override void Encode(BinaryStreamBase stream, TKey currentKey, TValue currentValue)
         {
             if (!m_encoding.ContainsEndOfStreamSymbol)
@@ -87,11 +115,25 @@ namespace GSF.SortedTreeStore.Encoding
             currentValue.CopyTo(m_prevValue);
         }
 
+        /// <summary>
+        /// Encodes the current key/value to the stream.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="currentKey">the key to write</param>
+        /// <param name="currentValue">the value to write</param>
+        /// <returns>the number of bytes advanced in the stream</returns>
         public override unsafe int Encode(byte* stream, TKey currentKey, TValue currentValue)
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Attempts to read the next point from the stream. 
+        /// </summary>
+        /// <param name="stream">The stream to read from</param>
+        /// <param name="key">the key to store the value to</param>
+        /// <param name="value">the value to store to</param>
+        /// <returns>True if successful. False if end of the stream has been reached.</returns>
         public override unsafe bool TryDecode(BinaryStreamBase stream, TKey key, TValue value)
         {
             if (!m_encoding.ContainsEndOfStreamSymbol)
@@ -106,6 +148,10 @@ namespace GSF.SortedTreeStore.Encoding
             return !endOfStream;
         }
 
+        /// <summary>
+        /// Resets the encoder. Some encoders maintain streaming state data that should
+        /// be reset when reading from a new stream.
+        /// </summary>
         public override void ResetEncoder()
         {
             m_prevKey.Clear();

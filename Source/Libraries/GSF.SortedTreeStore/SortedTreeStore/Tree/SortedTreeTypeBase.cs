@@ -111,15 +111,6 @@ namespace GSF.SortedTreeStore.Tree
         }
 
         /// <summary>
-        /// Gets all available encoding methods for a specific type. May return null if none exists.
-        /// </summary>
-        /// <returns>null or an IEnumerable of all encoding methods.</returns>
-        public virtual IEnumerable GetEncodingMethods()
-        {
-            return null;
-        }
-
-        /// <summary>
         /// Executes a copy command without modifying the current class.
         /// </summary>
         /// <param name="source"></param>

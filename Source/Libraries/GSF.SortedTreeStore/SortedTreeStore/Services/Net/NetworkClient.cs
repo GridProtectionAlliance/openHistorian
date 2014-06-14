@@ -37,11 +37,16 @@ namespace GSF.SortedTreeStore.Services.Net
     public class NetworkClient
         : Client
     {
+        private bool m_disposed;
         private TcpClient m_client;
         private NetworkBinaryStream m_stream;
         private ClientDatabaseBase m_sortedTreeEngine;
         string m_historianDatabaseString;
 
+        /// <summary>
+        /// Creates a <see cref="NetworkClient"/>
+        /// </summary>
+        /// <param name="config">The config to use for the client</param>
         public NetworkClient(NetworkClientConfig config)
         {
             IPAddress ip;
@@ -56,7 +61,7 @@ namespace GSF.SortedTreeStore.Services.Net
         /// <summary>
         /// Connects to the remote historian.
         /// </summary>
-        /// <param name="server"></param>
+        /// <param name="server">The server to connect to</param>
         private void Start(IPEndPoint server)
         {
             m_client = new TcpClient(AddressFamily.InterNetworkV6);
@@ -152,29 +157,46 @@ namespace GSF.SortedTreeStore.Services.Net
             return db;
         }
 
+
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Releases the unmanaged resources used by the <see cref="NetworkClient"/> object and optionally releases the managed resources.
         /// </summary>
-        /// <filterpriority>2</filterpriority>
-        public void Dispose()
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
         {
-            if (m_sortedTreeEngine != null)
-                m_sortedTreeEngine.Dispose();
-            m_sortedTreeEngine = null;
-
-            try
+            if (!m_disposed)
             {
-                m_stream.Write((byte)ServerCommand.Disconnect);
-                m_stream.Flush();
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    // This will be done regardless of whether the object is finalized or disposed.
 
-            }
+                    if (disposing)
+                    {
+                        if (m_sortedTreeEngine != null)
+                            m_sortedTreeEngine.Dispose();
+                        m_sortedTreeEngine = null;
 
-            if (m_client != null)
-                m_client.Close();
-            m_client = null;
+                        try
+                        {
+                            m_stream.Write((byte)ServerCommand.Disconnect);
+                            m_stream.Flush();
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+
+                        if (m_client != null)
+                            m_client.Close();
+                        m_client = null;
+                    }
+                }
+                finally
+                {
+                    m_disposed = true;          // Prevent duplicate dispose.
+                    base.Dispose(disposing);    // Call base class Dispose().
+                }
+            }
         }
     }
 }

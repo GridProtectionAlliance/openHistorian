@@ -28,12 +28,18 @@ using openHistorian.Collections;
 
 namespace GSF.SortedTreeStore.Encoding
 {
+    /// <summary>
+    /// A stream based compression method that supports <see cref="HistorianKey"/>, <see cref="HistorianValue"/>
+    /// </summary>
     public class HistorianCompressedStream
         : StreamEncodingBase<HistorianKey, HistorianValue>
     {
         ulong m_prevTimestamp;
         ulong m_prevPointID;
 
+        /// <summary>
+        /// Gets if Encoding using byte arrays is supported.
+        /// </summary>
         public override bool SupportsPointerSerialization
         {
             get
@@ -42,6 +48,9 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// Gets the maximum number of bytes needed to encode a single point.
+        /// </summary>
         public override int MaxCompressedSize
         {
             get
@@ -50,6 +59,9 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// Gets the definition of the encoding used.
+        /// </summary>
         public override EncodingDefinition EncodingMethod
         {
             get
@@ -58,11 +70,21 @@ namespace GSF.SortedTreeStore.Encoding
             }
         }
 
+        /// <summary>
+        /// Writes the end of the stream symbol to the <see cref="stream"/>.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
         public override void WriteEndOfStream(BinaryStreamBase stream)
         {
             stream.Write((byte)255);
         }
 
+        /// <summary>
+        /// Encodes the current key/value to the stream.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="currentKey">the key to write</param>
+        /// <param name="currentValue">the value to write</param>
         public override void Encode(BinaryStreamBase stream, HistorianKey currentKey, HistorianValue currentValue)
         {
             if (currentKey.Timestamp == m_prevTimestamp
@@ -134,9 +156,16 @@ namespace GSF.SortedTreeStore.Encoding
             m_prevPointID = currentKey.PointID;
         }
 
+        /// <summary>
+        /// Encodes the current key/value to the stream.
+        /// </summary>
+        /// <param name="stream">the stream to write to</param>
+        /// <param name="currentKey">the key to write</param>
+        /// <param name="currentValue">the value to write</param>
+        /// <returns>the number of bytes advanced in the stream</returns>
         public override unsafe int Encode(byte* stream, HistorianKey currentKey, HistorianValue currentValue)
         {
-            int size = 0;
+            int size;
             if (currentKey.Timestamp == m_prevTimestamp
              && ((currentKey.PointID ^ m_prevPointID) < 64)
              && currentKey.EntryNumber == 0
@@ -185,12 +214,12 @@ namespace GSF.SortedTreeStore.Encoding
             size = 1;
 
             if (currentKey.Timestamp != m_prevTimestamp)
-                GSF.Encoding7Bit.Write(stream, ref size, currentKey.Timestamp ^ m_prevTimestamp);
+                Encoding7Bit.Write(stream, ref size, currentKey.Timestamp ^ m_prevTimestamp);
 
-            GSF.Encoding7Bit.Write(stream, ref size, currentKey.PointID ^ m_prevPointID);
+            Encoding7Bit.Write(stream, ref size, currentKey.PointID ^ m_prevPointID);
 
             if (currentKey.EntryNumber != 0)
-                GSF.Encoding7Bit.Write(stream, ref size, currentKey.EntryNumber);
+                Encoding7Bit.Write(stream, ref size, currentKey.EntryNumber);
 
             if (currentValue.Value1 > uint.MaxValue)
             {
@@ -225,7 +254,14 @@ namespace GSF.SortedTreeStore.Encoding
             return size;
         }
 
-        public override unsafe bool TryDecode(BinaryStreamBase stream, HistorianKey key, HistorianValue value)
+        /// <summary>
+        /// Attempts to read the next point from the stream. 
+        /// </summary>
+        /// <param name="stream">The stream to read from</param>
+        /// <param name="key">the key to store the value to</param>
+        /// <param name="value">the value to store to</param>
+        /// <returns>True if successful. False if end of the stream has been reached.</returns>
+        public override bool TryDecode(BinaryStreamBase stream, HistorianKey key, HistorianValue value)
         {
             byte code = stream.ReadUInt8();
             if (code == 255)
@@ -292,6 +328,10 @@ namespace GSF.SortedTreeStore.Encoding
             return true;
         }
 
+        /// <summary>
+        /// Resets the encoder. Some encoders maintain streaming state data that should
+        /// be reset when reading from a new stream.
+        /// </summary>
         public override void ResetEncoder()
         {
             m_prevTimestamp = 0;

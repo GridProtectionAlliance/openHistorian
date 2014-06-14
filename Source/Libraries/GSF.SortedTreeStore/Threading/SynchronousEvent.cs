@@ -1,7 +1,7 @@
 ﻿//******************************************************************************************************
 //  SynchronousEvent.cs - Gbtc
 //
-//  Copyright © 2013, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2014, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -33,6 +33,12 @@ namespace GSF.Threading
     /// will be raised on the thread that constructed this class.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    /// <remarks>
+    /// This is useful when needing to process data on a certain thread. On instance is 
+    /// when preparing data that needs to then be processed on the UI thread. Just construct
+    /// this class on the UI thread, then when any thread raises an event, this event will be
+    /// queued on the UI thread.
+    /// </remarks>
     public class SynchronousEvent<T> 
         : IDisposable
         where T : EventArgs

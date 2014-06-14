@@ -23,8 +23,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Filters;
@@ -38,24 +38,45 @@ namespace GSF.SortedTreeStore
     /// </summary>
     public static class Library
     {
+        /// <summary>
+        /// Gets all of the streaming like encoding.
+        /// </summary>
         public static readonly StreamEncoding Streaming;
+        /// <summary>
+        /// Gets all of the encoding data.
+        /// </summary>
         public static readonly EncodingLibrary Encodings;
+        /// <summary>
+        /// Gets all of the filters.
+        /// </summary>
         public static readonly FilterLibrary Filters;
 
         private static readonly object SyncRoot;
         private static readonly Dictionary<Guid, Type> TypeLookup;
         private static readonly Dictionary<Type, Guid> RegisteredType;
 
+        private static readonly HashSet<string> FilterAssemblyNames;
+        private static readonly HashSet<Assembly> LoadedAssemblies;
+
         static Library()
         {
             try
             {
+                FilterAssemblyNames = new HashSet<string>();
+                LoadedAssemblies = new HashSet<Assembly>();
                 Streaming = new StreamEncoding();
                 Encodings = new EncodingLibrary();
                 Filters = new FilterLibrary();
                 SyncRoot = new object();
                 TypeLookup = new Dictionary<Guid, Type>();
                 RegisteredType = new Dictionary<Type, Guid>();
+
+                FilterAssemblyNames.Add(typeof(CreateStreamEncodingBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(CreateSingleValueEncodingBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(CreateDoubleValueEncodingBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(CreateFilterBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(CreateSeekFilterBase).Assembly.GetName().Name);
+                FilterAssemblyNames.Add(typeof(SortedTreeTypeBase).Assembly.GetName().Name);
 
                 ReloadNewAssemblies();
             }
@@ -72,36 +93,75 @@ namespace GSF.SortedTreeStore
         /// </summary>
         static void ReloadNewAssemblies()
         {
-            var sortedTreeType = typeof(SortedTreeTypeBase);
+            var typeCreateStreamEncodingBase = typeof(CreateStreamEncodingBase);
+            var typeCreateSingleValueEncodingBase = typeof(CreateSingleValueEncodingBase);
+            var typeCreateDoubleValueEncodingBase = typeof(CreateDoubleValueEncodingBase);
+            var typeCreateFilterBase = typeof(CreateFilterBase);
+            var typeCreateSeekFilterBase = typeof(CreateSeekFilterBase);
+            var typeSortedTreeTypeBase = typeof(SortedTreeTypeBase);
+
             try
             {
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 foreach (var assembly in assemblies)
                 {
-                    var modules = assembly.GetModules(false);
-                    foreach (var module in modules)
+                    if (!LoadedAssemblies.Contains(assembly))
                     {
-                        try
+                        LoadedAssemblies.Add(assembly);
+
+                        if (FilterAssemblyNames.Contains(assembly.GetName().Name) || assembly.GetReferencedAssemblies().Any(x => FilterAssemblyNames.Contains(x.Name)))
                         {
-                            var types = module.GetTypes();
-                            foreach (var assemblyType in types)
+                            var modules = assembly.GetModules(false);
+                            foreach (var module in modules)
                             {
                                 try
                                 {
-                                    if (!assemblyType.IsAbstract && sortedTreeType.IsAssignableFrom(assemblyType))
+                                    var types = module.GetTypes();
+                                    foreach (var assemblyType in types)
                                     {
-                                        Register(assemblyType);
+                                        try
+                                        {
+                                            if (!assemblyType.IsAbstract)
+                                            {
+                                                if (typeCreateStreamEncodingBase.IsAssignableFrom(assemblyType))
+                                                {
+                                                    Streaming.Register((CreateStreamEncodingBase)Activator.CreateInstance(assemblyType));
+                                                }
+                                                else if (typeCreateSingleValueEncodingBase.IsAssignableFrom(assemblyType))
+                                                {
+                                                    Encodings.Register((CreateSingleValueEncodingBase)Activator.CreateInstance(assemblyType));
+                                                }
+                                                else if (typeCreateDoubleValueEncodingBase.IsAssignableFrom(assemblyType))
+                                                {
+                                                    Encodings.Register((CreateDoubleValueEncodingBase)Activator.CreateInstance(assemblyType));
+                                                }
+                                                else if (typeCreateFilterBase.IsAssignableFrom(assemblyType))
+                                                {
+                                                    Filters.Register((CreateFilterBase)Activator.CreateInstance(assemblyType));
+                                                }
+                                                else if (typeCreateSeekFilterBase.IsAssignableFrom(assemblyType))
+                                                {
+                                                    Filters.Register((CreateSeekFilterBase)Activator.CreateInstance(assemblyType));
+                                                }
+                                                else if (typeSortedTreeTypeBase.IsAssignableFrom(assemblyType))
+                                                {
+                                                    Register((SortedTreeTypeBase)Activator.CreateInstance(assemblyType));
+                                                }
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Fatal,
+                                                "Static Constructor Error", typeof(Library).ToString(), null, ex);
+                                        }
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
+                                    Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Fatal,
+                                        "Static Constructor Error", typeof(Library).ToString(), null, ex);
                                 }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Default.UniversalReporter.LogMessage(VerboseLevel.Fatal, "Static Constructor Error", typeof(Library).ToString(), null, ex);
                         }
                     }
                 }
@@ -126,38 +186,12 @@ namespace GSF.SortedTreeStore
         }
 
         /// <summary>
-        /// Registers the provided type with the SortedTreeStore. 
-        /// If they type does not inherit from <see cref="SortedTreeTypeBase"/> or
-        /// does not have a default initializer, then this method will fail.
-        /// </summary>
-        /// <param name="type">the type to register</param>
-        public static void Register(Type type)
-        {
-            Type library = typeof(Library);
-            MethodInfo method = library.GetMethod("InternalRegister", BindingFlags.Static | BindingFlags.NonPublic);
-            MethodInfo reflectionMethod = method.MakeGenericMethod(type);
-            reflectionMethod.Invoke(null, null);
-        }
-
-
-        //Called by Register(Type type) via reflection.
-        [MethodImpl(MethodImplOptions.NoOptimization)]
-        private static void InternalRegister<T>()
-            where T : SortedTreeTypeBase, new()
-        {
-            Register<T>();
-        }
-
-        /// <summary>
         /// Registeres the generic type with the SortedTreeStore.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public static void Register<T>()
-            where T : SortedTreeTypeBase, new()
+        private static void Register(SortedTreeTypeBase sortedTreeType)
         {
-            T obj = new T();
-            Type type = typeof(T);
-            Guid id = obj.GenericTypeGuid;
+            Type type = sortedTreeType.GetType();
+            Guid id = sortedTreeType.GenericTypeGuid;
 
             lock (SyncRoot)
             {
@@ -185,12 +219,6 @@ namespace GSF.SortedTreeStore
                 RegisteredType.Add(type, id);
                 TypeLookup.Add(id, type);
             }
-
-            Encodings.Register<T>();
-            Filters.Register<T>();
-            Streaming.Register<T>();
         }
-
-
     }
 }

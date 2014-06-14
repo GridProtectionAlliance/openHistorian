@@ -36,7 +36,6 @@ namespace GSF.SortedTreeStore.Encoding
         where T : CreateDoubleValueBase
     {
         private readonly object m_syncRoot;
-        private readonly HashSet<Type> m_registeredTypes;
         private readonly Dictionary<EncodingDefinition, T> m_combinedEncoding;
         private readonly Dictionary<Tuple<EncodingDefinition, Type>, T> m_keyTypedCombinedEncoding;
         private readonly Dictionary<Tuple<EncodingDefinition, Type>, T> m_valueTypedCombinedEncoding;
@@ -48,37 +47,10 @@ namespace GSF.SortedTreeStore.Encoding
         public DualEncodingDictionary()
         {
             m_syncRoot = new object();
-            m_registeredTypes = new HashSet<Type>();
             m_combinedEncoding = new Dictionary<EncodingDefinition, T>();
             m_keyTypedCombinedEncoding = new Dictionary<Tuple<EncodingDefinition, Type>, T>();
             m_valueTypedCombinedEncoding = new Dictionary<Tuple<EncodingDefinition, Type>, T>();
             m_keyValueTypedCombinedEncoding = new Dictionary<Tuple<EncodingDefinition, Type, Type>, T>();
-        }
-
-        /// <summary>
-        /// Registers the provided type.
-        /// </summary>
-        /// <typeparam name="TTreeType"></typeparam>
-        public void Register<TTreeType>()
-            where TTreeType : SortedTreeTypeBase, new()
-        {
-            TTreeType type = new TTreeType();
-            lock (m_syncRoot)
-            {
-                if (m_registeredTypes.Add(type.GetType()))
-                {
-                    IEnumerable encodingMethods = type.GetEncodingMethods();
-                    if (encodingMethods == null)
-                        return;
-
-                    foreach (var method in encodingMethods)
-                    {
-                        var single = method as T;
-                        if (single != null)
-                            Register(single);
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -131,15 +103,6 @@ namespace GSF.SortedTreeStore.Encoding
 
             lock (m_syncRoot)
             {
-                if (!m_registeredTypes.Contains(keyType))
-                {
-                    Register<TKey>();
-                }
-                if (!m_registeredTypes.Contains(valueType))
-                {
-                    Register<TValue>();
-                }
-
                 if (m_keyValueTypedCombinedEncoding.TryGetValue(Tuple.Create(encodingMethod, keyType, valueType), out encoding)
                     || m_keyTypedCombinedEncoding.TryGetValue(Tuple.Create(encodingMethod, keyType), out encoding)
                     || m_valueTypedCombinedEncoding.TryGetValue(Tuple.Create(encodingMethod, valueType), out encoding)

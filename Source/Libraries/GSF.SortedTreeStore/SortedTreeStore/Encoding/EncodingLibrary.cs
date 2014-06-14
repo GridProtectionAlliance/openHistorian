@@ -39,21 +39,24 @@ namespace GSF.SortedTreeStore.Encoding
         {
             m_singleEncoding = new SingleEncodingDictionary<CreateSingleValueEncodingBase>();
             m_doubleEncoding = new DualEncodingDictionary<CreateDoubleValueEncodingBase>();
-
-            m_singleEncoding.Register(new CreateFixedSizeSingleEncoding());
-            m_doubleEncoding.Register(new CreateFixedSizeCombinedEncoding());
-            m_doubleEncoding.Register(new CreateFixedSizeDualSingleEncoding());
         }
 
         /// <summary>
         /// Registers the provided type in the encoding library.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void Register<T>()
-            where T : SortedTreeTypeBase, new()
+        /// <param name="encoding">the encoding to register</param>
+        internal void Register(CreateSingleValueEncodingBase encoding)
         {
-            m_singleEncoding.Register<T>();
-            m_doubleEncoding.Register<T>();
+            m_singleEncoding.Register(encoding);
+        }
+
+        /// <summary>
+        /// Registers the provided type in the encoding library.
+        /// </summary>
+        /// <param name="encoding">the encoding to register</param>
+        internal void Register(CreateDoubleValueEncodingBase encoding)
+        {
+            m_doubleEncoding.Register(encoding);
         }
 
         /// <summary>
