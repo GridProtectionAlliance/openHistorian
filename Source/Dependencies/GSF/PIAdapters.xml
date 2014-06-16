@@ -41,11 +41,6 @@
             </summary>
             <param name="measurements">Measurements to queue</param>
         </member>
-        <member name="M:PIAdapters.PIOutputAdapter.MapKeysToPoints">
-            <summary>
-            Resets the PI tag to MeasurementKey mapping for loading data into PI by finding PI points that match either the GSFSchema pointtag or alternatetag
-            </summary>
-        </member>
         <member name="M:PIAdapters.PIOutputAdapter.ExecuteMetadataRefresh">
             <summary>
             Sends updated metadata to PI.
@@ -111,6 +106,11 @@
         <member name="P:PIAdapters.PIOutputAdapter.TagMapCacheFileName">
             <summary>
             Gets or sets the filename to be used for tag map cache.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIOutputAdapter.Status">
+            <summary>
+            Returns the detailed status of the data output source.
             </summary>
         </member>
         <member name="T:PIAdapters.PIPBInputAdapter">
