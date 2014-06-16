@@ -116,7 +116,7 @@ GO
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW [dbo].[SchemaVersion] AS
-SELECT 2 AS VersionNumber
+SELECT 3 AS VersionNumber
 GO
 
 SET ANSI_NULLS ON
@@ -286,6 +286,7 @@ CREATE TABLE [dbo].[SignalType](
     [Acronym] [varchar](4) NOT NULL,
     [Suffix] [varchar](2) NOT NULL,
     [Abbreviation] [varchar](2) NOT NULL,
+    [LongAcronym] [varchar](200) NOT NULL DEFAULT 'Undefined',
     [Source] [varchar](10) NOT NULL,
     [EngineeringUnits] [varchar](10) NULL,
  CONSTRAINT [PK_SignalType] PRIMARY KEY CLUSTERED 
@@ -1933,7 +1934,7 @@ SELECT     dbo.Device.CompanyID, dbo.Company.Acronym AS CompanyAcronym, dbo.Comp
                       dbo.Measurement.SignalReference, dbo.Measurement.Adder, dbo.Measurement.Multiplier, dbo.Measurement.Description, dbo.Measurement.Subscribed, dbo.Measurement.Internal, dbo.Measurement.Enabled, 
                       COALESCE (dbo.SignalType.EngineeringUnits, N'') AS EngineeringUnits, dbo.SignalType.Source, dbo.SignalType.Acronym AS SignalAcronym, 
                       dbo.SignalType.Name AS SignalName, dbo.SignalType.Suffix AS SignalTypeSuffix, dbo.Device.Longitude, dbo.Device.Latitude,
-                      COALESCE(Historian.Acronym, Device.Acronym, '__') + ':' + CONVERT(NVARCHAR(10), Measurement.PointID) AS ID
+                      COALESCE(Historian.Acronym, Device.Acronym, '__') + ':' + CONVERT(NVARCHAR(10), Measurement.PointID) AS ID, Measurement.UpdatedOn
 FROM         dbo.Company WITH (NOLOCK) RIGHT OUTER JOIN
                       dbo.Device WITH (NOLOCK) ON dbo.Company.ID = dbo.Device.CompanyID RIGHT OUTER JOIN
                       dbo.Measurement WITH (NOLOCK) LEFT OUTER JOIN
@@ -1981,9 +1982,9 @@ AS
 SELECT    dbo.Node.ID AS NodeID, COALESCE(dbo.Device.NodeID, dbo.Historian.NodeID) AS SourceNodeID, COALESCE(dbo.Historian.Acronym, dbo.Device.Acronym, '__') + ':' + CONVERT(NVARCHAR(10), dbo.Measurement.PointID) AS ID, dbo.Measurement.SignalID, 
                       dbo.Measurement.PointTag, dbo.Measurement.AlternateTag, dbo.Measurement.SignalReference, dbo.Measurement.Internal, dbo.Measurement.Subscribed, dbo.Device.Acronym AS Device, 
                       CASE WHEN dbo.Device.IsConcentrator = 0 AND dbo.Device.ParentID IS NOT NULL THEN RuntimeP.ID ELSE dbo.Runtime.ID END AS DeviceID,
-                      COALESCE(dbo.Device.FramesPerSecond, 30) AS FramesPerSecond, dbo.Protocol.Acronym AS Protocol, dbo.Protocol.Type AS ProtocolType, dbo.SignalType.Acronym AS SignalType, dbo.Phasor.ID AS PhasorID, dbo.Phasor.Type AS PhasorType, 
+                      COALESCE(dbo.Device.FramesPerSecond, 30) AS FramesPerSecond, dbo.Protocol.Acronym AS Protocol, dbo.Protocol.Type AS ProtocolType, dbo.SignalType.Acronym AS SignalType, dbo.SignalType.EngineeringUnits, dbo.Phasor.ID AS PhasorID, dbo.Phasor.Type AS PhasorType, 
                       dbo.Phasor.Phase, dbo.Measurement.Adder, dbo.Measurement.Multiplier, dbo.Company.Acronym AS Company, dbo.Device.Longitude, 
-                      dbo.Device.Latitude, dbo.Measurement.Description
+                      dbo.Device.Latitude, dbo.Measurement.Description, dbo.Measurement.UpdatedOn
 FROM         dbo.Company WITH (NOLOCK) RIGHT OUTER JOIN
                       dbo.Device WITH (NOLOCK) ON dbo.Company.ID = dbo.Device.CompanyID RIGHT OUTER JOIN
                       dbo.Measurement WITH (NOLOCK) LEFT OUTER JOIN
@@ -1998,9 +1999,9 @@ WHERE     (dbo.Device.Enabled <> 0 OR dbo.Device.Enabled IS NULL) AND (dbo.Measu
 UNION ALL
 SELECT		NodeID, SourceNodeID, Source + ':' + CONVERT(NVARCHAR(10), PointID) AS ID, SignalID,
                     PointTag, AlternateTag, SignalReference, 0 AS Internal, 1 AS Subscribed, NULL AS Device,
-                    NULL AS DeviceID, FramesPerSecond, ProtocolAcronym AS Protocol, ProtocolType, SignalTypeAcronym AS SignalType, PhasorID, PhasorType,
+                    NULL AS DeviceID, FramesPerSecond, ProtocolAcronym AS Protocol, ProtocolType, SignalTypeAcronym AS SignalType, '' AS EngineeringUnits, PhasorID, PhasorType,
                     Phase, Adder, Multiplier, CompanyAcronym AS Company, Longitude,
-                    Latitude, Description
+                    Latitude, Description, getutcdate() AS UpdatedOn
 FROM		dbo.ImportedMeasurement WITH (NOLOCK)
 WHERE		dbo.ImportedMeasurement.Enabled <> 0
 
@@ -2136,7 +2137,7 @@ SELECT     D.NodeID, D.ID, D.ParentID, D.UniqueID, D.Acronym, ISNULL(D.Name, '')
                       AS HistorianAcronym, ISNULL(VD.VendorAcronym, '') AS VendorAcronym, ISNULL(VD.Name, '') AS VendorDeviceName, ISNULL(P.Name, '') 
                       AS ProtocolName, P.Type AS ProtocolType, P.Category, ISNULL(I.Name, '') AS InterconnectionName, N.Name AS NodeName, ISNULL(PD.Acronym, '') AS ParentAcronym, D.CreatedOn, D.AllowedParsingExceptions, 
                       D.ParsingExceptionWindow, D.DelayedConnectionInterval, D.AllowUseOfCachedConfiguration, D.AutoStartDataParsingSequence, D.SkipDisableRealTimeData, 
-                      D.MeasurementReportingInterval
+                      D.MeasurementReportingInterval, D.UpdatedOn
 FROM         dbo.Device AS D WITH (NOLOCK) LEFT OUTER JOIN
                       dbo.Company AS C WITH (NOLOCK) ON C.ID = D.CompanyID LEFT OUTER JOIN
                       dbo.Historian AS H WITH (NOLOCK) ON H.ID = D.HistorianID LEFT OUTER JOIN
@@ -2711,7 +2712,7 @@ BEGIN
     WHERE inserted.Acronym <> deleted.Acronym
     
     INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue)
-    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM ActiveMeasurement INNER JOIN #signalTypeID s ON ActiveMeasurement.SignalTypeID = s.ID
+    SELECT 'ActiveMeasurement', 'SignalID', SignalID FROM Measurement INNER JOIN #signalTypeID s ON Measurement.SignalTypeID = s.ID
     
     DROP TABLE #signalTypeID
 END

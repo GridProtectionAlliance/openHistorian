@@ -38,7 +38,7 @@ USE openHistorian;
 -- IMPORTANT NOTE: When making updates to this schema, please increment the version number!
 -- *******************************************************************************************
 CREATE VIEW SchemaVersion AS
-SELECT 2 AS VersionNumber;
+SELECT 3 AS VersionNumber;
 
 CREATE TABLE ErrorLog(
     ID INT AUTO_INCREMENT NOT NULL,
@@ -134,6 +134,7 @@ CREATE TABLE SignalType(
     Acronym VARCHAR(4) NOT NULL,
     Suffix VARCHAR(2) NOT NULL,
     Abbreviation VARCHAR(2) NOT NULL,
+    LongAcronym VARCHAR(200) NOT NULL DEFAULT 'Undefined',
     Source VARCHAR(10) NOT NULL,
     EngineeringUnits VARCHAR(10) NULL,
     CONSTRAINT PK_SignalType PRIMARY KEY (ID ASC)
@@ -991,8 +992,8 @@ AS
 SELECT Node.ID AS NodeID, COALESCE(Device.NodeID, Historian.NodeID) AS SourceNodeID, CONCAT_WS(':', COALESCE(Historian.Acronym, Device.Acronym, '__'), 
     CAST(Measurement.PointID AS CHAR)) AS ID, Measurement.SignalID, Measurement.PointTag, Measurement.AlternateTag, Measurement.SignalReference, Measurement.Internal, Measurement.Subscribed,
     Device.Acronym AS Device, CASE WHEN Device.IsConcentrator = 0 AND Device.ParentID IS NOT NULL THEN RuntimeP.ID ELSE Runtime.ID END AS DeviceID, COALESCE(Device.FramesPerSecond, 30) AS FramesPerSecond, 
-    Protocol.Acronym AS Protocol, Protocol.Type AS ProtocolType, SignalType.Acronym AS SignalType, Phasor.ID AS PhasorID, Phasor.Type AS PhasorType, Phasor.Phase, Measurement.Adder, 
-    Measurement.Multiplier, Company.Acronym AS Company, Device.Longitude, Device.Latitude, Measurement.Description
+    Protocol.Acronym AS Protocol, Protocol.Type AS ProtocolType, SignalType.Acronym AS SignalType, SignalType.EngineeringUnits, Phasor.ID AS PhasorID, Phasor.Type AS PhasorType, Phasor.Phase, Measurement.Adder, 
+    Measurement.Multiplier, Company.Acronym AS Company, Device.Longitude, Device.Latitude, Measurement.Description, Measurement.UpdatedOn
 FROM Company RIGHT OUTER JOIN
     Device ON Company.ID = Device.CompanyID RIGHT OUTER JOIN
     Measurement LEFT OUTER JOIN
@@ -1008,8 +1009,8 @@ WHERE (Device.Enabled <> 0 OR Device.Enabled IS NULL) AND (Measurement.Enabled <
 UNION ALL
 SELECT NodeID, SourceNodeID, CONCAT_WS(':', Source, CAST(PointID AS CHAR)) AS ID, SignalID, PointTag,
     AlternateTag, SignalReference, 0 AS Internal, 1 AS Subscribed, NULL AS Device, NULL AS DeviceID,
-    FramesPerSecond, ProtocolAcronym AS Protocol, ProtocolType, SignalTypeAcronym AS SignalType, PhasorID, PhasorType, Phase, Adder, Multiplier,
-    CompanyAcronym AS Company, Longitude, Latitude, Description
+    FramesPerSecond, ProtocolAcronym AS Protocol, ProtocolType, SignalTypeAcronym AS SignalType, '' AS EngineeringUnits, PhasorID, PhasorType, Phase, Adder, Multiplier,
+    CompanyAcronym AS Company, Longitude, Latitude, Description, UTC_TIMESTAMP() AS UpdatedOn
 FROM ImportedMeasurement
 WHERE ImportedMeasurement.Enabled <> 0;
 
@@ -1062,7 +1063,7 @@ SELECT     Device.CompanyID, Company.Acronym AS CompanyAcronym, Company.Name AS 
     Measurement.SignalReference, Measurement.Adder, Measurement.Multiplier, Measurement.Description, Measurement.Subscribed, Measurement.Internal, Measurement.Enabled, 
     COALESCE (SignalType.EngineeringUnits, N'') AS EngineeringUnits, SignalType.Source, SignalType.Acronym AS SignalAcronym, 
     SignalType.Name AS SignalName, SignalType.Suffix AS SignalTypeSuffix, Device.Longitude, Device.Latitude,
-    CONCAT_WS(':', COALESCE(Historian.Acronym, Device.Acronym, '__'), CAST(Measurement.PointID AS CHAR)) AS ID
+    CONCAT_WS(':', COALESCE(Historian.Acronym, Device.Acronym, '__'), CAST(Measurement.PointID AS CHAR)) AS ID, Measurement.UpdatedOn
 FROM Company RIGHT OUTER JOIN
     Device ON Company.ID = Device.CompanyID RIGHT OUTER JOIN
     Measurement LEFT OUTER JOIN
@@ -1173,7 +1174,7 @@ SELECT D.NodeID, D.ID, D.ParentID, D.UniqueID, D.Acronym, COALESCE(D.Name, '') A
     AS HistorianAcronym, COALESCE(VD.VendorAcronym, '') AS VendorAcronym, COALESCE(VD.Name, '') AS VendorDeviceName, COALESCE(P.Name, '') 
     AS ProtocolName, P.Type AS ProtocolType, P.Category, COALESCE(I.Name, '') AS InterconnectionName, N.Name AS NodeName, COALESCE(PD.Acronym, '') AS ParentAcronym, D.CreatedOn, D.AllowedParsingExceptions, 
     D.ParsingExceptionWindow, D.DelayedConnectionInterval, D.AllowUseOfCachedConfiguration, D.AutoStartDataParsingSequence, D.SkipDisableRealTimeData, 
-    D.MeasurementReportingInterval
+    D.MeasurementReportingInterval, D.UpdatedOn
 FROM Device AS D LEFT OUTER JOIN
     Company AS C ON C.ID = D.CompanyID LEFT OUTER JOIN
     Historian AS H ON H.ID = D.HistorianID LEFT OUTER JOIN
@@ -1501,7 +1502,7 @@ BEGIN
     CASE WHEN OLD.SignalID <> NEW.SignalID
     THEN
         INSERT INTO TrackedChange(TableName, PrimaryKeyColumn, PrimaryKeyValue) VALUES('ActiveMeasurement', 'SignalID', OLD.SignalID);
-	ELSE BEGIN END;
+    ELSE BEGIN END;
     END CASE;
 END$$
 DELIMITER ;
