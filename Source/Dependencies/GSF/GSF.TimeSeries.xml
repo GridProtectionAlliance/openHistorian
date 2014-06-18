@@ -4559,6 +4559,10 @@
                     <term>*-1d</term>
                     <description>Evaluates to 1 day before <see cref="P:System.DateTime.UtcNow"/>.</description>
                 </item>
+                <item>
+                    <term>*+2d</term>
+                    <description>Evaluates to 2 days from <see cref="P:System.DateTime.UtcNow"/>.</description>
+                </item>
             </list>
             </para>
             </remarks>

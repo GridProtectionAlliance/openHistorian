@@ -21166,7 +21166,7 @@
         </member>
         <member name="T:GSF.TimeTagBase">
             <summary>
-            Represents tha base class for alternate timetag implementations.
+            Represents the base class for alternate timetag implementations.
             </summary>
         </member>
         <member name="M:GSF.TimeTagBase.#ctor(System.Int64,System.Double)">

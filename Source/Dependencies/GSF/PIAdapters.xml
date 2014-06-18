@@ -4,9 +4,89 @@
         <name>PIAdapters</name>
     </assembly>
     <members>
+        <member name="T:PIAdapters.PIConnection">
+            <summary>
+            Represents a STA connection to a PI server that handles open, close and execute operations.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIConnection.#ctor">
+            <summary>
+            Creates a new OSI-PI connection.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIConnection.Finalize">
+            <summary>
+            Releases the unmanaged resources before the <see cref="T:PIAdapters.PIConnection"/> object is reclaimed by <see cref="T:System.GC"/>.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIConnection.Dispose">
+            <summary>
+            Releases all the resources used by the <see cref="T:PIAdapters.PIConnection"/> object.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIConnection.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:PIAdapters.PIConnection"/> object and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:PIAdapters.PIConnection.Open">
+            <summary>
+            Attempts to open <see cref="T:PIAdapters.PIConnection"/>.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIConnection.Close">
+            <summary>
+            Closes <see cref="T:PIAdapters.PIConnection"/>.
+            </summary>
+        </member>
+        <member name="M:PIAdapters.PIConnection.Execute(System.Action{PISDK.Server})">
+            <summary>
+            Executes an action against the <see cref="T:PIAdapters.PIConnection"/> on its STA operations thread.
+            </summary>
+            <remarks>
+            This method ensures that each operation on OSI-PI server object is handled synchronously on its primary STA thread.
+            </remarks>
+            <param name="operation">Action to execute.</param>
+        </member>
+        <member name="P:PIAdapters.PIConnection.ServerName">
+            <summary>
+            Gets or sets the name of the PI server for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.UserName">
+            <summary>
+            Gets or sets the name of the PI user ID for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.Password">
+            <summary>
+            Gets or sets the password used for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.ConnectTimeout">
+            <summary>
+            Gets or sets the timeout interval (in milliseconds) for the adapter's connection
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.Connected">
+            <summary>
+            Gets flag that determines if <see cref="T:PIAdapters.PIConnection"/> is currently connected to <see cref="P:PIAdapters.PIConnection.ServerName"/>.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIConnection.Busy">
+            <summary>
+            Gets flag that determines if an OSI-PI server operation is currently executing.
+            </summary>
+        </member>
         <member name="T:PIAdapters.PIOutputAdapter">
             <summary>
             Exports measurements to PI if the point tag or alternate tag corresponds to a PI point's tag name.
+            </summary>
+        </member>
+        <member name="F:PIAdapters.PIOutputAdapter.DefaultPointsPerConnection">
+            <summary>
+            Default value for <see cref="P:PIAdapters.PIOutputAdapter.PointsPerConnection"/>.
             </summary>
         </member>
         <member name="M:PIAdapters.PIOutputAdapter.#ctor">
@@ -53,9 +133,9 @@
             <param name="maxLength">Maximum number of characters in the status string</param>
             <returns>Status</returns>
         </member>
-        <member name="P:PIAdapters.PIOutputAdapter.BulkUpdate">
+        <member name="P:PIAdapters.PIOutputAdapter.PointsPerConnection">
             <summary>
-            Set this property true to force the adapter to send bulk updates to PI with the UpdateValues method. Set this property to false to update points one value at a time using UpdateValue method.
+            Gets or sets total number of points a single <see cref="T:PIAdapters.PIConnection"/> will handle for archiving data.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.OutputIsForArchive">
@@ -101,11 +181,6 @@
         <member name="P:PIAdapters.PIOutputAdapter.PIPointClass">
             <summary>
             Gets or sets the point class string used when automatically creating new PI points during the metadata update. On the PI server, this class should inherit from classic.
-            </summary>
-        </member>
-        <member name="P:PIAdapters.PIOutputAdapter.TagMapCacheFileName">
-            <summary>
-            Gets or sets the filename to be used for tag map cache.
             </summary>
         </member>
         <member name="P:PIAdapters.PIOutputAdapter.Status">
@@ -188,6 +263,11 @@
             Gets or sets the password used for the adapter's PI connection.
             </summary>
         </member>
+        <member name="P:PIAdapters.PIPBInputAdapter.ConnectTimeout">
+            <summary>
+            Gets or sets the timeout interval (in milliseconds) for the adapter's connection
+            </summary>
+        </member>
         <member name="T:PIAdapters.PIRTInputAdapter">
             <summary>
             Uses PI event pipes to deliver real-time PI data to GSF host
@@ -229,11 +309,6 @@
         <member name="M:PIAdapters.PIRTInputAdapter.QueryData">
             <summary>
             Runs a constant loop to pull data from PI
-            </summary>
-        </member>
-        <member name="M:PIAdapters.PIRTInputAdapter.m_publishTimer_Tick(System.Object,System.Timers.ElapsedEventArgs)">
-            <summary>
-            Publishes data that was queried from PI using polling
             </summary>
         </member>
         <member name="M:PIAdapters.PIRTInputAdapter.Dispose(System.Boolean)">
@@ -281,6 +356,11 @@
         <member name="P:PIAdapters.PIRTInputAdapter.Password">
             <summary>
             Gets or sets the password used for the adapter's PI connection.
+            </summary>
+        </member>
+        <member name="P:PIAdapters.PIRTInputAdapter.ConnectTimeout">
+            <summary>
+            Gets or sets the timeout interval (in milliseconds) for the adapter's connection
             </summary>
         </member>
         <member name="P:PIAdapters.PIRTInputAdapter.AutoAddOutput">

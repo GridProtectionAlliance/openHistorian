@@ -90,7 +90,7 @@
             </summary>
             <remarks>
             With the exception of the values of -1 and 0, this value specifies the desired processing interval for data, i.e.,
-            basically a delay, or timer interval, overwhich to process data. A value of -1 means to use the default processing
+            basically a delay, or timer interval, over which to process data. A value of -1 means to use the default processing
             interval while a value of 0 means to process data as fast as possible.
             </remarks>
         </member>
