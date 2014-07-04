@@ -72,7 +72,7 @@ namespace GSF.SortedTreeStore.Services.Net
             try
             {
                 long code = m_stream.ReadInt64();
-                if (code != 1122334455667788993L)
+                if (code != 1122334455667788994L)
                 {
                     m_stream.Write((byte)ServerResponse.UnknownProtocolIdentifier);
                     m_stream.Flush();
@@ -134,6 +134,12 @@ namespace GSF.SortedTreeStore.Services.Net
                             m_stream.Write(i.KeyTypeID);
                             m_stream.Write(i.ValueType.FullName);
                             m_stream.Write(i.ValueTypeID);
+
+                            m_stream.Write(i.SupportedStreamingModes.Count);
+                            foreach (var encoding in i.SupportedStreamingModes)
+                            {
+                                encoding.Save(m_stream);
+                            }
                         }
                         m_stream.Flush();
                         break;

@@ -23,7 +23,6 @@
 //******************************************************************************************************
 
 using System;
-using GSF.Diagnostics;
 using GSF.Net;
 using GSF.SortedTreeStore.Encoding;
 using GSF.SortedTreeStore.Services.Reader;

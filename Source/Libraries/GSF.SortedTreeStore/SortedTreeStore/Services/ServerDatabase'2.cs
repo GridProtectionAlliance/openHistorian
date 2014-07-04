@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using GSF.Diagnostics;
 using GSF.SortedTreeStore.Filters;
@@ -54,6 +55,7 @@ namespace GSF.SortedTreeStore.Services
         private ArchiveList<TKey, TValue> m_archiveList;
         private volatile bool m_disposed;
         private string m_databaseName;
+        private List<EncodingDefinition> m_supportedStreamingMethods;
 
         /// <summary>
         /// Event is raised when there is an exception encountered while processing.
@@ -102,6 +104,7 @@ namespace GSF.SortedTreeStore.Services
             m_tmpValue = new TValue();
             m_databaseName = databaseConfig.DatabaseName;
             m_archiveList = new ArchiveList<TKey, TValue>(Log.LogSource);
+            m_supportedStreamingMethods = databaseConfig.StreamingEncodingMethods.ToList();
 
             if (databaseConfig.WriterMode == WriterMode.InMemory)
             {
@@ -186,7 +189,7 @@ namespace GSF.SortedTreeStore.Services
             {
                 if (m_info == null)
                 {
-                    m_info = new DatabaseInfo(m_databaseName, m_tmpKey, m_tmpValue);
+                    m_info = new DatabaseInfo(m_databaseName, m_tmpKey, m_tmpValue, m_supportedStreamingMethods);
                 }
                 return m_info;
             }

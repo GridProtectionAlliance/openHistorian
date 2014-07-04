@@ -68,7 +68,7 @@ namespace GSF.SortedTreeStore.Services.Net
             m_client.Client.DualMode = true;
             m_client.Connect(server);
             m_stream = new NetworkBinaryStream(m_client.Client);
-            m_stream.Write(1122334455667788993L);
+            m_stream.Write(1122334455667788994L);
             m_stream.Flush();
 
             var command = (ServerResponse)m_stream.ReadUInt8();
@@ -84,6 +84,8 @@ namespace GSF.SortedTreeStore.Services.Net
                 default:
                     throw new Exception("Unknown server response: " + command.ToString());
             }
+
+
         }
 
         public override ClientDatabaseBase GetDatabase(string databaseName)

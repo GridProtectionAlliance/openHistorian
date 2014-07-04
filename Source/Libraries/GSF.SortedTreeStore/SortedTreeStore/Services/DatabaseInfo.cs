@@ -22,6 +22,8 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using GSF.SortedTreeStore.Tree;
 
 namespace GSF.SortedTreeStore.Services
@@ -37,13 +39,15 @@ namespace GSF.SortedTreeStore.Services
         /// <param name="databaseName">the name of the database</param>
         /// <param name="key">the key type</param>
         /// <param name="value">the value type</param>
-        public DatabaseInfo(string databaseName, SortedTreeTypeBase key, SortedTreeTypeBase value)
+        /// <param name="supportedStreamingModes"></param>
+        public DatabaseInfo(string databaseName, SortedTreeTypeBase key, SortedTreeTypeBase value, IList<EncodingDefinition> supportedStreamingModes)
         {
             DatabaseName = databaseName;
             KeyTypeID = key.GenericTypeGuid;
             KeyType = key.GetType();
             ValueTypeID = value.GenericTypeGuid;
             ValueType = value.GetType();
+            SupportedStreamingModes = new ReadOnlyCollection<EncodingDefinition>(supportedStreamingModes);
         }
 
         /// <summary>
@@ -55,7 +59,6 @@ namespace GSF.SortedTreeStore.Services
         /// Gets the ID for the database key.
         /// </summary>
         public Guid KeyTypeID { get; private set; }
-
 
         /// <summary>
         /// Gets the ID for the database value.
@@ -71,5 +74,10 @@ namespace GSF.SortedTreeStore.Services
         /// Gets the type for the database value.
         /// </summary>
         public Type ValueType { get; private set; }
+
+        /// <summary>
+        /// Gets all of the supported streaming modes for the server.
+        /// </summary>
+        public ReadOnlyCollection<EncodingDefinition> SupportedStreamingModes { get; private set; }
     }
 }

@@ -242,9 +242,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataExtractionUtility", "To
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "openHistorian.Scada", "openHistorian.Scada\openHistorian.Scada.csproj", "{E461E61E-EB10-40CF-9DD7-B22A80F6A6B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveTools", "Tools\ArchiveTools\ArchiveTools.csproj", "{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 27
+		SccNumberOfProjects = 28
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs11
 		SccLocalPath0 = .
@@ -352,6 +354,10 @@ Global
 		SccProjectTopLevelParentUniqueName26 = openHistorian.sln
 		SccProjectName26 = openHistorian.Scada
 		SccLocalPath26 = openHistorian.Scada
+		SccProjectUniqueName27 = Tools\\ArchiveTools\\ArchiveTools.csproj
+		SccProjectTopLevelParentUniqueName27 = openHistorian.sln
+		SccProjectName27 = Tools/ArchiveTools
+		SccLocalPath27 = Tools\\ArchiveTools
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = openHistorian.vsmdi
@@ -774,6 +780,21 @@ Global
 		{E461E61E-EB10-40CF-9DD7-B22A80F6A6B0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{E461E61E-EB10-40CF-9DD7-B22A80F6A6B0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E461E61E-EB10-40CF-9DD7-B22A80F6A6B0}.Release|x86.ActiveCfg = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Mono|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Mono|Mixed Platforms.Build.0 = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Mono|x86.ActiveCfg = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -806,6 +827,7 @@ Global
 		{7E9282AA-CBC3-485F-99D8-7DCA3DF02748} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{2C71AA25-9346-4DD0-A0CD-F265F6036822} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{8F477BB8-2277-43E3-BF0B-035B0F4F1B46} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
+		{2A89656C-2FDB-4ABA-9F16-0F7B41217F44} = {3A952272-B64C-48E0-9CB2-0130AC28D72E}
 		{B2DA9C7B-24C1-449B-816D-C72F4661983E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{E2483910-5890-4F88-AF06-BE6C76EB5A9E} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
 		{69FCF69C-A782-40CF-A428-9A8B30370B7C} = {C73F9DF6-4556-49B4-90D7-C28F87B310D6}
